@@ -58,6 +58,7 @@ const RAIL_WIDTH_CONFIG_BY_MODE = Object.freeze({
 const GLOBAL_RIGHT_RAIL_MIN = RAIL_WIDTH_CONFIG_BY_MODE.mobile.rightMin;
 const GLOBAL_RIGHT_RAIL_MAX = RAIL_WIDTH_CONFIG_BY_MODE.desktop.rightMax;
 const GLOBAL_RIGHT_RAIL_BASELINE = RAIL_WIDTH_CONFIG_BY_MODE.desktop.rightBaseline;
+export const LEFT_RAIL_COLLAPSED_WIDTH = 48;
 
 function clampInt(value, min, max, fallback) {
   const numeric = Number.isFinite(value) ? Math.trunc(value) : Math.trunc(fallback);
@@ -136,9 +137,12 @@ export function buildSidebarLayoutModel(source = {}, options = {}) {
   const rightVisible = options.rightVisible !== false
     && config.rightVisible !== false
     && viewportWidth >= config.dualRailMinViewportWidth;
-  let leftWidth = resolveRailWidthCandidate(
+  const leftCollapsed = typeof options.leftCollapsed === 'boolean'
+    ? options.leftCollapsed
+    : source.leftCollapsed === true;
+  let leftExpandedWidth = resolveRailWidthCandidate(
     source,
-    ['leftSidebarWidth', 'left_width'],
+    ['leftExpandedWidth', 'leftSidebarWidth', 'left_width'],
     config.leftMin,
     config.leftMax,
     config.leftBaseline,
@@ -160,9 +164,9 @@ export function buildSidebarLayoutModel(source = {}, options = {}) {
     )
     : storedRightWidth;
 
-  if (rightVisible) {
-    ({ leftWidth, rightWidth } = fitDualRailWidthsToViewport(
-      leftWidth,
+  if (rightVisible && !leftCollapsed) {
+    ({ leftWidth: leftExpandedWidth, rightWidth } = fitDualRailWidthsToViewport(
+      leftExpandedWidth,
       rightWidth,
       config,
       viewportWidth,
@@ -174,9 +178,12 @@ export function buildSidebarLayoutModel(source = {}, options = {}) {
     viewportMode,
     layoutVariant: rightVisible ? 'dual' : 'single',
     rightVisible,
-    leftSidebarWidth: leftWidth,
+    leftCollapsed,
+    leftExpandedWidth,
+    leftSidebarWidth: leftCollapsed ? LEFT_RAIL_COLLAPSED_WIDTH : leftExpandedWidth,
     rightSidebarWidth: rightWidth,
     constraints: {
+      leftCollapsedWidth: LEFT_RAIL_COLLAPSED_WIDTH,
       leftMin: config.leftMin,
       leftMax: config.leftMax,
       rightMin: config.rightMin,
@@ -225,6 +232,7 @@ export function buildLayoutPatchFromSpatialState(state, options = {}) {
     viewportWidth,
     viewportMode,
     rightVisible: options.rightVisible,
+    leftCollapsed: options.leftCollapsed,
   });
   return {
     left_width: model.leftSidebarWidth,
@@ -246,10 +254,12 @@ export function buildSpatialStateFromLayoutSnapshot(layout, options = {}) {
     viewportWidth,
     viewportMode,
     rightVisible: options.rightVisible,
+    leftCollapsed: options.leftCollapsed,
   });
   return {
-    leftSidebarWidth: model.leftSidebarWidth,
+    leftSidebarWidth: model.leftExpandedWidth,
     rightSidebarWidth: model.rightSidebarWidth,
+    leftCollapsed: model.leftCollapsed,
     viewportWidth,
     viewportMode: model.viewportMode,
     source: 'design-os-runtime',

@@ -36,6 +36,7 @@ export {
   DESIGN_OS_PROFILE_OPTIONS,
   DESIGN_OS_SHELL_MODE_OPTIONS,
   DESIGN_OS_WORKSPACE_BY_EDITOR_MODE,
+  LEFT_RAIL_COLLAPSED_WIDTH,
   applyCssVariables,
   buildDesignOsStatusText,
   buildLayoutPatchFromSpatialState,

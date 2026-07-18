@@ -25,7 +25,7 @@ function createChildSource(tempRoot, outputDir) {
   return `\
 const fs = require('node:fs');
 const path = require('node:path');
-const { app, BrowserWindow, dialog, session } = require('electron');
+const { app, BrowserWindow, dialog, Menu, session } = require('electron');
 
 const rootDir = ${JSON.stringify(rootDir)};
 const tempRoot = ${JSON.stringify(tempRoot)};
@@ -179,6 +179,102 @@ async function dragRail(win, side, delta) {
       activeHandleCleared: !handle?.classList.contains('is-resizing'),
     };
   })()\`, true);
+}
+
+async function exerciseLeftRailCollapse(win) {
+  const productStateBefore = snapshotProjectProductFiles();
+  const expanded = await collectProbe(win, 'left-rail-expanded');
+  await win.webContents.executeJavaScript("document.querySelector('[data-left-rail-collapse]')?.click()", true);
+  const collapsed = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const layout = document.querySelector('.app-layout'); const sidebar = document.querySelector('.sidebar--left'); const button = document.querySelector('[data-left-rail-collapse]'); const resizer = document.querySelector('[data-sidebar-resizer]'); const key = [...Array(localStorage.length).keys()].map((index) => localStorage.key(index)).find((item) => item?.startsWith('yalkenSpatialLayout:')) || ''; const stored = key ? JSON.parse(localStorage.getItem(key) || '{}') : {}; const main = document.querySelector('.main-content')?.getBoundingClientRect(); return { collapsed: layout?.dataset.leftRailCollapsed === 'true', leftWidth: parseInt(layout?.style.getPropertyValue('--app-left-sidebar-width') || '0', 10), sidebarClass: sidebar?.classList.contains('is-collapsed') === true, resizerHidden: resizer?.hidden === true, buttonExpanded: button?.getAttribute('aria-expanded') || '', buttonFocused: document.activeElement === button, mainWidth: Math.round(main?.width || 0), stored }; })()",
+      true
+    ).then((state) => state.collapsed && state.buttonFocused ? state : null),
+    'LEFT_RAIL_COLLAPSE_FAILED'
+  );
+  await captureEvidence(win, 'sidebar-left-collapsed.png');
+
+  await win.webContents.executeJavaScript("document.querySelector('[data-left-rail-collapse]')?.click()", true);
+  const restored = await waitUntil(
+    () => collectProbe(win, 'left-rail-restored').then((probe) => (
+      probe.leftWidthVar === expanded.leftWidthVar ? probe : null
+    )),
+    'LEFT_RAIL_RESTORE_FAILED'
+  );
+  const control = await win.webContents.executeJavaScript(
+    "(() => { const layout = document.querySelector('.app-layout'); const button = document.querySelector('[data-left-rail-collapse]'); const resizer = document.querySelector('[data-sidebar-resizer]'); return { collapsed: layout?.dataset.leftRailCollapsed === 'true', buttonExpanded: button?.getAttribute('aria-expanded') || '', buttonFocused: document.activeElement === button, resizerHidden: resizer?.hidden === true }; })()",
+    true
+  );
+
+  return {
+    expanded,
+    collapsed,
+    restored,
+    control,
+    productStateUnchanged: JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore),
+  };
+}
+
+async function exerciseLeftRailSafeReset(win) {
+  const productStateBefore = snapshotProjectProductFiles();
+  await win.webContents.executeJavaScript("document.querySelector('[data-left-rail-collapse]')?.click()", true);
+  await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "document.querySelector('.app-layout')?.dataset.leftRailCollapsed === 'true'",
+      true
+    ),
+    'LEFT_RAIL_PRE_RESET_COLLAPSE_FAILED'
+  );
+  const safeResetItem = Menu.getApplicationMenu()?.getMenuItemById('view-safe-reset');
+  if (!safeResetItem) throw new Error('SAFE_RESET_MENU_ITEM_MISSING');
+  safeResetItem.click(safeResetItem, win, {});
+  const reset = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const layout = document.querySelector('.app-layout'); const button = document.querySelector('[data-left-rail-collapse]'); const key = [...Array(localStorage.length).keys()].map((index) => localStorage.key(index)).find((item) => item?.startsWith('yalkenSpatialLayout:')) || ''; const stored = key ? JSON.parse(localStorage.getItem(key) || '{}') : {}; return { collapsed: layout?.dataset.leftRailCollapsed === 'true', leftWidth: parseInt(layout?.style.getPropertyValue('--app-left-sidebar-width') || '0', 10), buttonExpanded: button?.getAttribute('aria-expanded') || '', stored }; })()",
+      true
+    ).then((state) => !state.collapsed && state.leftWidth === 290 ? state : null),
+    'LEFT_RAIL_SAFE_RESET_FAILED'
+  );
+  return {
+    reset,
+    productStateUnchanged: JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore),
+  };
+}
+
+async function exerciseLeftRailLastStableRestore(win) {
+  const productStateBefore = snapshotProjectProductFiles();
+  const point = await win.webContents.executeJavaScript(
+    "(() => { const handle = document.querySelector('[data-sidebar-resizer]'); const rect = handle?.getBoundingClientRect(); return rect ? { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + 40) } : null; })()",
+    true
+  );
+  if (!point) throw new Error('LEFT_RAIL_LAST_STABLE_HANDLE_MISSING');
+  win.webContents.sendInputEvent({ type: 'mouseMove', x: point.x, y: point.y });
+  win.webContents.sendInputEvent({ type: 'mouseDown', x: point.x, y: point.y, button: 'left', clickCount: 1 });
+  win.webContents.sendInputEvent({ type: 'mouseMove', x: point.x + 30, y: point.y, button: 'left' });
+  const transientWidth = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "parseInt(document.querySelector('.app-layout')?.style.getPropertyValue('--app-left-sidebar-width') || '0', 10)",
+      true
+    ).then((width) => width === 320 ? width : 0),
+    'LEFT_RAIL_TRANSIENT_RESIZE_FAILED'
+  );
+  const restoreItem = Menu.getApplicationMenu()?.getMenuItemById('view-restore-last-stable');
+  if (!restoreItem) throw new Error('RESTORE_LAST_STABLE_MENU_ITEM_MISSING');
+  restoreItem.click(restoreItem, win, {});
+  const restored = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const layout = document.querySelector('.app-layout'); const key = [...Array(localStorage.length).keys()].map((index) => localStorage.key(index)).find((item) => item?.startsWith('yalkenSpatialLayout:')) || ''; const stored = key ? JSON.parse(localStorage.getItem(key) || '{}') : {}; return { width: parseInt(layout?.style.getPropertyValue('--app-left-sidebar-width') || '0', 10), storedWidth: stored.leftSidebarWidth || 0 }; })()",
+      true
+    ).then((state) => state.width === 290 ? state : null),
+    'LEFT_RAIL_LAST_STABLE_RESTORE_FAILED'
+  );
+  win.webContents.sendInputEvent({ type: 'mouseUp', x: point.x + 30, y: point.y, button: 'left', clickCount: 1 });
+  await sleep(120);
+  return {
+    transientWidth,
+    restored,
+    productStateUnchanged: JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore),
+  };
 }
 
 async function exerciseInspectorControls(win) {
@@ -414,6 +510,7 @@ app.whenReady().then(async () => {
     const inspectorControls = await exerciseInspectorControls(win);
     const leftDrag = await dragRail(win, 'left', 40);
     const rightDrag = await dragRail(win, 'right', -30);
+    const leftRailCollapse = await exerciseLeftRailCollapse(win);
     const resizedWide = await collectProbe(win, 'resized-wide');
     await captureEvidence(win, 'sidebar-wide.png');
     const compact = await resizeAndProbe(win, 1000, 850, 'compact-single');
@@ -421,6 +518,8 @@ app.whenReady().then(async () => {
     const mobile = await resizeAndProbe(win, 820, 850, 'mobile-single');
     await captureEvidence(win, 'sidebar-mobile.png');
     const restoredWide = await resizeAndProbe(win, 1440, 850, 'restored-wide');
+    const leftRailSafeReset = await exerciseLeftRailSafeReset(win);
+    const leftRailLastStable = await exerciseLeftRailLastStableRestore(win);
     const image = await win.webContents.capturePage();
     const bitmap = image.toBitmap();
     const sampled = new Set();
@@ -436,10 +535,13 @@ app.whenReady().then(async () => {
       inspectorControls,
       leftDrag,
       rightDrag,
+      leftRailCollapse,
       resizedWide,
       compact,
       mobile,
       restoredWide,
+      leftRailSafeReset,
+      leftRailLastStable,
       screenshotBytes: image.toPNG().byteLength,
       sampledPixelValues: sampled.size,
       networkRequests,
@@ -594,6 +696,24 @@ try {
   assert.equal(result.rightDrag.resizingClassCleared, true);
   assert.equal(result.rightDrag.activeHandleCleared, true);
 
+  assert.equal(result.leftRailCollapse.collapsed.leftWidth, 48);
+  assert.equal(result.leftRailCollapse.collapsed.sidebarClass, true);
+  assert.equal(result.leftRailCollapse.collapsed.resizerHidden, true);
+  assert.equal(result.leftRailCollapse.collapsed.buttonExpanded, 'false');
+  assert.equal(result.leftRailCollapse.collapsed.buttonFocused, true);
+  assert.equal(result.leftRailCollapse.collapsed.mainWidth > result.leftRailCollapse.expanded.main.width, true);
+  assert.equal(result.leftRailCollapse.collapsed.stored.leftSidebarWidth, 330);
+  assert.equal(result.leftRailCollapse.collapsed.stored.leftCollapsed, true);
+  assert.equal(Boolean(result.leftRailCollapse.collapsed.stored.projectId), true);
+  assert.equal(result.leftRailCollapse.restored.leftWidthVar, 330);
+  assert.deepEqual(result.leftRailCollapse.control, {
+    collapsed: false,
+    buttonExpanded: 'true',
+    buttonFocused: true,
+    resizerHidden: false,
+  });
+  assert.equal(result.leftRailCollapse.productStateUnchanged, true);
+
   assertSingleRailProbe(result.compact);
   assert.equal(result.compact.leftWidthVar >= 250 && result.compact.leftWidthVar <= 320, true);
   assert.equal(result.compact.main.width >= 480, true);
@@ -611,6 +731,15 @@ try {
   );
   assert.equal(result.restoredWide.documentFits, true);
   assert.equal(result.restoredWide.bodyFits, true);
+  assert.equal(result.leftRailSafeReset.reset.collapsed, false);
+  assert.equal(result.leftRailSafeReset.reset.leftWidth, 290);
+  assert.equal(result.leftRailSafeReset.reset.buttonExpanded, 'true');
+  assert.equal(result.leftRailSafeReset.reset.stored.leftCollapsed, false);
+  assert.equal(result.leftRailSafeReset.reset.stored.leftSidebarWidth, 290);
+  assert.equal(result.leftRailSafeReset.productStateUnchanged, true);
+  assert.equal(result.leftRailLastStable.transientWidth, 320);
+  assert.deepEqual(result.leftRailLastStable.restored, { width: 290, storedWidth: 290 });
+  assert.equal(result.leftRailLastStable.productStateUnchanged, true);
   assert.equal(result.screenshotBytes > 1000, true);
   assert.equal(result.sampledPixelValues > 1, true);
   assert.deepEqual(result.networkRequests, []);

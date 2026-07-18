@@ -83,6 +83,7 @@ import {
   buildSidebarLayoutModel,
   buildSpatialStateFromLayoutSnapshot,
   deriveSidebarViewportMode,
+  LEFT_RAIL_COLLAPSED_WIDTH,
 } from './design-os/index.mjs';
 import {
   getToolbarFunctionCatalogEntryById,
@@ -149,6 +150,7 @@ const emptyState = document.querySelector('.empty-state');
 const editorPanel = document.querySelector('.editor-panel');
 const sidebar = document.querySelector('.sidebar');
 const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
+const leftRailCollapseButton = document.querySelector('[data-left-rail-collapse]');
 const rightSidebarResizer = document.querySelector('[data-right-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
@@ -7011,6 +7013,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       projectId: normalizeProjectId(currentProjectId),
       leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
       rightSidebarWidth: SPATIAL_LAYOUT_MOBILE_RIGHT_BASELINE_WIDTH,
+      leftCollapsed: false,
       viewportWidth,
       viewportMode: mode,
       savedAtUtc: '',
@@ -7023,6 +7026,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       projectId: normalizeProjectId(currentProjectId),
       leftSidebarWidth: SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH,
       rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
+      leftCollapsed: false,
       viewportWidth,
       viewportMode: mode,
       savedAtUtc: '',
@@ -7034,6 +7038,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
     projectId: normalizeProjectId(currentProjectId),
     leftSidebarWidth: SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH,
     rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
+    leftCollapsed: false,
     viewportWidth,
     viewportMode: mode,
     savedAtUtc: '',
@@ -7052,6 +7057,7 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
     ...model.constraints,
     layoutVariant: model.layoutVariant,
     rightVisible: model.rightVisible,
+    leftCollapsed: model.leftCollapsed,
   };
 }
 
@@ -7082,6 +7088,7 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
       viewportMode: constraints.mode,
       viewportWidth,
       rightVisible: constraints.rightVisible,
+      leftCollapsed: rawState.leftCollapsed === true,
     }
   );
 
@@ -7090,6 +7097,7 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
     projectId: normalizeProjectId(rawState.projectId || currentProjectId),
     leftSidebarWidth: sharedState.leftSidebarWidth,
     rightSidebarWidth: sharedState.rightSidebarWidth,
+    leftCollapsed: sharedState.leftCollapsed,
     viewportWidth,
     viewportMode: constraints.mode,
     savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
@@ -7099,7 +7107,7 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
 
 function readSpatialLayoutState(projectId = currentProjectId) {
   const storageKey = getSpatialLayoutStorageKey(projectId);
-  const legacyKey = 'spatialLayout';
+  const legacyKey = normalizeProjectId(projectId) ? storageKey : 'spatialLayout';
   const raw = readWorkspaceStorage(storageKey, legacyKey);
   if (!raw) return null;
   try {
@@ -7116,6 +7124,7 @@ function persistSpatialLayoutState(state, projectId = currentProjectId) {
     projectId: normalizedProjectId,
     leftSidebarWidth: Math.round(Number(state?.leftSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH),
     rightSidebarWidth: Math.round(Number(state?.rightSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH),
+    leftCollapsed: state?.leftCollapsed === true,
     viewportWidth: Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth())),
     viewportMode: state?.viewportMode || getSpatialLayoutMode(),
     savedAtUtc: new Date().toISOString(),
@@ -7139,12 +7148,27 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     shellMode: constraints.mode === 'compact' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
     viewportMode: constraints.mode,
     rightVisible,
+    leftCollapsed: normalizedState.leftCollapsed,
   });
 
   if (appLayout) {
+    appLayout.style.setProperty('--app-left-sidebar-collapsed-width', `${LEFT_RAIL_COLLAPSED_WIDTH}px`);
     appLayout.style.setProperty('--app-left-sidebar-width', `${layoutPatch.left_width}px`);
     appLayout.style.setProperty('--app-right-sidebar-width', `${layoutPatch.right_width}px`);
     appLayout.dataset.sidebarLayout = constraints.layoutVariant;
+    appLayout.dataset.leftRailCollapsed = normalizedState.leftCollapsed ? 'true' : 'false';
+  }
+
+  sidebar?.classList.toggle('is-collapsed', normalizedState.leftCollapsed);
+  if (leftRailCollapseButton) {
+    const expanded = !normalizedState.leftCollapsed;
+    const label = expanded ? 'Свернуть навигатор' : 'Показать навигатор';
+    leftRailCollapseButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    leftRailCollapseButton.setAttribute('aria-label', label);
+    leftRailCollapseButton.title = label;
+  }
+  if (sidebarResizer) {
+    sidebarResizer.hidden = normalizedState.leftCollapsed;
   }
 
   if (rightSidebar) {
@@ -7159,6 +7183,7 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     projectId: normalizeProjectId(projectId || normalizedState.projectId || currentProjectId),
     viewportWidth,
     viewportMode: constraints.mode,
+    leftCollapsed: normalizedState.leftCollapsed,
     source: persist ? 'committed' : normalizedState.source,
   };
 
@@ -7180,6 +7205,24 @@ function commitSpatialLayoutState(projectId = currentProjectId) {
     persist: true,
     projectId,
   });
+}
+
+function setLeftRailCollapsed(collapsed, { persist = true, restoreFocus = true } = {}) {
+  const nextState = {
+    ...(spatialLayoutState || getSpatialLayoutBaselineForViewport()),
+    leftCollapsed: collapsed === true,
+  };
+  const applied = applySpatialLayoutState(nextState, { persist, projectId: currentProjectId });
+  scheduleLayoutRefresh();
+  if (restoreFocus && leftRailCollapseButton) {
+    requestAnimationFrame(() => leftRailCollapseButton.focus({ preventScroll: true }));
+  }
+  return applied;
+}
+
+function toggleLeftRailCollapsed() {
+  const currentState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
+  return setLeftRailCollapsed(currentState.leftCollapsed !== true);
 }
 
 function updateSpatialLayoutForViewportChange() {
@@ -11295,6 +11338,9 @@ function handleUiAction(action) {
       return true;
     case 'open-command-palette':
       openCommandPaletteModal();
+      return true;
+    case 'toggle-left-rail':
+      toggleLeftRailCollapsed();
       return true;
     case 'open-diagnostics':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
