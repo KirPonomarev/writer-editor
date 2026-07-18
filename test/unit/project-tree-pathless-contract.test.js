@@ -37,8 +37,8 @@ test('project tree renderer emits project and node identity only for tree comman
     ['openDocumentNode', 'handleCreateNode'],
     ['handleCreateNode', 'handleRenameNode'],
     ['handleRenameNode', 'handleDeleteNode'],
-    ['handleDeleteNode', 'handleReorderNode'],
-    ['handleReorderNode', 'buildContextMenuItems'],
+    ['handleDeleteNode', 'handleMoveNode'],
+    ['handleMoveNode', 'handleReorderNode'],
   ];
 
   for (const [name, next] of functionNames) {
@@ -50,6 +50,9 @@ test('project tree renderer emits project and node identity only for tree comman
   assert.match(editor, /currentDocumentId/u);
   assert.match(editor, /hasDocumentId/u);
   assert.match(editor, /currentDocumentId === effectiveDocumentId/u);
+  const reorderSection = functionSection(editor, 'handleReorderNode', 'handleAddCardForNode');
+  assert.match(reorderSection, /await handleMoveNode\(node, targetParentNodeId, targetIndex\)/u);
+  assert.equal(/\bpath\s*:/u.test(reorderSection), false, 'handleReorderNode must not emit a path');
 });
 
 test('main owns node resolution and tree command results stay pathless', () => {

@@ -39,6 +39,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   TREE_RENAME_NODE: 'cmd.project.tree.renameNode',
   TREE_DELETE_NODE: 'cmd.project.tree.deleteNode',
   TREE_REORDER_NODE: 'cmd.project.tree.reorderNode',
+  TREE_MOVE_NODE: 'cmd.project.tree.moveNode',
   EDIT_UNDO: 'cmd.project.edit.undo',
   EDIT_REDO: 'cmd.project.edit.redo',
   EDIT_FIND: 'cmd.project.edit.find',
@@ -1447,6 +1448,71 @@ export function registerProjectCommands(registry, options = {}) {
             : response && typeof response.reason === 'string'
               ? response.reason
               : 'TREE_REORDER_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
+      label: 'Move Project Tree Node',
+      group: 'edit',
+      surface: ['internal'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
+      const targetParentNodeId = typeof input.targetParentNodeId === 'string' ? input.targetParentNodeId.trim() : '';
+      const targetIndex = Number.isInteger(input.targetIndex) ? input.targetIndex : -1;
+      if (!projectId || !nodeId || !targetParentNodeId || targetIndex < 0) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'TREE_MOVE_PAYLOAD_INVALID');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
+          { projectId, nodeId, targetParentNodeId, targetIndex },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
+          'TREE_MOVE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          moved: true,
+          projectId,
+          nodeId: typeof bridged.nodeId === 'string' && bridged.nodeId.trim()
+            ? bridged.nodeId.trim()
+            : nodeId,
+          targetParentNodeId,
+          targetIndex: Number.isInteger(bridged.targetIndex) ? bridged.targetIndex : targetIndex,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'TREE_MOVE_FAILED',
       );
     },
   );

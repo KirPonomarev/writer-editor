@@ -20,7 +20,7 @@ function assertCommandBridgePath(source, commandEffectSource, commandId, payload
   assert.ok(commandEffectSource.includes('payload: plan.payload,'))
 }
 
-test('preload tree document bridge: projectCommands routes five existing tree and document commands through invokeUiCommandBridge', () => {
+test('preload tree document bridge: projectCommands routes six tree and document commands through invokeUiCommandBridge', () => {
   const source = read('src/renderer/commands/projectCommands.mjs')
   const commandEffectSource = read('src/renderer/commands/commandEffectModel.mjs')
 
@@ -32,12 +32,14 @@ test('preload tree document bridge: projectCommands routes five existing tree an
   assert.equal(source.includes('electronAPI.renameNode('), false)
   assert.equal(source.includes('electronAPI.deleteNode('), false)
   assert.equal(source.includes('electronAPI.reorderNode('), false)
+  assert.equal(source.includes('electronAPI.moveNode('), false)
 
   assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', '{ projectId, nodeId }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ projectId, parentNodeId, kind, name }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', '{ projectId, nodeId, name }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ projectId, nodeId }')
   assertCommandBridgePath(source, commandEffectSource, 'TREE_REORDER_NODE', '{ projectId, nodeId, direction }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_MOVE_NODE', '{ projectId, nodeId, targetParentNodeId, targetIndex }')
 })
 
 test('preload tree document bridge: main bridge allowlist includes only existing cmd.ui set and existing tree document ids', () => {
@@ -52,6 +54,7 @@ test('preload tree document bridge: main bridge allowlist includes only existing
   assert.ok(source.includes("'cmd.project.tree.renameNode'"))
   assert.ok(source.includes("'cmd.project.tree.deleteNode'"))
   assert.ok(source.includes("'cmd.project.tree.reorderNode'"))
+  assert.ok(source.includes('TREE_MOVE_COMMAND_ID'))
 
   assert.ok(source.includes("if (!UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS.has(commandId)) {"))
   assert.ok(source.includes("return { ok: false, reason: 'COMMAND_ID_NOT_ALLOWED' };"))
@@ -65,6 +68,7 @@ test('preload tree document bridge: main bridge reuses existing tree and documen
   assert.ok(source.includes('async function handleUiRenameNodeCommand(payload) {'))
   assert.ok(source.includes('async function handleUiDeleteNodeCommand(payload) {'))
   assert.ok(source.includes('async function handleUiReorderNodeCommand(payload) {'))
+  assert.ok(source.includes('async function handleUiMoveNodeCommand(payload, options = {}) {'))
 
   assert.ok(source.includes("'cmd.project.document.open': async (payload = {}) => {"))
   assert.ok(source.includes('return handleUiOpenDocumentCommand(payload);'))
@@ -76,12 +80,15 @@ test('preload tree document bridge: main bridge reuses existing tree and documen
   assert.ok(source.includes('return handleUiDeleteNodeCommand(payload);'))
   assert.ok(source.includes("'cmd.project.tree.reorderNode': async (payload = {}) => {"))
   assert.ok(source.includes('return handleUiReorderNodeCommand(payload);'))
+  assert.ok(source.includes('[TREE_MOVE_COMMAND_ID]: async (payload = {}) => {'))
+  assert.ok(source.includes('return handleUiMoveNodeCommand(payload);'))
 
   assert.ok(source.includes("ipcMain.handle('ui:open-document', async (_, payload) => {"))
   assert.ok(source.includes("ipcMain.handle('ui:create-node', async (_, payload) => {"))
   assert.ok(source.includes("ipcMain.handle('ui:rename-node', async (_, payload) => {"))
   assert.ok(source.includes("ipcMain.handle('ui:delete-node', async (_, payload) => {"))
   assert.ok(source.includes("ipcMain.handle('ui:reorder-node', async (_, payload) => {"))
+  assert.ok(source.includes("ipcMain.handle('ui:move-node', async (_, payload) => {"))
 })
 
 test('preload tree document bridge: out-of-scope surfaces remain present and unchanged by intent', () => {
