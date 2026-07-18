@@ -42,8 +42,17 @@ test('sector-m toolbar main shell scale: runtime restores an independent persist
   assert.ok(source.includes('const FLOATING_TOOLBAR_SCALE_MIN = 0.5;'));
   assert.ok(source.includes('const FLOATING_TOOLBAR_SCALE_MAX = 2.0;'));
   assert.ok(source.includes('const FLOATING_TOOLBAR_SCALE_STEP = 0.05;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MIN = 0.8;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MAX = 1.15;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MIN = 0.75;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MAX = 1.35;'));
   assert.ok(source.includes('const FLOATING_TOOLBAR_METRIC_BASE_PX = Object.freeze({'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_OPTICAL_METRIC_KEYS = new Set(['));
   assert.ok(source.includes('function snapFloatingToolbarMetric(value, step = getFloatingToolbarDevicePixelStep()) {'));
+  assert.ok(source.includes('function getFloatingToolbarContentMetricScale(scale, isVertical) {'));
+  assert.ok(source.includes('function getFloatingToolbarMetricProjectionScale(name, contentScale) {'));
+  assert.ok(source.includes('? Math.sqrt(contentScale)'));
+  assert.ok(source.includes('const projectionScale = getFloatingToolbarMetricProjectionScale(name, contentScale);'));
   assert.ok(source.includes('function scheduleFloatingToolbarScaleState(nextState) {'));
   assert.ok(source.includes('if (signature === floatingToolbarMetricScaleSignature) return;'));
 

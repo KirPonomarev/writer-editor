@@ -59,15 +59,15 @@
   --toolbar-chrome-caret-size: 10px;
   --toolbar-chrome-radius-button: 10px;
   --toolbar-chrome-radius-control: 10px;
-  --toolbar-chrome-ink: rgba(45, 39, 33, 0.82);
-  --toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.9);
-  --toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.72);
-  --toolbar-chrome-field-bg: rgba(248, 246, 243, 0.72);
-  --toolbar-chrome-field-hover-bg: rgba(248, 246, 243, 0.82);
-  --toolbar-chrome-field-border: rgba(50, 36, 24, 0.07);
-  --toolbar-chrome-field-border-hover: rgba(50, 36, 24, 0.1);
-  --toolbar-chrome-field-inset: rgba(255, 255, 255, 0.36);
-  --toolbar-chrome-field-shadow: rgba(0, 0, 0, 0.04);
+  --toolbar-chrome-ink: rgba(45, 39, 33, 0.92);
+  --toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.96);
+  --toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.82);
+  --toolbar-chrome-field-bg: rgba(248, 246, 243, 0.94);
+  --toolbar-chrome-field-hover-bg: rgba(250, 248, 245, 0.98);
+  --toolbar-chrome-field-border: rgba(50, 36, 24, 0.11);
+  --toolbar-chrome-field-border-hover: rgba(50, 36, 24, 0.16);
+  --toolbar-chrome-field-inset: rgba(255, 255, 255, 0.6);
+  --toolbar-chrome-field-shadow: rgba(0, 0, 0, 0.055);
   --toolbar-chrome-quiet-bg: rgba(248, 246, 243, 0.12);
   --toolbar-chrome-hover-bg: rgba(236, 231, 223, 0.22);
   --toolbar-chrome-active-bg: rgba(228, 222, 214, 0.3);
@@ -699,6 +699,9 @@ body {
   user-select: none;
   font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
+  text-rendering: auto;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
   transition: box-shadow 0.18s ease, opacity 0.18s ease;
   zoom: 1;
   transform: none;
@@ -1044,7 +1047,7 @@ body {
   font-size: var(--floating-toolbar-control-font-size);
   font-weight: 400;
   line-height: var(--floating-toolbar-control-line-height);
-  letter-spacing: 0.005em;
+  letter-spacing: 0;
   text-align: left;
   font-variant-numeric: tabular-nums;
 }
@@ -1167,7 +1170,7 @@ body {
   font-weight: 500;
   line-height: var(--floating-toolbar-control-line-height);
   text-align: center;
-  letter-spacing: 0.008em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
 }
@@ -1342,7 +1345,7 @@ body {
   font-size: var(--floating-toolbar-control-font-size);
   font-weight: 500;
   line-height: var(--floating-toolbar-control-line-height);
-  letter-spacing: 0.008em;
+  letter-spacing: 0;
 }
 
 .floating-toolbar__shell:not(.is-vertical) .floating-toolbar__line-height-icon-wrap {
@@ -1375,7 +1378,7 @@ body {
   text-overflow: clip;
   text-align: right;
   font-weight: 500;
-  letter-spacing: 0.008em;
+  letter-spacing: 0;
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum" 1, "lnum" 1;
 }

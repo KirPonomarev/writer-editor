@@ -38,10 +38,10 @@ test('sector-m toolbar native fluency chrome: tokenized spacing ladder and quiet
   assert.ok(styles.includes('--toolbar-chrome-slot-icon: 28px;'));
   assert.ok(styles.includes('--toolbar-chrome-radius-button: 10px;'));
   assert.ok(styles.includes('--toolbar-chrome-radius-control: 10px;'));
-  assert.ok(styles.includes('--toolbar-chrome-ink: rgba(45, 39, 33, 0.82);'));
-  assert.ok(styles.includes('--toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.9);'));
-  assert.ok(styles.includes('--toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.72);'));
-  assert.ok(styles.includes('--toolbar-chrome-field-bg: rgba(248, 246, 243, 0.72);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink: rgba(45, 39, 33, 0.92);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink-strong: rgba(31, 26, 21, 0.96);'));
+  assert.ok(styles.includes('--toolbar-chrome-ink-muted: rgba(45, 39, 33, 0.82);'));
+  assert.ok(styles.includes('--toolbar-chrome-field-bg: rgba(248, 246, 243, 0.94);'));
   assert.ok(styles.includes('--toolbar-chrome-quiet-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-hover-bg:'));
   assert.ok(styles.includes('--toolbar-chrome-active-bg:'));
@@ -108,6 +108,7 @@ test('sector-m toolbar native fluency chrome: numeric controls remain readable a
   assert.ok(sizeDisplayTextSection.includes('text-align: right;'));
   assert.ok(sizeDisplayTextSection.includes('font-variant-numeric: tabular-nums;'));
   assert.ok(sizeDisplayTextSection.includes('font-feature-settings: "tnum" 1, "lnum" 1;'));
+  assert.ok(sizeDisplayTextSection.includes('letter-spacing: 0;'));
   assert.ok(horizontalNumericQuietSection.includes('background: var(--toolbar-chrome-quiet-bg);'));
   assert.ok(horizontalNumericQuietSection.includes('background: var(--toolbar-chrome-hover-bg);'));
   assert.ok(styles.includes('font-variant-numeric: tabular-nums;'));
@@ -146,6 +147,8 @@ test('sector-m toolbar native fluency chrome: toolbar sections forbid fake-scale
   assert.equal(leftToolbarSection.includes('transform: scale('), false);
   assert.equal(floatingToolbarSection.includes('transform: scale('), false);
   assert.ok(floatingToolbarSection.includes('zoom: 1;'));
+  assert.ok(floatingToolbarSection.includes('text-rendering: auto;'));
+  assert.ok(floatingToolbarSection.includes('-webkit-font-smoothing: auto;'));
   assert.equal(floatingToolbarSection.includes('zoom: var(--floating-toolbar-scale);'), false);
   assert.equal(leftToolbarSection.includes('backdrop-filter:'), false);
   assert.equal(floatingToolbarSection.includes('backdrop-filter:'), false);
