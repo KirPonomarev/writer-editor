@@ -189,6 +189,7 @@
 - contour `TOOLBAR_METRIC_SCALE_SHARPNESS_001` replaces shell layout zoom with DPR-snapped real chrome metrics while preserving the same 0.5x–2.0x state contract
 - contour `TOOLBAR_NATIVE_FLUENCY_OPTICAL_SHARPNESS_002` closes the owner visual rejection of literal metric growth: horizontal body metrics project to 0.8x–1.15x, vertical body metrics to 0.75x–1.35x, and radii, padding and gaps use a quieter optical projection
 - contour `TOOLBAR_QUIET_CONTRAST_REBALANCE_003` restores the earlier quiet light-theme ink and field opacity after owner review found the sharper chrome visually heavier rather than clearer
+- contour `TOOLBAR_LIGHTWEIGHT_CONTROL_TEXT_300_004` moves toolbar control values from the mixed 400 and 500 baseline to one 300 chrome token while preserving icon weight, geometry and sharp metric rendering
 - native fluency toolbar contract remains enforced: no transform-scale, no layout-zoom stretch and no blur trick; popup menus and transform handles remain native-scale layers
 - targeted toolbar verification for both contours is pass and independent post-audit is pass
 - required checks on both merged PRs passed: `oss-policy`, `x1-runtime-parity (ubuntu-latest)`, `x1-runtime-parity (windows-latest)`

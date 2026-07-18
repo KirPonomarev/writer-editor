@@ -34,6 +34,7 @@ test('sector-m toolbar native fluency chrome: tokenized spacing ladder and quiet
   assert.ok(styles.includes('--toolbar-chrome-control-height-large: 32px;'));
   assert.ok(styles.includes('--toolbar-chrome-control-text-height: 32px;'));
   assert.ok(styles.includes('--toolbar-chrome-control-pad-x: 12px;'));
+  assert.ok(styles.includes('--toolbar-chrome-control-font-weight: 300;'));
   assert.ok(styles.includes('--toolbar-chrome-chevron-gap: 8px;'));
   assert.ok(styles.includes('--toolbar-chrome-slot-icon: 28px;'));
   assert.ok(styles.includes('--toolbar-chrome-radius-button: 10px;'));
@@ -106,6 +107,7 @@ test('sector-m toolbar native fluency chrome: numeric controls remain readable a
   assert.ok(sizeDisplaySection.includes('padding: 0 var(--toolbar-chrome-gap-sm);'));
   assert.ok(sizeDisplayTextSection.includes('min-width: 2.4ch;'));
   assert.ok(sizeDisplayTextSection.includes('text-align: right;'));
+  assert.ok(sizeDisplayTextSection.includes('font-weight: var(--toolbar-chrome-control-font-weight);'));
   assert.ok(sizeDisplayTextSection.includes('font-variant-numeric: tabular-nums;'));
   assert.ok(sizeDisplayTextSection.includes('font-feature-settings: "tnum" 1, "lnum" 1;'));
   assert.ok(sizeDisplayTextSection.includes('letter-spacing: 0;'));
@@ -114,6 +116,36 @@ test('sector-m toolbar native fluency chrome: numeric controls remain readable a
   assert.ok(styles.includes('font-variant-numeric: tabular-nums;'));
   assert.ok(styles.includes('--floating-toolbar-width-scale: 1;'));
   assert.ok(styles.includes('--left-toolbar-width-scale: 1;'));
+});
+
+test('sector-m toolbar native fluency chrome: control values share one light weight token', () => {
+  const styles = readStylesSource();
+  const displayTextSection = sliceSection(
+    styles,
+    '.floating-toolbar__display-text {',
+    '.floating-toolbar__select-icon {'
+  );
+  const displayValueSection = sliceSection(
+    styles,
+    '.floating-toolbar__display-value {',
+    '.floating-toolbar__caret--line-height {'
+  );
+  const horizontalDisplaySection = sliceSection(
+    styles,
+    '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__display-text {',
+    '.floating-toolbar__shell:not(.is-vertical) .floating-toolbar__line-height-icon-wrap {'
+  );
+  const verticalLabelSection = sliceSection(
+    styles,
+    '.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph,',
+    '.floating-toolbar__shell.is-vertical .floating-toolbar__caret--list {'
+  );
+
+  for (const section of [displayTextSection, displayValueSection, horizontalDisplaySection, verticalLabelSection]) {
+    assert.ok(section.includes('font-weight: var(--toolbar-chrome-control-font-weight);'));
+    assert.equal(section.includes('font-weight: 400;'), false);
+    assert.equal(section.includes('font-weight: 500;'), false);
+  }
 });
 
 test('sector-m toolbar native fluency chrome: canonical slot classes own horizontal widths', () => {
