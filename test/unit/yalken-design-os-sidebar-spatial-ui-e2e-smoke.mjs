@@ -222,6 +222,44 @@ async function exerciseInspectorControls(win) {
   return { before, typographyChanged, commentsOpened, inspectorRestored };
 }
 
+async function exerciseActiveDocumentReveal(win) {
+  const prepared = await win.webContents.executeJavaScript(
+    "(async () => { const result = await window.electronAPI.getProjectTree('roman'); const activeId = document.querySelector('.tree__row[data-active-document=true]')?.dataset.documentId || ''; const candidates = []; const stack = result?.root ? [result.root] : []; while (stack.length) { const node = stack.pop(); if (!node) continue; if (['scene', 'chapter-file', 'roman-section'].includes(node.kind) && node.nodeId !== activeId) candidates.push(node); for (const child of node.children || []) stack.push(child); } const target = candidates.at(-1) || null; const manuscriptRow = [...document.querySelectorAll('.tree__row')].find((row) => row.querySelector('.tree__label')?.textContent?.trim() === 'Рукопись'); if (manuscriptRow) manuscriptRow.click(); return { projectId: result?.projectId || '', targetId: target?.nodeId || '', targetLabel: target?.label || '', manuscriptFound: Boolean(manuscriptRow), targetHiddenAfterCollapse: target ? !document.querySelector('.tree__row[data-document-id=' + target.nodeId + ']') : false }; })()",
+    true
+  );
+  if (!prepared.projectId || !prepared.targetId) {
+    throw new Error('ACTIVE_REVEAL_TARGET_MISSING');
+  }
+
+  const opened = await win.webContents.executeJavaScript(
+    'window.electronAPI.openDocument(' + JSON.stringify({
+      projectId: prepared.projectId,
+      nodeId: prepared.targetId,
+    }) + ')',
+    true
+  );
+  if (!opened || opened.ok === false) {
+    throw new Error('ACTIVE_REVEAL_OPEN_FAILED');
+  }
+
+  const revealed = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const tree = document.querySelector('.sidebar--left [data-tree]'); const rows = [...document.querySelectorAll('.tree__row[data-active-document=true]')]; const row = rows[0] || null; const treeRect = tree?.getBoundingClientRect(); const rowRect = row?.getBoundingClientRect(); const activeElement = document.activeElement; const labels = [...document.querySelectorAll('.tree__label')].map((label) => label.textContent?.trim() || ''); return { activeCount: rows.length, activeId: row?.dataset.documentId || '', ariaCurrent: row?.getAttribute('aria-current') || '', visible: Boolean(treeRect && rowRect && rowRect.top >= treeRect.top - 1 && rowRect.bottom <= treeRect.bottom + 1), editorFocused: Boolean(activeElement?.classList?.contains('ProseMirror') || activeElement?.closest?.('.ProseMirror')), russianRoots: ['Проект', 'Рукопись', 'Заметки'].every((label) => labels.includes(label)) }; })()",
+      true
+    ).then((state) => (
+      state.activeCount === 1 &&
+      state.activeId === prepared.targetId &&
+      state.visible &&
+      state.editorFocused
+        ? state
+        : null
+    )),
+    'ACTIVE_DOCUMENT_NOT_REVEALED'
+  );
+
+  return { prepared, revealed };
+}
+
 app.whenReady().then(async () => {
   try {
     const win = await waitUntil(() => BrowserWindow.getAllWindows()[0] || null, 'WINDOW_NOT_CREATED');
@@ -244,6 +282,7 @@ app.whenReady().then(async () => {
     await sleep(400);
 
     const initialWide = await resizeAndProbe(win, 1440, 850, 'initial-wide');
+    const activeDocumentReveal = await exerciseActiveDocumentReveal(win);
     const inspectorControls = await exerciseInspectorControls(win);
     const leftDrag = await dragRail(win, 'left', 40);
     const rightDrag = await dragRail(win, 'right', -30);
@@ -264,6 +303,7 @@ app.whenReady().then(async () => {
     emit({
       ok: 1,
       initialWide,
+      activeDocumentReveal,
       inspectorControls,
       leftDrag,
       rightDrag,
@@ -333,7 +373,11 @@ function assertSingleRailProbe(probe) {
 
 try {
   assert.equal(timedOut, false, `Electron sidebar UI E2E timed out\n${stderr}`);
-  assert.equal(exitState.code, 0, `Electron sidebar UI E2E failed\n${stdout}\n${stderr}`);
+  assert.equal(
+    exitState.code,
+    0,
+    `Electron sidebar UI E2E failed (${JSON.stringify(exitState)})\n${stdout}\n${stderr}`
+  );
   assert.equal(result?.ok, 1, result?.message || 'missing Electron sidebar UI E2E result');
 
   assert.equal(result.initialWide.layoutVariant, 'dual');
@@ -343,6 +387,17 @@ try {
   assert.equal(result.initialWide.tree.height > 236, true, 'project tree should use available rail height');
   assert.equal(result.initialWide.leftToolbar.right + 8 <= result.initialWide.mainToolbar.left, true);
   assert.equal(result.initialWide.mainToolbar.right <= result.initialWide.innerWidth, true);
+
+  assert.equal(result.activeDocumentReveal.prepared.manuscriptFound, true);
+  assert.equal(result.activeDocumentReveal.prepared.targetHiddenAfterCollapse, true);
+  assert.deepEqual(result.activeDocumentReveal.revealed, {
+    activeCount: 1,
+    activeId: result.activeDocumentReveal.prepared.targetId,
+    ariaCurrent: 'true',
+    visible: true,
+    editorFocused: true,
+    russianRoots: true,
+  });
 
   assert.deepEqual(result.inspectorControls.before, {
     commentsTag: 'BUTTON',

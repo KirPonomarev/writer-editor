@@ -3544,6 +3544,8 @@ body.dark-theme .toolbar__swatch::before {
 .sidebar--left .tree__row.is-selected {
   background: var(--selected-bg);
   color: var(--foreground);
+  box-shadow: inset 2px 0 0 var(--text-secondary);
+  font-weight: 500;
 }
 
 .tree__indent {
