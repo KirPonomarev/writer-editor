@@ -3941,6 +3941,13 @@
       "approvedBy": "ticket:SMOKE_A4_MINIMAL_BARREL_RECONCILIATION_2026_07_17_001",
       "approvedAtUtc": "2026-07-17T16:16:00.000Z",
       "rationale": "Approve isolated positive and negative fixture coverage for the exact private root-barrel set and continued missing-export rejection."
+    },
+    {
+      "filePath": "test/contracts/projectManifestBinding.test.js",
+      "sha256": "8ab203ac6d880132f343e0dc9dea5654e4600d1e7b7988d13ce63c32187bcc53",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S02A",
+      "approvedAtUtc": "2026-07-18T00:00:00.000Z",
+      "rationale": "Approve bounded project manifest contract coverage proving unknown future and Pro fields survive normalization while known project fields remain canonical; no governance weakening, network, dependency, UI claim, or project-data deletion is introduced."
     }
   ]
 }
