@@ -6,6 +6,10 @@ function buildError(code, reason, details = {}) {
   return { ok: false, error: { code, reason, details } };
 }
 
+function computeContentHash(content) {
+  return crypto.createHash('sha256').update(String(content ?? ''), 'utf8').digest('hex');
+}
+
 function normalizeBatchEntries(entries) {
   if (!Array.isArray(entries) || entries.length === 0) {
     return { ok: false, error: { code: 'M7_FLOW_BATCH_INVALID', reason: 'flow_save_batch_invalid' } };
@@ -26,7 +30,12 @@ function normalizeBatchEntries(entries) {
       return { ok: false, error: { code: 'M7_FLOW_BATCH_INVALID', reason: 'flow_save_batch_duplicate_path', details: { path: targetPath } } };
     }
     seen.add(targetPath);
-    normalized.push({ path: targetPath, content });
+    normalized.push({
+      ...entry,
+      path: targetPath,
+      content,
+      contentHash: computeContentHash(content),
+    });
   }
 
   return { ok: true, value: normalized };
@@ -232,12 +241,25 @@ async function writeFlowSceneBatchAtomic(input = {}, options = {}) {
 
     await removeBackups(entries);
     await fs.unlink(markerPath).catch(() => {});
+    const markerCleared = !(await exists(markerPath));
     return {
       ok: true,
       value: {
         batchId,
         sceneCount: entries.length,
         markerPath,
+        receipt: {
+          operation: 'flow.batch.save.v1',
+          batchId,
+          sceneCount: entries.length,
+          committed: true,
+          markerCleared,
+          entries: entries.map((entry) => ({
+            path: entry.path,
+            contentHash: entry.contentHash,
+            bytesWritten: Buffer.byteLength(entry.content, 'utf8'),
+          })),
+        },
       },
     };
   } catch (error) {

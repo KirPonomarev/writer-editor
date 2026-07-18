@@ -2512,6 +2512,10 @@ export function registerProjectCommands(registry, options = {}) {
       return ok({
         saved: true,
         savedCount: Number.isInteger(bridged.savedCount) ? bridged.savedCount : input.scenes.length,
+        receipt: bridged.receipt && typeof bridged.receipt === 'object' && !Array.isArray(bridged.receipt)
+          ? bridged.receipt
+          : null,
+        scenes: Array.isArray(bridged.scenes) ? bridged.scenes : [],
       });
     }
 

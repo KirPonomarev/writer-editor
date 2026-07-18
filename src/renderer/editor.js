@@ -6272,9 +6272,18 @@ async function handleFlowModeSaveUiPath() {
 
   const saveResult = await runFlowSaveCommand(payload.scenes);
   if (!saveResult.ok) return;
+  const refreshedScenes = normalizeFlowSceneRefs(saveResult.value && saveResult.value.scenes);
+  const nextScenes = refreshedScenes.length === flowModeState.scenes.length
+    ? refreshedScenes
+    : flowModeState.scenes;
+  const nextProjection = refreshedScenes.length === flowModeState.scenes.length
+    ? composeFlowReadProjection(refreshedScenes)
+    : flowModeState.projection;
 
   flowModeState = {
     ...flowModeState,
+    scenes: nextScenes,
+    projection: nextProjection,
     dirty: false,
   };
   localDirty = false;

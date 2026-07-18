@@ -48,7 +48,7 @@ test('M7 commands wire flow open/save through command layer with deterministic p
   });
   assert.deepEqual(saved, {
     ok: true,
-    value: { saved: true, savedCount: 1 },
+    value: { saved: true, savedCount: 1, receipt: null, scenes: [] },
   });
 });
 
@@ -143,6 +143,6 @@ test('M7 commands accept boolean bridge success envelope for flow open and save'
   });
   assert.deepEqual(saved, {
     ok: true,
-    value: { saved: true, savedCount: 1 },
+    value: { saved: true, savedCount: 1, receipt: null, scenes: [] },
   });
 });
