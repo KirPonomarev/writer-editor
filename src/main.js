@@ -6762,6 +6762,18 @@ function loadProjectTreeIdentityModule() {
   return projectTreeIdentityModulePromise;
 }
 
+let notesStorageModulePromise = null;
+function loadNotesStorageModule() {
+  if (!notesStorageModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'core', 'notesStorage.mjs')).href;
+    notesStorageModulePromise = import(modulePath).catch((error) => {
+      notesStorageModulePromise = null;
+      throw error;
+    });
+  }
+  return notesStorageModulePromise;
+}
+
 let navigatorCountersModulePromise = null;
 function loadNavigatorCountersModule() {
   if (!navigatorCountersModulePromise) {
@@ -6853,6 +6865,30 @@ async function ensureProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
     manifestPath,
     manifest: nextManifest
   };
+}
+
+async function migrateProjectNotesStorage(options = {}) {
+  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const expectedProjectId = normalizeStableProjectId(options.projectId);
+  if (expectedProjectId && expectedProjectId !== manifest.projectId) {
+    return {
+      ok: false,
+      code: 'E_NOTES_PROJECT_MISMATCH',
+      reason: 'NOTES_PROJECT_MISMATCH',
+    };
+  }
+  const notesStorage = await loadNotesStorageModule();
+  const projectRoot = path.dirname(manifestPath);
+  return notesStorage.migrateNotesStorage({
+    projectRoot,
+    projectId: manifest.projectId,
+    readFile: fs.readFile,
+    writeFileAtomic: (filePath, content) => queueDiskOperation(
+      () => fileManager.writeFileAtomic(filePath, content),
+      'save project notes storage',
+    ),
+    ...(typeof options.now === 'function' ? { now: options.now } : {}),
+  });
 }
 
 async function resolveProjectBindingForFile(filePath) {
@@ -16008,6 +16044,7 @@ module.exports = {
   handleMetadataUpdateCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectTreeQuery,
+  migrateProjectNotesStorage,
   normalizeProjectManifest,
   persistBookProfileForFile,
   persistProjectManifestAtPath,
