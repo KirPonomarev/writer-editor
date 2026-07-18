@@ -1,5 +1,8 @@
 # TOOLBAR_LIGHTWEIGHT_CONTROL_TEXT_300_004
 
+STATUS: OWNER_APPROVED_CANONICAL_BASELINE
+OWNER_DECISION_DATE: 2026-07-18
+
 ## Objective
 
 Make the main formatting toolbar visibly lighter after owner review found the existing text weight too heavy, without weakening icon clarity or changing geometry.
@@ -21,3 +24,7 @@ Make the main formatting toolbar visibly lighter after owner review found the ex
 ## Scope truth
 
 This contour changes only the font weight of toolbar control values and vertical field labels. It does not alter toolbar functions, icons, menus, editor content, storage, import, export or dependencies.
+
+## Canonical decision
+
+The owner accepted the 300 proof as the retained main-toolbar baseline. Future sidebar work remains an independent design layer and cannot change this toolbar baseline by implication. Any replacement requires a separate owner-approved UI contour with a controlled comparison.

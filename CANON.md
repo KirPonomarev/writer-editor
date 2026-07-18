@@ -113,3 +113,17 @@ Machine-bound blocking law определяется не этим докумен
 - broader freedom не становится автоматическим продолжением `Writer v1`,
 - post-version-one exploration допускается только как отдельный evaluation-only axis,
 - этот evaluation-only axis не переоткрывает закрытые `Writer v1` gates сам по себе.
+
+## 9. Owner-Approved Toolbar Visual Baseline
+
+`TOOLBAR_LIGHTWEIGHT_CONTROL_TEXT_300_004` принят владельцем как действующий визуальный baseline главного форматирующего тулбара.
+
+Обязательный контракт baseline:
+- видимые текстовые значения контролов в горизонтальном и вертикальном тулбаре используют единый `--toolbar-chrome-control-font-weight: 300`;
+- прежняя смесь весов `400` и `500` для этих значений считается superseded;
+- Phosphor-иконки сохраняют собственные stroke/weight-настройки и не наследуют текстовый вес;
+- popup menu typography, editor typography, left system toolbar и боковые панели не наследуют это решение автоматически;
+- геометрия, размеры, spacing, radii, width-scale, orientation projection и DPR-snapped metric rendering остаются отдельными каналами и не меняются этим baseline;
+- `transform: scale`, shell `zoom` и blur-based имитация резкости для главного тулбара запрещены ранее принятым native-fluency contract.
+
+Этот baseline может быть заменён только отдельным owner-approved UI contour с контролируемым A/B-сравнением. Рефакторинг, унификация типографики или работа над боковыми панелями не могут изменить его по касательной.
