@@ -356,6 +356,10 @@ const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
 const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
 const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
 const FLOATING_TOOLBAR_SCALE_STEP = 0.05;
+const FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MIN = 0.8;
+const FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MAX = 1.15;
+const FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MIN = 0.75;
+const FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MAX = 1.35;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
 const FLOATING_TOOLBAR_METRIC_BASE_PX = Object.freeze({
@@ -397,6 +401,26 @@ const FLOATING_TOOLBAR_METRIC_BASE_PX = Object.freeze({
   '--floating-toolbar-vertical-field-pad-x': 10,
   '--floating-toolbar-separator-block-margin': 2,
 });
+const FLOATING_TOOLBAR_OPTICAL_METRIC_KEYS = new Set([
+  '--toolbar-chrome-gap-xxs',
+  '--toolbar-chrome-gap-xs',
+  '--toolbar-chrome-gap-sm',
+  '--toolbar-chrome-gap-md',
+  '--toolbar-chrome-gap-lg',
+  '--toolbar-chrome-pad-x',
+  '--toolbar-chrome-item-gap',
+  '--toolbar-chrome-group-gap',
+  '--toolbar-chrome-separator-gap',
+  '--toolbar-chrome-control-pad-x',
+  '--toolbar-chrome-chevron-gap',
+  '--toolbar-chrome-vertical-pad',
+  '--toolbar-chrome-radius-button',
+  '--toolbar-chrome-radius-control',
+  '--floating-toolbar-display-icon-pad-x',
+  '--floating-toolbar-swatch-radius',
+  '--floating-toolbar-vertical-field-pad-x',
+  '--floating-toolbar-separator-block-margin',
+]);
 const FONT_WEIGHT_PRESETS = Object.freeze({
   light: { weight: '300', stretch: 'normal', spacing: '0em' },
   regular: { weight: '400', stretch: 'normal', spacing: '0em' },
@@ -3257,14 +3281,38 @@ function formatFloatingToolbarMetric(value) {
     : value.toFixed(3).replace(/0+$/u, '').replace(/\.$/u, '');
 }
 
+function getFloatingToolbarContentMetricScale(scale, isVertical) {
+  const clampedScale = clampFloatingToolbarScale(scale);
+  const projectedMinimum = isVertical
+    ? FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MIN
+    : FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MIN;
+  const projectedMaximum = isVertical
+    ? FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MAX
+    : FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MAX;
+  if (clampedScale >= 1) {
+    const progress = (clampedScale - 1) / (FLOATING_TOOLBAR_SCALE_MAX - 1);
+    return 1 + (progress * (projectedMaximum - 1));
+  }
+  const progress = (clampedScale - FLOATING_TOOLBAR_SCALE_MIN) / (1 - FLOATING_TOOLBAR_SCALE_MIN);
+  return projectedMinimum + (progress * (1 - projectedMinimum));
+}
+
+function getFloatingToolbarMetricProjectionScale(name, contentScale) {
+  return FLOATING_TOOLBAR_OPTICAL_METRIC_KEYS.has(name)
+    ? Math.sqrt(contentScale)
+    : contentScale;
+}
+
 function applyFloatingToolbarMetricScale() {
   if (!toolbarShell) return;
   const scale = clampFloatingToolbarScale(floatingToolbarState.scale);
+  const contentScale = getFloatingToolbarContentMetricScale(scale, floatingToolbarState.isVertical);
   const devicePixelStep = getFloatingToolbarDevicePixelStep();
-  const signature = `${scale}:${devicePixelStep}`;
+  const signature = `${scale}:${contentScale}:${devicePixelStep}`;
   if (signature === floatingToolbarMetricScaleSignature) return;
   for (const [name, baseValue] of Object.entries(FLOATING_TOOLBAR_METRIC_BASE_PX)) {
-    const scaledValue = snapFloatingToolbarMetric(baseValue * scale, devicePixelStep);
+    const projectionScale = getFloatingToolbarMetricProjectionScale(name, contentScale);
+    const scaledValue = snapFloatingToolbarMetric(baseValue * projectionScale, devicePixelStep);
     toolbarShell.style.setProperty(name, `${formatFloatingToolbarMetric(scaledValue)}px`);
   }
   floatingToolbarMetricScaleSignature = signature;
@@ -3335,10 +3383,14 @@ function getFloatingToolbarItemOffsetKey(item) {
 }
 
 function applyFloatingToolbarItemOffsets() {
+  const contentScale = getFloatingToolbarContentMetricScale(
+    floatingToolbarState.scale,
+    floatingToolbarState.isVertical
+  );
   toolbarTunableItems.forEach((item) => {
     const key = getFloatingToolbarItemOffsetKey(item);
     const offset = floatingToolbarState.isDetached ? Number(toolbarItemOffsets[key] || 0) : 0;
-    const scaledOffset = snapFloatingToolbarMetric(offset * floatingToolbarState.scale);
+    const scaledOffset = snapFloatingToolbarMetric(offset * contentScale);
     item.style.setProperty('--floating-toolbar-offset-x', `${formatFloatingToolbarMetric(scaledOffset)}px`);
   });
   scheduleToolbarAnchorUpdate();
@@ -5343,7 +5395,10 @@ function initializeFloatingToolbarItemOffsetTuning() {
     }
     setFloatingToolbarItemOffset(
       toolbarItemOffsetDragState.item,
-      toolbarItemOffsetDragState.originOffset + (deltaX / floatingToolbarState.scale),
+      toolbarItemOffsetDragState.originOffset + (deltaX / getFloatingToolbarContentMetricScale(
+        floatingToolbarState.scale,
+        floatingToolbarState.isVertical
+      )),
       false
     );
     event.preventDefault();

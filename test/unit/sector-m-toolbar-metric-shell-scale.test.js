@@ -83,6 +83,11 @@ test('sector-m toolbar metric shell scale: vertical width and uniform scale reta
   assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_MAX'));
   assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_STEP'));
   assert.ok(scaleClampSnippet.includes('.toFixed(2)'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MIN = 0.8;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_HORIZONTAL_MAX = 1.15;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MIN = 0.75;'));
+  assert.ok(source.includes('const FLOATING_TOOLBAR_PROJECTED_SCALE_VERTICAL_MAX = 1.35;'));
+  assert.ok(source.includes('function getFloatingToolbarContentMetricScale(scale, isVertical) {'));
 });
 
 test('sector-m toolbar metric shell scale: native popup and anchor math stays in unscaled shell coordinates', () => {

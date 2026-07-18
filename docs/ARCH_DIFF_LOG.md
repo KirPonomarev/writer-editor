@@ -76,3 +76,12 @@
 - Риск: неполная карта метрик могла бы оставить отдельный control несогласованного размера; popup anchors и сохранённые item offsets требуют отдельной проверки после удаления zoom coordinates.
 - Rollback: откатить metric-scale contour к предыдущему layout-zoom runtime, не меняя сохранённые scale и widthScale state keys.
 - План удаления исключения: предыдущий layout-zoom риск считается закрытым после renderer, interaction, persistence и visual sharpness gates; постоянный контракт — metric scale для body layer и native scale для popup и transform layers.
+
+## 2026-07-18 — Main Toolbar Optical Projection Closeout
+
+- Контекст: повторный owner visual gate показал, что буквальная проекция состояния 0.5x–2.0x через реальные метрики технически резкая, но на верхнем диапазоне даёт чрезмерно крупные поля, радиусы и интервалы и поэтому воспринимается мягкой и композиционно тяжёлой.
+- Что нарушаем: новых исключений не вводится; уточняется постоянная семантика scale state после закрытия layout-zoom exception.
+- Причина: полная горизонтальная панель имеет существенно больший footprint, чем вертикальная, поэтому один буквальный геометрический multiplier не может сохранять native-fluency плотность в обеих ориентациях.
+- Риск: значение сохранённого scale больше не является буквальным CSS multiplier; регрессия возможна, если будущий код обойдёт orientation-aware projection или начнёт масштабировать popup и transform layers.
+- Rollback: откатить optical-projection contour; сохранённые scale и widthScale state keys останутся совместимыми.
+- План удаления исключения: запись фиксирует закрытие visual sharpness gate как постоянный контракт — state range остаётся 0.5x–2.0x, body metrics проецируются в 0.8x–1.15x горизонтально и 0.75x–1.35x вертикально, optical rhythm растёт по square-root projection, popup и transform layers остаются native-scale.
