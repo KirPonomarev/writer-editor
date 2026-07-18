@@ -466,7 +466,7 @@ let toolbarStylesMenuState = {
 let lastSearchQuery = '';
 let plainTextBuffer = '';
 const activeTab = 'roman';
-let currentDocumentPath = null;
+let currentDocumentId = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
 let spatialLayoutState = null;
@@ -6027,7 +6027,7 @@ function getMarkdownImportSceneLocatorsFromPreview(previewPayload, createdSceneI
 function findMarkdownImportSceneNode(root, locators) {
   if (!root || !Array.isArray(locators) || locators.length === 0) return null;
   const matches = [];
-  const seenPaths = new Set();
+  const seenNodeIds = new Set();
 
   const visit = (node) => {
     if (!node || typeof node !== 'object' || Array.isArray(node)) return;
@@ -6037,15 +6037,17 @@ function findMarkdownImportSceneNode(root, locators) {
       const label = typeof node.label === 'string'
         ? node.label.trim()
         : (typeof node.name === 'string' ? node.name.trim() : '');
-      const nodePath = getEffectiveDocumentPath(node);
+      const nodeId = typeof node.nodeId === 'string'
+        ? node.nodeId.trim()
+        : (typeof node.id === 'string' ? node.id.trim() : '');
       const matched = locators.some((locator) => {
         if (!locator || typeof locator !== 'object' || Array.isArray(locator)) return false;
         const expectedLabel = typeof locator.expectedLabel === 'string' ? locator.expectedLabel.trim() : '';
         if (expectedLabel) return label === expectedLabel;
         return sceneId && typeof locator.sceneId === 'string' && sceneId === locator.sceneId;
       });
-      if (matched && nodePath && !seenPaths.has(nodePath)) {
-        seenPaths.add(nodePath);
+      if (matched && nodeId && !seenNodeIds.has(nodeId)) {
+        seenNodeIds.add(nodeId);
         matches.push(node);
       }
     }
@@ -7306,20 +7308,10 @@ function getTitleFromPath(filePath) {
   return fileName.replace(/^\d+_/, '').replace(/\.txt$/i, '');
 }
 
-function getCategoryIndexDocumentPath(node) {
-  if (!node || !node.path) return '';
-  return `${node.path.replace(/[\\/]$/, '')}/.index.txt`;
-}
-
-function getEffectiveDocumentPath(node) {
+function getEffectiveDocumentId(node) {
   if (!node) return '';
-  if (typeof node.effectivePath === 'string' && node.effectivePath) {
-    return node.effectivePath;
-  }
-  if (node.kind === 'materials-category' || node.kind === 'reference-category') {
-    return getCategoryIndexDocumentPath(node);
-  }
-  return node.path || '';
+  if (typeof node.nodeId === 'string' && node.nodeId) return node.nodeId;
+  return typeof node.id === 'string' ? node.id : '';
 }
 
 function getEffectiveDocumentKind(node) {
@@ -7411,13 +7403,12 @@ function closeCardModal() {
 }
 
 async function openDocumentNode(node) {
-  const documentPath = getEffectiveDocumentPath(node);
-  if (!documentPath) return false;
+  const documentId = getEffectiveDocumentId(node);
+  if (!documentId) return false;
   try {
     const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {
-      path: documentPath,
-      title: node.label,
-      kind: getEffectiveDocumentKind(node)
+      projectId: currentProjectId,
+      nodeId: documentId,
     });
     if (!result || result.ok === false) {
       return false;
@@ -7428,7 +7419,9 @@ async function openDocumentNode(node) {
     if (value && value.cancelled) {
       return false;
     }
-    currentDocumentPath = documentPath;
+    currentDocumentId = value && typeof value.documentId === 'string'
+      ? value.documentId
+      : documentId;
     currentDocumentKind = getEffectiveDocumentKind(node);
     metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
     updateMetaVisibility();
@@ -7443,7 +7436,8 @@ async function handleCreateNode(node, kind, promptLabel) {
   const name = window.prompt(promptLabel || 'Название', '');
   if (!name) return;
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
-    parentPath: node.path,
+    projectId: currentProjectId,
+    parentNodeId: getEffectiveDocumentId(node),
     kind,
     name
   });
@@ -7456,15 +7450,14 @@ async function handleCreateNode(node, kind, promptLabel) {
 async function handleRenameNode(node) {
   const name = window.prompt('Новое имя', node.label || '');
   if (!name) return;
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path: node.path, name });
+  const nodeId = getEffectiveDocumentId(node);
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {
+    projectId: currentProjectId,
+    nodeId,
+    name,
+  });
   if (!result || result.ok === false) {
     return;
-  }
-  const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
-    ? result.value
-    : null;
-  if (currentDocumentPath && value && value.path && currentDocumentPath === node.path) {
-    currentDocumentPath = value.path;
   }
   await loadTree();
 }
@@ -7472,30 +7465,32 @@ async function handleRenameNode(node) {
 async function handleDeleteNode(node) {
   const confirmed = window.confirm('Переместить в корзину?');
   if (!confirmed) return;
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path: node.path });
+  const nodeId = getEffectiveDocumentId(node);
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, {
+    projectId: currentProjectId,
+    nodeId,
+  });
   if (!result || result.ok === false) {
     return;
   }
-  if (currentDocumentPath && currentDocumentPath === node.path) {
-    currentDocumentPath = null;
+  if (currentDocumentId && currentDocumentId === nodeId) {
+    currentDocumentId = null;
   }
   await loadTree();
-    if (!currentDocumentPath) {
-      collapseSelection();
-    }
-    updateInspectorSnapshot();
+  if (!currentDocumentId) {
+    collapseSelection();
+  }
+  updateInspectorSnapshot();
 }
 
 async function handleReorderNode(node, direction) {
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path: node.path, direction });
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, {
+    projectId: currentProjectId,
+    nodeId: getEffectiveDocumentId(node),
+    direction,
+  });
   if (!result || result.ok === false) {
     return;
-  }
-  const value = result.value && typeof result.value === 'object' && !Array.isArray(result.value)
-    ? result.value
-    : null;
-  if (currentDocumentPath && value && value.path && currentDocumentPath === node.path) {
-    currentDocumentPath = value.path;
   }
   await loadTree();
 }
@@ -7577,8 +7572,8 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   row.dataset.level = String(level);
   row.dataset.kind = getTreeNodePresentationKind(node);
 
-  const effectivePath = getEffectiveDocumentPath(node);
-  if (currentDocumentPath && effectivePath && currentDocumentPath === effectivePath) {
+  const effectiveDocumentId = getEffectiveDocumentId(node);
+  if (currentDocumentId && effectiveDocumentId && currentDocumentId === effectiveDocumentId) {
     row.classList.add('is-selected');
   }
 
@@ -7662,7 +7657,7 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
       return;
     }
     if (
-      node.path &&
+      getEffectiveDocumentId(node) &&
       (node.kind === 'chapter-file' ||
         node.kind === 'scene' ||
         node.kind === 'material' ||
@@ -7755,6 +7750,13 @@ async function loadTree() {
       updateStatusText('Ошибка');
       return;
     }
+    if (typeof result.projectId === 'string' && result.projectId.trim()) {
+      const nextProjectId = normalizeProjectId(result.projectId);
+      if (nextProjectId !== currentProjectId) {
+        currentProjectId = nextProjectId;
+        expandedNodesByTab = new Map();
+      }
+    }
     treeRoot = result.root;
     if (treeContainer) {
       treeContainer.dataset.tab = activeTab;
@@ -7768,9 +7770,9 @@ async function loadTree() {
       );
       if (stored === null) {
         const romanRoot = findRomanRootNode(treeRoot);
-        const pathToExpand = (romanRoot && romanRoot.path) || treeRoot.path;
-        if (pathToExpand) {
-          expandedSet.add(pathToExpand);
+        const nodeIdToExpand = getEffectiveDocumentId(romanRoot) || getEffectiveDocumentId(treeRoot);
+        if (nodeIdToExpand) {
+          expandedSet.add(nodeIdToExpand);
           saveExpandedSet(activeTab);
         }
       }
@@ -8151,7 +8153,7 @@ function updateInspectorSnapshot() {
   const snapshot = [
     `Mode=${currentMode}`,
     `DocKind=${currentDocumentKind || 'none'}`,
-    `DocPath=${currentDocumentPath || 'none'}`,
+    `DocId=${currentDocumentId || 'none'}`,
     `Dirty=${localDirty ? 'true' : 'false'}`,
     `FlowMode=${flowModeState.active ? 'active' : 'off'}`,
     `CollabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
@@ -8928,7 +8930,7 @@ function openDiagnosticsModal() {
       `leftTab=${currentLeftTab}`,
       `rightTab=${currentRightTab}`,
       `docKind=${currentDocumentKind || 'none'}`,
-      `docPath=${currentDocumentPath || 'none'}`,
+      `docId=${currentDocumentId || 'none'}`,
       `dirty=${localDirty ? 'true' : 'false'}`,
       `flowModeActive=${flowModeState.active ? 'true' : 'false'}`,
       `collabScopeLocal=${collabScopeLocal ? 'true' : 'false'}`,
@@ -9164,7 +9166,7 @@ function findDocxImportSceneNode(root, locators) {
   const sceneIds = new Set(locators.map((item) => item.sceneId).filter(Boolean));
   const expectedLabels = new Set(locators.map((item) => item.expectedLabel).filter(Boolean));
   const matches = [];
-  const seenPaths = new Set();
+  const seenNodeIds = new Set();
 
   const visit = (node) => {
     if (!node || typeof node !== 'object' || Array.isArray(node)) return;
@@ -9174,13 +9176,15 @@ function findDocxImportSceneNode(root, locators) {
       const label = typeof node.label === 'string'
         ? node.label.trim()
         : (typeof node.name === 'string' ? node.name.trim() : '');
-      const nodePath = getEffectiveDocumentPath(node);
+      const nodeId = typeof node.nodeId === 'string'
+        ? node.nodeId.trim()
+        : (typeof node.id === 'string' ? node.id.trim() : '');
       if (
         ((sceneId && sceneIds.has(sceneId)) || (label && expectedLabels.has(label)))
-        && nodePath
-        && !seenPaths.has(nodePath)
+        && nodeId
+        && !seenNodeIds.has(nodeId)
       ) {
-        seenPaths.add(nodePath);
+        seenNodeIds.add(nodeId);
         matches.push(node);
       }
     }
@@ -9271,7 +9275,7 @@ function findTxtImportSceneNode(root, locators) {
   const sceneIds = new Set(locators.map((item) => item.sceneId).filter(Boolean));
   const expectedLabels = new Set(locators.map((item) => item.expectedLabel).filter(Boolean));
   const matches = [];
-  const seenPaths = new Set();
+  const seenNodeIds = new Set();
 
   const visit = (node) => {
     if (!node || typeof node !== 'object' || Array.isArray(node)) return;
@@ -9281,13 +9285,15 @@ function findTxtImportSceneNode(root, locators) {
       const label = typeof node.label === 'string'
         ? node.label.trim()
         : (typeof node.name === 'string' ? node.name.trim() : '');
-      const nodePath = getEffectiveDocumentPath(node);
+      const nodeId = typeof node.nodeId === 'string'
+        ? node.nodeId.trim()
+        : (typeof node.id === 'string' ? node.id.trim() : '');
       if (
         ((sceneId && sceneIds.has(sceneId)) || (label && expectedLabels.has(label)))
-        && nodePath
-        && !seenPaths.has(nodePath)
+        && nodeId
+        && !seenNodeIds.has(nodeId)
       ) {
-        seenPaths.add(nodePath);
+        seenNodeIds.add(nodeId);
         matches.push(node);
       }
     }
@@ -11497,11 +11503,11 @@ if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';
-    const hasPath = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'path');
+    const hasDocumentId = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'documentId');
     const hasKind = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'kind');
     const hasProjectId = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'projectId');
     const hasBookProfile = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'bookProfile');
-    const path = hasPath ? payload.path : '';
+    const documentId = hasDocumentId && typeof payload.documentId === 'string' ? payload.documentId : '';
     const kind = hasKind ? payload.kind : '';
     const projectId = hasProjectId && typeof payload.projectId === 'string' ? payload.projectId : '';
     const bookProfile = hasBookProfile ? payload.bookProfile : null;
@@ -11509,8 +11515,8 @@ if (window.electronAPI) {
 
     clearFlowModeState();
     metaEnabled = nextMetaEnabled;
-    if (hasPath) {
-      currentDocumentPath = path || null;
+    if (hasDocumentId) {
+      currentDocumentId = documentId || null;
     }
     if (hasKind) {
       currentDocumentKind = kind || null;

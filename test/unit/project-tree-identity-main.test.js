@@ -70,6 +70,18 @@ function findNode(root, predicate) {
   return null;
 }
 
+function assertPathlessTree(node) {
+  assert.ok(node && typeof node === 'object');
+  assert.equal(Object.prototype.hasOwnProperty.call(node, 'path'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(node, 'effectivePath'), false);
+  assert.match(node.nodeId, /^tree-node-[a-f0-9]{32}$/u);
+  assert.equal(node.id, node.nodeId);
+  assert.equal(Object.values(node).some((value) => (
+    typeof value === 'string' && (value.startsWith('/') || /^[A-Za-z]:[\\/]/u.test(value))
+  )), false);
+  for (const child of node.children || []) assertPathlessTree(child);
+}
+
 test('project tree identity migration is atomic, idempotent, and rename-stable', async (t) => {
   const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'tree-identity-main-'));
   t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
@@ -88,9 +100,28 @@ test('project tree identity migration is atomic, idempotent, and rename-stable',
 
   const first = await main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
   assert.equal(first.ok, true);
-  const firstScene = findNode(first.root, (node) => node.path === scenePath);
+  assert.match(first.projectId, /^project-/u);
+  assertPathlessTree(first.root);
+  const firstScene = findNode(first.root, (node) => node.label === 'Scene' && node.kind === 'scene');
   assert.ok(firstScene);
   assert.match(firstScene.nodeId, /^tree-node-[a-f0-9]{32}$/u);
+  const resolvedFirstScene = await main.resolveProjectTreeNodeIdentity(firstScene.nodeId, first.projectId);
+  assert.equal(resolvedFirstScene.nodePath, scenePath);
+  await assert.rejects(
+    () => main.resolveProjectTreeNodeIdentity(firstScene.nodeId, 'project-from-another-workspace'),
+    (error) => error && error.code === 'E_TREE_NODE_PROJECT_MISMATCH',
+  );
+  await assert.rejects(
+    () => main.resolveProjectTreeNodeIdentity('not-a-tree-id', first.projectId),
+    (error) => error && error.code === 'E_TREE_NODE_ID_INVALID',
+  );
+  assert.deepEqual(
+    await main.getProjectDocumentIdentityPayload(scenePath),
+    { documentId: firstScene.nodeId },
+  );
+  const externalIdentity = await main.getProjectDocumentIdentityPayload(path.join(tempRoot, 'external.txt'));
+  assert.match(externalIdentity.documentId, /^external-document-[a-f0-9]{32}$/u);
+  assert.equal(Object.prototype.hasOwnProperty.call(externalIdentity, 'path'), false);
 
   const manifestPath = path.join(projectRoot, 'project.craftsman.json');
   const firstManifestText = await fsPromises.readFile(manifestPath, 'utf8');
@@ -108,17 +139,37 @@ test('project tree identity migration is atomic, idempotent, and rename-stable',
   };
   await fileManager.writeFileAtomic(manifestPath, JSON.stringify(manifestWithFuture, null, 2));
 
-  const renamed = await main.handleUiRenameNodeCommand({ path: scenePath, name: 'Renamed' });
+  const renamed = await main.handleUiRenameNodeCommand({
+    projectId: first.projectId,
+    nodeId: firstScene.nodeId,
+    name: 'Renamed',
+  });
   assert.equal(renamed.ok, true);
+  assert.equal(renamed.nodeId, firstScene.nodeId);
+  assert.equal(Object.prototype.hasOwnProperty.call(renamed, 'path'), false);
   const afterRename = await main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
   assert.equal(afterRename.ok, true);
-  const renamedScene = findNode(afterRename.root, (node) => node.path === renamed.path);
+  const renamedScene = findNode(afterRename.root, (node) => node.nodeId === firstScene.nodeId);
   assert.ok(renamedScene);
   assert.equal(renamedScene.nodeId, firstScene.nodeId);
-  assert.equal(await fsPromises.readFile(renamed.path, 'utf8'), 'scene text');
+  const renamedPath = path.join(importedRoot, '01_Renamed.txt');
+  assert.equal(await fsPromises.readFile(renamedPath, 'utf8'), 'scene text');
+  assert.deepEqual(
+    await main.getProjectDocumentIdentityPayload(renamedPath),
+    { documentId: firstScene.nodeId },
+  );
 
   const finalManifest = JSON.parse(await fsPromises.readFile(manifestPath, 'utf8'));
   assert.deepEqual(finalManifest.futureProData, { links: [{ id: 'keep-me' }] });
   assert.equal(finalManifest.treeIdentity.nodes[firstScene.nodeId].bindingKey, 'file:roman/Imported/01_Renamed.txt');
   assert.equal(fs.existsSync(path.join(projectRoot, 'backups')), true);
+
+  const outsidePath = path.join(tempRoot, 'outside.txt');
+  await fsPromises.writeFile(outsidePath, 'outside', 'utf8');
+  await fsPromises.rm(renamedPath);
+  await fsPromises.symlink(outsidePath, renamedPath);
+  await assert.rejects(
+    () => main.resolveProjectTreeNodeIdentity(firstScene.nodeId, first.projectId),
+    (error) => error && error.code === 'E_PATH_BOUNDARY_VIOLATION',
+  );
 });

@@ -6,6 +6,8 @@ import {
   normalizeProjectTreeIdentity,
   reconcileProjectTreeIdentity,
   rebindProjectTreeIdentity,
+  rebindProjectTreeIdentityBatch,
+  upsertProjectTreeIdentityNode,
 } from '../../src/core/projectTreeIdentity.mjs';
 
 test('project tree identity reconciles deterministically and idempotently', () => {
@@ -111,4 +113,45 @@ test('project tree identity marks missing nodes without deleting identity', () =
   });
   assert.equal(missing.ok, true);
   assert.equal(missing.value.nodes[nodeId].present, false);
+});
+
+test('project tree identity upsert creates one stable live node without tombstoning peers', () => {
+  const first = reconcileProjectTreeIdentity({
+    projectId: 'project-one',
+    registry: null,
+    descriptors: [{ bindingKey: 'file:roman/first.txt', kind: 'scene' }],
+  });
+  const upserted = upsertProjectTreeIdentityNode({
+    projectId: 'project-one',
+    registry: first.value,
+    bindingKey: 'file:roman/second.txt',
+    kind: 'scene',
+  });
+  assert.equal(upserted.ok, true);
+  assert.equal(upserted.value.nodes[first.bindings['file:roman/first.txt']].present, true);
+  assert.equal(upserted.value.nodes[upserted.nodeId].bindingKey, 'file:roman/second.txt');
+  assert.equal(upserted.nodeId, createDeterministicTreeNodeId('project-one', 'file:roman/second.txt'));
+});
+
+test('project tree identity batch rebind preserves IDs across prefix swaps', () => {
+  const first = reconcileProjectTreeIdentity({
+    projectId: 'project-one',
+    registry: null,
+    descriptors: [
+      { bindingKey: 'file:roman/01_first.txt', kind: 'scene' },
+      { bindingKey: 'file:roman/02_second.txt', kind: 'scene' },
+    ],
+  });
+  const firstId = first.bindings['file:roman/01_first.txt'];
+  const secondId = first.bindings['file:roman/02_second.txt'];
+  const rebound = rebindProjectTreeIdentityBatch({
+    registry: first.value,
+    moves: [
+      { fromBindingKey: 'file:roman/01_first.txt', toBindingKey: 'file:roman/02_first.txt' },
+      { fromBindingKey: 'file:roman/02_second.txt', toBindingKey: 'file:roman/01_second.txt' },
+    ],
+  });
+  assert.equal(rebound.ok, true);
+  assert.equal(rebound.value.nodes[firstId].bindingKey, 'file:roman/02_first.txt');
+  assert.equal(rebound.value.nodes[secondId].bindingKey, 'file:roman/01_second.txt');
 });

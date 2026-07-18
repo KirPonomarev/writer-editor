@@ -124,14 +124,14 @@ test('TXT import preview UI flow: scene resolver executes exact match and fail-c
   const exactNode = {
     kind: 'scene',
     label: 'Imported TXT 1234567890',
-    path: 'roman/Imported/Imported TXT 1234567890.txt',
+    nodeId: 'tree-node-11111111111111111111111111111111',
   };
   assert.equal(findTxtImportSceneNode({ children: [exactNode] }, locators), exactNode);
   assert.equal(
     findTxtImportSceneNode({
       children: [
-        { ...exactNode, path: 'roman/Imported/a.txt' },
-        { ...exactNode, path: 'roman/Imported/b.txt' },
+        { ...exactNode, nodeId: 'tree-node-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
+        { ...exactNode, nodeId: 'tree-node-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' },
       ],
     }, locators),
     null,
