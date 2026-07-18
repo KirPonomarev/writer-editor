@@ -22,7 +22,6 @@ function createPresentationGroup({
     name: label,
     label,
     kind,
-    path: '',
     children,
     presentationKind: kind,
     presentationExpandKey: expandKey || id,
@@ -41,7 +40,6 @@ function cloneRawNodeForPresentation(node, bucketKind = 'manuscript') {
   return {
     ...node,
     children,
-    effectivePath: typeof node.path === 'string' ? node.path : '',
     effectiveKind: typeof node.kind === 'string' ? node.kind : '',
     presentationKind:
       typeof node.kind === 'string' && node.kind.length > 0
@@ -122,7 +120,6 @@ export function getLeftRailPresentationExpandKey(node) {
   if (typeof node.presentationExpandKey === 'string' && node.presentationExpandKey) {
     return node.presentationExpandKey;
   }
-  if (typeof node.path === 'string' && node.path) return node.path;
   return typeof node.id === 'string' ? node.id : '';
 }
 

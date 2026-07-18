@@ -169,9 +169,11 @@ test('command kernel tree-document adoption: editor routes tree and document act
 
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {'))
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, { path: node.path, name })'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, { path: node.path })'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, { path: node.path, direction })'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, {'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, {'))
+  assert.equal(source.includes('path: node.path'), false)
+  assert.ok(source.includes('nodeId: getEffectiveDocumentId(node)'))
 })
 
 test('command kernel tree-document adoption: tree click and context actions continue through openDocumentNode and handlers', () => {

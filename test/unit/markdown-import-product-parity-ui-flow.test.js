@@ -78,14 +78,14 @@ test('Markdown import product parity: accepted safe create resolves tree scene a
   const exactNode = {
     kind: 'scene',
     label: 'Draft 1234abcd90',
-    path: 'roman/Imported/Draft 1234abcd90.txt',
+    nodeId: 'tree-node-11111111111111111111111111111111',
   };
   assert.equal(findMarkdownImportSceneNode({ children: [exactNode] }, locators), exactNode);
   assert.equal(
     findMarkdownImportSceneNode({
       children: [
-        { ...exactNode, path: 'roman/Imported/a.txt' },
-        { ...exactNode, path: 'roman/Imported/b.txt' },
+        { ...exactNode, nodeId: 'tree-node-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
+        { ...exactNode, nodeId: 'tree-node-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' },
       ],
     }, locators),
     null,

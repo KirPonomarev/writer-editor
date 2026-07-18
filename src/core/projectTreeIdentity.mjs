@@ -256,13 +256,71 @@ export function reconcileProjectTreeIdentity({ projectId, registry, descriptors 
 }
 
 export function rebindProjectTreeIdentity({ registry, fromBindingKey, toBindingKey } = {}) {
+  return rebindProjectTreeIdentityBatch({
+    registry,
+    moves: [{ fromBindingKey, toBindingKey }],
+  });
+}
+
+export function upsertProjectTreeIdentityNode({ projectId, registry, bindingKey, kind } = {}) {
+  const normalizedProjectId = normalizeString(projectId);
+  const normalizedRegistry = normalizeProjectTreeIdentity(registry);
+  if (!normalizedRegistry.ok) {
+    return { ...normalizedRegistry, changed: false, nodeId: '' };
+  }
+  const normalizedBindingKey = normalizeTreeBindingKey(bindingKey);
+  const normalizedKind = normalizeKind(kind);
+  if (!normalizedProjectId || !normalizedBindingKey || !normalizedKind) {
+    return {
+      ok: false,
+      value: null,
+      changed: false,
+      nodeId: '',
+      error: makeError('E_TREE_IDENTITY_UPSERT_INVALID', 'TREE_IDENTITY_UPSERT_INVALID'),
+    };
+  }
+
+  const next = cloneJson(normalizedRegistry.value);
+  const existing = Object.entries(next.nodes)
+    .find(([, node]) => node.bindingKey === normalizedBindingKey);
+  const nodeId = existing
+    ? existing[0]
+    : createDeterministicTreeNodeId(normalizedProjectId, normalizedBindingKey);
+  const collision = next.nodes[nodeId];
+  if (collision && collision.bindingKey !== normalizedBindingKey) {
+    return {
+      ok: false,
+      value: null,
+      changed: false,
+      nodeId: '',
+      error: makeError('E_TREE_IDENTITY_ID_COLLISION', 'TREE_IDENTITY_ID_COLLISION', {
+        nodeId,
+        bindingKey: normalizedBindingKey,
+      }),
+    };
+  }
+  next.nodes[nodeId] = {
+    ...(collision || {}),
+    bindingKey: normalizedBindingKey,
+    kind: normalizedKind,
+    present: true,
+  };
+  next.nodes = Object.fromEntries(Object.entries(next.nodes).sort(([a], [b]) => a.localeCompare(b)));
+  return {
+    ok: true,
+    value: next,
+    changed: JSON.stringify(normalizedRegistry.value) !== JSON.stringify(next),
+    nodeId,
+    error: null,
+  };
+}
+
+export function rebindProjectTreeIdentityBatch({ registry, moves } = {}) {
   const normalizedRegistry = normalizeProjectTreeIdentity(registry);
   if (!normalizedRegistry.ok) {
     return { ...normalizedRegistry, changed: false, movedNodeIds: [] };
   }
-  const from = normalizeTreeBindingKey(fromBindingKey);
-  const to = normalizeTreeBindingKey(toBindingKey);
-  if (!from || !to || !from.startsWith('file:') || !to.startsWith('file:')) {
+  if (!Array.isArray(moves) || moves.length === 0) {
     return {
       ok: false,
       value: null,
@@ -272,43 +330,72 @@ export function rebindProjectTreeIdentity({ registry, fromBindingKey, toBindingK
     };
   }
 
-  const next = cloneJson(normalizedRegistry.value);
-  const updates = [];
-  const occupied = new Map(Object.entries(next.nodes).map(([nodeId, node]) => [node.bindingKey, nodeId]));
-  for (const [nodeId, node] of Object.entries(next.nodes)) {
-    if (node.bindingKey === from || node.bindingKey.startsWith(`${from}/`)) {
-      const suffix = node.bindingKey.slice(from.length);
-      const nextBindingKey = `${to}${suffix}`;
-      const owner = occupied.get(nextBindingKey);
-      if (owner && owner !== nodeId && !next.nodes[owner].bindingKey.startsWith(`${from}/`)) {
-        return {
-          ok: false,
-          value: null,
-          changed: false,
-          movedNodeIds: [],
-          error: makeError(
-            'E_TREE_IDENTITY_REBIND_COLLISION',
-            'TREE_IDENTITY_REBIND_COLLISION',
-            { nodeId, bindingKey: nextBindingKey, owner },
-          ),
-        };
-      }
-      updates.push({ nodeId, nextBindingKey });
+  const normalizedMoves = [];
+  const fromKeys = new Set();
+  const toKeys = new Set();
+  for (const move of moves) {
+    const from = normalizeTreeBindingKey(move?.fromBindingKey);
+    const to = normalizeTreeBindingKey(move?.toBindingKey);
+    if (
+      !from
+      || !to
+      || !from.startsWith('file:')
+      || !to.startsWith('file:')
+      || fromKeys.has(from)
+      || toKeys.has(to)
+    ) {
+      return {
+        ok: false,
+        value: null,
+        changed: false,
+        movedNodeIds: [],
+        error: makeError('E_TREE_IDENTITY_REBIND_INVALID', 'TREE_IDENTITY_REBIND_INVALID'),
+      };
     }
+    fromKeys.add(from);
+    toKeys.add(to);
+    normalizedMoves.push({ from, to });
   }
 
-  for (const update of updates) {
-    next.nodes[update.nodeId] = {
-      ...next.nodes[update.nodeId],
-      bindingKey: update.nextBindingKey,
+  const next = cloneJson(normalizedRegistry.value);
+  const movedNodeIds = [];
+  for (const [nodeId, node] of Object.entries(next.nodes)) {
+    const matchingMove = normalizedMoves.find(({ from }) => (
+      node.bindingKey === from || node.bindingKey.startsWith(`${from}/`)
+    ));
+    if (!matchingMove) continue;
+    const suffix = node.bindingKey.slice(matchingMove.from.length);
+    next.nodes[nodeId] = {
+      ...node,
+      bindingKey: `${matchingMove.to}${suffix}`,
       present: true,
     };
+    movedNodeIds.push(nodeId);
+  }
+
+  const owners = new Map();
+  for (const [nodeId, node] of Object.entries(next.nodes)) {
+    const owner = owners.get(node.bindingKey);
+    if (owner && owner !== nodeId) {
+      return {
+        ok: false,
+        value: null,
+        changed: false,
+        movedNodeIds: [],
+        error: makeError(
+          'E_TREE_IDENTITY_REBIND_COLLISION',
+          'TREE_IDENTITY_REBIND_COLLISION',
+          { nodeId, bindingKey: node.bindingKey, owner },
+        ),
+      };
+    }
+    owners.set(node.bindingKey, nodeId);
   }
   return {
     ok: true,
     value: next,
-    changed: updates.length > 0,
-    movedNodeIds: updates.map((item) => item.nodeId).sort(),
+    changed: movedNodeIds.length > 0,
+    movedNodeIds: movedNodeIds.sort(),
     error: null,
   };
 }

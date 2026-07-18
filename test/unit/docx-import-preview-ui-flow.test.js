@@ -131,14 +131,14 @@ test('DOCX import preview UI flow: scene resolver executes exact match and fail-
   const exactNode = {
     kind: 'scene',
     label: 'Imported DOCX 11111111',
-    path: 'roman/Imported/Imported DOCX 11111111.txt',
+    nodeId: 'tree-node-11111111111111111111111111111111',
   };
   assert.equal(findDocxImportSceneNode({ children: [exactNode] }, locators), exactNode);
   assert.equal(
     findDocxImportSceneNode({
       children: [
-        { ...exactNode, path: 'roman/Imported/a.txt' },
-        { ...exactNode, path: 'roman/Imported/b.txt' },
+        { ...exactNode, nodeId: 'tree-node-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' },
+        { ...exactNode, nodeId: 'tree-node-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' },
       ],
     }, locators),
     null,
