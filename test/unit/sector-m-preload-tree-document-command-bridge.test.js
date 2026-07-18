@@ -33,11 +33,11 @@ test('preload tree document bridge: projectCommands routes five existing tree an
   assert.equal(source.includes('electronAPI.deleteNode('), false)
   assert.equal(source.includes('electronAPI.reorderNode('), false)
 
-  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', '{ path, title, kind }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ parentPath, kind, name }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', '{ path, name }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ path }')
-  assertCommandBridgePath(source, commandEffectSource, 'TREE_REORDER_NODE', '{ path, direction }')
+  assertCommandBridgePath(source, commandEffectSource, 'PROJECT_DOCUMENT_OPEN', '{ projectId, nodeId }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_CREATE_NODE', '{ projectId, parentNodeId, kind, name }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_RENAME_NODE', '{ projectId, nodeId, name }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_DELETE_NODE', '{ projectId, nodeId }')
+  assertCommandBridgePath(source, commandEffectSource, 'TREE_REORDER_NODE', '{ projectId, nodeId, direction }')
 })
 
 test('preload tree document bridge: main bridge allowlist includes only existing cmd.ui set and existing tree document ids', () => {

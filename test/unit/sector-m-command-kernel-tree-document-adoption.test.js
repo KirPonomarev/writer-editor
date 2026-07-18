@@ -72,15 +72,16 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.ok(commandEffectSource.includes('commandId: plan.commandId,'))
   assert.ok(commandEffectSource.includes('payload: plan.payload,'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,'))
-  assert.ok(projectCommandsSource.includes('{ path, title, kind },'))
+  assert.ok(projectCommandsSource.includes('{ projectId, nodeId },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ parentPath, kind, name },'))
+  assert.ok(projectCommandsSource.includes('{ projectId, parentNodeId, kind, name },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_RENAME_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ path, name },'))
+  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, name },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ path },'))
+  assert.ok(projectCommandsSource.includes('{ projectId, nodeId },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
-  assert.ok(projectCommandsSource.includes('{ path, direction },'))
+  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, direction },'))
+  assert.equal(projectCommandsSource.includes('DOCUMENT_PATH_REQUIRED'), false)
 })
 
 test('command kernel tree-document adoption: tree document commands execute exact command bridge payloads', async () => {
@@ -98,28 +99,28 @@ test('command kernel tree-document adoption: tree document commands execute exac
   const cases = [
     [
       projectCommands.EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
-      { path: 'scene-1.md', title: 'Scene 1', kind: 'scene' },
-      { path: 'scene-1.md', title: 'Scene 1', kind: 'scene' },
+      { projectId: 'project-1', nodeId: 'scene-1' },
+      { projectId: 'project-1', nodeId: 'scene-1' },
     ],
     [
       projectCommands.EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
-      { parentPath: 'book', kind: 'scene', name: 'New Scene' },
-      { parentPath: 'book', kind: 'scene', name: 'New Scene' },
+      { projectId: 'project-1', parentNodeId: 'chapter-1', kind: 'scene', name: 'New Scene' },
+      { projectId: 'project-1', parentNodeId: 'chapter-1', kind: 'scene', name: 'New Scene' },
     ],
     [
       projectCommands.EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
-      { path: 'book/old.md', name: 'New Name' },
-      { path: 'book/old.md', name: 'New Name' },
+      { projectId: 'project-1', nodeId: 'scene-1', name: 'New Name' },
+      { projectId: 'project-1', nodeId: 'scene-1', name: 'New Name' },
     ],
     [
       projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
-      { path: 'book/delete.md' },
-      { path: 'book/delete.md' },
+      { projectId: 'project-1', nodeId: 'scene-1' },
+      { projectId: 'project-1', nodeId: 'scene-1' },
     ],
     [
       projectCommands.EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
-      { path: 'book/reorder.md', direction: 'up' },
-      { path: 'book/reorder.md', direction: 'up' },
+      { projectId: 'project-1', nodeId: 'scene-1', direction: 'up' },
+      { projectId: 'project-1', nodeId: 'scene-1', direction: 'up' },
     ],
   ]
 
@@ -142,6 +143,7 @@ test('command kernel tree-document adoption: runtime and docs capability binding
 
   const expected = new Map([
     [projectCommands.EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'cap.project.document.open'],
+    [projectCommands.EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT, 'cap.project.export.selectedScenesTxtV1'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'cap.project.tree.createNode'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'cap.project.tree.renameNode'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'cap.project.tree.deleteNode'],
@@ -156,6 +158,52 @@ test('command kernel tree-document adoption: runtime and docs capability binding
     assert.equal(capabilityPolicy.CAPABILITY_MATRIX.web[capabilityId], false)
     assert.equal(capabilityPolicy.CAPABILITY_MATRIX['mobile-wrapper'][capabilityId], false)
   }
+})
+
+test('navigator context command bindings: selected-scenes export uses one registered command for open and confirm', async () => {
+  const projectCommands = await loadProjectCommands()
+  const calls = []
+  let opened = 0
+  const electronAPI = {
+    invokeUiCommandBridge(request) {
+      calls.push(request)
+      return { ok: true, exported: true, sceneCount: 2 }
+    },
+  }
+  const { registry, handlers } = createCaptureRegistry()
+  projectCommands.registerProjectCommands(registry, {
+    electronAPI,
+    uiActions: {
+      openSelectedScenesTxtExport() {
+        opened += 1
+      },
+    },
+  })
+
+  const commandId = projectCommands.EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT
+  assert.equal(commandId, 'cmd.project.exportSelectedScenesTxtV1')
+  const registered = handlers.get(commandId)
+  assert.ok(registered)
+  assert.deepEqual(registered.meta.surface, ['menu', 'context'])
+
+  const openResult = await registered.handler({})
+  assert.equal(openResult.ok, true)
+  assert.equal(opened, 1)
+  assert.equal(calls.length, 0)
+
+  const confirmResult = await registered.handler({
+    confirmed: true,
+    requestId: 'export-request-1',
+    selectedSceneIds: ['scene-1', 'scene-2'],
+  })
+  assert.equal(confirmResult.ok, true)
+  assert.equal(confirmResult.value.exported, true)
+  assert.equal(confirmResult.value.sceneCount, 2)
+  assertBridgeCall(calls.at(-1), commandId, {
+    confirmed: true,
+    requestId: 'export-request-1',
+    selectedSceneIds: ['scene-1', 'scene-2'],
+  })
 })
 
 test('command kernel tree-document adoption: editor routes tree and document actions via dispatchUiCommand only', () => {
@@ -180,10 +228,41 @@ test('command kernel tree-document adoption: tree click and context actions cont
   const source = read('src/renderer/editor.js')
 
   assert.ok(source.includes('const opened = await openDocumentNode(node);'))
-  assert.ok(source.includes("items.push({ label: 'Новая папка', onClick: () => handleCreateNode(node, 'folder', 'Название папки') });"))
-  assert.ok(source.includes("items.push({ label: 'Переименовать', onClick: () => handleRenameNode(node) });"))
-  assert.ok(source.includes("items.push({ label: 'Удалить', onClick: () => handleDeleteNode(node) });"))
-  assert.ok(source.includes("items.push({ label: 'Вверх', onClick: () => handleReorderNode(node, 'up') });"))
+  assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новая папка'"))
+  assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'Переименовать'"))
+  assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'Удалить'"))
+  assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'Вверх'"))
+  assert.ok(source.includes('button.dataset.commandId = item.commandId;'))
+  assert.ok(source.includes('isNavigatorContextCommandAvailable(commandId)'))
+})
+
+test('navigator context command bindings: every visible item is registry-gated and command-addressable', () => {
+  const source = read('src/renderer/editor.js')
+  const start = source.indexOf('function buildContextMenuItems(node)')
+  const end = source.indexOf('function renderTreeNode(node, level, isLast, ancestorHasNext = [])', start)
+  assert.notEqual(start, -1)
+  assert.notEqual(end, -1)
+  const section = source.slice(start, end)
+
+  assert.ok(source.includes('button.dataset.commandId = item.commandId;'))
+  assert.ok(source.includes('if (!commandRegistry.hasCommand(commandId)) return false;'))
+  assert.ok(source.includes('enforceCapabilityForCommand('))
+  assert.equal(section.includes('items.push('), false)
+  assert.equal(section.includes('onClick:'), false)
+  assert.equal(section.includes('openCardModal('), false)
+  assert.equal(section.toLowerCase().includes('duplicate'), false)
+
+  for (const commandId of [
+    'PROJECT_DOCUMENT_OPEN',
+    'PROJECT_EXPORT_SELECTED_SCENES_TXT',
+    'TREE_CREATE_NODE',
+    'TREE_RENAME_NODE',
+    'TREE_DELETE_NODE',
+    'TREE_REORDER_NODE',
+    'INSERT_ADD_CARD',
+  ]) {
+    assert.ok(section.includes(`EXTRA_COMMAND_IDS.${commandId}`), commandId)
+  }
 })
 
 test('command kernel tree-document adoption: loadTree data fetch uses query bridge and signal paths remain canonicalized', () => {
