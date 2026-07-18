@@ -22,7 +22,11 @@ test('project manifest binding: ensureProjectManifest compares against source ma
 
   assert.match(source, /sourceManifestComparable\s*:\s*getProjectManifestComparable\(sourceManifest\)/);
   assert.match(source, /const\s+sourceManifestComparable\s*=\s*existingManifestRecord\s*\?\s*existingManifestRecord\.sourceManifestComparable\s*:\s*null/);
-  assert.match(source, /const\s+shouldWrite\s*=\s*!sourceManifestComparable\s*\n\s*\|\|\s*JSON\.stringify\(sourceManifestComparable\)\s*!==\s*JSON\.stringify\(nextManifest\)/m);
+  assert.match(
+    source,
+    /const\s+shouldWrite\s*=\s*!sourceManifestComparable\s*\n\s*\|\|\s*JSON\.stringify\(sourceManifestComparable\)\s*!==\s*JSON\.stringify\(getProjectManifestComparable\(nextManifest\)\)/m,
+  );
+  assert.match(source, /\.\.\.canonicalizeComparableValue\(source\)/);
 });
 
 test('project manifest binding: settings persist and restore by projectId plus relative path', () => {

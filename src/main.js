@@ -6733,16 +6733,7 @@ function getProjectManifestComparable(manifest) {
   if (!isPlainObjectValue(manifest)) {
     return null;
   }
-
-  return {
-    schemaVersion: manifest.schemaVersion,
-    projectId: typeof manifest.projectId === 'string' ? manifest.projectId.trim() : manifest.projectId,
-    projectName: typeof manifest.projectName === 'string' ? manifest.projectName.trim() : manifest.projectName,
-    createdAtUtc: typeof manifest.createdAtUtc === 'string' ? manifest.createdAtUtc.trim() : manifest.createdAtUtc,
-    bookProfile: Object.prototype.hasOwnProperty.call(manifest, 'bookProfile')
-      ? canonicalizeComparableValue(manifest.bookProfile)
-      : undefined,
-  };
+  return canonicalizeComparableValue(manifest);
 }
 
 let bookProfileModulePromise = null;
@@ -6755,6 +6746,18 @@ function loadBookProfileModule() {
     });
   }
   return bookProfileModulePromise;
+}
+
+let projectTreeIdentityModulePromise = null;
+function loadProjectTreeIdentityModule() {
+  if (!projectTreeIdentityModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'core', 'projectTreeIdentity.mjs')).href;
+    projectTreeIdentityModulePromise = import(modulePath).catch((error) => {
+      projectTreeIdentityModulePromise = null;
+      throw error;
+    });
+  }
+  return projectTreeIdentityModulePromise;
 }
 
 async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
@@ -6782,6 +6785,7 @@ async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_
   }
 
   const normalizedManifest = {
+    ...canonicalizeComparableValue(source),
     schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
     projectId,
     projectName: normalizedProjectName,
@@ -6790,6 +6794,8 @@ async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_
 
   if (bookProfile) {
     normalizedManifest.bookProfile = bookProfile;
+  } else if (Object.prototype.hasOwnProperty.call(normalizedManifest, 'bookProfile')) {
+    delete normalizedManifest.bookProfile;
   }
 
   return normalizedManifest;
@@ -6817,7 +6823,7 @@ async function ensureProjectManifest(projectName = DEFAULT_PROJECT_NAME) {
   const sourceManifestComparable = existingManifestRecord ? existingManifestRecord.sourceManifestComparable : null;
   const nextManifest = await normalizeProjectManifest(existingManifest || {}, projectName);
   const shouldWrite = !sourceManifestComparable
-    || JSON.stringify(sourceManifestComparable) !== JSON.stringify(nextManifest);
+    || JSON.stringify(sourceManifestComparable) !== JSON.stringify(getProjectManifestComparable(nextManifest));
 
   if (shouldWrite) {
     const writeResult = await queueDiskOperation(
@@ -11241,6 +11247,134 @@ function buildNode({ name, label, kind, nodePath, children = [], ...metadata }) 
   };
 }
 
+function getProjectTreeIdentityBindingKey(node, projectRoot) {
+  if (!node || typeof node !== 'object') {
+    return '';
+  }
+  if (node.kind === 'roman-tab-root') {
+    return 'virtual:roman-tab-root';
+  }
+  if (typeof node.path !== 'string' || !node.path.trim()) {
+    return '';
+  }
+  const relativePath = path.relative(projectRoot, node.path);
+  if (!relativePath || relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+    return '';
+  }
+  return `file:${relativePath.split(path.sep).join('/')}`;
+}
+
+function collectProjectTreeIdentityDescriptors(roots, projectRoot) {
+  const descriptors = [];
+  const visit = (node) => {
+    if (!node || typeof node !== 'object') return;
+    const bindingKey = getProjectTreeIdentityBindingKey(node, projectRoot);
+    if (!bindingKey || typeof node.kind !== 'string' || !node.kind.trim()) {
+      throw new Error('PROJECT_TREE_IDENTITY_DESCRIPTOR_INVALID');
+    }
+    descriptors.push({ bindingKey, kind: node.kind });
+    if (Array.isArray(node.children)) {
+      node.children.forEach(visit);
+    }
+  };
+  roots.forEach(visit);
+  return descriptors;
+}
+
+function annotateProjectTreeIdentities(roots, projectRoot, bindings) {
+  const visit = (node) => {
+    if (!node || typeof node !== 'object') return;
+    const bindingKey = getProjectTreeIdentityBindingKey(node, projectRoot);
+    const nodeId = bindingKey && bindings ? bindings[bindingKey] : '';
+    if (!nodeId) {
+      throw new Error('PROJECT_TREE_IDENTITY_BINDING_MISSING');
+    }
+    node.nodeId = nodeId;
+    if (Array.isArray(node.children)) {
+      node.children.forEach(visit);
+    }
+  };
+  roots.forEach(visit);
+}
+
+async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest) {
+  const backupResult = await backupManager.createBackup(manifestPath, sourceText, { basePath: projectRoot });
+  if (!backupResult || backupResult.success !== true) {
+    throw new Error(backupResult?.error || 'PROJECT_TREE_IDENTITY_BACKUP_FAILED');
+  }
+  await persistProjectManifestAtPath(manifestPath, manifest, 'save project tree identity registry');
+}
+
+async function reconcileProjectTreeIdentities(roots) {
+  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const projectRoot = path.dirname(manifestPath);
+  const descriptors = collectProjectTreeIdentityDescriptors(roots, projectRoot);
+  const identityModule = await loadProjectTreeIdentityModule();
+  const result = identityModule.reconcileProjectTreeIdentity({
+    projectId: manifest.projectId,
+    registry: manifest.treeIdentity,
+    descriptors,
+  });
+  if (!result.ok) {
+    const error = new Error(result.error?.reason || 'PROJECT_TREE_IDENTITY_RECONCILE_FAILED');
+    error.code = result.error?.code || 'E_TREE_IDENTITY_RECONCILE_FAILED';
+    error.details = result.error?.details || {};
+    throw error;
+  }
+  if (result.changed) {
+    const sourceText = await fs.readFile(manifestPath, 'utf8');
+    const nextManifest = {
+      ...manifest,
+      treeIdentity: result.value,
+    };
+    await persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, nextManifest);
+  }
+  annotateProjectTreeIdentities(roots, projectRoot, result.bindings);
+  return {
+    projectId: manifest.projectId,
+    roots,
+  };
+}
+
+async function rebindProjectTreeIdentityForPaths(fromPath, toPath) {
+  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  if (!manifest.treeIdentity) {
+    return { changed: false, movedNodeIds: [] };
+  }
+  const projectRoot = path.dirname(manifestPath);
+  const toBindingKey = (candidatePath) => {
+    const relativePath = path.relative(projectRoot, candidatePath);
+    if (!relativePath || relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      return '';
+    }
+    return `file:${relativePath.split(path.sep).join('/')}`;
+  };
+  const identityModule = await loadProjectTreeIdentityModule();
+  const result = identityModule.rebindProjectTreeIdentity({
+    registry: manifest.treeIdentity,
+    fromBindingKey: toBindingKey(fromPath),
+    toBindingKey: toBindingKey(toPath),
+  });
+  if (!result.ok) {
+    const error = new Error(result.error?.reason || 'PROJECT_TREE_IDENTITY_REBIND_FAILED');
+    error.code = result.error?.code || 'E_TREE_IDENTITY_REBIND_FAILED';
+    throw error;
+  }
+  if (result.changed) {
+    const sourceText = await fs.readFile(manifestPath, 'utf8');
+    await persistProjectTreeIdentityMigration(
+      manifestPath,
+      projectRoot,
+      sourceText,
+      { ...manifest, treeIdentity: result.value },
+    );
+  }
+  return {
+    changed: result.changed,
+    movedNodeIds: result.movedNodeIds,
+  };
+}
+
 async function buildImportedRomanTree(romanPath) {
   const importedPath = joinPathSegmentsWithinRoot(romanPath, ['Imported'], {
     resolveSymlinks: false,
@@ -12018,30 +12152,35 @@ async function handleWorkspaceProjectTreeQuery(payload) {
   }
 
   await ensureProjectStructure();
-
-  if (tab === 'roman') {
+  if (!['roman', 'materials', 'reference'].includes(tab)) {
+    return { ok: false, error: 'Unknown tab' };
+  }
+  try {
     const romanRoot = await buildRomanTree();
     const mindmapRoot = await buildMindMapTree();
     const printRoot = await buildPrintTree();
-    const root = buildNode({
-      name: 'Roman tab',
-      label: 'Roman',
-      kind: 'roman-tab-root',
-      nodePath: getProjectRootPath(),
-      children: [romanRoot, mindmapRoot, printRoot]
-    });
-    return { ok: true, root };
+    const roots = {
+      roman: buildNode({
+        name: 'Roman tab',
+        label: 'Roman',
+        kind: 'roman-tab-root',
+        nodePath: getProjectRootPath(),
+        children: [romanRoot, mindmapRoot, printRoot]
+      }),
+      materials: await buildMaterialsTree(),
+      reference: await buildReferenceTree(),
+    };
+    await reconcileProjectTreeIdentities(Object.values(roots));
+    return { ok: true, root: roots[tab] };
+  } catch (error) {
+    logDevError('query.projectTree:identity', error);
+    return {
+      ok: false,
+      error: error && typeof error.code === 'string'
+        ? error.code
+        : 'PROJECT_TREE_IDENTITY_UNAVAILABLE',
+    };
   }
-  if (tab === 'materials') {
-    const root = await buildMaterialsTree();
-    return { ok: true, root };
-  }
-  if (tab === 'reference') {
-    const root = await buildReferenceTree();
-    return { ok: true, root };
-  }
-
-  return { ok: false, error: 'Unknown tab' };
 }
 
 async function handleWorkspaceSelectedScenesTxtExportScopeQuery() {
@@ -12438,6 +12577,23 @@ async function handleUiRenameNodeCommand(payload) {
   } catch (error) {
     logDevError('rename node', error);
     return { ok: false, error: error.message || 'Failed to rename' };
+  }
+
+  try {
+    await rebindProjectTreeIdentityForPaths(nodePath, targetPath);
+  } catch (error) {
+    logDevError('rename node identity', error);
+    try {
+      await fs.rename(targetPath, nodePath);
+    } catch (rollbackError) {
+      logDevError('rename node identity rollback', rollbackError);
+    }
+    return {
+      ok: false,
+      error: error && typeof error.code === 'string'
+        ? error.code
+        : 'PROJECT_TREE_IDENTITY_REBIND_FAILED',
+    };
   }
 
   if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
@@ -14595,8 +14751,12 @@ app.on('window-all-closed', () => {
 module.exports = {
   ensureProjectManifest,
   getProjectManifestComparable,
+  handleUiRenameNodeCommand,
+  handleWorkspaceProjectTreeQuery,
   normalizeProjectManifest,
   persistBookProfileForFile,
   persistProjectManifestAtPath,
   readProjectManifest,
+  rebindProjectTreeIdentityForPaths,
+  reconcileProjectTreeIdentities,
 };
