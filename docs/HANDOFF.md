@@ -178,6 +178,7 @@ _Generated: 2026-07-12_
 - the earlier whole-shell descale is superseded by owner-approved contour `TOOLBAR_UNIFORM_SCALE_RESTORE_001`: the main formatting toolbar again has independent 0.5x–2.0x uniform scale in both orientations
 - contour `TOOLBAR_METRIC_SCALE_SHARPNESS_001` supersedes layout zoom with DPR-snapped real metrics for the main toolbar body
 - contour `TOOLBAR_NATIVE_FLUENCY_OPTICAL_SHARPNESS_002` adds orientation-aware body projection and slower optical-rhythm growth so the persisted 0.5x–2.0x state remains useful without producing an oversized soft toolbar
+- contour `TOOLBAR_QUIET_CONTRAST_REBALANCE_003` returns light-theme chrome to the prior quiet opacity after owner review; DPR-snapped metrics, zero letter spacing and optical scale projection remain unchanged
 - width-scale stays independent; popup menus, transform handles, the editor sheet and the left system toolbar remain outside the metric scale layer
 - native fluency toolbar contract remains reconfirmed: no transform-scale or blur trick in toolbar shell sections
 - required checks for both merged toolbar contours passed: `oss-policy`, `x1-runtime-parity (ubuntu-latest)`, `x1-runtime-parity (windows-latest)`
