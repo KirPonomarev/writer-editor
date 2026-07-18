@@ -145,6 +145,7 @@ test('sector-m toolbar native fluency chrome: toolbar sections forbid fake-scale
 
   assert.equal(leftToolbarSection.includes('transform: scale('), false);
   assert.equal(floatingToolbarSection.includes('transform: scale('), false);
+  assert.ok(floatingToolbarSection.includes('zoom: var(--floating-toolbar-scale);'));
   assert.equal(leftToolbarSection.includes('backdrop-filter:'), false);
   assert.equal(floatingToolbarSection.includes('backdrop-filter:'), false);
   assert.equal(leftToolbarSection.includes('filter: blur('), false);

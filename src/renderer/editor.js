@@ -157,6 +157,7 @@ const gridTriggerButton = document.querySelector('[data-grid-button]');
 const configuratorBuckets = Array.from(document.querySelectorAll('[data-configurator-bucket]'));
 const toolbarRotateHandles = Array.from(document.querySelectorAll('[data-toolbar-rotate-handle]'));
 const toolbarWidthHandle = document.querySelector('[data-toolbar-width-handle]');
+const toolbarScaleHandle = document.querySelector('[data-toolbar-scale-handle]');
 const leftToolbarRotateHandles = Array.from(document.querySelectorAll('[data-left-toolbar-rotate-handle]'));
 const leftToolbarWidthHandle = document.querySelector('[data-left-toolbar-width-handle]');
 const leftToolbarCluster = document.querySelector('.left-floating-toolbar .work-bar__cluster');
@@ -352,6 +353,8 @@ const FLOATING_TOOLBAR_SNAP_ZONE_PX = 30;
 const FLOATING_TOOLBAR_CENTER_ANCHOR_PX = 30;
 const FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX = 10;
 const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
+const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
+const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
 const FONT_WEIGHT_PRESETS = Object.freeze({
@@ -426,6 +429,7 @@ let floatingToolbarState = {
   y: 0,
   isVertical: false,
   isDetached: false,
+  scale: 1,
   widthScale: 1,
   dockedWidthScale: 1,
   freeWidthScale: 1,
@@ -3180,6 +3184,17 @@ function clampFloatingToolbarWidthScale(widthScale, isVertical = false) {
   );
 }
 
+function clampFloatingToolbarScale(scale) {
+  return Math.min(
+    Math.max(scale, FLOATING_TOOLBAR_SCALE_MIN),
+    FLOATING_TOOLBAR_SCALE_MAX
+  );
+}
+
+function getFloatingToolbarScale() {
+  return Math.max(Number(floatingToolbarState.scale) || 1, 0.001);
+}
+
 function readFloatingToolbarState() {
   try {
     const raw = localStorage.getItem(FLOATING_TOOLBAR_STORAGE_KEY);
@@ -3188,6 +3203,7 @@ function readFloatingToolbarState() {
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
     const x = Number(parsed.x);
     const y = Number(parsed.y);
+    const scale = Number(parsed.scale);
     const widthScale = Number(parsed.widthScale);
     const dockedWidthScale = Number(parsed.dockedWidthScale);
     const freeWidthScale = Number(parsed.freeWidthScale);
@@ -3201,6 +3217,7 @@ function readFloatingToolbarState() {
       y,
       isVertical: Boolean(parsed.isVertical),
       isDetached: Boolean(parsed.isDetached),
+      scale: Number.isFinite(scale) ? scale : 1,
       widthScale: Boolean(parsed.isDetached) ? resolvedFreeWidthScale : resolvedDockedWidthScale,
       dockedWidthScale: resolvedDockedWidthScale,
       freeWidthScale: resolvedFreeWidthScale,
@@ -3304,15 +3321,17 @@ function setToolbarSpacingMenuOpen(nextOpen) {
   setToolbarColorPickerOpen(false);
   setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = getFloatingToolbarScale();
   toolbarSpacingMenu.hidden = false;
   const menuRect = toolbarSpacingMenu.getBoundingClientRect();
+  const menuWidth = menuRect.width / shellScale;
   const clusterLeft = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-left')) || 0;
   const clusterRight = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-right')) || 0;
   const clusterBottom = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-bottom')) || 0;
   const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
-  const desiredLeft = clusterCenterX - (menuRect.width / 2);
+  const desiredLeft = clusterCenterX - (menuWidth / 2);
   const desiredTop = clusterBottom + 18;
-  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
   const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
   const nextTop = Math.round(desiredTop);
   toolbarSpacingMenu.style.left = `${nextLeft}px`;
@@ -3331,12 +3350,14 @@ function setParagraphMenuOpen(nextOpen) {
   setToolbarColorPickerOpen(false);
   setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = getFloatingToolbarScale();
   const triggerRect = paragraphTriggerButton.getBoundingClientRect();
   paragraphMenu.hidden = false;
   const menuRect = paragraphMenu.getBoundingClientRect();
-  const desiredLeft = triggerRect.left - shellRect.left;
-  const desiredTop = (triggerRect.bottom - shellRect.top) + 10;
-  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
+  const menuWidth = menuRect.width / shellScale;
+  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
+  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
   const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
   const nextTop = Math.round(desiredTop);
   paragraphMenu.style.left = `${nextLeft}px`;
@@ -3356,12 +3377,14 @@ function setListMenuOpen(nextOpen) {
   setToolbarColorPickerOpen(false);
   setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = getFloatingToolbarScale();
   const triggerRect = listTriggerButton.getBoundingClientRect();
   listMenu.hidden = false;
   const menuRect = listMenu.getBoundingClientRect();
-  const desiredLeft = triggerRect.left - shellRect.left;
-  const desiredTop = (triggerRect.bottom - shellRect.top) + 10;
-  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
+  const menuWidth = menuRect.width / shellScale;
+  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
+  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
   const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
   const nextTop = Math.round(desiredTop);
   listMenu.style.left = `${nextLeft}px`;
@@ -3407,14 +3430,16 @@ function setToolbarStylesMenuOpen(nextOpen, nextAnchor = toolbarStylesMenuState.
   const anchorButton = getToolbarStylesAnchorButton(anchor);
   if (!(anchorButton instanceof HTMLElement)) return;
   const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = getFloatingToolbarScale();
   const triggerRect = anchorButton.getBoundingClientRect();
   toolbarStylesMenu.hidden = false;
   toolbarStylesMenu.setAttribute('aria-hidden', 'false');
   const menuRect = toolbarStylesMenu.getBoundingClientRect();
-  const rawLeft = (triggerRect.left - shellRect.left) + ((triggerRect.width - menuRect.width) / 2);
-  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
+  const menuWidth = menuRect.width / shellScale;
+  const rawLeft = ((triggerRect.left - shellRect.left) / shellScale) + (((triggerRect.width / shellScale) - menuWidth) / 2);
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
   const nextLeft = Math.round(Math.min(Math.max(rawLeft, 0), maxLeft));
-  const nextTop = Math.round((triggerRect.bottom - shellRect.top) + 10);
+  const nextTop = Math.round(((triggerRect.bottom - shellRect.top) / shellScale) + 10);
   toolbarStylesMenu.style.left = `${nextLeft}px`;
   toolbarStylesMenu.style.top = `${nextTop}px`;
   toolbarStylesMenuState = {
@@ -3465,6 +3490,7 @@ function setToolbarAnchorVar(host, name, value) {
 function updateToolbarAnchorVars() {
   if (!toolbarShell || !toolbarTunableItems.length) return;
   const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = getFloatingToolbarScale();
   const itemRects = toolbarTunableItems
     .map((item) => item.getBoundingClientRect())
     .filter((rect) => rect.width > 0 && rect.height > 0);
@@ -3480,10 +3506,10 @@ function updateToolbarAnchorVars() {
     top: itemRects[0].top,
     bottom: itemRects[0].bottom,
   });
-  const localLeft = bounds.left - shellRect.left;
-  const localRight = bounds.right - shellRect.left;
-  const localTop = bounds.top - shellRect.top;
-  const localBottom = bounds.bottom - shellRect.top;
+  const localLeft = (bounds.left - shellRect.left) / shellScale;
+  const localRight = (bounds.right - shellRect.left) / shellScale;
+  const localTop = (bounds.top - shellRect.top) / shellScale;
+  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
   setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-left', localLeft);
   setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-right', localRight);
   setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-top', localTop);
@@ -3676,6 +3702,7 @@ function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingCli
     y: snapped.y,
     isVertical: false,
     isDetached: false,
+    scale: 1,
     widthScale: 1,
     dockedWidthScale: 1,
     freeWidthScale: 1,
@@ -3686,7 +3713,7 @@ function getDefaultFloatingToolbarState(shellRect = toolbarShell?.getBoundingCli
 function applyFloatingToolbarVisualState() {
   if (!toolbarShell) return;
   toolbarShell.style.transform = 'none';
-  toolbarShell.style.removeProperty('--floating-toolbar-scale');
+  toolbarShell.style.setProperty('--floating-toolbar-scale', String(floatingToolbarState.scale));
   toolbarShell.style.setProperty(
     '--floating-toolbar-width-scale',
     String(floatingToolbarState.isDetached ? floatingToolbarState.freeWidthScale : floatingToolbarState.dockedWidthScale)
@@ -3705,6 +3732,9 @@ function applyFloatingToolbarState(partialState, persist = true) {
   }, shellRect);
   const nextIsDetached = Boolean(partialState.isDetached);
   const nextIsVertical = Boolean(partialState.isVertical);
+  const nextScale = clampFloatingToolbarScale(
+    Number.isFinite(partialState.scale) ? partialState.scale : floatingToolbarState.scale
+  );
   const isModeTransition = nextIsDetached !== floatingToolbarState.isDetached;
   const providedWidthScale = Number.isFinite(partialState.widthScale)
     ? partialState.widthScale
@@ -3748,6 +3778,7 @@ function applyFloatingToolbarState(partialState, persist = true) {
     y: nextPosition.y,
     isVertical: nextIsVertical,
     isDetached: nextIsDetached,
+    scale: nextScale,
     widthScale: nextIsDetached ? nextFreeWidthScale : nextDockedWidthScale,
     dockedWidthScale: nextDockedWidthScale,
     freeWidthScale: nextFreeWidthScale,
@@ -5231,7 +5262,7 @@ function initializeFloatingToolbarSpacingMenu() {
   if (!toolbarShell || !toolbarSpacingMenu || !toolbarSpacingAction) return;
   setToolbarSpacingTuningMode(false);
   toolbarShell.addEventListener('contextmenu', (event) => {
-    if (event.target instanceof Element && event.target.closest('[data-toolbar-rotate-handle], [data-toolbar-width-handle]')) {
+    if (event.target instanceof Element && event.target.closest('[data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
       return;
     }
     event.preventDefault();
@@ -5459,6 +5490,10 @@ function initializeFloatingToolbarDragFoundation() {
     event.stopPropagation();
     startFloatingToolbarInteraction('width', event);
   });
+  toolbarScaleHandle?.addEventListener('mousedown', (event) => {
+    event.stopPropagation();
+    startFloatingToolbarInteraction('scale', event);
+  });
   document.addEventListener('mousemove', (event) => {
     const { mode, origin } = floatingToolbarInteractionState;
     if (!mode || !origin) return;
@@ -5509,6 +5544,13 @@ function initializeFloatingToolbarDragFoundation() {
         dockedWidthScale: origin.isDetached ? origin.dockedWidthScale : nextWidthScale,
         freeWidthScale: origin.isDetached ? nextWidthScale : origin.freeWidthScale,
       }, false);
+    } else if (mode === 'scale') {
+      floatingToolbarInteractionState.active = true;
+      const scaleDelta = (origin.isVertical ? deltaY : deltaX) * 0.01;
+      applyFloatingToolbarState({
+        ...origin,
+        scale: origin.scale + scaleDelta,
+      }, false);
     }
     event.preventDefault();
   });
@@ -5525,7 +5567,7 @@ function initializeFloatingToolbarDragFoundation() {
       floatingToolbarSuppressClickOnce = false;
       return;
     }
-    if (target.closest('button, select, option, input, textarea, label, [data-toolbar-rotate-handle], [data-toolbar-width-handle]')) {
+    if (target.closest('button, select, option, input, textarea, label, [data-toolbar-rotate-handle], [data-toolbar-width-handle], [data-toolbar-scale-handle]')) {
       return;
     }
     setFloatingToolbarHandlesVisible(!floatingToolbarHandlesVisible);
@@ -10400,12 +10442,14 @@ function positionToolbarColorPickerOverlay() {
   if (!(anchorButton instanceof HTMLElement)) return;
 
   const shellRect = toolbarShell.getBoundingClientRect();
+  const shellScale = getFloatingToolbarScale();
   const anchorRect = anchorButton.getBoundingClientRect();
   const overlayRect = toolbarColorPickerOverlay.getBoundingClientRect();
-  const rawLeft = anchorRect.left - shellRect.left + ((anchorRect.width - overlayRect.width) / 2);
-  const maxLeft = Math.max(0, shellRect.width - overlayRect.width);
+  const overlayWidth = overlayRect.width / shellScale;
+  const rawLeft = ((anchorRect.left - shellRect.left) / shellScale) + (((anchorRect.width / shellScale) - overlayWidth) / 2);
+  const maxLeft = Math.max(0, (shellRect.width / shellScale) - overlayWidth);
   const left = Math.min(Math.max(0, rawLeft), maxLeft);
-  const top = anchorRect.bottom - shellRect.top + 10;
+  const top = ((anchorRect.bottom - shellRect.top) / shellScale) + 10;
   toolbarColorPickerOverlay.style.left = `${left}px`;
   toolbarColorPickerOverlay.style.top = `${top}px`;
 }

@@ -58,3 +58,12 @@
 - Риск: слишком широкое исключение могло бы скрыть новый effectful core код.
 - Rollback: удалить evidence-bound ветку из `scripts/ops-gate.mjs` и соответствующий contract test; E0 снова будет блокировать current path-boundary implementation.
 - План удаления исключения: вынести filesystem и current-working-directory probes в IO adapter, а deterministic hash port — в чистый contract adapter отдельным owner-approved architecture contour, затем удалить исключения.
+
+## 2026-07-18 — Main Toolbar Uniform Scale Restoration
+
+- Контекст: owner отдельно подтвердил продуктовый контракт, в котором основная форматирующая панель независимо перемещается, меняет ширину и равномерно масштабируется в горизонтальной и вертикальной ориентациях.
+- Что нарушаем: ранее принятый runtime descale main-toolbar shell и одноразовое удаление scale-handle markup из `index.html`.
+- Причина: descale устранил прежний `transform: scale` из-за риска размытия, но вместе с реализацией потерялся нужный пользовательский сценарий. Новый контур возвращает сценарий через отдельный layout-zoom канал с диапазоном 0.5x–2.0x, не смешивая его с width-scale и не затрагивая редакторский лист.
+- Риск: Chromium layout zoom может изменить геометрию popup anchors, hit targets и позиционное ограничение панели на крайних значениях.
+- Rollback: откатить commit контура; сохранённый ключ scale останется совместимым и будет безопасно проигнорирован старым runtime.
+- План удаления исключения: после визуального и interaction gate закрепить независимый scale как текущий Design OS contract и перевести запись из временного исключения в каноническое описание панели; при провале sharpness gate вернуть descale.

@@ -659,6 +659,7 @@ body {
 }
 
 .floating-toolbar__shell {
+  --floating-toolbar-scale: 1;
   --floating-toolbar-width-scale: 1;
   --floating-toolbar-vertical-rail-width: min(
     calc(100vw - 32px),
@@ -690,6 +691,7 @@ body {
   font-family: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-variant-numeric: tabular-nums;
   transition: box-shadow 0.18s ease, opacity 0.18s ease;
+  zoom: var(--floating-toolbar-scale);
   transform: none;
 }
 
@@ -1113,6 +1115,10 @@ body {
 
 .floating-toolbar__phosphor-icon--width {
   --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/arrows-out-line-horizontal.svg');
+}
+
+.floating-toolbar__phosphor-icon--scale {
+  --floating-toolbar-icon-source: url('./assets/icons/phosphor/regular/arrows-out.svg');
 }
 
 .floating-toolbar__phosphor-icon--caret-down {
@@ -1752,7 +1758,8 @@ body {
 }
 
 .floating-toolbar__transform-handle--rotate,
-.floating-toolbar__transform-handle--width {
+.floating-toolbar__transform-handle--width,
+.floating-toolbar__transform-handle--scale {
   top: var(--floating-toolbar-cluster-center-y);
   transform: translateY(-50%);
 }
@@ -1770,8 +1777,15 @@ body {
   cursor: ew-resize;
 }
 
+.floating-toolbar__transform-handle--scale {
+  left: var(--floating-toolbar-cluster-right);
+  margin-left: calc(16px + var(--toolbar-chrome-slot-icon));
+  cursor: nwse-resize;
+}
+
 .floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--rotate,
-.floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--width {
+.floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--width,
+.floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--scale {
   left: var(--floating-toolbar-cluster-center-x);
   right: auto;
   margin-left: 0;
@@ -1789,6 +1803,11 @@ body {
   bottom: auto;
   margin-top: -8px;
   transform: translate(-50%, -100%);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__transform-handle--scale {
+  top: var(--floating-toolbar-cluster-bottom);
+  margin-top: calc(16px + var(--toolbar-chrome-slot-icon));
 }
 
 .floating-toolbar__transform-control {
