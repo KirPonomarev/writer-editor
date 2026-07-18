@@ -508,6 +508,9 @@ let currentMeta = {
   status: 'черновик',
   tags: { pov: '', line: '', place: '' }
 };
+let currentMetadataBaselineHash = '';
+let metadataUpdateDebounceId = null;
+let metadataUpdatePending = false;
 let expandedNodesByTab = new Map();
 let autoSaveTimerId = null;
 let floatingToolbarState = {
@@ -589,6 +592,7 @@ function isPlainObject(value) {
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
 const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';
+const METADATA_UPDATE_COMMAND_ID = 'cmd.project.metadata.update';
 const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
 const REVIEW_SURFACE_CLEAR_SESSION_COMMAND_ID = 'cmd.project.review.clearSession';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
@@ -7341,6 +7345,9 @@ function collapseSelection() {
   emptyState?.classList.remove('hidden');
   metaPanel?.classList.add('is-hidden');
   metaEnabled = false;
+  currentMetadataBaselineHash = '';
+  metadataUpdatePending = false;
+  clearPendingMetadataUpdate();
   currentMeta = { synopsis: '', status: 'черновик', tags: { pov: '', line: '', place: '' } };
   currentCards = [];
   updateCardsList();
@@ -8515,35 +8522,35 @@ let localDirty = false;
 if (metaSynopsis) {
   metaSynopsis.addEventListener('input', () => {
     syncMetaFromInputs();
-    markAsModified();
+    scheduleMetadataUpdate();
   });
 }
 
 if (metaStatus) {
   metaStatus.addEventListener('change', () => {
     syncMetaFromInputs();
-    markAsModified();
+    scheduleMetadataUpdate();
   });
 }
 
 if (metaTagPov) {
   metaTagPov.addEventListener('input', () => {
     syncMetaFromInputs();
-    markAsModified();
+    scheduleMetadataUpdate();
   });
 }
 
 if (metaTagLine) {
   metaTagLine.addEventListener('input', () => {
     syncMetaFromInputs();
-    markAsModified();
+    scheduleMetadataUpdate();
   });
 }
 
 if (metaTagPlace) {
   metaTagPlace.addEventListener('input', () => {
     syncMetaFromInputs();
-    markAsModified();
+    scheduleMetadataUpdate();
   });
 }
 
@@ -8697,6 +8704,12 @@ function normalizeMetadataInspectorPayload(result) {
 
 function renderMetadataInspectorState(rawState = {}) {
   const state = normalizeMetadataInspectorPayload(rawState);
+  if (typeof rawState?.contentHash === 'string' && /^[a-f0-9]{64}$/u.test(rawState.contentHash)) {
+    currentMetadataBaselineHash = rawState.contentHash;
+    if (metadataUpdatePending) {
+      scheduleMetadataUpdate();
+    }
+  }
   const contextLabel = state.context && state.context.title
     ? `${state.context.title} · ${state.context.kind || 'document'}`
     : (state.state === 'empty' ? 'Нет сцены' : 'Недоступно');
@@ -8716,6 +8729,61 @@ function renderMetadataInspectorState(rawState = {}) {
       : (state.unavailableReason || '—');
   }
   if (inspectorMetaTagsValue) inspectorMetaTagsValue.textContent = tags || '—';
+}
+
+function clearPendingMetadataUpdate() {
+  if (metadataUpdateDebounceId) {
+    window.clearTimeout(metadataUpdateDebounceId);
+    metadataUpdateDebounceId = null;
+  }
+}
+
+function getMetadataUpdatePayload() {
+  if (!metaEnabled || !currentProjectId || !currentDocumentId || !currentMetadataBaselineHash) return null;
+  return {
+    projectId: currentProjectId,
+    nodeId: currentDocumentId,
+    baselineHash: currentMetadataBaselineHash,
+    metadata: {
+      synopsis: currentMeta.synopsis || '',
+      status: currentMeta.status || 'черновик',
+      tags: {
+        pov: currentMeta.tags?.pov || '',
+        line: currentMeta.tags?.line || '',
+        place: currentMeta.tags?.place || '',
+      },
+    },
+  };
+}
+
+async function flushMetadataUpdate() {
+  clearPendingMetadataUpdate();
+  const payload = getMetadataUpdatePayload();
+  if (!payload) return;
+  metadataUpdatePending = false;
+  const result = await dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload);
+  if (!result || result.ok !== true) {
+    updateStatusText('Метаданные не сохранены');
+    await refreshMetadataInspector();
+    return;
+  }
+  const receipt = result.value?.receipt && typeof result.value.receipt === 'object' && !Array.isArray(result.value.receipt)
+    ? result.value.receipt
+    : null;
+  if (receipt && typeof receipt.contentHashAfter === 'string' && /^[a-f0-9]{64}$/u.test(receipt.contentHashAfter)) {
+    currentMetadataBaselineHash = receipt.contentHashAfter;
+  }
+  updateStatusText('Метаданные сохранены');
+  await refreshMetadataInspector();
+}
+
+function scheduleMetadataUpdate() {
+  if (!metaEnabled) return;
+  metadataUpdatePending = true;
+  clearPendingMetadataUpdate();
+  metadataUpdateDebounceId = window.setTimeout(() => {
+    void flushMetadataUpdate();
+  }, 400);
 }
 
 async function refreshMetadataInspector() {
@@ -12143,6 +12211,9 @@ if (window.electronAPI) {
     );
 
     clearFlowModeState();
+    clearPendingMetadataUpdate();
+    currentMetadataBaselineHash = '';
+    metadataUpdatePending = false;
     metaEnabled = nextMetaEnabled;
     if (hasDocumentId) {
       currentDocumentId = documentId || null;

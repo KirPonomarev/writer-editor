@@ -42,7 +42,7 @@ function assertBridgeCall(call, expectedCommandId, expectedPayload) {
   })
 }
 
-test('command kernel tree-document adoption: projectCommands defines and registers six stable command ids', async () => {
+test('command kernel tree-document adoption: projectCommands defines and registers tree plus metadata stable command ids', async () => {
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
   const commandEffectSource = read('src/renderer/commands/commandEffectModel.mjs')
   const projectCommands = await loadProjectCommands()
@@ -53,6 +53,7 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'cmd.project.tree.deleteNode')
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'cmd.project.tree.reorderNode')
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'cmd.project.tree.moveNode')
+  assert.equal(projectCommands.EXTRA_COMMAND_IDS.METADATA_UPDATE, 'cmd.project.metadata.update')
 
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
@@ -60,6 +61,7 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_MOVE_NODE,'))
+  assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.METADATA_UPDATE,'))
 
   assert.equal(projectCommandsSource.includes('electronAPI.openDocument('), false)
   assert.equal(projectCommandsSource.includes('electronAPI.createNode('), false)
@@ -86,6 +88,8 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.ok(projectCommandsSource.includes('{ projectId, nodeId, direction },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_MOVE_NODE,'))
   assert.ok(projectCommandsSource.includes('{ projectId, nodeId, targetParentNodeId, targetIndex },'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.METADATA_UPDATE,'))
+  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, baselineHash, metadata },'))
   assert.equal(projectCommandsSource.includes('DOCUMENT_PATH_REQUIRED'), false)
 })
 
@@ -132,6 +136,21 @@ test('command kernel tree-document adoption: tree document commands execute exac
       { projectId: 'project-1', nodeId: 'scene-1', targetParentNodeId: 'chapter-1', targetIndex: 0 },
       { projectId: 'project-1', nodeId: 'scene-1', targetParentNodeId: 'chapter-1', targetIndex: 0 },
     ],
+    [
+      projectCommands.EXTRA_COMMAND_IDS.METADATA_UPDATE,
+      {
+        projectId: 'project-1',
+        nodeId: 'scene-1',
+        baselineHash: 'a'.repeat(64),
+        metadata: { synopsis: 'One', status: 'черновик', tags: { pov: 'A' } },
+      },
+      {
+        projectId: 'project-1',
+        nodeId: 'scene-1',
+        baselineHash: 'a'.repeat(64),
+        metadata: { synopsis: 'One', status: 'черновик', tags: { pov: 'A' } },
+      },
+    ],
   ]
 
   for (const [commandId, input, expectedPayload] of cases) {
@@ -159,6 +178,7 @@ test('command kernel tree-document adoption: runtime and docs capability binding
     [projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'cap.project.tree.deleteNode'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'cap.project.tree.reorderNode'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'cap.project.tree.moveNode'],
+    [projectCommands.EXTRA_COMMAND_IDS.METADATA_UPDATE, 'cap.project.metadata.update'],
   ])
 
   for (const [commandId, capabilityId] of expected.entries()) {
