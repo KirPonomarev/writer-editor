@@ -50,7 +50,9 @@ test('sector-m toolbar native fluency chrome: tokenized spacing ladder and quiet
 
   assert.ok(styles.includes('gap: var(--toolbar-chrome-item-gap);'));
   assert.ok(styles.includes('gap: var(--toolbar-chrome-group-gap);'));
-  assert.ok(styles.includes('gap: var(--toolbar-chrome-gap-lg);'));
+  assert.ok(styles.includes('column-gap: var(--toolbar-chrome-gap-sm);'));
+  assert.ok(styles.includes('row-gap: var(--toolbar-chrome-gap-sm);'));
+  assert.ok(styles.includes('margin-bottom: var(--toolbar-chrome-gap-sm);'));
   assert.ok(styles.includes('margin: 0 var(--toolbar-chrome-separator-gap);'));
   assert.ok(styles.includes('background: var(--toolbar-chrome-quiet-bg);'));
   assert.ok(styles.includes('background: var(--toolbar-chrome-hover-bg);'));

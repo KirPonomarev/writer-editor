@@ -716,6 +716,7 @@ body {
   gap: var(--toolbar-chrome-group-gap);
   width: var(--floating-toolbar-vertical-rail-width);
   min-height: 0;
+  max-height: calc(100vh - 24px);
   padding: var(--toolbar-chrome-vertical-pad);
   box-sizing: border-box;
 }
@@ -830,32 +831,69 @@ body {
   align-items: stretch;
   justify-content: flex-start;
   gap: var(--toolbar-chrome-gap-sm);
+  grid-column: 1 / -1;
   width: 100%;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__controls {
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--toolbar-chrome-gap-lg);
+  display: grid;
+  grid-template-columns: repeat(4, var(--toolbar-chrome-control-height));
+  grid-auto-flow: row;
+  align-items: start;
+  justify-content: start;
+  column-gap: var(--toolbar-chrome-gap-sm);
+  row-gap: var(--toolbar-chrome-gap-sm);
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
 }
 
+.floating-toolbar__shell.is-vertical .floating-toolbar__controls::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--type,
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline,
-.floating-toolbar__shell.is-vertical .floating-toolbar__group--color,
-.floating-toolbar__shell.is-vertical .floating-toolbar__group--styles,
-.floating-toolbar__shell.is-vertical .floating-toolbar__group--history {
-  flex-direction: row;
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--paragraph {
+  margin-bottom: var(--toolbar-chrome-gap-sm);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: var(--toolbar-chrome-gap-sm);
 }
 
-.floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline .floating-toolbar__button,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--color,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--insert,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--review,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--styles,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--history {
+  display: contents;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--format-inline > .floating-toolbar__button {
+  width: 100%;
+  min-width: var(--toolbar-chrome-control-height);
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--insert > .floating-toolbar__button,
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--color .floating-toolbar__button,
+.floating-toolbar__shell.is-vertical .floating-toolbar__group--review > .floating-toolbar__button,
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--styles .floating-toolbar__button,
 .floating-toolbar__shell.is-vertical .floating-toolbar__group--history .floating-toolbar__button {
-  flex: 1 1 0;
-  width: auto;
+  align-self: center;
+  justify-self: center;
+  flex: 0 0 var(--toolbar-chrome-control-height);
+  width: var(--toolbar-chrome-control-height);
+  height: var(--toolbar-chrome-control-height);
   min-width: var(--toolbar-chrome-control-height);
 }
 
@@ -1235,6 +1273,7 @@ body {
 }
 
 .floating-toolbar__button-label--paragraph,
+.floating-toolbar__button-label--list,
 .floating-toolbar__caret--paragraph {
   display: none;
 }
@@ -1576,7 +1615,8 @@ body {
   height: 28px;
 }
 
-.floating-toolbar__shell.is-vertical .floating-toolbar__button--paragraph {
+.floating-toolbar__shell.is-vertical .floating-toolbar__button--paragraph,
+.floating-toolbar__shell.is-vertical .floating-toolbar__button--list {
   width: 100%;
   height: 32px;
   display: grid;
@@ -1589,19 +1629,27 @@ body {
   background: var(--toolbar-chrome-field-bg);
   box-shadow:
     inset 0 1px 0 var(--toolbar-chrome-field-inset),
-    0 1px 2px var(--toolbar-chrome-field-shadow);
+    0 1px 1px var(--toolbar-chrome-field-shadow);
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph,
+.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--list,
 .floating-toolbar__shell.is-vertical .floating-toolbar__caret--paragraph {
   display: inline-flex;
 }
 
-.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph {
+.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--paragraph,
+.floating-toolbar__shell.is-vertical .floating-toolbar__button-label--list {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.floating-toolbar__shell.is-vertical .floating-toolbar__caret--list {
+  width: var(--toolbar-chrome-caret-size);
+  height: var(--toolbar-chrome-caret-size);
+  opacity: 1;
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap {
@@ -1609,7 +1657,7 @@ body {
   border-color: var(--toolbar-chrome-field-border);
   box-shadow:
     inset 0 1px 0 var(--toolbar-chrome-field-inset),
-    0 1px 2px var(--toolbar-chrome-field-shadow);
+    0 1px 1px var(--toolbar-chrome-field-shadow);
 }
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__select-wrap:hover,
@@ -1631,7 +1679,7 @@ body {
   padding: 0 12px;
 }
 
-.floating-toolbar__shell.is-vertical .floating-toolbar__button:not(.floating-toolbar__button--paragraph) {
+.floating-toolbar__shell.is-vertical .floating-toolbar__button:not(.floating-toolbar__button--paragraph):not(.floating-toolbar__button--list) {
   justify-content: center;
   padding: 0;
 }
