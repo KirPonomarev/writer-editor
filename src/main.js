@@ -9252,6 +9252,7 @@ async function collectSelectedScenesTxtExportCandidates(folderPath, binding, out
 
     out.push({
       sceneId,
+      nodeId: binding.nodeIdsByBindingKey.get(`file:${sceneId.split(path.sep).join('/')}`) || '',
       label: buildSelectedScenesTxtExportCandidateLabel(sceneId),
       path: entry.path,
       title: typeof documentContext.title === 'string' ? documentContext.title : getDisplayNameForEntry(entry.name),
@@ -9265,9 +9266,28 @@ async function buildSelectedScenesTxtExportScope() {
   const manifest = manifestRecord ? manifestRecord.manifest : null;
   const projectRoot = path.dirname(manifestPath);
   const romanPath = getProjectSectionPath('roman', DEFAULT_PROJECT_NAME);
+  const nodeIdsByBindingKey = new Map();
+  const identityNodes = manifest?.treeIdentity?.nodes;
+  if (identityNodes && typeof identityNodes === 'object' && !Array.isArray(identityNodes)) {
+    for (const [nodeId, record] of Object.entries(identityNodes)) {
+      if (
+        /^tree-node-[a-f0-9]{32}$/u.test(nodeId)
+        && record
+        && record.present !== false
+        && typeof record.bindingKey === 'string'
+        && record.bindingKey.startsWith('file:')
+      ) {
+        nodeIdsByBindingKey.set(record.bindingKey, nodeId);
+      }
+    }
+  }
   const sceneCandidates = [];
   if (await fileExists(romanPath)) {
-    await collectSelectedScenesTxtExportCandidates(romanPath, { manifestPath }, sceneCandidates);
+    await collectSelectedScenesTxtExportCandidates(
+      romanPath,
+      { manifestPath, nodeIdsByBindingKey },
+      sceneCandidates,
+    );
   }
 
   const currentDocumentContext = typeof currentFilePath === 'string' && currentFilePath.trim()
@@ -12412,6 +12432,7 @@ async function handleWorkspaceSelectedScenesTxtExportScopeQuery() {
       sceneCandidates: Array.isArray(scope.sceneCandidates)
         ? scope.sceneCandidates.map((candidate) => ({
             sceneId: candidate.sceneId,
+            nodeId: candidate.nodeId,
             label: candidate.label,
             title: candidate.title,
           }))

@@ -118,6 +118,7 @@ test('navigator runtime scrolls the sole active row without focusing the navigat
   assert.equal(/activeRow\.focus\(/u.test(revealSection), false);
   assert.match(revealSection, /focusEditorSurface\('current'\)/u);
   assert.match(renderSection, /currentDocumentId === effectiveDocumentId/u);
+  assert.match(renderSection, /row\.classList\.add\('is-active-document'\)/u);
   assert.match(renderSection, /row\.dataset\.activeDocument = 'true'/u);
   assert.match(renderSection, /row\.setAttribute\('aria-current', 'true'\)/u);
   assert.equal(/getTitleFromPath\(path\)/u.test(source), false);

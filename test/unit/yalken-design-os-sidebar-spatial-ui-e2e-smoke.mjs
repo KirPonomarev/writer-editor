@@ -260,6 +260,133 @@ async function exerciseActiveDocumentReveal(win) {
   return { prepared, revealed };
 }
 
+function snapshotProjectProductFiles() {
+  const projectRoot = path.join(tempRoot, 'documents', 'craftsman');
+  const records = [];
+  const visit = (directory) => {
+    if (!fs.existsSync(directory)) return;
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const entryPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) visit(entryPath);
+      else if (entry.isFile()) {
+        records.push({
+          path: path.relative(projectRoot, entryPath).split(path.sep).join('/'),
+          content: fs.readFileSync(entryPath).toString('base64'),
+        });
+      }
+    }
+  };
+  visit(projectRoot);
+  return records.sort((left, right) => left.path.localeCompare(right.path));
+}
+
+async function exerciseNavigatorSelection(win) {
+  const productStateBefore = snapshotProjectProductFiles();
+  const targets = await win.webContents.executeJavaScript(
+    "(() => { const activeId = document.querySelector('.tree__row[data-active-document=true]')?.dataset.navigatorRowId || ''; const ids = [...document.querySelectorAll('.tree__row[data-navigator-selectable=true]')].map((row) => row.dataset.navigatorRowId || '').filter((id) => id && id !== activeId); return { activeId, ids: ids.slice(0, 2) }; })()",
+    true
+  );
+  if (!targets.activeId || targets.ids.length < 2) throw new Error('NAVIGATOR_SELECTION_TARGETS_MISSING');
+
+  const dispatchRowClick = (nodeId, options = {}) => win.webContents.executeJavaScript(
+    "(() => { const row = document.querySelector('.tree__row[data-navigator-row-id=" + nodeId + "]'); if (!row) return false; row.dispatchEvent(new MouseEvent('click', { bubbles: true, ctrlKey: " + (options.ctrlKey === true ? 'true' : 'false') + " })); return true; })()",
+    true
+  );
+  const readState = () => win.webContents.executeJavaScript(
+    "(() => { const activeElement = document.activeElement; return { selectedIds: [...document.querySelectorAll('.tree__row.is-selected')].map((row) => row.dataset.navigatorRowId || '').filter(Boolean), activeId: document.querySelector('.tree__row[data-active-document=true]')?.dataset.navigatorRowId || '', focusedId: activeElement?.dataset?.navigatorRowId || '', editorFocused: Boolean(activeElement?.classList?.contains('ProseMirror') || activeElement?.closest?.('.ProseMirror')) }; })()",
+    true
+  );
+
+  await dispatchRowClick(targets.ids[0], { ctrlKey: true });
+  const afterFirstPointer = await waitUntil(
+    () => readState().then((state) => (
+      state.selectedIds.length === 1 &&
+      state.selectedIds[0] === targets.ids[0] &&
+      state.activeId === targets.activeId &&
+      state.focusedId === targets.ids[0]
+        ? state
+        : null
+    )),
+    'NAVIGATOR_FIRST_POINTER_SELECTION_FAILED'
+  );
+
+  await dispatchRowClick(targets.ids[1], { ctrlKey: true });
+  const afterSecondPointer = await waitUntil(
+    () => readState().then((state) => (
+      state.selectedIds.length === 2 &&
+      targets.ids.every((id) => state.selectedIds.includes(id)) &&
+      state.activeId === targets.activeId &&
+      state.focusedId === targets.ids[1]
+        ? state
+        : null
+    )),
+    'NAVIGATOR_MULTI_POINTER_SELECTION_FAILED'
+  );
+
+  await win.webContents.executeJavaScript(
+    "(() => { const row = document.querySelector('.tree__row[data-navigator-row-id=" + targets.ids[1] + "]'); if (!row) return false; row.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, ctrlKey: true })); return true; })()",
+    true
+  );
+  const afterKeyboardToggle = await waitUntil(
+    () => readState().then((state) => (
+      state.selectedIds.length === 1 &&
+      state.selectedIds[0] === targets.ids[0] &&
+      state.activeId === targets.activeId &&
+      state.focusedId === targets.ids[1]
+        ? state
+        : null
+    )),
+    'NAVIGATOR_KEYBOARD_SELECTION_FAILED'
+  );
+  const productStateUnchanged = JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore);
+
+  await win.webContents.executeJavaScript(
+    "(() => { const row = document.querySelector('.tree__row[data-navigator-row-id=" + targets.ids[1] + "]'); if (!row) return false; row.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true })); return true; })()",
+    true
+  );
+  await waitUntil(
+    () => readState().then((state) => (
+      state.selectedIds.length === 1 &&
+      state.selectedIds[0] === targets.ids[1] &&
+      state.focusedId === targets.ids[1]
+        ? state
+        : null
+    )),
+    'NAVIGATOR_KEYBOARD_SINGLE_SELECTION_FAILED'
+  );
+  const openResult = await win.webContents.executeJavaScript(
+    "window.electronAPI.getProjectTree('roman').then((tree) => window.electronAPI.openDocument({ projectId: tree.projectId, nodeId: " + JSON.stringify(targets.ids[1]) + " }))",
+    true
+  );
+  if (!openResult || openResult.ok === false) throw new Error('NAVIGATOR_DOCUMENT_OPEN_FAILED');
+  let afterOpen = null;
+  try {
+    afterOpen = await waitUntil(
+      () => readState().then((state) => (
+        state.selectedIds.length === 1 &&
+        state.selectedIds[0] === targets.ids[1] &&
+        state.activeId === targets.ids[1] &&
+        state.editorFocused
+          ? state
+          : null
+      )),
+      'NAVIGATOR_OPEN_FOCUS_SYNC_FAILED'
+    );
+  } catch (error) {
+    const finalState = await readState();
+    throw new Error('NAVIGATOR_OPEN_FOCUS_SYNC_FAILED:' + JSON.stringify(finalState));
+  }
+
+  return {
+    targets,
+    afterFirstPointer,
+    afterSecondPointer,
+    afterKeyboardToggle,
+    afterOpen,
+    productStateUnchanged,
+  };
+}
+
 app.whenReady().then(async () => {
   try {
     const win = await waitUntil(() => BrowserWindow.getAllWindows()[0] || null, 'WINDOW_NOT_CREATED');
@@ -283,6 +410,7 @@ app.whenReady().then(async () => {
 
     const initialWide = await resizeAndProbe(win, 1440, 850, 'initial-wide');
     const activeDocumentReveal = await exerciseActiveDocumentReveal(win);
+    const navigatorSelection = await exerciseNavigatorSelection(win);
     const inspectorControls = await exerciseInspectorControls(win);
     const leftDrag = await dragRail(win, 'left', 40);
     const rightDrag = await dragRail(win, 'right', -30);
@@ -304,6 +432,7 @@ app.whenReady().then(async () => {
       ok: 1,
       initialWide,
       activeDocumentReveal,
+      navigatorSelection,
       inspectorControls,
       leftDrag,
       rightDrag,
@@ -398,6 +527,28 @@ try {
     editorFocused: true,
     russianRoots: true,
   });
+  assert.deepEqual(result.navigatorSelection.afterFirstPointer, {
+    selectedIds: [result.navigatorSelection.targets.ids[0]],
+    activeId: result.navigatorSelection.targets.activeId,
+    focusedId: result.navigatorSelection.targets.ids[0],
+    editorFocused: false,
+  });
+  assert.equal(result.navigatorSelection.afterSecondPointer.selectedIds.length, 2);
+  assert.equal(result.navigatorSelection.afterSecondPointer.activeId, result.navigatorSelection.targets.activeId);
+  assert.equal(result.navigatorSelection.afterSecondPointer.focusedId, result.navigatorSelection.targets.ids[1]);
+  assert.deepEqual(result.navigatorSelection.afterKeyboardToggle, {
+    selectedIds: [result.navigatorSelection.targets.ids[0]],
+    activeId: result.navigatorSelection.targets.activeId,
+    focusedId: result.navigatorSelection.targets.ids[1],
+    editorFocused: false,
+  });
+  assert.deepEqual(result.navigatorSelection.afterOpen, {
+    selectedIds: [result.navigatorSelection.targets.ids[1]],
+    activeId: result.navigatorSelection.targets.ids[1],
+    focusedId: '',
+    editorFocused: true,
+  });
+  assert.equal(result.navigatorSelection.productStateUnchanged, true);
 
   assert.deepEqual(result.inspectorControls.before, {
     commentsTag: 'BUTTON',

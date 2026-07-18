@@ -59,6 +59,13 @@ import {
   resolveLeftRailActiveReveal,
 } from './leftRailPresentationModel.mjs';
 import {
+  applyNavigatorSelection,
+  buildNavigatorSelectionDescriptor,
+  createNavigatorSelectionState,
+  moveNavigatorFocus,
+  reconcileNavigatorSelection,
+} from './navigatorSelectionModel.mjs';
+import {
   applyPreviewChromeCssVars,
   createPreviewChromeState,
 } from './previewChrome.mjs';
@@ -471,6 +478,7 @@ let currentDocumentId = null;
 let currentDocumentKind = null;
 let currentProjectId = '';
 let activeDocumentRevealRequested = false;
+let navigatorSelectionState = createNavigatorSelectionState();
 let spatialLayoutState = null;
 let flowModeState = {
   active: false,
@@ -7345,6 +7353,79 @@ function isProjectTreeDocumentId(value) {
   return typeof value === 'string' && /^tree-node-[a-f0-9]{32}$/u.test(value);
 }
 
+const NAVIGATOR_SELECTABLE_KINDS = new Set(['roman-section', 'chapter-file', 'scene']);
+
+function isNavigatorSelectableNode(node) {
+  return NAVIGATOR_SELECTABLE_KINDS.has(getEffectiveDocumentKind(node));
+}
+
+function collectNavigatorSelectionUniverse() {
+  if (!treeRoot) return { availableIds: [], selectableIds: [] };
+  const presentationRoot = buildLeftRailPresentationTree(treeRoot);
+  const availableIds = [];
+  const selectableIds = [];
+  const stack = [presentationRoot];
+  while (stack.length) {
+    const node = stack.pop();
+    if (!node || typeof node !== 'object') continue;
+    const nodeId = getEffectiveDocumentId(node);
+    if (nodeId) {
+      availableIds.push(nodeId);
+      if (isNavigatorSelectableNode(node)) selectableIds.push(nodeId);
+    }
+    const children = Array.isArray(node.children) ? node.children : [];
+    for (let index = children.length - 1; index >= 0; index -= 1) {
+      stack.push(children[index]);
+    }
+  }
+  return { availableIds, selectableIds };
+}
+
+function reconcileNavigatorSelectionWithTree() {
+  const universe = collectNavigatorSelectionUniverse();
+  navigatorSelectionState = reconcileNavigatorSelection(navigatorSelectionState, {
+    projectId: currentProjectId,
+    ...universe,
+  });
+  return navigatorSelectionState;
+}
+
+function getVisibleNavigatorRowIds({ selectableOnly = false } = {}) {
+  if (!treeContainer) return [];
+  return Array.from(treeContainer.querySelectorAll('.tree__row[data-navigator-row-id]'))
+    .filter((row) => !selectableOnly || row.dataset.navigatorSelectable === 'true')
+    .map((row) => row.dataset.navigatorRowId || '')
+    .filter(Boolean);
+}
+
+function getNavigatorSelectionDescriptor() {
+  return buildNavigatorSelectionDescriptor(navigatorSelectionState, {
+    activeDocumentId: currentDocumentId || '',
+  });
+}
+
+function scheduleNavigatorRowFocus(nodeId) {
+  if (!treeContainer || !nodeId) return;
+  requestAnimationFrame(() => {
+    const row = treeContainer.querySelector(`.tree__row[data-navigator-row-id="${nodeId}"]`);
+    if (row instanceof HTMLElement) row.focus({ preventScroll: true });
+  });
+}
+
+function selectNavigatorNode(node, event = null) {
+  const nodeId = getEffectiveDocumentId(node);
+  if (!nodeId || !isNavigatorSelectableNode(node)) return false;
+  const toggle = Boolean(event && (event.metaKey || event.ctrlKey));
+  const extend = Boolean(event && event.shiftKey);
+  navigatorSelectionState = applyNavigatorSelection(navigatorSelectionState, {
+    nodeId,
+    orderedSelectableIds: getVisibleNavigatorRowIds({ selectableOnly: true }),
+    mode: extend ? 'range' : (toggle ? 'toggle' : 'single'),
+    additive: extend && toggle,
+  });
+  return true;
+}
+
 function getEffectiveDocumentKind(node) {
   if (!node) return '';
   if (typeof node.effectiveKind === 'string' && node.effectiveKind) {
@@ -7610,11 +7691,18 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   const effectiveDocumentId = getEffectiveDocumentId(node);
   if (effectiveDocumentId) {
     row.dataset.documentId = effectiveDocumentId;
+    row.dataset.navigatorRowId = effectiveDocumentId;
   }
   if (currentDocumentId && effectiveDocumentId && currentDocumentId === effectiveDocumentId) {
-    row.classList.add('is-selected');
+    row.classList.add('is-active-document');
     row.dataset.activeDocument = 'true';
     row.setAttribute('aria-current', 'true');
+  }
+  if (effectiveDocumentId && isNavigatorSelectableNode(node)) {
+    const selected = navigatorSelectionState.selectedIds.includes(effectiveDocumentId);
+    row.dataset.navigatorSelectable = 'true';
+    row.classList.toggle('is-selected', selected);
+    row.setAttribute('aria-selected', selected ? 'true' : 'false');
   }
 
   const indent = document.createElement('span');
@@ -7680,7 +7768,14 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   }
   row.appendChild(toggle);
   row.appendChild(label);
-  row.addEventListener('click', async () => {
+  row.addEventListener('focus', () => {
+    if (!effectiveDocumentId) return;
+    navigatorSelectionState = {
+      ...navigatorSelectionState,
+      focusedId: effectiveDocumentId,
+    };
+  });
+  row.addEventListener('click', async (event) => {
     if (hasChildren && isTreeNodeRowExpandable(node)) {
       if (isExpanded) {
         if (isImplicitlyExpanded && collapsedKey) {
@@ -7708,10 +7803,16 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
         node.kind === 'mindmap-section' ||
         node.kind === 'print-section')
     ) {
-      const opened = await openDocumentNode(node);
-      if (opened) {
+      const selectionHandled = selectNavigatorNode(node, event);
+      const selectionOnly = selectionHandled && Boolean(event.metaKey || event.ctrlKey || event.shiftKey);
+      if (selectionOnly) {
         renderTree();
+        scheduleNavigatorRowFocus(effectiveDocumentId);
+        return;
       }
+      const opened = await openDocumentNode(node);
+      renderTree();
+      if (!opened) scheduleNavigatorRowFocus(effectiveDocumentId);
     }
   });
 
@@ -7755,6 +7856,7 @@ function findRomanRootNode(root) {
 
 function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
   if (!treeContainer) return;
+  reconcileNavigatorSelectionWithTree();
   treeContainer.innerHTML = '';
   if (!treeRoot) {
     const empty = document.createElement('div');
@@ -7798,6 +7900,7 @@ async function loadTree() {
       if (nextProjectId !== currentProjectId) {
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
+        navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
       }
     }
     treeRoot = result.root;
@@ -7837,6 +7940,58 @@ async function loadTree() {
 }
 
 if (treeContainer) {
+  treeContainer.addEventListener('keydown', (event) => {
+    const row = event.target instanceof Element
+      ? event.target.closest('.tree__row[data-navigator-row-id]')
+      : null;
+    if (!(row instanceof HTMLElement)) return;
+    const currentId = row.dataset.navigatorRowId || '';
+    const visibleIds = getVisibleNavigatorRowIds();
+    const directionByKey = {
+      ArrowUp: 'previous',
+      ArrowDown: 'next',
+      Home: 'first',
+      End: 'last',
+    };
+    const direction = directionByKey[event.key];
+    if (direction) {
+      event.preventDefault();
+      navigatorSelectionState = moveNavigatorFocus(navigatorSelectionState, {
+        orderedIds: visibleIds,
+        currentId,
+        direction,
+      });
+      const targetId = navigatorSelectionState.focusedId;
+      if (event.shiftKey && targetId) {
+        navigatorSelectionState = applyNavigatorSelection(navigatorSelectionState, {
+          nodeId: targetId,
+          orderedSelectableIds: getVisibleNavigatorRowIds({ selectableOnly: true }),
+          mode: 'range',
+          additive: Boolean(event.metaKey || event.ctrlKey),
+        });
+        renderTree();
+        scheduleNavigatorRowFocus(targetId);
+        return;
+      }
+      const target = treeContainer.querySelector(`.tree__row[data-navigator-row-id="${targetId}"]`);
+      if (target instanceof HTMLElement) target.focus({ preventScroll: true });
+      return;
+    }
+
+    if ((event.key === ' ' || event.key === 'Spacebar') && row.dataset.navigatorSelectable === 'true') {
+      event.preventDefault();
+      const toggle = event.metaKey || event.ctrlKey;
+      navigatorSelectionState = applyNavigatorSelection(navigatorSelectionState, {
+        nodeId: currentId,
+        orderedSelectableIds: getVisibleNavigatorRowIds({ selectableOnly: true }),
+        mode: event.shiftKey ? 'range' : (toggle ? 'toggle' : 'single'),
+        additive: event.shiftKey && toggle,
+      });
+      renderTree();
+      scheduleNavigatorRowFocus(currentId);
+    }
+  });
+
   treeContainer.addEventListener('contextmenu', (event) => {
     if (event.target.closest('.tree__row')) {
       return;
@@ -8683,6 +8838,7 @@ function performSafeResetShell() {
   const nextFontFamily = resolveSafeResetFontFamily();
 
   clearProjectWorkspaceStorage(currentProjectId);
+  navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
 
   try {
     localStorage.removeItem('editorTheme');
@@ -9012,11 +9168,13 @@ async function confirmExportPreviewAndRun() {
 
 function normalizeSelectedScenesTxtExportScope(scope) {
   if (!scope || typeof scope !== 'object' || Array.isArray(scope)) return null;
+  const projectId = typeof scope.projectId === 'string' ? scope.projectId.trim() : '';
   const sceneCandidates = Array.isArray(scope.sceneCandidates)
     ? scope.sceneCandidates
         .filter((candidate) => candidate && typeof candidate === 'object' && !Array.isArray(candidate))
         .map((candidate) => ({
           sceneId: typeof candidate.sceneId === 'string' ? candidate.sceneId.trim() : '',
+          nodeId: typeof candidate.nodeId === 'string' ? candidate.nodeId.trim() : '',
           label: typeof candidate.label === 'string' && candidate.label.trim()
             ? candidate.label.trim()
             : (typeof candidate.title === 'string' ? candidate.title.trim() : ''),
@@ -9031,9 +9189,29 @@ function normalizeSelectedScenesTxtExportScope(scope) {
     : [];
   if (sceneCandidates.length === 0) return null;
   return {
+    projectId,
     defaultSceneIds,
     sceneCandidates,
   };
+}
+
+function applyNavigatorSelectionToExportScope(scope) {
+  const descriptor = getNavigatorSelectionDescriptor();
+  if (
+    !scope
+    || !descriptor.projectId
+    || descriptor.projectId !== scope.projectId
+    || descriptor.selectedIds.length === 0
+  ) {
+    return scope;
+  }
+  const selectedNodeIds = new Set(descriptor.selectedIds);
+  const selectedSceneIds = scope.sceneCandidates
+    .filter((candidate) => candidate.nodeId && selectedNodeIds.has(candidate.nodeId))
+    .map((candidate) => candidate.sceneId);
+  return selectedSceneIds.length > 0
+    ? { ...scope, defaultSceneIds: selectedSceneIds }
+    : scope;
 }
 
 function getSelectedScenesTxtExportCheckedSceneIds() {
@@ -9148,7 +9326,9 @@ async function openSelectedScenesTxtExportFlow() {
     return;
   }
 
-  const scope = normalizeSelectedScenesTxtExportScope(result.scope);
+  const scope = applyNavigatorSelectionToExportScope(
+    normalizeSelectedScenesTxtExportScope(result.scope),
+  );
   if (!scope) {
     updateStatusText('No exportable scenes available');
     return;
@@ -11582,6 +11762,7 @@ if (window.electronAPI) {
       if (nextProjectId !== currentProjectId) {
         currentProjectId = nextProjectId;
         expandedNodesByTab = new Map();
+        navigatorSelectionState = createNavigatorSelectionState(currentProjectId);
         restoreSpatialLayoutState(currentProjectId);
         adoptToolbarConfiguratorState(currentProjectId);
       }
