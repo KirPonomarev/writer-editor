@@ -7577,6 +7577,30 @@ function getTreeNodePresentationKind(node) {
   return getLeftRailPresentationKind(node);
 }
 
+function normalizeNavigatorDerivedCounters(node) {
+  const counters = node && node.derivedCounters && typeof node.derivedCounters === 'object' && !Array.isArray(node.derivedCounters)
+    ? node.derivedCounters
+    : null;
+  if (!counters) return null;
+  const wordCount = Number.isInteger(counters.wordCount) ? Math.max(0, counters.wordCount) : 0;
+  const sceneCount = Number.isInteger(counters.sceneCount) ? Math.max(0, counters.sceneCount) : 0;
+  const progressPercent = Number.isInteger(counters.progressPercent)
+    ? Math.min(100, Math.max(0, counters.progressPercent))
+    : 0;
+  if (wordCount === 0 && sceneCount === 0) return null;
+  return { wordCount, sceneCount, progressPercent };
+}
+
+function formatNavigatorDerivedCounters(node) {
+  const counters = normalizeNavigatorDerivedCounters(node);
+  if (!counters) return '';
+  const parts = [];
+  if (counters.wordCount > 0) parts.push(`${counters.wordCount} сл.`);
+  if (counters.sceneCount > 0) parts.push(`${counters.sceneCount} сц.`);
+  if (counters.sceneCount > 0) parts.push(`${counters.progressPercent}%`);
+  return parts.join(' · ');
+}
+
 function isTreeNodeDefaultExpanded(node) {
   return isLeftRailPresentationDefaultExpanded(node);
 }
@@ -7870,6 +7894,12 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
     row.dataset.navigatorRowId = effectiveDocumentId;
     row.draggable = activeTab === 'roman' && isNavigatorMovableNode(node);
   }
+  const derivedCounters = normalizeNavigatorDerivedCounters(node);
+  if (derivedCounters) {
+    row.dataset.navigatorWordCount = String(derivedCounters.wordCount);
+    row.dataset.navigatorSceneCount = String(derivedCounters.sceneCount);
+    row.dataset.navigatorProgressPercent = String(derivedCounters.progressPercent);
+  }
   if (parentNodeId) {
     row.dataset.navigatorParentNodeId = parentNodeId;
   }
@@ -7943,12 +7973,20 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId 
   const label = document.createElement('span');
   label.className = 'tree__label';
   label.textContent = node.label || node.name || '';
+  const counterLabel = formatNavigatorDerivedCounters(node);
 
   if (!hasChildren) {
     toggle.classList.add('is-empty');
   }
   row.appendChild(toggle);
   row.appendChild(label);
+  if (counterLabel) {
+    const counters = document.createElement('span');
+    counters.className = 'tree__counters';
+    counters.textContent = counterLabel;
+    counters.setAttribute('aria-label', `Счетчики: ${counterLabel}`);
+    row.appendChild(counters);
+  }
   row.addEventListener('focus', () => {
     if (!effectiveDocumentId) return;
     navigatorSelectionState = {
