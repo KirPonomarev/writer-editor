@@ -267,6 +267,33 @@ function createProfileState(masterIds) {
   };
 }
 
+test('sector-m toolbar profile presentation: shell exposes the projected profile without changing toolbar items', async () => {
+  const { createToolbarRuntimeRegistry, applyToolbarActiveProfile } = await importRuntimeProjectionModule();
+  const documentLike = createToolbarDocument();
+  const toolbar = wireToolbarRegistry(documentLike);
+  documentLike.currentToolbarRoot = toolbar.root;
+
+  const registry = createToolbarRuntimeRegistry(toolbar.root);
+  applyToolbarActiveProfile(registry, {
+    activeToolbarProfile: 'minimal',
+    toolbarProfiles: {
+      minimal: ['toolbar.history.undo', 'toolbar.history.redo'],
+      master: [],
+    },
+  });
+
+  assert.equal(toolbar.shell.dataset.toolbarProfile, 'minimal');
+  assert.deepEqual(getVisibleNodeNames(toolbar.historyGroup), ['undo-node', 'redo-node']);
+
+  applyToolbarActiveProfile(registry, createProfileState([
+    'toolbar.history.undo',
+    'toolbar.history.redo',
+  ]));
+
+  assert.equal(toolbar.shell.dataset.toolbarProfile, 'master');
+  assert.deepEqual(getVisibleNodeNames(toolbar.historyGroup), ['undo-node', 'redo-node']);
+});
+
 test('sector-m toolbar live dom root rebind: projection rebinds to the current toolbar root before mutation', async () => {
   const { createToolbarRuntimeRegistry, applyToolbarActiveProfile } = await importRuntimeProjectionModule();
   const documentLike = createToolbarDocument();
