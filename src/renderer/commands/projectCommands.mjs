@@ -40,6 +40,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   TREE_DELETE_NODE: 'cmd.project.tree.deleteNode',
   TREE_REORDER_NODE: 'cmd.project.tree.reorderNode',
   TREE_MOVE_NODE: 'cmd.project.tree.moveNode',
+  METADATA_UPDATE: 'cmd.project.metadata.update',
   EDIT_UNDO: 'cmd.project.edit.undo',
   EDIT_REDO: 'cmd.project.edit.redo',
   EDIT_FIND: 'cmd.project.edit.find',
@@ -1513,6 +1514,71 @@ export function registerProjectCommands(registry, options = {}) {
             : response && typeof response.reason === 'string'
               ? response.reason
               : 'TREE_MOVE_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.METADATA_UPDATE,
+      label: 'Update Metadata',
+      group: 'edit',
+      surface: ['inspector'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.METADATA_UPDATE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
+      const baselineHash = typeof input.baselineHash === 'string' ? input.baselineHash.trim() : '';
+      const metadata = input.metadata && typeof input.metadata === 'object' && !Array.isArray(input.metadata)
+        ? input.metadata
+        : null;
+      if (!projectId || !nodeId || !/^[a-f0-9]{64}$/u.test(baselineHash) || !metadata) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.METADATA_UPDATE, 'METADATA_UPDATE_PAYLOAD_INVALID');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.METADATA_UPDATE,
+          { projectId, nodeId, baselineHash, metadata },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.METADATA_UPDATE,
+          'METADATA_UPDATE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = unwrapBridgeResponseValue(response);
+      if (bridged && bridged.ok === true) {
+        return ok({
+          updated: bridged.updated === true,
+          projectId,
+          nodeId: typeof bridged.nodeId === 'string' && bridged.nodeId.trim()
+            ? bridged.nodeId.trim()
+            : nodeId,
+          metadata: getObjectOrNull(bridged.metadata),
+          wordCount: Number.isInteger(bridged.wordCount) ? Math.max(0, bridged.wordCount) : 0,
+          receipt: getObjectOrNull(bridged.receipt),
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.METADATA_UPDATE,
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'METADATA_UPDATE_FAILED',
       );
     },
   );

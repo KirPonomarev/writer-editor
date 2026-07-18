@@ -27,6 +27,9 @@ test('preload ui command bridge: main exposes one handler and enforces route and
   assert.ok(source.includes("'cmd.ui.theme.set'"))
   assert.ok(source.includes("'cmd.ui.font.set'"))
   assert.ok(source.includes("'cmd.ui.fontSize.set'"))
+  assert.ok(source.includes('METADATA_UPDATE_COMMAND_ID'))
+  assert.ok(source.includes('[METADATA_UPDATE_COMMAND_ID]: async (payload = {}) => {'))
+  assert.ok(source.includes('return handleMetadataUpdateCommand(payload);'))
   assert.ok(source.includes("return { ok: false, reason: 'COMMAND_ID_NOT_ALLOWED' };"))
   assert.ok(source.includes('dispatchMenuCommand(commandId, payload, { route: COMMAND_BUS_ROUTE })'))
 })
@@ -44,6 +47,35 @@ test('preload ui command bridge: editor cmd.ui handlers use bridge and no longer
   assert.equal(source.includes('window.electronAPI.setTheme(nextTheme);'), false)
   assert.equal(source.includes('window.electronAPI.setFont(fontFamily);'), false)
   assert.equal(source.includes('window.electronAPI.setFontSizePx(px);'), false)
+})
+
+test('preload ui command bridge: metadata edits dispatch pathless stable-id command', () => {
+  const source = read('src/renderer/editor.js')
+  const payloadStart = source.indexOf('function getMetadataUpdatePayload()')
+  const payloadEnd = source.indexOf('async function flushMetadataUpdate()', payloadStart)
+  const payloadHelper = source.slice(payloadStart, payloadEnd)
+  const flushStart = payloadEnd
+  const flushEnd = source.indexOf('function scheduleMetadataUpdate()', flushStart)
+  const flushHelper = source.slice(flushStart, flushEnd)
+
+  assert.ok(source.includes("const METADATA_UPDATE_COMMAND_ID = 'cmd.project.metadata.update';"))
+  assert.ok(payloadHelper.includes('projectId: currentProjectId'))
+  assert.ok(payloadHelper.includes('nodeId: currentDocumentId'))
+  assert.ok(payloadHelper.includes('baselineHash: currentMetadataBaselineHash'))
+  assert.ok(payloadHelper.includes('metadata: {'))
+  assert.ok(flushHelper.includes('dispatchUiCommand(METADATA_UPDATE_COMMAND_ID, payload)'))
+  assert.ok(flushHelper.includes('receipt.contentHashAfter'))
+  assert.ok(source.includes('scheduleMetadataUpdate();'))
+
+  for (const forbidden of [
+    'filePath',
+    'path:',
+    'projectRoot',
+    'scenePath',
+    'recovery:',
+  ]) {
+    assert.equal(payloadHelper.includes(forbidden), false, forbidden)
+  }
 })
 
 test('preload ui command bridge: review exact apply uses bridge with intent-only payload', () => {

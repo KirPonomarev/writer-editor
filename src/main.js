@@ -322,6 +322,7 @@ const MARKDOWN_LOCAL_FILE_MAX_REQUEST_ID_CHARS = 120;
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const TREE_MOVE_COMMAND_ID = 'cmd.project.tree.moveNode';
+const METADATA_UPDATE_COMMAND_ID = 'cmd.project.metadata.update';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -12733,6 +12734,77 @@ function normalizeMetadataInspectorMeta(meta) {
   };
 }
 
+const METADATA_UPDATE_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'projectId',
+  'nodeId',
+  'baselineHash',
+  'metadata',
+]);
+const METADATA_UPDATE_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'filePath',
+  'path',
+  'projectRoot',
+  'recovery',
+  'receipt',
+  'scenePath',
+]);
+
+function makeMetadataUpdateError(code, reason, details = {}) {
+  return {
+    ok: false,
+    error: code,
+    code,
+    reason,
+    ...(details && typeof details === 'object' && !Array.isArray(details) ? { details } : {}),
+  };
+}
+
+function normalizeMetadataUpdatePayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_PAYLOAD_INVALID', 'METADATA_UPDATE_PAYLOAD_REQUIRED');
+  }
+  const keys = Object.keys(payload);
+  const forbidden = keys.filter((key) => METADATA_UPDATE_FORBIDDEN_AUTHORITY_KEYS.includes(key)).sort();
+  if (forbidden.length > 0) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_PAYLOAD_INVALID', 'METADATA_UPDATE_RENDERER_AUTHORITY_DENIED', {
+      fields: forbidden,
+    });
+  }
+  const unsupported = keys.filter((key) => !METADATA_UPDATE_ALLOWED_PAYLOAD_KEYS.includes(key)).sort();
+  if (unsupported.length > 0) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_PAYLOAD_INVALID', 'METADATA_UPDATE_PAYLOAD_UNSUPPORTED_FIELDS', {
+      fields: unsupported,
+    });
+  }
+  const projectId = typeof payload.projectId === 'string' ? payload.projectId.trim() : '';
+  const nodeId = typeof payload.nodeId === 'string' ? payload.nodeId.trim() : '';
+  const baselineHash = typeof payload.baselineHash === 'string' ? payload.baselineHash.trim() : '';
+  if (!projectId || !nodeId || !/^[a-f0-9]{64}$/u.test(baselineHash)) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_PAYLOAD_INVALID', 'METADATA_UPDATE_CONTEXT_INVALID');
+  }
+  return {
+    ok: true,
+    value: {
+      projectId,
+      nodeId,
+      baselineHash,
+      metadata: normalizeMetadataInspectorMeta(payload.metadata),
+    },
+  };
+}
+
+function replaceObservableMetadataBlock(sourceText, nextMeta, envelopeModule) {
+  const normalizedSource = typeof envelopeModule.normalizeDocumentLineEndings === 'function'
+    ? envelopeModule.normalizeDocumentLineEndings(sourceText)
+    : String(sourceText || '').replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+  const metaBlock = envelopeModule.composeMetaBlock(true, nextMeta);
+  const metaPattern = /^\[meta\][\s\S]*?\[\/meta\](?:\n{1,2})?/iu;
+  if (metaPattern.test(normalizedSource)) {
+    return normalizedSource.replace(metaPattern, `${metaBlock}\n\n`);
+  }
+  return normalizedSource ? `${metaBlock}\n\n${normalizedSource}` : metaBlock;
+}
+
 function countMetadataInspectorWords(text) {
   const normalized = String(text || '').trim();
   if (!normalized) return 0;
@@ -12838,6 +12910,7 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
       context,
       metadata: normalizeMetadataInspectorMeta(parsed.meta),
       wordCount: countMetadataInspectorWords(parsed.text),
+      contentHash: computeHash(content),
       unavailableReason: '',
     };
   } catch (error) {
@@ -12851,6 +12924,158 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
       unavailableReason: 'METADATA_READ_FAILED',
     };
   }
+}
+
+async function handleMetadataUpdateCommand(payload = {}, options = {}) {
+  const normalizedPayload = normalizeMetadataUpdatePayload(payload);
+  if (!normalizedPayload.ok) return normalizedPayload;
+  const safePayload = normalizedPayload.value;
+
+  let resolvedNode;
+  let documentTarget;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
+    documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
+  } catch (error) {
+    return makeMetadataUpdateError(
+      error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
+      'METADATA_UPDATE_NODE_RESOLUTION_FAILED',
+    );
+  }
+
+  if (!ROMAN_META_KINDS.has(documentTarget.kind)) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_KIND_BLOCKED', 'METADATA_UNSUPPORTED_FOR_NODE', {
+      kind: documentTarget.kind,
+    });
+  }
+
+  const documentPathGuard = sanitizePayloadWithinProjectRoot(
+    { path: documentTarget.filePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
+  if (!documentPathGuard.ok || !documentPathGuard.payload) {
+    return makeMetadataUpdateError('E_PATH_BOUNDARY_VIOLATION', 'PATH_BOUNDARY_VIOLATION');
+  }
+
+  const filePath = documentPathGuard.payload.path;
+  let sourceText = '';
+  try {
+    sourceText = await fs.readFile(filePath, 'utf8');
+  } catch (error) {
+    return makeMetadataUpdateError(
+      error && typeof error.code === 'string' ? error.code : 'E_METADATA_UPDATE_READ_FAILED',
+      error && error.code === 'ENOENT' ? 'DOCUMENT_EMPTY' : 'METADATA_UPDATE_READ_FAILED',
+    );
+  }
+
+  const contentHashBefore = computeHash(sourceText);
+  if (contentHashBefore !== safePayload.baselineHash) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_STALE', 'METADATA_UPDATE_STALE_CONTEXT', {
+      expectedHash: safePayload.baselineHash,
+      observedHash: contentHashBefore,
+    });
+  }
+
+  let envelopeModule;
+  let beforeParsed;
+  let nextText;
+  let afterParsed;
+  try {
+    envelopeModule = await loadDocumentContentEnvelopeModule();
+    beforeParsed = envelopeModule.parseObservablePayload(sourceText);
+    if (!beforeParsed || beforeParsed.issue) {
+      return makeMetadataUpdateError('E_METADATA_UPDATE_PAYLOAD_INVALID', 'DOCUMENT_PAYLOAD_INVALID');
+    }
+    nextText = replaceObservableMetadataBlock(sourceText, safePayload.metadata, envelopeModule);
+    afterParsed = envelopeModule.parseObservablePayload(nextText);
+    if (!afterParsed || afterParsed.issue) {
+      return makeMetadataUpdateError('E_METADATA_UPDATE_PAYLOAD_INVALID', 'DOCUMENT_PAYLOAD_INVALID_AFTER_UPDATE');
+    }
+  } catch (error) {
+    logDevError('metadata update parse', error);
+    return makeMetadataUpdateError('E_METADATA_UPDATE_PARSE_FAILED', 'METADATA_UPDATE_PARSE_FAILED');
+  }
+
+  if ((beforeParsed.text || '') !== (afterParsed.text || '')) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_TEXT_CHANGED', 'METADATA_UPDATE_TEXT_PRESERVATION_FAILED');
+  }
+
+  if (nextText === sourceText) {
+    return {
+      ok: true,
+      updated: false,
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      metadata: normalizeMetadataInspectorMeta(afterParsed.meta),
+      wordCount: countMetadataInspectorWords(afterParsed.text),
+      receipt: {
+        schemaVersion: 'metadata-update-receipt.v1',
+        type: 'project.metadata.update.receipt',
+        commandId: METADATA_UPDATE_COMMAND_ID,
+        projectId: resolvedNode.projectId,
+        nodeId: resolvedNode.nodeId,
+        updated: false,
+        contentHashBefore,
+        contentHashAfter: contentHashBefore,
+        recovery: {
+          snapshotCreated: false,
+          snapshotReadable: false,
+          snapshotHashMatchesInput: false,
+          recoveryAction: 'NO_WRITE',
+        },
+      },
+    };
+  }
+
+  const backupResult = await backupManager.createBackup(filePath, sourceText, { basePath: resolvedNode.projectRoot });
+  if (!backupResult || backupResult.success !== true) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_BACKUP_FAILED', 'METADATA_UPDATE_BACKUP_FAILED');
+  }
+
+  const writeFileAtomic = typeof options.writeFileAtomic === 'function'
+    ? options.writeFileAtomic
+    : (targetPath, content) => fileManager.writeFileAtomic(targetPath, content);
+  const writeResult = await queueDiskOperation(
+    () => writeFileAtomic(filePath, nextText),
+    'update metadata',
+  );
+  if (!writeResult || writeResult.success !== true) {
+    return makeMetadataUpdateError('E_METADATA_UPDATE_WRITE_FAILED', 'METADATA_UPDATE_WRITE_FAILED', {
+      message: writeResult && typeof writeResult.error === 'string' ? writeResult.error : '',
+    });
+  }
+
+  const contentHashAfter = computeHash(nextText);
+  if (filePath === currentFilePath) {
+    lastAutosaveHash = contentHashAfter;
+    backupHashes.set(filePath, contentHashAfter);
+  }
+
+  return {
+    ok: true,
+    updated: true,
+    projectId: resolvedNode.projectId,
+    nodeId: resolvedNode.nodeId,
+    metadata: normalizeMetadataInspectorMeta(afterParsed.meta),
+    wordCount: countMetadataInspectorWords(afterParsed.text),
+    receipt: {
+      schemaVersion: 'metadata-update-receipt.v1',
+      type: 'project.metadata.update.receipt',
+      commandId: METADATA_UPDATE_COMMAND_ID,
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      updated: true,
+      contentHashBefore,
+      contentHashAfter,
+      recovery: {
+        snapshotCreated: true,
+        snapshotReadable: true,
+        snapshotHashMatchesInput: true,
+        recoveryAction: 'OPEN_BACKUP_OR_ABORT',
+      },
+    },
+  };
 }
 
 async function handleWorkspaceSelectedScenesTxtExportScopeQuery() {
@@ -14202,6 +14427,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.tree.renameNode',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
+  METADATA_UPDATE_COMMAND_ID,
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -14625,6 +14851,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [TREE_MOVE_COMMAND_ID]: async (payload = {}) => {
     return handleUiMoveNodeCommand(payload);
+  },
+  [METADATA_UPDATE_COMMAND_ID]: async (payload = {}) => {
+    return handleMetadataUpdateCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -15653,6 +15882,7 @@ module.exports = {
   handleUiRenameNodeCommand,
   handleUiReorderNodeCommand,
   handleUiMoveNodeCommand,
+  handleMetadataUpdateCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectTreeQuery,
   normalizeProjectManifest,

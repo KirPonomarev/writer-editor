@@ -23,6 +23,7 @@
     { "commandId": "cmd.project.tree.deleteNode", "capabilityId": "cap.project.tree.deleteNode" },
     { "commandId": "cmd.project.tree.reorderNode", "capabilityId": "cap.project.tree.reorderNode" },
     { "commandId": "cmd.project.tree.moveNode", "capabilityId": "cap.project.tree.moveNode" },
+    { "commandId": "cmd.project.metadata.update", "capabilityId": "cap.project.metadata.update" },
     { "commandId": "cmd.project.edit.undo", "capabilityId": "cap.project.edit.undo" },
     { "commandId": "cmd.project.edit.redo", "capabilityId": "cap.project.edit.redo" },
     { "commandId": "cmd.project.edit.find", "capabilityId": "cap.project.edit.find" },
