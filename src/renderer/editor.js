@@ -230,6 +230,11 @@ const inspectorWeightValue = document.querySelector('[data-inspector-weight]');
 const inspectorFontSizeValue = document.querySelector('[data-inspector-font-size]');
 const inspectorLineHeightValue = document.querySelector('[data-inspector-line-height]');
 const inspectorMarginsValue = document.querySelector('[data-inspector-margins]');
+const inspectorMetaContextValue = document.querySelector('[data-inspector-meta-context]');
+const inspectorMetaStatusValue = document.querySelector('[data-inspector-meta-status]');
+const inspectorMetaWordCountValue = document.querySelector('[data-inspector-meta-word-count]');
+const inspectorMetaSynopsisValue = document.querySelector('[data-inspector-meta-synopsis]');
+const inspectorMetaTagsValue = document.querySelector('[data-inspector-meta-tags]');
 const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.right-rail-form-row')).find((row) => {
   const key = row.querySelector('.right-rail-form-key');
   return key && key.textContent && key.textContent.trim() === 'Формат';
@@ -583,6 +588,7 @@ function isPlainObject(value) {
 // REVIEW_SURFACE_PRESENTATION_START
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
+const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';
 const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
 const REVIEW_SURFACE_CLEAR_SESSION_COMMAND_ID = 'cmd.project.review.clearSession';
 const REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID = 'cmd.project.review.applyExactTextChange';
@@ -5947,6 +5953,7 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
     && queryId !== SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID
     && queryId !== 'query.collabScopeLocal'
     && queryId !== REVIEW_SURFACE_QUERY_ID
+    && queryId !== METADATA_INSPECTOR_QUERY_ID
   ) {
     return null;
   }
@@ -7342,6 +7349,7 @@ function collapseSelection() {
     updateWordCount();
   }
   updateInspectorSnapshot();
+  renderMetadataInspectorState({ state: 'empty', unavailableReason: 'NO_ACTIVE_NODE' });
 }
 
 function updateMetaInputs() {
@@ -7720,6 +7728,7 @@ async function openDocumentNode(node) {
     metaEnabled = currentDocumentKind === 'scene' || currentDocumentKind === 'chapter-file';
     updateMetaVisibility();
     updateInspectorSnapshot();
+    refreshMetadataInspector();
     return true;
   } catch {
     activeDocumentRevealRequested = false;
@@ -8651,6 +8660,80 @@ function updateInspectorSnapshot() {
   inspectorSnapshotElement.textContent = snapshot.join('\n');
 }
 
+function normalizeMetadataInspectorPayload(result) {
+  const state = typeof result?.state === 'string' ? result.state : 'empty';
+  const context = result?.context && typeof result.context === 'object' && !Array.isArray(result.context)
+    ? result.context
+    : null;
+  const metadata = result?.metadata && typeof result.metadata === 'object' && !Array.isArray(result.metadata)
+    ? result.metadata
+    : {};
+  const tags = metadata.tags && typeof metadata.tags === 'object' && !Array.isArray(metadata.tags)
+    ? metadata.tags
+    : {};
+  return {
+    state,
+    unavailableReason: typeof result?.unavailableReason === 'string' ? result.unavailableReason : '',
+    context: context
+      ? {
+        nodeId: typeof context.nodeId === 'string' ? context.nodeId : '',
+        kind: typeof context.kind === 'string' ? context.kind : '',
+        title: typeof context.title === 'string' ? context.title : '',
+        metaEnabled: context.metaEnabled === true,
+      }
+      : null,
+    metadata: {
+      synopsis: typeof metadata.synopsis === 'string' ? metadata.synopsis : '',
+      status: typeof metadata.status === 'string' && metadata.status ? metadata.status : 'черновик',
+      tags: {
+        pov: typeof tags.pov === 'string' ? tags.pov : '',
+        line: typeof tags.line === 'string' ? tags.line : '',
+        place: typeof tags.place === 'string' ? tags.place : '',
+      },
+    },
+    wordCount: Number.isInteger(result?.wordCount) ? Math.max(0, result.wordCount) : 0,
+  };
+}
+
+function renderMetadataInspectorState(rawState = {}) {
+  const state = normalizeMetadataInspectorPayload(rawState);
+  const contextLabel = state.context && state.context.title
+    ? `${state.context.title} · ${state.context.kind || 'document'}`
+    : (state.state === 'empty' ? 'Нет сцены' : 'Недоступно');
+  const tags = [
+    state.metadata.tags.pov,
+    state.metadata.tags.line,
+    state.metadata.tags.place,
+  ].filter(Boolean).join(' · ');
+  if (inspectorMetaContextValue) inspectorMetaContextValue.textContent = contextLabel;
+  if (inspectorMetaStatusValue) {
+    inspectorMetaStatusValue.textContent = state.state === 'ready' ? state.metadata.status : '—';
+  }
+  if (inspectorMetaWordCountValue) inspectorMetaWordCountValue.textContent = String(state.wordCount);
+  if (inspectorMetaSynopsisValue) {
+    inspectorMetaSynopsisValue.textContent = state.state === 'ready' && state.metadata.synopsis
+      ? state.metadata.synopsis
+      : (state.unavailableReason || '—');
+  }
+  if (inspectorMetaTagsValue) inspectorMetaTagsValue.textContent = tags || '—';
+}
+
+async function refreshMetadataInspector() {
+  if (!window.electronAPI || typeof window.electronAPI.invokeWorkspaceQueryBridge !== 'function') {
+    renderMetadataInspectorState({ state: 'unavailable', unavailableReason: 'QUERY_BRIDGE_UNAVAILABLE' });
+    return;
+  }
+  const result = await invokeWorkspaceQueryBridge(METADATA_INSPECTOR_QUERY_ID, {
+    projectId: currentProjectId,
+    nodeId: currentDocumentId || '',
+  });
+  if (!result || result.ok === false) {
+    renderMetadataInspectorState({ state: 'unavailable', unavailableReason: 'METADATA_QUERY_FAILED' });
+    return;
+  }
+  renderMetadataInspectorState(result);
+}
+
 function renderOutlineList() {
   if (!outlineListElement) return;
   outlineListElement.innerHTML = '';
@@ -8817,6 +8900,7 @@ function applyRightTab(tab) {
   if (rightCommentsPanel) rightCommentsPanel.hidden = tab !== 'comments';
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
+    refreshMetadataInspector();
   }
   syncInspectorStateSurface();
   syncToolbarShellState();
@@ -12136,6 +12220,7 @@ if (window.electronAPI) {
     updateSaveStateText('loaded');
     updatePerfHintText('normal');
     updateInspectorSnapshot();
+    refreshMetadataInspector();
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {

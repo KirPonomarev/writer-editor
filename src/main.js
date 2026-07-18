@@ -12619,6 +12619,9 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   if (queryId === 'query.reviewSurface') {
     return handleWorkspaceReviewSurfaceQuery();
   }
+  if (queryId === 'query.metadataInspector') {
+    return handleWorkspaceMetadataInspectorQuery(payload);
+  }
   return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
 
@@ -12712,6 +12715,140 @@ async function handleWorkspaceProjectTreeQuery(payload) {
       error: error && typeof error.code === 'string'
         ? error.code
         : 'PROJECT_TREE_IDENTITY_UNAVAILABLE',
+    };
+  }
+}
+
+function normalizeMetadataInspectorMeta(meta) {
+  const source = isPlainObjectValue(meta) ? meta : {};
+  const tags = isPlainObjectValue(source.tags) ? source.tags : {};
+  return {
+    synopsis: typeof source.synopsis === 'string' ? source.synopsis : '',
+    status: typeof source.status === 'string' && source.status.trim() ? source.status : 'черновик',
+    tags: {
+      pov: typeof tags.pov === 'string' ? tags.pov : '',
+      line: typeof tags.line === 'string' ? tags.line : '',
+      place: typeof tags.place === 'string' ? tags.place : '',
+    },
+  };
+}
+
+function countMetadataInspectorWords(text) {
+  const normalized = String(text || '').trim();
+  if (!normalized) return 0;
+  return normalized.split(/\s+/u).filter(Boolean).length;
+}
+
+async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
+  const safePayload = payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {};
+  const nodeId = typeof safePayload.nodeId === 'string' ? safePayload.nodeId.trim() : '';
+  const projectId = typeof safePayload.projectId === 'string' ? safePayload.projectId.trim() : '';
+  if (!nodeId) {
+    return {
+      ok: true,
+      state: 'empty',
+      context: null,
+      metadata: normalizeMetadataInspectorMeta(null),
+      wordCount: 0,
+      unavailableReason: 'NO_ACTIVE_NODE',
+    };
+  }
+
+  let resolvedNode;
+  let documentTarget;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(nodeId, projectId);
+    documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
+  } catch (error) {
+    return {
+      ok: true,
+      state: 'unavailable',
+      context: {
+        projectId,
+        nodeId,
+      },
+      metadata: normalizeMetadataInspectorMeta(null),
+      wordCount: 0,
+      unavailableReason: error && typeof error.code === 'string' ? error.code : 'TREE_NODE_UNAVAILABLE',
+    };
+  }
+
+  const contextFromPath = getDocumentContextFromPath(documentTarget.filePath);
+  const context = {
+    projectId: resolvedNode.projectId,
+    nodeId: resolvedNode.nodeId,
+    kind: documentTarget.kind,
+    title: contextFromPath.title,
+    metaEnabled: ROMAN_META_KINDS.has(documentTarget.kind),
+  };
+  if (!context.metaEnabled) {
+    return {
+      ok: true,
+      state: 'unavailable',
+      context,
+      metadata: normalizeMetadataInspectorMeta(null),
+      wordCount: 0,
+      unavailableReason: 'METADATA_UNSUPPORTED_FOR_NODE',
+    };
+  }
+
+  const guard = sanitizePayloadWithinProjectRoot({ path: documentTarget.filePath }, ['path']);
+  if (!guard.ok || !guard.payload) {
+    return {
+      ok: true,
+      state: 'unavailable',
+      context,
+      metadata: normalizeMetadataInspectorMeta(null),
+      wordCount: 0,
+      unavailableReason: 'PATH_BOUNDARY_VIOLATION',
+    };
+  }
+
+  let content = '';
+  try {
+    content = await fs.readFile(guard.payload.path, 'utf8');
+  } catch (error) {
+    if (error && error.code !== 'ENOENT') logDevError('query.metadataInspector:fileRead', error);
+    return {
+      ok: true,
+      state: 'empty',
+      context,
+      metadata: normalizeMetadataInspectorMeta(null),
+      wordCount: 0,
+      unavailableReason: error && error.code === 'ENOENT' ? 'DOCUMENT_EMPTY' : 'DOCUMENT_READ_FAILED',
+    };
+  }
+
+  try {
+    const envelopeModule = await loadDocumentContentEnvelopeModule();
+    const parsed = envelopeModule.parseObservablePayload(content);
+    if (!parsed || parsed.issue) {
+      return {
+        ok: true,
+        state: 'unavailable',
+        context,
+        metadata: normalizeMetadataInspectorMeta(null),
+        wordCount: 0,
+        unavailableReason: 'DOCUMENT_PAYLOAD_INVALID',
+      };
+    }
+    return {
+      ok: true,
+      state: 'ready',
+      context,
+      metadata: normalizeMetadataInspectorMeta(parsed.meta),
+      wordCount: countMetadataInspectorWords(parsed.text),
+      unavailableReason: '',
+    };
+  } catch (error) {
+    logDevError('query.metadataInspector:parse', error);
+    return {
+      ok: true,
+      state: 'unavailable',
+      context,
+      metadata: normalizeMetadataInspectorMeta(null),
+      wordCount: 0,
+      unavailableReason: 'METADATA_READ_FAILED',
     };
   }
 }
@@ -14074,6 +14211,7 @@ const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.selectedScenesTxtExportScope',
   'query.collabScopeLocal',
   'query.reviewSurface',
+  'query.metadataInspector',
 ]);
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
@@ -15515,6 +15653,7 @@ module.exports = {
   handleUiRenameNodeCommand,
   handleUiReorderNodeCommand,
   handleUiMoveNodeCommand,
+  handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectTreeQuery,
   normalizeProjectManifest,
   persistBookProfileForFile,

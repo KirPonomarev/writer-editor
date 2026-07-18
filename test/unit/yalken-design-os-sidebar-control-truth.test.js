@@ -63,10 +63,17 @@ test('sidebar product truth: inspector projects live values and unopened surface
     'data-inspector-font-size',
     'data-inspector-line-height',
     'data-inspector-margins',
+    'data-inspector-meta-context',
+    'data-inspector-meta-status',
+    'data-inspector-meta-word-count',
+    'data-inspector-meta-synopsis',
+    'data-inspector-meta-tags',
   ]) {
     assert.ok(html.includes(hook), `missing live inspector hook: ${hook}`);
   }
   assert.ok(editor.includes('function syncInspectorBookProfileValues('));
+  assert.ok(editor.includes('function renderMetadataInspectorState('));
+  assert.ok(editor.includes("const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';"));
   assert.ok(editor.includes('if (inspectorFontValue) inspectorFontValue.textContent = fontLabel;'));
   assert.ok(editor.includes('if (!inspectorMarginsValue) return;'));
 
