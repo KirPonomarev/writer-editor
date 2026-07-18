@@ -36,6 +36,8 @@ import {
   buildFlowModeM9NextNoopSaveStatus,
   buildFlowSavePayload,
   composeFlowDocument,
+  composeFlowReadProjection,
+  findFlowProjectionSceneAtOffset,
   nextSceneCaretAtBoundary,
   previousSceneCaretAtBoundary,
 } from './commands/flowMode.mjs';
@@ -500,6 +502,7 @@ let rightRailOverlayReturnFocus = null;
 let flowModeState = {
   active: false,
   scenes: [],
+  projection: null,
   dirty: false,
 };
 let reviewSurfaceState = null;
@@ -6155,6 +6158,7 @@ function clearFlowModeState() {
   flowModeState = {
     active: false,
     scenes: [],
+    projection: null,
     dirty: false,
   };
 }
@@ -6165,13 +6169,41 @@ function normalizeFlowSceneRefs(rawScenes) {
     .map((scene) => {
       if (!scene || typeof scene !== 'object' || Array.isArray(scene)) return null;
       const path = typeof scene.path === 'string' ? scene.path : '';
+      const sceneId = typeof scene.sceneId === 'string' ? scene.sceneId : '';
+      const nodeId = typeof scene.nodeId === 'string' ? scene.nodeId : '';
       const title = typeof scene.title === 'string' ? scene.title : '';
       const kind = typeof scene.kind === 'string' ? scene.kind : 'scene';
       const content = typeof scene.content === 'string' ? scene.content : '';
-      if (!path) return null;
-      return { path, title, kind, content };
+      const missing = scene.missing === true;
+      const partial = missing || scene.partial === true;
+      if (!path && !sceneId && !nodeId) return null;
+      return { path, sceneId, nodeId, title, kind, content, missing, partial };
     })
     .filter(Boolean);
+}
+
+async function jumpToFlowProjectionSourceAtCaret() {
+  if (!flowModeState.active || !flowModeState.projection) return false;
+  const selection = getSelectionOffsets();
+  const source = findFlowProjectionSceneAtOffset(flowModeState.projection, selection.start);
+  if (!source || !source.nodeId || source.missing) {
+    updateStatusText('Непрерывно: исходная сцена недоступна');
+    return false;
+  }
+  const node = findTreeNodeById(treeRoot, source.nodeId);
+  if (!node) {
+    updateStatusText('Непрерывно: исходная сцена не найдена');
+    return false;
+  }
+  const opened = await openDocumentNode(node);
+  if (!opened) {
+    updateStatusText('Непрерывно: исходная сцена не открылась');
+    return false;
+  }
+  clearFlowModeState();
+  renderTree();
+  updateStatusText(`Открыта исходная сцена: ${source.title || 'Без названия'}`);
+  return true;
 }
 
 async function handleFlowModeOpenUiPath() {
@@ -6189,23 +6221,31 @@ async function handleFlowModeOpenUiPath() {
     return;
   }
 
+  const projection = composeFlowReadProjection(scenes);
+
   flowModeState = {
     active: true,
     scenes: scenes.map((scene) => ({
       path: scene.path,
+      sceneId: scene.sceneId,
+      nodeId: scene.nodeId,
       title: scene.title,
       kind: scene.kind,
+      missing: scene.missing,
+      partial: scene.partial,
       content: scene.content,
     })),
+    projection,
     dirty: false,
   };
 
-  setPlainText(composeFlowDocument(scenes));
+  setPlainText(projection.text || composeFlowDocument(scenes));
   updateWordCount();
   localDirty = false;
   await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
-  showEditorPanelFor('Flow mode');
-  updateStatusText(buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true }));
+  showEditorPanelFor('Непрерывно');
+  const partialSuffix = projection.partial ? ' · есть недоступные сцены' : '';
+  updateStatusText(`${buildFlowModeM9KickoffStatus('open', scenes.length, { m8Kickoff: true, m9Kickoff: true })}${partialSuffix}`);
 }
 
 async function handleFlowModeSaveUiPath() {
@@ -12271,6 +12311,11 @@ document.addEventListener('keydown', (event) => {
         first.focus({ preventScroll: true });
       }
     }
+    return;
+  }
+  if (flowModeState.active && event.altKey && event.key === 'Enter') {
+    event.preventDefault();
+    void jumpToFlowProjectionSourceAtCaret();
     return;
   }
   const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;

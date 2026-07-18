@@ -83,21 +83,27 @@ test('preload transfer and flow bridge: main bridge reuses existing export impor
   assert.ok(source.includes("ipcMain.handle(FLOW_SAVE_V1_CHANNEL, async (_, payload) => {\n  return handleFlowSaveV1(payload);\n});"))
 })
 
-test('preload transfer and flow bridge: flow open blocks stale batch state before tree read and scene creation', () => {
+test('preload transfer and flow bridge: flow open blocks stale batch state before tree read and keeps read projection path write-free', () => {
   const source = read('src/main.js')
 
   assert.ok(source.includes('async function getFlowBatchGuard(projectRoot) {'))
   assert.ok(source.includes("return makeFlowModeError(FLOW_OPEN_V1_CHANNEL, 'M7_FLOW_BATCH_STALE', 'flow_open_batch_recovery_required', {"))
+  assert.ok(source.includes('const flowIdentity = await buildFlowStableNodeIdMap();'))
+  assert.ok(source.includes('missing = true;'))
 
   const guardIndex = source.indexOf("flow_open_batch_recovery_required")
   const treeIndex = source.indexOf('const romanRoot = await buildRomanTree();')
-  const createIndex = source.indexOf("() => fileManager.writeFileAtomic(filePath, '')")
+  const openStart = source.indexOf('async function handleFlowOpenV1()')
+  const openEnd = source.indexOf('async function handleFlowSaveV1(payloadRaw)')
+  const openSource = source.slice(openStart, openEnd)
+  const createIndex = openSource.indexOf("() => fileManager.writeFileAtomic(filePath, '')")
 
   assert.notEqual(guardIndex, -1)
   assert.notEqual(treeIndex, -1)
-  assert.notEqual(createIndex, -1)
+  assert.notEqual(openStart, -1)
+  assert.notEqual(openEnd, -1)
   assert.ok(guardIndex < treeIndex)
-  assert.ok(guardIndex < createIndex)
+  assert.equal(createIndex, -1)
 })
 
 test('preload transfer and flow bridge: flow save blocks stale batch state and routes persistence through one batch helper call', () => {
