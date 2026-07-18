@@ -34,6 +34,7 @@ import {
   buildFlowModeM9KickoffStatus,
   buildFlowModeM9CoreSaveErrorStatus,
   buildFlowModeM9NextNoopSaveStatus,
+  buildFlowProjectionSavePayload,
   buildFlowSavePayload,
   composeFlowDocument,
   composeFlowReadProjection,
@@ -6171,13 +6172,14 @@ function normalizeFlowSceneRefs(rawScenes) {
       const path = typeof scene.path === 'string' ? scene.path : '';
       const sceneId = typeof scene.sceneId === 'string' ? scene.sceneId : '';
       const nodeId = typeof scene.nodeId === 'string' ? scene.nodeId : '';
+      const baselineHash = typeof scene.baselineHash === 'string' ? scene.baselineHash : '';
       const title = typeof scene.title === 'string' ? scene.title : '';
       const kind = typeof scene.kind === 'string' ? scene.kind : 'scene';
       const content = typeof scene.content === 'string' ? scene.content : '';
       const missing = scene.missing === true;
       const partial = missing || scene.partial === true;
       if (!path && !sceneId && !nodeId) return null;
-      return { path, sceneId, nodeId, title, kind, content, missing, partial };
+      return { path, sceneId, nodeId, baselineHash, title, kind, content, missing, partial };
     })
     .filter(Boolean);
 }
@@ -6229,6 +6231,7 @@ async function handleFlowModeOpenUiPath() {
       path: scene.path,
       sceneId: scene.sceneId,
       nodeId: scene.nodeId,
+      baselineHash: scene.baselineHash,
       title: scene.title,
       kind: scene.kind,
       missing: scene.missing,
@@ -6259,7 +6262,9 @@ async function handleFlowModeSaveUiPath() {
     return;
   }
 
-  const payload = buildFlowSavePayload(getPlainText(), flowModeState.scenes);
+  const payload = flowModeState.projection
+    ? buildFlowProjectionSavePayload(getPlainText(), flowModeState.scenes)
+    : buildFlowSavePayload(getPlainText(), flowModeState.scenes);
   if (!payload.ok) {
     updateStatusText(buildFlowModeM9CoreSaveErrorStatus(payload.error, flowModeState.scenes.length));
     return;

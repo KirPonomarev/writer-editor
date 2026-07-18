@@ -11046,6 +11046,7 @@ async function handleFlowOpenV1() {
         nodeId: descriptor.nodeId,
         title: descriptor.title,
         kind: descriptor.kind,
+        baselineHash: missing ? '' : computeHash(normalizeFlowTextInput(content)),
         missing,
         partial: missing,
         content: normalizeFlowTextInput(content),
@@ -11082,6 +11083,7 @@ async function handleFlowSaveV1(payloadRaw) {
     const romanRoot = await buildRomanTree();
     const allowedNodes = collectFlowEditableNodes(romanRoot, []);
     const allowed = new Map(allowedNodes.map((item) => [item.path, item]));
+    const flowIdentity = await buildFlowStableNodeIdMap();
 
     const normalizedScenes = [];
     for (const item of incomingScenes) {
@@ -11107,6 +11109,43 @@ async function handleFlowSaveV1(payloadRaw) {
       if (!safeScenePath || !allowed.has(safeScenePath)) {
         return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_PATH_FORBIDDEN', 'flow_save_path_forbidden', {
           path: safeScenePath || scenePath,
+        });
+      }
+      const descriptor = buildFlowSceneReadDescriptor(allowed.get(safeScenePath), flowIdentity);
+      const sceneId = typeof item.sceneId === 'string' ? item.sceneId.trim() : '';
+      const nodeId = typeof item.nodeId === 'string' ? item.nodeId.trim() : '';
+      const baselineHash = typeof item.baselineHash === 'string' ? item.baselineHash.trim().toLowerCase() : '';
+      if (!sceneId || sceneId !== descriptor.sceneId) {
+        return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M15_FLOW_SCENE_ID_MISMATCH', 'flow_scene_id_mismatch', {
+          sceneId,
+        });
+      }
+      if (nodeId && descriptor.nodeId && nodeId !== descriptor.nodeId) {
+        return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M15_FLOW_NODE_ID_MISMATCH', 'flow_node_id_mismatch', {
+          sceneId,
+          nodeId,
+        });
+      }
+      if (!/^[a-f0-9]{64}$/u.test(baselineHash)) {
+        return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M15_FLOW_BASELINE_HASH_MISSING', 'flow_scene_baseline_hash_missing', {
+          sceneId,
+        });
+      }
+      let currentContent = '';
+      try {
+        currentContent = await fs.readFile(safeScenePath, 'utf8');
+      } catch (error) {
+        return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M15_FLOW_SOURCE_MISSING', 'flow_scene_missing', {
+          sceneId,
+          message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        });
+      }
+      const currentHash = computeHash(normalizeFlowTextInput(currentContent));
+      if (currentHash !== baselineHash) {
+        return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M15_FLOW_STALE_SOURCE', 'flow_stale_source', {
+          sceneId,
+          expectedHash: baselineHash,
+          currentHash,
         });
       }
       normalizedScenes.push({
