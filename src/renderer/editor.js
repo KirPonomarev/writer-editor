@@ -355,8 +355,48 @@ const FLOATING_TOOLBAR_ITEM_SNAP_THRESHOLD_PX = 10;
 const FLOATING_TOOLBAR_VISIBLE_STRIP_PX = 56;
 const FLOATING_TOOLBAR_SCALE_MIN = 0.5;
 const FLOATING_TOOLBAR_SCALE_MAX = 2.0;
+const FLOATING_TOOLBAR_SCALE_STEP = 0.05;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MIN = 0.1;
 const FLOATING_TOOLBAR_WIDTH_SCALE_MAX = 2.0;
+const FLOATING_TOOLBAR_METRIC_BASE_PX = Object.freeze({
+  '--toolbar-chrome-gap-xxs': 4,
+  '--toolbar-chrome-gap-xs': 6,
+  '--toolbar-chrome-gap-sm': 8,
+  '--toolbar-chrome-gap-md': 12,
+  '--toolbar-chrome-gap-lg': 16,
+  '--toolbar-chrome-row-height': 48,
+  '--toolbar-chrome-pad-x': 24,
+  '--toolbar-chrome-item-gap': 10,
+  '--toolbar-chrome-group-gap': 20,
+  '--toolbar-chrome-separator-gap': 12,
+  '--toolbar-chrome-control-height': 28,
+  '--toolbar-chrome-control-height-large': 32,
+  '--toolbar-chrome-control-text-height': 32,
+  '--toolbar-chrome-control-pad-x': 12,
+  '--toolbar-chrome-chevron-gap': 8,
+  '--toolbar-chrome-slot-icon': 28,
+  '--toolbar-chrome-slot-icon-wide': 40,
+  '--toolbar-chrome-slot-short': 56,
+  '--toolbar-chrome-slot-medium': 72,
+  '--toolbar-chrome-slot-long': 104,
+  '--toolbar-chrome-slot-xlong': 136,
+  '--toolbar-chrome-vertical-panel-width': 160,
+  '--toolbar-chrome-vertical-pad': 12,
+  '--toolbar-chrome-icon-size': 16,
+  '--toolbar-chrome-utility-icon-size': 14,
+  '--toolbar-chrome-caret-size': 10,
+  '--toolbar-chrome-radius-button': 10,
+  '--toolbar-chrome-radius-control': 10,
+  '--floating-toolbar-control-font-size': 13,
+  '--floating-toolbar-control-line-height': 17,
+  '--floating-toolbar-display-icon-pad-x': 8,
+  '--floating-toolbar-select-icon-size': 12,
+  '--floating-toolbar-swatch-size': 14,
+  '--floating-toolbar-swatch-radius': 4,
+  '--floating-toolbar-list-caret-size': 8,
+  '--floating-toolbar-vertical-field-pad-x': 10,
+  '--floating-toolbar-separator-block-margin': 2,
+});
 const FONT_WEIGHT_PRESETS = Object.freeze({
   light: { weight: '300', stretch: 'normal', spacing: '0em' },
   regular: { weight: '400', stretch: 'normal', spacing: '0em' },
@@ -461,6 +501,9 @@ let floatingToolbarSuppressClickOnce = false;
 let toolbarItemSuppressClickOnce = false;
 let toolbarSpacingTuningMode = false;
 let toolbarAnchorFrameId = 0;
+let floatingToolbarMetricScaleSignature = '';
+let floatingToolbarScaleFrameId = 0;
+let pendingFloatingToolbarScaleState = null;
 let toolbarItemOffsets = {};
 let toolbarItemOffsetDragState = {
   active: false,
@@ -3185,14 +3228,46 @@ function clampFloatingToolbarWidthScale(widthScale, isVertical = false) {
 }
 
 function clampFloatingToolbarScale(scale) {
-  return Math.min(
+  const clamped = Math.min(
     Math.max(scale, FLOATING_TOOLBAR_SCALE_MIN),
     FLOATING_TOOLBAR_SCALE_MAX
   );
+  const stepped = Math.round(clamped / FLOATING_TOOLBAR_SCALE_STEP) * FLOATING_TOOLBAR_SCALE_STEP;
+  return Number(Math.min(
+    Math.max(stepped, FLOATING_TOOLBAR_SCALE_MIN),
+    FLOATING_TOOLBAR_SCALE_MAX
+  ).toFixed(2));
 }
 
-function getFloatingToolbarScale() {
-  return Math.max(Number(floatingToolbarState.scale) || 1, 0.001);
+function getFloatingToolbarDevicePixelStep() {
+  const devicePixelRatio = Number(window.devicePixelRatio);
+  const boundedRatio = Number.isFinite(devicePixelRatio)
+    ? Math.min(Math.max(devicePixelRatio, 1), 4)
+    : 1;
+  return 1 / boundedRatio;
+}
+
+function snapFloatingToolbarMetric(value, step = getFloatingToolbarDevicePixelStep()) {
+  return Math.round(value / step) * step;
+}
+
+function formatFloatingToolbarMetric(value) {
+  return Number.isInteger(value)
+    ? String(value)
+    : value.toFixed(3).replace(/0+$/u, '').replace(/\.$/u, '');
+}
+
+function applyFloatingToolbarMetricScale() {
+  if (!toolbarShell) return;
+  const scale = clampFloatingToolbarScale(floatingToolbarState.scale);
+  const devicePixelStep = getFloatingToolbarDevicePixelStep();
+  const signature = `${scale}:${devicePixelStep}`;
+  if (signature === floatingToolbarMetricScaleSignature) return;
+  for (const [name, baseValue] of Object.entries(FLOATING_TOOLBAR_METRIC_BASE_PX)) {
+    const scaledValue = snapFloatingToolbarMetric(baseValue * scale, devicePixelStep);
+    toolbarShell.style.setProperty(name, `${formatFloatingToolbarMetric(scaledValue)}px`);
+  }
+  floatingToolbarMetricScaleSignature = signature;
 }
 
 function readFloatingToolbarState() {
@@ -3263,7 +3338,8 @@ function applyFloatingToolbarItemOffsets() {
   toolbarTunableItems.forEach((item) => {
     const key = getFloatingToolbarItemOffsetKey(item);
     const offset = floatingToolbarState.isDetached ? Number(toolbarItemOffsets[key] || 0) : 0;
-    item.style.setProperty('--floating-toolbar-offset-x', `${offset}px`);
+    const scaledOffset = snapFloatingToolbarMetric(offset * floatingToolbarState.scale);
+    item.style.setProperty('--floating-toolbar-offset-x', `${formatFloatingToolbarMetric(scaledOffset)}px`);
   });
   scheduleToolbarAnchorUpdate();
 }
@@ -3321,17 +3397,15 @@ function setToolbarSpacingMenuOpen(nextOpen) {
   setToolbarColorPickerOpen(false);
   setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
-  const shellScale = getFloatingToolbarScale();
   toolbarSpacingMenu.hidden = false;
   const menuRect = toolbarSpacingMenu.getBoundingClientRect();
-  const menuWidth = menuRect.width / shellScale;
   const clusterLeft = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-left')) || 0;
   const clusterRight = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-right')) || 0;
   const clusterBottom = Number.parseFloat(toolbarShell.style.getPropertyValue('--floating-toolbar-cluster-bottom')) || 0;
   const clusterCenterX = clusterLeft + ((clusterRight - clusterLeft) / 2);
-  const desiredLeft = clusterCenterX - (menuWidth / 2);
+  const desiredLeft = clusterCenterX - (menuRect.width / 2);
   const desiredTop = clusterBottom + 18;
-  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
+  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
   const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
   const nextTop = Math.round(desiredTop);
   toolbarSpacingMenu.style.left = `${nextLeft}px`;
@@ -3350,14 +3424,12 @@ function setParagraphMenuOpen(nextOpen) {
   setToolbarColorPickerOpen(false);
   setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
-  const shellScale = getFloatingToolbarScale();
   const triggerRect = paragraphTriggerButton.getBoundingClientRect();
   paragraphMenu.hidden = false;
   const menuRect = paragraphMenu.getBoundingClientRect();
-  const menuWidth = menuRect.width / shellScale;
-  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
-  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
-  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
+  const desiredLeft = triggerRect.left - shellRect.left;
+  const desiredTop = (triggerRect.bottom - shellRect.top) + 10;
+  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
   const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
   const nextTop = Math.round(desiredTop);
   paragraphMenu.style.left = `${nextLeft}px`;
@@ -3377,14 +3449,12 @@ function setListMenuOpen(nextOpen) {
   setToolbarColorPickerOpen(false);
   setToolbarStylesMenuOpen(false);
   const shellRect = toolbarShell.getBoundingClientRect();
-  const shellScale = getFloatingToolbarScale();
   const triggerRect = listTriggerButton.getBoundingClientRect();
   listMenu.hidden = false;
   const menuRect = listMenu.getBoundingClientRect();
-  const menuWidth = menuRect.width / shellScale;
-  const desiredLeft = (triggerRect.left - shellRect.left) / shellScale;
-  const desiredTop = ((triggerRect.bottom - shellRect.top) / shellScale) + 10;
-  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
+  const desiredLeft = triggerRect.left - shellRect.left;
+  const desiredTop = (triggerRect.bottom - shellRect.top) + 10;
+  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
   const nextLeft = Math.round(Math.min(Math.max(desiredLeft, 0), maxLeft));
   const nextTop = Math.round(desiredTop);
   listMenu.style.left = `${nextLeft}px`;
@@ -3430,16 +3500,14 @@ function setToolbarStylesMenuOpen(nextOpen, nextAnchor = toolbarStylesMenuState.
   const anchorButton = getToolbarStylesAnchorButton(anchor);
   if (!(anchorButton instanceof HTMLElement)) return;
   const shellRect = toolbarShell.getBoundingClientRect();
-  const shellScale = getFloatingToolbarScale();
   const triggerRect = anchorButton.getBoundingClientRect();
   toolbarStylesMenu.hidden = false;
   toolbarStylesMenu.setAttribute('aria-hidden', 'false');
   const menuRect = toolbarStylesMenu.getBoundingClientRect();
-  const menuWidth = menuRect.width / shellScale;
-  const rawLeft = ((triggerRect.left - shellRect.left) / shellScale) + (((triggerRect.width / shellScale) - menuWidth) / 2);
-  const maxLeft = Math.max(0, (shellRect.width / shellScale) - menuWidth);
+  const rawLeft = (triggerRect.left - shellRect.left) + ((triggerRect.width - menuRect.width) / 2);
+  const maxLeft = Math.max(0, shellRect.width - menuRect.width);
   const nextLeft = Math.round(Math.min(Math.max(rawLeft, 0), maxLeft));
-  const nextTop = Math.round(((triggerRect.bottom - shellRect.top) / shellScale) + 10);
+  const nextTop = Math.round((triggerRect.bottom - shellRect.top) + 10);
   toolbarStylesMenu.style.left = `${nextLeft}px`;
   toolbarStylesMenu.style.top = `${nextTop}px`;
   toolbarStylesMenuState = {
@@ -3490,7 +3558,6 @@ function setToolbarAnchorVar(host, name, value) {
 function updateToolbarAnchorVars() {
   if (!toolbarShell || !toolbarTunableItems.length) return;
   const shellRect = toolbarShell.getBoundingClientRect();
-  const shellScale = getFloatingToolbarScale();
   const itemRects = toolbarTunableItems
     .map((item) => item.getBoundingClientRect())
     .filter((rect) => rect.width > 0 && rect.height > 0);
@@ -3506,10 +3573,10 @@ function updateToolbarAnchorVars() {
     top: itemRects[0].top,
     bottom: itemRects[0].bottom,
   });
-  const localLeft = (bounds.left - shellRect.left) / shellScale;
-  const localRight = (bounds.right - shellRect.left) / shellScale;
-  const localTop = (bounds.top - shellRect.top) / shellScale;
-  const localBottom = (bounds.bottom - shellRect.top) / shellScale;
+  const localLeft = bounds.left - shellRect.left;
+  const localRight = bounds.right - shellRect.left;
+  const localTop = bounds.top - shellRect.top;
+  const localBottom = bounds.bottom - shellRect.top;
   setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-left', localLeft);
   setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-right', localRight);
   setToolbarAnchorVar(toolbarShell, '--floating-toolbar-cluster-top', localTop);
@@ -3714,6 +3781,7 @@ function applyFloatingToolbarVisualState() {
   if (!toolbarShell) return;
   toolbarShell.style.transform = 'none';
   toolbarShell.style.setProperty('--floating-toolbar-scale', String(floatingToolbarState.scale));
+  applyFloatingToolbarMetricScale();
   toolbarShell.style.setProperty(
     '--floating-toolbar-width-scale',
     String(floatingToolbarState.isDetached ? floatingToolbarState.freeWidthScale : floatingToolbarState.dockedWidthScale)
@@ -5186,8 +5254,36 @@ function startFloatingToolbarInteraction(mode, event) {
   updateTransformingClass();
 }
 
+function flushPendingFloatingToolbarScaleState() {
+  if (floatingToolbarScaleFrameId) {
+    cancelAnimationFrame(floatingToolbarScaleFrameId);
+    floatingToolbarScaleFrameId = 0;
+  }
+  const pendingState = pendingFloatingToolbarScaleState;
+  pendingFloatingToolbarScaleState = null;
+  if (pendingState) {
+    applyFloatingToolbarState(pendingState, false);
+  }
+}
+
+function scheduleFloatingToolbarScaleState(nextState) {
+  pendingFloatingToolbarScaleState = nextState;
+  if (floatingToolbarScaleFrameId) return;
+  floatingToolbarScaleFrameId = requestAnimationFrame(() => {
+    floatingToolbarScaleFrameId = 0;
+    const pendingState = pendingFloatingToolbarScaleState;
+    pendingFloatingToolbarScaleState = null;
+    if (pendingState) {
+      applyFloatingToolbarState(pendingState, false);
+    }
+  });
+}
+
 function stopFloatingToolbarInteraction() {
   if (!toolbarShell) return;
+  if (floatingToolbarInteractionState.mode === 'scale') {
+    flushPendingFloatingToolbarScaleState();
+  }
   if (floatingToolbarInteractionState.mode) {
     persistFloatingToolbarState();
   }
@@ -5247,7 +5343,7 @@ function initializeFloatingToolbarItemOffsetTuning() {
     }
     setFloatingToolbarItemOffset(
       toolbarItemOffsetDragState.item,
-      toolbarItemOffsetDragState.originOffset + deltaX,
+      toolbarItemOffsetDragState.originOffset + (deltaX / floatingToolbarState.scale),
       false
     );
     event.preventDefault();
@@ -5547,10 +5643,10 @@ function initializeFloatingToolbarDragFoundation() {
     } else if (mode === 'scale') {
       floatingToolbarInteractionState.active = true;
       const scaleDelta = (origin.isVertical ? deltaY : deltaX) * 0.01;
-      applyFloatingToolbarState({
+      scheduleFloatingToolbarScaleState({
         ...origin,
         scale: origin.scale + scaleDelta,
-      }, false);
+      });
     }
     event.preventDefault();
   });
@@ -10442,14 +10538,12 @@ function positionToolbarColorPickerOverlay() {
   if (!(anchorButton instanceof HTMLElement)) return;
 
   const shellRect = toolbarShell.getBoundingClientRect();
-  const shellScale = getFloatingToolbarScale();
   const anchorRect = anchorButton.getBoundingClientRect();
   const overlayRect = toolbarColorPickerOverlay.getBoundingClientRect();
-  const overlayWidth = overlayRect.width / shellScale;
-  const rawLeft = ((anchorRect.left - shellRect.left) / shellScale) + (((anchorRect.width / shellScale) - overlayWidth) / 2);
-  const maxLeft = Math.max(0, (shellRect.width / shellScale) - overlayWidth);
+  const rawLeft = anchorRect.left - shellRect.left + ((anchorRect.width - overlayRect.width) / 2);
+  const maxLeft = Math.max(0, shellRect.width - overlayRect.width);
   const left = Math.min(Math.max(0, rawLeft), maxLeft);
-  const top = ((anchorRect.bottom - shellRect.top) / shellScale) + 10;
+  const top = anchorRect.bottom - shellRect.top + 10;
   toolbarColorPickerOverlay.style.left = `${left}px`;
   toolbarColorPickerOverlay.style.top = `${top}px`;
 }

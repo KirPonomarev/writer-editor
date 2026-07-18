@@ -67,3 +67,12 @@
 - Риск: Chromium layout zoom может изменить геометрию popup anchors, hit targets и позиционное ограничение панели на крайних значениях.
 - Rollback: откатить commit контура; сохранённый ключ scale останется совместимым и будет безопасно проигнорирован старым runtime.
 - План удаления исключения: после визуального и interaction gate закрепить независимый scale как текущий Design OS contract и перевести запись из временного исключения в каноническое описание панели; при провале sharpness gate вернуть descale.
+
+## 2026-07-18 — Main Toolbar Layout Zoom Exception Resolution
+
+- Контекст: owner visual review подтвердил потерю резкости и смешение content, popup и transform-handle layers при масштабировании всей shell через Chromium layout zoom.
+- Что нарушаем: новых исключений не вводится; этот контур закрывает временный layout-zoom implementation path из предыдущей записи, сохраняя owner-approved scale contract.
+- Причина: основная панель уже имеет scoped chrome tokens, поэтому равномерный размер можно проецировать как DPR-snapped реальные метрики без растягивания готовой shell.
+- Риск: неполная карта метрик могла бы оставить отдельный control несогласованного размера; popup anchors и сохранённые item offsets требуют отдельной проверки после удаления zoom coordinates.
+- Rollback: откатить metric-scale contour к предыдущему layout-zoom runtime, не меняя сохранённые scale и widthScale state keys.
+- План удаления исключения: предыдущий layout-zoom риск считается закрытым после renderer, interaction, persistence и visual sharpness gates; постоянный контракт — metric scale для body layer и native scale для popup и transform layers.

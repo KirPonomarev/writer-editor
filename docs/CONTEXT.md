@@ -186,7 +186,8 @@
 - contour `TOOLBAR_NATIVE_FLUENCY_VISUAL_REFINE_001` is merged on main from commit `59c398d8ba02390fff5dc0a435f26d1f142fbb7a` via PR `750`
 - owner-approved contour `TOOLBAR_UNIFORM_SCALE_RESTORE_001` restores independent 0.5x–2.0x uniform scale for the main formatting toolbar in horizontal and vertical orientations
 - width-scale remains a separate metric tuning path; uniform scale does not affect the editor sheet or the left system toolbar
-- native fluency toolbar contract remains enforced: no transform-scale shell path and no blur trick; uniform scale uses the layout-zoom channel
+- contour `TOOLBAR_METRIC_SCALE_SHARPNESS_001` replaces shell layout zoom with DPR-snapped real chrome metrics while preserving the same 0.5x–2.0x state contract
+- native fluency toolbar contract remains enforced: no transform-scale, no layout-zoom stretch and no blur trick; popup menus and transform handles remain native-scale layers
 - targeted toolbar verification for both contours is pass and independent post-audit is pass
 - required checks on both merged PRs passed: `oss-policy`, `x1-runtime-parity (ubuntu-latest)`, `x1-runtime-parity (windows-latest)`
 - this closeout does not open any automatic runtime contour; next move remains exactly one explicit owner-selected contour

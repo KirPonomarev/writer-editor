@@ -32,6 +32,7 @@ test('sector-m toolbar metric shell scale: main scale and width are independent 
 
   assert.ok(mainVisualSnippet.includes("'--floating-toolbar-width-scale',"));
   assert.ok(mainVisualSnippet.includes("toolbarShell.style.setProperty('--floating-toolbar-scale', String(floatingToolbarState.scale));"));
+  assert.ok(mainVisualSnippet.includes('applyFloatingToolbarMetricScale();'));
   assert.ok(mainVisualSnippet.includes("toolbarShell.style.transform = 'none';"));
 
   assert.ok(leftVisualSnippet.includes("leftToolbarShell.style.setProperty('--left-toolbar-width-scale', String(leftFloatingToolbarState.widthScale));"));
@@ -73,16 +74,18 @@ test('sector-m toolbar metric shell scale: vertical width and uniform scale reta
   const scaleClampSnippet = sliceSection(
     source,
     'function clampFloatingToolbarScale(scale) {',
-    'function getFloatingToolbarScale() {'
+    'function getFloatingToolbarDevicePixelStep() {'
   );
 
   assert.ok(widthClampSnippet.includes('const minimumWidthScale = isVertical ? 1 : FLOATING_TOOLBAR_WIDTH_SCALE_MIN;'));
   assert.ok(widthClampSnippet.includes('Math.max(widthScale, minimumWidthScale)'));
   assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_MIN'));
   assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_MAX'));
+  assert.ok(scaleClampSnippet.includes('FLOATING_TOOLBAR_SCALE_STEP'));
+  assert.ok(scaleClampSnippet.includes('.toFixed(2)'));
 });
 
-test('sector-m toolbar metric shell scale: scaled popup and anchor math stays in shell-local coordinates', () => {
+test('sector-m toolbar metric shell scale: native popup and anchor math stays in unscaled shell coordinates', () => {
   const source = readFile('src', 'renderer', 'editor.js');
   const paragraphSnippet = sliceSection(
     source,
@@ -100,10 +103,13 @@ test('sector-m toolbar metric shell scale: scaled popup and anchor math stays in
     'function syncToolbarShellState() {'
   );
 
-  assert.ok(paragraphSnippet.includes('const shellScale = getFloatingToolbarScale();'));
-  assert.ok(paragraphSnippet.includes('(triggerRect.left - shellRect.left) / shellScale'));
-  assert.ok(anchorSnippet.includes('(bounds.left - shellRect.left) / shellScale'));
-  assert.ok(colorSnippet.includes('const overlayWidth = overlayRect.width / shellScale;'));
+  assert.equal(source.includes('function getFloatingToolbarScale() {'), false);
+  assert.equal(paragraphSnippet.includes('shellScale'), false);
+  assert.ok(paragraphSnippet.includes('const desiredLeft = triggerRect.left - shellRect.left;'));
+  assert.ok(anchorSnippet.includes('const localLeft = bounds.left - shellRect.left;'));
+  assert.equal(anchorSnippet.includes('/ shellScale'), false);
+  assert.ok(colorSnippet.includes('const rawLeft = anchorRect.left - shellRect.left + ((anchorRect.width - overlayRect.width) / 2);'));
+  assert.equal(colorSnippet.includes('shellScale'), false);
 });
 
 test('sector-m toolbar metric shell scale: css keeps sharp shells and metric channels', () => {
@@ -117,7 +123,10 @@ test('sector-m toolbar metric shell scale: css keeps sharp shells and metric cha
   assert.ok(mainShellSection.includes('transform: none;'));
   assert.equal(leftShellSection.includes('transform: scale('), false);
   assert.equal(mainShellSection.includes('transform: scale('), false);
-  assert.ok(mainShellSection.includes('zoom: var(--floating-toolbar-scale);'));
+  assert.ok(mainShellSection.includes('zoom: 1;'));
+  assert.equal(mainShellSection.includes('zoom: var(--floating-toolbar-scale);'), false);
   assert.ok(styles.includes('width: calc(var(--toolbar-chrome-slot-long) * var(--floating-toolbar-width-scale));'));
   assert.ok(styles.includes('gap: calc(12px * var(--left-toolbar-width-scale));'));
+  assert.ok(styles.includes('width: 28px;'));
+  assert.ok(styles.includes('height: 28px;'));
 });
