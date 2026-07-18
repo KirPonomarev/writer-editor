@@ -134,6 +134,7 @@ export function buildSidebarLayoutModel(source = {}, options = {}) {
     ? options.viewportMode
     : deriveSidebarViewportMode(viewportWidth);
   const config = getRailWidthConfig(viewportMode);
+  const leftRailMode = viewportMode === 'mobile' ? 'overlay' : 'docked';
   const rightVisible = options.rightVisible !== false
     && config.rightVisible !== false
     && viewportWidth >= config.dualRailMinViewportWidth;
@@ -176,6 +177,7 @@ export function buildSidebarLayoutModel(source = {}, options = {}) {
   return {
     viewportWidth,
     viewportMode,
+    leftRailMode,
     layoutVariant: rightVisible ? 'dual' : 'single',
     rightVisible,
     leftCollapsed,
@@ -184,6 +186,7 @@ export function buildSidebarLayoutModel(source = {}, options = {}) {
     rightSidebarWidth: rightWidth,
     constraints: {
       leftCollapsedWidth: LEFT_RAIL_COLLAPSED_WIDTH,
+      leftRailMode,
       leftMin: config.leftMin,
       leftMax: config.leftMax,
       rightMin: config.rightMin,

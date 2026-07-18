@@ -1868,7 +1868,9 @@ body {
 
 .app-layout {
   display: grid;
+  position: relative;
   --app-left-sidebar-collapsed-width: 48px;
+  --app-left-sidebar-expanded-width: 290px;
   --app-left-sidebar-width: 290px;
   --app-right-sidebar-width: 290px;
   grid-template-columns: minmax(250px, var(--app-left-sidebar-width)) minmax(640px, 1fr) minmax(280px, var(--app-right-sidebar-width));
@@ -2928,6 +2930,20 @@ body.dark-theme .toolbar__swatch::before {
 
 .sidebar--left.is-collapsed .left-rail-collapse-button__icon {
   transform: rotate(180deg);
+}
+
+.left-rail-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  padding: 0;
+  border: 0;
+  background: rgba(29, 27, 25, 0.14);
+  cursor: default;
+}
+
+.left-rail-overlay-backdrop[hidden] {
+  display: none;
 }
 
 .sidebar--left .toolbar__row--secondary {
@@ -4878,7 +4894,25 @@ body.dark-theme .status-bar {
 
   .app-layout {
     --app-left-sidebar-width: 240px;
-    grid-template-columns: minmax(200px, var(--app-left-sidebar-width)) minmax(0, 1fr);
+  }
+
+  .app-layout[data-left-rail-mode="overlay"] {
+    grid-template-columns: var(--app-left-sidebar-collapsed-width) minmax(0, 1fr);
+  }
+
+  .app-layout[data-left-rail-mode="overlay"] .sidebar--left.is-overlay-mode.is-overlay-open {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 5;
+    width: min(
+      var(--app-left-sidebar-expanded-width),
+      calc(100% - var(--app-left-sidebar-collapsed-width) - 16px)
+    );
+    max-width: calc(100% - var(--app-left-sidebar-collapsed-width) - 16px);
+    overflow: hidden;
+    background: var(--background);
+    box-shadow: 12px 0 28px rgba(29, 27, 25, 0.16);
+    transition: box-shadow 0.16s ease;
   }
 
   .sidebar--right {
@@ -4922,7 +4956,8 @@ body.dark-theme .status-bar {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .left-rail-collapse-button__icon {
+  .left-rail-collapse-button__icon,
+  .app-layout[data-left-rail-mode="overlay"] .sidebar--left.is-overlay-mode.is-overlay-open {
     transition: none;
   }
 }

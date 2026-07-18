@@ -151,6 +151,7 @@ const editorPanel = document.querySelector('.editor-panel');
 const sidebar = document.querySelector('.sidebar');
 const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
 const leftRailCollapseButton = document.querySelector('[data-left-rail-collapse]');
+const leftRailOverlayBackdrop = document.querySelector('[data-left-rail-overlay-backdrop]');
 const rightSidebarResizer = document.querySelector('[data-right-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
@@ -482,6 +483,9 @@ let currentProjectId = '';
 let activeDocumentRevealRequested = false;
 let navigatorSelectionState = createNavigatorSelectionState();
 let spatialLayoutState = null;
+let leftRailAdaptiveMode = '';
+let leftRailOverlayOpen = false;
+let leftRailOverlayReturnFocus = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -7058,6 +7062,7 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
     layoutVariant: model.layoutVariant,
     rightVisible: model.rightVisible,
     leftCollapsed: model.leftCollapsed,
+    leftRailMode: model.leftRailMode,
   };
 }
 
@@ -7142,33 +7147,57 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   const normalizedState = normalizeSpatialLayoutState(state, viewportWidth);
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
   const rightVisible = constraints.rightVisible;
+  const previousAdaptiveMode = leftRailAdaptiveMode;
+  const overlayMode = constraints.leftRailMode === 'overlay';
+  if (previousAdaptiveMode && previousAdaptiveMode !== constraints.leftRailMode) {
+    leftRailOverlayOpen = false;
+    leftRailOverlayReturnFocus = null;
+  }
+  leftRailAdaptiveMode = constraints.leftRailMode;
+  const effectiveLeftCollapsed = overlayMode
+    ? !leftRailOverlayOpen
+    : normalizedState.leftCollapsed;
   const layoutPatch = buildLayoutPatchFromSpatialState(normalizedState, {
     viewportWidth,
     viewportHeight: Math.max(0, Math.floor(window.innerHeight || document.documentElement.clientHeight || 0)),
     shellMode: constraints.mode === 'compact' ? 'COMPACT_DOCKED' : 'CALM_DOCKED',
     viewportMode: constraints.mode,
     rightVisible,
-    leftCollapsed: normalizedState.leftCollapsed,
+    leftCollapsed: effectiveLeftCollapsed,
   });
 
   if (appLayout) {
     appLayout.style.setProperty('--app-left-sidebar-collapsed-width', `${LEFT_RAIL_COLLAPSED_WIDTH}px`);
+    appLayout.style.setProperty('--app-left-sidebar-expanded-width', `${normalizedState.leftSidebarWidth}px`);
     appLayout.style.setProperty('--app-left-sidebar-width', `${layoutPatch.left_width}px`);
     appLayout.style.setProperty('--app-right-sidebar-width', `${layoutPatch.right_width}px`);
     appLayout.dataset.sidebarLayout = constraints.layoutVariant;
-    appLayout.dataset.leftRailCollapsed = normalizedState.leftCollapsed ? 'true' : 'false';
+    appLayout.dataset.leftRailCollapsed = effectiveLeftCollapsed ? 'true' : 'false';
+    appLayout.dataset.leftRailMode = constraints.leftRailMode;
+    appLayout.dataset.leftRailOverlayOpen = overlayMode && leftRailOverlayOpen ? 'true' : 'false';
   }
 
-  sidebar?.classList.toggle('is-collapsed', normalizedState.leftCollapsed);
+  sidebar?.classList.toggle('is-collapsed', effectiveLeftCollapsed);
+  sidebar?.classList.toggle('is-overlay-mode', overlayMode);
+  sidebar?.classList.toggle('is-overlay-open', overlayMode && leftRailOverlayOpen);
   if (leftRailCollapseButton) {
-    const expanded = !normalizedState.leftCollapsed;
-    const label = expanded ? 'Свернуть навигатор' : 'Показать навигатор';
+    const expanded = !effectiveLeftCollapsed;
+    const label = overlayMode
+      ? expanded ? 'Закрыть навигатор' : 'Показать навигатор'
+      : expanded ? 'Свернуть навигатор' : 'Показать навигатор';
     leftRailCollapseButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     leftRailCollapseButton.setAttribute('aria-label', label);
     leftRailCollapseButton.title = label;
   }
   if (sidebarResizer) {
-    sidebarResizer.hidden = normalizedState.leftCollapsed;
+    sidebarResizer.hidden = overlayMode || normalizedState.leftCollapsed;
+  }
+  if (leftRailOverlayBackdrop) {
+    leftRailOverlayBackdrop.hidden = !overlayMode || !leftRailOverlayOpen;
+    leftRailOverlayBackdrop.setAttribute('aria-hidden', overlayMode && leftRailOverlayOpen ? 'false' : 'true');
+  }
+  if (mainContent) {
+    mainContent.inert = overlayMode && leftRailOverlayOpen;
   }
 
   if (rightSidebar) {
@@ -7220,7 +7249,46 @@ function setLeftRailCollapsed(collapsed, { persist = true, restoreFocus = true }
   return applied;
 }
 
+function getLeftRailOverlayFocusableElements() {
+  if (!sidebar || !leftRailOverlayOpen) return [];
+  return Array.from(sidebar.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+    .filter((element) => !element.hidden && !element.disabled && element.getClientRects().length > 0);
+}
+
+function setLeftRailOverlayOpen(open, { restoreFocus = true } = {}) {
+  const constraints = getSpatialLayoutConstraintsForViewport();
+  if (constraints.leftRailMode !== 'overlay') return spatialLayoutState;
+  const nextOpen = open === true;
+  if (nextOpen === leftRailOverlayOpen) return spatialLayoutState;
+  if (nextOpen) {
+    const activeElement = document.activeElement;
+    leftRailOverlayReturnFocus = activeElement instanceof HTMLElement ? activeElement : leftRailCollapseButton;
+  }
+  const returnFocusTarget = leftRailOverlayReturnFocus;
+  leftRailOverlayOpen = nextOpen;
+  applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
+    persist: false,
+    projectId: currentProjectId,
+  });
+  scheduleLayoutRefresh();
+  requestAnimationFrame(() => {
+    if (nextOpen) {
+      (getLeftRailOverlayFocusableElements()[0] || leftRailCollapseButton)?.focus({ preventScroll: true });
+      return;
+    }
+    if (restoreFocus) {
+      const target = returnFocusTarget?.isConnected ? returnFocusTarget : leftRailCollapseButton;
+      target?.focus({ preventScroll: true });
+    }
+    leftRailOverlayReturnFocus = null;
+  });
+  return spatialLayoutState;
+}
+
 function toggleLeftRailCollapsed() {
+  if (getSpatialLayoutConstraintsForViewport().leftRailMode === 'overlay') {
+    return setLeftRailOverlayOpen(!leftRailOverlayOpen);
+  }
   const currentState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
   return setLeftRailCollapsed(currentState.leftCollapsed !== true);
 }
@@ -11342,6 +11410,9 @@ function handleUiAction(action) {
     case 'toggle-left-rail':
       toggleLeftRailCollapsed();
       return true;
+    case 'close-left-rail-overlay':
+      setLeftRailOverlayOpen(false);
+      return true;
     case 'open-diagnostics':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
       return true;
@@ -11658,6 +11729,27 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && configuratorPanel && !configuratorPanel.hidden) {
     event.preventDefault();
     setConfiguratorOpen(false);
+    return;
+  }
+  if (event.key === 'Escape' && leftRailOverlayOpen) {
+    event.preventDefault();
+    event.stopPropagation();
+    setLeftRailOverlayOpen(false);
+    return;
+  }
+  if (event.key === 'Tab' && leftRailOverlayOpen) {
+    const focusable = getLeftRailOverlayFocusableElements();
+    if (focusable.length > 0) {
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !sidebar?.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && (document.activeElement === last || !sidebar?.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    }
     return;
   }
   const isPrimaryModifier = isMac ? event.metaKey : event.ctrlKey;
