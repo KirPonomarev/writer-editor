@@ -55,6 +55,8 @@ export const DESIGN_OS_LAYOUT_PATCH_KEYS = Object.freeze([
   'viewport_width',
   'viewport_height',
   'shell_mode',
+  'right_collapsed',
+  'right_expanded_width',
 ]);
 
 export const DESIGN_OS_DANGEROUS_OBJECT_KEYS = Object.freeze([
@@ -71,6 +73,8 @@ const DEFAULT_LAYOUT_SNAPSHOT = Object.freeze({
   viewport_width: 1440,
   viewport_height: 900,
   shell_mode: 'CALM_DOCKED',
+  right_collapsed: false,
+  right_expanded_width: 290,
 });
 
 const DEFAULT_RUNTIME_CONTEXT = Object.freeze({
@@ -176,6 +180,8 @@ export function createLayoutSnapshot(input = {}) {
     viewport_width: Number.isFinite(source.viewport_width) ? Math.trunc(source.viewport_width) : DEFAULT_LAYOUT_SNAPSHOT.viewport_width,
     viewport_height: Number.isFinite(source.viewport_height) ? Math.trunc(source.viewport_height) : DEFAULT_LAYOUT_SNAPSHOT.viewport_height,
     shell_mode: normalizeString(source.shell_mode) || DEFAULT_LAYOUT_SNAPSHOT.shell_mode,
+    right_collapsed: source.right_collapsed === true,
+    right_expanded_width: Number.isFinite(source.right_expanded_width) ? Math.trunc(source.right_expanded_width) : DEFAULT_LAYOUT_SNAPSHOT.right_expanded_width,
   };
 }
 

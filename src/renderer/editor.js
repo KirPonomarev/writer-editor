@@ -85,6 +85,7 @@ import {
   buildSpatialStateFromLayoutSnapshot,
   deriveSidebarViewportMode,
   LEFT_RAIL_COLLAPSED_WIDTH,
+  RIGHT_RAIL_COLLAPSED_WIDTH,
 } from './design-os/index.mjs';
 import {
   getToolbarFunctionCatalogEntryById,
@@ -153,6 +154,7 @@ const sidebar = document.querySelector('.sidebar');
 const sidebarResizer = document.querySelector('[data-sidebar-resizer]');
 const leftRailCollapseButton = document.querySelector('[data-left-rail-collapse]');
 const leftRailOverlayBackdrop = document.querySelector('[data-left-rail-overlay-backdrop]');
+const rightRailCollapseButton = document.querySelector('[data-right-rail-collapse]');
 const rightSidebarResizer = document.querySelector('[data-right-sidebar-resizer]');
 const mainContent = document.querySelector('.main-content');
 const toolbar = document.querySelector('[data-toolbar]');
@@ -492,6 +494,9 @@ let spatialLayoutState = null;
 let leftRailAdaptiveMode = '';
 let leftRailOverlayOpen = false;
 let leftRailOverlayReturnFocus = null;
+let rightRailAdaptiveMode = '';
+let rightRailOverlayOpen = false;
+let rightRailOverlayReturnFocus = null;
 let flowModeState = {
   active: false,
   scenes: [],
@@ -7035,6 +7040,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       leftSidebarWidth: SPATIAL_LAYOUT_MOBILE_LEFT_BASELINE_WIDTH,
       rightSidebarWidth: SPATIAL_LAYOUT_MOBILE_RIGHT_BASELINE_WIDTH,
       leftCollapsed: false,
+      rightCollapsed: false,
       viewportWidth,
       viewportMode: mode,
       savedAtUtc: '',
@@ -7048,6 +7054,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
       leftSidebarWidth: SPATIAL_LAYOUT_COMPACT_LEFT_BASELINE_WIDTH,
       rightSidebarWidth: SPATIAL_LAYOUT_COMPACT_RIGHT_BASELINE_WIDTH,
       leftCollapsed: false,
+      rightCollapsed: false,
       viewportWidth,
       viewportMode: mode,
       savedAtUtc: '',
@@ -7060,6 +7067,7 @@ function getSpatialLayoutBaselineForViewport(viewportWidth = getSpatialLayoutVie
     leftSidebarWidth: SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH,
     rightSidebarWidth: SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH,
     leftCollapsed: false,
+    rightCollapsed: false,
     viewportWidth,
     viewportMode: mode,
     savedAtUtc: '',
@@ -7079,7 +7087,9 @@ function getSpatialLayoutConstraintsForViewport(viewportWidth = getSpatialLayout
     layoutVariant: model.layoutVariant,
     rightVisible: model.rightVisible,
     leftCollapsed: model.leftCollapsed,
+    rightCollapsed: model.rightCollapsed,
     leftRailMode: model.leftRailMode,
+    rightRailMode: model.constraints.rightRailMode,
   };
 }
 
@@ -7111,6 +7121,7 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
       viewportWidth,
       rightVisible: constraints.rightVisible,
       leftCollapsed: rawState.leftCollapsed === true,
+      rightCollapsed: rawState.rightCollapsed === true,
     }
   );
 
@@ -7120,6 +7131,7 @@ function normalizeSpatialLayoutState(rawState, viewportWidth = getSpatialLayoutV
     leftSidebarWidth: sharedState.leftSidebarWidth,
     rightSidebarWidth: sharedState.rightSidebarWidth,
     leftCollapsed: sharedState.leftCollapsed,
+    rightCollapsed: sharedState.rightCollapsed,
     viewportWidth,
     viewportMode: constraints.mode,
     savedAtUtc: typeof rawState.savedAtUtc === 'string' ? rawState.savedAtUtc : '',
@@ -7147,6 +7159,7 @@ function persistSpatialLayoutState(state, projectId = currentProjectId) {
     leftSidebarWidth: Math.round(Number(state?.leftSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_LEFT_BASELINE_WIDTH),
     rightSidebarWidth: Math.round(Number(state?.rightSidebarWidth) || SPATIAL_LAYOUT_DESKTOP_RIGHT_BASELINE_WIDTH),
     leftCollapsed: state?.leftCollapsed === true,
+    rightCollapsed: state?.rightCollapsed === true,
     viewportWidth: Math.max(0, Math.floor(Number(state?.viewportWidth) || getSpatialLayoutViewportWidth())),
     viewportMode: state?.viewportMode || getSpatialLayoutMode(),
     savedAtUtc: new Date().toISOString(),
@@ -7165,15 +7178,31 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
   const constraints = getSpatialLayoutConstraintsForViewport(viewportWidth);
   const rightVisible = constraints.rightVisible;
   const previousAdaptiveMode = leftRailAdaptiveMode;
+  const previousRightAdaptiveMode = rightRailAdaptiveMode;
   const overlayMode = constraints.leftRailMode === 'overlay';
+  const rightOverlayMode = constraints.rightRailMode === 'overlay';
   if (previousAdaptiveMode && previousAdaptiveMode !== constraints.leftRailMode) {
     leftRailOverlayOpen = false;
     leftRailOverlayReturnFocus = null;
   }
+  if (previousRightAdaptiveMode && previousRightAdaptiveMode !== constraints.rightRailMode) {
+    rightRailOverlayOpen = false;
+    rightRailOverlayReturnFocus = null;
+  }
   leftRailAdaptiveMode = constraints.leftRailMode;
+  rightRailAdaptiveMode = constraints.rightRailMode;
+  if (!rightOverlayMode) {
+    rightRailOverlayOpen = false;
+    rightRailOverlayReturnFocus = null;
+  }
   const effectiveLeftCollapsed = overlayMode
     ? !leftRailOverlayOpen
     : normalizedState.leftCollapsed;
+  const effectiveRightCollapsed = rightOverlayMode
+    ? !rightRailOverlayOpen
+    : normalizedState.rightCollapsed;
+  const rightOverlayActive = rightOverlayMode && rightRailOverlayOpen;
+  const anyOverlayActive = (overlayMode && leftRailOverlayOpen) || rightOverlayActive;
   const layoutPatch = buildLayoutPatchFromSpatialState(normalizedState, {
     viewportWidth,
     viewportHeight: Math.max(0, Math.floor(window.innerHeight || document.documentElement.clientHeight || 0)),
@@ -7181,17 +7210,23 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     viewportMode: constraints.mode,
     rightVisible,
     leftCollapsed: effectiveLeftCollapsed,
+    rightCollapsed: effectiveRightCollapsed,
   });
 
   if (appLayout) {
     appLayout.style.setProperty('--app-left-sidebar-collapsed-width', `${LEFT_RAIL_COLLAPSED_WIDTH}px`);
+    appLayout.style.setProperty('--app-right-sidebar-collapsed-width', `${RIGHT_RAIL_COLLAPSED_WIDTH}px`);
     appLayout.style.setProperty('--app-left-sidebar-expanded-width', `${normalizedState.leftSidebarWidth}px`);
+    appLayout.style.setProperty('--app-right-sidebar-expanded-width', `${normalizedState.rightSidebarWidth}px`);
     appLayout.style.setProperty('--app-left-sidebar-width', `${layoutPatch.left_width}px`);
     appLayout.style.setProperty('--app-right-sidebar-width', `${layoutPatch.right_width}px`);
     appLayout.dataset.sidebarLayout = constraints.layoutVariant;
     appLayout.dataset.leftRailCollapsed = effectiveLeftCollapsed ? 'true' : 'false';
+    appLayout.dataset.rightRailCollapsed = effectiveRightCollapsed ? 'true' : 'false';
     appLayout.dataset.leftRailMode = constraints.leftRailMode;
+    appLayout.dataset.rightRailMode = constraints.rightRailMode;
     appLayout.dataset.leftRailOverlayOpen = overlayMode && leftRailOverlayOpen ? 'true' : 'false';
+    appLayout.dataset.rightRailOverlayOpen = rightOverlayActive ? 'true' : 'false';
   }
 
   sidebar?.classList.toggle('is-collapsed', effectiveLeftCollapsed);
@@ -7210,18 +7245,30 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     sidebarResizer.hidden = overlayMode || normalizedState.leftCollapsed;
   }
   if (leftRailOverlayBackdrop) {
-    leftRailOverlayBackdrop.hidden = !overlayMode || !leftRailOverlayOpen;
-    leftRailOverlayBackdrop.setAttribute('aria-hidden', overlayMode && leftRailOverlayOpen ? 'false' : 'true');
+    leftRailOverlayBackdrop.hidden = !anyOverlayActive;
+    leftRailOverlayBackdrop.setAttribute('aria-hidden', anyOverlayActive ? 'false' : 'true');
   }
   if (mainContent) {
-    mainContent.inert = overlayMode && leftRailOverlayOpen;
+    mainContent.inert = anyOverlayActive;
   }
 
   if (rightSidebar) {
-    rightSidebar.hidden = !rightVisible;
+    rightSidebar.hidden = !rightVisible && !rightOverlayActive;
+    rightSidebar.classList.toggle('is-collapsed', effectiveRightCollapsed);
+    rightSidebar.classList.toggle('is-overlay-mode', rightOverlayMode);
+    rightSidebar.classList.toggle('is-overlay-open', rightOverlayActive);
+  }
+  if (rightRailCollapseButton) {
+    const expanded = !effectiveRightCollapsed;
+    const label = rightOverlayMode
+      ? expanded ? 'Закрыть контекст' : 'Показать контекст'
+      : expanded ? 'Свернуть контекст' : 'Показать контекст';
+    rightRailCollapseButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+    rightRailCollapseButton.setAttribute('aria-label', label);
+    rightRailCollapseButton.title = label;
   }
   if (rightSidebarResizer) {
-    rightSidebarResizer.hidden = !rightVisible;
+    rightSidebarResizer.hidden = !rightVisible || effectiveRightCollapsed;
   }
 
   spatialLayoutState = {
@@ -7230,6 +7277,7 @@ function applySpatialLayoutState(state, { persist = false, projectId = currentPr
     viewportWidth,
     viewportMode: constraints.mode,
     leftCollapsed: normalizedState.leftCollapsed,
+    rightCollapsed: normalizedState.rightCollapsed,
     source: persist ? 'committed' : normalizedState.source,
   };
 
@@ -7272,6 +7320,12 @@ function getLeftRailOverlayFocusableElements() {
     .filter((element) => !element.hidden && !element.disabled && element.getClientRects().length > 0);
 }
 
+function getRightRailOverlayFocusableElements() {
+  if (!rightSidebar || !rightRailOverlayOpen) return [];
+  return Array.from(rightSidebar.querySelectorAll('button, input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+    .filter((element) => !element.hidden && !element.disabled && element.getClientRects().length > 0);
+}
+
 function setLeftRailOverlayOpen(open, { restoreFocus = true } = {}) {
   const constraints = getSpatialLayoutConstraintsForViewport();
   if (constraints.leftRailMode !== 'overlay') return spatialLayoutState;
@@ -7280,6 +7334,8 @@ function setLeftRailOverlayOpen(open, { restoreFocus = true } = {}) {
   if (nextOpen) {
     const activeElement = document.activeElement;
     leftRailOverlayReturnFocus = activeElement instanceof HTMLElement ? activeElement : leftRailCollapseButton;
+    rightRailOverlayOpen = false;
+    rightRailOverlayReturnFocus = null;
   }
   const returnFocusTarget = leftRailOverlayReturnFocus;
   leftRailOverlayOpen = nextOpen;
@@ -7300,6 +7356,59 @@ function setLeftRailOverlayOpen(open, { restoreFocus = true } = {}) {
     leftRailOverlayReturnFocus = null;
   });
   return spatialLayoutState;
+}
+
+function setRightRailCollapsed(collapsed, { persist = true, restoreFocus = true } = {}) {
+  const nextState = {
+    ...(spatialLayoutState || getSpatialLayoutBaselineForViewport()),
+    rightCollapsed: collapsed === true,
+  };
+  const applied = applySpatialLayoutState(nextState, { persist, projectId: currentProjectId });
+  scheduleLayoutRefresh();
+  if (restoreFocus && rightRailCollapseButton) {
+    requestAnimationFrame(() => rightRailCollapseButton.focus({ preventScroll: true }));
+  }
+  return applied;
+}
+
+function setRightRailOverlayOpen(open, { restoreFocus = true } = {}) {
+  const constraints = getSpatialLayoutConstraintsForViewport();
+  if (constraints.rightRailMode !== 'overlay') return spatialLayoutState;
+  const nextOpen = open === true;
+  if (nextOpen === rightRailOverlayOpen) return spatialLayoutState;
+  if (nextOpen) {
+    const activeElement = document.activeElement;
+    rightRailOverlayReturnFocus = activeElement instanceof HTMLElement ? activeElement : rightRailCollapseButton;
+    leftRailOverlayOpen = false;
+    leftRailOverlayReturnFocus = null;
+  }
+  const returnFocusTarget = rightRailOverlayReturnFocus;
+  rightRailOverlayOpen = nextOpen;
+  applySpatialLayoutState(spatialLayoutState || getSpatialLayoutBaselineForViewport(), {
+    persist: false,
+    projectId: currentProjectId,
+  });
+  scheduleLayoutRefresh();
+  requestAnimationFrame(() => {
+    if (nextOpen) {
+      (getRightRailOverlayFocusableElements()[0] || rightRailCollapseButton)?.focus({ preventScroll: true });
+      return;
+    }
+    if (restoreFocus) {
+      const target = returnFocusTarget?.isConnected ? returnFocusTarget : rightRailCollapseButton;
+      target?.focus({ preventScroll: true });
+    }
+    rightRailOverlayReturnFocus = null;
+  });
+  return spatialLayoutState;
+}
+
+function toggleRightRailCollapsed() {
+  if (getSpatialLayoutConstraintsForViewport().rightRailMode === 'overlay') {
+    return setRightRailOverlayOpen(!rightRailOverlayOpen);
+  }
+  const currentState = spatialLayoutState || getSpatialLayoutBaselineForViewport();
+  return setRightRailCollapsed(currentState.rightCollapsed !== true);
 }
 
 function toggleLeftRailCollapsed() {
@@ -11763,6 +11872,13 @@ function handleUiAction(action) {
       return true;
     case 'close-left-rail-overlay':
       setLeftRailOverlayOpen(false);
+      setRightRailOverlayOpen(false, { restoreFocus: false });
+      return true;
+    case 'toggle-right-rail':
+      toggleRightRailCollapsed();
+      return true;
+    case 'close-right-rail-overlay':
+      setRightRailOverlayOpen(false);
       return true;
     case 'open-diagnostics':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.TOOLS_OPEN_DIAGNOSTICS);
@@ -12121,6 +12237,12 @@ document.addEventListener('keydown', (event) => {
     setLeftRailOverlayOpen(false);
     return;
   }
+  if (event.key === 'Escape' && rightRailOverlayOpen) {
+    event.preventDefault();
+    event.stopPropagation();
+    setRightRailOverlayOpen(false);
+    return;
+  }
   if (event.key === 'Tab' && leftRailOverlayOpen) {
     const focusable = getLeftRailOverlayFocusableElements();
     if (focusable.length > 0) {
@@ -12130,6 +12252,21 @@ document.addEventListener('keydown', (event) => {
         event.preventDefault();
         last.focus({ preventScroll: true });
       } else if (!event.shiftKey && (document.activeElement === last || !sidebar?.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    }
+    return;
+  }
+  if (event.key === 'Tab' && rightRailOverlayOpen) {
+    const focusable = getRightRailOverlayFocusableElements();
+    if (focusable.length > 0) {
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !rightSidebar?.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+      } else if (!event.shiftKey && (document.activeElement === last || !rightSidebar?.contains(document.activeElement))) {
         event.preventDefault();
         first.focus({ preventScroll: true });
       }

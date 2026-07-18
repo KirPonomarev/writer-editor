@@ -127,3 +127,21 @@ test('sidebar composition truth: right rail tabs have keyboard focus behavior', 
   assert.ok(editor.includes('buttons[nextIndex].focus();'));
   assert.ok(editor.includes('activateRightRailTabButton(buttons[nextIndex]);'));
 });
+
+test('sidebar spatial truth: right rail owns collapse and overlay controls', () => {
+  const html = read('src/renderer/index.html');
+  const styles = read('src/renderer/styles.css');
+  const editor = read('src/renderer/editor.js');
+
+  assert.ok(html.includes('data-right-rail-collapse'));
+  assert.ok(html.includes('data-action="toggle-right-rail"'));
+  assert.ok(styles.includes('.right-rail-collapse-button'));
+  assert.ok(styles.includes('.sidebar--right.is-collapsed > :not(.right-rail-collapse-button)'));
+  assert.ok(styles.includes('.app-layout[data-right-rail-mode="overlay"] .sidebar--right.is-overlay-mode.is-overlay-open'));
+  assert.ok(editor.includes('let rightRailOverlayOpen = false;'));
+  assert.ok(editor.includes('function setRightRailOverlayOpen(open, { restoreFocus = true } = {})'));
+  assert.ok(editor.includes('leftRailOverlayOpen = false;'));
+  assert.ok(editor.includes('rightRailOverlayOpen = false;'));
+  assert.ok(editor.includes("if (event.key === 'Escape' && rightRailOverlayOpen)"));
+  assert.ok(editor.includes("if (event.key === 'Tab' && rightRailOverlayOpen)"));
+});
