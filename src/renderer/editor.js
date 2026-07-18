@@ -18,6 +18,7 @@ import {
 } from './tiptap/index.js';
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
+import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
 import {
   COMMAND_IDS,
   EXTRA_COMMAND_IDS,
@@ -5806,6 +5807,7 @@ registerProjectCommands(commandRegistry, {
     reviewClearSession: () => handleReviewClearSession(),
     planFlowSave: () => handlePlanFlowSave(),
     reviewExportMarkdown: () => handleReviewExportMarkdown(),
+    openSelectedScenesTxtExport: () => openSelectedScenesTxtExportFlow(),
     setTheme: (payload) => handleUiSetThemeCommand(payload),
     setFont: (payload) => handleUiSetFontCommand(payload),
     setFontSize: (payload) => handleUiSetFontSizeCommand(payload),
@@ -7600,15 +7602,37 @@ function showContextMenu(items, x, y) {
     button.type = 'button';
     button.className = 'context-menu__item';
     button.textContent = item.label;
+    button.dataset.commandId = item.commandId;
+    button.disabled = item.enabled === false;
     button.addEventListener('click', () => {
+      if (button.disabled) return;
       clearContextMenu();
-      item.onClick();
+      item.onInvoke();
     });
     contextMenu.appendChild(button);
   });
   contextMenu.style.left = `${x}px`;
   contextMenu.style.top = `${y}px`;
   contextMenu.hidden = false;
+}
+
+function isNavigatorContextCommandAvailable(commandId) {
+  if (!commandRegistry.hasCommand(commandId)) return false;
+  return enforceCapabilityForCommand(
+    commandId,
+    withEditorModeCommandPayload(),
+    { defaultPlatformId: window.electronAPI ? 'node' : 'web' },
+  ).ok;
+}
+
+function appendContextMenuCommandItem(items, commandId, label, onInvoke, options = {}) {
+  if (!isNavigatorContextCommandAvailable(commandId) || typeof onInvoke !== 'function') return;
+  items.push({
+    commandId,
+    label,
+    onInvoke,
+    enabled: options.enabled !== false,
+  });
 }
 
 function openCardModal(prefillText = '') {
@@ -7722,67 +7746,76 @@ async function handleReorderNode(node, direction) {
   await loadTree();
 }
 
+async function handleAddCardForNode(node) {
+  const opened = await openDocumentNode(node);
+  if (!opened) return;
+  await dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_ADD_CARD);
+}
+
 function buildContextMenuItems(node) {
   const items = [];
   if (!node) return items;
 
+  const append = (commandId, label, onInvoke, options) => {
+    appendContextMenuCommandItem(items, commandId, label, onInvoke, options);
+  };
+  const appendOpen = () => {
+    append(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'Открыть', () => openDocumentNode(node));
+  };
+  const appendReorder = () => {
+    append(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'Вверх', () => handleReorderNode(node, 'up'));
+    append(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'Вниз', () => handleReorderNode(node, 'down'));
+  };
+  const appendRenameDelete = () => {
+    append(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'Переименовать', () => handleRenameNode(node));
+    append(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'Удалить', () => handleDeleteNode(node));
+  };
+
   if (node.kind === 'part') {
-    items.push({ label: 'Новая глава (документ)', onClick: () => handleCreateNode(node, 'chapter-file', 'Название главы') });
-    items.push({ label: 'Новая глава (со сценами)', onClick: () => handleCreateNode(node, 'chapter-folder', 'Название главы') });
-    items.push({ label: 'Вверх', onClick: () => handleReorderNode(node, 'up') });
-    items.push({ label: 'Вниз', onClick: () => handleReorderNode(node, 'down') });
-    items.push({ label: 'Переименовать', onClick: () => handleRenameNode(node) });
-    items.push({ label: 'Удалить', onClick: () => handleDeleteNode(node) });
+    append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новая глава (документ)', () => handleCreateNode(node, 'chapter-file', 'Название главы'));
+    append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новая глава (со сценами)', () => handleCreateNode(node, 'chapter-folder', 'Название главы'));
+    appendReorder();
+    appendRenameDelete();
     return items;
   }
 
   if (node.kind === 'chapter-folder') {
-    items.push({ label: 'Новая сцена', onClick: () => handleCreateNode(node, 'scene', 'Название сцены') });
-    items.push({ label: 'Вверх', onClick: () => handleReorderNode(node, 'up') });
-    items.push({ label: 'Вниз', onClick: () => handleReorderNode(node, 'down') });
-    items.push({ label: 'Переименовать', onClick: () => handleRenameNode(node) });
-    items.push({ label: 'Удалить', onClick: () => handleDeleteNode(node) });
+    append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новая сцена', () => handleCreateNode(node, 'scene', 'Название сцены'));
+    appendReorder();
+    appendRenameDelete();
     return items;
   }
 
   if (node.kind === 'chapter-file' || node.kind === 'scene') {
-    items.push({ label: 'Добавить карточку…', onClick: async () => {
-      const opened = await openDocumentNode(node);
-      if (opened) openCardModal('');
-    }});
-    items.push({ label: 'Вверх', onClick: () => handleReorderNode(node, 'up') });
-    items.push({ label: 'Вниз', onClick: () => handleReorderNode(node, 'down') });
-    items.push({ label: 'Переименовать', onClick: () => handleRenameNode(node) });
-    items.push({ label: 'Удалить', onClick: () => handleDeleteNode(node) });
+    appendOpen();
+    append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
+    append(
+      EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+      'Экспорт TXT выбранных сцен',
+      () => dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT),
+    );
+    appendReorder();
+    appendRenameDelete();
     return items;
   }
 
   if (node.kind === 'materials-category' || node.kind === 'reference-category' || node.kind === 'folder') {
     if (node.kind === 'materials-category' || node.kind === 'reference-category') {
-      items.push({
-        label: 'Добавить карточку…',
-        onClick: async () => {
-          const opened = await openDocumentNode(node);
-          if (opened) openCardModal('');
-        }
-      });
+      appendOpen();
+      append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
     }
-    items.push({ label: 'Новая папка', onClick: () => handleCreateNode(node, 'folder', 'Название папки') });
-    items.push({ label: 'Новый документ', onClick: () => handleCreateNode(node, 'file', 'Название документа') });
+    append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новая папка', () => handleCreateNode(node, 'folder', 'Название папки'));
+    append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новый документ', () => handleCreateNode(node, 'file', 'Название документа'));
     if (node.kind === 'folder') {
-      items.push({ label: 'Переименовать', onClick: () => handleRenameNode(node) });
-      items.push({ label: 'Удалить', onClick: () => handleDeleteNode(node) });
+      appendRenameDelete();
     }
     return items;
   }
 
   if (node.kind === 'material' || node.kind === 'reference') {
-    items.push({ label: 'Добавить карточку…', onClick: async () => {
-      const opened = await openDocumentNode(node);
-      if (opened) openCardModal('');
-    }});
-    items.push({ label: 'Переименовать', onClick: () => handleRenameNode(node) });
-    items.push({ label: 'Удалить', onClick: () => handleDeleteNode(node) });
+    appendOpen();
+    append(EXTRA_COMMAND_IDS.INSERT_ADD_CARD, 'Добавить карточку…', () => handleAddCardForNode(node));
+    appendRenameDelete();
     return items;
   }
 
@@ -7929,6 +7962,14 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
 
   row.addEventListener('contextmenu', (event) => {
     event.preventDefault();
+    if (
+      effectiveDocumentId
+      && isNavigatorSelectableNode(node)
+      && !navigatorSelectionState.selectedIds.includes(effectiveDocumentId)
+    ) {
+      selectNavigatorNode(node);
+      renderTree();
+    }
     const items = buildContextMenuItems(node);
     if (items.length) {
       showContextMenu(items, event.clientX, event.clientY);
@@ -9398,7 +9439,7 @@ async function confirmSelectedScenesTxtExportAndRun() {
 
   closeSelectedScenesTxtExportModal();
   updateStatusText('Exporting selected scenes TXT');
-  const result = await invokePreloadUiCommandBridge('cmd.project.exportSelectedScenesTxtV1', {
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT, {
     confirmed: true,
     requestId: `selected-scenes-txt-export-${Date.now()}`,
     selectedSceneIds,
@@ -12079,8 +12120,8 @@ if (window.electronAPI) {
       void handleMarkdownExportUiPath();
       return true;
     }
-    if (commandId === 'cmd.project.exportSelectedScenesTxtV1') {
-      void openSelectedScenesTxtExportFlow();
+    if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT) {
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT);
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {

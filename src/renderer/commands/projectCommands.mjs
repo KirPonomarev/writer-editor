@@ -25,6 +25,7 @@ export const COMMAND_IDS = Object.freeze({
 export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_NEW: 'cmd.project.new',
   PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open',
+  PROJECT_EXPORT_SELECTED_SCENES_TXT: 'cmd.project.exportSelectedScenesTxtV1',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
   VIEW_OPEN_SETTINGS: 'cmd.project.view.openSettings',
   VIEW_SAFE_RESET: 'cmd.project.view.safeReset',
@@ -1064,6 +1065,86 @@ export function registerProjectCommands(registry, options = {}) {
 
   registry.registerCommand(
     {
+      id: EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+      label: 'Export Selected Scenes as TXT',
+      group: 'file',
+      surface: ['menu', 'context'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (input.confirmed !== true) {
+        return runUiAction(
+          uiActions,
+          'openSelectedScenesTxtExport',
+          EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+        );
+      }
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+          'ELECTRON_API_UNAVAILABLE',
+        );
+      }
+      const selectedSceneIds = Array.isArray(input.selectedSceneIds)
+        ? input.selectedSceneIds
+            .filter((sceneId) => typeof sceneId === 'string' && sceneId.trim())
+            .map((sceneId) => sceneId.trim())
+        : [];
+      if (selectedSceneIds.length === 0) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+          'SELECTED_SCENE_IDS_REQUIRED',
+        );
+      }
+      const requestId = typeof input.requestId === 'string' && input.requestId.trim()
+        ? input.requestId.trim()
+        : `selected-scenes-txt-export-${Date.now()}`;
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+          { confirmed: true, requestId, selectedSceneIds },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+          'SELECTED_SCENES_TXT_EXPORT_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          canceled: bridged.canceled === true,
+          exported: bridged.exported === true,
+          sceneCount: Number.isInteger(bridged.sceneCount) ? bridged.sceneCount : selectedSceneIds.length,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
+        bridged && typeof bridged.reason === 'string'
+          ? bridged.reason
+          : bridged && typeof bridged.error === 'string'
+            ? bridged.error
+            : response && typeof response.reason === 'string'
+              ? response.reason
+              : 'SELECTED_SCENES_TXT_EXPORT_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
       id: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
       label: 'Open Project Document Node',
       group: 'file',
@@ -1074,11 +1155,10 @@ export function registerProjectCommands(registry, options = {}) {
       if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'ELECTRON_API_UNAVAILABLE');
       }
-      const path = typeof input.path === 'string' ? input.path.trim() : '';
-      const title = typeof input.title === 'string' ? input.title : '';
-      const kind = typeof input.kind === 'string' ? input.kind : '';
-      if (!path) {
-        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'DOCUMENT_PATH_REQUIRED');
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
+      if (!projectId || !nodeId) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'DOCUMENT_IDENTITY_REQUIRED');
       }
 
       let response;
@@ -1086,7 +1166,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,
-          { path, title, kind },
+          { projectId, nodeId },
         );
       } catch (error) {
         return fail(
@@ -1102,10 +1182,16 @@ export function registerProjectCommands(registry, options = {}) {
         ? response.value
         : response;
       if (bridged && bridged.cancelled) {
-        return ok({ opened: false, cancelled: true, path, kind });
+        return ok({ opened: false, cancelled: true, projectId, documentId: nodeId });
       }
       if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
-        return ok({ opened: true, path, kind });
+        return ok({
+          opened: true,
+          projectId,
+          documentId: typeof bridged.documentId === 'string' && bridged.documentId.trim()
+            ? bridged.documentId.trim()
+            : nodeId,
+        });
       }
       return fail(
         'E_COMMAND_FAILED',
@@ -1133,10 +1219,11 @@ export function registerProjectCommands(registry, options = {}) {
       if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
-      const parentPath = typeof input.parentPath === 'string' ? input.parentPath.trim() : '';
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const parentNodeId = typeof input.parentNodeId === 'string' ? input.parentNodeId.trim() : '';
       const kind = typeof input.kind === 'string' ? input.kind.trim() : '';
       const name = typeof input.name === 'string' ? input.name.trim() : '';
-      if (!parentPath || !kind || !name) {
+      if (!projectId || !parentNodeId || !kind || !name) {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'TREE_CREATE_PAYLOAD_INVALID');
       }
 
@@ -1145,7 +1232,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
-          { parentPath, kind, name },
+          { projectId, parentNodeId, kind, name },
         );
       } catch (error) {
         return fail(
@@ -1161,7 +1248,14 @@ export function registerProjectCommands(registry, options = {}) {
         ? response.value
         : response;
       if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
-        return ok({ created: true, parentPath, kind, name });
+        return ok({
+          created: true,
+          projectId,
+          parentNodeId,
+          nodeId: typeof bridged.nodeId === 'string' ? bridged.nodeId : '',
+          kind,
+          name,
+        });
       }
       return fail(
         'E_COMMAND_FAILED',
@@ -1189,9 +1283,10 @@ export function registerProjectCommands(registry, options = {}) {
       if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
-      const path = typeof input.path === 'string' ? input.path.trim() : '';
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
       const name = typeof input.name === 'string' ? input.name.trim() : '';
-      if (!path || !name) {
+      if (!projectId || !nodeId || !name) {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'TREE_RENAME_PAYLOAD_INVALID');
       }
 
@@ -1200,7 +1295,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_RENAME_NODE,
-          { path, name },
+          { projectId, nodeId, name },
         );
       } catch (error) {
         return fail(
@@ -1218,8 +1313,10 @@ export function registerProjectCommands(registry, options = {}) {
       if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({
           renamed: true,
-          path: typeof bridged.path === 'string' && bridged.path.trim().length > 0 ? bridged.path : path,
-          oldPath: path,
+          projectId,
+          nodeId: typeof bridged.nodeId === 'string' && bridged.nodeId.trim()
+            ? bridged.nodeId.trim()
+            : nodeId,
         });
       }
       return fail(
@@ -1248,8 +1345,9 @@ export function registerProjectCommands(registry, options = {}) {
       if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
-      const path = typeof input.path === 'string' ? input.path.trim() : '';
-      if (!path) {
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
+      if (!projectId || !nodeId) {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'TREE_DELETE_PAYLOAD_INVALID');
       }
 
@@ -1258,7 +1356,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_DELETE_NODE,
-          { path },
+          { projectId, nodeId },
         );
       } catch (error) {
         return fail(
@@ -1274,7 +1372,7 @@ export function registerProjectCommands(registry, options = {}) {
         ? response.value
         : response;
       if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
-        return ok({ deleted: true, path });
+        return ok({ deleted: true, projectId, nodeId });
       }
       return fail(
         'E_COMMAND_FAILED',
@@ -1302,9 +1400,10 @@ export function registerProjectCommands(registry, options = {}) {
       if (!electronAPI || typeof electronAPI !== 'object') {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'ELECTRON_API_UNAVAILABLE');
       }
-      const path = typeof input.path === 'string' ? input.path.trim() : '';
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const nodeId = typeof input.nodeId === 'string' ? input.nodeId.trim() : '';
       const direction = typeof input.direction === 'string' ? input.direction.trim() : '';
-      if (!path || (direction !== 'up' && direction !== 'down')) {
+      if (!projectId || !nodeId || (direction !== 'up' && direction !== 'down')) {
         return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'TREE_REORDER_PAYLOAD_INVALID');
       }
 
@@ -1313,7 +1412,7 @@ export function registerProjectCommands(registry, options = {}) {
         response = await invokeBridgeOnlyCommand(
           electronAPI,
           EXTRA_COMMAND_IDS.TREE_REORDER_NODE,
-          { path, direction },
+          { projectId, nodeId, direction },
         );
       } catch (error) {
         return fail(
@@ -1331,8 +1430,10 @@ export function registerProjectCommands(registry, options = {}) {
       if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
         return ok({
           reordered: true,
-          path: typeof bridged.path === 'string' && bridged.path.trim().length > 0 ? bridged.path : path,
-          oldPath: path,
+          projectId,
+          nodeId: typeof bridged.nodeId === 'string' && bridged.nodeId.trim()
+            ? bridged.nodeId.trim()
+            : nodeId,
           direction,
         });
       }

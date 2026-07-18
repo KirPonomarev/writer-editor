@@ -3202,10 +3202,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "4dec5d393d267455b87c747dfe4fee72e19996854c9cbe8e206b90a8489bfedd",
-      "approvedBy": "ticket:REVIEW_BRIDGE_CANONICAL_PACKET_UI_APPLY_001_GOVERNANCE_BYTE_TRUTH_REPAIR",
-      "approvedAtUtc": "2026-07-12T17:55:25.000Z",
-      "rationale": "Rebind the pre-existing command-capability status approval to its current mainline bytes discovered by the Phase 01 governance audit; the status itself is unchanged in this contour and no command authority, capability scope, runtime behavior, dependency, network, release, or Y9 claim is widened."
+      "sha256": "b1cc60c8539d06a4f7deed9d20b6895e1db196d3adadd35ed03971afbe2e3b50",
+      "approvedBy": "owner-plan:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3:S07_NAVIGATOR_CONTEXT_COMMAND_BINDINGS",
+      "approvedAtUtc": "2026-07-18T20:28:00.000Z",
+      "rationale": "Approve the bounded S07 capability binding for the existing selected-scenes TXT export command. The change routes the existing navigator action through the canonical command registry and capability policy without adding storage semantics, widening export behavior, changing licensing, or touching toolbar ownership."
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",

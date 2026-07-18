@@ -25,13 +25,17 @@ test('selected scenes TXT export UI flow: renderer owns only transient picker an
     'try {',
     "result = await invokeWorkspaceQueryBridge(SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID, {});",
     "updateStatusText('Selected scenes TXT export unavailable');",
-    "const result = await invokePreloadUiCommandBridge('cmd.project.exportSelectedScenesTxtV1', {",
+    'const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT, {',
     'selectedSceneIds,',
-    "if (commandId === 'cmd.project.exportSelectedScenesTxtV1') {",
-    'void openSelectedScenesTxtExportFlow();',
+    'if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT) {',
+    'void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT);',
   ]) {
     assert.ok(editor.includes(marker), marker);
   }
+  assert.equal(
+    editor.includes("invokePreloadUiCommandBridge('cmd.project.exportSelectedScenesTxtV1'"),
+    false,
+  );
 });
 
 test('selected scenes TXT export UI flow: renderer does not treat tree row state as export truth', () => {
