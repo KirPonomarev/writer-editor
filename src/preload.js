@@ -19,6 +19,7 @@ const TREE_COMMAND_IDS = Object.freeze({
   RENAME_NODE: 'cmd.project.tree.renameNode',
   DELETE_NODE: 'cmd.project.tree.deleteNode',
   REORDER_NODE: 'cmd.project.tree.reorderNode',
+  MOVE_NODE: 'cmd.project.tree.moveNode',
 });
 const TREE_COMMAND_ID_SET = new Set(Object.values(TREE_COMMAND_IDS));
 
@@ -160,6 +161,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   reorderNode: (payload) => {
     return dispatchTreeCommand({
       commandId: TREE_COMMAND_IDS.REORDER_NODE,
+      payload,
+    });
+  },
+  moveNode: (payload) => {
+    return dispatchTreeCommand({
+      commandId: TREE_COMMAND_IDS.MOVE_NODE,
       payload,
     });
   },

@@ -43,6 +43,7 @@ test('preload file lifecycle bridge: main command bridge allowlist includes only
   assert.ok(source.includes("'cmd.project.tree.renameNode'"))
   assert.ok(source.includes("'cmd.project.tree.deleteNode'"))
   assert.ok(source.includes("'cmd.project.tree.reorderNode'"))
+  assert.ok(source.includes('TREE_MOVE_COMMAND_ID'))
   assert.ok(source.includes("'cmd.ui.theme.set'"))
   assert.ok(source.includes("'cmd.ui.font.set'"))
   assert.ok(source.includes("'cmd.ui.fontSize.set'"))

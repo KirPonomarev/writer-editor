@@ -321,6 +321,7 @@ const MARKDOWN_LOCAL_FILE_PREVIEW_TTL_MS = 15 * 60 * 1000;
 const MARKDOWN_LOCAL_FILE_MAX_REQUEST_ID_CHARS = 120;
 const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
+const TREE_MOVE_COMMAND_ID = 'cmd.project.tree.moveNode';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -11334,6 +11335,50 @@ async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, so
   await persistProjectManifestAtPath(manifestPath, manifest, 'save project tree identity registry');
 }
 
+async function createProjectTreeMoveRecovery(manifestPath, projectRoot, sourceText, options = {}) {
+  const manifestHash = computeHash(sourceText);
+  let recovery = {
+    snapshotCreated: false,
+    snapshotReadable: false,
+    snapshotHashMatchesInput: false,
+    manifestHash,
+  };
+  try {
+    const markdownIo = await loadMarkdownIoModule();
+    if (!markdownIo || typeof markdownIo.createMarkdownRecoveryPack !== 'function') {
+      return recovery;
+    }
+    const outputRoot = joinPathSegmentsWithinRoot(
+      projectRoot,
+      ['backups', 'tree-move-recovery'],
+      { resolveSymlinks: false },
+    );
+    const pack = await markdownIo.createMarkdownRecoveryPack(manifestPath, {
+      text: sourceText,
+      outputRoot,
+      sourceKind: 'project-tree-move-manifest',
+      recoveryAction: 'OPEN_SNAPSHOT',
+      ...(typeof options.now === 'function' ? { now: options.now } : {}),
+    });
+    if (pack && pack.ok === 1 && typeof pack.contentPath === 'string') {
+      let recoveredText = '';
+      try {
+        recoveredText = await fs.readFile(pack.contentPath, 'utf8');
+      } catch {}
+      recovery = {
+        snapshotCreated: true,
+        snapshotReadable: recoveredText.length > 0 || sourceText.length === 0,
+        snapshotHashMatchesInput: computeHash(recoveredText) === manifestHash,
+        manifestHash,
+        recoveryPackCreated: true,
+      };
+    }
+  } catch (error) {
+    logDevError('project tree move recovery', error);
+  }
+  return recovery;
+}
+
 async function reconcileProjectTreeIdentities(roots) {
   const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
   const projectRoot = path.dirname(manifestPath);
@@ -11615,6 +11660,23 @@ async function rebindProjectTreeIdentityForMoves(pathMoves) {
     );
   }
   return { changed: result.changed, movedNodeIds: result.movedNodeIds };
+}
+
+function getTreeParentNodeIdFromResolvedPath(parentPath, manifest) {
+  if (!manifest || !manifest.treeIdentity || !parentPath) return '';
+  const projectRoot = getProjectRootPath();
+  const bindingKey = toProjectTreeBindingKey(projectRoot, parentPath);
+  if (!bindingKey) return '';
+  const nodes = manifest.treeIdentity.nodes && typeof manifest.treeIdentity.nodes === 'object'
+    ? manifest.treeIdentity.nodes
+    : {};
+  const match = Object.entries(nodes).find(([, record]) => (
+    record
+    && typeof record === 'object'
+    && record.present !== false
+    && record.bindingKey === bindingKey
+  ));
+  return match ? match[0] : '';
 }
 
 async function buildImportedRomanTree(romanPath) {
@@ -11920,6 +11982,160 @@ async function reorderEntriesWithPrefixes(parentPath, orderedEntries) {
 
   await safeRenameSequence(renames);
   return orderedEntries;
+}
+
+const TREE_MOVE_ALLOWED_NODE_KINDS = new Set([
+  'part',
+  'chapter-folder',
+  'chapter-file',
+  'scene',
+]);
+const TREE_MOVE_ALLOWED_PARENT_KINDS = new Set([
+  'roman-root',
+  'part',
+  'chapter-folder',
+]);
+const TREE_MOVE_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'projectId',
+  'nodeId',
+  'targetParentNodeId',
+  'targetIndex',
+]);
+const TREE_MOVE_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'fromPath',
+  'path',
+  'projectRoot',
+  'receipt',
+  'recovery',
+  'scenePath',
+  'targetPath',
+  'toPath',
+]);
+
+function makeTreeMoveError(code, reason, details = {}) {
+  return {
+    ok: false,
+    error: code,
+    code,
+    reason,
+    ...(details && typeof details === 'object' && !Array.isArray(details) ? { details } : {}),
+  };
+}
+
+function normalizeTreeMovePayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return makeTreeMoveError('E_TREE_MOVE_PAYLOAD_INVALID', 'TREE_MOVE_PAYLOAD_REQUIRED');
+  }
+  const keys = Object.keys(payload);
+  const forbidden = keys.filter((key) => TREE_MOVE_FORBIDDEN_AUTHORITY_KEYS.includes(key)).sort();
+  if (forbidden.length > 0) {
+    return makeTreeMoveError('E_TREE_MOVE_PAYLOAD_INVALID', 'TREE_MOVE_RENDERER_AUTHORITY_DENIED', {
+      fields: forbidden,
+    });
+  }
+  const unsupported = keys.filter((key) => !TREE_MOVE_ALLOWED_PAYLOAD_KEYS.includes(key)).sort();
+  if (unsupported.length > 0) {
+    return makeTreeMoveError('E_TREE_MOVE_PAYLOAD_INVALID', 'TREE_MOVE_PAYLOAD_UNSUPPORTED_FIELDS', {
+      fields: unsupported,
+    });
+  }
+  const projectId = typeof payload.projectId === 'string' ? payload.projectId.trim() : '';
+  const nodeId = typeof payload.nodeId === 'string' ? payload.nodeId.trim() : '';
+  const targetParentNodeId = typeof payload.targetParentNodeId === 'string'
+    ? payload.targetParentNodeId.trim()
+    : '';
+  const targetIndex = Number.isInteger(payload.targetIndex) ? payload.targetIndex : -1;
+  if (!projectId || !nodeId || !targetParentNodeId || targetIndex < 0) {
+    return makeTreeMoveError('E_TREE_MOVE_PAYLOAD_INVALID', 'TREE_MOVE_PAYLOAD_INVALID');
+  }
+  return {
+    ok: true,
+    value: {
+      projectId,
+      nodeId,
+      targetParentNodeId,
+      targetIndex,
+    },
+  };
+}
+
+function buildOrderedTreeMoveRenames(parentPath, orderedEntries) {
+  const renames = [];
+  orderedEntries.forEach((entry, index) => {
+    const prefixed = formatPrefixedName(entry.baseName, index + 1);
+    const finalName = entry.isFile ? `${prefixed}.txt` : prefixed;
+    const finalPath = joinPathSegmentsWithinRoot(parentPath, [finalName], { resolveSymlinks: false });
+    entry.nextPath = finalPath;
+    if (entry.path !== finalPath) {
+      renames.push({ from: entry.path, to: finalPath });
+    }
+  });
+  return renames;
+}
+
+function dedupeRenames(renames) {
+  const seen = new Set();
+  const result = [];
+  for (const rename of renames) {
+    if (!rename || rename.from === rename.to) continue;
+    const key = `${rename.from}\u0000${rename.to}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(rename);
+  }
+  return result;
+}
+
+async function buildTreeMovePlan(nodePath, targetParentPath, targetIndex) {
+  const sourceParentPath = path.dirname(nodePath);
+  const sameParent = sourceParentPath === targetParentPath;
+  const sourceEntries = await readDirectoryEntries(sourceParentPath);
+  const movingEntry = sourceEntries.find((entry) => entry.path === nodePath);
+  if (!movingEntry) {
+    return makeTreeMoveError('E_TREE_MOVE_NODE_NOT_FOUND', 'TREE_MOVE_NODE_NOT_FOUND');
+  }
+
+  if (sameParent) {
+    const withoutMoving = sourceEntries.filter((entry) => entry.path !== nodePath);
+    if (targetIndex > withoutMoving.length) {
+      return makeTreeMoveError('E_TREE_MOVE_TARGET_INDEX_INVALID', 'TREE_MOVE_TARGET_INDEX_INVALID');
+    }
+    const ordered = withoutMoving.slice();
+    ordered.splice(targetIndex, 0, movingEntry);
+    const renames = buildOrderedTreeMoveRenames(sourceParentPath, ordered);
+    const moved = ordered.find((entry) => entry.path === nodePath);
+    return {
+      ok: true,
+      value: {
+        renames: dedupeRenames(renames),
+        nextNodePath: moved?.nextPath || nodePath,
+        targetIndex,
+      },
+    };
+  }
+
+  const targetEntries = await readDirectoryEntries(targetParentPath);
+  if (targetIndex > targetEntries.length) {
+    return makeTreeMoveError('E_TREE_MOVE_TARGET_INDEX_INVALID', 'TREE_MOVE_TARGET_INDEX_INVALID');
+  }
+  const sourceOrdered = sourceEntries.filter((entry) => entry.path !== nodePath);
+  const movingTargetEntry = {
+    ...movingEntry,
+    path: nodePath,
+  };
+  const targetOrdered = targetEntries.slice();
+  targetOrdered.splice(targetIndex, 0, movingTargetEntry);
+  const sourceRenames = buildOrderedTreeMoveRenames(sourceParentPath, sourceOrdered);
+  const targetRenames = buildOrderedTreeMoveRenames(targetParentPath, targetOrdered);
+  const moved = targetOrdered.find((entry) => entry.path === nodePath);
+  return {
+    ok: true,
+    value: {
+      renames: dedupeRenames([...sourceRenames, ...targetRenames]),
+      nextNodePath: moved?.nextPath || nodePath,
+      targetIndex,
+    },
+  };
 }
 
 // Автоматическое открытие последнего файла
@@ -12680,6 +12896,7 @@ const LEGACY_UI_TREE_DOCUMENT_COMMAND_IDS = new Set([
   'cmd.project.tree.renameNode',
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
+  TREE_MOVE_COMMAND_ID,
 ]);
 
 function normalizeLegacyUiBridgePayload(value) {
@@ -12926,6 +13143,173 @@ ipcMain.handle('ui:delete-node', async (_, payload) => {
   return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.deleteNode', payload);
 });
 
+async function handleUiMoveNodeCommand(payload, options = {}) {
+  const normalized = normalizeTreeMovePayload(payload);
+  if (!normalized.ok) return normalized;
+  const safePayload = normalized.value;
+
+  let resolvedNode;
+  let resolvedParent;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
+    resolvedParent = await resolveProjectTreeNodeIdentity(
+      safePayload.targetParentNodeId,
+      safePayload.projectId,
+    );
+  } catch (error) {
+    return makeTreeMoveError(
+      error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
+      'TREE_MOVE_NODE_RESOLUTION_FAILED',
+    );
+  }
+
+  if (!TREE_MOVE_ALLOWED_NODE_KINDS.has(resolvedNode.kind)) {
+    return makeTreeMoveError('E_TREE_MOVE_KIND_BLOCKED', 'TREE_MOVE_KIND_BLOCKED', {
+      kind: resolvedNode.kind,
+    });
+  }
+  if (!TREE_MOVE_ALLOWED_PARENT_KINDS.has(resolvedParent.kind)) {
+    return makeTreeMoveError('E_TREE_MOVE_TARGET_KIND_BLOCKED', 'TREE_MOVE_TARGET_KIND_BLOCKED', {
+      kind: resolvedParent.kind,
+    });
+  }
+
+  const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
+  if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
+  const parentPathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedParent.nodePath }, ['path']);
+  if (!parentPathGuard.ok || !parentPathGuard.payload) return parentPathGuard.error;
+  const nodePath = nodePathGuard.payload.path;
+  const targetParentPath = parentPathGuard.payload.path;
+  const romanRoot = getProjectSectionPath('roman');
+
+  if (!isPathInside(romanRoot, nodePath) || !isPathInside(romanRoot, targetParentPath)) {
+    return makeTreeMoveError('E_TREE_MOVE_SCOPE_BLOCKED', 'TREE_MOVE_ONLY_SUPPORTED_IN_ROMAN');
+  }
+  if (nodePath === targetParentPath || isPathInside(nodePath, targetParentPath)) {
+    return makeTreeMoveError('E_TREE_MOVE_CYCLE_BLOCKED', 'TREE_MOVE_CYCLE_BLOCKED');
+  }
+
+  let targetParentStat;
+  try {
+    targetParentStat = await fs.lstat(targetParentPath);
+  } catch {
+    return makeTreeMoveError('E_TREE_MOVE_TARGET_NOT_FOUND', 'TREE_MOVE_TARGET_NOT_FOUND');
+  }
+  if (!targetParentStat.isDirectory()) {
+    return makeTreeMoveError('E_TREE_MOVE_TARGET_NOT_PARENT', 'TREE_MOVE_TARGET_NOT_PARENT');
+  }
+
+  const plan = await buildTreeMovePlan(nodePath, targetParentPath, safePayload.targetIndex);
+  if (!plan.ok) return plan;
+  const { renames, nextNodePath, targetIndex } = plan.value;
+  if (!Array.isArray(renames) || renames.length === 0) {
+    return {
+      ok: true,
+      nodeId: resolvedNode.nodeId,
+      targetParentNodeId: resolvedParent.nodeId,
+      targetIndex,
+      moved: false,
+      receipt: {
+        schemaVersion: 'project-tree-move-receipt.v1',
+        type: 'project.tree.move.receipt',
+        commandId: TREE_MOVE_COMMAND_ID,
+        projectId: resolvedNode.projectId,
+        nodeId: resolvedNode.nodeId,
+        targetParentNodeId: resolvedParent.nodeId,
+        moved: false,
+      },
+    };
+  }
+
+  const manifestSourceText = await fs.readFile(resolvedNode.manifestPath, 'utf8');
+  const backupResult = await backupManager.createBackup(
+    resolvedNode.manifestPath,
+    manifestSourceText,
+    { basePath: resolvedNode.projectRoot },
+  );
+  if (!backupResult || backupResult.success !== true) {
+    return makeTreeMoveError('E_TREE_MOVE_BACKUP_FAILED', 'TREE_MOVE_BACKUP_FAILED');
+  }
+  const recovery = await createProjectTreeMoveRecovery(
+    resolvedNode.manifestPath,
+    resolvedNode.projectRoot,
+    manifestSourceText,
+    options,
+  );
+
+  try {
+    if (typeof options.beforeFsMove === 'function') {
+      await options.beforeFsMove({ renames: cloneJsonSafe(renames) || [] });
+    }
+    await safeRenameSequence(renames);
+    if (typeof options.afterFsMoveBeforeIdentity === 'function') {
+      await options.afterFsMoveBeforeIdentity({ renames: cloneJsonSafe(renames) || [] });
+    }
+  } catch (error) {
+    try {
+      await safeRenameSequence(
+        renames.slice().reverse().map((move) => ({ from: move.to, to: move.from })),
+      );
+    } catch (rollbackError) {
+      logDevError('move node filesystem rollback', rollbackError);
+    }
+    return makeTreeMoveError('E_TREE_MOVE_FILESYSTEM_FAILED', 'TREE_MOVE_FILESYSTEM_FAILED', {
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+    });
+  }
+
+  try {
+    await rebindProjectTreeIdentityForMoves(
+      renames.map((move) => ({ fromPath: move.from, toPath: move.to })),
+    );
+  } catch (error) {
+    logDevError('move node identity', error);
+    try {
+      await safeRenameSequence(
+        renames.slice().reverse().map((move) => ({ from: move.to, to: move.from })),
+      );
+    } catch (rollbackError) {
+      logDevError('move node identity rollback', rollbackError);
+    }
+    return makeTreeMoveError(
+      error && typeof error.code === 'string' ? error.code : 'E_TREE_MOVE_IDENTITY_REBIND_FAILED',
+      'TREE_MOVE_IDENTITY_REBIND_FAILED',
+    );
+  }
+
+  if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
+    const relative = path.relative(nodePath, currentFilePath);
+    currentFilePath = joinPathSegmentsWithinRoot(nextNodePath, [relative], { resolveSymlinks: false });
+    await saveLastFile();
+  }
+
+  const receipt = {
+    schemaVersion: 'project-tree-move-receipt.v1',
+    type: 'project.tree.move.receipt',
+    commandId: TREE_MOVE_COMMAND_ID,
+    projectId: resolvedNode.projectId,
+    nodeId: resolvedNode.nodeId,
+    targetParentNodeId: resolvedParent.nodeId,
+    targetIndex,
+    moved: true,
+    renamedEntryCount: renames.length,
+    recovery: {
+      snapshotCreated: recovery.snapshotCreated === true,
+      snapshotReadable: recovery.snapshotReadable === true,
+      snapshotHashMatchesInput: recovery.snapshotHashMatchesInput === true,
+      manifestHash: typeof recovery.manifestHash === 'string' ? recovery.manifestHash : '',
+    },
+  };
+  return {
+    ok: true,
+    nodeId: resolvedNode.nodeId,
+    targetParentNodeId: resolvedParent.nodeId,
+    targetIndex,
+    moved: true,
+    receipt,
+  };
+}
+
 async function handleUiReorderNodeCommand(payload) {
   const safePayload = normalizeLegacyUiBridgePayload(payload);
   if (typeof safePayload.direction !== 'string') {
@@ -12962,46 +13346,22 @@ async function handleUiReorderNodeCommand(payload) {
     return { ok: true, nodeId: resolvedNode.nodeId };
   }
 
-  const nextEntries = entries.slice();
-  const [moved] = nextEntries.splice(index, 1);
-  nextEntries.splice(targetIndex, 0, moved);
-
-  const reordered = await reorderEntriesWithPrefixes(parentPath, nextEntries);
-  const updated = reordered.find((entry) => entry.path === nodePath || entry.nextPath === nodePath);
-  const updatedPath = updated?.nextPath || nodePath;
-  const identityMoves = reordered
-    .filter((entry) => entry.path !== entry.nextPath)
-    .map((entry) => ({ fromPath: entry.path, toPath: entry.nextPath }));
-  try {
-    await rebindProjectTreeIdentityForMoves(identityMoves);
-  } catch (error) {
-    logDevError('reorder node identity', error);
-    try {
-      await safeRenameSequence(
-        identityMoves.map((move) => ({ from: move.toPath, to: move.fromPath })),
-      );
-    } catch (rollbackError) {
-      logDevError('reorder node identity rollback', rollbackError);
-    }
-    return {
-      ok: false,
-      error: error && typeof error.code === 'string'
-        ? error.code
-        : 'PROJECT_TREE_IDENTITY_REBIND_FAILED',
-    };
-  }
-
-  if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
-    const relative = path.relative(nodePath, currentFilePath);
-    currentFilePath = joinPathSegmentsWithinRoot(updatedPath, [relative], { resolveSymlinks: false });
-    await saveLastFile();
-  }
-
+  const moveResult = await handleUiMoveNodeCommand({
+    projectId: resolvedNode.projectId,
+    nodeId: resolvedNode.nodeId,
+    targetParentNodeId: getTreeParentNodeIdFromResolvedPath(parentPath, resolvedNode.manifest),
+    targetIndex,
+  });
+  if (!moveResult || moveResult.ok !== true) return moveResult;
   return { ok: true, nodeId: resolvedNode.nodeId };
 }
 
 ipcMain.handle('ui:reorder-node', async (_, payload) => {
   return dispatchLegacyUiTreeDocumentCommand('cmd.project.tree.reorderNode', payload);
+});
+
+ipcMain.handle('ui:move-node', async (_, payload) => {
+  return dispatchLegacyUiTreeDocumentCommand(TREE_MOVE_COMMAND_ID, payload);
 });
 ipcMain.handle('ui:open-section', async (_, payload) => {
   if (!mainWindow) {
@@ -14047,6 +14407,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.tree.reorderNode': async (payload = {}) => {
     return handleUiReorderNodeCommand(payload);
   },
+  [TREE_MOVE_COMMAND_ID]: async (payload = {}) => {
+    return handleUiMoveNodeCommand(payload);
+  },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
       ? payload.fontFamily
@@ -15073,6 +15436,7 @@ module.exports = {
   handleUiOpenDocumentCommand,
   handleUiRenameNodeCommand,
   handleUiReorderNodeCommand,
+  handleUiMoveNodeCommand,
   handleWorkspaceProjectTreeQuery,
   normalizeProjectManifest,
   persistBookProfileForFile,

@@ -42,7 +42,7 @@ function assertBridgeCall(call, expectedCommandId, expectedPayload) {
   })
 }
 
-test('command kernel tree-document adoption: projectCommands defines and registers five stable command ids', async () => {
+test('command kernel tree-document adoption: projectCommands defines and registers six stable command ids', async () => {
   const projectCommandsSource = read('src/renderer/commands/projectCommands.mjs')
   const commandEffectSource = read('src/renderer/commands/commandEffectModel.mjs')
   const projectCommands = await loadProjectCommands()
@@ -52,18 +52,21 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'cmd.project.tree.renameNode')
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'cmd.project.tree.deleteNode')
   assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'cmd.project.tree.reorderNode')
+  assert.equal(projectCommands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'cmd.project.tree.moveNode')
 
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_CREATE_NODE,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_RENAME_NODE,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_DELETE_NODE,'))
   assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
+  assert.ok(projectCommandsSource.includes('id: EXTRA_COMMAND_IDS.TREE_MOVE_NODE,'))
 
   assert.equal(projectCommandsSource.includes('electronAPI.openDocument('), false)
   assert.equal(projectCommandsSource.includes('electronAPI.createNode('), false)
   assert.equal(projectCommandsSource.includes('electronAPI.renameNode('), false)
   assert.equal(projectCommandsSource.includes('electronAPI.deleteNode('), false)
   assert.equal(projectCommandsSource.includes('electronAPI.reorderNode('), false)
+  assert.equal(projectCommandsSource.includes('electronAPI.moveNode('), false)
 
   assert.ok(projectCommandsSource.includes('invokeBridgeOnlyCommand('))
   assert.ok(projectCommandsSource.includes("effectType: 'electron-bridge-only',"))
@@ -81,6 +84,8 @@ test('command kernel tree-document adoption: projectCommands defines and registe
   assert.ok(projectCommandsSource.includes('{ projectId, nodeId },'))
   assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_REORDER_NODE,'))
   assert.ok(projectCommandsSource.includes('{ projectId, nodeId, direction },'))
+  assert.ok(projectCommandsSource.includes('EXTRA_COMMAND_IDS.TREE_MOVE_NODE,'))
+  assert.ok(projectCommandsSource.includes('{ projectId, nodeId, targetParentNodeId, targetIndex },'))
   assert.equal(projectCommandsSource.includes('DOCUMENT_PATH_REQUIRED'), false)
 })
 
@@ -122,6 +127,11 @@ test('command kernel tree-document adoption: tree document commands execute exac
       { projectId: 'project-1', nodeId: 'scene-1', direction: 'up' },
       { projectId: 'project-1', nodeId: 'scene-1', direction: 'up' },
     ],
+    [
+      projectCommands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE,
+      { projectId: 'project-1', nodeId: 'scene-1', targetParentNodeId: 'chapter-1', targetIndex: 0 },
+      { projectId: 'project-1', nodeId: 'scene-1', targetParentNodeId: 'chapter-1', targetIndex: 0 },
+    ],
   ]
 
   for (const [commandId, input, expectedPayload] of cases) {
@@ -148,6 +158,7 @@ test('command kernel tree-document adoption: runtime and docs capability binding
     [projectCommands.EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'cap.project.tree.renameNode'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'cap.project.tree.deleteNode'],
     [projectCommands.EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'cap.project.tree.reorderNode'],
+    [projectCommands.EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'cap.project.tree.moveNode'],
   ])
 
   for (const [commandId, capabilityId] of expected.entries()) {
@@ -214,12 +225,13 @@ test('command kernel tree-document adoption: editor routes tree and document act
   assert.equal(source.includes('window.electronAPI.renameNode('), false)
   assert.equal(source.includes('window.electronAPI.deleteNode('), false)
   assert.equal(source.includes('window.electronAPI.reorderNode('), false)
+  assert.equal(source.includes('window.electronAPI.moveNode('), false)
 
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, {'))
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {'))
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {'))
   assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, {'))
-  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, {'))
+  assert.ok(source.includes('dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, {'))
   assert.equal(source.includes('path: node.path'), false)
   assert.ok(source.includes('nodeId: getEffectiveDocumentId(node)'))
 })
@@ -231,7 +243,7 @@ test('command kernel tree-document adoption: tree click and context actions cont
   assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, 'Новая папка'"))
   assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'Переименовать'"))
   assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_DELETE_NODE, 'Удалить'"))
-  assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'Вверх'"))
+  assert.ok(source.includes("append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Вверх'"))
   assert.ok(source.includes('button.dataset.commandId = item.commandId;'))
   assert.ok(source.includes('isNavigatorContextCommandAvailable(commandId)'))
 })
@@ -239,7 +251,7 @@ test('command kernel tree-document adoption: tree click and context actions cont
 test('navigator context command bindings: every visible item is registry-gated and command-addressable', () => {
   const source = read('src/renderer/editor.js')
   const start = source.indexOf('function buildContextMenuItems(node)')
-  const end = source.indexOf('function renderTreeNode(node, level, isLast, ancestorHasNext = [])', start)
+  const end = source.indexOf('function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId = \'\', siblingIndex = 0)', start)
   assert.notEqual(start, -1)
   assert.notEqual(end, -1)
   const section = source.slice(start, end)
@@ -258,7 +270,7 @@ test('navigator context command bindings: every visible item is registry-gated a
     'TREE_CREATE_NODE',
     'TREE_RENAME_NODE',
     'TREE_DELETE_NODE',
-    'TREE_REORDER_NODE',
+    'TREE_MOVE_NODE',
     'INSERT_ADD_CARD',
   ]) {
     assert.ok(section.includes(`EXTRA_COMMAND_IDS.${commandId}`), commandId)

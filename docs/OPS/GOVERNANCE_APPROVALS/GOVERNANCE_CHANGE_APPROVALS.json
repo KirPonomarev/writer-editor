@@ -3202,10 +3202,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "b1cc60c8539d06a4f7deed9d20b6895e1db196d3adadd35ed03971afbe2e3b50",
-      "approvedBy": "owner-plan:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3:S07_NAVIGATOR_CONTEXT_COMMAND_BINDINGS",
-      "approvedAtUtc": "2026-07-18T20:28:00.000Z",
-      "rationale": "Approve the bounded S07 capability binding for the existing selected-scenes TXT export command. The change routes the existing navigator action through the canonical command registry and capability policy without adding storage semantics, widening export behavior, changing licensing, or touching toolbar ownership."
+      "sha256": "887c1b122a51b58c96133728aa5bafc916b20ec5bef341e90da8143cb7723fd7",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S08_NAVIGATOR_MOVE_COMMAND",
+      "approvedAtUtc": "2026-07-19T00:00:00.000Z",
+      "rationale": "Approve bounded S08 command-capability binding update for cmd.project.tree.moveNode while preserving the S07 selected-scenes TXT export binding; this adds navigator move command capability coverage without widening network, dependency, cloud, paid feature, toolbar visual, project path authority, recovery bypass, or unsupported platform claims."
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",

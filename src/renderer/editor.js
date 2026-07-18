@@ -7466,10 +7466,30 @@ function isProjectTreeDocumentId(value) {
   return typeof value === 'string' && /^tree-node-[a-f0-9]{32}$/u.test(value);
 }
 
+function findTreeNodeById(root, nodeId) {
+  if (!root || typeof root !== 'object' || !nodeId) return null;
+  const stack = [root];
+  while (stack.length) {
+    const node = stack.pop();
+    if (!node || typeof node !== 'object') continue;
+    if (getEffectiveDocumentId(node) === nodeId) return node;
+    const children = Array.isArray(node.children) ? node.children : [];
+    for (let index = children.length - 1; index >= 0; index -= 1) {
+      stack.push(children[index]);
+    }
+  }
+  return null;
+}
+
 const NAVIGATOR_SELECTABLE_KINDS = new Set(['roman-section', 'chapter-file', 'scene']);
+const NAVIGATOR_MOVABLE_KINDS = new Set(['part', 'chapter-folder', 'chapter-file', 'scene']);
 
 function isNavigatorSelectableNode(node) {
   return NAVIGATOR_SELECTABLE_KINDS.has(getEffectiveDocumentKind(node));
+}
+
+function isNavigatorMovableNode(node) {
+  return NAVIGATOR_MOVABLE_KINDS.has(getEffectiveDocumentKind(node));
 }
 
 function collectNavigatorSelectionUniverse() {
@@ -7734,16 +7754,26 @@ async function handleDeleteNode(node) {
   updateInspectorSnapshot();
 }
 
-async function handleReorderNode(node, direction) {
-  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, {
+async function handleMoveNode(node, targetParentNodeId, targetIndex) {
+  const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, {
     projectId: currentProjectId,
     nodeId: getEffectiveDocumentId(node),
-    direction,
+    targetParentNodeId,
+    targetIndex,
   });
   if (!result || result.ok === false) {
     return;
   }
   await loadTree();
+}
+
+async function handleReorderNode(node, direction) {
+  const targetParentNodeId = typeof node.parentNodeId === 'string' ? node.parentNodeId : '';
+  const siblingIndex = Number.isInteger(node.siblingIndex) ? node.siblingIndex : -1;
+  if (!targetParentNodeId || siblingIndex < 0) return;
+  const targetIndex = direction === 'up' ? siblingIndex - 1 : direction === 'down' ? siblingIndex + 1 : siblingIndex;
+  if (targetIndex < 0) return;
+  await handleMoveNode(node, targetParentNodeId, targetIndex);
 }
 
 async function handleAddCardForNode(node) {
@@ -7763,8 +7793,8 @@ function buildContextMenuItems(node) {
     append(EXTRA_COMMAND_IDS.PROJECT_DOCUMENT_OPEN, 'Открыть', () => openDocumentNode(node));
   };
   const appendReorder = () => {
-    append(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'Вверх', () => handleReorderNode(node, 'up'));
-    append(EXTRA_COMMAND_IDS.TREE_REORDER_NODE, 'Вниз', () => handleReorderNode(node, 'down'));
+    append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Вверх', () => handleReorderNode(node, 'up'));
+    append(EXTRA_COMMAND_IDS.TREE_MOVE_NODE, 'Вниз', () => handleReorderNode(node, 'down'));
   };
   const appendRenameDelete = () => {
     append(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, 'Переименовать', () => handleRenameNode(node));
@@ -7822,9 +7852,11 @@ function buildContextMenuItems(node) {
   return items;
 }
 
-function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
+function renderTreeNode(node, level, isLast, ancestorHasNext = [], parentNodeId = '', siblingIndex = 0) {
   const li = document.createElement('li');
   li.className = 'tree__node';
+  node.parentNodeId = parentNodeId;
+  node.siblingIndex = siblingIndex;
 
   const row = document.createElement('button');
   row.type = 'button';
@@ -7836,7 +7868,12 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
   if (effectiveDocumentId) {
     row.dataset.documentId = effectiveDocumentId;
     row.dataset.navigatorRowId = effectiveDocumentId;
+    row.draggable = activeTab === 'roman' && isNavigatorMovableNode(node);
   }
+  if (parentNodeId) {
+    row.dataset.navigatorParentNodeId = parentNodeId;
+  }
+  row.dataset.navigatorSiblingIndex = String(siblingIndex);
   if (currentDocumentId && effectiveDocumentId && currentDocumentId === effectiveDocumentId) {
     row.classList.add('is-active-document');
     row.dataset.activeDocument = 'true';
@@ -7976,6 +8013,59 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
     }
   });
 
+  row.addEventListener('dragstart', (event) => {
+    if (!event.dataTransfer) {
+      event.preventDefault();
+      return;
+    }
+    if (!effectiveDocumentId || activeTab !== 'roman' || !isNavigatorMovableNode(node)) {
+      event.preventDefault();
+      return;
+    }
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('application/x-yalken-tree-node-id', effectiveDocumentId);
+    event.dataTransfer.setData('application/x-yalken-tree-parent-node-id', parentNodeId || '');
+    event.dataTransfer.setData('application/x-yalken-tree-sibling-index', String(siblingIndex));
+  });
+
+  row.addEventListener('dragover', (event) => {
+    if (!event.dataTransfer) return;
+    if (!effectiveDocumentId || activeTab !== 'roman') return;
+    const draggedId = event.dataTransfer.getData('application/x-yalken-tree-node-id');
+    if (!draggedId || draggedId === effectiveDocumentId) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  });
+
+  row.addEventListener('drop', (event) => {
+    if (!event.dataTransfer) return;
+    if (!effectiveDocumentId || activeTab !== 'roman') return;
+    const draggedId = event.dataTransfer.getData('application/x-yalken-tree-node-id');
+    if (!draggedId || draggedId === effectiveDocumentId) return;
+    const draggedNode = findTreeNodeById(treeRoot, draggedId);
+    if (!draggedNode) return;
+    event.preventDefault();
+    const targetParentNodeId = node.kind === 'chapter-folder' || node.kind === 'part' || node.kind === 'roman-root'
+      ? effectiveDocumentId
+      : parentNodeId;
+    let targetIndex = node.kind === 'chapter-folder' || node.kind === 'part' || node.kind === 'roman-root'
+      ? 0
+      : siblingIndex;
+    const sourceParentNodeId = event.dataTransfer.getData('application/x-yalken-tree-parent-node-id');
+    const sourceSiblingIndex = Number(event.dataTransfer.getData('application/x-yalken-tree-sibling-index'));
+    if (
+      sourceParentNodeId
+      && sourceParentNodeId === targetParentNodeId
+      && Number.isInteger(sourceSiblingIndex)
+      && sourceSiblingIndex >= 0
+      && sourceSiblingIndex < targetIndex
+    ) {
+      targetIndex -= 1;
+    }
+    if (!targetParentNodeId || targetIndex < 0) return;
+    handleMoveNode(draggedNode, targetParentNodeId, targetIndex);
+  });
+
   li.appendChild(row);
 
   if (hasChildren && isExpanded) {
@@ -7987,7 +8077,9 @@ function renderTreeNode(node, level, isLast, ancestorHasNext = []) {
           child,
           level + 1,
           index === node.children.length - 1,
-          ancestorHasNext.concat(!isLast)
+          ancestorHasNext.concat(!isLast),
+          effectiveDocumentId,
+          index
         )
       );
     });
