@@ -41,6 +41,12 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   TREE_REORDER_NODE: 'cmd.project.tree.reorderNode',
   TREE_MOVE_NODE: 'cmd.project.tree.moveNode',
   METADATA_UPDATE: 'cmd.project.metadata.update',
+  NOTES_CREATE: 'cmd.project.notes.create',
+  NOTES_UPDATE: 'cmd.project.notes.update',
+  NOTES_DELETE: 'cmd.project.notes.delete',
+  NOTES_RESTORE: 'cmd.project.notes.restore',
+  NOTES_ATTACH_SCENE: 'cmd.project.notes.attachToScene',
+  NOTES_CONVERT_SCENE: 'cmd.project.notes.convertToScene',
   EDIT_UNDO: 'cmd.project.edit.undo',
   EDIT_REDO: 'cmd.project.edit.redo',
   EDIT_FIND: 'cmd.project.edit.find',
@@ -790,6 +796,47 @@ export function createLegacyActionBridge(executeCommand) {
     const result = await executeCommand(commandId, payload);
     return { handled: true, commandId, result };
   };
+}
+
+function registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, meta) {
+  registry.registerCommand(
+    {
+      id: commandId,
+      label: meta.label,
+      group: meta.group || 'project',
+      surface: Array.isArray(meta.surface) ? meta.surface : ['internal'],
+      hotkey: meta.hotkey || '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', commandId, 'ELECTRON_API_UNAVAILABLE');
+      }
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(electronAPI, commandId, input);
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          commandId,
+          'COMMAND_BRIDGE_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+      const bridged = unwrapBridgeResponseValue(response);
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          performed: true,
+          result: bridged,
+        });
+      }
+      return fail(
+        bridged && typeof bridged.code === 'string' ? bridged.code : 'E_COMMAND_FAILED',
+        commandId,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'COMMAND_FAILED',
+        bridged && bridged.details && typeof bridged.details === 'object' ? bridged.details : undefined,
+      );
+    },
+  );
 }
 
 export function registerProjectCommands(registry, options = {}) {
@@ -1582,6 +1629,21 @@ export function registerProjectCommands(registry, options = {}) {
       );
     },
   );
+
+  [
+    [EXTRA_COMMAND_IDS.NOTES_CREATE, 'Create Note'],
+    [EXTRA_COMMAND_IDS.NOTES_UPDATE, 'Update Note'],
+    [EXTRA_COMMAND_IDS.NOTES_DELETE, 'Delete Note'],
+    [EXTRA_COMMAND_IDS.NOTES_RESTORE, 'Restore Note'],
+    [EXTRA_COMMAND_IDS.NOTES_ATTACH_SCENE, 'Attach Note To Scene'],
+    [EXTRA_COMMAND_IDS.NOTES_CONVERT_SCENE, 'Convert Note To Scene'],
+  ].forEach(([commandId, label]) => {
+    registerBridgeOnlyProjectCommand(registry, electronAPI, commandId, {
+      label,
+      group: 'notes',
+      surface: ['internal'],
+    });
+  });
 
   registry.registerCommand(
     {

@@ -63,6 +63,14 @@ function createDeterministicNoteId(projectId, note, index) {
   return `${NOTE_ID_PREFIX}${digest.slice(0, 32)}`;
 }
 
+export function createNoteId(projectId, seed = '') {
+  const normalizedSeed = normalizeOptionalString(seed, 4096) || crypto.randomUUID?.() || crypto.randomBytes(16).toString('hex');
+  const digest = crypto.createHash('sha256')
+    .update(`${normalizeOptionalString(projectId, 128)}\u0000${normalizedSeed}`, 'utf8')
+    .digest('hex');
+  return `${NOTE_ID_PREFIX}${digest.slice(0, 32)}`;
+}
+
 function normalizeScope(value) {
   const scope = normalizeString(value, 64).toLowerCase();
   return NOTE_SCOPES.has(scope) ? scope : 'inbox';
@@ -169,6 +177,176 @@ export function normalizeNotesDocument(source = {}, options = {}) {
     value: normalized,
     changed: stableJson(source || {}) !== stableJson(normalized),
     hash: computeNotesHash(normalized),
+  };
+}
+
+export function toPublicNote(note) {
+  if (!isPlainObject(note)) return null;
+  const publicNote = {
+    id: normalizeNoteId(note.id),
+    scope: normalizeScope(note.scope),
+    title: normalizeOptionalString(note.title, 512),
+    body: typeof note.body === 'string' ? note.body : '',
+    createdAtUtc: normalizeOptionalString(note.createdAtUtc, 64),
+    updatedAtUtc: normalizeOptionalString(note.updatedAtUtc, 64),
+    deleted: note.deleted === true,
+    attachment: normalizeAttachment(note.attachment || note, normalizeScope(note.scope)),
+    contentHash: computeNotesHash({ body: typeof note.body === 'string' ? note.body : '' }),
+  };
+  if (publicNote.deleted) {
+    publicNote.deletedAtUtc = normalizeOptionalString(note.deletedAtUtc, 64);
+  }
+  if (Array.isArray(note.conversions)) {
+    publicNote.conversions = note.conversions
+      .filter(isPlainObject)
+      .map((conversion) => ({
+        kind: normalizeOptionalString(conversion.kind, 64) || 'scene',
+        sceneId: normalizeOptionalString(conversion.sceneId, 512),
+        createdAtUtc: normalizeOptionalString(conversion.createdAtUtc, 64),
+      }));
+  }
+  return publicNote;
+}
+
+export function buildNotesReadModel(document, options = {}) {
+  const normalized = normalizeNotesDocument(document, options).value;
+  const includeDeleted = options.includeDeleted === true;
+  const scope = normalizeOptionalString(options.scope, 64).toLowerCase();
+  const notes = normalized.notes
+    .filter((note) => includeDeleted || note.deleted !== true)
+    .filter((note) => !scope || note.scope === scope)
+    .map(toPublicNote)
+    .filter(Boolean);
+  return {
+    ok: true,
+    schemaVersion: 'notes-read-model.v1',
+    projectId: normalized.projectId,
+    state: 'ready',
+    scope: scope || 'all',
+    notes,
+    counts: {
+      total: normalized.notes.filter((note) => note.deleted !== true).length,
+      deleted: normalized.notes.filter((note) => note.deleted === true).length,
+      inbox: normalized.notes.filter((note) => note.deleted !== true && note.scope === 'inbox').length,
+    },
+    documentHash: computeNotesHash(normalized),
+  };
+}
+
+function findNoteIndex(document, noteId) {
+  const normalizedId = normalizeNoteId(noteId);
+  if (!normalizedId) return -1;
+  return document.notes.findIndex((note) => note.id === normalizedId);
+}
+
+export function applyNotesMutation(document, mutation = {}, options = {}) {
+  const nowIso = typeof options.now === 'function' ? options.now() : new Date().toISOString();
+  const projectId = normalizeOptionalString(options.projectId || document?.projectId, 128);
+  const base = normalizeNotesDocument(document, { projectId, now: () => nowIso }).value;
+  const next = cloneJson(base);
+  const op = normalizeOptionalString(mutation.op, 64);
+  let noteId = normalizeNoteId(mutation.noteId);
+  let changed = false;
+
+  if (op === 'create') {
+    noteId = noteId || createNoteId(projectId, `${mutation.scope || 'inbox'}\u0000${mutation.title || ''}\u0000${mutation.body || ''}\u0000${nowIso}`);
+    if (findNoteIndex(next, noteId) >= 0) {
+      return { ok: false, code: 'E_NOTE_ALREADY_EXISTS', reason: 'NOTE_ALREADY_EXISTS' };
+    }
+    const note = normalizeNote({
+      ...mutation,
+      id: noteId,
+      createdAtUtc: nowIso,
+      updatedAtUtc: nowIso,
+    }, next.notes.length, { projectId, nowIso });
+    next.notes.push(note);
+    changed = true;
+  } else {
+    const index = findNoteIndex(next, noteId);
+    if (index < 0) {
+      return { ok: false, code: 'E_NOTE_NOT_FOUND', reason: 'NOTE_NOT_FOUND' };
+    }
+    const current = next.notes[index];
+    if (op === 'update') {
+      if (current.deleted === true) {
+        return { ok: false, code: 'E_NOTE_DELETED', reason: 'NOTE_DELETED' };
+      }
+      next.notes[index] = normalizeNote({
+        ...current,
+        title: Object.prototype.hasOwnProperty.call(mutation, 'title') ? mutation.title : current.title,
+        body: Object.prototype.hasOwnProperty.call(mutation, 'body') ? mutation.body : current.body,
+        updatedAtUtc: nowIso,
+      }, index, { projectId, nowIso });
+      changed = true;
+    } else if (op === 'delete') {
+      if (current.deleted !== true) {
+        next.notes[index] = {
+          ...current,
+          deleted: true,
+          deletedAtUtc: nowIso,
+          updatedAtUtc: nowIso,
+        };
+        changed = true;
+      }
+    } else if (op === 'restore') {
+      if (current.deleted === true) {
+        const restored = { ...current, deleted: false, updatedAtUtc: nowIso };
+        delete restored.deletedAtUtc;
+        next.notes[index] = restored;
+        changed = true;
+      }
+    } else if (op === 'attachToScene') {
+      if (current.deleted === true) {
+        return { ok: false, code: 'E_NOTE_DELETED', reason: 'NOTE_DELETED' };
+      }
+      next.notes[index] = normalizeNote({
+        ...current,
+        scope: 'scene',
+        sceneId: mutation.sceneId,
+        nodeId: mutation.nodeId,
+        attachment: {
+          ...(isPlainObject(current.attachment) ? current.attachment : {}),
+          scope: 'scene',
+          sceneId: mutation.sceneId,
+          nodeId: mutation.nodeId,
+        },
+        updatedAtUtc: nowIso,
+      }, index, { projectId, nowIso });
+      changed = true;
+    } else if (op === 'recordConversion') {
+      if (current.deleted === true) {
+        return { ok: false, code: 'E_NOTE_DELETED', reason: 'NOTE_DELETED' };
+      }
+      const sceneId = normalizeOptionalString(mutation.sceneId, 512);
+      if (!sceneId) {
+        return { ok: false, code: 'E_NOTE_CONVERSION_SCENE_REQUIRED', reason: 'NOTE_CONVERSION_SCENE_REQUIRED' };
+      }
+      next.notes[index] = {
+        ...current,
+        conversions: [
+          ...(Array.isArray(current.conversions) ? current.conversions.filter(isPlainObject) : []),
+          {
+            kind: 'scene',
+            sceneId,
+            createdAtUtc: nowIso,
+          },
+        ],
+        updatedAtUtc: nowIso,
+      };
+      changed = true;
+    } else {
+      return { ok: false, code: 'E_NOTES_MUTATION_UNSUPPORTED', reason: 'NOTES_MUTATION_UNSUPPORTED' };
+    }
+  }
+
+  next.notes = normalizeNoteList(next.notes, { projectId, nowIso });
+  return {
+    ok: true,
+    changed,
+    noteId,
+    document: next,
+    note: toPublicNote(next.notes[findNoteIndex(next, noteId)]),
+    hash: computeNotesHash(next),
   };
 }
 

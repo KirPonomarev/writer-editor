@@ -323,6 +323,12 @@ const FLOW_OPEN_V1_CHANNEL = 'm:cmd:project:flow:open:v1';
 const FLOW_SAVE_V1_CHANNEL = 'm:cmd:project:flow:save:v1';
 const TREE_MOVE_COMMAND_ID = 'cmd.project.tree.moveNode';
 const METADATA_UPDATE_COMMAND_ID = 'cmd.project.metadata.update';
+const NOTES_CREATE_COMMAND_ID = 'cmd.project.notes.create';
+const NOTES_UPDATE_COMMAND_ID = 'cmd.project.notes.update';
+const NOTES_DELETE_COMMAND_ID = 'cmd.project.notes.delete';
+const NOTES_RESTORE_COMMAND_ID = 'cmd.project.notes.restore';
+const NOTES_ATTACH_SCENE_COMMAND_ID = 'cmd.project.notes.attachToScene';
+const NOTES_CONVERT_SCENE_COMMAND_ID = 'cmd.project.notes.convertToScene';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -6891,6 +6897,311 @@ async function migrateProjectNotesStorage(options = {}) {
   });
 }
 
+async function getProjectNotesContext(payload = {}) {
+  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const expectedProjectId = normalizeStableProjectId(payload.projectId);
+  if (expectedProjectId && expectedProjectId !== manifest.projectId) {
+    return {
+      ok: false,
+      code: 'E_NOTES_PROJECT_MISMATCH',
+      reason: 'NOTES_PROJECT_MISMATCH',
+    };
+  }
+  const notesStorage = await loadNotesStorageModule();
+  const projectRoot = path.dirname(manifestPath);
+  return {
+    ok: true,
+    projectRoot,
+    projectId: manifest.projectId,
+    notesStorage,
+  };
+}
+
+function makeNotesCommandError(commandId, code, reason, details = {}) {
+  return {
+    ok: false,
+    code,
+    op: commandId,
+    reason,
+    ...(isPlainObjectValue(details) && Object.keys(details).length > 0 ? { details } : {}),
+  };
+}
+
+async function readProjectNotesDocument(context, options = {}) {
+  const current = await context.notesStorage.readNotesStorage({
+    projectRoot: context.projectRoot,
+    projectId: context.projectId,
+    readFile: fs.readFile,
+    ...(typeof options.now === 'function' ? { now: options.now } : {}),
+  });
+  if (!current.ok) {
+    return {
+      ok: false,
+      code: 'E_NOTES_STORAGE_CORRUPT',
+      reason: 'NOTES_STORAGE_CORRUPT',
+    };
+  }
+  return { ok: true, current };
+}
+
+async function writeProjectNotesDocument(context, current, document, commandId, options = {}) {
+  const now = typeof options.now === 'function' ? options.now : () => new Date().toISOString();
+  const beforeText = current && typeof current.sourceText === 'string' && current.sourceText.length > 0
+    ? current.sourceText
+    : `${JSON.stringify(context.notesStorage.buildEmptyNotesDocument(context.projectId, { now }), null, 2)}\n`;
+  const notesPath = context.notesStorage.getNotesStoragePath(context.projectRoot);
+  const recovery = await context.notesStorage.createNotesRecoverySnapshot({
+    projectRoot: context.projectRoot,
+    notesPath,
+    sourceText: beforeText,
+    now,
+  });
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(notesPath, `${JSON.stringify(document, null, 2)}\n`),
+    'save project notes command',
+  );
+  if (!writeResult || writeResult.success !== true) {
+    return makeNotesCommandError(
+      commandId,
+      'E_NOTES_STORAGE_WRITE_FAILED',
+      'NOTES_STORAGE_WRITE_FAILED',
+      { recovery },
+    );
+  }
+  return {
+    ok: true,
+    recovery,
+  };
+}
+
+function buildNotesMutationReceipt({ commandId, mutation, result, recovery }) {
+  return {
+    schemaVersion: 'notes-command-receipt.v1',
+    commandId,
+    operation: mutation.op,
+    noteId: result.noteId,
+    documentHash: result.hash,
+    recovery: recovery || null,
+  };
+}
+
+async function runNotesMutationCommand(commandId, payload = {}, mutationInput = {}, options = {}) {
+  const context = await getProjectNotesContext(payload);
+  if (!context.ok) {
+    return makeNotesCommandError(commandId, context.code, context.reason);
+  }
+  const read = await readProjectNotesDocument(context, options);
+  if (!read.ok) {
+    return makeNotesCommandError(commandId, read.code, read.reason);
+  }
+  const mutation = {
+    ...mutationInput,
+    noteId: typeof payload.noteId === 'string' ? payload.noteId : mutationInput.noteId,
+  };
+  const result = context.notesStorage.applyNotesMutation(read.current.document, mutation, {
+    projectId: context.projectId,
+    ...(typeof options.now === 'function' ? { now: options.now } : {}),
+  });
+  if (!result.ok) {
+    return makeNotesCommandError(commandId, result.code, result.reason);
+  }
+  const written = await writeProjectNotesDocument(context, read.current, result.document, commandId, options);
+  if (!written.ok) {
+    return written;
+  }
+  return {
+    ok: true,
+    note: result.note,
+    receipt: buildNotesMutationReceipt({
+      commandId,
+      mutation,
+      result,
+      recovery: written.recovery,
+    }),
+  };
+}
+
+async function handleWorkspaceProjectNotesQuery(payload = {}) {
+  const context = await getProjectNotesContext(payload);
+  if (!context.ok) {
+    return makeNotesCommandError('query.projectNotes', context.code, context.reason);
+  }
+  const read = await readProjectNotesDocument(context);
+  if (!read.ok) {
+    return {
+      ok: true,
+      schemaVersion: 'notes-read-model.v1',
+      projectId: context.projectId,
+      state: 'corrupt',
+      unavailableReason: read.reason,
+      notes: [],
+      counts: { total: 0, deleted: 0, inbox: 0 },
+    };
+  }
+  return context.notesStorage.buildNotesReadModel(read.current.document, {
+    projectId: context.projectId,
+    scope: typeof payload.scope === 'string' ? payload.scope : '',
+    includeDeleted: payload.includeDeleted === true,
+  });
+}
+
+async function handleNotesCreateCommand(payload = {}, options = {}) {
+  return runNotesMutationCommand(NOTES_CREATE_COMMAND_ID, payload, {
+    op: 'create',
+    noteId: typeof payload.noteId === 'string' ? payload.noteId : '',
+    scope: typeof payload.scope === 'string' ? payload.scope : 'inbox',
+    title: typeof payload.title === 'string' ? payload.title : '',
+    body: typeof payload.body === 'string' ? payload.body : '',
+  }, options);
+}
+
+async function handleNotesUpdateCommand(payload = {}, options = {}) {
+  return runNotesMutationCommand(NOTES_UPDATE_COMMAND_ID, payload, {
+    op: 'update',
+    title: typeof payload.title === 'string' ? payload.title : undefined,
+    body: typeof payload.body === 'string' ? payload.body : undefined,
+  }, options);
+}
+
+async function handleNotesDeleteCommand(payload = {}, options = {}) {
+  return runNotesMutationCommand(NOTES_DELETE_COMMAND_ID, payload, { op: 'delete' }, options);
+}
+
+async function handleNotesRestoreCommand(payload = {}, options = {}) {
+  return runNotesMutationCommand(NOTES_RESTORE_COMMAND_ID, payload, { op: 'restore' }, options);
+}
+
+async function handleNotesAttachToSceneCommand(payload = {}, options = {}) {
+  const context = await getProjectNotesContext(payload);
+  if (!context.ok) {
+    return makeNotesCommandError(NOTES_ATTACH_SCENE_COMMAND_ID, context.code, context.reason);
+  }
+  const nodeId = typeof payload.nodeId === 'string' ? payload.nodeId : '';
+  let resolved = null;
+  try {
+    resolved = await resolveProjectTreeNodeIdentity(nodeId, context.projectId);
+  } catch {
+    resolved = null;
+  }
+  if (!resolved || resolved.ok === false || resolved.kind !== 'scene') {
+    return makeNotesCommandError(
+      NOTES_ATTACH_SCENE_COMMAND_ID,
+      'E_NOTES_SCENE_NODE_INVALID',
+      'NOTES_SCENE_NODE_INVALID',
+    );
+  }
+  const sceneId = getProjectRelativeFilePath(resolved.nodePath, path.join(context.projectRoot, PROJECT_MANIFEST_FILENAME));
+  if (!sceneId) {
+    return makeNotesCommandError(
+      NOTES_ATTACH_SCENE_COMMAND_ID,
+      'E_NOTES_SCENE_ID_UNRESOLVED',
+      'NOTES_SCENE_ID_UNRESOLVED',
+    );
+  }
+  return runNotesMutationCommand(NOTES_ATTACH_SCENE_COMMAND_ID, payload, {
+    op: 'attachToScene',
+    sceneId,
+    nodeId,
+  }, options);
+}
+
+async function allocateConvertedNoteScenePath(projectRoot, title) {
+  const importedRoot = joinPathSegmentsWithinRoot(projectRoot, ['roman', 'Imported'], { resolveSymlinks: false });
+  await fs.mkdir(importedRoot, { recursive: true });
+  const safeTitle = sanitizeFilename(title || 'Note scene');
+  const entries = await readDirectoryEntries(importedRoot);
+  const maxPrefix = entries.reduce((max, entry) => (
+    Number.isInteger(entry.prefix) && entry.prefix > max ? entry.prefix : max
+  ), 0);
+  for (let offset = 1; offset <= 999; offset += 1) {
+    const prefix = String(maxPrefix + offset).padStart(2, '0');
+    const candidate = joinPathSegmentsWithinRoot(importedRoot, [`${prefix}_${safeTitle}.txt`], { resolveSymlinks: false });
+    if (!fsSync.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  throw new Error('NOTES_CONVERT_SCENE_SLOT_UNAVAILABLE');
+}
+
+async function handleNotesConvertToSceneCommand(payload = {}, options = {}) {
+  const context = await getProjectNotesContext(payload);
+  if (!context.ok) {
+    return makeNotesCommandError(NOTES_CONVERT_SCENE_COMMAND_ID, context.code, context.reason);
+  }
+  const read = await readProjectNotesDocument(context, options);
+  if (!read.ok) {
+    return makeNotesCommandError(NOTES_CONVERT_SCENE_COMMAND_ID, read.code, read.reason);
+  }
+  const readModel = context.notesStorage.buildNotesReadModel(read.current.document, {
+    projectId: context.projectId,
+    includeDeleted: true,
+  });
+  const noteId = typeof payload.noteId === 'string' ? payload.noteId : '';
+  const note = readModel.notes.find((item) => item.id === noteId) || null;
+  if (!note || note.deleted === true) {
+    return makeNotesCommandError(NOTES_CONVERT_SCENE_COMMAND_ID, 'E_NOTE_NOT_FOUND', 'NOTE_NOT_FOUND');
+  }
+  const title = typeof payload.title === 'string' && payload.title.trim()
+    ? payload.title.trim()
+    : note.title || 'Note scene';
+  const body = typeof note.body === 'string' ? note.body : '';
+  if (payload.confirmed !== true) {
+    return {
+      ok: true,
+      preview: true,
+      noteId: note.id,
+      title,
+      bodyHash: note.contentHash,
+    };
+  }
+  const scenePath = await allocateConvertedNoteScenePath(context.projectRoot, title);
+  const sceneWrite = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(scenePath, body),
+    'convert note to scene',
+  );
+  if (!sceneWrite || sceneWrite.success !== true) {
+    return makeNotesCommandError(
+      NOTES_CONVERT_SCENE_COMMAND_ID,
+      'E_NOTES_CONVERT_SCENE_WRITE_FAILED',
+      'NOTES_CONVERT_SCENE_WRITE_FAILED',
+    );
+  }
+  const sceneId = getProjectRelativeFilePath(scenePath, path.join(context.projectRoot, PROJECT_MANIFEST_FILENAME));
+  const recorded = context.notesStorage.applyNotesMutation(read.current.document, {
+    op: 'recordConversion',
+    noteId: note.id,
+    sceneId,
+  }, {
+    projectId: context.projectId,
+    ...(typeof options.now === 'function' ? { now: options.now } : {}),
+  });
+  if (!recorded.ok) {
+    return makeNotesCommandError(NOTES_CONVERT_SCENE_COMMAND_ID, recorded.code, recorded.reason, {
+      sceneCreated: true,
+    });
+  }
+  const written = await writeProjectNotesDocument(context, read.current, recorded.document, NOTES_CONVERT_SCENE_COMMAND_ID, options);
+  if (!written.ok) {
+    return written;
+  }
+  return {
+    ok: true,
+    converted: true,
+    note: recorded.note,
+    scene: {
+      sceneId,
+      title,
+      contentHash: computeHash(body),
+    },
+    receipt: buildNotesMutationReceipt({
+      commandId: NOTES_CONVERT_SCENE_COMMAND_ID,
+      mutation: { op: 'recordConversion', noteId: note.id, sceneId },
+      result: recorded,
+      recovery: written.recovery,
+    }),
+  };
+}
+
 async function resolveProjectBindingForFile(filePath) {
   if (typeof filePath !== 'string' || !filePath.trim()) {
     return null;
@@ -12782,6 +13093,9 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   if (queryId === 'query.metadataInspector') {
     return handleWorkspaceMetadataInspectorQuery(payload);
   }
+  if (queryId === 'query.projectNotes') {
+    return handleWorkspaceProjectNotesQuery(payload);
+  }
   return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
 
@@ -14587,6 +14901,12 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.tree.deleteNode',
   'cmd.project.tree.reorderNode',
   METADATA_UPDATE_COMMAND_ID,
+  NOTES_CREATE_COMMAND_ID,
+  NOTES_UPDATE_COMMAND_ID,
+  NOTES_DELETE_COMMAND_ID,
+  NOTES_RESTORE_COMMAND_ID,
+  NOTES_ATTACH_SCENE_COMMAND_ID,
+  NOTES_CONVERT_SCENE_COMMAND_ID,
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -14597,6 +14917,7 @@ const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.collabScopeLocal',
   'query.reviewSurface',
   'query.metadataInspector',
+  'query.projectNotes',
 ]);
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
@@ -15013,6 +15334,24 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [METADATA_UPDATE_COMMAND_ID]: async (payload = {}) => {
     return handleMetadataUpdateCommand(payload);
+  },
+  [NOTES_CREATE_COMMAND_ID]: async (payload = {}) => {
+    return handleNotesCreateCommand(payload);
+  },
+  [NOTES_UPDATE_COMMAND_ID]: async (payload = {}) => {
+    return handleNotesUpdateCommand(payload);
+  },
+  [NOTES_DELETE_COMMAND_ID]: async (payload = {}) => {
+    return handleNotesDeleteCommand(payload);
+  },
+  [NOTES_RESTORE_COMMAND_ID]: async (payload = {}) => {
+    return handleNotesRestoreCommand(payload);
+  },
+  [NOTES_ATTACH_SCENE_COMMAND_ID]: async (payload = {}) => {
+    return handleNotesAttachToSceneCommand(payload);
+  },
+  [NOTES_CONVERT_SCENE_COMMAND_ID]: async (payload = {}) => {
+    return handleNotesConvertToSceneCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -16042,7 +16381,14 @@ module.exports = {
   handleUiReorderNodeCommand,
   handleUiMoveNodeCommand,
   handleMetadataUpdateCommand,
+  handleNotesAttachToSceneCommand,
+  handleNotesConvertToSceneCommand,
+  handleNotesCreateCommand,
+  handleNotesDeleteCommand,
+  handleNotesRestoreCommand,
+  handleNotesUpdateCommand,
   handleWorkspaceMetadataInspectorQuery,
+  handleWorkspaceProjectNotesQuery,
   handleWorkspaceProjectTreeQuery,
   migrateProjectNotesStorage,
   normalizeProjectManifest,
