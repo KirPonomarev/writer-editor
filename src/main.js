@@ -11148,9 +11148,14 @@ async function handleFlowSaveV1(payloadRaw) {
           currentHash,
         });
       }
+      const nextContent = normalizeFlowTextInput(item.content);
       normalizedScenes.push({
         path: safeScenePath,
-        content: normalizeFlowTextInput(item.content),
+        sceneId,
+        nodeId: nodeId || descriptor.nodeId,
+        baselineHash,
+        contentHashAfter: computeHash(nextContent),
+        content: nextContent,
       });
     }
 
@@ -11174,10 +11179,49 @@ async function handleFlowSaveV1(payloadRaw) {
       return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, errorCode, errorReason, errorDetails);
     }
 
+    const batchValue = writeResult && writeResult.value && typeof writeResult.value === 'object'
+      ? writeResult.value
+      : {};
+    const reopenedScenes = [];
+    for (const scene of normalizedScenes) {
+      let reopenedContent = '';
+      try {
+        reopenedContent = await fs.readFile(scene.path, 'utf8');
+      } catch {
+        reopenedContent = scene.content;
+      }
+      reopenedScenes.push({
+        sceneId: scene.sceneId,
+        nodeId: scene.nodeId,
+        title: typeof allowed.get(scene.path)?.title === 'string' ? allowed.get(scene.path).title : '',
+        kind: typeof allowed.get(scene.path)?.kind === 'string' ? allowed.get(scene.path).kind : 'scene',
+        baselineHash: computeHash(normalizeFlowTextInput(reopenedContent)),
+        missing: false,
+        partial: false,
+        content: normalizeFlowTextInput(reopenedContent),
+      });
+    }
+    const receiptEntries = normalizedScenes.map((scene) => ({
+      sceneId: scene.sceneId,
+      nodeId: scene.nodeId,
+      baselineHashBefore: scene.baselineHash,
+      contentHashAfter: scene.contentHashAfter,
+    }));
+    const receipt = {
+      operation: 'flow.batch.save.v1',
+      batchId: typeof batchValue.batchId === 'string' ? batchValue.batchId : '',
+      savedCount: normalizedScenes.length,
+      committed: true,
+      markerCleared: batchValue.receipt && batchValue.receipt.markerCleared === true,
+      scenes: receiptEntries,
+    };
+
     updateStatus('Flow mode сохранен');
     return {
       ok: 1,
       savedCount: normalizedScenes.length,
+      receipt,
+      scenes: reopenedScenes,
     };
   } catch (error) {
     return makeFlowModeError(FLOW_SAVE_V1_CHANNEL, 'M7_FLOW_INTERNAL_ERROR', 'flow_save_failed', {
