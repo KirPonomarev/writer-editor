@@ -20,10 +20,16 @@ function normalizeStableId(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizeBaselineHash(value) {
+  const hash = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  return /^[a-f0-9]{64}$/u.test(hash) ? hash : '';
+}
+
 function normalizeFlowProjectionScene(scene, index) {
   const source = scene && typeof scene === 'object' && !Array.isArray(scene) ? scene : {};
   const sceneId = normalizeStableId(source.sceneId) || normalizeStableId(source.nodeId) || `flow-scene-${index + 1}`;
   const nodeId = normalizeStableId(source.nodeId);
+  const baselineHash = normalizeBaselineHash(source.baselineHash);
   const title = typeof source.title === 'string' ? source.title : '';
   const kind = typeof source.kind === 'string' && source.kind ? source.kind : 'scene';
   const parsed = parseObservablePayload(typeof source.content === 'string' ? source.content : '');
@@ -31,6 +37,7 @@ function normalizeFlowProjectionScene(scene, index) {
   return {
     sceneId,
     nodeId,
+    baselineHash,
     title: escapeTitle(title) || 'Untitled',
     kind,
     order: index,
@@ -80,14 +87,18 @@ export function composeFlowReadProjection(scenes = []) {
     const start = cursor;
     lines.push(block);
     cursor += block.length;
+    const headingPrefix = `${heading}\n\n`;
     boundaries.push({
       sceneId: scene.sceneId,
       nodeId: scene.nodeId,
+      baselineHash: scene.baselineHash,
       title: scene.title,
       kind: scene.kind,
       order: scene.order,
       missing: scene.missing,
       start,
+      contentStart: start + headingPrefix.length,
+      contentEnd: cursor,
       end: cursor,
     });
     if (index < normalizedScenes.length - 1) cursor += 1;
@@ -100,6 +111,7 @@ export function composeFlowReadProjection(scenes = []) {
     scenes: normalizedScenes.map((scene) => ({
       sceneId: scene.sceneId,
       nodeId: scene.nodeId,
+      baselineHash: scene.baselineHash,
       title: scene.title,
       kind: scene.kind,
       order: scene.order,
@@ -124,6 +136,7 @@ export function findFlowProjectionSceneAtOffset(projection, offset) {
   return {
     sceneId: normalizeStableId(match.sceneId),
     nodeId: normalizeStableId(match.nodeId),
+    baselineHash: normalizeBaselineHash(match.baselineHash),
     title: typeof match.title === 'string' ? match.title : '',
     kind: typeof match.kind === 'string' ? match.kind : 'scene',
     order: Number.isInteger(match.order) ? match.order : 0,
@@ -177,6 +190,24 @@ export function buildFlowModeM9CoreSaveErrorStatus(error, sceneCount) {
   if (reason === 'flow_scene_path_missing') {
     return `Flow mode core (${count}) · save blocked: scene path missing · reopen flow mode`;
   }
+  if (reason === 'flow_scene_id_missing') {
+    return `Flow mode core (${count}) · save blocked: scene id missing · reopen flow mode`;
+  }
+  if (reason === 'flow_scene_baseline_hash_missing') {
+    return `Flow mode core (${count}) · save blocked: baseline hash missing · reopen flow mode`;
+  }
+  if (reason === 'flow_scene_missing') {
+    return `Flow mode core (${count}) · save blocked: source scene missing · reopen flow mode`;
+  }
+  if (reason === 'flow_boundary_damaged') {
+    return `Flow mode core (${count}) · save blocked: scene boundary changed · reopen flow mode`;
+  }
+  if (reason === 'flow_boundary_ambiguous') {
+    return `Flow mode core (${count}) · save blocked: scene boundary ambiguous · reopen flow mode`;
+  }
+  if (reason === 'flow_stale_source') {
+    return `Flow mode core (${count}) · save blocked: source changed · reopen flow mode`;
+  }
   if (reason === 'flow_scene_rich_content_unsupported') {
     return `Flow mode core (${count}) · save blocked: rich scene content unsupported · reopen flow mode`;
   }
@@ -228,6 +259,118 @@ function splitFlowScenes(flowText, expectedCount) {
     const contentEnd = i + 1 < markers.length ? markers[i + 1].line : lines.length;
     const content = lines.slice(contentStart, contentEnd).join('\n').replace(/\n+$/u, '');
     scenes.push(content);
+  }
+
+  return { ok: true, scenes };
+}
+
+function failProjectionSave(code, reason, details = {}) {
+  return { ok: false, error: { code, reason, details } };
+}
+
+function findUniqueBoundaryIndex(text, needle, fromIndex) {
+  const first = text.indexOf(needle, fromIndex);
+  if (first < 0) return { ok: false, reason: 'missing' };
+  const second = text.indexOf(needle, first + needle.length);
+  if (second >= 0) return { ok: false, reason: 'ambiguous' };
+  return { ok: true, index: first };
+}
+
+function splitFlowProjectionScenes(flowText, sceneRefs = []) {
+  const text = normalizeLineEndings(flowText).replace(/\n$/u, '');
+  const refs = Array.isArray(sceneRefs) ? sceneRefs : [];
+  const scenes = [];
+  let cursor = 0;
+
+  for (let index = 0; index < refs.length; index += 1) {
+    const ref = refs[index] && typeof refs[index] === 'object' ? refs[index] : {};
+    const title = escapeTitle(ref.title) || 'Untitled';
+    const heading = `${title}\n\n`;
+    if (text.slice(cursor, cursor + heading.length) !== heading) {
+      return failProjectionSave(
+        'M15_FLOW_BOUNDARY_DAMAGED',
+        'flow_boundary_damaged',
+        { sceneId: normalizeStableId(ref.sceneId), index },
+      );
+    }
+    const contentStart = cursor + heading.length;
+    let contentEnd = text.length;
+
+    if (index < refs.length - 1) {
+      const nextTitle = escapeTitle(refs[index + 1]?.title) || 'Untitled';
+      const nextNeedle = `\n\n${nextTitle}\n\n`;
+      const found = findUniqueBoundaryIndex(text, nextNeedle, contentStart);
+      if (!found.ok) {
+        return failProjectionSave(
+          found.reason === 'ambiguous' ? 'M15_FLOW_BOUNDARY_AMBIGUOUS' : 'M15_FLOW_BOUNDARY_DAMAGED',
+          found.reason === 'ambiguous' ? 'flow_boundary_ambiguous' : 'flow_boundary_damaged',
+          { sceneId: normalizeStableId(ref.sceneId), nextSceneId: normalizeStableId(refs[index + 1]?.sceneId), index },
+        );
+      }
+      contentEnd = found.index;
+      cursor = found.index + 2;
+    }
+
+    scenes.push(text.slice(contentStart, contentEnd).replace(/\n+$/u, ''));
+  }
+
+  return { ok: true, scenes };
+}
+
+export function buildFlowProjectionSavePayload(flowText, sceneRefs = []) {
+  const refs = Array.isArray(sceneRefs) ? sceneRefs : [];
+  const invalidRef = refs.find((ref) => !ref || typeof ref !== 'object' || Array.isArray(ref));
+  if (invalidRef) {
+    return failProjectionSave('M15_FLOW_INVALID_SCENE_ITEM', 'flow_scene_invalid');
+  }
+  if (refs.some((ref) => !normalizeStableId(ref.sceneId))) {
+    return failProjectionSave('M15_FLOW_SCENE_ID_MISSING', 'flow_scene_id_missing');
+  }
+  if (refs.some((ref) => !normalizeBaselineHash(ref.baselineHash))) {
+    return failProjectionSave('M15_FLOW_SCENE_BASELINE_HASH_MISSING', 'flow_scene_baseline_hash_missing');
+  }
+  if (refs.some((ref) => ref.missing === true || ref.partial === true)) {
+    return failProjectionSave('M15_FLOW_SCENE_MISSING', 'flow_scene_missing');
+  }
+
+  const split = splitFlowProjectionScenes(flowText, refs);
+  if (!split.ok) return split;
+
+  const scenes = refs.map((ref, idx) => {
+    const nextContent = composeDocumentContentFromBase({
+      baseContent: String(ref && ref.content ? ref.content : ''),
+      nextVisibleText: split.scenes[idx],
+    });
+    if (!nextContent.ok) {
+      return {
+        path: String(ref && ref.path ? ref.path : ''),
+        sceneId: normalizeStableId(ref.sceneId),
+        nodeId: normalizeStableId(ref.nodeId),
+        baselineHash: normalizeBaselineHash(ref.baselineHash),
+        title: String(ref && ref.title ? ref.title : ''),
+        kind: String(ref && ref.kind ? ref.kind : 'scene'),
+        error: nextContent.error,
+      };
+    }
+
+    return {
+      path: String(ref && ref.path ? ref.path : ''),
+      sceneId: normalizeStableId(ref.sceneId),
+      nodeId: normalizeStableId(ref.nodeId),
+      baselineHash: normalizeBaselineHash(ref.baselineHash),
+      title: String(ref && ref.title ? ref.title : ''),
+      kind: String(ref && ref.kind ? ref.kind : 'scene'),
+      content: nextContent.content,
+    };
+  });
+
+  if (scenes.some((scene) => scene.path.length === 0)) {
+    return failProjectionSave('M7_FLOW_SCENE_PATH_MISSING', 'flow_scene_path_missing');
+  }
+
+  const invalidScene = scenes.find((scene) => scene.error);
+  if (invalidScene) {
+    return { ok: false, error: invalidScene.error };
   }
 
   return { ok: true, scenes };
