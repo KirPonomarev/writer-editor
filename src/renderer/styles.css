@@ -837,7 +837,7 @@ body {
 
 .floating-toolbar__shell.is-vertical .floating-toolbar__controls {
   display: grid;
-  grid-template-columns: repeat(4, var(--toolbar-chrome-control-height));
+  grid-template-columns: repeat(4, minmax(var(--toolbar-chrome-control-height), 1fr));
   grid-auto-flow: row;
   align-items: start;
   justify-content: start;

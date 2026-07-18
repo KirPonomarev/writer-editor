@@ -88,6 +88,25 @@ test('sector-m toolbar metric shell descale: drag semantics stay move-width with
   assert.equal(source.includes("mode === 'scale'"), false);
 });
 
+test('sector-m toolbar metric shell descale: vertical width scale has no hidden range below its visual minimum', () => {
+  const source = readFile('src', 'renderer', 'editor.js');
+  const clampSnippet = sliceSection(
+    source,
+    'function clampFloatingToolbarWidthScale(widthScale, isVertical = false) {',
+    'function readFloatingToolbarState() {'
+  );
+  const stateSnippet = sliceSection(
+    source,
+    'function applyFloatingToolbarState(partialState, persist = true) {',
+    'function restoreFloatingToolbarPosition() {'
+  );
+
+  assert.ok(clampSnippet.includes('const minimumWidthScale = isVertical ? 1 : FLOATING_TOOLBAR_WIDTH_SCALE_MIN;'));
+  assert.ok(clampSnippet.includes('Math.max(widthScale, minimumWidthScale)'));
+  assert.ok(stateSnippet.includes('const nextIsVertical = Boolean(partialState.isVertical);'));
+  assert.ok(stateSnippet.includes('clampFloatingToolbarWidthScale(providedWidthScale, nextIsVertical)'));
+});
+
 test('sector-m toolbar metric shell descale: css keeps metric anchors and width-scale formulas without shell scale', () => {
   const styles = readFile('src', 'renderer', 'styles.css');
   const leftShellSection = sliceSection(styles, '.left-floating-toolbar__shell {', '.left-floating-toolbar__shell::before {');
