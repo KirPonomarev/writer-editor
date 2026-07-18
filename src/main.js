@@ -6761,6 +6761,18 @@ function loadProjectTreeIdentityModule() {
   return projectTreeIdentityModulePromise;
 }
 
+let navigatorCountersModulePromise = null;
+function loadNavigatorCountersModule() {
+  if (!navigatorCountersModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'derived', 'navigatorCounters.mjs')).href;
+    navigatorCountersModulePromise = import(modulePath).catch((error) => {
+      navigatorCountersModulePromise = null;
+      throw error;
+    });
+  }
+  return navigatorCountersModulePromise;
+}
+
 async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
   const source = isPlainObjectValue(manifest) ? manifest : {};
   const stableProjectId = normalizeStableProjectId(source.projectId);
@@ -11410,6 +11422,69 @@ async function reconcileProjectTreeIdentities(roots) {
   };
 }
 
+async function annotateProjectTreeDerivedCounters(roots) {
+  const counterModule = await loadNavigatorCountersModule();
+  if (!counterModule || typeof counterModule.annotateNavigatorDerivedCounters !== 'function') {
+    return {
+      changedSceneIds: [],
+      affectedNodeIds: [],
+    };
+  }
+  const readText = async (node) => {
+    if (!node || typeof node !== 'object') return '';
+    const nodePath = typeof node.path === 'string' ? node.path : '';
+    const kind = typeof node.kind === 'string' ? node.kind : '';
+    if (!nodePath || (kind !== 'scene' && kind !== 'chapter-file')) return '';
+    const projectRoot = getProjectRootPath();
+    const guard = sanitizePayloadWithinProjectRoot({ path: nodePath }, ['path'], projectRoot);
+    if (!guard.ok || !guard.payload) return '';
+    try {
+      return await fs.readFile(guard.payload.path, 'utf8');
+    } catch (error) {
+      if (error && error.code !== 'ENOENT') logDevError('project tree derived counter read', error);
+      return '';
+    }
+  };
+  const changedSceneIds = new Set();
+  const affectedNodeIds = new Set();
+  for (const root of roots) {
+    const result = await counterModule.annotateNavigatorDerivedCounters(root, { readText });
+    for (const nodeId of result.changedSceneIds || []) changedSceneIds.add(nodeId);
+    for (const nodeId of result.affectedNodeIds || []) affectedNodeIds.add(nodeId);
+  }
+  return {
+    changedSceneIds: Array.from(changedSceneIds).sort(),
+    affectedNodeIds: Array.from(affectedNodeIds).sort(),
+  };
+}
+
+function serializeProjectTreeDerivedCounters(counters) {
+  if (!counters || typeof counters !== 'object' || Array.isArray(counters)) {
+    return null;
+  }
+  const wordCount = Number.isInteger(counters.wordCount) ? Math.max(0, counters.wordCount) : 0;
+  const sceneCount = Number.isInteger(counters.sceneCount) ? Math.max(0, counters.sceneCount) : 0;
+  const completedSceneCount = Number.isInteger(counters.completedSceneCount)
+    ? Math.max(0, counters.completedSceneCount)
+    : 0;
+  const progressPercent = Number.isInteger(counters.progressPercent)
+    ? Math.min(100, Math.max(0, counters.progressPercent))
+    : 0;
+  const affectedByChangedSceneIds = Array.isArray(counters.affectedByChangedSceneIds)
+    ? counters.affectedByChangedSceneIds
+      .filter((value) => typeof value === 'string' && /^tree-node-[a-f0-9]{32}$/u.test(value))
+      .slice()
+      .sort()
+    : [];
+  return {
+    wordCount,
+    sceneCount,
+    completedSceneCount,
+    progressPercent,
+    affectedByChangedSceneIds,
+  };
+}
+
 function serializeProjectTreeNode(node) {
   if (!node || typeof node !== 'object' || Array.isArray(node)) {
     throw new Error('PROJECT_TREE_PUBLIC_NODE_INVALID');
@@ -11422,6 +11497,7 @@ function serializeProjectTreeNode(node) {
   if (!nodeId || !kind) {
     throw new Error('PROJECT_TREE_PUBLIC_IDENTITY_MISSING');
   }
+  const derivedCounters = serializeProjectTreeDerivedCounters(node.derivedCounters);
   return {
     id: nodeId,
     nodeId,
@@ -11429,6 +11505,7 @@ function serializeProjectTreeNode(node) {
     label,
     kind,
     children: Array.isArray(node.children) ? node.children.map(serializeProjectTreeNode) : [],
+    ...(derivedCounters ? { derivedCounters } : {}),
     ...(node.imported === true ? { imported: true } : {}),
   };
 }
@@ -11449,6 +11526,7 @@ async function buildProjectTreeRootsWithIdentities() {
     reference: await buildReferenceTree(),
   };
   const identity = await reconcileProjectTreeIdentities(Object.values(roots));
+  await annotateProjectTreeDerivedCounters(Object.values(roots));
   return {
     projectId: identity.projectId,
     roots,

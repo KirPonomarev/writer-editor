@@ -3697,6 +3697,19 @@ body.dark-theme .toolbar__swatch::before {
   letter-spacing: 0.002em;
 }
 
+.sidebar--left .tree__counters {
+  flex: 0 0 auto;
+  max-width: 96px;
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .sidebar--left .tree__label::before {
   content: '';
   width: 14px;
