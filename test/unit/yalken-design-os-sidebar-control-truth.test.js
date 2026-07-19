@@ -78,8 +78,6 @@ test('sidebar product truth: inspector projects live values and unopened surface
   assert.ok(editor.includes('if (!inspectorMarginsValue) return;'));
 
   for (const demoClaim of [
-    'data-right-tab="history"',
-    'data-right-panel-history',
     'data-history-placeholder',
     'Быстрая заметка',
     'Черновик синхронизирован.',
@@ -101,17 +99,23 @@ test('sidebar composition truth: right rail keeps metadata and review providers 
   assert.ok(html.includes('role="tab"\n              aria-controls="right-panel-inspector"'));
   assert.ok(html.includes('data-right-tab="comments"'));
   assert.ok(html.includes('role="tab"\n              aria-controls="right-panel-comments"'));
+  assert.ok(html.includes('data-right-tab="history"'));
+  assert.ok(html.includes('role="tab"\n              aria-controls="right-panel-history"'));
   assert.ok(html.includes('data-right-panel-inspector\n          data-right-surface-provider="query.metadataInspector"'));
   assert.ok(html.includes('data-right-panel-comments\n          data-right-surface-provider="query.reviewSurface"'));
+  assert.ok(html.includes('data-right-panel-history\n          data-right-surface-provider="query.sceneHistory"'));
   assert.ok(html.includes('data-review-surface-provider="query.reviewSurface"'));
+  assert.ok(html.includes('data-scene-history-provider="query.sceneHistory"'));
 
   assert.ok(editor.includes('const RIGHT_RAIL_SURFACE_PROVIDERS = Object.freeze({'));
   assert.ok(editor.includes('inspector: METADATA_INSPECTOR_QUERY_ID'));
   assert.ok(editor.includes('comments: REVIEW_SURFACE_QUERY_ID'));
+  assert.ok(editor.includes('history: SCENE_HISTORY_QUERY_ID'));
   assert.ok(editor.includes('function syncRightRailCompositionState(tab)'));
   assert.ok(editor.includes('rightTabsHost.dataset.activeRightProvider = providerId;'));
   assert.ok(editor.includes("reviewSurfaceHost.dataset.reviewSurfaceLoadedFrom = REVIEW_SURFACE_QUERY_ID;"));
   assert.ok(editor.includes("if (tab === 'inspector') {\n    ensureCommandsOpenerInRightInspectorSurface();\n    refreshMetadataInspector();\n  }"));
+  assert.ok(editor.includes("} else if (tab === 'history') {\n    refreshSceneHistory();\n  }"));
   assert.equal(editor.includes("if (tab === 'comments') {\n    refreshMetadataInspector();"), false);
 });
 

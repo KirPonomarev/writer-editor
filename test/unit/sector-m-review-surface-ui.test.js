@@ -374,7 +374,8 @@ test('review surface ui: comments rail keeps bounded review host and removes dem
 
   assert.ok(html.includes('data-right-tab="inspector"'));
   assert.ok(html.includes('data-right-tab="comments"'));
-  assert.equal(html.includes('data-right-tab="history"'), false);
+  assert.ok(html.includes('data-right-tab="history"'));
+  assert.ok(html.includes('data-right-panel-history'));
   assert.ok(html.includes('data-review-surface-host'));
   assert.equal(html.includes('right-rail-comment-card'), false);
   assert.equal(html.includes('data-comments-placeholder'), false);

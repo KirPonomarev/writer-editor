@@ -3413,8 +3413,145 @@ body.dark-theme .toolbar__swatch::before {
   gap: 12px;
 }
 
+[data-right-panel-history]:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .right-rail-shell--comments {
   gap: 20px;
+}
+
+.right-rail-shell--history {
+  gap: 18px;
+}
+
+.right-rail-surface--history-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.right-rail-history-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.right-rail-history-checkpoint {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--toolbar-control-border);
+  border-radius: 999px;
+  background: var(--selected-bg);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    var(--control-shadow);
+}
+
+.right-rail-history-checkpoint:disabled {
+  cursor: default;
+  opacity: 0.48;
+}
+
+.right-rail-history-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--divider);
+}
+
+.right-rail-history-item {
+  appearance: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  width: 100%;
+  padding: 10px 0 11px;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.right-rail-history-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  line-height: 17px;
+  font-weight: 500;
+}
+
+.right-rail-history-item small {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.right-rail-history-item:hover,
+.right-rail-history-item:focus-visible {
+  color: var(--foreground);
+}
+
+.right-rail-history-item.is-active span {
+  color: var(--foreground);
+}
+
+.right-rail-history-state {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.right-rail-history-state span {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-tertiary);
+  word-break: break-word;
+}
+
+.right-rail-history-state--blocked {
+  color: #8a3b2e;
+}
+
+.right-rail-history-delta {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.right-rail-history-diff-block {
+  min-height: 34px;
+  max-height: 132px;
+  margin: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--divider);
+  background: transparent;
+  color: var(--text-secondary);
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font: inherit;
+  font-size: 11.5px;
+  line-height: 16px;
+}
+
+.right-rail-history-diff-block--removed {
+  border-color: rgba(143, 89, 72, 0.22);
+}
+
+.right-rail-history-diff-block--inserted {
+  border-color: rgba(58, 110, 74, 0.22);
 }
 
 .right-rail-surface--review-header,

@@ -234,6 +234,8 @@ const rightTabsHost = document.querySelector('[data-right-tabs]');
 const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]'));
 const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]');
 const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
+const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
+const sceneHistoryHost = document.querySelector('[data-scene-history-host]');
 const reviewSurfaceHost = document.querySelector('[data-review-surface-host]');
 const inspectorCommentsAction = document.querySelector('[data-inspector-comments-action]');
 const inspectorFocusStatus = document.querySelector('[data-inspector-focus-status]');
@@ -529,6 +531,14 @@ let projectSearchState = {
 };
 let projectSearchRefreshTimer = null;
 let pendingProjectSearchJump = null;
+let sceneHistoryState = {
+  state: 'empty',
+  snapshots: [],
+  selectedSnapshot: null,
+  selectedSnapshotId: '',
+  sequence: 0,
+  unavailableReason: '',
+};
 let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentId = null;
@@ -644,9 +654,11 @@ function isPlainObject(value) {
 const REVIEW_SURFACE_RECEIPT_SCHEMA = 'revision-bridge.exact-text-min-safe-write.receipt.v1';
 const REVIEW_SURFACE_QUERY_ID = 'query.reviewSurface';
 const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';
+const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
 const RIGHT_RAIL_SURFACE_PROVIDERS = Object.freeze({
   inspector: METADATA_INSPECTOR_QUERY_ID,
   comments: REVIEW_SURFACE_QUERY_ID,
+  history: SCENE_HISTORY_QUERY_ID,
 });
 const METADATA_UPDATE_COMMAND_ID = 'cmd.project.metadata.update';
 const REVIEW_SURFACE_IMPORT_LOCAL_PACKET_COMMAND_ID = 'cmd.project.review.importLocalPacket';
@@ -6016,6 +6028,7 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
     && queryId !== METADATA_INSPECTOR_QUERY_ID
     && queryId !== NOTES_WORKSPACE_QUERY_ID
     && queryId !== PROJECT_SEARCH_QUERY_ID
+    && queryId !== SCENE_HISTORY_QUERY_ID
   ) {
     return null;
   }
@@ -7952,6 +7965,9 @@ async function openDocumentNode(node) {
     updateMetaVisibility();
     updateInspectorSnapshot();
     refreshMetadataInspector();
+    if (currentRightTab === 'history') {
+      refreshSceneHistory('');
+    }
     return true;
   } catch {
     activeDocumentRevealRequested = false;
@@ -9883,6 +9899,7 @@ function ensureCommandsOpenerInRightInspectorSurface() {
 }
 
 function normalizeRightTab(tab) {
+  if (tab === 'history') return 'history';
   if (tab === 'comments') return 'comments';
   return 'inspector';
 }
@@ -9921,6 +9938,10 @@ function syncRightRailCompositionState(tab) {
     rightCommentsPanel.hidden = tab !== 'comments';
     rightCommentsPanel.dataset.rightSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
   }
+  if (rightHistoryPanel instanceof HTMLElement) {
+    rightHistoryPanel.hidden = tab !== 'history';
+    rightHistoryPanel.dataset.rightSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.history;
+  }
   if (reviewSurfaceHost instanceof HTMLElement) {
     reviewSurfaceHost.dataset.reviewSurfaceProvider = RIGHT_RAIL_SURFACE_PROVIDERS.comments;
   }
@@ -9933,9 +9954,139 @@ function applyRightTab(tab) {
   if (tab === 'inspector') {
     ensureCommandsOpenerInRightInspectorSurface();
     refreshMetadataInspector();
+  } else if (tab === 'history') {
+    refreshSceneHistory();
   }
   syncInspectorStateSurface();
   syncToolbarShellState();
+}
+
+function normalizeSceneHistoryReadModel(result = {}, sequence = sceneHistoryState.sequence) {
+  if (!result || result.ok === false || typeof result !== 'object' || Array.isArray(result)) {
+    return {
+      state: 'unavailable',
+      snapshots: [],
+      selectedSnapshot: null,
+      selectedSnapshotId: '',
+      sequence,
+      unavailableReason: 'SCENE_HISTORY_QUERY_FAILED',
+    };
+  }
+  const snapshots = Array.isArray(result.snapshots) ? result.snapshots : [];
+  const selectedSnapshot = result.selectedSnapshot && typeof result.selectedSnapshot === 'object' && !Array.isArray(result.selectedSnapshot)
+    ? result.selectedSnapshot
+    : null;
+  return {
+    ...result,
+    snapshots,
+    selectedSnapshot,
+    selectedSnapshotId: selectedSnapshot?.snapshotId || sceneHistoryState.selectedSnapshotId || '',
+    sequence,
+    unavailableReason: typeof result.unavailableReason === 'string' ? result.unavailableReason : '',
+  };
+}
+
+function renderSceneHistoryState() {
+  if (!(sceneHistoryHost instanceof HTMLElement)) return;
+  const state = sceneHistoryState.state || 'empty';
+  const snapshots = Array.isArray(sceneHistoryState.snapshots) ? sceneHistoryState.snapshots : [];
+  const selected = sceneHistoryState.selectedSnapshot;
+  sceneHistoryHost.dataset.sceneHistoryState = state;
+
+  const buttonDisabled = !currentProjectId || !currentDocumentId || state === 'unavailable';
+  const header = `
+    <section class="right-rail-surface right-rail-surface--history-header">
+      <div class="right-rail-section__label">История текста</div>
+      <div class="right-rail-history-actions">
+        <button
+          type="button"
+          class="right-rail-history-checkpoint"
+          data-scene-history-checkpoint
+          ${buttonDisabled ? 'disabled' : ''}
+        >Снимок</button>
+      </div>
+    </section>
+  `;
+
+  if (state === 'empty') {
+    sceneHistoryHost.innerHTML = `${header}<div class="right-rail-history-state">Откройте сцену, чтобы увидеть снимки текста.</div>`;
+    return;
+  }
+  if (state === 'unavailable') {
+    const reason = reviewSurfaceEscapeHtml(sceneHistoryState.unavailableReason || 'SCENE_HISTORY_UNAVAILABLE');
+    sceneHistoryHost.innerHTML = `${header}<div class="right-rail-history-state right-rail-history-state--blocked">История текста недоступна.<span>${reason}</span></div>`;
+    return;
+  }
+  if (snapshots.length === 0) {
+    sceneHistoryHost.innerHTML = `${header}<div class="right-rail-history-state">Снимков пока нет. Ручной снимок создаёт точку восстановления перед дальнейшей правкой.</div>`;
+    return;
+  }
+
+  const selectedId = selected?.snapshotId || sceneHistoryState.selectedSnapshotId || snapshots[0]?.snapshotId || '';
+  const list = snapshots.map((snapshot) => {
+    const active = snapshot.snapshotId === selectedId;
+    const label = snapshot.createdAtUtc ? new Date(snapshot.createdAtUtc).toLocaleString('ru-RU') : snapshot.label;
+    const changeLabel = snapshot.changedFromCurrent ? 'изменён' : 'без изменений';
+    return `
+      <button
+        type="button"
+        class="right-rail-history-item${active ? ' is-active' : ''}"
+        data-scene-history-snapshot="${reviewSurfaceEscapeHtml(snapshot.snapshotId)}"
+        aria-pressed="${active ? 'true' : 'false'}"
+      >
+        <span>${reviewSurfaceEscapeHtml(label)}</span>
+        <small>${snapshot.readable ? changeLabel : 'не читается'}</small>
+      </button>
+    `;
+  }).join('');
+
+  const diff = selected?.diff || null;
+  const diffMarkup = diff
+    ? `
+      <section class="right-rail-surface right-rail-surface--history-diff">
+        <div class="right-rail-section__label">Diff</div>
+        <div class="right-rail-history-delta">${diff.changed ? `${diff.deltaWords >= 0 ? '+' : ''}${diff.deltaWords} слов` : 'Без изменений'}</div>
+        <pre class="right-rail-history-diff-block right-rail-history-diff-block--removed">${reviewSurfaceEscapeHtml(diff.removedPreview || '')}</pre>
+        <pre class="right-rail-history-diff-block right-rail-history-diff-block--inserted">${reviewSurfaceEscapeHtml(diff.insertedPreview || '')}</pre>
+      </section>
+    `
+    : '<div class="right-rail-history-state">Выбранный снимок нельзя прочитать.</div>';
+
+  sceneHistoryHost.innerHTML = `${header}<div class="right-rail-history-list">${list}</div>${diffMarkup}`;
+}
+
+async function refreshSceneHistory(selectedSnapshotId = sceneHistoryState.selectedSnapshotId || '') {
+  if (currentRightTab !== 'history' && selectedSnapshotId === sceneHistoryState.selectedSnapshotId) return;
+  const sequence = sceneHistoryState.sequence + 1;
+  sceneHistoryState = {
+    ...sceneHistoryState,
+    state: currentDocumentId ? 'loading' : 'empty',
+    sequence,
+  };
+  renderSceneHistoryState();
+  const result = await invokeWorkspaceQueryBridge(SCENE_HISTORY_QUERY_ID, {
+    projectId: currentProjectId,
+    nodeId: currentDocumentId || '',
+    selectedSnapshotId,
+  });
+  if (sequence !== sceneHistoryState.sequence) return;
+  sceneHistoryState = normalizeSceneHistoryReadModel(result, sequence);
+  renderSceneHistoryState();
+}
+
+async function createSceneHistoryCheckpoint() {
+  if (!currentProjectId || !currentDocumentId) return;
+  const result = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.HISTORY_CREATE_CHECKPOINT, {
+    projectId: currentProjectId,
+    nodeId: currentDocumentId,
+  });
+  if (!result || result.ok !== true) {
+    updateStatusText('Снимок истории не создан');
+    await refreshSceneHistory();
+    return;
+  }
+  updateStatusText('Снимок истории создан');
+  await refreshSceneHistory('');
 }
 
 function renderReviewSurface() {
@@ -13002,7 +13153,7 @@ if (rightTabsHost) {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
       return;
     }
-    if (tab === 'inspector') {
+    if (tab === 'inspector' || tab === 'history') {
       applyRightTab(tab);
     }
   };
@@ -13042,6 +13193,24 @@ if (rightTabsHost) {
     activateRightRailTabButton(buttons[nextIndex]);
   });
 }
+
+sceneHistoryHost?.addEventListener('click', (event) => {
+  const checkpointButton = event.target instanceof Element
+    ? event.target.closest('[data-scene-history-checkpoint]')
+    : null;
+  if (checkpointButton) {
+    void createSceneHistoryCheckpoint();
+    return;
+  }
+  const snapshotButton = event.target instanceof Element
+    ? event.target.closest('[data-scene-history-snapshot]')
+    : null;
+  if (!(snapshotButton instanceof HTMLElement)) return;
+  const snapshotId = snapshotButton.dataset.sceneHistorySnapshot || '';
+  if (!snapshotId) return;
+  sceneHistoryState = { ...sceneHistoryState, selectedSnapshotId: snapshotId };
+  void refreshSceneHistory(snapshotId);
+});
 
 if (leftSearchInput) {
   leftSearchInput.addEventListener('input', () => {
@@ -13435,6 +13604,9 @@ if (window.electronAPI) {
     updatePerfHintText('normal');
     updateInspectorSnapshot();
     refreshMetadataInspector();
+    if (currentRightTab === 'history') {
+      refreshSceneHistory('');
+    }
     applyPendingProjectSearchJump(currentDocumentId || '');
   });
 
