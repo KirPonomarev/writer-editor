@@ -11195,8 +11195,16 @@ function setImportSurfaceStatus(message = '', detail = '') {
   }
 }
 
+function normalizeSurfaceCommandId(input = '') {
+  if (typeof input === 'string') return input.trim();
+  if (input && typeof input === 'object' && !Array.isArray(input) && typeof input.commandId === 'string') {
+    return input.commandId.trim();
+  }
+  return '';
+}
+
 function openImportSurfaceModal(commandId = '') {
-  const normalizedCommandId = typeof commandId === 'string' ? commandId.trim() : '';
+  const normalizedCommandId = normalizeSurfaceCommandId(commandId);
   const currentFormat = normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_DOCX_V1
     ? 'DOCX'
     : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1
@@ -11245,7 +11253,7 @@ function setExportSurfaceStatus(message = '', detail = '') {
 }
 
 function openExportSurfaceModal(commandId = '') {
-  const normalizedCommandId = typeof commandId === 'string' ? commandId.trim() : '';
+  const normalizedCommandId = normalizeSurfaceCommandId(commandId);
   const currentFormat = normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN
     ? 'DOCX Minimal'
     : (normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_PDF_V1
