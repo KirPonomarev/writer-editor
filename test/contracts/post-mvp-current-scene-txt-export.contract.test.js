@@ -35,7 +35,7 @@ test('post-mvp current scene txt export: file menu exposes one direct command en
   assert.equal(matches[0].id, 'file-export-current-scene-txt');
   assert.equal(matches[0].actionId, undefined);
   assert.equal(matches[0].labelKey, 'menu.file.exportCurrentSceneTxt');
-  assert.deepEqual(matches[0].profile, ['pro', 'guru']);
+  assert.deepEqual(matches[0].profile, ['minimal', 'pro', 'guru']);
 
   assert.deepEqual(locale.entries['menu.file.exportCurrentSceneTxt'], {
     base: 'Экспорт TXT текущей сцены',

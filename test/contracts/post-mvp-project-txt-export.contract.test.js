@@ -36,7 +36,7 @@ test('post-mvp project TXT export: file menu exposes one bounded all-scenes comm
   assert.equal(matches[0].id, 'file-export-all-scenes-txt');
   assert.equal(matches[0].actionId, undefined);
   assert.equal(matches[0].labelKey, 'menu.file.exportAllScenesTxt');
-  assert.deepEqual(matches[0].profile, ['pro', 'guru']);
+  assert.deepEqual(matches[0].profile, ['minimal', 'pro', 'guru']);
 
   assert.deepEqual(locale.entries['menu.file.exportAllScenesTxt'], {
     base: 'Экспорт TXT всех сцен',
