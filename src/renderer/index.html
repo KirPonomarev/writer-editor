@@ -417,6 +417,29 @@
         <div class="toolbar__row toolbar__row--secondary" data-left-search-panel hidden>
           <input type="text" class="modal__input" data-left-search-input placeholder="Поиск по проекту">
         </div>
+        <div class="workspace-map" aria-label="Структура проекта">
+          <div class="workspace-map__path" aria-hidden="true">
+            <span class="workspace-map__path-item">Проект</span>
+            <span class="workspace-map__path-item">Рукопись</span>
+            <span class="workspace-map__path-item">Сцены</span>
+          </div>
+          <div class="workspace-map__mode" role="group" aria-label="Режим текста">
+            <button
+              type="button"
+              class="workspace-map__mode-button is-active"
+              data-flow-view-mode="scene"
+              data-action="open-current-scene"
+              aria-pressed="true"
+            >Сцена</button>
+            <button
+              type="button"
+              class="workspace-map__mode-button"
+              data-flow-view-mode="continuous"
+              data-action="open-flow-mode"
+              aria-pressed="false"
+            >Непрерывно</button>
+          </div>
+        </div>
         <div class="sidebar__tree" id="left-panel-project" data-tree role="tabpanel" aria-labelledby="left-tab-project"></div>
         <div class="sidebar__tree" id="left-panel-outline" data-outline-list role="tabpanel" aria-labelledby="left-tab-outline" hidden></div>
         <div class="sidebar__tree" id="left-panel-notes" data-notes-left-list role="tabpanel" aria-labelledby="left-tab-notes" hidden></div>
@@ -570,6 +593,11 @@
           </div>
         </section>
         <div class="editor-panel-wrapper">
+          <div class="editor-architecture-strip" aria-hidden="true">
+            <span>Тихий редактор</span>
+            <span>Сцена</span>
+            <span>Локально</span>
+          </div>
           <div class="editor-panel">
             <div class="editor-panel__meta" data-meta-panel>
               <div class="meta-row">
@@ -670,6 +698,10 @@
           aria-labelledby="right-tab-inspector"
         >
           <div class="right-rail-shell right-rail-shell--inspector">
+            <div class="right-rail-context-band" aria-hidden="true">
+              <span>Контекст сцены</span>
+              <span>Без записи в рукопись</span>
+            </div>
             <section class="right-rail-surface" data-inspector-metadata-surface>
               <div class="right-rail-section__label">Документ</div>
               <div class="right-rail-form-grid">
