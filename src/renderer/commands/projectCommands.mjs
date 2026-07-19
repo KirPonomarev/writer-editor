@@ -51,6 +51,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   EDIT_REDO: 'cmd.project.edit.redo',
   EDIT_FIND: 'cmd.project.edit.find',
   EDIT_REPLACE: 'cmd.project.edit.replace',
+  EDIT_REPLACE_SINGLE_SAFE: 'cmd.project.edit.replaceSingleSafe',
   VIEW_ZOOM_OUT: 'cmd.project.view.zoomOut',
   VIEW_ZOOM_IN: 'cmd.project.view.zoomIn',
   VIEW_TOGGLE_WRAP: 'cmd.project.view.toggleWrap',

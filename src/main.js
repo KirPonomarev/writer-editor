@@ -329,6 +329,7 @@ const NOTES_DELETE_COMMAND_ID = 'cmd.project.notes.delete';
 const NOTES_RESTORE_COMMAND_ID = 'cmd.project.notes.restore';
 const NOTES_ATTACH_SCENE_COMMAND_ID = 'cmd.project.notes.attachToScene';
 const NOTES_CONVERT_SCENE_COMMAND_ID = 'cmd.project.notes.convertToScene';
+const REPLACE_SINGLE_SAFE_COMMAND_ID = 'cmd.project.edit.replaceSingleSafe';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -7334,6 +7335,285 @@ async function handleWorkspaceProjectSearchQuery(payload = {}) {
       unavailableReason: error && typeof error.code === 'string' ? error.code : 'PROJECT_SEARCH_UNAVAILABLE',
     };
   }
+}
+
+function makeReplaceSingleSafeError(code, reason, details = {}) {
+  return {
+    ok: false,
+    code,
+    op: REPLACE_SINGLE_SAFE_COMMAND_ID,
+    reason,
+    ...(isPlainObjectValue(details) && Object.keys(details).length > 0 ? { details } : {}),
+  };
+}
+
+function normalizeReplaceSingleSafePayload(payload = {}) {
+  if (!isPlainObjectValue(payload)) {
+    return {
+      ok: false,
+      code: 'E_REPLACE_SINGLE_SAFE_PAYLOAD_INVALID',
+      reason: 'REPLACE_SINGLE_SAFE_PAYLOAD_INVALID',
+    };
+  }
+  const forbidden = [
+    'filePath',
+    'path',
+    'projectRoot',
+    'scenePath',
+    'scenePathBySceneId',
+    'receipt',
+    'recovery',
+    'reviewSession',
+    'applyOps',
+    'projectSnapshot',
+  ].filter((key) => Object.prototype.hasOwnProperty.call(payload, key));
+  if (forbidden.length > 0) {
+    return {
+      ok: false,
+      code: 'E_REPLACE_SINGLE_SAFE_PAYLOAD_FORBIDDEN_AUTHORITY',
+      reason: 'REPLACE_SINGLE_SAFE_PAYLOAD_FORBIDDEN_AUTHORITY',
+      details: { keys: forbidden },
+    };
+  }
+
+  const source = isPlainObjectValue(payload.source) ? payload.source : {};
+  const range = isPlainObjectValue(payload.range) ? payload.range : {};
+  const from = Number.isInteger(range.from) ? range.from : Math.trunc(Number(range.from));
+  const to = Number.isInteger(range.to) ? range.to : Math.trunc(Number(range.to));
+  const normalized = {
+    requestId: typeof payload.requestId === 'string' ? payload.requestId.trim().slice(0, 120) : '',
+    searchResultId: typeof payload.searchResultId === 'string' ? payload.searchResultId.trim() : '',
+    projectId: typeof payload.projectId === 'string' ? payload.projectId.trim() : '',
+    nodeId: typeof source.nodeId === 'string'
+      ? source.nodeId.trim()
+      : (typeof payload.nodeId === 'string' ? payload.nodeId.trim() : ''),
+    sourceType: typeof source.type === 'string' ? source.type.trim() : '',
+    sourceKind: typeof source.kind === 'string' ? source.kind.trim() : '',
+    sourceField: typeof source.field === 'string' ? source.field.trim() : '',
+    sourceHash: typeof source.contentHash === 'string'
+      ? source.contentHash.trim()
+      : (typeof payload.sourceHash === 'string' ? payload.sourceHash.trim() : ''),
+    from,
+    to,
+    expectedText: typeof payload.expectedText === 'string'
+      ? payload.expectedText
+      : (typeof payload.matchText === 'string' ? payload.matchText : ''),
+    replacementText: typeof payload.replacementText === 'string' ? payload.replacementText : '',
+  };
+
+  if (!normalized.searchResultId) {
+    return { ok: false, code: 'E_REPLACE_SINGLE_SAFE_RESULT_ID_REQUIRED', reason: 'REPLACE_SINGLE_SAFE_RESULT_ID_REQUIRED' };
+  }
+  if (normalized.sourceType !== 'document' || normalized.sourceKind !== 'scene') {
+    return {
+      ok: false,
+      code: 'E_REPLACE_SINGLE_SAFE_SOURCE_UNSUPPORTED',
+      reason: 'REPLACE_SINGLE_SAFE_SOURCE_UNSUPPORTED',
+      details: { sourceType: normalized.sourceType, sourceKind: normalized.sourceKind },
+    };
+  }
+  if (!normalized.nodeId || !normalized.sourceHash || normalized.sourceField !== 'body') {
+    return { ok: false, code: 'E_REPLACE_SINGLE_SAFE_SOURCE_INVALID', reason: 'REPLACE_SINGLE_SAFE_SOURCE_INVALID' };
+  }
+  if (!Number.isInteger(normalized.from) || !Number.isInteger(normalized.to) || normalized.from < 0 || normalized.to < normalized.from) {
+    return { ok: false, code: 'E_REPLACE_SINGLE_SAFE_RANGE_INVALID', reason: 'REPLACE_SINGLE_SAFE_RANGE_INVALID' };
+  }
+  if (!normalized.expectedText || normalized.to - normalized.from !== normalized.expectedText.length) {
+    return { ok: false, code: 'E_REPLACE_SINGLE_SAFE_EXPECTED_TEXT_INVALID', reason: 'REPLACE_SINGLE_SAFE_EXPECTED_TEXT_INVALID' };
+  }
+  return { ok: true, value: normalized };
+}
+
+function countExactTextOccurrences(sourceText, needle) {
+  if (typeof sourceText !== 'string' || typeof needle !== 'string' || needle.length === 0) return 0;
+  let count = 0;
+  let index = 0;
+  while (index <= sourceText.length) {
+    const found = sourceText.indexOf(needle, index);
+    if (found < 0) break;
+    count += 1;
+    if (count > 1) return count;
+    index = found + needle.length;
+  }
+  return count;
+}
+
+async function handleReplaceSingleSafeCommand(payload = {}, options = {}) {
+  const normalized = normalizeReplaceSingleSafePayload(payload);
+  if (!normalized.ok) {
+    return makeReplaceSingleSafeError(normalized.code, normalized.reason, normalized.details);
+  }
+  if (isDirty || autoSaveInProgress) {
+    return makeReplaceSingleSafeError(
+      'E_REPLACE_SINGLE_SAFE_DIRTY_EDITOR_BLOCKED',
+      'REPLACE_SINGLE_SAFE_DIRTY_EDITOR_BLOCKED',
+      { isDirty: Boolean(isDirty), autoSaveInProgress: Boolean(autoSaveInProgress) },
+    );
+  }
+
+  let resolvedNode;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(normalized.value.nodeId, normalized.value.projectId);
+  } catch (error) {
+    return makeReplaceSingleSafeError(
+      error && typeof error.code === 'string' ? error.code : 'E_REPLACE_SINGLE_SAFE_SOURCE_UNRESOLVED',
+      'REPLACE_SINGLE_SAFE_SOURCE_UNRESOLVED',
+    );
+  }
+  if (resolvedNode.kind !== 'scene') {
+    return makeReplaceSingleSafeError(
+      'E_REPLACE_SINGLE_SAFE_SOURCE_UNSUPPORTED',
+      'REPLACE_SINGLE_SAFE_SOURCE_UNSUPPORTED',
+      { sourceKind: resolvedNode.kind },
+    );
+  }
+
+  let sourceText = '';
+  try {
+    sourceText = await fs.readFile(resolvedNode.nodePath, 'utf8');
+  } catch (error) {
+    return makeReplaceSingleSafeError(
+      error && typeof error.code === 'string' ? error.code : 'E_REPLACE_SINGLE_SAFE_READ_FAILED',
+      'REPLACE_SINGLE_SAFE_READ_FAILED',
+    );
+  }
+  const contentHashBefore = computeHash(sourceText);
+  if (contentHashBefore !== normalized.value.sourceHash) {
+    return makeReplaceSingleSafeError(
+      'E_REPLACE_SINGLE_SAFE_STALE',
+      'REPLACE_SINGLE_SAFE_STALE_SOURCE_HASH',
+      { expectedHash: normalized.value.sourceHash, observedHash: contentHashBefore },
+    );
+  }
+
+  let parsedText = sourceText;
+  let envelopeModule = null;
+  let parsedEnvelope = null;
+  try {
+    envelopeModule = await loadDocumentContentEnvelopeModule();
+    parsedEnvelope = envelopeModule.parseObservablePayload(sourceText);
+    if (parsedEnvelope && !parsedEnvelope.issue) parsedText = parsedEnvelope.text || '';
+  } catch {
+    parsedText = sourceText;
+  }
+
+  const exactSlice = parsedText.slice(normalized.value.from, normalized.value.to);
+  if (exactSlice !== normalized.value.expectedText) {
+    return makeReplaceSingleSafeError('E_REPLACE_SINGLE_SAFE_STALE', 'REPLACE_SINGLE_SAFE_STALE_RANGE');
+  }
+  const occurrenceCount = countExactTextOccurrences(parsedText, normalized.value.expectedText);
+  if (occurrenceCount !== 1) {
+    return makeReplaceSingleSafeError(
+      'E_REPLACE_SINGLE_SAFE_AMBIGUOUS',
+      'REPLACE_SINGLE_SAFE_AMBIGUOUS_MATCH',
+      { occurrenceCount },
+    );
+  }
+
+  const nextVisibleText = `${parsedText.slice(0, normalized.value.from)}${normalized.value.replacementText}${parsedText.slice(normalized.value.to)}`;
+  let nextText = nextVisibleText;
+  const sourceHasEnvelope = Boolean(parsedEnvelope?.doc || parsedEnvelope?.hasMetaBlock || parsedEnvelope?.hasCardsBlock);
+  if (sourceHasEnvelope && envelopeModule && typeof envelopeModule.composeDocumentContentFromBase === 'function') {
+    const composed = envelopeModule.composeDocumentContentFromBase({
+      baseContent: sourceText,
+      nextVisibleText,
+    });
+    if (!composed || composed.ok !== true || typeof composed.content !== 'string') {
+      return makeReplaceSingleSafeError(
+        'E_REPLACE_SINGLE_SAFE_STRUCTURAL_UNSUPPORTED',
+        'REPLACE_SINGLE_SAFE_STRUCTURAL_UNSUPPORTED',
+        isPlainObjectValue(composed?.error) ? composed.error : {},
+      );
+    }
+    nextText = composed.content;
+  }
+  if (nextVisibleText === parsedText && nextText === sourceText) {
+    return {
+      ok: true,
+      applied: false,
+      unchanged: true,
+      receipt: {
+        schemaVersion: 'replace-single-safe-receipt.v1',
+        commandId: REPLACE_SINGLE_SAFE_COMMAND_ID,
+        operation: 'replaceSingleSafe',
+        projectId: resolvedNode.projectId,
+        nodeId: resolvedNode.nodeId,
+        searchResultId: normalized.value.searchResultId,
+        contentHashBefore,
+        contentHashAfter: contentHashBefore,
+        recovery: null,
+      },
+    };
+  }
+
+  let markdownIo;
+  try {
+    markdownIo = typeof options.loadMarkdownIoModule === 'function'
+      ? await options.loadMarkdownIoModule()
+      : await loadMarkdownIoModule();
+  } catch (error) {
+    return makeReplaceSingleSafeError(
+      'E_REPLACE_SINGLE_SAFE_WRITE_UNAVAILABLE',
+      'REPLACE_SINGLE_SAFE_WRITE_UNAVAILABLE',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (!markdownIo || typeof markdownIo.writeMarkdownWithTransactionRecovery !== 'function') {
+    return makeReplaceSingleSafeError('E_REPLACE_SINGLE_SAFE_WRITE_UNAVAILABLE', 'REPLACE_SINGLE_SAFE_WRITE_UNAVAILABLE');
+  }
+
+  let writeResult;
+  try {
+    writeResult = await queueDiskOperation(
+      () => markdownIo.writeMarkdownWithTransactionRecovery(resolvedNode.nodePath, nextText, {
+        maxSnapshots: 20,
+        ...(typeof options.now === 'function' ? { now: options.now } : {}),
+      }),
+      'replace single safe',
+    );
+  } catch (error) {
+    return makeReplaceSingleSafeError(
+      error && typeof error.code === 'string' ? error.code : 'E_REPLACE_SINGLE_SAFE_WRITE_FAILED',
+      error && typeof error.reason === 'string' ? error.reason : 'REPLACE_SINGLE_SAFE_WRITE_FAILED',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+
+  const contentHashAfter = computeHash(nextText);
+  if (resolvedNode.nodePath === currentFilePath) {
+    lastAutosaveHash = contentHashAfter;
+    backupHashes.set(resolvedNode.nodePath, contentHashAfter);
+    sendEditorText(await attachProjectIdToEditorPayload({
+      content: nextText,
+      title: getDocumentContextFromPath(resolvedNode.nodePath).title,
+      documentId: resolvedNode.nodeId,
+      kind: resolvedNode.kind,
+      metaEnabled: false,
+    }, resolvedNode.nodePath));
+    setDirtyState(false);
+  }
+
+  return {
+    ok: true,
+    applied: true,
+    receipt: {
+      schemaVersion: 'replace-single-safe-receipt.v1',
+      commandId: REPLACE_SINGLE_SAFE_COMMAND_ID,
+      operation: 'replaceSingleSafe',
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      searchResultId: normalized.value.searchResultId,
+      range: { from: normalized.value.from, to: normalized.value.to },
+      contentHashBefore,
+      contentHashAfter,
+      recovery: {
+        snapshotCreated: writeResult?.snapshotCreated === true,
+        snapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
+        transactionId: typeof writeResult?.transactionId === 'string' ? writeResult.transactionId : '',
+        intentPath: typeof writeResult?.intentPath === 'string' ? writeResult.intentPath : '',
+      },
+    },
+  };
 }
 
 async function handleNotesCreateCommand(payload = {}, options = {}) {
@@ -15252,6 +15532,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   NOTES_RESTORE_COMMAND_ID,
   NOTES_ATTACH_SCENE_COMMAND_ID,
   NOTES_CONVERT_SCENE_COMMAND_ID,
+  REPLACE_SINGLE_SAFE_COMMAND_ID,
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -15698,6 +15979,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [NOTES_CONVERT_SCENE_COMMAND_ID]: async (payload = {}) => {
     return handleNotesConvertToSceneCommand(payload);
+  },
+  [REPLACE_SINGLE_SAFE_COMMAND_ID]: async (payload = {}) => {
+    return handleReplaceSingleSafeCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -16733,12 +17017,14 @@ module.exports = {
   handleNotesDeleteCommand,
   handleNotesRestoreCommand,
   handleNotesUpdateCommand,
+  handleReplaceSingleSafeCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
   handleWorkspaceProjectSearchQuery,
   handleWorkspaceProjectTreeQuery,
   migrateProjectNotesStorage,
   normalizeProjectManifest,
+  normalizeReplaceSingleSafePayload,
   persistBookProfileForFile,
   persistProjectManifestAtPath,
   readProjectManifest,
