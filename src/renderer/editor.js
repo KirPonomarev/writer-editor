@@ -315,6 +315,9 @@ const projectLibraryCreateButton = document.querySelector('[data-project-library
 const projectLibraryRefreshButtons = Array.from(document.querySelectorAll('[data-project-library-refresh]'));
 const projectLibraryContinueButton = document.querySelector('[data-project-library-continue]');
 const projectLibraryOpenButton = document.querySelector('[data-project-library-open]');
+const projectLibraryRenameButton = document.querySelector('[data-project-library-rename]');
+const projectLibraryDuplicateButton = document.querySelector('[data-project-library-duplicate]');
+const projectLibraryMoveButton = document.querySelector('[data-project-library-move]');
 const projectLibraryCloseButtons = Array.from(document.querySelectorAll('[data-project-library-close]'));
 const docxImportPreviewModal = document.querySelector('[data-docx-import-preview-modal]');
 const docxImportPreviewMessage = document.querySelector('[data-docx-import-preview-message]');
@@ -8542,9 +8545,11 @@ function setProjectLibraryStatus(text) {
 function renderProjectLibraryModal() {
   if (!projectLibraryList) return;
   projectLibraryList.innerHTML = '';
-  if (projectLibraryOpenButton) {
-    projectLibraryOpenButton.disabled = !projectLibraryState.selectedProjectId;
-  }
+  const hasSelection = Boolean(projectLibraryState.selectedProjectId);
+  if (projectLibraryOpenButton) projectLibraryOpenButton.disabled = !hasSelection;
+  if (projectLibraryRenameButton) projectLibraryRenameButton.disabled = !hasSelection;
+  if (projectLibraryDuplicateButton) projectLibraryDuplicateButton.disabled = !hasSelection;
+  if (projectLibraryMoveButton) projectLibraryMoveButton.disabled = !hasSelection;
   if (!projectLibraryState.entries.length) {
     const empty = document.createElement('div');
     empty.className = 'project-library__empty';
@@ -8668,6 +8673,74 @@ async function continueLastProjectFromLibraryModal() {
     {},
     'Последний проект открыт',
   );
+}
+
+async function renameSelectedProjectFromLibraryModal() {
+  const projectId = projectLibraryState.selectedProjectId;
+  const projectName = projectLibraryNameInput?.value?.trim() || '';
+  if (!projectId) {
+    setProjectLibraryStatus('Выберите проект');
+    return;
+  }
+  if (!projectName) {
+    setProjectLibraryStatus('Введите новое имя');
+    projectLibraryNameInput?.focus();
+    return;
+  }
+  if (projectLibraryRenameButton) projectLibraryRenameButton.disabled = true;
+  try {
+    const ok = await runProjectLifecycleAndRefresh(
+      EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME,
+      { projectId, projectName },
+      'Проект переименован',
+    );
+    if (ok && projectLibraryNameInput) projectLibraryNameInput.value = '';
+  } finally {
+    if (projectLibraryRenameButton) projectLibraryRenameButton.disabled = false;
+  }
+}
+
+async function duplicateSelectedProjectFromLibraryModal() {
+  const projectId = projectLibraryState.selectedProjectId;
+  const projectName = projectLibraryNameInput?.value?.trim() || '';
+  if (!projectId) {
+    setProjectLibraryStatus('Выберите проект');
+    return;
+  }
+  if (!projectName) {
+    setProjectLibraryStatus('Введите имя копии');
+    projectLibraryNameInput?.focus();
+    return;
+  }
+  if (projectLibraryDuplicateButton) projectLibraryDuplicateButton.disabled = true;
+  try {
+    const ok = await runProjectLifecycleAndRefresh(
+      EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE,
+      { projectId, projectName },
+      'Проект продублирован',
+    );
+    if (ok && projectLibraryNameInput) projectLibraryNameInput.value = '';
+  } finally {
+    if (projectLibraryDuplicateButton) projectLibraryDuplicateButton.disabled = false;
+  }
+}
+
+async function moveSelectedProjectFromLibraryModal() {
+  const projectId = projectLibraryState.selectedProjectId;
+  if (!projectId) {
+    setProjectLibraryStatus('Выберите проект');
+    return;
+  }
+  if (projectLibraryMoveButton) projectLibraryMoveButton.disabled = true;
+  try {
+    await runProjectLifecycleAndRefresh(
+      EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION,
+      { projectId },
+      'Проект перемещён',
+    );
+  } finally {
+    if (projectLibraryMoveButton) projectLibraryMoveButton.disabled = false;
+  }
 }
 
 if (treeContainer) {
@@ -13458,6 +13531,18 @@ projectLibraryOpenButton?.addEventListener('click', () => {
 
 projectLibraryContinueButton?.addEventListener('click', () => {
   void continueLastProjectFromLibraryModal();
+});
+
+projectLibraryRenameButton?.addEventListener('click', () => {
+  void renameSelectedProjectFromLibraryModal();
+});
+
+projectLibraryDuplicateButton?.addEventListener('click', () => {
+  void duplicateSelectedProjectFromLibraryModal();
+});
+
+projectLibraryMoveButton?.addEventListener('click', () => {
+  void moveSelectedProjectFromLibraryModal();
 });
 
 projectLibraryNameInput?.addEventListener('keydown', (event) => {

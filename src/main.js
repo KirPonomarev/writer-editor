@@ -340,12 +340,16 @@ const PROJECT_LIBRARY_QUERY_ID = 'query.projectLibrary';
 const PROJECT_LIFECYCLE_CREATE_COMMAND_ID = 'cmd.project.lifecycle.create';
 const PROJECT_LIFECYCLE_OPEN_COMMAND_ID = 'cmd.project.lifecycle.open';
 const PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID = 'cmd.project.lifecycle.continue';
+const PROJECT_LIFECYCLE_RENAME_COMMAND_ID = 'cmd.project.lifecycle.rename';
+const PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID = 'cmd.project.lifecycle.duplicate';
+const PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID = 'cmd.project.lifecycle.moveLocation';
 const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
 const HISTORY_CREATE_CHECKPOINT_COMMAND_ID = 'cmd.project.history.createCheckpoint';
 const HISTORY_RESTORE_PREVIEW_COMMAND_ID = 'cmd.project.history.restorePreview';
 const HISTORY_RESTORE_APPLY_COMMAND_ID = 'cmd.project.history.restoreApply';
 const HISTORY_RESTORE_UNDO_COMMAND_ID = 'cmd.project.history.restoreUndo';
 const PROJECT_LIBRARY_INDEX_FILENAME = 'project-library-index.v1.json';
+const PROJECT_LIFECYCLE_JOURNAL_FILENAME = '.project-lifecycle-journal.v1.json';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -9263,6 +9267,505 @@ async function handleProjectLifecycleContinueCommand() {
   return handleProjectLifecycleOpenCommand({ projectId: lastProjectId });
 }
 
+function getProjectLifecycleJournalPath() {
+  return joinPathSegmentsWithinRoot(fileManager.getDocumentsPath(), [PROJECT_LIFECYCLE_JOURNAL_FILENAME], {
+    resolveSymlinks: false,
+  });
+}
+
+function makeProjectLifecycleTempPath(targetPath, suffix) {
+  const safeSuffix = sanitizeFilename(`${suffix || 'tmp'}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`);
+  return `${targetPath}.${safeSuffix}.tmp`;
+}
+
+function normalizeProjectLifecycleName(value, fallback = '') {
+  const source = typeof value === 'string' ? value.trim() : '';
+  const name = sanitizeFilename(source || fallback);
+  return name ? name.slice(0, 128) : '';
+}
+
+function normalizeProjectRootWithinDocuments(value) {
+  const documentsRoot = fileManager.getDocumentsPath();
+  return normalizeProjectLibraryPrivatePath(value, documentsRoot);
+}
+
+async function readProjectManifestRawAtPath(manifestPath) {
+  const raw = await fs.readFile(manifestPath, 'utf8');
+  const parsed = JSON.parse(raw);
+  return {
+    raw,
+    manifest: isPlainObjectValue(parsed) ? parsed : {},
+    sourceSchemaVersion: Number(parsed?.schemaVersion),
+  };
+}
+
+function isProjectBindingFutureSchema(projectBinding) {
+  return Number(projectBinding?.sourceSchemaVersion) > PROJECT_MANIFEST_SCHEMA_VERSION;
+}
+
+function makeProjectLifecycleReceipt(commandId, projectId, extra = {}) {
+  return {
+    schemaVersion: 'project-lifecycle-receipt.v1',
+    type: 'project.lifecycle.receipt',
+    commandId,
+    projectId,
+    createdAtUtc: new Date().toISOString(),
+    ...extra,
+  };
+}
+
+async function writeProjectLifecycleJournal(entry) {
+  const payload = {
+    schemaVersion: 'project-lifecycle-journal.v1',
+    updatedAtUtc: new Date().toISOString(),
+    ...entry,
+  };
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(getProjectLifecycleJournalPath(), `${JSON.stringify(payload, null, 2)}\n`),
+    'save project lifecycle journal',
+  );
+  if (!writeResult || writeResult.success !== true) {
+    throw new Error(writeResult?.error || 'PROJECT_LIFECYCLE_JOURNAL_WRITE_FAILED');
+  }
+}
+
+async function clearProjectLifecycleJournal() {
+  try {
+    await fs.rm(getProjectLifecycleJournalPath(), { force: true });
+  } catch {}
+}
+
+async function readProjectLifecycleJournal() {
+  try {
+    const raw = await fs.readFile(getProjectLifecycleJournalPath(), 'utf8');
+    const parsed = JSON.parse(raw);
+    return isPlainObjectValue(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+async function recoverProjectLifecycleJournal() {
+  const journal = await readProjectLifecycleJournal();
+  if (!journal) return { ok: true, recovered: false };
+  const commandId = typeof journal.commandId === 'string' ? journal.commandId : '';
+  const phase = typeof journal.phase === 'string' ? journal.phase : '';
+  const sourceRoot = normalizeProjectRootWithinDocuments(journal.sourceRoot);
+  const targetRoot = normalizeProjectRootWithinDocuments(journal.targetRoot);
+  const tempRoot = normalizeProjectRootWithinDocuments(journal.tempRoot);
+  if (!commandId || !phase || (!sourceRoot && !targetRoot && !tempRoot)) {
+    await clearProjectLifecycleJournal();
+    return { ok: true, recovered: true, action: 'cleared-invalid-journal' };
+  }
+
+  try {
+    if (commandId === PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID) {
+      if (tempRoot) await fs.rm(tempRoot, { recursive: true, force: true });
+      await clearProjectLifecycleJournal();
+      return { ok: true, recovered: true, action: 'duplicate-temp-removed' };
+    }
+
+    if (phase === 'source-moved-to-temp' && tempRoot && sourceRoot && !(await fileExists(sourceRoot))) {
+      await fs.rename(tempRoot, sourceRoot);
+      await clearProjectLifecycleJournal();
+      return { ok: true, recovered: true, action: 'source-restored' };
+    }
+
+    if (phase === 'final-moved' && targetRoot && await fileExists(targetRoot)) {
+      if (tempRoot) await fs.rm(tempRoot, { recursive: true, force: true });
+      await clearProjectLifecycleJournal();
+      return { ok: true, recovered: true, action: 'finalized' };
+    }
+
+    await clearProjectLifecycleJournal();
+    return { ok: true, recovered: true, action: 'cleared-stale-journal' };
+  } catch (error) {
+    logDevError('project lifecycle journal recovery', error);
+    return makeProjectLifecycleError('E_PROJECT_LIFECYCLE_RECOVERY_FAILED', 'PROJECT_LIFECYCLE_RECOVERY_FAILED');
+  }
+}
+
+async function createProjectLifecycleRecovery(projectBinding, commandId, sourceText, options = {}) {
+  const manifestHash = computeHash(sourceText);
+  let recovery = {
+    snapshotCreated: false,
+    snapshotReadable: false,
+    snapshotHashMatchesInput: false,
+    manifestHash,
+  };
+  try {
+    const backupResult = await backupManager.createBackup(projectBinding.manifestPath, sourceText, {
+      basePath: projectBinding.projectRoot,
+    });
+    recovery.backupCreated = backupResult?.success === true;
+  } catch (error) {
+    logDevError('project lifecycle backup', error);
+  }
+  try {
+    const markdownIo = await loadMarkdownIoModule();
+    if (!markdownIo || typeof markdownIo.createMarkdownRecoveryPack !== 'function') return recovery;
+    const outputRoot = joinPathSegmentsWithinRoot(
+      projectBinding.projectRoot,
+      ['backups', 'project-lifecycle-recovery'],
+      { resolveSymlinks: false },
+    );
+    const pack = await markdownIo.createMarkdownRecoveryPack(projectBinding.manifestPath, {
+      text: sourceText,
+      outputRoot,
+      sourceKind: `project-lifecycle-${commandId}`,
+      recoveryAction: 'OPEN_SNAPSHOT',
+      ...(typeof options.now === 'function' ? { now: options.now } : {}),
+    });
+    if (pack && pack.ok === 1 && typeof pack.contentPath === 'string') {
+      let recoveredText = '';
+      try {
+        recoveredText = await fs.readFile(pack.contentPath, 'utf8');
+      } catch {}
+      recovery = {
+        ...recovery,
+        snapshotCreated: true,
+        snapshotReadable: recoveredText.length > 0 || sourceText.length === 0,
+        snapshotHashMatchesInput: computeHash(recoveredText) === manifestHash,
+        recoveryPackCreated: true,
+      };
+    }
+  } catch (error) {
+    logDevError('project lifecycle recovery', error);
+  }
+  return recovery;
+}
+
+async function replaceProjectLibraryIndexBinding(previousRoot, projectBinding, options = {}) {
+  if (!projectBinding || !projectBinding.projectId || !projectBinding.projectRoot || !projectBinding.manifestPath) return;
+  try {
+    const documentsRoot = fileManager.getDocumentsPath();
+    const existing = await readProjectLibraryPrivateIndex(documentsRoot);
+    const normalizedPreviousRoot = normalizeProjectLibraryPrivatePath(previousRoot, documentsRoot);
+    const normalizedRoot = normalizeProjectLibraryPrivatePath(projectBinding.projectRoot, documentsRoot);
+    const normalizedManifestPath = normalizeProjectLibraryPrivatePath(projectBinding.manifestPath, documentsRoot);
+    if (!normalizedRoot || !normalizedManifestPath) return;
+    const now = typeof options.now === 'string' && options.now ? options.now : new Date().toISOString();
+    const nextEntry = {
+      projectId: projectBinding.projectId,
+      projectName: projectBinding.manifest?.projectName || path.basename(normalizedRoot),
+      projectRoot: normalizedRoot,
+      manifestPath: normalizedManifestPath,
+      status: normalizeProjectLibraryStatus(options.status),
+      createdAtUtc: projectBinding.manifest?.createdAtUtc || '',
+      lastOpenedAtUtc: options.markOpened === false ? '' : now,
+      lastSeenAtUtc: now,
+      manifestHash: computeHash(JSON.stringify(getProjectManifestComparable(projectBinding.manifest || {}))),
+    };
+    const retained = existing.filter((entry) => (
+      path.resolve(entry.projectRoot) !== path.resolve(normalizedRoot)
+      && (!normalizedPreviousRoot || path.resolve(entry.projectRoot) !== path.resolve(normalizedPreviousRoot))
+    ));
+    await writeProjectLibraryPrivateIndex([nextEntry, ...retained]);
+  } catch (error) {
+    logDevError('projectLibraryIndex:replaceBinding', error);
+  }
+}
+
+async function writeProjectManifestRawAtomic(manifestPath, manifest) {
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`),
+    'save project lifecycle manifest',
+  );
+  if (!writeResult || writeResult.success !== true) {
+    throw new Error(writeResult?.error || 'PROJECT_MANIFEST_WRITE_FAILED');
+  }
+}
+
+async function resolveMutableProjectBinding(projectId) {
+  const binding = await findProjectBindingByProjectId(projectId);
+  if (!binding) return makeProjectLifecycleError('E_PROJECT_NOT_FOUND', 'PROJECT_NOT_FOUND');
+  if (isProjectBindingFutureSchema(binding)) {
+    return makeProjectLifecycleError('E_PROJECT_READONLY_SCHEMA', 'PROJECT_READONLY_SCHEMA');
+  }
+  return { ok: true, binding };
+}
+
+async function moveProjectDirectoryWithManifestMutation({
+  commandId,
+  projectBinding,
+  targetRoot,
+  mutateManifest,
+  statusText,
+  options = {},
+}) {
+  const sourceRoot = projectBinding.projectRoot;
+  if (path.resolve(sourceRoot) === path.resolve(targetRoot)) {
+    return {
+      ok: true,
+      moved: false,
+      projectId: projectBinding.projectId,
+      receipt: makeProjectLifecycleReceipt(commandId, projectBinding.projectId, { moved: false }),
+    };
+  }
+  if (await fileExists(targetRoot)) {
+    return makeProjectLifecycleError('E_PROJECT_TARGET_EXISTS', 'PROJECT_TARGET_EXISTS');
+  }
+  const targetParent = path.dirname(targetRoot);
+  await fs.mkdir(targetParent, { recursive: true });
+  const tempRoot = makeProjectLifecycleTempPath(sourceRoot, 'project-lifecycle-move');
+  const rawRecord = await readProjectManifestRawAtPath(projectBinding.manifestPath);
+  const recovery = await createProjectLifecycleRecovery(projectBinding, commandId, rawRecord.raw, options);
+  await writeProjectLifecycleJournal({
+    commandId,
+    projectId: projectBinding.projectId,
+    phase: 'prepared',
+    sourceRoot,
+    targetRoot,
+    tempRoot,
+  });
+  try {
+    if (typeof options.beforeSourceMove === 'function') await options.beforeSourceMove({ sourceRoot, tempRoot, targetRoot });
+    await fs.rename(sourceRoot, tempRoot);
+    await writeProjectLifecycleJournal({
+      commandId,
+      projectId: projectBinding.projectId,
+      phase: 'source-moved-to-temp',
+      sourceRoot,
+      targetRoot,
+      tempRoot,
+    });
+    const tempManifestPath = joinPathSegmentsWithinRoot(tempRoot, [PROJECT_MANIFEST_FILENAME], {
+      resolveSymlinks: false,
+    });
+    const nextManifest = mutateManifest({ ...rawRecord.manifest });
+    await writeProjectManifestRawAtomic(tempManifestPath, nextManifest);
+    if (typeof options.afterManifestBeforeFinalMove === 'function') {
+      await options.afterManifestBeforeFinalMove({ sourceRoot, tempRoot, targetRoot });
+    }
+    await fs.rename(tempRoot, targetRoot);
+    await writeProjectLifecycleJournal({
+      commandId,
+      projectId: projectBinding.projectId,
+      phase: 'final-moved',
+      sourceRoot,
+      targetRoot,
+      tempRoot,
+    });
+    await clearProjectLifecycleJournal();
+
+    const nextBinding = {
+      ...projectBinding,
+      projectRoot: targetRoot,
+      manifestPath: joinPathSegmentsWithinRoot(targetRoot, [PROJECT_MANIFEST_FILENAME], { resolveSymlinks: false }),
+      manifest: await normalizeProjectManifest(nextManifest, path.basename(targetRoot)),
+    };
+    if (currentFilePath && (currentFilePath === sourceRoot || isPathInside(sourceRoot, currentFilePath))) {
+      const relative = path.relative(sourceRoot, currentFilePath);
+      currentFilePath = relative ? joinPathSegmentsWithinRoot(targetRoot, [relative], { resolveSymlinks: false }) : null;
+      setActiveProjectNameFromRoot(targetRoot);
+      await saveLastFile({ projectBinding: nextBinding });
+    }
+    await replaceProjectLibraryIndexBinding(sourceRoot, nextBinding, { status: 'available' });
+    return {
+      ok: true,
+      moved: true,
+      projectId: nextBinding.projectId,
+      projectName: nextBinding.manifest.projectName,
+      receipt: makeProjectLifecycleReceipt(commandId, nextBinding.projectId, {
+        moved: true,
+        recovery,
+        targetStatus: statusText || 'available',
+      }),
+    };
+  } catch (error) {
+    try {
+      if (await fileExists(tempRoot) && !(await fileExists(sourceRoot))) {
+        await fs.rename(tempRoot, sourceRoot);
+      }
+    } catch (rollbackError) {
+      logDevError('project lifecycle directory rollback', rollbackError);
+    }
+    await clearProjectLifecycleJournal();
+    logDevError('project lifecycle directory move', error);
+    return makeProjectLifecycleError('E_PROJECT_DIRECTORY_MOVE_FAILED', 'PROJECT_DIRECTORY_MOVE_FAILED', {
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      recovery,
+    });
+  }
+}
+
+async function handleProjectLifecycleRenameCommand(payload = {}, options = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  if (!normalized.projectId) return makeProjectLifecycleError('E_PROJECT_ID_REQUIRED', 'PROJECT_ID_REQUIRED');
+  const nextProjectName = normalizeProjectLifecycleName(normalized.projectName);
+  if (!nextProjectName) return makeProjectLifecycleError('E_PROJECT_NAME_REQUIRED', 'PROJECT_NAME_REQUIRED');
+  if (await hasPendingAutosaveRecovery()) {
+    return makeProjectLifecycleError('E_PROJECT_RECOVERY_PENDING', 'PROJECT_RECOVERY_PENDING');
+  }
+  const canProceed = await confirmDiscardChanges();
+  if (!canProceed) return { ok: false, cancelled: true };
+  const resolved = await resolveMutableProjectBinding(normalized.projectId);
+  if (!resolved.ok) return resolved;
+  const binding = resolved.binding;
+  const targetRoot = joinPathSegmentsWithinRoot(fileManager.getDocumentsPath(), [nextProjectName], {
+    resolveSymlinks: false,
+  });
+  const result = await moveProjectDirectoryWithManifestMutation({
+    commandId: PROJECT_LIFECYCLE_RENAME_COMMAND_ID,
+    projectBinding: binding,
+    targetRoot,
+    statusText: 'renamed',
+    options,
+    mutateManifest: (manifest) => ({
+      ...manifest,
+      schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
+      projectId: binding.projectId,
+      projectName: nextProjectName,
+    }),
+  });
+  if (result.ok) {
+    setActiveProjectNameFromRoot(targetRoot);
+  }
+  return {
+    ...result,
+    renamed: result.ok === true,
+  };
+}
+
+async function handleProjectLifecycleDuplicateCommand(payload = {}, options = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  if (!normalized.projectId) return makeProjectLifecycleError('E_PROJECT_ID_REQUIRED', 'PROJECT_ID_REQUIRED');
+  const duplicateName = normalizeProjectLifecycleName(normalized.projectName, 'Копия проекта');
+  if (!duplicateName) return makeProjectLifecycleError('E_PROJECT_NAME_REQUIRED', 'PROJECT_NAME_REQUIRED');
+  if (await hasPendingAutosaveRecovery()) {
+    return makeProjectLifecycleError('E_PROJECT_RECOVERY_PENDING', 'PROJECT_RECOVERY_PENDING');
+  }
+  const resolved = await resolveMutableProjectBinding(normalized.projectId);
+  if (!resolved.ok) return resolved;
+  const binding = resolved.binding;
+  const targetRoot = joinPathSegmentsWithinRoot(fileManager.getDocumentsPath(), [duplicateName], {
+    resolveSymlinks: false,
+  });
+  if (await fileExists(targetRoot)) return makeProjectLifecycleError('E_PROJECT_TARGET_EXISTS', 'PROJECT_TARGET_EXISTS');
+  const tempRoot = makeProjectLifecycleTempPath(targetRoot, 'project-lifecycle-duplicate');
+  const rawRecord = await readProjectManifestRawAtPath(binding.manifestPath);
+  const recovery = await createProjectLifecycleRecovery(binding, PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID, rawRecord.raw, options);
+  const newProjectId = createStableProjectId();
+  await writeProjectLifecycleJournal({
+    commandId: PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID,
+    projectId: binding.projectId,
+    phase: 'copying-to-temp',
+    sourceRoot: binding.projectRoot,
+    targetRoot,
+    tempRoot,
+  });
+  try {
+    if (typeof options.beforeCopy === 'function') await options.beforeCopy({ sourceRoot: binding.projectRoot, tempRoot, targetRoot });
+    await copyDirectoryContents(binding.projectRoot, tempRoot, { overwriteExisting: true });
+    const tempManifestPath = joinPathSegmentsWithinRoot(tempRoot, [PROJECT_MANIFEST_FILENAME], {
+      resolveSymlinks: false,
+    });
+    const nextManifest = {
+      ...rawRecord.manifest,
+      schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
+      projectId: newProjectId,
+      projectName: duplicateName,
+      createdAtUtc: new Date().toISOString(),
+      duplicatedFromProjectId: binding.projectId,
+    };
+    delete nextManifest.treeIdentity;
+    await writeProjectManifestRawAtomic(tempManifestPath, nextManifest);
+    if (typeof options.afterManifestBeforeFinalMove === 'function') {
+      await options.afterManifestBeforeFinalMove({ sourceRoot: binding.projectRoot, tempRoot, targetRoot });
+    }
+    await fs.rename(tempRoot, targetRoot);
+    await clearProjectLifecycleJournal();
+    const nextBinding = {
+      projectId: newProjectId,
+      projectRoot: targetRoot,
+      manifestPath: tempManifestPath.replace(tempRoot, targetRoot),
+      manifest: await normalizeProjectManifest(nextManifest, duplicateName),
+    };
+    await replaceProjectLibraryIndexBinding('', nextBinding, { status: 'available', markOpened: false });
+    return {
+      ok: true,
+      duplicated: true,
+      projectId: newProjectId,
+      sourceProjectId: binding.projectId,
+      projectName: duplicateName,
+      receipt: makeProjectLifecycleReceipt(PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID, newProjectId, {
+        duplicated: true,
+        sourceProjectId: binding.projectId,
+        recovery,
+      }),
+    };
+  } catch (error) {
+    await fs.rm(tempRoot, { recursive: true, force: true }).catch(() => {});
+    await clearProjectLifecycleJournal();
+    logDevError('project lifecycle duplicate', error);
+    return makeProjectLifecycleError('E_PROJECT_DUPLICATE_FAILED', 'PROJECT_DUPLICATE_FAILED', {
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+      recovery,
+    });
+  }
+}
+
+async function resolveProjectMoveTargetParent(payload = {}) {
+  const documentsRoot = fileManager.getDocumentsPath();
+  const suppliedPath = typeof payload.targetParentPath === 'string' ? payload.targetParentPath.trim() : '';
+  if (suppliedPath) {
+    const normalized = normalizeProjectLibraryPrivatePath(suppliedPath, documentsRoot);
+    return normalized || '';
+  }
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Move Project',
+    properties: ['openDirectory', 'createDirectory'],
+    defaultPath: documentsRoot,
+  });
+  if (result?.canceled || !Array.isArray(result?.filePaths) || !result.filePaths[0]) return null;
+  return normalizeProjectLibraryPrivatePath(result.filePaths[0], documentsRoot) || '';
+}
+
+async function handleProjectLifecycleMoveLocationCommand(payload = {}, options = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  if (!normalized.projectId) return makeProjectLifecycleError('E_PROJECT_ID_REQUIRED', 'PROJECT_ID_REQUIRED');
+  if (await hasPendingAutosaveRecovery()) {
+    return makeProjectLifecycleError('E_PROJECT_RECOVERY_PENDING', 'PROJECT_RECOVERY_PENDING');
+  }
+  const canProceed = await confirmDiscardChanges();
+  if (!canProceed) return { ok: false, cancelled: true };
+  const resolved = await resolveMutableProjectBinding(normalized.projectId);
+  if (!resolved.ok) return resolved;
+  const binding = resolved.binding;
+  const targetParent = await resolveProjectMoveTargetParent(payload);
+  if (targetParent === null) return { ok: false, cancelled: true };
+  if (!targetParent) return makeProjectLifecycleError('E_PROJECT_TARGET_OUTSIDE_ROOT', 'PROJECT_TARGET_OUTSIDE_ROOT');
+  const targetRoot = joinPathSegmentsWithinRoot(targetParent, [path.basename(binding.projectRoot)], {
+    resolveSymlinks: false,
+  });
+  const result = await moveProjectDirectoryWithManifestMutation({
+    commandId: PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID,
+    projectBinding: binding,
+    targetRoot,
+    statusText: 'moved',
+    options,
+    mutateManifest: (manifest) => ({
+      ...manifest,
+      schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
+      projectId: binding.projectId,
+      projectName: binding.manifest?.projectName || path.basename(targetRoot),
+    }),
+  });
+  if (result.ok) {
+    setActiveProjectNameFromRoot(targetRoot);
+  }
+  return {
+    ...result,
+    moved: result.ok === true ? result.moved !== false : false,
+  };
+}
+
 function getProjectLibraryIndexPath() {
   return path.join(app.getPath('userData'), PROJECT_LIBRARY_INDEX_FILENAME);
 }
@@ -9415,11 +9918,26 @@ async function collectProjectLibraryManifestCandidates(documentsRoot, indexEntri
   return entries;
 }
 
-function mergeProjectLibraryPrivateEntries(scannedEntries, indexEntries, now) {
+async function mergeProjectLibraryPrivateEntries(scannedEntries, indexEntries, now, documentsRoot, settings) {
   const scannedRoots = new Set(scannedEntries.map((entry) => path.resolve(entry.projectRoot)));
   const merged = [...scannedEntries];
   for (const indexed of indexEntries) {
     if (scannedRoots.has(path.resolve(indexed.projectRoot))) continue;
+    const indexedCandidate = await readProjectLibraryManifestCandidate(
+      indexed.projectRoot,
+      indexed.status,
+      documentsRoot,
+      indexEntries,
+      settings,
+      now,
+    );
+    if (indexedCandidate) {
+      merged.push({
+        ...indexedCandidate,
+        source: 'index+manifest',
+      });
+      continue;
+    }
     merged.push({
       ...indexed,
       status: 'missing',
@@ -9448,12 +9966,18 @@ function toProjectLibraryReadModelRecord(entry) {
 }
 
 async function buildProjectLibraryPrivateIndex() {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) {
+    const error = new Error(recovered.reason || 'PROJECT_LIFECYCLE_RECOVERY_FAILED');
+    error.code = recovered.code || 'E_PROJECT_LIFECYCLE_RECOVERY_FAILED';
+    throw error;
+  }
   const documentsRoot = fileManager.getDocumentsPath();
   const now = new Date().toISOString();
   const settings = await loadSettings();
   const indexEntries = await readProjectLibraryPrivateIndex(documentsRoot);
   const scannedEntries = await collectProjectLibraryManifestCandidates(documentsRoot, indexEntries, settings, now);
-  return mergeProjectLibraryPrivateEntries(scannedEntries, indexEntries, now);
+  return mergeProjectLibraryPrivateEntries(scannedEntries, indexEntries, now, documentsRoot, settings);
 }
 
 async function handleWorkspaceProjectLibraryQuery() {
@@ -17194,6 +17718,9 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   PROJECT_LIFECYCLE_CREATE_COMMAND_ID,
   PROJECT_LIFECYCLE_OPEN_COMMAND_ID,
   PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID,
+  PROJECT_LIFECYCLE_RENAME_COMMAND_ID,
+  PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID,
+  PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID,
   'cmd.project.save',
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
@@ -17294,6 +17821,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID]: async () => {
     return normalizeUiBridgeMenuResult(await handleProjectLifecycleContinueCommand());
+  },
+  [PROJECT_LIFECYCLE_RENAME_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleRenameCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleDuplicateCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleMoveLocationCommand(payload));
   },
   'cmd.project.save': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
@@ -18772,6 +19308,10 @@ module.exports = {
   handleProjectLifecycleCreateCommand,
   handleProjectLifecycleOpenCommand,
   handleProjectLifecycleContinueCommand,
+  handleProjectLifecycleRenameCommand,
+  handleProjectLifecycleDuplicateCommand,
+  handleProjectLifecycleMoveLocationCommand,
+  recoverProjectLifecycleJournal,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
   handleWorkspaceProjectLibraryQuery,
