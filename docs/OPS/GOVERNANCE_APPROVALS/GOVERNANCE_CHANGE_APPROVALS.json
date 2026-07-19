@@ -395,10 +395,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "d4e6353d756cd1ec8b3a95c78e0ee27a0815aa5fc6a57da0874d16b87be4faeb",
-      "approvedBy": "ticket:PRODUCT_ACCEPTANCE_RELEASE_HYGIENE_004",
-      "approvedAtUtc": "2026-07-13T01:27:18.838Z",
-      "rationale": "Approve canonical release-mode lock regeneration against the current menu artifact and snapshot hashes; no promotion evidence pack, runtime, UI, storage, export, dependency, network, cloud, or new release claim is introduced."
+      "sha256": "ae8108d7ea2206f9dd136002b62036867dc84546edf0ad15d995cb97bfa870c6",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S31_PDF_EXPORT",
+      "approvedAtUtc": "2026-07-19T04:05:00.000Z",
+      "rationale": "Approve S31 PDF export release-candidate lock refresh after menu artifact hash changed intentionally."
     },
     {
       "filePath": "test/contracts/editor-sheet-6000-diagnostic-probe.contract.test.js",
@@ -3790,24 +3790,24 @@
     },
     {
       "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "sha256": "2e88ae8e419549955e03c8e09f1d420f36ac0c9df1771aaccf8c203a0c3d2e49",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
-      "rationale": "Approve the normalized menu artifact with the honest manual-only DOCX tracked text candidate label."
+      "sha256": "b98c64169c5e5a3e6d40fb5d142a9073745f86caf1a929a647e3891fc5da1727",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S31_PDF_EXPORT",
+      "approvedAtUtc": "2026-07-19T04:05:00.000Z",
+      "rationale": "Approve S31 PDF export menu artifact refresh: add the PDF export lane while preserving offline menu semantics and normalized artifact integrity."
     },
     {
       "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "sha256": "958965fbe6e1a4a9932dfd70edfc5cfc749e06b6b89eb2b2e8ae2cc25e359b6b",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
-      "rationale": "Approve the menu artifact lock regenerated from the owner-approved Gate C label change."
+      "sha256": "3dc72fa348b6b41fc44d07e2e8a2240b70047100f6344b4d2192ec0ca66ae770",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S31_PDF_EXPORT",
+      "approvedAtUtc": "2026-07-19T04:05:00.000Z",
+      "rationale": "Approve S31 PDF export menu artifact lock refresh after the PDF export lane became part of the minimal desktop menu."
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "sha256": "fb72ca6102f8332aca5308eb9226bd4b3ebda63ac60718361d1f6956fe06811f",
-      "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_REVIEW_V1_GATE_C_001",
-      "approvedAtUtc": "2026-07-12T23:44:36.000Z",
-      "rationale": "Approve the minimal desktop menu snapshot refreshed for the Gate C label."
+      "sha256": "e92a2c88ecf5af3fc21f123e21859c4918ed003841013081139ad6abc536bbf5",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S31_PDF_EXPORT",
+      "approvedAtUtc": "2026-07-19T04:05:00.000Z",
+      "rationale": "Approve S31 PDF export menu snapshot registry refresh for the new PDF export menu item."
     },
     {
       "filePath": "docs/OPS/STATUS/REVIEW_BRIDGE_DOCX_DIAGNOSTIC_EVIDENCE_SURFACE_001_STATUS.json",

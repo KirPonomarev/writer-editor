@@ -26,6 +26,7 @@ test('S30 export surface: one modal exposes existing bounded export lanes', () =
     'data-export-surface-status',
     'data-export-surface-detail',
     'data-export-surface-format="docx"',
+    'data-export-surface-format="pdf"',
     'data-export-surface-format="markdown"',
     'data-export-surface-format="txt-current"',
     'data-export-surface-format="txt-selected"',
@@ -51,6 +52,8 @@ test('S30 export surface: buttons delegate to existing export commands and do no
 
   assert.ok(section.includes("if (normalizedFormat === 'docx') {"));
   assert.ok(section.includes('return openExportPreviewModal();'));
+  assert.ok(section.includes("if (normalizedFormat === 'pdf') {"));
+  assert.ok(section.includes('COMMAND_IDS.PROJECT_EXPORT_PDF_V1'));
   assert.ok(section.includes("if (normalizedFormat === 'markdown') {"));
   assert.ok(section.includes('return handleMarkdownExportUiPath();'));
   assert.ok(section.includes("if (normalizedFormat === 'txt-current') {"));
@@ -84,8 +87,9 @@ test('S30 export surface: palette, runtime, and Tiptap routes converge on surfac
     'function openSettingsModal()',
   );
   assert.ok(paletteSection.includes("const exportDocxCommandId = 'cmd.project.export.docxMin';"));
+  assert.ok(paletteSection.includes("const exportPdfCommandId = 'cmd.project.exportPdfV1';"));
   assert.ok(paletteSection.includes("const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';"));
-  assert.equal((paletteSection.match(/return openExportSurfaceModal\(normalizedCommandId\);/g) || []).length, 2);
+  assert.equal((paletteSection.match(/return openExportSurfaceModal\(normalizedCommandId\);/g) || []).length, 3);
 
   const runtimeSection = sectionBetween(
     editor,
@@ -94,6 +98,7 @@ test('S30 export surface: palette, runtime, and Tiptap routes converge on surfac
   );
   for (const marker of [
     'if (commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {',
+    'if (commandId === COMMAND_IDS.PROJECT_EXPORT_PDF_V1) {',
     'if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT) {',
     'if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT) {',
     'if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT) {',
@@ -101,11 +106,12 @@ test('S30 export surface: palette, runtime, and Tiptap routes converge on surfac
   ]) {
     assert.ok(runtimeSection.includes(marker), marker);
   }
-  assert.equal((runtimeSection.match(/openExportSurfaceModal\(commandId\);/g) || []).length, 5);
+  assert.equal((runtimeSection.match(/openExportSurfaceModal\(commandId\);/g) || []).length, 6);
   assert.ok(editor.includes('openExportSurface: (commandId = \'\') => openExportSurfaceModal(commandId),'));
 
   for (const commandId of [
     'cmd.project.exportMarkdownV1',
+    'cmd.project.exportPdfV1',
     'cmd.project.exportCurrentSceneTxtV1',
     'cmd.project.exportSelectedScenesTxtV1',
     'cmd.project.exportAllScenesTxtV1',
@@ -130,7 +136,7 @@ test('S30 export surface: palette, runtime, and Tiptap routes converge on surfac
   const allMenuSection = sectionBetween(
     main,
     '[EXPORT_ALL_SCENES_TXT_COMMAND_ID]: async (payload = {}) => {',
-    "  'cmd.project.edit.undo': () => {",
+    '  [EXPORT_PDF_COMMAND_ID]: async (payload = {}) => {',
   );
   assert.equal(currentMenuSection.includes('sendCanonicalRuntimeCommand('), false);
   assert.equal(allMenuSection.includes('sendCanonicalRuntimeCommand('), false);

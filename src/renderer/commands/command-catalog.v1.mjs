@@ -24,6 +24,14 @@ const COMMAND_CATALOG_ROWS = [
     hotkey: 'Cmd/Ctrl+Shift+E',
   },
   {
+    key: 'PROJECT_EXPORT_PDF_V1',
+    id: 'cmd.project.exportPdfV1',
+    label: 'Export PDF',
+    group: 'export',
+    surface: ['palette'],
+    hotkey: '',
+  },
+  {
     key: 'PROJECT_IMPORT_MARKDOWN_V1',
     id: 'cmd.project.importMarkdownV1',
     label: 'Import Markdown Content',
