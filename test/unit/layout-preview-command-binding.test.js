@@ -168,7 +168,7 @@ test('layout preview command binding: preview controls are routed through comman
     "if (commandId === 'cmd.project.export.docxMin' && payload.preview === true) {",
     '  return { handled: false, result: null }',
   );
-  assert.ok(runtimeBridgeSnippet.includes('runBridgeCallback(runtimeHandlers.openExportPreview, commandId)'));
+  assert.ok(runtimeBridgeSnippet.includes('runBridgeCallback(runtimeHandlers.openExportSurface, commandId, commandId)'));
   assert.equal(runtimeBridgeSnippet.includes('document'), false);
   assert.equal(runtimeBridgeSnippet.includes('window'), false);
 });

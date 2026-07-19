@@ -207,7 +207,15 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
     return { handled: true, result: runBridgeCallback(runtimeHandlers.switchMode, commandId, 'write') }
   }
   if (commandId === 'cmd.project.export.docxMin' && payload.preview === true) {
-    return { handled: true, result: runBridgeCallback(runtimeHandlers.openExportPreview, commandId) }
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openExportSurface, commandId, commandId) }
+  }
+  if (
+    commandId === 'cmd.project.exportMarkdownV1'
+    || commandId === 'cmd.project.exportCurrentSceneTxtV1'
+    || commandId === 'cmd.project.exportSelectedScenesTxtV1'
+    || commandId === 'cmd.project.exportAllScenesTxtV1'
+  ) {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openExportSurface, commandId, commandId) }
   }
   if (
     commandId === 'cmd.project.importDocxV1'

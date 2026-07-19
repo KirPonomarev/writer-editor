@@ -28,7 +28,7 @@ test('selected scenes TXT export UI flow: renderer owns only transient picker an
     'const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT, {',
     'selectedSceneIds,',
     'if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT) {',
-    'void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT);',
+    'openExportSurfaceModal(commandId);',
   ]) {
     assert.ok(editor.includes(marker), marker);
   }

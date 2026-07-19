@@ -3664,17 +3664,17 @@
     },
     {
       "filePath": "test/contracts/post-mvp-current-scene-txt-export.contract.test.js",
-      "sha256": "112f0d3cea5f8d03b97fe7efe89286fbf6c300f3fc3b971bc4e87e2d4326df06",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve the current-scene TXT contract rebind from removed bespoke realpath helpers to the shared external target authority, preserving scene-only canonical source, atomic external write, project-root denial, and source-overwrite denial."
+      "sha256": "a9f49e00a8f2b61f0289ea68a25ae342fa48acd17065f961b035fd17e9e7e130",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S30_EXPORT_SURFACE_EXISTING",
+      "approvedAtUtc": "2026-07-19T00:00:00.000Z",
+      "rationale": "Approve bounded current-scene TXT contract expectation rebind to minimal-profile visibility already delivered by Review Bridge product discoverability while preserving scene-only canonical source, atomic external write, project-root denial, source-overwrite denial, and direct main-owned menu authority."
     },
     {
       "filePath": "test/contracts/post-mvp-project-txt-export.contract.test.js",
-      "sha256": "4cebd8edbbd2e15b6eb62405ecdbf68e25104e2003e7686d783ebc0dd48db146",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
-      "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve the all-scenes TXT contract marker rebind after replacement of bespoke physical-path helpers by the shared validator; canonical scene traversal, source scope, atomic write, and product claims remain unchanged."
+      "sha256": "f66c54dd9f95cfec9aa61f12e0746e423fb990e7d49b96a1eec1a0fec1f4bc47",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S30_EXPORT_SURFACE_EXISTING",
+      "approvedAtUtc": "2026-07-19T00:00:00.000Z",
+      "rationale": "Approve bounded all-scenes TXT contract expectation rebind to minimal-profile visibility already delivered by Review Bridge product discoverability while preserving canonical scene traversal, source scope, atomic write, product claims, and direct main-owned menu authority."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",

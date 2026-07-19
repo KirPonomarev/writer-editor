@@ -37,7 +37,9 @@ test('export preview command id canonicalization: editor handles canonical paylo
 
   assert.ok(source.includes('function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null) {'))
   assert.ok(source.includes("if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {"))
-  assert.ok(source.includes('openExportPreviewModal();'))
+  assert.ok(source.includes('openExportSurfaceModal(commandId);'))
+  assert.ok(source.includes('function runExportSurfaceFormat(format)'))
+  assert.ok(source.includes('return openExportPreviewModal();'))
   assert.ok(source.includes("case 'export-docx-min':"))
   assert.ok(source.includes('void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);'))
   assert.equal(source.includes("case 'export-docx-min':\n      openExportPreviewModal();"), false)
@@ -54,8 +56,12 @@ test('export preview command id canonicalization: runtime bridge handles canonic
   const { createTiptapRuntimeBridge } = await loadRuntimeBridgeModule()
 
   let previewCalls = 0
+  let surfaceCalls = 0
   const bridge = createTiptapRuntimeBridge({
     runtimeHandlers: {
+      openExportSurface() {
+        surfaceCalls += 1
+      },
       openExportPreview() {
         previewCalls += 1
       },
@@ -74,12 +80,13 @@ test('export preview command id canonicalization: runtime bridge handles canonic
     action: 'cmd.project.export.docxMin',
     reason: null,
   })
-  assert.equal(previewCalls, 1)
+  assert.equal(surfaceCalls, 1)
+  assert.equal(previewCalls, 0)
 
   const legacyResult = bridge.handleRuntimeCommand({ command: 'open-export-preview' })
   assert.equal(legacyResult.handled, true)
   assert.equal(legacyResult.command, 'open-export-preview')
-  assert.equal(previewCalls, 2)
+  assert.equal(previewCalls, 1)
 })
 
 test('export preview command id canonicalization: project command forwards confirm payload and preserves preview surface semantics', async () => {

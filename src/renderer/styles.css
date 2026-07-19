@@ -5066,17 +5066,20 @@ body.dark-theme .status-bar {
   word-break: break-word;
 }
 
-.import-surface__content {
+.import-surface__content,
+.export-surface__content {
   width: min(460px, calc(100vw - 32px));
 }
 
-.import-surface__grid {
+.import-surface__grid,
+.export-surface__grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
 }
 
-.import-surface__option {
+.import-surface__option,
+.export-surface__option {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -5085,12 +5088,14 @@ body.dark-theme .status-bar {
   padding: 10px 12px;
 }
 
-.import-surface__option-title {
+.import-surface__option-title,
+.export-surface__option-title {
   font-size: 14px;
   font-weight: 500;
 }
 
-.import-surface__option-copy {
+.import-surface__option-copy,
+.export-surface__option-copy {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.35;

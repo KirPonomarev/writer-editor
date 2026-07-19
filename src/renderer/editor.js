@@ -302,6 +302,11 @@ const exportPreviewModal = document.querySelector('[data-export-preview-modal]')
 const exportPreviewMessage = document.querySelector('[data-export-preview-message]');
 const exportPreviewConfirmButtons = Array.from(document.querySelectorAll('[data-export-preview-confirm]'));
 const exportPreviewCancelButtons = Array.from(document.querySelectorAll('[data-export-preview-cancel]'));
+const exportSurfaceModal = document.querySelector('[data-export-surface-modal]');
+const exportSurfaceStatus = document.querySelector('[data-export-surface-status]');
+const exportSurfaceDetail = document.querySelector('[data-export-surface-detail]');
+const exportSurfaceFormatButtons = Array.from(document.querySelectorAll('[data-export-surface-format]'));
+const exportSurfaceCloseButtons = Array.from(document.querySelectorAll('[data-export-surface-close]'));
 const selectedScenesTxtExportModal = document.querySelector('[data-selected-scenes-txt-export-modal]');
 const selectedScenesTxtExportSummary = document.querySelector('[data-selected-scenes-txt-export-summary]');
 const selectedScenesTxtExportList = document.querySelector('[data-selected-scenes-txt-export-list]');
@@ -10933,7 +10938,9 @@ function performSafeResetShell() {
   closeSimpleModal(settingsModal);
   closeSimpleModal(recoveryModal);
   closeSimpleModal(exportPreviewModal);
+  closeSimpleModal(exportSurfaceModal);
   closeSimpleModal(selectedScenesTxtExportModal);
+  closeSimpleModal(importSurfaceModal);
   closeDocxImportPreviewModal();
   closeSimpleModal(diagnosticsModal);
 
@@ -11002,7 +11009,9 @@ function performRestoreLastStableShell() {
   closeSimpleModal(settingsModal);
   closeSimpleModal(recoveryModal);
   closeSimpleModal(exportPreviewModal);
+  closeSimpleModal(exportSurfaceModal);
   closeSimpleModal(selectedScenesTxtExportModal);
+  closeSimpleModal(importSurfaceModal);
   closeDocxImportPreviewModal();
   closeSimpleModal(diagnosticsModal);
 
@@ -11144,6 +11153,100 @@ function runImportSurfaceFormat(format) {
   return undefined;
 }
 
+function setExportSurfaceStatus(message = '', detail = '') {
+  if (exportSurfaceStatus) {
+    exportSurfaceStatus.textContent = message || 'Choose what to export from saved project truth.';
+  }
+  if (exportSurfaceDetail) {
+    exportSurfaceDetail.textContent = detail || 'Unsupported layout fidelity is reported by the chosen export lane.';
+  }
+}
+
+function openExportSurfaceModal(commandId = '') {
+  const normalizedCommandId = typeof commandId === 'string' ? commandId.trim() : '';
+  const currentFormat = normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN
+    ? 'DOCX Minimal'
+    : (normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1
+      ? 'Markdown'
+      : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT
+        ? 'TXT Selected Scenes'
+        : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT
+          ? 'TXT Current Scene'
+          : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT ? 'TXT All Scenes' : ''))));
+  const prefix = currentFormat ? `${currentFormat} selected. ` : '';
+  setExportSurfaceStatus(
+    `${prefix}Choose an existing export lane; project text is read from saved truth.`,
+    'Target picking, loss reports, and unsupported fidelity stay owned by the selected export command.',
+  );
+  openSimpleModal(exportSurfaceModal);
+}
+
+function closeExportSurfaceModal() {
+  closeSimpleModal(exportSurfaceModal);
+}
+
+function getExportBridgeValue(result) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return {};
+  if (result.value && typeof result.value === 'object' && !Array.isArray(result.value)) {
+    return result.value;
+  }
+  return result;
+}
+
+async function runExportSurfaceBridgeCommand(commandId, requestPrefix, statusBase) {
+  updateStatusText(`${statusBase} export`);
+  const result = await invokePreloadUiCommandBridge(commandId, {
+    confirmed: true,
+    requestId: `${requestPrefix}-${Date.now()}`,
+  });
+  if (!result || result.ok !== true) {
+    updateStatusText(`${statusBase} export failed`);
+    return result;
+  }
+  const value = getExportBridgeValue(result);
+  if (value.canceled === true || value.cancelled === true) {
+    updateStatusText(`${statusBase} export cancelled`);
+    return result;
+  }
+  if (value.exported === true || result.ok === true) {
+    const sceneCount = Number.isInteger(value.sceneCount) ? `: ${value.sceneCount}` : '';
+    updateStatusText(`${statusBase} exported${sceneCount}`);
+    return result;
+  }
+  updateStatusText(`${statusBase} export unavailable`);
+  return result;
+}
+
+function runExportSurfaceFormat(format) {
+  const normalizedFormat = typeof format === 'string' ? format.trim().toLowerCase() : '';
+  closeExportSurfaceModal();
+  if (normalizedFormat === 'docx') {
+    return openExportPreviewModal();
+  }
+  if (normalizedFormat === 'markdown') {
+    return handleMarkdownExportUiPath();
+  }
+  if (normalizedFormat === 'txt-current') {
+    return runExportSurfaceBridgeCommand(
+      EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT,
+      'export-current-scene-txt',
+      'Current scene TXT',
+    );
+  }
+  if (normalizedFormat === 'txt-selected') {
+    return openSelectedScenesTxtExportFlow();
+  }
+  if (normalizedFormat === 'txt-all') {
+    return runExportSurfaceBridgeCommand(
+      EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT,
+      'export-all-scenes-txt',
+      'All scenes TXT',
+    );
+  }
+  updateStatusText('Export format unavailable');
+  return undefined;
+}
+
 function runCommandPaletteAction(commandId) {
   if (typeof commandId !== 'string' || commandId.trim().length === 0) return;
   closeSimpleModal(commandPaletteModal);
@@ -11151,6 +11254,7 @@ function runCommandPaletteAction(commandId) {
   const importDocxCommandId = 'cmd.project.importDocxV1';
   const importTxtCommandId = 'cmd.project.importTxtV1';
   const importMarkdownCommandId = 'cmd.project.importMarkdownV1';
+  const exportDocxCommandId = 'cmd.project.export.docxMin';
   const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';
   if (normalizedCommandId === importDocxCommandId) {
     return openImportSurfaceModal(normalizedCommandId);
@@ -11161,8 +11265,11 @@ function runCommandPaletteAction(commandId) {
   if (normalizedCommandId === importMarkdownCommandId) {
     return openImportSurfaceModal(normalizedCommandId);
   }
+  if (normalizedCommandId === exportDocxCommandId) {
+    return openExportSurfaceModal(normalizedCommandId);
+  }
   if (normalizedCommandId === exportMarkdownCommandId) {
-    return handleMarkdownExportUiPath();
+    return openExportSurfaceModal(normalizedCommandId);
   }
   return dispatchUiCommand(commandId.trim());
 }
@@ -13897,6 +14004,14 @@ exportPreviewConfirmButtons.forEach((button) => {
     void confirmExportPreviewAndRun();
   });
 });
+exportSurfaceCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeExportSurfaceModal());
+});
+exportSurfaceFormatButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    void runExportSurfaceFormat(button.dataset.exportSurfaceFormat || '');
+  });
+});
 selectedScenesTxtExportCancelButtons.forEach((button) => {
   button.addEventListener('click', () => closeSelectedScenesTxtExportModal());
 });
@@ -14324,15 +14439,23 @@ if (window.electronAPI) {
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {
-      void handleMarkdownExportUiPath();
+      openExportSurfaceModal(commandId);
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT) {
+      openExportSurfaceModal(commandId);
       return true;
     }
     if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT) {
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT);
+      openExportSurfaceModal(commandId);
+      return true;
+    }
+    if (commandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT) {
+      openExportSurfaceModal(commandId);
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN && payload.preview === true) {
-      openExportPreviewModal();
+      openExportSurfaceModal(commandId);
       return true;
     }
     return false;
@@ -14347,6 +14470,7 @@ if (window.electronAPI) {
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
       openImportSurface: (commandId = '') => openImportSurfaceModal(commandId),
+      openExportSurface: (commandId = '') => openExportSurfaceModal(commandId),
       insertAddCard: () => handleInsertAddCard(),
       find: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);
