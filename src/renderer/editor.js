@@ -11168,13 +11168,15 @@ function openExportSurfaceModal(commandId = '') {
     ? 'DOCX Minimal'
     : (normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_PDF_V1
       ? 'PDF'
-      : (normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1
-        ? 'Markdown'
-        : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT
-          ? 'TXT Selected Scenes'
-          : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT
-            ? 'TXT Current Scene'
-            : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT ? 'TXT All Scenes' : '')))));
+      : (normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1
+        ? 'Project Archive'
+        : (normalizedCommandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1
+          ? 'Markdown'
+          : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT
+            ? 'TXT Selected Scenes'
+            : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT
+              ? 'TXT Current Scene'
+              : (normalizedCommandId === EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT ? 'TXT All Scenes' : ''))))));
   const prefix = currentFormat ? `${currentFormat} selected. ` : '';
   setExportSurfaceStatus(
     `${prefix}Choose an existing export lane; project text is read from saved truth.`,
@@ -11232,6 +11234,13 @@ function runExportSurfaceFormat(format) {
       'PDF',
     );
   }
+  if (normalizedFormat === 'archive') {
+    return runExportSurfaceBridgeCommand(
+      COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1,
+      'export-full-archive',
+      'Project archive',
+    );
+  }
   if (normalizedFormat === 'markdown') {
     return handleMarkdownExportUiPath();
   }
@@ -11265,6 +11274,7 @@ function runCommandPaletteAction(commandId) {
   const importMarkdownCommandId = 'cmd.project.importMarkdownV1';
   const exportDocxCommandId = 'cmd.project.export.docxMin';
   const exportPdfCommandId = 'cmd.project.exportPdfV1';
+  const exportFullArchiveCommandId = 'cmd.project.exportFullArchiveV1';
   const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';
   if (normalizedCommandId === importDocxCommandId) {
     return openImportSurfaceModal(normalizedCommandId);
@@ -11279,6 +11289,9 @@ function runCommandPaletteAction(commandId) {
     return openExportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === exportPdfCommandId) {
+    return openExportSurfaceModal(normalizedCommandId);
+  }
+  if (normalizedCommandId === exportFullArchiveCommandId) {
     return openExportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === exportMarkdownCommandId) {
@@ -14452,6 +14465,10 @@ if (window.electronAPI) {
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_PDF_V1) {
+      openExportSurfaceModal(commandId);
+      return true;
+    }
+    if (commandId === COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1) {
       openExportSurfaceModal(commandId);
       return true;
     }

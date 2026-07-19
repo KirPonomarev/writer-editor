@@ -212,6 +212,7 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (
     commandId === 'cmd.project.exportMarkdownV1'
     || commandId === 'cmd.project.exportPdfV1'
+    || commandId === 'cmd.project.exportFullArchiveV1'
     || commandId === 'cmd.project.exportCurrentSceneTxtV1'
     || commandId === 'cmd.project.exportSelectedScenesTxtV1'
     || commandId === 'cmd.project.exportAllScenesTxtV1'

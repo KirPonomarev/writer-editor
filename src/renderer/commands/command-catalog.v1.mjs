@@ -32,6 +32,14 @@ const COMMAND_CATALOG_ROWS = [
     hotkey: '',
   },
   {
+    key: 'PROJECT_EXPORT_FULL_ARCHIVE_V1',
+    id: 'cmd.project.exportFullArchiveV1',
+    label: 'Export Full Project Archive',
+    group: 'export',
+    surface: ['palette'],
+    hotkey: '',
+  },
+  {
     key: 'PROJECT_IMPORT_MARKDOWN_V1',
     id: 'cmd.project.importMarkdownV1',
     label: 'Import Markdown Content',
