@@ -318,6 +318,11 @@ const projectLibraryOpenButton = document.querySelector('[data-project-library-o
 const projectLibraryRenameButton = document.querySelector('[data-project-library-rename]');
 const projectLibraryDuplicateButton = document.querySelector('[data-project-library-duplicate]');
 const projectLibraryMoveButton = document.querySelector('[data-project-library-move]');
+const projectLibraryArchiveButton = document.querySelector('[data-project-library-archive]');
+const projectLibraryTrashButton = document.querySelector('[data-project-library-trash]');
+const projectLibraryRestoreButton = document.querySelector('[data-project-library-restore]');
+const projectLibraryBackupButton = document.querySelector('[data-project-library-backup]');
+const projectLibraryIntegrityButton = document.querySelector('[data-project-library-integrity]');
 const projectLibraryCloseButtons = Array.from(document.querySelectorAll('[data-project-library-close]'));
 const docxImportPreviewModal = document.querySelector('[data-docx-import-preview-modal]');
 const docxImportPreviewMessage = document.querySelector('[data-docx-import-preview-message]');
@@ -8542,14 +8547,28 @@ function setProjectLibraryStatus(text) {
   }
 }
 
+function getSelectedProjectLibraryEntry() {
+  const projectId = projectLibraryState.selectedProjectId;
+  return projectLibraryState.entries.find((entry) => entry.projectId === projectId) || null;
+}
+
 function renderProjectLibraryModal() {
   if (!projectLibraryList) return;
   projectLibraryList.innerHTML = '';
-  const hasSelection = Boolean(projectLibraryState.selectedProjectId);
-  if (projectLibraryOpenButton) projectLibraryOpenButton.disabled = !hasSelection;
-  if (projectLibraryRenameButton) projectLibraryRenameButton.disabled = !hasSelection;
+  const selectedEntry = getSelectedProjectLibraryEntry();
+  const hasSelection = Boolean(selectedEntry);
+  const selectedStatus = selectedEntry?.status || 'available';
+  const canOpenSelected = hasSelection && selectedStatus !== 'trashed' && selectedStatus !== 'missing';
+  const canMutateSelected = hasSelection && selectedStatus !== 'missing';
+  if (projectLibraryOpenButton) projectLibraryOpenButton.disabled = !canOpenSelected;
+  if (projectLibraryRenameButton) projectLibraryRenameButton.disabled = !canOpenSelected;
   if (projectLibraryDuplicateButton) projectLibraryDuplicateButton.disabled = !hasSelection;
-  if (projectLibraryMoveButton) projectLibraryMoveButton.disabled = !hasSelection;
+  if (projectLibraryMoveButton) projectLibraryMoveButton.disabled = !canOpenSelected;
+  if (projectLibraryArchiveButton) projectLibraryArchiveButton.disabled = !canOpenSelected || selectedStatus === 'archived';
+  if (projectLibraryTrashButton) projectLibraryTrashButton.disabled = !canOpenSelected;
+  if (projectLibraryRestoreButton) projectLibraryRestoreButton.disabled = !canMutateSelected || (selectedStatus !== 'archived' && selectedStatus !== 'trashed');
+  if (projectLibraryBackupButton) projectLibraryBackupButton.disabled = !canMutateSelected;
+  if (projectLibraryIntegrityButton) projectLibraryIntegrityButton.disabled = !hasSelection;
   if (!projectLibraryState.entries.length) {
     const empty = document.createElement('div');
     empty.className = 'project-library__empty';
@@ -8741,6 +8760,69 @@ async function moveSelectedProjectFromLibraryModal() {
   } finally {
     if (projectLibraryMoveButton) projectLibraryMoveButton.disabled = false;
   }
+}
+
+async function runSelectedProjectLibraryLifecycleAction(commandId, button, statusText) {
+  const projectId = projectLibraryState.selectedProjectId;
+  if (!projectId) {
+    setProjectLibraryStatus('Выберите проект');
+    return;
+  }
+  if (button) button.disabled = true;
+  try {
+    const result = await dispatchUiCommand(commandId, { projectId });
+    const value = unwrapBridgeResult(result);
+    if (!result || result.ok !== true) {
+      setProjectLibraryStatus(value && typeof value.reason === 'string' ? value.reason : 'Команда не выполнена');
+      return;
+    }
+    setProjectLibraryStatus(statusText);
+    updateStatusText(statusText);
+    await refreshProjectLibraryModal();
+    await loadTree();
+  } finally {
+    if (button) button.disabled = false;
+  }
+}
+
+async function archiveSelectedProjectFromLibraryModal() {
+  await runSelectedProjectLibraryLifecycleAction(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_ARCHIVE,
+    projectLibraryArchiveButton,
+    'Проект архивирован',
+  );
+}
+
+async function trashSelectedProjectFromLibraryModal() {
+  await runSelectedProjectLibraryLifecycleAction(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_TRASH,
+    projectLibraryTrashButton,
+    'Проект перемещён в корзину',
+  );
+}
+
+async function restoreSelectedProjectFromLibraryModal() {
+  await runSelectedProjectLibraryLifecycleAction(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RESTORE,
+    projectLibraryRestoreButton,
+    'Проект восстановлен',
+  );
+}
+
+async function backupSelectedProjectFromLibraryModal() {
+  await runSelectedProjectLibraryLifecycleAction(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_BACKUP,
+    projectLibraryBackupButton,
+    'Резервная копия создана',
+  );
+}
+
+async function inspectSelectedProjectIntegrityFromLibraryModal() {
+  await runSelectedProjectLibraryLifecycleAction(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_INTEGRITY,
+    projectLibraryIntegrityButton,
+    'Целостность проверена',
+  );
 }
 
 if (treeContainer) {
@@ -13543,6 +13625,26 @@ projectLibraryDuplicateButton?.addEventListener('click', () => {
 
 projectLibraryMoveButton?.addEventListener('click', () => {
   void moveSelectedProjectFromLibraryModal();
+});
+
+projectLibraryArchiveButton?.addEventListener('click', () => {
+  void archiveSelectedProjectFromLibraryModal();
+});
+
+projectLibraryTrashButton?.addEventListener('click', () => {
+  void trashSelectedProjectFromLibraryModal();
+});
+
+projectLibraryRestoreButton?.addEventListener('click', () => {
+  void restoreSelectedProjectFromLibraryModal();
+});
+
+projectLibraryBackupButton?.addEventListener('click', () => {
+  void backupSelectedProjectFromLibraryModal();
+});
+
+projectLibraryIntegrityButton?.addEventListener('click', () => {
+  void inspectSelectedProjectIntegrityFromLibraryModal();
 });
 
 projectLibraryNameInput?.addEventListener('keydown', (event) => {
