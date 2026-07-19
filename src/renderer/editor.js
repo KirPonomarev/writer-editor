@@ -221,6 +221,15 @@ let toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbar
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
 const flowViewModeButtons = Array.from(document.querySelectorAll('[data-flow-view-mode]'));
+const leftRailHeader = document.querySelector('[data-left-rail-header]');
+const leftRailActionButtons = Array.from(document.querySelectorAll('[data-left-rail-action]'));
+const leftRailProjectControls = document.querySelector('[data-left-rail-project-controls]');
+const leftRailSummary = document.querySelector('[data-left-rail-summary]');
+const leftRailUnitCount = document.querySelector('[data-left-rail-unit-count]');
+const leftRailWordCount = document.querySelector('[data-left-rail-word-count]');
+const leftRailProgressLabel = document.querySelector('[data-left-rail-progress-label]');
+const leftRailProgress = document.querySelector('[data-left-rail-progress]');
+const leftRailProgressValue = document.querySelector('[data-left-rail-progress-value]');
 const leftTabsHost = document.querySelector('[data-left-tabs]');
 const leftTabButtons = Array.from(document.querySelectorAll('[data-left-tab]'));
 const leftSearchPanel = document.querySelector('[data-left-search-panel]');
@@ -7983,11 +7992,60 @@ function normalizeNavigatorDerivedCounters(node) {
 function formatNavigatorDerivedCounters(node) {
   const counters = normalizeNavigatorDerivedCounters(node);
   if (!counters) return '';
+  const presentationKind = getTreeNodePresentationKind(node);
+  if (presentationKind === 'presentation-workspace') {
+    return counters.sceneCount > 0 ? `${formatLeftRailNumber(counters.sceneCount)} сц.` : '';
+  }
+  if (presentationKind === 'presentation-manuscript') {
+    return counters.wordCount > 0 ? `${formatLeftRailNumber(counters.wordCount)} сл.` : '';
+  }
+  if (presentationKind === 'part' || presentationKind === 'chapter-folder') {
+    return counters.sceneCount > 0 ? `${formatLeftRailNumber(counters.sceneCount)} сц.` : '';
+  }
+  if (presentationKind === 'scene' || presentationKind === 'chapter-file') {
+    return counters.wordCount > 0 ? `${formatLeftRailNumber(counters.wordCount)} сл.` : '';
+  }
   const parts = [];
-  if (counters.wordCount > 0) parts.push(`${counters.wordCount} сл.`);
-  if (counters.sceneCount > 0) parts.push(`${counters.sceneCount} сц.`);
-  if (counters.sceneCount > 0) parts.push(`${counters.progressPercent}%`);
+  if (counters.wordCount > 0) parts.push(`${formatLeftRailNumber(counters.wordCount)} сл.`);
+  if (counters.sceneCount > 0) parts.push(`${formatLeftRailNumber(counters.sceneCount)} сц.`);
   return parts.join(' · ');
+}
+
+function formatLeftRailNumber(value) {
+  return new Intl.NumberFormat('ru-RU').format(Math.max(0, Number(value) || 0));
+}
+
+function formatLeftRailSceneCount(value) {
+  const count = Math.max(0, Number(value) || 0);
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  const suffix = mod10 === 1 && mod100 !== 11
+    ? 'сцена'
+    : (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? 'сцены' : 'сцен');
+  return `${formatLeftRailNumber(count)} ${suffix}`;
+}
+
+function updateLeftRailSummary(presentationRoot = null) {
+  if (!leftRailSummary || !leftRailUnitCount || !leftRailWordCount || !leftRailProgressLabel) return;
+  const counters = normalizeNavigatorDerivedCounters(presentationRoot);
+  if (!counters) {
+    leftRailUnitCount.textContent = 'Локально';
+    leftRailWordCount.textContent = 'Без ограничений';
+    leftRailProgressLabel.textContent = 'На этом устройстве';
+    if (leftRailProgress) leftRailProgress.hidden = true;
+    if (leftRailProgressValue) leftRailProgressValue.style.width = '0%';
+    return;
+  }
+  leftRailUnitCount.textContent = formatLeftRailSceneCount(counters.sceneCount);
+  leftRailWordCount.textContent = `${formatLeftRailNumber(counters.wordCount)} слов`;
+  leftRailProgressLabel.textContent = `${counters.progressPercent}% заполнено`;
+  if (leftRailProgress) {
+    leftRailProgress.hidden = false;
+    leftRailProgress.setAttribute('aria-valuenow', String(counters.progressPercent));
+  }
+  if (leftRailProgressValue) {
+    leftRailProgressValue.style.width = `${counters.progressPercent}%`;
+  }
 }
 
 function isTreeNodeDefaultExpanded(node) {
@@ -8529,6 +8587,46 @@ function findRomanRootNode(root) {
   return null;
 }
 
+function buildNavigatorRootCreateMenuItems() {
+  if (activeTab !== 'roman' || !treeRoot) return [];
+  const romanRoot = findRomanRootNode(treeRoot);
+  if (!romanRoot) return [];
+  const items = [];
+  appendContextMenuCommandItem(
+    items,
+    EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+    'Новая часть',
+    () => handleCreateNode(romanRoot, 'part', 'Название части'),
+  );
+  appendContextMenuCommandItem(
+    items,
+    EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+    'Новая глава (документ)',
+    () => handleCreateNode(romanRoot, 'chapter-file', 'Название главы'),
+  );
+  appendContextMenuCommandItem(
+    items,
+    EXTRA_COMMAND_IDS.TREE_CREATE_NODE,
+    'Новая глава (со сценами)',
+    () => handleCreateNode(romanRoot, 'chapter-folder', 'Название главы'),
+  );
+  return items;
+}
+
+function openNavigatorRootCreateMenu(anchor = null, point = null) {
+  const items = buildNavigatorRootCreateMenuItems();
+  if (!items.length) return false;
+  const rect = anchor instanceof HTMLElement ? anchor.getBoundingClientRect() : null;
+  const x = point && Number.isFinite(point.x)
+    ? point.x
+    : Math.max(8, (rect ? rect.right : 188) - 180);
+  const y = point && Number.isFinite(point.y)
+    ? point.y
+    : (rect ? rect.bottom + 4 : 52);
+  showContextMenu(items, x, y);
+  return true;
+}
+
 function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
   if (!treeContainer) return;
   reconcileNavigatorSelectionWithTree();
@@ -8538,6 +8636,7 @@ function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
     empty.className = 'tree__empty';
     empty.textContent = 'Дерево пустое';
     treeContainer.appendChild(empty);
+    updateLeftRailSummary(null);
     renderOutlineList();
     renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
     updateInspectorSnapshot();
@@ -8546,6 +8645,7 @@ function renderTree({ revealActive = false, restoreEditorFocus = false } = {}) {
   const list = document.createElement('ul');
   list.className = 'tree__list';
   const presentationRoot = buildLeftRailPresentationTree(treeRoot);
+  updateLeftRailSummary(presentationRoot);
   const nodesToRender =
     (presentationRoot.kind === 'presentation-workspace'
       ? [presentationRoot]
@@ -9000,28 +9100,7 @@ if (treeContainer) {
     }
     if (!treeRoot) return;
     event.preventDefault();
-    if (activeTab === 'roman') {
-      const romanRoot = findRomanRootNode(treeRoot);
-      if (!romanRoot) return;
-      showContextMenu(
-        [
-          {
-            label: 'Новая часть',
-            onClick: () => handleCreateNode(romanRoot, 'part', 'Название части')
-          },
-          {
-            label: 'Новая глава (документ)',
-            onClick: () => handleCreateNode(romanRoot, 'chapter-file', 'Название главы')
-          },
-          {
-            label: 'Новая глава (со сценами)',
-            onClick: () => handleCreateNode(romanRoot, 'chapter-folder', 'Название главы')
-          }
-        ],
-        event.clientX,
-        event.clientY
-      );
-    }
+    openNavigatorRootCreateMenu(null, { x: event.clientX, y: event.clientY });
   });
 }
 
@@ -10317,6 +10396,8 @@ function applyLeftTab(tab) {
   if (notesLeftListElement) notesLeftListElement.hidden = tab !== 'notes';
   if (searchResultsElement) searchResultsElement.hidden = tab !== 'search';
   if (leftSearchPanel) leftSearchPanel.hidden = tab !== 'search';
+  if (leftRailProjectControls) leftRailProjectControls.hidden = tab !== 'project';
+  if (leftRailSummary) leftRailSummary.hidden = tab !== 'project';
   if (tab === 'outline') {
     hideNotesWorkspace();
     hideProjectSearchWorkspace();
@@ -13927,6 +14008,27 @@ if (modeSwitcher) {
     const mode = button.dataset.mode;
     if (mode === 'write' || mode === 'plan' || mode === 'review') {
       applyMode(mode);
+    }
+  });
+}
+
+if (leftRailHeader) {
+  leftRailHeader.addEventListener('click', (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest('[data-left-rail-action]')
+      : null;
+    if (!(button instanceof HTMLElement) || !leftRailActionButtons.includes(button)) return;
+    const action = button.dataset.leftRailAction;
+    if (action === 'search') {
+      applyLeftTab('search');
+      requestAnimationFrame(() => leftSearchInput?.focus({ preventScroll: true }));
+      return;
+    }
+    if (action === 'add') {
+      event.stopPropagation();
+      if (!openNavigatorRootCreateMenu(button)) {
+        updateStatusText('Добавление недоступно для этого раздела');
+      }
     }
   });
 }

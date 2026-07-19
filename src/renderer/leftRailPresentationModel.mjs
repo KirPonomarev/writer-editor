@@ -16,6 +16,7 @@ function createPresentationGroup({
   children = [],
   expandKey,
   defaultExpanded = true,
+  derivedCounters = null,
 }) {
   return {
     id,
@@ -26,6 +27,9 @@ function createPresentationGroup({
     presentationKind: kind,
     presentationExpandKey: expandKey || id,
     presentationDefaultExpanded: defaultExpanded,
+    ...(derivedCounters && typeof derivedCounters === 'object'
+      ? { derivedCounters }
+      : {}),
   };
 }
 
@@ -90,6 +94,7 @@ export function buildLeftRailPresentationTree(rawRoot) {
         kind: 'presentation-manuscript',
         children: manuscriptChildren,
         expandKey: 'left-rail:manuscript',
+        derivedCounters: romanRoot.derivedCounters,
       }),
     );
   }
@@ -112,6 +117,7 @@ export function buildLeftRailPresentationTree(rawRoot) {
     kind: 'presentation-workspace',
     children: workspaceChildren,
     expandKey: 'left-rail:workspace',
+    derivedCounters: romanRoot.derivedCounters,
   });
 }
 

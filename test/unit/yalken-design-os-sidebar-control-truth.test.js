@@ -30,7 +30,7 @@ test('sidebar control truth: every static sidebar button declares a command or t
   for (const button of buttons) {
     assert.match(
       button,
-      /\bdata-(?:action|left-tab|right-tab)=/u,
+      /\bdata-(?:action|left-rail-action|left-tab|right-tab)=/u,
       `unbound sidebar button: ${button}`
     );
   }
