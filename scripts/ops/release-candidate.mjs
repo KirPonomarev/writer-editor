@@ -408,12 +408,10 @@ function writeTextDeterministic(filePath, content, keepExisting = false) {
   return 1;
 }
 
-function ensureDoctorLog(repoRoot, outputPath) {
-  if (fs.existsSync(outputPath)) return;
+function collectDoctorLog(repoRoot) {
   const doctorScriptPath = resolvePath(repoRoot, 'scripts/doctor.mjs');
   if (!fs.existsSync(doctorScriptPath)) {
-    writeTextDeterministic(outputPath, 'DOCTOR_STRICT_SKIPPED_MISSING_SCRIPT=1\n', true);
-    return;
+    return 'DOCTOR_STRICT_SKIPPED_MISSING_SCRIPT=1\n';
   }
 
   const result = spawnSync(process.execPath, ['scripts/doctor.mjs', '--strict'], {
@@ -426,7 +424,7 @@ function ensureDoctorLog(repoRoot, outputPath) {
   if (result.status !== 0) {
     throw new Error(`DOCTOR_STRICT_FAILED:${result.status}`);
   }
-  writeTextDeterministic(outputPath, combined.endsWith('\n') ? combined : `${combined}\n`, true);
+  return combined.endsWith('\n') ? combined : `${combined}\n`;
 }
 
 function sanitizeRcIdForPath(rcId) {
@@ -438,6 +436,7 @@ function generatePromotionEvidencePack({ repoRoot, lockDoc, lockPath, observed }
   const safeRcId = sanitizeRcIdForPath(lockDoc.rcId);
   const evidenceRoot = resolvePath(repoRoot, DEFAULT_EVIDENCE_ROOT);
   const evidenceDir = path.join(evidenceRoot, safeRcId);
+  const doctorLog = collectDoctorLog(repoRoot);
   fs.mkdirSync(evidenceDir, { recursive: true });
 
   const releaseCandidateLockSha256 = sha256File(lockPath);
@@ -489,10 +488,10 @@ function generatePromotionEvidencePack({ repoRoot, lockDoc, lockPath, observed }
   writeTextDeterministic(promotionSummaryPath, `${stableStringify(promotionSummary)}\n`);
   writeTextDeterministic(menuArtifactHashPath, `${lockDoc.menuArtifactHash}\n`);
   writeTextDeterministic(perfBaselineSnapshotPath, fs.readFileSync(observed.paths.perfBaselinePath, 'utf8'));
+  writeTextDeterministic(doctorLogPath, doctorLog);
   writeTextDeterministic(heavyLaneSummaryPath, `${stableStringify(heavyLaneSummary)}\n`);
   writeTextDeterministic(requiredSetSnapshotPath, fs.readFileSync(observed.paths.requiredTokenSetPath, 'utf8'));
   writeTextDeterministic(failsignalSnapshotPath, fs.readFileSync(observed.paths.failsignalRegistryPath, 'utf8'));
-  ensureDoctorLog(repoRoot, doctorLogPath);
 
   return {
     evidenceDir,

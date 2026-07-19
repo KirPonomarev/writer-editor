@@ -198,3 +198,29 @@ test('promotion verify generates evidence pack and keeps deterministic files sta
     fs.rmSync(fixtureRoot, { recursive: true, force: true });
   }
 });
+
+test('promotion verify does not write evidence when doctor strict fails', () => {
+  const fixtureRoot = makeFixtureRepo();
+  try {
+    const create = runReleaseCandidate(['--create', '--repo-root', fixtureRoot, '--mode=release', '--json']);
+    assert.equal(create.status, 0, `${create.stdout}\n${create.stderr}`);
+
+    fs.writeFileSync(
+      path.join(fixtureRoot, 'scripts', 'doctor.mjs'),
+      "console.error('DOCTOR_STRICT_FIXTURE_FAIL=1');\nprocess.exit(1);\n",
+      'utf8',
+    );
+
+    const verify = runReleaseCandidate(['--verify', '--repo-root', fixtureRoot, '--mode=promotion', '--json']);
+    assert.notEqual(verify.status, 0, 'promotion mode must fail when doctor strict fails');
+    const payload = parseJsonOutput(verify);
+    assert.equal(payload.result, 'FAIL');
+    assert.match(String(payload.failReason || ''), /^DOCTOR_STRICT_FAILED:/u);
+    assert.equal(payload.evidencePackPath, undefined);
+
+    const evidenceRoot = path.join(fixtureRoot, 'docs', 'OPS', 'EVIDENCE', 'promotion');
+    assert.equal(fs.existsSync(evidenceRoot), false, 'failing doctor must not leave promotion evidence');
+  } finally {
+    fs.rmSync(fixtureRoot, { recursive: true, force: true });
+  }
+});
