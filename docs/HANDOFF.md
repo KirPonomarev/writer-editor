@@ -34,6 +34,16 @@ _Generated: 2026-07-12_
 - Legacy editor truth: no longer primary
 - Active docs: synced to post-merge main reality with explicit Y8 formal cutover packet, rollback packet, historical vertical sheets baseline, C05 long-document closeout, current 01R quarantine for tracked vertical sheet reds, editorial sheet 10000 committed stress evidence, import/export MVP-scope closeout, delivered current-scene TXT export, delivered selected-scenes TXT export, delivered TXT import factual rebind, review bridge exact-apply lane closeout, delivered DOCX review preflight, delivered DOCX review local-file entry, and DOCX comments-only product proof work.
 
+## Current S42 Re-entry
+- Active autonomous plan binding: `YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3`.
+- Runtime sprints through `S41_VISUAL_RECOVERY_NEGATIVE_HARDENING` are merged before this docs-only factual sync; pre-S42 remote main head is `b4d2ab806490a0aad488ba247ec5f6e8bf3f8c95`.
+- S42 changes factual docs and status artifacts only. Runtime, toolbar baseline, sidebars, editor sheet geometry, command semantics, storage, recovery, import/export behavior, dependencies, account/cloud/network policy, and project format must remain unchanged.
+- Capability truth now has two layers: `CAPABILITIES_MATRIX.json` remains the platform command capability matrix, while `YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_CAPABILITY_STATUS.json` records the human-readable LIVE/PARTIAL/PLANNED/BLOCKED capability status for the merged next-stage runtime.
+- Desktop node local writing, project lifecycle, notes, search, replacement, history, import/export, settings, local Free/Pro provider, Pro data preservation, accessibility, longform runtime, and safe-reset/last-stable proof hardening are factual live within their stated bounded limits.
+- Flow remains a derived scene projection and is partial by design: supported guarded editing and batch save are admitted, but Flow is not a second manuscript truth and does not claim semantic merge or arbitrary cross-scene editing.
+- Free/Pro remains local-only and shared-format. Free preserves Pro data and marks dependent Pro records stale after text edits, but Pro-only complexity surfaces remain unavailable in Free.
+- Web and mobile-wrapper local filesystem project commands remain blocked by platform capability rows. Word, Google Docs, broad layout parity, EPUB/HTML, cloud, sync, accounts, release readiness, and Pro analytics recomputation remain unclaimed.
+
 ## Local Machine State
 - This file describes a snapshot-bound mainline reality, not the forever-current state of the local machine.
 - Local branch, local worktree cleanliness, and local generated artifacts must be checked separately before any new write contour.

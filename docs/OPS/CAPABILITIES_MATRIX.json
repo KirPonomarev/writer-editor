@@ -2,6 +2,78 @@
   "schemaVersion": 1,
   "opsCanonVersion": "v1.3",
   "declaredEmpty": false,
+  "factualStatusRef": "YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_CAPABILITY_STATUS.json",
+  "factualStatusBinding": {
+    "planId": "YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3",
+    "sprintId": "S42_FACTUAL_DOCS_CAPABILITY_MATRIX",
+    "remoteHeadBeforeDocs": "b4d2ab806490a0aad488ba247ec5f6e8bf3f8c95",
+    "completedRuntimeSprintRange": "S00-S41",
+    "docsOnly": true
+  },
+  "statusLegend": {
+    "LIVE": "merged and demonstrated runtime behavior within the stated platform, entitlement, and fidelity limits",
+    "PARTIAL": "merged bounded behavior with an explicit limitation that remains outside automatic support",
+    "PLANNED": "accepted direction without merged runtime authority in this matrix",
+    "BLOCKED": "not admitted, unavailable, or intentionally disabled for the stated platform or entitlement"
+  },
+  "statusSummary": [
+    {
+      "surfaceId": "desktop-local-writing-core",
+      "status": "LIVE",
+      "platforms": ["node"],
+      "evidence": ["S02-S28 merged", "npm test passed through S41", "test:electron passed through S41"],
+      "limits": ["desktop-first local project truth only", "scene remains the atomic text and recovery unit"]
+    },
+    {
+      "surfaceId": "import-export-free-v1",
+      "status": "LIVE",
+      "platforms": ["node"],
+      "evidence": ["S29-S33 merged", "CAPABILITY_MATRIX.json Gate A/B/C evidence", "full archive roundtrip proof in S38"],
+      "limits": ["bounded DOCX and Markdown fidelity", "PDF and full archive are local desktop lanes", "no EPUB, HTML, cloud, or sync claim"]
+    },
+    {
+      "surfaceId": "flow-derived-projection",
+      "status": "PARTIAL",
+      "platforms": ["node"],
+      "evidence": ["S14-S16 merged", "S40 longform flow-provider stress proof"],
+      "limits": ["Flow is a derived scene projection, not a second manuscript truth", "unsupported rich or boundary-damaging edits fail closed", "no semantic merge claim"]
+    },
+    {
+      "surfaceId": "free-pro-local-entitlement",
+      "status": "LIVE",
+      "platforms": ["node"],
+      "evidence": ["S37 merged", "S38 Pro-Free-Pro archive roundtrip proof"],
+      "limits": ["local entitlement only", "no account, license server, subscription state, network, or profile-to-tier coupling"]
+    },
+    {
+      "surfaceId": "pro-complexity-in-free",
+      "status": "BLOCKED",
+      "platforms": ["node"],
+      "evidence": ["S37 entitlement tests", "S38 unknown-field preservation proof"],
+      "limits": ["Free can read and preserve Pro data but does not run Pro-only review or world-model surfaces"]
+    },
+    {
+      "surfaceId": "web-and-mobile-wrapper-local-filesystem",
+      "status": "BLOCKED",
+      "platforms": ["web", "mobile-wrapper"],
+      "evidence": ["CAPABILITIES_MATRIX disabledCommands rows", "capability unsupported contract"],
+      "limits": ["local file project commands are disabled outside node desktop; editor-only command subsets remain available where declared true"]
+    },
+    {
+      "surfaceId": "safe-reset-last-stable-recovery-proof",
+      "status": "LIVE",
+      "platforms": ["node"],
+      "evidence": ["S41 merged", "test:toolbar-closeout passed in S41", "storage and recovery contract matrix passed in S41"],
+      "limits": ["proof evaluator hardening only", "no recovery behavior widening"]
+    },
+    {
+      "surfaceId": "editor-specific-word-google-claims",
+      "status": "PLANNED",
+      "platforms": ["node"],
+      "evidence": ["Gate D remains post-v1 not claimed in CAPABILITY_MATRIX.json"],
+      "limits": ["no Word support, Google Docs support, roundtrip, layout parity, or cloud integration"]
+    }
+  ],
   "items": [
     {
       "platformId": "node",

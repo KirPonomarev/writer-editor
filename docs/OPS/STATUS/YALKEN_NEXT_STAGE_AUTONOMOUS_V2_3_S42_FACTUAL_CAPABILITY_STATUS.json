@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "yalken-next-stage.factual-capability-status.v1",
+  "planId": "YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3",
+  "sprintId": "S42_FACTUAL_DOCS_CAPABILITY_MATRIX",
+  "status": "docs_only_factual_sync",
+  "remoteHeadBeforeDocs": "b4d2ab806490a0aad488ba247ec5f6e8bf3f8c95",
+  "completedRuntimeSprintRange": "S00-S41",
+  "sourceTruth": [
+    "CANON.md",
+    "docs/OPS/STATUS/CANON_STATUS.json",
+    "docs/OPS/CAPABILITIES_MATRIX.json",
+    "docs/OPS/STATUS/CAPABILITY_MATRIX.json",
+    "YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3 execution tracker outside git"
+  ],
+  "statusLegend": {
+    "LIVE": "merged and demonstrated runtime behavior within explicit platform, entitlement, and fidelity limits",
+    "PARTIAL": "merged bounded behavior with explicit limitations or manual-only lanes",
+    "PLANNED": "accepted direction without merged runtime authority in this matrix",
+    "BLOCKED": "not admitted, unavailable, or intentionally disabled"
+  },
+  "runtimeTruth": [
+    {
+      "surfaceId": "desktop-local-writing-core",
+      "status": "LIVE",
+      "owner": "Product Core plus command kernel",
+      "evidence": ["S02-S28 merged", "npm test passed through S41", "test:electron passed through S41"],
+      "limitations": ["desktop-first node runtime", "scene remains the atomic text, history, concurrency, and recovery unit"]
+    },
+    {
+      "surfaceId": "navigator-sidebars-design-os",
+      "status": "LIVE",
+      "owner": "Design OS shell",
+      "evidence": ["S03-S13 merged", "S39 accessibility keyboard checks", "S41 sector-u-full visual and accessibility lane"],
+      "limitations": ["existing toolbar baseline remains frozen", "future visual sidebar polish requires a separate owner-approved UI contour"]
+    },
+    {
+      "surfaceId": "flow-derived-projection",
+      "status": "PARTIAL",
+      "owner": "Flow provider over source scenes",
+      "evidence": ["S14-S16 merged", "S40 longform flow provider stress proof"],
+      "limitations": ["Flow is not a document truth", "unsupported rich content, stale sources, and damaged boundaries fail closed", "no semantic merge"]
+    },
+    {
+      "surfaceId": "notes-search-replace-history",
+      "status": "LIVE",
+      "owner": "Product Core providers and storage recovery",
+      "evidence": ["S17-S24 merged", "S41 storage and recovery contracts passed"],
+      "limitations": ["no Pro semantic analysis", "no cloud index", "no collaboration"]
+    },
+    {
+      "surfaceId": "project-library-lifecycle",
+      "status": "LIVE",
+      "owner": "main-owned project library and lifecycle commands",
+      "evidence": ["S25-S28 merged", "full suite passed through S41"],
+      "limitations": ["local paths remain main-owned", "project index is reconstructable and not project truth"]
+    },
+    {
+      "surfaceId": "import-export-free-v1",
+      "status": "LIVE",
+      "owner": "main-owned file authority plus format-specific lanes",
+      "evidence": ["S29-S33 merged", "CAPABILITY_MATRIX.json Gate A/B/C delivery", "S38 full archive Pro-Free-Pro proof"],
+      "limitations": ["bounded DOCX and Markdown fidelity", "PDF and archive are local desktop claims", "no EPUB, HTML, cloud sync, broad format parity, or editor-specific claim"]
+    },
+    {
+      "surfaceId": "settings-aggregation",
+      "status": "LIVE",
+      "owner": "Settings read model over existing owners",
+      "evidence": ["S34 merged", "S37 entitlement settings proof"],
+      "limitations": ["settings surface is not a universal store", "unsupported spelling and accessibility override controls remain unavailable"]
+    },
+    {
+      "surfaceId": "free-pro-local-entitlement",
+      "status": "LIVE",
+      "owner": "local capability provider",
+      "evidence": ["S37 merged", "S38 Pro-Free-Pro roundtrip proof"],
+      "limitations": ["local-only Free and Pro distinction", "no account, license server, subscription state, network truth, or toolbar-profile coupling"]
+    },
+    {
+      "surfaceId": "pro-data-preservation-in-free",
+      "status": "LIVE",
+      "owner": "shared project format plus preservation helper",
+      "evidence": ["S38 merged", "archive-backed Pro-Free-Pro roundtrip test"],
+      "limitations": ["Free marks dependent Pro records stale after text edits", "Free preserves but does not recompute Pro analytics"]
+    },
+    {
+      "surfaceId": "keyboard-and-a11y",
+      "status": "LIVE",
+      "owner": "renderer accessibility contracts",
+      "evidence": ["S39 merged", "S41 sector-u-full visual and accessibility lane"],
+      "limitations": ["no separate accessibility override settings engine"]
+    },
+    {
+      "surfaceId": "longform-performance",
+      "status": "LIVE",
+      "owner": "derived providers and bounded vertical sheet windowing",
+      "evidence": ["S40 merged", "longform Electron stress pack passed in S41"],
+      "limitations": ["runtime-derived page map only", "no second page-map truth", "above-current-contract profiling remains future work"]
+    },
+    {
+      "surfaceId": "safe-reset-last-stable-recovery-proof",
+      "status": "LIVE",
+      "owner": "Design OS shell proof evaluators",
+      "evidence": ["S41 merged", "test:toolbar-closeout passed in S41"],
+      "limitations": ["proof evaluator hardening only", "no runtime recovery behavior widening"]
+    },
+    {
+      "surfaceId": "web-and-mobile-wrapper-filesystem",
+      "status": "BLOCKED",
+      "owner": "platform capability resolver",
+      "evidence": ["CAPABILITIES_MATRIX disabledCommands rows", "capability unsupported contract"],
+      "limitations": ["local filesystem project commands remain disabled outside node desktop"]
+    },
+    {
+      "surfaceId": "word-google-editor-specific-claims",
+      "status": "PLANNED",
+      "owner": "future editor-specific evidence lane",
+      "evidence": ["CAPABILITY_MATRIX.json Gate D remains post_v1_not_claimed"],
+      "limitations": ["no Word support, Google Docs support, layout parity, roundtrip, cloud integration, or release claim"]
+    }
+  ],
+  "checksReferenced": [
+    "npm run build:renderer",
+    "npm run test:ops",
+    "npm run test:toolbar-closeout",
+    "npm run test:sector-u-full",
+    "npm test",
+    "npm run test:electron",
+    "npm run perf:baseline:check",
+    "npm run oss:policy",
+    "npm audit --audit-level=moderate"
+  ],
+  "localNonBlockingNotes": [
+    "S41 attempted npm run security:audit:generic-sast, but semgrep was not installed in the local environment.",
+    "S42 introduces no runtime behavior and makes no release-readiness, cloud, account, Word, Google, EPUB, HTML, or Pro analytics recomputation claim."
+  ],
+  "delivery": {
+    "commitRequired": true,
+    "pushRequired": true,
+    "pullRequestRequired": true,
+    "mergeRequired": true
+  }
+}

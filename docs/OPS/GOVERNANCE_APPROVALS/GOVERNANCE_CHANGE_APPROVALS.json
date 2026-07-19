@@ -3923,10 +3923,17 @@
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
-      "sha256": "dd2f1a15986811a231e46245001cbf1430951f4e3583dd1b398d8db64de31bba",
-      "approvedBy": "ticket:S36_COMMAND_MENU_KEYMAP_AUDIT",
-      "approvedAtUtc": "2026-07-19T00:00:00.000Z",
-      "rationale": "Approve bounded S36 command menu keymap audit capability truth synchronization. The change documents already existing public menu, palette, lifecycle, import, export, and main-owned menu commands in runtime and OPS capability declarations while preserving offline-first scope, no new command semantics, no new dependency, no licensing implementation, no network or cloud behavior, and no toolbar redesign."
+      "sha256": "9721f4fc0aabcc802e2a29cd85eaf1c570b0a6718d7ae8ff8d9bb86177493759",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_DOCS_CAPABILITY_MATRIX",
+      "approvedAtUtc": "2026-07-19T10:58:00.000Z",
+      "rationale": "Approve bounded S42 factual capability status sync. The change adds docs-only LIVE, PARTIAL, PLANNED, and BLOCKED status evidence for already merged S00-S41 runtime behavior while preserving the existing platform capability rows, command semantics, storage, recovery, import/export behavior, dependencies, network policy, toolbar baseline, sidebar design, and project format."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_CAPABILITY_STATUS.json",
+      "sha256": "cf646ffa7b64cbc0ddc67cbcdd2b4d6c96c7f43e0ec58d39fb5445e9a1e1c618",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_DOCS_CAPABILITY_MATRIX",
+      "approvedAtUtc": "2026-07-19T10:58:00.000Z",
+      "rationale": "Approve bounded S42 factual status artifact for the already merged S00-S41 next-stage runtime. The artifact records explicit LIVE, PARTIAL, PLANNED, and BLOCKED statuses and accepted limitations only; it introduces no runtime, command, storage, recovery, UI, dependency, account, cloud, network, import/export, entitlement, or project-format change."
     },
     {
       "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",

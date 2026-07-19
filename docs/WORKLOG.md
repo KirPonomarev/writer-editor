@@ -3,6 +3,15 @@
 Короткая хронология изменений и решений. Это не полный лог чата, а сжатые записи “что сделали / зачем / что дальше”.
 Если в переписке были важные продуктовые/UX‑решения (даже без кода) — фиксируйте их здесь короткими пунктами.
 
+## 2026-07-19
+- S42 factual docs and Capability Matrix sync opened as a docs-only contour after `S41_VISUAL_RECOVERY_NEGATIVE_HARDENING` merged at remote main `b4d2ab806490a0aad488ba247ec5f6e8bf3f8c95`.
+- Added `YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_CAPABILITY_STATUS.json` as the factual LIVE/PARTIAL/PLANNED/BLOCKED status layer for the merged S00-S41 next-stage runtime.
+- Updated `CAPABILITIES_MATRIX.json` with an explicit factual status binding and summary while preserving the existing platform capability rows consumed by command capability tooling.
+- Rebound active docs to the current merged truth: desktop node local writing core, project lifecycle, notes, search, replacement, history, import/export, settings, local Free/Pro provider, Pro-data preservation, accessibility, longform runtime, and safe-reset/last-stable proof hardening are live only inside their documented bounds.
+- Flow remains explicitly partial and derived: it can read and edit source scenes through guarded supported paths, but it is not a second manuscript truth and does not claim semantic merge or arbitrary cross-scene editing.
+- Web and mobile-wrapper filesystem project commands remain blocked; Word, Google Docs, EPUB, HTML, cloud, sync, account, broad layout parity, release readiness, and Pro analytics recomputation remain unclaimed.
+- Scope truth: S42 introduces no runtime, UI, dependency, storage, command, entitlement, toolbar, sidebar, editor, import/export, cloud, account, network, recovery-behavior, or project-format change.
+
 ## 2026-07-13
 - Review Bridge Gate C: delivered and merged via PR `1085`, feature commit `af7b1897bfe8be726f520680e83437f9a3c2f191`, and merge SHA `72ee480b0fcc53239c162d5302b41a1c87e82dc4` from owner-approved binding base `c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886`.
 - Bounded tracked text: adjacent DOCX deletion plus insertion becomes one manual TextChange candidate, standalone insertions and deletions remain separate manual candidates, and none of them creates Apply authority.
