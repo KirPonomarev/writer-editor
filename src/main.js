@@ -52,6 +52,7 @@ const { createCommandSurfaceKernel } = require('./command/commandSurfaceKernel')
 const launchT0 = performance.now();
 let mainWindow;
 let currentFilePath = null; // Путь к текущему открытому файлу
+let currentProjectName = '';
 let currentReviewSurfacePayload = {};
 let currentReviewSurfacePayloadSource = 'none';
 let currentReviewSurfacePayloadContentHash = '';
@@ -336,6 +337,9 @@ const REPLACE_MASS_PREVIEW_COMMAND_ID = 'cmd.project.edit.replaceMassPreview';
 const REPLACE_MASS_APPLY_COMMAND_ID = 'cmd.project.edit.replaceMassApply';
 const REPLACE_MASS_ROLLBACK_COMMAND_ID = 'cmd.project.edit.replaceMassRollback';
 const PROJECT_LIBRARY_QUERY_ID = 'query.projectLibrary';
+const PROJECT_LIFECYCLE_CREATE_COMMAND_ID = 'cmd.project.lifecycle.create';
+const PROJECT_LIFECYCLE_OPEN_COMMAND_ID = 'cmd.project.lifecycle.open';
+const PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID = 'cmd.project.lifecycle.continue';
 const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
 const HISTORY_CREATE_CHECKPOINT_COMMAND_ID = 'cmd.project.history.createCheckpoint';
 const HISTORY_RESTORE_PREVIEW_COMMAND_ID = 'cmd.project.history.restorePreview';
@@ -6664,18 +6668,18 @@ const ROMAN_SECTION_FILENAME_SET = new Set(
   ROMAN_SECTION_LABELS.map((label) => sanitizeFilename(label).toLowerCase())
 );
 
-function getProjectRootPath(projectName = DEFAULT_PROJECT_NAME) {
+function getProjectRootPath(projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
   const root = fileManager.getDocumentsPath();
   return joinPathSegmentsWithinRoot(root, [sanitizeFilename(projectName)], { resolveSymlinks: false });
 }
 
-function getProjectSectionPath(section, projectName = DEFAULT_PROJECT_NAME) {
+function getProjectSectionPath(section, projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
   const root = getProjectRootPath(projectName);
   const folder = PROJECT_SUBFOLDERS[section];
   return folder ? joinPathSegmentsWithinRoot(root, [folder], { resolveSymlinks: false }) : root;
 }
 
-function getProjectManifestPath(projectName = DEFAULT_PROJECT_NAME) {
+function getProjectManifestPath(projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
   return joinPathSegmentsWithinRoot(getProjectRootPath(projectName), [PROJECT_MANIFEST_FILENAME], {
     resolveSymlinks: false,
   });
@@ -6691,7 +6695,7 @@ function buildSectionDefinitions(labels) {
 const MATERIALS_SECTIONS = buildSectionDefinitions(MATERIALS_SECTION_LABELS);
 const REFERENCE_SECTIONS = buildSectionDefinitions(REFERENCE_SECTION_LABELS);
 
-function getSectionDocumentPath(sectionName, projectName = DEFAULT_PROJECT_NAME) {
+function getSectionDocumentPath(sectionName, projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
   const root = fileManager.getDocumentsPath();
   const projectFolder = sanitizeFilename(projectName);
   const fileName = `${sanitizeFilename(sectionName)}.txt`;
@@ -8935,7 +8939,7 @@ async function resolveProjectBindingForFile(filePath) {
     return null;
   }
 
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
   return {
     manifestPath,
     projectRoot,
@@ -8975,12 +8979,16 @@ async function findProjectBindingByProjectId(projectId) {
       const manifestPath = path.join(documentsRoot, entry.name, PROJECT_MANIFEST_FILENAME);
       try {
         const raw = await fs.readFile(manifestPath, 'utf8');
-        const manifest = await normalizeProjectManifest(JSON.parse(raw), entry.name);
+        const parsed = JSON.parse(raw);
+        const sourceSchemaVersion = Number(parsed?.schemaVersion);
+        const manifest = await normalizeProjectManifest(parsed, entry.name);
         if (manifest.projectId === normalizedProjectId) {
           return {
+            projectId: manifest.projectId,
             manifestPath,
             projectRoot: path.dirname(manifestPath),
-            manifest
+            manifest,
+            sourceSchemaVersion,
           };
         }
       } catch {
@@ -8992,6 +9000,267 @@ async function findProjectBindingByProjectId(projectId) {
   }
 
   return null;
+}
+
+function setActiveProjectNameFromRoot(projectRoot) {
+  if (typeof projectRoot !== 'string' || !projectRoot.trim()) return;
+  currentProjectName = sanitizeFilename(path.basename(projectRoot));
+}
+
+function makeProjectLifecycleError(code, reason, details = {}) {
+  return {
+    ok: false,
+    code,
+    reason,
+    ...(isPlainObjectValue(details) && Object.keys(details).length ? { details } : {}),
+  };
+}
+
+function normalizeProjectLifecyclePayload(payload = {}) {
+  const source = isPlainObjectValue(payload) ? payload : {};
+  return {
+    projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '',
+    projectName: typeof source.projectName === 'string' ? source.projectName.trim() : '',
+  };
+}
+
+function normalizeSelectionRangeForSettings(value) {
+  if (!isPlainObjectValue(value)) return null;
+  const start = Number(value.start);
+  const end = Number(value.end);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return null;
+  return {
+    start: Math.max(0, Math.floor(start)),
+    end: Math.max(0, Math.floor(end)),
+  };
+}
+
+async function hasPendingAutosaveRecovery() {
+  try {
+    const content = await fs.readFile(getAutosavePath(), 'utf8');
+    return Boolean(content);
+  } catch {
+    return false;
+  }
+}
+
+async function ensureProjectSkeleton(projectNameInput) {
+  const projectName = sanitizeFilename(projectNameInput || DEFAULT_PROJECT_NAME);
+  const projectRoot = getProjectRootPath(projectName);
+  const manifestPath = getProjectManifestPath(projectName);
+  if (await fileExists(manifestPath)) {
+    return makeProjectLifecycleError('E_PROJECT_ALREADY_EXISTS', 'PROJECT_ALREADY_EXISTS');
+  }
+  for (const folderName of Object.values(PROJECT_SUBFOLDERS)) {
+    await fs.mkdir(joinPathSegmentsWithinRoot(projectRoot, [folderName], { resolveSymlinks: false }), {
+      recursive: true,
+    });
+  }
+  const { manifest } = await ensureProjectManifest(projectName);
+  const importedRoot = joinPathSegmentsWithinRoot(projectRoot, [PROJECT_SUBFOLDERS.roman, 'Imported'], {
+    resolveSymlinks: false,
+  });
+  await fs.mkdir(importedRoot, { recursive: true });
+  const firstScenePath = joinPathSegmentsWithinRoot(importedRoot, ['01 Начало.txt'], { resolveSymlinks: false });
+  const created = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(firstScenePath, ''),
+    'create initial project scene',
+  );
+  if (!created.success) {
+    return makeProjectLifecycleError('E_PROJECT_INITIAL_SCENE_WRITE_FAILED', 'PROJECT_INITIAL_SCENE_WRITE_FAILED');
+  }
+  return {
+    ok: true,
+    projectId: manifest.projectId,
+    projectName: manifest.projectName,
+    projectRoot,
+    manifest,
+    firstScenePath,
+  };
+}
+
+async function collectProjectTextFiles(rootPath, output = []) {
+  let entries = [];
+  try {
+    entries = await fs.readdir(rootPath, { withFileTypes: true });
+  } catch {
+    return output;
+  }
+  for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name, 'ru'))) {
+    const entryPath = joinPathSegmentsWithinRoot(rootPath, [entry.name], { resolveSymlinks: false });
+    if (entry.isDirectory()) {
+      await collectProjectTextFiles(entryPath, output);
+    } else if (entry.isFile() && entry.name.toLowerCase().endsWith('.txt')) {
+      output.push(entryPath);
+    }
+  }
+  return output;
+}
+
+async function resolveProjectContinueTarget(projectBinding, settings = {}) {
+  const relative = typeof settings.lastProjectRelativePath === 'string'
+    ? settings.lastProjectRelativePath.trim()
+    : '';
+  if (relative && settings.lastProjectId === projectBinding.projectId) {
+    const candidatePath = joinPathSegmentsWithinRoot(projectBinding.projectRoot, [relative], {
+      resolveSymlinks: false,
+    });
+    if (
+      candidatePath === projectBinding.projectRoot
+      || isPathInside(projectBinding.projectRoot, candidatePath)
+    ) {
+      try {
+        const stat = await fs.stat(candidatePath);
+        if (stat.isFile()) return { filePath: candidatePath, source: 'last-active' };
+      } catch {}
+    }
+  }
+  const romanRoot = joinPathSegmentsWithinRoot(projectBinding.projectRoot, [PROJECT_SUBFOLDERS.roman], {
+    resolveSymlinks: false,
+  });
+  const files = await collectProjectTextFiles(romanRoot);
+  return files[0]
+    ? { filePath: files[0], source: 'first-scene' }
+    : { filePath: '', source: 'none' };
+}
+
+async function getReadOnlyProjectDocumentIdentityPayload(filePath, projectBinding) {
+  const binding = isPlainObjectValue(projectBinding) ? projectBinding : {};
+  const projectRoot = typeof binding.projectRoot === 'string' ? binding.projectRoot : '';
+  const projectId = typeof binding.projectId === 'string' ? binding.projectId : '';
+  if (!projectRoot || !projectId || typeof filePath !== 'string' || !isPathInside(projectRoot, filePath)) {
+    return { documentId: '', projectId };
+  }
+  const normalizedPath = path.basename(filePath).toLowerCase() === '.index.txt'
+    ? path.dirname(filePath)
+    : filePath;
+  const bindingKey = toProjectTreeBindingKey(projectRoot, normalizedPath);
+  if (!bindingKey) return { documentId: '', projectId };
+  const identityModule = await loadProjectTreeIdentityModule();
+  return {
+    documentId: identityModule.createDeterministicTreeNodeId(projectId, bindingKey),
+    projectId,
+  };
+}
+
+async function openProjectDocumentFile(filePath, options = {}) {
+  if (!filePath || !isAllowedFilePath(filePath)) {
+    return makeProjectLifecycleError('E_PROJECT_OPEN_PATH_NOT_ALLOWED', 'PROJECT_OPEN_PATH_NOT_ALLOWED');
+  }
+  const fileResult = await fileManager.readFile(filePath);
+  if (!fileResult.success) {
+    return makeProjectLifecycleError('E_PROJECT_OPEN_READ_FAILED', 'PROJECT_OPEN_READ_FAILED');
+  }
+  currentFilePath = filePath;
+  const context = getDocumentContextFromPath(filePath);
+  const readOnlyProject = options.readOnlyProject === true;
+  const projectBinding = isPlainObjectValue(options.projectBinding) ? options.projectBinding : null;
+  const documentIdentity = readOnlyProject && projectBinding
+    ? await getReadOnlyProjectDocumentIdentityPayload(filePath, projectBinding)
+    : await getProjectDocumentIdentityPayload(filePath);
+  sendEditorText(await attachProjectIdToEditorPayload({
+    content: fileResult.content,
+    title: context.title,
+    ...documentIdentity,
+    projectId: options.projectId || documentIdentity.projectId || projectBinding?.projectId || '',
+    kind: context.kind,
+    metaEnabled: context.metaEnabled,
+    selectionRange: normalizeSelectionRangeForSettings(options.selectionRange),
+    readOnlyProject,
+  }, filePath));
+  setDirtyState(false);
+  const contentHash = computeHash(fileResult.content);
+  lastAutosaveHash = contentHash;
+  backupHashes.set(filePath, contentHash);
+  await saveLastFile({
+    selectionRange: normalizeSelectionRangeForSettings(options.selectionRange),
+    projectBinding,
+  });
+  updateStatus(options.statusText || 'Готово');
+  return {
+    ok: true,
+    projectId: options.projectId || documentIdentity.projectId || '',
+    documentId: documentIdentity.documentId || '',
+    opened: true,
+  };
+}
+
+async function handleProjectLifecycleCreateCommand(payload = {}) {
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  const projectName = normalized.projectName || DEFAULT_PROJECT_NAME;
+  if (await hasPendingAutosaveRecovery()) {
+    return makeProjectLifecycleError('E_PROJECT_RECOVERY_PENDING', 'PROJECT_RECOVERY_PENDING');
+  }
+  const canProceed = await confirmDiscardChanges();
+  if (!canProceed) return { ok: false, cancelled: true };
+  const created = await ensureProjectSkeleton(projectName);
+  if (!created.ok) return created;
+  setActiveProjectNameFromRoot(created.projectRoot);
+  const opened = await openProjectDocumentFile(created.firstScenePath, { statusText: 'Проект создан' });
+  if (!opened.ok) return opened;
+  await touchProjectLibraryIndexForBinding({
+    projectId: created.projectId,
+    projectRoot: created.projectRoot,
+    manifestPath: joinPathSegmentsWithinRoot(created.projectRoot, [PROJECT_MANIFEST_FILENAME], {
+      resolveSymlinks: false,
+    }),
+    manifest: created.manifest,
+  });
+  return {
+    ok: true,
+    created: true,
+    projectId: created.projectId,
+    projectName: created.projectName,
+    documentId: opened.documentId,
+    recoveryChecked: true,
+  };
+}
+
+async function handleProjectLifecycleOpenCommand(payload = {}) {
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  if (!normalized.projectId) {
+    return makeProjectLifecycleError('E_PROJECT_ID_REQUIRED', 'PROJECT_ID_REQUIRED');
+  }
+  if (await hasPendingAutosaveRecovery()) {
+    return makeProjectLifecycleError('E_PROJECT_RECOVERY_PENDING', 'PROJECT_RECOVERY_PENDING');
+  }
+  const canProceed = await confirmDiscardChanges();
+  if (!canProceed) return { ok: false, cancelled: true };
+  const binding = await findProjectBindingByProjectId(normalized.projectId);
+  if (!binding) return makeProjectLifecycleError('E_PROJECT_NOT_FOUND', 'PROJECT_NOT_FOUND');
+  setActiveProjectNameFromRoot(binding.projectRoot);
+  const settings = await loadSettings();
+  const target = await resolveProjectContinueTarget(binding, settings);
+  if (!target.filePath) return makeProjectLifecycleError('E_PROJECT_EMPTY', 'PROJECT_EMPTY');
+  const readOnlyProject = Number(binding.sourceSchemaVersion) > PROJECT_MANIFEST_SCHEMA_VERSION;
+  const selectionRange = settings.lastProjectId === binding.projectId
+    ? normalizeSelectionRangeForSettings(settings.lastProjectSelectionRange)
+    : null;
+  const opened = await openProjectDocumentFile(target.filePath, {
+    selectionRange,
+    statusText: target.source === 'last-active' ? 'Проект открыт' : 'Проект открыт с первой сцены',
+    projectId: binding.projectId,
+    projectBinding: binding,
+    readOnlyProject,
+  });
+  if (!opened.ok) return opened;
+  return {
+    ok: true,
+    opened: true,
+    projectId: binding.projectId,
+    projectName: binding.manifest?.projectName || path.basename(binding.projectRoot),
+    documentId: opened.documentId,
+    continuationSource: target.source,
+    recoveryChecked: true,
+    readOnlyProject,
+  };
+}
+
+async function handleProjectLifecycleContinueCommand() {
+  const settings = await loadSettings();
+  const lastProjectId = typeof settings.lastProjectId === 'string' ? settings.lastProjectId.trim() : '';
+  if (!lastProjectId) return makeProjectLifecycleError('E_PROJECT_CONTINUE_UNAVAILABLE', 'PROJECT_CONTINUE_UNAVAILABLE');
+  return handleProjectLifecycleOpenCommand({ projectId: lastProjectId });
 }
 
 function getProjectLibraryIndexPath() {
@@ -9371,6 +9640,10 @@ function sendEditorText(payload) {
       projectId: typeof payload.projectId === 'string' ? payload.projectId : '',
       bookProfile: isPlainObjectValue(payload.bookProfile) ? payload.bookProfile : null,
     };
+    const selectionRange = normalizeSelectionRangeForSettings(payload.selectionRange);
+    if (selectionRange) {
+      safePayload.selectionRange = selectionRange;
+    }
     if (isPlainObjectValue(payload.reviewSurface)) {
       safePayload.reviewSurface = cloneJsonSafe(payload.reviewSurface);
       currentReviewSurfacePayload = cloneJsonSafe(payload.reviewSurface) || {};
@@ -9392,21 +9665,24 @@ function sendEditorText(payload) {
 
 async function attachProjectIdToEditorPayload(payload, privateFilePath = '') {
   const source = payload && typeof payload === 'object' ? payload : {};
+  const readOnlyProject = source.readOnlyProject === true;
   const nextPayload = {
     content: typeof source.content === 'string' ? source.content : '',
     title: typeof source.title === 'string' ? source.title : '',
     documentId: typeof source.documentId === 'string' ? source.documentId : '',
     kind: typeof source.kind === 'string' ? source.kind : '',
     metaEnabled: Boolean(source.metaEnabled),
-    projectId: '',
-    bookProfile: null,
+    projectId: typeof source.projectId === 'string' ? source.projectId : '',
+    bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
+    selectionRange: normalizeSelectionRangeForSettings(source.selectionRange),
+    readOnlyProject,
     reviewSurface: isPlainObjectValue(source.reviewSurface) ? cloneJsonSafe(source.reviewSurface) : undefined,
   };
 
   const sourceFilePath = typeof privateFilePath === 'string' && privateFilePath.trim()
     ? privateFilePath
     : '';
-  if (!sourceFilePath) {
+  if (!sourceFilePath || readOnlyProject) {
     return nextPayload;
   }
 
@@ -9458,6 +9734,7 @@ function normalizeEditorSnapshotPayload(payload) {
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
+    selectionRange: normalizeSelectionRangeForSettings(source.selectionRange),
   };
 }
 
@@ -10114,10 +10391,13 @@ async function saveSettings(settings) {
 }
 
 // Сохранение последнего открытого файла
-async function saveLastFile() {
+async function saveLastFile(options = {}) {
   try {
     const settings = await loadSettings();
-    const projectBinding = await resolveProjectBindingForFile(currentFilePath);
+    const selectionRange = normalizeSelectionRangeForSettings(options.selectionRange);
+    const projectBinding = isPlainObjectValue(options.projectBinding)
+      ? options.projectBinding
+      : await resolveProjectBindingForFile(currentFilePath);
     if (projectBinding && projectBinding.projectId) {
       const projectId = projectBinding.projectId;
       const relativePath = getProjectRelativeFilePath(currentFilePath, projectBinding.manifestPath);
@@ -10129,6 +10409,9 @@ async function saveLastFile() {
       } else {
         delete settings.lastProjectRelativePath;
       }
+      if (selectionRange) {
+        settings.lastProjectSelectionRange = selectionRange;
+      }
       delete settings.lastExternalFilePath;
       await touchProjectLibraryIndexForBinding(projectBinding);
     } else {
@@ -10136,6 +10419,7 @@ async function saveLastFile() {
       delete settings.projectManifestPath;
       delete settings.lastProjectId;
       delete settings.lastProjectRelativePath;
+      delete settings.lastProjectSelectionRange;
       if (typeof currentFilePath === 'string' && currentFilePath.trim()) {
         settings.lastExternalFilePath = currentFilePath;
       } else {
@@ -13825,7 +14109,7 @@ async function createProjectTreeMoveRecovery(manifestPath, projectRoot, sourceTe
 }
 
 async function reconcileProjectTreeIdentities(roots) {
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
   const projectRoot = path.dirname(manifestPath);
   const descriptors = collectProjectTreeIdentityDescriptors(roots, projectRoot);
   const identityModule = await loadProjectTreeIdentityModule();
@@ -13967,13 +14251,14 @@ async function buildProjectTreeRootsWithIdentities() {
 }
 
 async function buildProjectTreeRootsWithIdentitiesReadOnly() {
-  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const activeProjectName = currentProjectName || DEFAULT_PROJECT_NAME;
+  const manifestRecord = await readProjectManifest(activeProjectName);
   if (!manifestRecord || !manifestRecord.manifest) {
     const error = new Error('PROJECT_MANIFEST_UNAVAILABLE');
     error.code = 'E_PROJECT_MANIFEST_UNAVAILABLE';
     throw error;
   }
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const manifestPath = getProjectManifestPath(activeProjectName);
   const projectRoot = path.dirname(manifestPath);
   const manifest = manifestRecord.manifest;
   const romanRoot = await buildRomanTree();
@@ -14083,7 +14368,7 @@ async function getProjectDocumentIdentityPayload(filePath) {
   }
   try {
     await buildProjectTreeRootsWithIdentities();
-    const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+    const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
     const normalizedPath = path.basename(filePath).toLowerCase() === '.index.txt'
       ? path.dirname(filePath)
       : filePath;
@@ -14099,6 +14384,26 @@ async function getProjectDocumentIdentityPayload(filePath) {
     return { documentId: created.nodeId };
   } catch (error) {
     logDevError('project document identity payload', error);
+    try {
+      const activeProjectName = currentProjectName || DEFAULT_PROJECT_NAME;
+      const manifestRecord = await readProjectManifest(activeProjectName);
+      const manifest = manifestRecord && manifestRecord.manifest ? manifestRecord.manifest : null;
+      const manifestPath = getProjectManifestPath(activeProjectName);
+      const projectRoot = path.dirname(manifestPath);
+      const normalizedPath = path.basename(filePath).toLowerCase() === '.index.txt'
+        ? path.dirname(filePath)
+        : filePath;
+      const bindingKey = toProjectTreeBindingKey(projectRoot, normalizedPath);
+      if (manifest && bindingKey) {
+        const identityModule = await loadProjectTreeIdentityModule();
+        const documentId = identityModule.createDeterministicTreeNodeId(manifest.projectId, bindingKey);
+        if (documentId) {
+          return { documentId };
+        }
+      }
+    } catch (fallbackError) {
+      logDevError('project document identity payload fallback', fallbackError);
+    }
     const resolutionError = new Error('PROJECT_DOCUMENT_IDENTITY_UNAVAILABLE');
     resolutionError.code = 'E_PROJECT_DOCUMENT_IDENTITY_UNAVAILABLE';
     throw resolutionError;
@@ -14133,7 +14438,7 @@ function getResolvedTreeDocumentTarget(resolvedNode) {
 }
 
 async function upsertProjectTreeIdentityForPath(candidatePath, kind) {
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
   const projectRoot = path.dirname(manifestPath);
   const identityModule = await loadProjectTreeIdentityModule();
   const result = identityModule.upsertProjectTreeIdentityNode({
@@ -14160,7 +14465,7 @@ async function upsertProjectTreeIdentityForPath(candidatePath, kind) {
 }
 
 async function rebindProjectTreeIdentityForPaths(fromPath, toPath) {
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
   if (!manifest.treeIdentity) {
     return { changed: false, movedNodeIds: [] };
   }
@@ -14196,7 +14501,7 @@ async function rebindProjectTreeIdentityForMoves(pathMoves) {
     ? pathMoves.filter((move) => move && move.fromPath !== move.toPath)
     : [];
   if (moves.length === 0) return { changed: false, movedNodeIds: [] };
-  const { manifestPath, manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
   if (!manifest.treeIdentity) return { changed: false, movedNodeIds: [] };
   const projectRoot = path.dirname(manifestPath);
   const identityModule = await loadProjectTreeIdentityModule();
@@ -15193,7 +15498,7 @@ async function handleWorkspaceProjectTreeQuery(payload) {
     return { ok: false, error: 'Missing tab' };
   }
 
-  await ensureProjectStructure();
+  await ensureProjectStructure(currentProjectName || DEFAULT_PROJECT_NAME);
   if (!['roman', 'materials', 'reference'].includes(tab)) {
     return { ok: false, error: 'Unknown tab' };
   }
@@ -16555,7 +16860,7 @@ async function autoSave() {
       lastAutosaveHash = currentHash;
       setDirtyState(false);
       updateStatus('Автосохранено');
-      await saveLastFile();
+      await saveLastFile({ selectionRange: snapshot.selectionRange });
       return true;
     }
 
@@ -16677,7 +16982,7 @@ async function handleSave() {
       lastAutosaveHash = computeHash(content);
       setDirtyState(false);
       updateStatus('Сохранено');
-      await saveLastFile();
+      await saveLastFile({ selectionRange: snapshot.selectionRange });
       return true;
     }
     updateStatus('Ошибка');
@@ -16711,7 +17016,7 @@ async function handleSave() {
       await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
-      await saveLastFile();
+      await saveLastFile({ selectionRange: snapshot.selectionRange });
       setDirtyState(false);
       updateStatus('Сохранено');
       if (wasUntitled) {
@@ -16769,7 +17074,7 @@ async function handleSaveAs() {
       await persistBookProfileForFile(filePath, snapshot.bookProfile, 'save project manifest');
       lastAutosaveHash = computeHash(content);
       currentFilePath = filePath;
-      await saveLastFile();
+      await saveLastFile({ selectionRange: snapshot.selectionRange });
       setDirtyState(false);
       updateStatus('Сохранено');
       if (wasUntitled) {
@@ -16886,6 +17191,9 @@ const MENU_RUNTIME_LEGACY_RAW_CONFIG_ENV_PATH = 'MENU_CONFIG_PATH';
 const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.new',
   'cmd.project.open',
+  PROJECT_LIFECYCLE_CREATE_COMMAND_ID,
+  PROJECT_LIFECYCLE_OPEN_COMMAND_ID,
+  PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID,
   'cmd.project.save',
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
@@ -16977,6 +17285,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   'cmd.project.open': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_OPEN, {});
+  },
+  [PROJECT_LIFECYCLE_CREATE_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleCreateCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_OPEN_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleOpenCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID]: async () => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleContinueCommand());
   },
   'cmd.project.save': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
@@ -18452,6 +18769,9 @@ module.exports = {
   handleHistoryRestoreApplyCommand,
   handleHistoryRestorePreviewCommand,
   handleHistoryRestoreUndoCommand,
+  handleProjectLifecycleCreateCommand,
+  handleProjectLifecycleOpenCommand,
+  handleProjectLifecycleContinueCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
   handleWorkspaceProjectLibraryQuery,
