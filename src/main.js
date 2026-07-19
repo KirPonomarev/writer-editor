@@ -335,11 +335,13 @@ const REPLACE_SINGLE_SAFE_COMMAND_ID = 'cmd.project.edit.replaceSingleSafe';
 const REPLACE_MASS_PREVIEW_COMMAND_ID = 'cmd.project.edit.replaceMassPreview';
 const REPLACE_MASS_APPLY_COMMAND_ID = 'cmd.project.edit.replaceMassApply';
 const REPLACE_MASS_ROLLBACK_COMMAND_ID = 'cmd.project.edit.replaceMassRollback';
+const PROJECT_LIBRARY_QUERY_ID = 'query.projectLibrary';
 const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
 const HISTORY_CREATE_CHECKPOINT_COMMAND_ID = 'cmd.project.history.createCheckpoint';
 const HISTORY_RESTORE_PREVIEW_COMMAND_ID = 'cmd.project.history.restorePreview';
 const HISTORY_RESTORE_APPLY_COMMAND_ID = 'cmd.project.history.restoreApply';
 const HISTORY_RESTORE_UNDO_COMMAND_ID = 'cmd.project.history.restoreUndo';
+const PROJECT_LIBRARY_INDEX_FILENAME = 'project-library-index.v1.json';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -6815,6 +6817,18 @@ function loadProjectSearchReadModelModule() {
   return projectSearchReadModelModulePromise;
 }
 
+let projectLibraryReadModelModulePromise = null;
+function loadProjectLibraryReadModelModule() {
+  if (!projectLibraryReadModelModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'derived', 'projectLibraryReadModel.mjs')).href;
+    projectLibraryReadModelModulePromise = import(modulePath).catch((error) => {
+      projectLibraryReadModelModulePromise = null;
+      throw error;
+    });
+  }
+  return projectLibraryReadModelModulePromise;
+}
+
 let sceneHistoryReadModelModulePromise = null;
 function loadSceneHistoryReadModelModule() {
   if (!sceneHistoryReadModelModulePromise) {
@@ -8980,6 +8994,244 @@ async function findProjectBindingByProjectId(projectId) {
   return null;
 }
 
+function getProjectLibraryIndexPath() {
+  return path.join(app.getPath('userData'), PROJECT_LIBRARY_INDEX_FILENAME);
+}
+
+function normalizeProjectLibraryStatus(value) {
+  const status = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (status === 'archived' || status === 'trashed' || status === 'missing') return status;
+  return 'available';
+}
+
+function normalizeProjectLibraryPrivatePath(value, documentsRoot) {
+  if (typeof value !== 'string' || !value.trim()) return '';
+  const resolved = path.resolve(value);
+  if (resolved !== documentsRoot && !isPathInside(documentsRoot, resolved)) return '';
+  return resolved;
+}
+
+function normalizeProjectLibraryIndexEntry(entry, documentsRoot) {
+  const source = isPlainObjectValue(entry) ? entry : {};
+  const projectId = normalizeStableProjectId(source.projectId);
+  const projectRoot = normalizeProjectLibraryPrivatePath(source.projectRoot, documentsRoot);
+  const manifestPath = normalizeProjectLibraryPrivatePath(source.manifestPath, documentsRoot);
+  if (!projectId || !projectRoot || !manifestPath) return null;
+  return {
+    projectId,
+    projectName: typeof source.projectName === 'string' && source.projectName.trim()
+      ? source.projectName.trim().slice(0, 256)
+      : path.basename(projectRoot),
+    projectRoot,
+    manifestPath,
+    status: normalizeProjectLibraryStatus(source.status),
+    createdAtUtc: typeof source.createdAtUtc === 'string' ? source.createdAtUtc : '',
+    lastOpenedAtUtc: typeof source.lastOpenedAtUtc === 'string' ? source.lastOpenedAtUtc : '',
+    lastSeenAtUtc: typeof source.lastSeenAtUtc === 'string' ? source.lastSeenAtUtc : '',
+    manifestHash: typeof source.manifestHash === 'string' ? source.manifestHash : '',
+  };
+}
+
+async function readProjectLibraryPrivateIndex(documentsRoot = fileManager.getDocumentsPath()) {
+  try {
+    const raw = await fs.readFile(getProjectLibraryIndexPath(), 'utf8');
+    const parsed = JSON.parse(raw);
+    const sourceEntries = Array.isArray(parsed?.entries) ? parsed.entries : [];
+    return sourceEntries
+      .map((entry) => normalizeProjectLibraryIndexEntry(entry, documentsRoot))
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+async function writeProjectLibraryPrivateIndex(entries) {
+  const privateEntries = Array.isArray(entries) ? entries : [];
+  const payload = {
+    schemaVersion: 'project-library-index.v1',
+    updatedAtUtc: new Date().toISOString(),
+    entries: privateEntries.map((entry) => ({
+      projectId: entry.projectId,
+      projectName: entry.projectName,
+      projectRoot: entry.projectRoot,
+      manifestPath: entry.manifestPath,
+      status: normalizeProjectLibraryStatus(entry.status),
+      createdAtUtc: entry.createdAtUtc || '',
+      lastOpenedAtUtc: entry.lastOpenedAtUtc || '',
+      lastSeenAtUtc: entry.lastSeenAtUtc || '',
+      manifestHash: entry.manifestHash || '',
+    })),
+  };
+  const writeResult = await queueDiskOperation(
+    () => fileManager.writeFileAtomic(getProjectLibraryIndexPath(), `${JSON.stringify(payload, null, 2)}\n`),
+    'save project library index',
+  );
+  if (!writeResult.success) {
+    throw new Error(writeResult.error || 'Failed to save project library index');
+  }
+}
+
+function buildProjectLibraryLocationKey(projectRoot) {
+  return computeHash(path.resolve(projectRoot || '')).slice(0, 32);
+}
+
+function getProjectLibraryStoredEntry(indexEntries, projectRoot) {
+  const normalized = path.resolve(projectRoot || '');
+  return indexEntries.find((entry) => path.resolve(entry.projectRoot) === normalized) || null;
+}
+
+async function readProjectLibraryManifestCandidate(projectRoot, status, documentsRoot, indexEntries, settings, now) {
+  const normalizedRoot = normalizeProjectLibraryPrivatePath(projectRoot, documentsRoot);
+  if (!normalizedRoot) return null;
+  const manifestPath = joinPathSegmentsWithinRoot(normalizedRoot, [PROJECT_MANIFEST_FILENAME], {
+    resolveSymlinks: false,
+  });
+  try {
+    const raw = await fs.readFile(manifestPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (!normalizeStableProjectId(parsed?.projectId)) return null;
+    const manifest = await normalizeProjectManifest(parsed, path.basename(normalizedRoot));
+    const stored = getProjectLibraryStoredEntry(indexEntries, normalizedRoot);
+    const lastOpenedAtUtc = stored?.lastOpenedAtUtc
+      || (settings?.lastProjectId === manifest.projectId ? new Date().toISOString() : '');
+    return {
+      projectId: manifest.projectId,
+      projectName: manifest.projectName || path.basename(normalizedRoot),
+      projectRoot: normalizedRoot,
+      manifestPath,
+      status: normalizeProjectLibraryStatus(status || stored?.status),
+      createdAtUtc: manifest.createdAtUtc || '',
+      lastOpenedAtUtc,
+      lastSeenAtUtc: now,
+      manifestHash: computeHash(raw),
+      source: stored ? 'scan+index' : 'scan',
+      locationKey: buildProjectLibraryLocationKey(normalizedRoot),
+      warnings: [],
+    };
+  } catch (error) {
+    if (error && error.code !== 'ENOENT') logDevError('query.projectLibrary:manifest', error);
+    return null;
+  }
+}
+
+async function collectProjectLibraryManifestCandidates(documentsRoot, indexEntries, settings, now) {
+  const entries = [];
+  const scanDirectory = async (root, status, options = {}) => {
+    let dirents = [];
+    try {
+      dirents = await fs.readdir(root, { withFileTypes: true });
+    } catch (error) {
+      if (error && error.code !== 'ENOENT') logDevError('query.projectLibrary:readdir', error);
+      return;
+    }
+    for (const dirent of dirents.sort((a, b) => a.name.localeCompare(b.name, 'ru'))) {
+      if (!dirent.isDirectory()) continue;
+      if (options.skipContainers && (dirent.name === 'archived' || dirent.name === 'trash')) continue;
+      const projectRoot = joinPathSegmentsWithinRoot(root, [dirent.name], { resolveSymlinks: false });
+      const record = await readProjectLibraryManifestCandidate(
+        projectRoot,
+        status,
+        documentsRoot,
+        indexEntries,
+        settings,
+        now,
+      );
+      if (record) entries.push(record);
+    }
+  };
+
+  await scanDirectory(documentsRoot, 'available', { skipContainers: true });
+  await scanDirectory(joinPathSegmentsWithinRoot(documentsRoot, ['archived'], { resolveSymlinks: false }), 'archived');
+  await scanDirectory(joinPathSegmentsWithinRoot(documentsRoot, ['trash'], { resolveSymlinks: false }), 'trashed');
+  return entries;
+}
+
+function mergeProjectLibraryPrivateEntries(scannedEntries, indexEntries, now) {
+  const scannedRoots = new Set(scannedEntries.map((entry) => path.resolve(entry.projectRoot)));
+  const merged = [...scannedEntries];
+  for (const indexed of indexEntries) {
+    if (scannedRoots.has(path.resolve(indexed.projectRoot))) continue;
+    merged.push({
+      ...indexed,
+      status: 'missing',
+      source: 'index',
+      lastSeenAtUtc: indexed.lastSeenAtUtc || now,
+      locationKey: buildProjectLibraryLocationKey(indexed.projectRoot),
+      warnings: ['PROJECT_MISSING'],
+    });
+  }
+  return merged;
+}
+
+function toProjectLibraryReadModelRecord(entry) {
+  return {
+    projectId: entry.projectId,
+    projectName: entry.projectName,
+    status: entry.status,
+    source: entry.source,
+    createdAtUtc: entry.createdAtUtc,
+    lastOpenedAtUtc: entry.lastOpenedAtUtc,
+    lastSeenAtUtc: entry.lastSeenAtUtc,
+    manifestHash: entry.manifestHash,
+    locationKey: entry.locationKey,
+    warnings: entry.warnings,
+  };
+}
+
+async function buildProjectLibraryPrivateIndex() {
+  const documentsRoot = fileManager.getDocumentsPath();
+  const now = new Date().toISOString();
+  const settings = await loadSettings();
+  const indexEntries = await readProjectLibraryPrivateIndex(documentsRoot);
+  const scannedEntries = await collectProjectLibraryManifestCandidates(documentsRoot, indexEntries, settings, now);
+  return mergeProjectLibraryPrivateEntries(scannedEntries, indexEntries, now);
+}
+
+async function handleWorkspaceProjectLibraryQuery() {
+  const projectLibraryModule = await loadProjectLibraryReadModelModule();
+  try {
+    const privateEntries = await buildProjectLibraryPrivateIndex();
+    await writeProjectLibraryPrivateIndex(privateEntries);
+    return projectLibraryModule.buildProjectLibraryReadModel({
+      scannedAtUtc: new Date().toISOString(),
+      projects: privateEntries.map(toProjectLibraryReadModelRecord),
+    });
+  } catch (error) {
+    logDevError('query.projectLibrary', error);
+    return projectLibraryModule.buildProjectLibraryReadModel({
+      unavailableReason: error && typeof error.code === 'string' ? error.code : 'PROJECT_LIBRARY_UNAVAILABLE',
+      projects: [],
+    });
+  }
+}
+
+async function touchProjectLibraryIndexForBinding(projectBinding, options = {}) {
+  if (!projectBinding || !projectBinding.projectId || !projectBinding.projectRoot || !projectBinding.manifestPath) return;
+  try {
+    const documentsRoot = fileManager.getDocumentsPath();
+    const existing = await readProjectLibraryPrivateIndex(documentsRoot);
+    const normalizedRoot = normalizeProjectLibraryPrivatePath(projectBinding.projectRoot, documentsRoot);
+    const normalizedManifestPath = normalizeProjectLibraryPrivatePath(projectBinding.manifestPath, documentsRoot);
+    if (!normalizedRoot || !normalizedManifestPath) return;
+    const now = typeof options.now === 'string' && options.now ? options.now : new Date().toISOString();
+    const nextEntry = {
+      projectId: projectBinding.projectId,
+      projectName: projectBinding.manifest?.projectName || path.basename(normalizedRoot),
+      projectRoot: normalizedRoot,
+      manifestPath: normalizedManifestPath,
+      status: normalizeProjectLibraryStatus(options.status),
+      createdAtUtc: projectBinding.manifest?.createdAtUtc || '',
+      lastOpenedAtUtc: now,
+      lastSeenAtUtc: now,
+      manifestHash: computeHash(JSON.stringify(getProjectManifestComparable(projectBinding.manifest || {}))),
+    };
+    const retained = existing.filter((entry) => path.resolve(entry.projectRoot) !== path.resolve(normalizedRoot));
+    await writeProjectLibraryPrivateIndex([nextEntry, ...retained]);
+  } catch (error) {
+    logDevError('projectLibraryIndex:touch', error);
+  }
+}
+
 async function resolveLastOpenedFilePath(settings) {
   const source = settings && typeof settings === 'object' ? settings : {};
   const lastProjectId = typeof source.lastProjectId === 'string' ? source.lastProjectId.trim() : '';
@@ -9878,6 +10130,7 @@ async function saveLastFile() {
         delete settings.lastProjectRelativePath;
       }
       delete settings.lastExternalFilePath;
+      await touchProjectLibraryIndexForBinding(projectBinding);
     } else {
       delete settings.projectId;
       delete settings.projectManifestPath;
@@ -14841,6 +15094,9 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   if (queryId === 'query.projectTree') {
     return handleWorkspaceProjectTreeQuery(payload);
   }
+  if (queryId === PROJECT_LIBRARY_QUERY_ID) {
+    return handleWorkspaceProjectLibraryQuery(payload);
+  }
   if (queryId === 'query.selectedScenesTxtExportScope') {
     return handleWorkspaceSelectedScenesTxtExportScopeQuery();
   }
@@ -16687,6 +16943,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
 ]);
 const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.projectTree',
+  PROJECT_LIBRARY_QUERY_ID,
   'query.selectedScenesTxtExportScope',
   'query.collabScopeLocal',
   'query.reviewSurface',
@@ -18197,6 +18454,7 @@ module.exports = {
   handleHistoryRestoreUndoCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
+  handleWorkspaceProjectLibraryQuery,
   handleWorkspaceProjectSearchQuery,
   handleWorkspaceSceneHistoryQuery,
   handleWorkspaceProjectTreeQuery,
