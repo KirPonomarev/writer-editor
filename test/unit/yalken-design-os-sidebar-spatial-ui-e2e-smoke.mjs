@@ -741,7 +741,7 @@ try {
     lineHeightMatches: true,
     marginsText: '25,4 мм',
     marginsTitle: 'Верх 25,4 мм, справа 25,4 мм, низ 25,4 мм, слева 25,4 мм',
-    historyTabPresent: false,
+    historyTabPresent: true,
     quickNotePresent: false,
   });
   assert.deepEqual(result.inspectorControls.typographyChanged, {

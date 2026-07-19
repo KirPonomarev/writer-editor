@@ -63,6 +63,7 @@ test('S34 settings aggregator: unavailable spelling and accessibility claims are
   const aggregation = settings.buildSettingsAggregation({});
   const spelling = aggregation.settings.find((entry) => entry.id === 'language.spelling');
   const accessibility = aggregation.settings.find((entry) => entry.id === 'accessibility.customOverrides');
+  const reducedMotion = aggregation.settings.find((entry) => entry.id === 'accessibility.reducedMotion');
 
   assert.equal(spelling.status, 'unavailable');
   assert.equal(spelling.persistenceClass, 'unsupported');
@@ -71,6 +72,10 @@ test('S34 settings aggregator: unavailable spelling and accessibility claims are
 
   assert.equal(accessibility.status, 'unavailable');
   assert.match(accessibility.note, /no user override surface/i);
+
+  assert.equal(reducedMotion.status, 'read_only');
+  assert.equal(reducedMotion.value, 'Follows system');
+  assert.equal(reducedMotion.persistenceClass, 'prefers-reduced-motion');
 });
 
 test('S34 settings surface: modal renders the aggregation read model and keeps live controls owner-owned', () => {
