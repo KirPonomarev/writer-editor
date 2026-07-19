@@ -307,6 +307,15 @@ const selectedScenesTxtExportSummary = document.querySelector('[data-selected-sc
 const selectedScenesTxtExportList = document.querySelector('[data-selected-scenes-txt-export-list]');
 const selectedScenesTxtExportConfirmButtons = Array.from(document.querySelectorAll('[data-selected-scenes-txt-export-confirm]'));
 const selectedScenesTxtExportCancelButtons = Array.from(document.querySelectorAll('[data-selected-scenes-txt-export-cancel]'));
+const projectLibraryModal = document.querySelector('[data-project-library-modal]');
+const projectLibraryList = document.querySelector('[data-project-library-list]');
+const projectLibraryStatus = document.querySelector('[data-project-library-status]');
+const projectLibraryNameInput = document.querySelector('[data-project-library-name]');
+const projectLibraryCreateButton = document.querySelector('[data-project-library-create]');
+const projectLibraryRefreshButtons = Array.from(document.querySelectorAll('[data-project-library-refresh]'));
+const projectLibraryContinueButton = document.querySelector('[data-project-library-continue]');
+const projectLibraryOpenButton = document.querySelector('[data-project-library-open]');
+const projectLibraryCloseButtons = Array.from(document.querySelectorAll('[data-project-library-close]'));
 const docxImportPreviewModal = document.querySelector('[data-docx-import-preview-modal]');
 const docxImportPreviewMessage = document.querySelector('[data-docx-import-preview-message]');
 const docxImportPreviewLoss = document.querySelector('[data-docx-import-preview-loss]');
@@ -369,6 +378,7 @@ const SAFE_RESET_BASELINE_FONT_WEIGHT = 'light';
 const SAFE_RESET_BASELINE_LINE_HEIGHT = '1.0';
 const SAFE_RESET_BASELINE_VIEW_MODE = 'default';
 const PROJECT_WORKSPACE_RESET_TABS = Object.freeze(['project', 'outline', 'search', 'roman']);
+const PROJECT_LIBRARY_QUERY_ID = 'query.projectLibrary';
 const NOTES_WORKSPACE_QUERY_ID = 'query.projectNotes';
 const PROJECT_SEARCH_QUERY_ID = 'query.projectSearch';
 const TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT = 4;
@@ -392,6 +402,13 @@ const TOOLBAR_COLOR_PICKER_MODE_SWATCHES = Object.freeze({
     Object.freeze({ value: '#d8f0c2', label: 'Mint' }),
   ]),
 });
+
+let projectLibraryState = {
+  loading: false,
+  entries: [],
+  selectedProjectId: '',
+  statusText: 'Готово',
+};
 const TOOLBAR_STYLES_MENU_ANCHORS = Object.freeze({
   paragraph: 'paragraph',
   character: 'character',
@@ -6024,6 +6041,7 @@ async function invokePreloadUiCommandBridge(commandId, payload = {}) {
 async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
   if (
     queryId !== 'query.projectTree'
+    && queryId !== PROJECT_LIBRARY_QUERY_ID
     && queryId !== SELECTED_SCENES_TXT_EXPORT_SCOPE_QUERY_ID
     && queryId !== 'query.collabScopeLocal'
     && queryId !== REVIEW_SURFACE_QUERY_ID
@@ -6606,6 +6624,7 @@ function composeEditorSnapshot() {
     content: composeDocumentContent(),
     plainText: getPlainText(),
     bookProfile: getActiveBookProfile(),
+    selectionRange: getSelectionOffsets(),
   };
 }
 
@@ -8469,6 +8488,186 @@ async function loadTree() {
   } catch {
     updateStatusText('Ошибка');
   }
+}
+
+function unwrapBridgeResult(result) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return result;
+  if (result.value && typeof result.value === 'object' && !Array.isArray(result.value)) {
+    return result.value;
+  }
+  return result;
+}
+
+function normalizeProjectLibraryEntry(entry) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return null;
+  const projectId = typeof entry.projectId === 'string' ? entry.projectId.trim() : '';
+  const projectName = typeof entry.projectName === 'string' && entry.projectName.trim()
+    ? entry.projectName.trim()
+    : 'Без названия';
+  if (!projectId) return null;
+  return {
+    projectId,
+    projectName,
+    status: typeof entry.status === 'string' ? entry.status : 'available',
+    lastOpenedAtUtc: typeof entry.lastOpenedAtUtc === 'string' ? entry.lastOpenedAtUtc : '',
+    duplicateProjectId: Boolean(entry.duplicateProjectId),
+    warnings: Array.isArray(entry.warnings) ? entry.warnings.filter((warning) => typeof warning === 'string') : [],
+  };
+}
+
+function normalizeProjectLibraryModel(model) {
+  const source = model && typeof model === 'object' && !Array.isArray(model) ? model : {};
+  const entries = Array.isArray(source.entries)
+    ? source.entries.map(normalizeProjectLibraryEntry).filter(Boolean)
+    : [];
+  return {
+    ok: source.ok === true,
+    entries,
+    counts: source.counts && typeof source.counts === 'object' && !Array.isArray(source.counts)
+      ? source.counts
+      : {},
+  };
+}
+
+function setProjectLibraryStatus(text) {
+  projectLibraryState = {
+    ...projectLibraryState,
+    statusText: text || 'Готово',
+  };
+  if (projectLibraryStatus) {
+    projectLibraryStatus.textContent = projectLibraryState.statusText;
+  }
+}
+
+function renderProjectLibraryModal() {
+  if (!projectLibraryList) return;
+  projectLibraryList.innerHTML = '';
+  if (projectLibraryOpenButton) {
+    projectLibraryOpenButton.disabled = !projectLibraryState.selectedProjectId;
+  }
+  if (!projectLibraryState.entries.length) {
+    const empty = document.createElement('div');
+    empty.className = 'project-library__empty';
+    empty.textContent = 'Пока нет локальных проектов';
+    projectLibraryList.appendChild(empty);
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  projectLibraryState.entries.forEach((entry) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `project-library__row${entry.projectId === projectLibraryState.selectedProjectId ? ' is-active' : ''}`;
+    button.dataset.projectLibraryId = entry.projectId;
+    button.setAttribute('aria-pressed', entry.projectId === projectLibraryState.selectedProjectId ? 'true' : 'false');
+
+    const name = document.createElement('span');
+    name.className = 'project-library__name';
+    name.textContent = entry.projectName;
+
+    const meta = document.createElement('small');
+    meta.className = 'project-library__meta';
+    const flags = [
+      entry.status !== 'available' ? entry.status : '',
+      entry.duplicateProjectId ? 'duplicate' : '',
+      entry.warnings.length ? 'needs attention' : '',
+    ].filter(Boolean);
+    meta.textContent = flags.length ? flags.join(' · ') : 'local project';
+
+    button.appendChild(name);
+    button.appendChild(meta);
+    fragment.appendChild(button);
+  });
+  projectLibraryList.appendChild(fragment);
+}
+
+async function refreshProjectLibraryModal() {
+  if (!projectLibraryModal) return;
+  projectLibraryState = { ...projectLibraryState, loading: true };
+  setProjectLibraryStatus('Обновляю');
+  try {
+    const result = await invokeWorkspaceQueryBridge(PROJECT_LIBRARY_QUERY_ID, {});
+    const model = normalizeProjectLibraryModel(result);
+    if (!model.ok) {
+      projectLibraryState = { ...projectLibraryState, loading: false, entries: [], selectedProjectId: '' };
+      setProjectLibraryStatus('Библиотека недоступна');
+      renderProjectLibraryModal();
+      return;
+    }
+    const selectedStillExists = model.entries.some((entry) => entry.projectId === projectLibraryState.selectedProjectId);
+    projectLibraryState = {
+      loading: false,
+      entries: model.entries,
+      selectedProjectId: selectedStillExists
+        ? projectLibraryState.selectedProjectId
+        : (model.entries[0]?.projectId || ''),
+      statusText: '',
+    };
+    setProjectLibraryStatus(model.entries.length ? `${model.entries.length} проектов` : 'Нет проектов');
+    renderProjectLibraryModal();
+  } catch {
+    projectLibraryState = { ...projectLibraryState, loading: false };
+    setProjectLibraryStatus('Библиотека недоступна');
+    renderProjectLibraryModal();
+  }
+}
+
+function openProjectLibraryModal() {
+  openSimpleModal(projectLibraryModal);
+  void refreshProjectLibraryModal();
+}
+
+async function runProjectLifecycleAndRefresh(commandId, payload, statusText) {
+  const result = await dispatchUiCommand(commandId, payload);
+  const value = unwrapBridgeResult(result);
+  if (!result || result.ok !== true) {
+    setProjectLibraryStatus(value && typeof value.reason === 'string' ? value.reason : 'Команда не выполнена');
+    return false;
+  }
+  closeSimpleModal(projectLibraryModal);
+  updateStatusText(statusText);
+  await loadTree();
+  return true;
+}
+
+async function createProjectFromLibraryModal() {
+  const projectName = projectLibraryNameInput?.value?.trim() || '';
+  if (!projectName) {
+    setProjectLibraryStatus('Введите имя проекта');
+    projectLibraryNameInput?.focus();
+    return;
+  }
+  if (projectLibraryCreateButton) projectLibraryCreateButton.disabled = true;
+  try {
+    const ok = await runProjectLifecycleAndRefresh(
+      EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE,
+      { projectName },
+      'Проект создан',
+    );
+    if (ok && projectLibraryNameInput) projectLibraryNameInput.value = '';
+  } finally {
+    if (projectLibraryCreateButton) projectLibraryCreateButton.disabled = false;
+  }
+}
+
+async function openSelectedProjectFromLibraryModal() {
+  const projectId = projectLibraryState.selectedProjectId;
+  if (!projectId) {
+    setProjectLibraryStatus('Выберите проект');
+    return;
+  }
+  await runProjectLifecycleAndRefresh(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN,
+    { projectId },
+    'Проект открыт',
+  );
+}
+
+async function continueLastProjectFromLibraryModal() {
+  await runProjectLifecycleAndRefresh(
+    EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE,
+    {},
+    'Последний проект открыт',
+  );
 }
 
 if (treeContainer) {
@@ -12829,7 +13028,7 @@ function handleUiAction(action) {
       }
       return true;
     case 'open':
-      void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
+      openProjectLibraryModal();
       return true;
     case 'save':
       commitSpatialLayoutState(currentProjectId);
@@ -12988,11 +13187,8 @@ function triggerLeftToolbarAction(action) {
       }
       break;
     case 'open':
-      if (typeof dispatchUiCommand === 'function') {
-        void dispatchUiCommand(COMMAND_IDS.PROJECT_OPEN);
-        return true;
-      }
-      break;
+      openProjectLibraryModal();
+      return true;
     case 'toggle-configurator':
       toggleConfiguratorOpen();
       return true;
@@ -13240,6 +13436,47 @@ notesRestoreButton?.addEventListener('click', () => {
     projectId: currentProjectId,
     noteId: note.id,
   }, 'Заметка возвращена');
+});
+
+projectLibraryCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeSimpleModal(projectLibraryModal));
+});
+
+projectLibraryRefreshButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    void refreshProjectLibraryModal();
+  });
+});
+
+projectLibraryCreateButton?.addEventListener('click', () => {
+  void createProjectFromLibraryModal();
+});
+
+projectLibraryOpenButton?.addEventListener('click', () => {
+  void openSelectedProjectFromLibraryModal();
+});
+
+projectLibraryContinueButton?.addEventListener('click', () => {
+  void continueLastProjectFromLibraryModal();
+});
+
+projectLibraryNameInput?.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    void createProjectFromLibraryModal();
+  }
+});
+
+projectLibraryList?.addEventListener('click', (event) => {
+  const button = event.target instanceof Element
+    ? event.target.closest('[data-project-library-id]')
+    : null;
+  if (!(button instanceof HTMLElement)) return;
+  projectLibraryState = {
+    ...projectLibraryState,
+    selectedProjectId: button.dataset.projectLibraryId || '',
+  };
+  renderProjectLibraryModal();
 });
 
 if (rightTabsHost) {
@@ -13627,6 +13864,15 @@ if (window.electronAPI) {
     const kind = hasKind ? payload.kind : '';
     const projectId = hasProjectId && typeof payload.projectId === 'string' ? payload.projectId : '';
     const bookProfile = hasBookProfile ? payload.bookProfile : null;
+    const incomingSelectionRange = typeof payload === 'object' && payload && payload.selectionRange
+      && typeof payload.selectionRange === 'object' && !Array.isArray(payload.selectionRange)
+      && Number.isFinite(Number(payload.selectionRange.start))
+      && Number.isFinite(Number(payload.selectionRange.end))
+      ? {
+        start: Math.max(0, Math.floor(Number(payload.selectionRange.start))),
+        end: Math.max(0, Math.floor(Number(payload.selectionRange.end))),
+      }
+      : null;
     const nextMetaEnabled = typeof payload === 'object' && payload ? Boolean(payload.metaEnabled) : false;
     const shouldRevealActiveDocument = isProjectTreeDocumentId(documentId) && (
       activeDocumentRevealRequested || documentId !== currentDocumentId
@@ -13696,6 +13942,11 @@ if (window.electronAPI) {
     updateWordCount();
     if (!useLargePayloadFastPath) {
       scheduleCentralSheetStripProofRefresh();
+    }
+    if (incomingSelectionRange) {
+      requestAnimationFrame(() => {
+        setSelectionRange(incomingSelectionRange.start, incomingSelectionRange.end);
+      });
     }
 
     const resolvedTitle = title || '';

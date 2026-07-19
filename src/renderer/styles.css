@@ -5066,6 +5066,115 @@ body.dark-theme .status-bar {
   word-break: break-word;
 }
 
+.project-library__content {
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+}
+
+.project-library__header,
+.project-library__create-row,
+.project-library__actions {
+  display: flex;
+  align-items: center;
+}
+
+.project-library__header {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.project-library__title {
+  margin: 0;
+}
+
+.project-library__status {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: right;
+}
+
+.project-library__create {
+  display: grid;
+  gap: 6px;
+}
+
+.project-library__create-row {
+  gap: 8px;
+}
+
+.project-library__input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.project-library__list {
+  flex: 1 1 auto;
+  min-height: 180px;
+  max-height: min(340px, calc(100vh - 260px));
+  overflow: auto;
+  border-top: 1px solid var(--divider);
+  border-bottom: 1px solid var(--divider);
+}
+
+.project-library__row {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  color: var(--foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.project-library__row:last-child {
+  border-bottom: 0;
+}
+
+.project-library__row:hover,
+.project-library__row:focus-visible {
+  color: var(--foreground);
+}
+
+.project-library__row.is-active {
+  color: var(--foreground);
+}
+
+.project-library__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 19px;
+  font-weight: 500;
+}
+
+.project-library__meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  line-height: 16px;
+}
+
+.project-library__empty {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+}
+
 .notes-workspace[hidden] {
   display: none;
 }

@@ -24,6 +24,9 @@ export const COMMAND_IDS = Object.freeze({
 
 export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_NEW: 'cmd.project.new',
+  PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create',
+  PROJECT_LIFECYCLE_OPEN: 'cmd.project.lifecycle.open',
+  PROJECT_LIFECYCLE_CONTINUE: 'cmd.project.lifecycle.continue',
   PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open',
   PROJECT_EXPORT_SELECTED_SCENES_TXT: 'cmd.project.exportSelectedScenesTxtV1',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
@@ -1260,6 +1263,168 @@ export function registerProjectCommands(registry, options = {}) {
             : response && typeof response.reason === 'string'
               ? response.reason
               : 'OPEN_DOCUMENT_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE,
+      label: 'Create Local Project',
+      group: 'file',
+      surface: ['palette', 'toolbar'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectName = typeof input.projectName === 'string' ? input.projectName.trim() : '';
+      if (!projectName) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE, 'PROJECT_NAME_REQUIRED');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE,
+          { projectName },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE,
+          'PROJECT_CREATE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
+        return ok({ created: false, cancelled: true });
+      }
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          created: true,
+          projectId: typeof bridged.projectId === 'string' ? bridged.projectId : '',
+          projectName,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CREATE,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_CREATE_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN,
+      label: 'Open Local Project',
+      group: 'file',
+      surface: ['palette', 'toolbar'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      if (!projectId) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN, 'PROJECT_ID_REQUIRED');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN,
+          { projectId },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN,
+          'PROJECT_OPEN_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
+        return ok({ opened: false, cancelled: true, projectId });
+      }
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          opened: true,
+          projectId,
+          continuationSource: typeof bridged.continuationSource === 'string' ? bridged.continuationSource : '',
+          readOnlyProject: Boolean(bridged.readOnlyProject),
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_OPEN,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_OPEN_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE,
+      label: 'Continue Last Local Project',
+      group: 'file',
+      surface: ['palette', 'toolbar'],
+      hotkey: '',
+    },
+    async () => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE, 'ELECTRON_API_UNAVAILABLE');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE,
+          {},
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE,
+          'PROJECT_CONTINUE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
+        return ok({ opened: false, cancelled: true });
+      }
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          opened: true,
+          projectId: typeof bridged.projectId === 'string' ? bridged.projectId : '',
+          continuationSource: typeof bridged.continuationSource === 'string' ? bridged.continuationSource : '',
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_CONTINUE_FAILED',
       );
     },
   );
