@@ -16,6 +16,16 @@
 - Текущий release axis: `Writer v1`
 - Active product truth после cutover должна быть одна
 
+## Next-stage Free/Pro Runtime Truth
+- Current autonomous plan binding: `YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3`, runtime sprints `S00` through `S41` are merged before the S42 docs-only sync; current pre-S42 remote main head is `b4d2ab806490a0aad488ba247ec5f6e8bf3f8c95`.
+- S42 is documentation and factual status only. It does not change runtime behavior, toolbar geometry, sidebars, editor sheet geometry, storage semantics, import/export semantics, entitlement logic, dependencies, accounts, cloud, network truth, or project format.
+- Command capability truth is now supplemented by `YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S42_FACTUAL_CAPABILITY_STATUS.json`; `CAPABILITIES_MATRIX.json` keeps its platform capability rows and adds factual `LIVE`, `PARTIAL`, `PLANNED`, and `BLOCKED` status summary.
+- Desktop `node` local writing core is `LIVE` for the merged scope: navigator identity and commands, sidebars under Design OS ownership, metadata, notes, search, replacement, history, project library/lifecycle, import/export surfaces, settings aggregation, local Free/Pro capability provider, Pro-data preservation, accessibility, longform performance, and safe-reset/last-stable proof hardening.
+- Flow is `PARTIAL`: it is a derived scene projection with guarded editing and recoverable batch save for supported content only. It is not a second manuscript truth, not a semantic merge lane, and not an arbitrary cross-scene editor.
+- Free/Pro is local and shared-format only. Free keeps authorship, toolbar, import/export, recovery, settings, archive, and readable Pro data preservation; Pro-only complexity surfaces are unavailable in Free but preserved without deletion.
+- Web and mobile-wrapper local filesystem project commands are `BLOCKED`; only the explicitly true editor-command subset in `CAPABILITIES_MATRIX.json` is admitted outside desktop node.
+- Editor-specific Word and Google support remains `PLANNED` or post-v1, not live. No Word support, Google Docs support, roundtrip, layout parity, cloud integration, EPUB, HTML, or release-readiness claim follows from the current merged runtime.
+
 ## What Is Already True
 
 ### Primary editor closure
