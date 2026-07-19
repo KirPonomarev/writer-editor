@@ -106,6 +106,19 @@
           }
         },
         {
+          "id": "file-export-pdf",
+          "label": "Export PDF...",
+          "labelKey": "menu.file.exportPdf",
+          "command": "cmd.project.exportPdfV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
           "id": "file-export-markdown",
           "label": "Export Markdown...",
           "labelKey": "menu.file.exportMarkdown",

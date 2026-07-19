@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "e442a34f5e27d8d7fb9ac2b1eea92153a1bc187e214d6776d317ed249b2c476c",
-  "generatedAt": "2026-07-12T23:32:30.918Z",
-  "generatedFromCommit": "c4b7c6f5729ac9219c9d8f948f2d9bf3e6c8b886",
+  "normalizedHashSha256": "24d5131be6957eae5c13d0ce265c790aadaf169ad5d1aa1f7bb7347dda1bebd2",
+  "generatedAt": "2026-07-19T04:02:40.470Z",
+  "generatedFromCommit": "106f230753a5fbcca4f11ce4538097b40ce31414",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -39,6 +39,11 @@
         "base": "Export Markdown...",
         "en": "Export Markdown...",
         "ru": "Экспорт Markdown..."
+      },
+      "menu.file.exportPdf": {
+        "base": "Export PDF...",
+        "en": "Export PDF...",
+        "ru": "Экспорт PDF..."
       },
       "menu.file.exportSelectedScenesTxt": {
         "base": "Экспорт TXT выбранных сцен",
@@ -282,6 +287,7 @@
     "cmd.project.exportAllScenesTxtV1",
     "cmd.project.exportCurrentSceneTxtV1",
     "cmd.project.exportMarkdownV1",
+    "cmd.project.exportPdfV1",
     "cmd.project.exportSelectedScenesTxtV1",
     "cmd.project.format.alignLeft",
     "cmd.project.importDocxV1",
@@ -481,6 +487,36 @@
           "id": "file-export-docx",
           "label": "Export DOCX (Minimal)...",
           "labelKey": "menu.file.exportDocx",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.exportPdfV1",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-pdf",
+          "label": "Export PDF...",
+          "labelKey": "menu.file.exportPdf",
           "mode": [
             "offline"
           ],

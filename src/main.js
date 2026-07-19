@@ -47,6 +47,7 @@ const {
 const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/docxMinBuilder');
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
+const { runPdfExport } = require('./export/pdf/pdfExportHandler');
 const { createCommandSurfaceKernel } = require('./command/commandSurfaceKernel');
 
 const launchT0 = performance.now();
@@ -314,6 +315,8 @@ const EXPORT_SELECTED_SCENES_TXT_COMMAND_ID = 'cmd.project.exportSelectedScenesT
 const EXPORT_SELECTED_SCENES_TXT_DEFAULT_REQUEST_ID = 'u3-export-selected-scenes-txt-request';
 const EXPORT_ALL_SCENES_TXT_COMMAND_ID = 'cmd.project.exportAllScenesTxtV1';
 const EXPORT_ALL_SCENES_TXT_DEFAULT_REQUEST_ID = 'u3-export-all-scenes-txt-request';
+const EXPORT_PDF_COMMAND_ID = 'cmd.project.exportPdfV1';
+const EXPORT_PDF_DEFAULT_REQUEST_ID = 'u3-export-pdf-request';
 const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.markdown.previewLocalFile';
@@ -366,6 +369,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_CURRENT_SCENE_TXT_V1: EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   PROJECT_EXPORT_SELECTED_SCENES_TXT_V1: EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
   PROJECT_EXPORT_ALL_SCENES_TXT_V1: EXPORT_ALL_SCENES_TXT_COMMAND_ID,
+  PROJECT_EXPORT_PDF_V1: EXPORT_PDF_COMMAND_ID,
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
@@ -6644,6 +6648,9 @@ function getInternalCommandSurfaceKernel() {
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT_V1]: async (payload = {}) => {
       return handleExportAllScenesTxt(payload);
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_PDF_V1]: async (payload = {}) => {
+      return handleExportPdf(payload);
+    },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleImportMarkdownV1(payload);
     },
@@ -11358,6 +11365,18 @@ function makeTypedExportError(code, reason, details) {
   return { ok: 0, error };
 }
 
+function makeTypedPdfExportError(code, reason, details) {
+  const error = {
+    code: typeof code === 'string' && code.length > 0 ? code : 'E_EXPORT_PDF_FAILED',
+    op: EXPORT_PDF_COMMAND_ID,
+    reason: typeof reason === 'string' && reason.length > 0 ? reason : 'EXPORT_PDF_FAILED',
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = details;
+  }
+  return { ok: false, error };
+}
+
 function buildPathBoundaryDetails(pathBoundaryError) {
   const source = pathBoundaryError && typeof pathBoundaryError === 'object' ? pathBoundaryError : {};
   return {
@@ -12372,11 +12391,41 @@ const ALL_SCENES_TXT_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
   'viewportDomText',
   'visibleWindowText',
 ]);
+const PDF_EXPORT_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'confirmed',
+  'outPath',
+  'requestId',
+]);
+const PDF_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'bookProfile',
+  'bufferSource',
+  'content',
+  'doc',
+  'editorSnapshot',
+  'plainText',
+  'project',
+  'projectRoot',
+  'rendererState',
+  'scene',
+  'sceneId',
+  'sceneIds',
+  'scenePath',
+  'scenePaths',
+  'text',
+  'viewportDomText',
+  'visibleWindowText',
+]);
 
 function normalizeCurrentSceneTxtExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
   const raw = filePath.trim();
   return raw.toLowerCase().endsWith('.txt') ? raw : `${raw}.txt`;
+}
+
+function normalizePdfExportPath(filePath) {
+  if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
+  const raw = filePath.trim();
+  return raw.toLowerCase().endsWith('.pdf') ? raw : `${raw}.pdf`;
 }
 
 function normalizeMarkdownExportPath(filePath) {
@@ -12534,6 +12583,50 @@ function normalizeAllScenesTxtExportPayload(payload = {}) {
   return pathGuard.payload;
 }
 
+function normalizePdfExportPayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return null;
+  }
+
+  const keys = Object.keys(payload);
+  const forbiddenAuthorityKeys = keys
+    .filter((key) => PDF_EXPORT_FORBIDDEN_AUTHORITY_KEYS.includes(key))
+    .sort();
+  const unsupportedKeys = keys
+    .filter((key) => !PDF_EXPORT_ALLOWED_PAYLOAD_KEYS.includes(key))
+    .sort();
+  if (forbiddenAuthorityKeys.length > 0 || unsupportedKeys.length > 0) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_PDF_PAYLOAD_INVALID',
+      reason: forbiddenAuthorityKeys.length > 0
+        ? 'pdf_export_renderer_authority_denied'
+        : 'pdf_export_payload_unsupported_fields',
+      details: {
+        fields: forbiddenAuthorityKeys.length > 0 ? forbiddenAuthorityKeys : unsupportedKeys,
+      },
+    };
+  }
+
+  const requestId = typeof payload.requestId === 'string' && payload.requestId.trim().length > 0
+    ? payload.requestId.trim()
+    : EXPORT_PDF_DEFAULT_REQUEST_ID;
+  const outPath = typeof payload.outPath === 'string' ? payload.outPath.trim() : '';
+  const normalized = {
+    requestId,
+    outPath,
+    confirmed: payload.confirmed === true,
+  };
+  const pathGuard = sanitizePathFields(normalized, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      ...normalized,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return pathGuard.payload;
+}
+
 function buildMarkdownExportDefaultPath(payload) {
   const safeDefaultName = sanitizeFilename(
     typeof payload.defaultName === 'string' && payload.defaultName.trim()
@@ -12574,6 +12667,18 @@ function buildAllScenesTxtExportDefaultPath() {
   ) || 'all-scenes';
   return normalizeCurrentSceneTxtExportPath(
     path.join(fileManager.getDocumentsPath(), `${projectBaseName}-all-scenes.txt`),
+  );
+}
+
+function buildPdfExportDefaultPath() {
+  const projectRoot = getProjectRootPath();
+  const projectBaseName = sanitizeFilename(
+    typeof projectRoot === 'string' && projectRoot.trim()
+      ? path.basename(projectRoot.trim())
+      : 'manuscript',
+  ) || 'manuscript';
+  return normalizePdfExportPath(
+    path.join(fileManager.getDocumentsPath(), `${projectBaseName}.pdf`),
   );
 }
 
@@ -12704,6 +12809,53 @@ async function resolveAllScenesTxtExportPath(payload) {
       canceled: false,
       error: {
         code: 'E_EXPORT_ALL_SCENES_TXT_PATH_REQUIRED',
+        reason: 'export_path_required',
+      },
+    };
+  }
+  const pathGuard = sanitizePathFields({ outPath }, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      canceled: false,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return { canceled: false, outPath: pathGuard.payload.outPath };
+}
+
+async function resolvePdfExportPath(payload) {
+  const fromPayload = normalizePdfExportPath(payload.outPath);
+  if (fromPayload) {
+    return { canceled: false, outPath: fromPayload };
+  }
+  if (!mainWindow) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_EXPORT_PDF_SAVE_DIALOG_UNAVAILABLE',
+        reason: 'save_dialog_unavailable',
+      },
+    };
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Экспорт PDF',
+    defaultPath: buildPdfExportDefaultPath(),
+    filters: [
+      { name: 'PDF', extensions: ['pdf'] },
+      { name: 'Все файлы', extensions: ['*'] },
+    ],
+  });
+  if (result.canceled) {
+    return { canceled: true, outPath: '' };
+  }
+
+  const outPath = normalizePdfExportPath(result.filePath);
+  if (!outPath) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_EXPORT_PDF_PATH_REQUIRED',
         reason: 'export_path_required',
       },
     };
@@ -12913,6 +13065,39 @@ async function validateTxtExportPhysicalTargetPath(outPath, options = {}) {
   }
 }
 
+async function validatePdfExportTarget(outPath, source = {}) {
+  if (typeof outPath !== 'string' || !outPath.trim()) {
+    return {
+      ok: false,
+      code: 'E_EXPORT_PDF_PATH_REQUIRED',
+      reason: 'export_path_required',
+    };
+  }
+
+  try {
+    const validated = await validateExternalWriteTarget(outPath, {
+      projectRoot: typeof source.projectRoot === 'string' ? source.projectRoot : '',
+      sourcePaths: Array.isArray(source.sourcePaths) ? source.sourcePaths : [],
+      allowedExtensions: ['.pdf'],
+    });
+    return { ok: true, outPath: validated.targetPath };
+  } catch (error) {
+    let reason = typeof error?.reason === 'string' && error.reason
+      ? error.reason
+      : 'external_target_authority_denied';
+    if (reason === 'EXTERNAL_TARGET_INSIDE_PROJECT_DENIED') {
+      reason = 'export_target_inside_project_root';
+    } else if (reason === 'EXTERNAL_TARGET_MATCHES_PROTECTED_SOURCE') {
+      reason = 'export_target_matches_pdf_source';
+    }
+    return {
+      ok: false,
+      code: 'E_EXPORT_PDF_TARGET_FORBIDDEN',
+      reason,
+    };
+  }
+}
+
 async function readSelectedScenesTxtExportSceneContent(sceneCandidate) {
   if (!sceneCandidate || typeof sceneCandidate !== 'object') {
     throw new Error('Selected scene export candidate is invalid');
@@ -12955,6 +13140,58 @@ async function readSelectedScenesTxtExportSceneContent(sceneCandidate) {
     );
   }
   return parsed.text;
+}
+
+async function readPdfExportBookProfile() {
+  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const manifest = manifestRecord && isPlainObjectValue(manifestRecord.manifest)
+    ? manifestRecord.manifest
+    : {};
+  const sourceProfile = isPlainObjectValue(manifest.bookProfile) ? manifest.bookProfile : {};
+  const bookProfileModule = await loadBookProfileModule();
+  const normalized = bookProfileModule.normalizeBookProfile(sourceProfile);
+  if (!normalized || normalized.ok !== true || !isPlainObjectValue(normalized.value)) {
+    throw new Error('Project BookProfile is invalid for PDF export');
+  }
+  return normalized.value;
+}
+
+async function readCanonicalPdfExportSource() {
+  if (isDirty || autoSaveInProgress) {
+    throw new Error('Unsaved editor state cannot be used as canonical PDF export source');
+  }
+
+  const scope = await buildSelectedScenesTxtExportScope();
+  const sceneCandidates = Array.isArray(scope?.sceneCandidates) ? scope.sceneCandidates : [];
+  if (sceneCandidates.length === 0) {
+    return {
+      projectId: typeof scope?.projectId === 'string' ? scope.projectId : '',
+      projectRoot: typeof scope?.projectRoot === 'string' ? scope.projectRoot : getProjectRootPath(),
+      sourcePaths: [],
+      bookProfile: await readPdfExportBookProfile(),
+      scenes: [],
+    };
+  }
+
+  const scenes = [];
+  for (const candidate of sceneCandidates) {
+    scenes.push({
+      sceneId: typeof candidate.sceneId === 'string' ? candidate.sceneId : '',
+      label: typeof candidate.label === 'string' ? candidate.label : '',
+      title: typeof candidate.title === 'string' ? candidate.title : '',
+      text: await readSelectedScenesTxtExportSceneContent(candidate),
+    });
+  }
+
+  return {
+    projectId: typeof scope.projectId === 'string' ? scope.projectId : '',
+    projectRoot: typeof scope.projectRoot === 'string' ? scope.projectRoot : getProjectRootPath(),
+    sourcePaths: sceneCandidates
+      .map((candidate) => (candidate && typeof candidate.path === 'string' ? candidate.path : ''))
+      .filter(Boolean),
+    bookProfile: await readPdfExportBookProfile(),
+    scenes,
+  };
 }
 
 async function resolveMarkdownExportPath(payload) {
@@ -13042,6 +13279,42 @@ async function buildDocxMinBuffer(editorSnapshot) {
     semanticMappingModule,
     styleMapModule,
   });
+}
+
+async function renderPdfBufferFromHtml(html) {
+  if (typeof html !== 'string' || html.length === 0) {
+    throw new Error('PDF print projection HTML is empty');
+  }
+
+  const printWindow = new BrowserWindow({
+    show: false,
+    width: 900,
+    height: 1200,
+    webPreferences: {
+      contextIsolation: true,
+      javascript: false,
+      nodeIntegration: false,
+      sandbox: true,
+      webSecurity: true,
+    },
+  });
+
+  try {
+    printWindow.webContents.on('will-navigate', (event) => {
+      event.preventDefault();
+    });
+    printWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+    await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+    const pdfData = await printWindow.webContents.printToPDF({
+      printBackground: true,
+      preferCSSPageSize: true,
+    });
+    return Buffer.isBuffer(pdfData) ? pdfData : Buffer.from(pdfData);
+  } finally {
+    if (!printWindow.isDestroyed()) {
+      printWindow.destroy();
+    }
+  }
 }
 
 async function readCurrentSceneTxtExportSource() {
@@ -13648,6 +13921,21 @@ async function handleExportDocxMin(payloadRaw) {
     validateDocxExportTarget,
     readCanonicalExportSnapshot,
     buildDocxMinBuffer,
+    queueDiskOperation,
+    writeBufferAtomic,
+    updateStatus,
+  });
+}
+
+async function handleExportPdf(payloadRaw = {}) {
+  return runPdfExport(payloadRaw, {
+    normalizePdfExportPayload,
+    makeTypedPdfExportError,
+    buildPathBoundaryDetails,
+    resolvePdfExportPath,
+    validatePdfExportTarget,
+    readCanonicalPdfExportSource,
+    renderPdfBuffer: renderPdfBufferFromHtml,
     queueDiskOperation,
     writeBufferAtomic,
     updateStatus,
@@ -18107,6 +18395,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
   EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
   EXPORT_ALL_SCENES_TXT_COMMAND_ID,
+  EXPORT_PDF_COMMAND_ID,
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
   'cmd.project.docx.previewImportPlan',
@@ -18266,6 +18555,26 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   [EXPORT_ALL_SCENES_TXT_COMMAND_ID]: async (payload = {}) => {
     const result = await dispatchCommandSurfaceKernel(
       COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT_V1,
+      payload,
+    );
+    return normalizeUiBridgeMenuResult(result);
+  },
+  [EXPORT_PDF_COMMAND_ID]: async (payload = {}) => {
+    const confirmed = payload && payload.confirmed === true;
+    if (!confirmed) {
+      const delivered = sendCanonicalRuntimeCommand(
+        EXPORT_PDF_COMMAND_ID,
+        {
+          source: 'menu',
+          preview: true,
+        },
+      );
+      if (delivered) {
+        return { ok: true, preview: true };
+      }
+    }
+    const result = await dispatchCommandSurfaceKernel(
+      COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_PDF_V1,
       payload,
     );
     return normalizeUiBridgeMenuResult(result);

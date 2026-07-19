@@ -37,6 +37,11 @@
       "ru": "Экспорт DOCX (минимальный)...",
       "en": "Export DOCX (Minimal)..."
     },
+    "menu.file.exportPdf": {
+      "base": "Export PDF...",
+      "ru": "Экспорт PDF...",
+      "en": "Export PDF..."
+    },
     "menu.file.exportMarkdown": {
       "base": "Export Markdown...",
       "ru": "Экспорт Markdown...",
