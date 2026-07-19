@@ -222,6 +222,32 @@ test('S38 Pro roundtrip: free edit invalidates only directly dependent Pro recor
   assert.deepEqual(next.futureProData, manifest.futureProData);
 });
 
+test('S38 Pro roundtrip: main-owned Free scene save invalidates manifest Pro data', async (t) => {
+  const harness = await createHarness(t, 's38-main-invalidation-');
+  const manifest = {
+    ...makeProRoundtripManifest(),
+    projectName: 'Роман',
+  };
+  const projectRoot = path.join(harness.documentsRoot, 'Роман');
+  const manifestPath = path.join(projectRoot, PROJECT_MANIFEST_FILENAME);
+  const alphaPath = path.join(projectRoot, 'roman', 'Imported', '01 Alpha.txt');
+
+  await writeProRoundtripProject(projectRoot, manifest);
+  await fsPromises.writeFile(alphaPath, 'alpha edited through main helper', 'utf8');
+
+  const invalidated = await harness.main.persistFreeEditProDataInvalidationForFile(alphaPath, {
+    operationLabel: 'test pro data invalidation',
+  });
+  assert.equal(invalidated.persisted, true);
+
+  const next = await readJson(manifestPath);
+  assert.deepEqual(next.proDataInvalidation.changedSceneIds, ['roman/Imported/01 Alpha.txt']);
+  assert.deepEqual(next.proDataInvalidation.deletedSceneIds, []);
+  assert.equal(next.proUnknown.comments[0].stale, true);
+  assert.equal(next.proUnknown.comments[1].stale, undefined);
+  assert.deepEqual(next.futureProData, manifest.futureProData);
+});
+
 test('S38 Pro roundtrip: Free save and full archive reopen preserve unknown Pro data', async (t) => {
   const freeHarness = await createHarness(t, 's38-free-');
   const proHarness = await createHarness(t, 's38-pro-');

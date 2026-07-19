@@ -16,6 +16,8 @@ const FREE_PRO_COMPLEXITY_COMMAND_IDS = Object.freeze([
   'cmd.project.review.exportLocalPacket',
   'cmd.project.review.openDocxReviewPreviewSession',
   'cmd.project.review.clearSession',
+  'cmd.project.review.applyExactTextChange',
+  'cmd.project.review.applyExactTextChangesBatch',
   'cmd.project.review.exportMarkdown',
 ]);
 
@@ -265,12 +267,24 @@ export function resolveCommandEntitlement(commandId, entitlementInput = {}) {
     });
   }
 
+  if (FREE_ALWAYS_AVAILABLE_SET.has(normalizedCommandId)) {
+    return Object.freeze({
+      ok: true,
+      available: true,
+      visible: true,
+      access: 'free_authorship',
+      reason: '',
+      state,
+      commandId: normalizedCommandId,
+    });
+  }
+
   return Object.freeze({
-    ok: true,
-    available: true,
-    visible: true,
-    access: FREE_ALWAYS_AVAILABLE_SET.has(normalizedCommandId) ? 'free_authorship' : 'enabled',
-    reason: '',
+    ok: false,
+    available: false,
+    visible: false,
+    access: 'unclassified',
+    reason: 'COMMAND_ENTITLEMENT_UNCLASSIFIED',
     state,
     commandId: normalizedCommandId,
   });

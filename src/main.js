@@ -6831,6 +6831,18 @@ function loadNotesStorageModule() {
   return notesStorageModulePromise;
 }
 
+let proRoundtripPreservationModulePromise = null;
+function loadProRoundtripPreservationModule() {
+  if (!proRoundtripPreservationModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'core', 'proRoundtripPreservation.mjs')).href;
+    proRoundtripPreservationModulePromise = import(modulePath).catch((error) => {
+      proRoundtripPreservationModulePromise = null;
+      throw error;
+    });
+  }
+  return proRoundtripPreservationModulePromise;
+}
+
 let navigatorCountersModulePromise = null;
 function loadNavigatorCountersModule() {
   if (!navigatorCountersModulePromise) {
@@ -10810,6 +10822,121 @@ async function persistProjectManifestAtPath(manifestPath, manifest, operationLab
   if (!writeResult.success) {
     throw new Error(writeResult.error || 'Failed to save project manifest');
   }
+}
+
+async function persistFreeEditProDataInvalidationForSceneIds(sceneIds = [], options = {}) {
+  const normalizedSceneIds = Array.isArray(sceneIds)
+    ? [...new Set(sceneIds
+      .map((sceneId) => (typeof sceneId === 'string' ? sceneId.trim() : ''))
+      .filter(Boolean))]
+    : [];
+  if (normalizedSceneIds.length === 0) {
+    return { persisted: false, reason: 'NO_SCENE_IDS' };
+  }
+
+  const projectRoot = getProjectRootPath();
+  if (typeof projectRoot !== 'string' || !projectRoot.trim()) {
+    return { persisted: false, reason: 'PROJECT_ROOT_UNAVAILABLE' };
+  }
+
+  let manifestPath = typeof options.manifestPath === 'string' && options.manifestPath.trim()
+    ? options.manifestPath
+    : '';
+  let manifest = isPlainObjectValue(options.manifest) ? options.manifest : null;
+  if (!manifestPath || !manifest) {
+    const record = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
+    manifestPath = record.manifestPath;
+    manifest = record.manifest;
+  }
+  if (!manifestPath || !isPlainObjectValue(manifest)) {
+    return { persisted: false, reason: 'PROJECT_BINDING_UNAVAILABLE' };
+  }
+
+  const preservationModule = await loadProRoundtripPreservationModule();
+  if (!preservationModule || typeof preservationModule.applyFreeEditProDataInvalidation !== 'function') {
+    return { persisted: false, reason: 'PRO_ROUNDTRIP_PRESERVATION_UNAVAILABLE' };
+  }
+
+  const result = preservationModule.applyFreeEditProDataInvalidation(manifest, {
+    changedSceneIds: Array.isArray(options.changedSceneIds) ? options.changedSceneIds : normalizedSceneIds,
+    deletedSceneIds: Array.isArray(options.deletedSceneIds) ? options.deletedSceneIds : [],
+    staleReason: typeof options.staleReason === 'string' && options.staleReason
+      ? options.staleReason
+      : 'FREE_SCENE_TEXT_CHANGED',
+  });
+  if (!result || result.ok !== true || !isPlainObjectValue(result.manifest)) {
+    return { persisted: false, reason: 'PRO_ROUNDTRIP_INVALIDATION_FAILED' };
+  }
+
+  await persistProjectManifestAtPath(
+    manifestPath,
+    result.manifest,
+    typeof options.operationLabel === 'string' && options.operationLabel
+      ? options.operationLabel
+      : 'save pro data invalidation',
+  );
+  return { persisted: true, receipt: result.receipt };
+}
+
+async function persistFreeEditProDataInvalidationForFile(filePath, options = {}) {
+  if (typeof filePath !== 'string' || !filePath.trim()) {
+    return { persisted: false, reason: 'FILE_PATH_REQUIRED' };
+  }
+  const documentContext = getDocumentContextFromPath(filePath);
+  if (!documentContext || documentContext.kind !== 'scene') {
+    return { persisted: false, reason: 'NOT_SCENE' };
+  }
+  const binding = await resolveProjectBindingForFile(filePath);
+  if (!binding || !binding.manifestPath) {
+    return { persisted: false, reason: 'PROJECT_BINDING_UNAVAILABLE' };
+  }
+  const sceneId = getProjectRelativeFilePath(filePath, binding.manifestPath);
+  if (!sceneId) {
+    return { persisted: false, reason: 'SCENE_ID_UNAVAILABLE' };
+  }
+  return persistFreeEditProDataInvalidationForSceneIds([sceneId], {
+    ...options,
+    changedSceneIds: [sceneId],
+    manifestPath: binding.manifestPath,
+    manifest: binding.manifest,
+  });
+}
+
+async function collectFreeEditDeletedSceneIds(nodePath) {
+  if (typeof nodePath !== 'string' || !nodePath.trim()) return [];
+  const binding = await resolveProjectBindingForFile(nodePath);
+  if (!binding || !binding.manifestPath) return [];
+  const deletedSceneIds = [];
+
+  async function visit(candidatePath) {
+    const documentContext = getDocumentContextFromPath(candidatePath);
+    if (documentContext && documentContext.kind === 'scene') {
+      const sceneId = getProjectRelativeFilePath(candidatePath, binding.manifestPath);
+      if (sceneId) deletedSceneIds.push(sceneId);
+      return;
+    }
+
+    let stat;
+    try {
+      stat = await fs.lstat(candidatePath);
+    } catch {
+      return;
+    }
+    if (!stat.isDirectory()) return;
+
+    let entries;
+    try {
+      entries = await fs.readdir(candidatePath, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      await visit(joinPathSegmentsWithinRoot(candidatePath, [entry.name], { resolveSymlinks: false }));
+    }
+  }
+
+  await visit(nodePath);
+  return [...new Set(deletedSceneIds)];
 }
 
 async function persistBookProfileForFile(filePath, bookProfile, operationLabel = 'save project manifest') {
@@ -18247,6 +18374,12 @@ async function handleUiDeleteNodeCommand(payload) {
   const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
   if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
   const nodePath = nodePathGuard.payload.path;
+  let deletedSceneIds = [];
+  try {
+    deletedSceneIds = await collectFreeEditDeletedSceneIds(nodePath);
+  } catch (error) {
+    logDevError('delete node collect pro data invalidation', error);
+  }
 
   const trashPath = getProjectSectionPath('trash');
   await fs.mkdir(trashPath, { recursive: true });
@@ -18262,6 +18395,19 @@ async function handleUiDeleteNodeCommand(payload) {
   } catch (error) {
     logDevError('delete node', error);
     return { ok: false, error: error.message || 'Failed to move to trash' };
+  }
+
+  if (deletedSceneIds.length > 0) {
+    try {
+      await persistFreeEditProDataInvalidationForSceneIds(deletedSceneIds, {
+        changedSceneIds: [],
+        deletedSceneIds,
+        staleReason: 'FREE_SCENE_DELETED',
+        operationLabel: 'delete pro data invalidation',
+      });
+    } catch (error) {
+      logDevError('delete node pro data invalidation', error);
+    }
   }
 
   if (currentFilePath && isPathInside(nodePath, currentFilePath)) {
@@ -18750,6 +18896,13 @@ async function autoSave() {
           updateStatus('Ошибка сохранения');
           return false;
         }
+        try {
+          await persistFreeEditProDataInvalidationForFile(currentFilePath, {
+            operationLabel: 'autosave pro data invalidation',
+          });
+        } catch (error) {
+          logDevError('autoSave:proDataInvalidation', error);
+        }
       }
       await persistBookProfileForFile(currentFilePath, snapshot.bookProfile, 'autosave project manifest');
 
@@ -18869,13 +19022,24 @@ async function handleSave() {
       updateStatus('Ошибка');
       return false;
     }
+    const contentHash = computeHash(content);
+    const textChanged = contentHash !== lastAutosaveHash;
     const saveResult = await queueDiskOperation(
       () => fileManager.writeFileAtomic(currentFilePath, content),
       'save existing file'
     );
     if (saveResult.success) {
+      if (textChanged) {
+        try {
+          await persistFreeEditProDataInvalidationForFile(currentFilePath, {
+            operationLabel: 'save pro data invalidation',
+          });
+        } catch (error) {
+          logDevError('handleSave:proDataInvalidation', error);
+        }
+      }
       await persistBookProfileForFile(currentFilePath, snapshot.bookProfile, 'save project manifest');
-      lastAutosaveHash = computeHash(content);
+      lastAutosaveHash = contentHash;
       setDirtyState(false);
       updateStatus('Сохранено');
       await saveLastFile({ selectionRange: snapshot.selectionRange });
@@ -19167,6 +19331,17 @@ const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.projectNotes',
   'query.projectSearch',
   SCENE_HISTORY_QUERY_ID,
+]);
+const MAIN_FREE_PRO_COMPLEXITY_COMMAND_IDS = new Set([
+  'cmd.project.plan.switchMode',
+  'cmd.project.review.switchMode',
+  'cmd.project.review.importLocalPacket',
+  'cmd.project.review.exportLocalPacket',
+  'cmd.project.review.openDocxReviewPreviewSession',
+  'cmd.project.review.clearSession',
+  'cmd.project.review.applyExactTextChange',
+  'cmd.project.review.applyExactTextChangesBatch',
+  'cmd.project.review.exportMarkdown',
 ]);
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
@@ -20066,6 +20241,15 @@ function dispatchMenuCommand(commandId, payload = {}, options = {}) {
     throw new Error(`Unsupported menu command route: ${route}`);
   }
 
+  if (MAIN_FREE_PRO_COMPLEXITY_COMMAND_IDS.has(commandId)) {
+    return {
+      ok: false,
+      code: 'E_COMMAND_DISABLED_FOR_ENTITLEMENT',
+      reason: 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE',
+      commandId,
+    };
+  }
+
   if (isMenuLocalCustomizationCommandId(commandId)) {
     const handler = MENU_COMMAND_HANDLERS[commandId];
     if (typeof handler !== 'function') {
@@ -20790,6 +20974,8 @@ module.exports = {
   normalizeReplaceMassMutationPayload,
   normalizeReplaceSingleSafePayload,
   persistBookProfileForFile,
+  persistFreeEditProDataInvalidationForFile,
+  persistFreeEditProDataInvalidationForSceneIds,
   persistProjectManifestAtPath,
   readProjectManifest,
   resolveProjectTreeNodeIdentity,

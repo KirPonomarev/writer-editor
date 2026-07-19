@@ -87,17 +87,47 @@ test('S37 local capability provider: Free keeps authorship, toolbar, import, exp
 test('S37 local capability provider: Pro complexity commands are unavailable in Free and enabled in Pro', async () => {
   const provider = await importModule('src/renderer/commands/localCapabilityProvider.mjs');
   const freeReview = provider.resolveCommandEntitlement('cmd.project.review.switchMode', { entitlementTier: 'free' });
+  const freeReviewApply = provider.resolveCommandEntitlement('cmd.project.review.applyExactTextChange', { entitlementTier: 'free' });
+  const freeReviewApplyBatch = provider.resolveCommandEntitlement('cmd.project.review.applyExactTextChangesBatch', { entitlementTier: 'free' });
   const proReview = provider.resolveCommandEntitlement('cmd.project.review.switchMode', { entitlementTier: 'pro' });
   const freeComments = provider.resolveCommandEntitlement('cmd.project.review.openComments', { entitlementTier: 'free' });
 
   assert.equal(freeReview.available, false);
   assert.equal(freeReview.visible, false);
   assert.equal(freeReview.reason, 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE');
+  assert.equal(freeReviewApply.available, false);
+  assert.equal(freeReviewApply.visible, false);
+  assert.equal(freeReviewApply.reason, 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE');
+  assert.equal(freeReviewApplyBatch.available, false);
+  assert.equal(freeReviewApplyBatch.visible, false);
+  assert.equal(freeReviewApplyBatch.reason, 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE');
   assert.equal(proReview.available, true);
   assert.equal(proReview.visible, true);
   assert.equal(freeComments.available, true);
   assert.equal(freeComments.access, 'read_only');
   assert.equal(freeComments.reason, 'PRO_DATA_READ_ONLY_IN_FREE');
+});
+
+test('S37 local capability provider: Free fails closed for unclassified commands', async () => {
+  const provider = await importModule('src/renderer/commands/localCapabilityProvider.mjs');
+  const entitlement = provider.resolveCommandEntitlement('cmd.project.future.proOnly', { entitlementTier: 'free' });
+
+  assert.equal(entitlement.available, false);
+  assert.equal(entitlement.visible, false);
+  assert.equal(entitlement.access, 'unclassified');
+  assert.equal(entitlement.reason, 'COMMAND_ENTITLEMENT_UNCLASSIFIED');
+});
+
+test('S37 main bridge boundary blocks Pro review writes in local Free', () => {
+  const main = read('src/main.js');
+
+  assert.ok(main.includes('const MAIN_FREE_PRO_COMPLEXITY_COMMAND_IDS = new Set(['));
+  assert.ok(main.includes("'cmd.project.review.applyExactTextChange'"));
+  assert.ok(main.includes("'cmd.project.review.applyExactTextChangesBatch'"));
+  assert.match(
+    main,
+    /if\s*\(\s*MAIN_FREE_PRO_COMPLEXITY_COMMAND_IDS\.has\(commandId\)\s*\)\s*\{[\s\S]*PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE/u,
+  );
 });
 
 test('S37 local capability provider: surface projection separates visibility from availability', async () => {
