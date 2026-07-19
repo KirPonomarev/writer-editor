@@ -201,7 +201,7 @@ test('S21 replace single safe: bridge and UI stay pathless and outside Review Se
   assert.ok(capability.includes("'cmd.project.edit.replaceSingleSafe': 'cap.project.edit.replaceSingleSafe'"));
 
   const start = main.indexOf('async function handleReplaceSingleSafeCommand(payload = {}, options = {})');
-  const end = main.indexOf('async function handleNotesCreateCommand', start);
+  const end = main.indexOf('function makeReplaceMassError', start);
   assert.ok(start > -1 && end > start);
   const handler = main.slice(start, end);
   for (const forbidden of ['activeReviewSessionStore', 'activeReviewSessionLifecycle', 'reviewSurface', 'reviewSession']) {

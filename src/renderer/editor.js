@@ -9527,7 +9527,20 @@ function renderProjectSearchCentralResults() {
   }
   const summary = document.createElement('div');
   summary.className = 'project-search-workspace__summary';
-  summary.textContent = `${projectSearchState.counts.returned} из ${projectSearchState.counts.total} совпадений`;
+  const summaryText = document.createElement('span');
+  summaryText.textContent = `${projectSearchState.counts.returned} из ${projectSearchState.counts.total} совпадений`;
+  summary.appendChild(summaryText);
+  const replaceableCount = projectSearchState.results.filter((result) => {
+    return result?.source?.type === 'document' && result?.source?.kind === 'scene' && result?.source?.field === 'body';
+  }).length;
+  if (replaceableCount > 1) {
+    const replaceAllButton = document.createElement('button');
+    replaceAllButton.type = 'button';
+    replaceAllButton.className = 'project-search-workspace__mass-replace';
+    replaceAllButton.dataset.projectSearchReplaceAll = 'true';
+    replaceAllButton.textContent = 'Заменить показанные';
+    summary.appendChild(replaceAllButton);
+  }
   projectSearchResultsElement.appendChild(summary);
 
   const list = document.createElement('div');
@@ -9717,6 +9730,87 @@ async function replaceProjectSearchResult(resultId) {
   updateStatusText(reason === 'REPLACE_SINGLE_SAFE_AMBIGUOUS_MATCH'
     ? 'Замена заблокирована: найдено несколько таких фрагментов'
     : 'Замена заблокирована: результат устарел или небезопасен');
+}
+
+function getReplaceableProjectSearchResults() {
+  return projectSearchState.results.filter((result) => {
+    return result?.source?.type === 'document'
+      && result?.source?.kind === 'scene'
+      && result?.source?.field === 'body'
+      && typeof result?.preview?.matchText === 'string'
+      && result.preview.matchText.length > 0;
+  });
+}
+
+function buildReplaceMassResultPayload(result) {
+  const source = result.source && typeof result.source === 'object' && !Array.isArray(result.source)
+    ? result.source
+    : {};
+  return {
+    searchResultId: result.id || '',
+    source: {
+      type: source.type || '',
+      nodeId: source.nodeId || '',
+      kind: source.kind || '',
+      title: source.title || '',
+      field: source.field || '',
+      contentHash: source.contentHash || '',
+    },
+    range: {
+      from: Number(result.preview?.from),
+      to: Number(result.preview?.to),
+    },
+    expectedText: result.preview?.matchText || '',
+  };
+}
+
+async function replaceVisibleProjectSearchResults() {
+  const results = getReplaceableProjectSearchResults();
+  if (results.length < 2) {
+    updateStatusText('Для массовой замены нужно несколько совпадений в сценах');
+    return;
+  }
+  if (typeof window.prompt !== 'function' || typeof window.confirm !== 'function') {
+    updateStatusText('Массовая замена недоступна');
+    return;
+  }
+  const replacementText = window.prompt('Заменить все показанные совпадения на:', '');
+  if (replacementText === null) return;
+  const payload = {
+    requestId: `replace-mass-${Date.now()}`,
+    projectId: currentProjectId,
+    replacementText,
+    results: results.map(buildReplaceMassResultPayload),
+  };
+  const previewBridgeResult = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.EDIT_REPLACE_MASS_PREVIEW, payload);
+  const preview = previewBridgeResult && previewBridgeResult.ok === true && previewBridgeResult.value && typeof previewBridgeResult.value === 'object'
+    ? previewBridgeResult.value
+    : null;
+  if (!preview || preview.ok !== true || !preview.plan) {
+    updateStatusText('Массовая замена заблокирована: результаты устарели');
+    return;
+  }
+  const scenes = Number(preview.plan?.totals?.scenes) || 0;
+  const operations = Number(preview.plan?.totals?.operations) || 0;
+  const confirmed = window.confirm(`Будет изменено сцен: ${scenes}. Замен: ${operations}. Продолжить?`);
+  if (!confirmed) {
+    updateStatusText('Массовая замена отменена');
+    return;
+  }
+  const applyBridgeResult = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.EDIT_REPLACE_MASS_APPLY, {
+    ...payload,
+    confirmed: true,
+    previewPlan: preview.plan,
+  });
+  const applied = applyBridgeResult && applyBridgeResult.ok === true && applyBridgeResult.value && typeof applyBridgeResult.value === 'object'
+    ? applyBridgeResult.value
+    : null;
+  if (applied && applied.ok === true && applied.applied === true) {
+    updateStatusText(`Массовая замена применена: ${operations}`);
+    await refreshProjectSearchResults(leftSearchInput ? leftSearchInput.value : '');
+    return;
+  }
+  updateStatusText('Массовая замена отклонена или откатана');
 }
 
 function applyLeftTab(tab) {
@@ -12984,6 +13078,14 @@ searchResultsElement?.addEventListener('click', (event) => {
 });
 
 projectSearchResultsElement?.addEventListener('click', (event) => {
+  const replaceAllTarget = event.target instanceof Element
+    ? event.target.closest('[data-project-search-replace-all]')
+    : null;
+  if (replaceAllTarget) {
+    event.preventDefault();
+    void replaceVisibleProjectSearchResults();
+    return;
+  }
   const replaceTarget = event.target instanceof Element
     ? event.target.closest('[data-replace-search-result-id]')
     : null;

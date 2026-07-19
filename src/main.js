@@ -67,6 +67,7 @@ let autoSaveInProgress = false;
 let isQuitting = false;
 let isWindowClosing = false;
 let lastAutosaveHash = null;
+let lastReplaceMassReceipt = null;
 const backupHashes = new Map();
 const isDevMode = process.argv.includes('--dev');
 const CSP_POLICY =
@@ -330,6 +331,9 @@ const NOTES_RESTORE_COMMAND_ID = 'cmd.project.notes.restore';
 const NOTES_ATTACH_SCENE_COMMAND_ID = 'cmd.project.notes.attachToScene';
 const NOTES_CONVERT_SCENE_COMMAND_ID = 'cmd.project.notes.convertToScene';
 const REPLACE_SINGLE_SAFE_COMMAND_ID = 'cmd.project.edit.replaceSingleSafe';
+const REPLACE_MASS_PREVIEW_COMMAND_ID = 'cmd.project.edit.replaceMassPreview';
+const REPLACE_MASS_APPLY_COMMAND_ID = 'cmd.project.edit.replaceMassApply';
+const REPLACE_MASS_ROLLBACK_COMMAND_ID = 'cmd.project.edit.replaceMassRollback';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -7613,6 +7617,591 @@ async function handleReplaceSingleSafeCommand(payload = {}, options = {}) {
         intentPath: typeof writeResult?.intentPath === 'string' ? writeResult.intentPath : '',
       },
     },
+  };
+}
+
+function makeReplaceMassError(code, reason, details = {}) {
+  return {
+    ok: false,
+    code,
+    op: REPLACE_MASS_APPLY_COMMAND_ID,
+    reason,
+    ...(isPlainObjectValue(details) && Object.keys(details).length > 0 ? { details } : {}),
+  };
+}
+
+function normalizeReplaceMassResultDescriptor(input, index) {
+  if (!isPlainObjectValue(input)) return null;
+  const source = isPlainObjectValue(input.source) ? input.source : {};
+  const range = isPlainObjectValue(input.range) ? input.range : {};
+  const from = Number.isInteger(range.from) ? range.from : Math.trunc(Number(range.from));
+  const to = Number.isInteger(range.to) ? range.to : Math.trunc(Number(range.to));
+  return {
+    index,
+    searchResultId: typeof input.searchResultId === 'string'
+      ? input.searchResultId.trim()
+      : (typeof input.id === 'string' ? input.id.trim() : ''),
+    nodeId: typeof source.nodeId === 'string'
+      ? source.nodeId.trim()
+      : (typeof input.nodeId === 'string' ? input.nodeId.trim() : ''),
+    sourceType: typeof source.type === 'string' ? source.type.trim() : '',
+    sourceKind: typeof source.kind === 'string' ? source.kind.trim() : '',
+    sourceField: typeof source.field === 'string' ? source.field.trim() : '',
+    sourceHash: typeof source.contentHash === 'string'
+      ? source.contentHash.trim()
+      : (typeof input.sourceHash === 'string' ? input.sourceHash.trim() : ''),
+    title: typeof source.title === 'string' ? source.title.trim().slice(0, 160) : '',
+    from,
+    to,
+    expectedText: typeof input.expectedText === 'string'
+      ? input.expectedText
+      : (typeof input.matchText === 'string' ? input.matchText : ''),
+  };
+}
+
+function normalizeReplaceMassMutationPayload(payload = {}) {
+  if (!isPlainObjectValue(payload)) {
+    return {
+      ok: false,
+      code: 'E_REPLACE_MASS_PAYLOAD_INVALID',
+      reason: 'REPLACE_MASS_PAYLOAD_INVALID',
+    };
+  }
+  const forbidden = [
+    'filePath',
+    'path',
+    'projectRoot',
+    'scenePath',
+    'scenePathBySceneId',
+    'receipt',
+    'recovery',
+    'reviewSession',
+    'applyOps',
+    'projectSnapshot',
+  ].filter((key) => Object.prototype.hasOwnProperty.call(payload, key));
+  if (forbidden.length > 0) {
+    return {
+      ok: false,
+      code: 'E_REPLACE_MASS_PAYLOAD_FORBIDDEN_AUTHORITY',
+      reason: 'REPLACE_MASS_PAYLOAD_FORBIDDEN_AUTHORITY',
+      details: { keys: forbidden },
+    };
+  }
+  const sourceResults = Array.isArray(payload.results) ? payload.results : [];
+  const results = sourceResults
+    .slice(0, 100)
+    .map((entry, index) => normalizeReplaceMassResultDescriptor(entry, index))
+    .filter(Boolean);
+  if (results.length === 0 || sourceResults.length > 100) {
+    return {
+      ok: false,
+      code: 'E_REPLACE_MASS_RESULTS_INVALID',
+      reason: sourceResults.length > 100 ? 'REPLACE_MASS_RESULTS_LIMIT_EXCEEDED' : 'REPLACE_MASS_RESULTS_REQUIRED',
+    };
+  }
+  const invalid = results.find((result) => {
+    return !result.searchResultId
+      || !result.nodeId
+      || !result.sourceHash
+      || result.sourceType !== 'document'
+      || result.sourceKind !== 'scene'
+      || result.sourceField !== 'body'
+      || !Number.isInteger(result.from)
+      || !Number.isInteger(result.to)
+      || result.from < 0
+      || result.to < result.from
+      || !result.expectedText
+      || result.to - result.from !== result.expectedText.length;
+  });
+  if (invalid) {
+    return {
+      ok: false,
+      code: 'E_REPLACE_MASS_RESULT_INVALID',
+      reason: 'REPLACE_MASS_RESULT_INVALID',
+      details: { index: invalid.index, searchResultId: invalid.searchResultId },
+    };
+  }
+  return {
+    ok: true,
+    value: {
+      requestId: typeof payload.requestId === 'string' ? payload.requestId.trim().slice(0, 120) : '',
+      projectId: typeof payload.projectId === 'string' ? payload.projectId.trim() : '',
+      replacementText: typeof payload.replacementText === 'string' ? payload.replacementText : '',
+      results,
+      confirmed: payload.confirmed === true,
+      previewPlan: isPlainObjectValue(payload.previewPlan) ? payload.previewPlan : null,
+    },
+  };
+}
+
+function buildReplaceMassPlanId(projectId, operations, replacementText) {
+  return computeHash(JSON.stringify({
+    projectId,
+    replacementTextHash: computeHash(replacementText),
+    operations: operations.map((operation) => ({
+      searchResultId: operation.searchResultId,
+      nodeId: operation.nodeId,
+      from: operation.range.from,
+      to: operation.range.to,
+      expectedTextHash: operation.expectedTextHash,
+      sourceHashBefore: operation.sourceHashBefore,
+    })),
+  })).slice(0, 24);
+}
+
+function buildReplaceMassPlanHash(plan) {
+  return computeHash(JSON.stringify({
+    schemaVersion: plan.schemaVersion,
+    planId: plan.planId,
+    projectId: plan.projectId,
+    replacementTextHash: plan.replacementTextHash,
+    operations: plan.operations,
+    affectedScenes: plan.affectedScenes,
+    totals: plan.totals,
+  }));
+}
+
+async function parseReplaceMassVisibleText(sourceText) {
+  let visibleText = sourceText;
+  let envelopeModule = null;
+  let parsedEnvelope = null;
+  try {
+    envelopeModule = await loadDocumentContentEnvelopeModule();
+    parsedEnvelope = envelopeModule.parseObservablePayload(sourceText);
+    if (parsedEnvelope && !parsedEnvelope.issue) visibleText = parsedEnvelope.text || '';
+  } catch {
+    visibleText = sourceText;
+  }
+  return { visibleText, envelopeModule, parsedEnvelope };
+}
+
+function composeReplaceMassNextText(sceneRecord, operations, replacementText) {
+  const sorted = [...operations].sort((a, b) => b.range.from - a.range.from || b.range.to - a.range.to);
+  let nextVisibleText = sceneRecord.visibleText;
+  for (const operation of sorted) {
+    const { from, to } = operation.range;
+    nextVisibleText = `${nextVisibleText.slice(0, from)}${replacementText}${nextVisibleText.slice(to)}`;
+  }
+  const sourceHasEnvelope = Boolean(sceneRecord.parsedEnvelope?.doc || sceneRecord.parsedEnvelope?.hasMetaBlock || sceneRecord.parsedEnvelope?.hasCardsBlock);
+  if (sourceHasEnvelope && sceneRecord.envelopeModule && typeof sceneRecord.envelopeModule.composeDocumentContentFromBase === 'function') {
+    const composed = sceneRecord.envelopeModule.composeDocumentContentFromBase({
+      baseContent: sceneRecord.sourceText,
+      nextVisibleText,
+    });
+    if (!composed || composed.ok !== true || typeof composed.content !== 'string') {
+      return {
+        ok: false,
+        code: 'E_REPLACE_MASS_STRUCTURAL_UNSUPPORTED',
+        reason: 'REPLACE_MASS_STRUCTURAL_UNSUPPORTED',
+        details: isPlainObjectValue(composed?.error) ? composed.error : {},
+      };
+    }
+    return { ok: true, nextText: composed.content, nextVisibleText };
+  }
+  return { ok: true, nextText: nextVisibleText, nextVisibleText };
+}
+
+async function buildReplaceMassPlan(normalized) {
+  const nodeRecords = new Map();
+  const duplicateRanges = new Set();
+  const projectIds = new Set();
+  const operationKeys = new Set();
+
+  for (const result of normalized.results) {
+    let resolvedNode;
+    try {
+      resolvedNode = await resolveProjectTreeNodeIdentity(result.nodeId, normalized.projectId);
+    } catch (error) {
+      return makeReplaceMassError(
+        error && typeof error.code === 'string' ? error.code : 'E_REPLACE_MASS_SOURCE_UNRESOLVED',
+        'REPLACE_MASS_SOURCE_UNRESOLVED',
+        { searchResultId: result.searchResultId },
+      );
+    }
+    if (resolvedNode.kind !== 'scene') {
+      return makeReplaceMassError(
+        'E_REPLACE_MASS_SOURCE_UNSUPPORTED',
+        'REPLACE_MASS_SOURCE_UNSUPPORTED',
+        { nodeId: resolvedNode.nodeId, sourceKind: resolvedNode.kind },
+      );
+    }
+    projectIds.add(resolvedNode.projectId);
+    if (!nodeRecords.has(resolvedNode.nodeId)) {
+      let sourceText = '';
+      try {
+        sourceText = await fs.readFile(resolvedNode.nodePath, 'utf8');
+      } catch (error) {
+        return makeReplaceMassError(
+          error && typeof error.code === 'string' ? error.code : 'E_REPLACE_MASS_READ_FAILED',
+          'REPLACE_MASS_READ_FAILED',
+          { nodeId: resolvedNode.nodeId },
+        );
+      }
+      const parsed = await parseReplaceMassVisibleText(sourceText);
+      nodeRecords.set(resolvedNode.nodeId, {
+        nodeId: resolvedNode.nodeId,
+        nodePath: resolvedNode.nodePath,
+        projectId: resolvedNode.projectId,
+        kind: resolvedNode.kind,
+        title: result.title || getDocumentContextFromPath(resolvedNode.nodePath).title,
+        sourceText,
+        contentHashBefore: computeHash(sourceText),
+        visibleText: parsed.visibleText,
+        envelopeModule: parsed.envelopeModule,
+        parsedEnvelope: parsed.parsedEnvelope,
+        operations: [],
+      });
+    }
+    const sceneRecord = nodeRecords.get(resolvedNode.nodeId);
+    if (sceneRecord.contentHashBefore !== result.sourceHash) {
+      return makeReplaceMassError(
+        'E_REPLACE_MASS_STALE',
+        'REPLACE_MASS_STALE_SOURCE_HASH',
+        { nodeId: resolvedNode.nodeId, expectedHash: result.sourceHash, observedHash: sceneRecord.contentHashBefore },
+      );
+    }
+    const exactSlice = sceneRecord.visibleText.slice(result.from, result.to);
+    if (exactSlice !== result.expectedText) {
+      return makeReplaceMassError(
+        'E_REPLACE_MASS_STALE',
+        'REPLACE_MASS_STALE_RANGE',
+        { nodeId: resolvedNode.nodeId, searchResultId: result.searchResultId },
+      );
+    }
+    const operationKey = `${resolvedNode.nodeId}:${result.from}:${result.to}`;
+    if (operationKeys.has(operationKey)) duplicateRanges.add(operationKey);
+    operationKeys.add(operationKey);
+    sceneRecord.operations.push({
+      operationId: `replace-mass-op-${computeHash(`${result.searchResultId}:${operationKey}`).slice(0, 16)}`,
+      searchResultId: result.searchResultId,
+      nodeId: resolvedNode.nodeId,
+      range: { from: result.from, to: result.to },
+      expectedText: result.expectedText,
+      expectedTextHash: computeHash(result.expectedText),
+      sourceHashBefore: sceneRecord.contentHashBefore,
+    });
+  }
+
+  if (projectIds.size !== 1) {
+    return makeReplaceMassError('E_REPLACE_MASS_CROSS_PROJECT_BLOCKED', 'REPLACE_MASS_CROSS_PROJECT_BLOCKED');
+  }
+  if (duplicateRanges.size > 0) {
+    return makeReplaceMassError(
+      'E_REPLACE_MASS_DUPLICATE_RANGE',
+      'REPLACE_MASS_DUPLICATE_RANGE',
+      { duplicateCount: duplicateRanges.size },
+    );
+  }
+
+  const sceneRecords = [...nodeRecords.values()];
+  for (const sceneRecord of sceneRecords) {
+    const overlapSorted = [...sceneRecord.operations].sort((a, b) => a.range.from - b.range.from || a.range.to - b.range.to);
+    for (let index = 1; index < overlapSorted.length; index += 1) {
+      if (overlapSorted[index].range.from < overlapSorted[index - 1].range.to) {
+        return makeReplaceMassError(
+          'E_REPLACE_MASS_OVERLAPPING_RANGE',
+          'REPLACE_MASS_OVERLAPPING_RANGE',
+          { nodeId: sceneRecord.nodeId },
+        );
+      }
+    }
+    const composed = composeReplaceMassNextText(sceneRecord, sceneRecord.operations, normalized.replacementText);
+    if (!composed.ok) return makeReplaceMassError(composed.code, composed.reason, composed.details);
+    sceneRecord.nextText = composed.nextText;
+    sceneRecord.contentHashAfter = computeHash(sceneRecord.nextText);
+  }
+
+  const operations = sceneRecords
+    .flatMap((sceneRecord) => sceneRecord.operations)
+    .sort((a, b) => a.nodeId.localeCompare(b.nodeId) || a.range.from - b.range.from);
+  const affectedScenes = sceneRecords
+    .map((sceneRecord) => ({
+      nodeId: sceneRecord.nodeId,
+      title: sceneRecord.title,
+      operationCount: sceneRecord.operations.length,
+      contentHashBefore: sceneRecord.contentHashBefore,
+      contentHashAfter: sceneRecord.contentHashAfter,
+    }))
+    .sort((a, b) => a.nodeId.localeCompare(b.nodeId));
+  const projectId = [...projectIds][0] || normalized.projectId;
+  const plan = {
+    schemaVersion: 'replace-mass-plan.v1',
+    commandId: REPLACE_MASS_PREVIEW_COMMAND_ID,
+    planId: buildReplaceMassPlanId(projectId, operations, normalized.replacementText),
+    projectId,
+    replacementTextHash: computeHash(normalized.replacementText),
+    operations,
+    affectedScenes,
+    totals: {
+      scenes: affectedScenes.length,
+      operations: operations.length,
+    },
+  };
+  plan.planHash = buildReplaceMassPlanHash(plan);
+  return { ok: true, plan, sceneRecords };
+}
+
+async function handleReplaceMassPreviewCommand(payload = {}) {
+  const normalized = normalizeReplaceMassMutationPayload(payload);
+  if (!normalized.ok) return makeReplaceMassError(normalized.code, normalized.reason, normalized.details);
+  const planned = await buildReplaceMassPlan(normalized.value);
+  if (!planned.ok) return planned;
+  return {
+    ok: true,
+    preview: true,
+    ready: true,
+    plan: planned.plan,
+  };
+}
+
+async function refreshOpenEditorAfterReplaceMass(sceneRecord) {
+  if (!sceneRecord || sceneRecord.nodePath !== currentFilePath) return;
+  lastAutosaveHash = sceneRecord.contentHashAfter || computeHash(sceneRecord.nextText || sceneRecord.sourceText || '');
+  backupHashes.set(sceneRecord.nodePath, lastAutosaveHash);
+  sendEditorText(await attachProjectIdToEditorPayload({
+    content: sceneRecord.nextText || sceneRecord.sourceText || '',
+    title: getDocumentContextFromPath(sceneRecord.nodePath).title,
+    documentId: sceneRecord.nodeId,
+    kind: sceneRecord.kind,
+    metaEnabled: false,
+  }, sceneRecord.nodePath));
+  setDirtyState(false);
+}
+
+async function rollbackReplaceMassWrites(appliedWrites, options = {}) {
+  const rollbackResults = [];
+  for (const applied of [...appliedWrites].reverse()) {
+    const snapshotPath = typeof applied.writeResult?.snapshotPath === 'string' ? applied.writeResult.snapshotPath : '';
+    if (!snapshotPath) {
+      rollbackResults.push({ nodeId: applied.sceneRecord.nodeId, ok: false, reason: 'SNAPSHOT_MISSING' });
+      continue;
+    }
+    try {
+      const snapshotText = await fs.readFile(snapshotPath, 'utf8');
+      await fileManager.writeFileAtomic(applied.sceneRecord.nodePath, snapshotText);
+      rollbackResults.push({
+        nodeId: applied.sceneRecord.nodeId,
+        ok: true,
+        snapshotPath,
+        contentHashAfterRollback: computeHash(snapshotText),
+      });
+      applied.sceneRecord.nextText = snapshotText;
+      applied.sceneRecord.contentHashAfter = computeHash(snapshotText);
+      await refreshOpenEditorAfterReplaceMass(applied.sceneRecord);
+    } catch (error) {
+      rollbackResults.push({
+        nodeId: applied.sceneRecord.nodeId,
+        ok: false,
+        snapshotPath,
+        reason: error && typeof error.code === 'string' ? error.code : 'ROLLBACK_WRITE_FAILED',
+      });
+    }
+  }
+  if (typeof options.afterRollback === 'function') {
+    await options.afterRollback(rollbackResults);
+  }
+  return rollbackResults;
+}
+
+async function revalidateReplaceMassSceneRecords(sceneRecords) {
+  for (const sceneRecord of sceneRecords) {
+    let sourceText = '';
+    try {
+      sourceText = await fs.readFile(sceneRecord.nodePath, 'utf8');
+    } catch (error) {
+      const readError = new Error('REPLACE_MASS_READ_FAILED');
+      readError.code = error && typeof error.code === 'string' ? error.code : 'E_REPLACE_MASS_READ_FAILED';
+      readError.reason = 'REPLACE_MASS_READ_FAILED';
+      readError.details = { nodeId: sceneRecord.nodeId };
+      throw readError;
+    }
+    const observedHash = computeHash(sourceText);
+    if (observedHash !== sceneRecord.contentHashBefore) {
+      const staleError = new Error('REPLACE_MASS_STALE_SOURCE_HASH');
+      staleError.code = 'E_REPLACE_MASS_STALE';
+      staleError.reason = 'REPLACE_MASS_STALE_SOURCE_HASH';
+      staleError.details = {
+        nodeId: sceneRecord.nodeId,
+        expectedHash: sceneRecord.contentHashBefore,
+        observedHash,
+      };
+      throw staleError;
+    }
+  }
+}
+
+async function handleReplaceMassApplyCommand(payload = {}, options = {}) {
+  const normalized = normalizeReplaceMassMutationPayload(payload);
+  if (!normalized.ok) return makeReplaceMassError(normalized.code, normalized.reason, normalized.details);
+  if (normalized.value.confirmed !== true) {
+    return makeReplaceMassError('E_REPLACE_MASS_CONFIRMATION_REQUIRED', 'REPLACE_MASS_CONFIRMATION_REQUIRED');
+  }
+  if (isDirty || autoSaveInProgress) {
+    return makeReplaceMassError(
+      'E_REPLACE_MASS_DIRTY_EDITOR_BLOCKED',
+      'REPLACE_MASS_DIRTY_EDITOR_BLOCKED',
+      { isDirty: Boolean(isDirty), autoSaveInProgress: Boolean(autoSaveInProgress) },
+    );
+  }
+  const planned = await buildReplaceMassPlan(normalized.value);
+  if (!planned.ok) return planned;
+  const previewPlan = normalized.value.previewPlan;
+  if (!isPlainObjectValue(previewPlan) || previewPlan.planHash !== planned.plan.planHash) {
+    return makeReplaceMassError(
+      'E_REPLACE_MASS_PREVIEW_MISMATCH',
+      'REPLACE_MASS_PREVIEW_MISMATCH',
+      { expectedPlanHash: previewPlan?.planHash || '', observedPlanHash: planned.plan.planHash },
+    );
+  }
+  if (typeof options.afterApplyPlanReady === 'function') {
+    await options.afterApplyPlanReady({ plan: planned.plan });
+  }
+
+  let markdownIo;
+  try {
+    markdownIo = typeof options.loadMarkdownIoModule === 'function'
+      ? await options.loadMarkdownIoModule()
+      : await loadMarkdownIoModule();
+  } catch (error) {
+    return makeReplaceMassError(
+      'E_REPLACE_MASS_WRITE_UNAVAILABLE',
+      'REPLACE_MASS_WRITE_UNAVAILABLE',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (!markdownIo || typeof markdownIo.writeMarkdownWithTransactionRecovery !== 'function') {
+    return makeReplaceMassError('E_REPLACE_MASS_WRITE_UNAVAILABLE', 'REPLACE_MASS_WRITE_UNAVAILABLE');
+  }
+
+  const appliedWrites = [];
+  try {
+    await queueDiskOperation(async () => {
+      const orderedScenes = [...planned.sceneRecords].sort((a, b) => a.nodeId.localeCompare(b.nodeId));
+      await revalidateReplaceMassSceneRecords(orderedScenes);
+      for (const sceneRecord of orderedScenes) {
+        const writeResult = await markdownIo.writeMarkdownWithTransactionRecovery(sceneRecord.nodePath, sceneRecord.nextText, {
+          maxSnapshots: 20,
+          ...(typeof options.now === 'function' ? { now: options.now } : {}),
+        });
+        appliedWrites.push({ sceneRecord, writeResult });
+        if (typeof options.afterSceneWrite === 'function') {
+          await options.afterSceneWrite({ sceneRecord, writeResult, appliedCount: appliedWrites.length });
+        }
+      }
+    }, 'replace mass apply');
+  } catch (error) {
+    if (appliedWrites.length === 0 && (error?.code === 'E_REPLACE_MASS_STALE' || error?.reason === 'REPLACE_MASS_READ_FAILED')) {
+      return makeReplaceMassError(
+        error && typeof error.code === 'string' ? error.code : 'E_REPLACE_MASS_PRE_WRITE_BLOCKED',
+        error && typeof error.reason === 'string' ? error.reason : 'REPLACE_MASS_PRE_WRITE_BLOCKED',
+        isPlainObjectValue(error?.details) ? error.details : {},
+      );
+    }
+    const rollback = await queueDiskOperation(
+      () => rollbackReplaceMassWrites(appliedWrites, options),
+      'replace mass rollback after failed apply',
+    );
+    return makeReplaceMassError(
+      'E_REPLACE_MASS_APPLY_ROLLED_BACK',
+      'REPLACE_MASS_APPLY_ROLLED_BACK',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        appliedBeforeFailure: appliedWrites.length,
+        rollback,
+      },
+    );
+  }
+
+  for (const sceneRecord of planned.sceneRecords) {
+    await refreshOpenEditorAfterReplaceMass(sceneRecord);
+  }
+  const receiptId = `replace-mass-receipt-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+  const receipt = {
+    schemaVersion: 'replace-mass-receipt.v1',
+    commandId: REPLACE_MASS_APPLY_COMMAND_ID,
+    operation: 'replaceMassApply',
+    receiptId,
+    projectId: planned.plan.projectId,
+    planId: planned.plan.planId,
+    planHash: planned.plan.planHash,
+    replacementTextHash: planned.plan.replacementTextHash,
+    applied: true,
+    totals: planned.plan.totals,
+    scenes: appliedWrites.map(({ sceneRecord, writeResult }) => ({
+      nodeId: sceneRecord.nodeId,
+      title: sceneRecord.title,
+      operationCount: sceneRecord.operations.length,
+      contentHashBefore: sceneRecord.contentHashBefore,
+      contentHashAfter: sceneRecord.contentHashAfter,
+      recovery: {
+        snapshotCreated: writeResult?.snapshotCreated === true,
+        snapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
+        transactionId: typeof writeResult?.transactionId === 'string' ? writeResult.transactionId : '',
+        intentPath: typeof writeResult?.intentPath === 'string' ? writeResult.intentPath : '',
+      },
+    })),
+  };
+  lastReplaceMassReceipt = {
+    receipt,
+    sceneRecords: appliedWrites.map(({ sceneRecord, writeResult }) => ({
+      nodeId: sceneRecord.nodeId,
+      nodePath: sceneRecord.nodePath,
+      kind: sceneRecord.kind,
+      snapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
+    })),
+  };
+  return {
+    ok: true,
+    applied: true,
+    receipt,
+  };
+}
+
+async function handleReplaceMassRollbackCommand(payload = {}) {
+  const receiptId = isPlainObjectValue(payload) && typeof payload.receiptId === 'string' ? payload.receiptId.trim() : '';
+  if (!receiptId || !lastReplaceMassReceipt || lastReplaceMassReceipt.receipt.receiptId !== receiptId) {
+    return makeReplaceMassError('E_REPLACE_MASS_ROLLBACK_RECEIPT_NOT_FOUND', 'REPLACE_MASS_ROLLBACK_RECEIPT_NOT_FOUND');
+  }
+  const appliedWrites = [];
+  for (const record of lastReplaceMassReceipt.sceneRecords) {
+    let resolvedNode;
+    try {
+      resolvedNode = await resolveProjectTreeNodeIdentity(record.nodeId, lastReplaceMassReceipt.receipt.projectId);
+    } catch {
+      return makeReplaceMassError(
+        'E_REPLACE_MASS_ROLLBACK_SOURCE_UNRESOLVED',
+        'REPLACE_MASS_ROLLBACK_SOURCE_UNRESOLVED',
+        { nodeId: record.nodeId },
+      );
+    }
+    if (resolvedNode.nodePath !== record.nodePath || resolvedNode.kind !== 'scene') {
+      return makeReplaceMassError(
+        'E_REPLACE_MASS_ROLLBACK_SOURCE_MISMATCH',
+        'REPLACE_MASS_ROLLBACK_SOURCE_MISMATCH',
+        { nodeId: record.nodeId },
+      );
+    }
+    appliedWrites.push({
+      sceneRecord: {
+        nodeId: record.nodeId,
+        nodePath: record.nodePath,
+        kind: record.kind,
+        sourceText: '',
+      },
+      writeResult: { snapshotPath: record.snapshotPath },
+    });
+  }
+  const rollback = await queueDiskOperation(
+    () => rollbackReplaceMassWrites(appliedWrites),
+    'replace mass rollback receipt',
+  );
+  const ok = rollback.every((entry) => entry.ok === true);
+  if (ok) lastReplaceMassReceipt = null;
+  return {
+    ok,
+    rolledBack: ok,
+    receiptId,
+    rollback,
   };
 }
 
@@ -15533,6 +16122,9 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   NOTES_ATTACH_SCENE_COMMAND_ID,
   NOTES_CONVERT_SCENE_COMMAND_ID,
   REPLACE_SINGLE_SAFE_COMMAND_ID,
+  REPLACE_MASS_PREVIEW_COMMAND_ID,
+  REPLACE_MASS_APPLY_COMMAND_ID,
+  REPLACE_MASS_ROLLBACK_COMMAND_ID,
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -15982,6 +16574,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [REPLACE_SINGLE_SAFE_COMMAND_ID]: async (payload = {}) => {
     return handleReplaceSingleSafeCommand(payload);
+  },
+  [REPLACE_MASS_PREVIEW_COMMAND_ID]: async (payload = {}) => {
+    return handleReplaceMassPreviewCommand(payload);
+  },
+  [REPLACE_MASS_APPLY_COMMAND_ID]: async (payload = {}) => {
+    return handleReplaceMassApplyCommand(payload);
+  },
+  [REPLACE_MASS_ROLLBACK_COMMAND_ID]: async (payload = {}) => {
+    return handleReplaceMassRollbackCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -17017,6 +17618,9 @@ module.exports = {
   handleNotesDeleteCommand,
   handleNotesRestoreCommand,
   handleNotesUpdateCommand,
+  handleReplaceMassApplyCommand,
+  handleReplaceMassPreviewCommand,
+  handleReplaceMassRollbackCommand,
   handleReplaceSingleSafeCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
@@ -17024,6 +17628,7 @@ module.exports = {
   handleWorkspaceProjectTreeQuery,
   migrateProjectNotesStorage,
   normalizeProjectManifest,
+  normalizeReplaceMassMutationPayload,
   normalizeReplaceSingleSafePayload,
   persistBookProfileForFile,
   persistProjectManifestAtPath,

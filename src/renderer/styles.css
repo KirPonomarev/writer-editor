@@ -5259,10 +5259,33 @@ body.dark-theme .notes-button {
 }
 
 .project-search-workspace__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 6px 8px 10px;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 16px;
+}
+
+.project-search-workspace__mass-replace {
+  flex: 0 0 auto;
+  min-height: 30px;
+  border: 1px solid rgba(84, 77, 68, 0.14);
+  border-radius: 6px;
+  padding: 0 12px;
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.project-search-workspace__mass-replace:hover {
+  background: rgba(84, 77, 68, 0.1);
+  color: var(--text-primary);
 }
 
 .project-search-results {
@@ -5358,6 +5381,11 @@ body.dark-theme .project-search-workspace__body {
 }
 
 body.dark-theme .project-search-result__replace {
+  border-color: rgba(230, 224, 214, 0.14);
+  background: rgba(230, 224, 214, 0.06);
+}
+
+body.dark-theme .project-search-workspace__mass-replace {
   border-color: rgba(230, 224, 214, 0.14);
   background: rgba(230, 224, 214, 0.06);
 }
