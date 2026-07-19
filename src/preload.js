@@ -134,6 +134,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
       payload: { tab },
     });
   },
+  getProjectLibrary: (payload) => {
+    return ipcRenderer.invoke(WORKSPACE_QUERY_BRIDGE_CHANNEL, {
+      queryId: 'query.projectLibrary',
+      payload: normalizeRequestPayload(payload),
+    });
+  },
   openDocument: (payload) => {
     return invokeUiCommand(DOCUMENT_OPEN_COMMAND_ID, payload);
   },
