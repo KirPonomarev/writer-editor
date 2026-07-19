@@ -3916,10 +3916,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "f66e0829314811af72a02c61e9acb777025ed0aa971b2104e7501b3a9db3df57",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S43_RELEASE_CANDIDATE_REBIND",
-      "approvedAtUtc": "2026-07-19T08:11:00.000Z",
-      "rationale": "Approve S43 final release candidate lock rebind to the verified remote main head after S42 factual capability status delivery; no runtime, menu, storage, recovery, dependency, network, cloud, UI design, entitlement, or project-format change is introduced."
+      "sha256": "b324aafd40bd8c966ee4a9e438bf607a7cc626d1d7cb4dab4ec6af61138e9083",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S43_FINAL_RC_LOCK_REBIND",
+      "approvedAtUtc": "2026-07-19T08:27:00.000Z",
+      "rationale": "Approve final S43 release candidate lock rebind to the verified remote main head after the Sector U full runner delivery; no runtime, menu, storage, recovery, dependency, network, cloud, UI design, entitlement, project-format behavior, or capability claim is introduced."
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
