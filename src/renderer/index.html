@@ -11,7 +11,7 @@
     <div class="titlebar">
       <div class="titlebar__label">Yalken</div>
     </div>
-    <div class="work-bar" data-top-work-bar>
+    <div class="work-bar" data-top-work-bar role="toolbar" aria-label="Основные команды">
       <div class="left-floating-toolbar" data-left-toolbar>
         <div class="left-floating-toolbar__shell" data-left-toolbar-shell>
           <div class="left-floating-toolbar__transform-handle left-floating-toolbar__transform-handle--rotate" data-left-toolbar-rotate-handle aria-hidden="true">
@@ -85,7 +85,7 @@
         </div>
       </div>
     </div>
-    <div class="floating-toolbar" data-toolbar>
+    <div class="floating-toolbar" data-toolbar role="toolbar" aria-label="Панель форматирования">
       <div class="floating-toolbar__shell" data-toolbar-shell>
         <div class="floating-toolbar__transform-handle floating-toolbar__transform-handle--rotate" data-toolbar-rotate-handle aria-hidden="true">
           <span class="floating-toolbar__transform-control floating-toolbar__transform-control--rotate">
@@ -110,7 +110,7 @@
                 <span class="floating-toolbar__display-text" data-font-display>Roboto Ms</span>
                 <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret" aria-hidden="true"></span>
               </div>
-              <select class="floating-toolbar__select" data-font-select>
+              <select class="floating-toolbar__select" data-font-select aria-label="Гарнитура">
                 <option value='"Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace'>Roboto Ms</option>
                 <option value='"Circe", -apple-system, system-ui, sans-serif'>Circe</option>
                 <option value='"American Typewriter", Georgia, serif'>American Typewriter</option>
@@ -128,7 +128,7 @@
                 <span class="floating-toolbar__display-text" data-weight-display>Light</span>
                 <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret" aria-hidden="true"></span>
               </div>
-              <select class="floating-toolbar__select" data-weight-select>
+              <select class="floating-toolbar__select" data-weight-select aria-label="Начертание">
                 <option value="regular">Regular</option>
                 <option value="light">Light</option>
                 <option value="semibold">Semibold</option>
@@ -143,7 +143,7 @@
                 <span class="floating-toolbar__display-text" data-size-display>12</span>
                 <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret" aria-hidden="true"></span>
               </div>
-              <select class="floating-toolbar__select" data-size-select>
+              <select class="floating-toolbar__select" data-size-select aria-label="Кегль">
                 <option value="9">9</option>
                 <option value="10">10</option>
                 <option value="11">11</option>
@@ -185,7 +185,7 @@
                 <span class="floating-toolbar__display-value" data-line-height-display>1.0</span>
                 <span class="floating-toolbar__phosphor-icon floating-toolbar__phosphor-icon--caret-down floating-toolbar__caret floating-toolbar__caret--line-height" aria-hidden="true"></span>
               </div>
-              <select class="floating-toolbar__select" data-line-height-select>
+              <select class="floating-toolbar__select" data-line-height-select aria-label="Интерлиньяж">
                 <option value="0.5">0.5</option>
                 <option value="0.6">0.6</option>
                 <option value="0.7">0.7</option>
@@ -347,16 +347,16 @@
             </button>
           </div>
         </div>
-        <div class="floating-toolbar__paragraph-menu" data-paragraph-menu id="floating-toolbar-paragraph-menu" hidden>
-          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-left" aria-pressed="true">Слева</button>
-          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-center" aria-pressed="false">По центру</button>
-          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-right" aria-pressed="false">Справа</button>
-          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-justify" aria-pressed="false">По ширине</button>
+        <div class="floating-toolbar__paragraph-menu" data-paragraph-menu id="floating-toolbar-paragraph-menu" role="menu" aria-label="Выравнивание абзаца" hidden>
+          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-left" role="menuitemradio" aria-checked="true" aria-pressed="true">Слева</button>
+          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-center" role="menuitemradio" aria-checked="false" aria-pressed="false">По центру</button>
+          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-right" role="menuitemradio" aria-checked="false" aria-pressed="false">Справа</button>
+          <button type="button" class="floating-toolbar__paragraph-menu-item" data-paragraph-alignment="align-justify" role="menuitemradio" aria-checked="false" aria-pressed="false">По ширине</button>
         </div>
-        <div class="floating-toolbar__list-menu" data-list-menu id="floating-toolbar-list-menu" hidden>
-          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="no-list" aria-pressed="false">Без списка</button>
-          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="bullet" aria-pressed="false">Маркированный</button>
-          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="ordered" aria-pressed="false">Нумерованный</button>
+        <div class="floating-toolbar__list-menu" data-list-menu id="floating-toolbar-list-menu" role="menu" aria-label="Тип списка" hidden>
+          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="no-list" role="menuitemradio" aria-checked="false" aria-pressed="false">Без списка</button>
+          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="bullet" role="menuitemradio" aria-checked="false" aria-pressed="false">Маркированный</button>
+          <button type="button" class="floating-toolbar__list-menu-item" data-list-action="ordered" role="menuitemradio" aria-checked="false" aria-pressed="false">Нумерованный</button>
         </div>
         <div class="floating-toolbar-spacing-menu" data-toolbar-spacing-menu hidden>
           <button
@@ -406,21 +406,21 @@
         >
           <span class="left-rail-collapse-button__icon" aria-hidden="true"></span>
         </button>
-        <div class="toolbar__row toolbar__row--secondary x101-tabs-row" data-left-tabs>
+        <div class="toolbar__row toolbar__row--secondary x101-tabs-row" data-left-tabs role="tablist" aria-label="Навигатор">
           <div class="toolbar__cluster x101-tabs-group">
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-left-tab="project" aria-pressed="true">Проект</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="outline" aria-pressed="false">План</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="notes" aria-pressed="false">Заметки</button>
-            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="search" aria-pressed="false">Поиск</button>
+            <button type="button" id="left-tab-project" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-left-tab="project" role="tab" aria-controls="left-panel-project" aria-selected="true" aria-pressed="true">Проект</button>
+            <button type="button" id="left-tab-outline" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="outline" role="tab" aria-controls="left-panel-outline" aria-selected="false" aria-pressed="false" tabindex="-1">План</button>
+            <button type="button" id="left-tab-notes" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="notes" role="tab" aria-controls="left-panel-notes" aria-selected="false" aria-pressed="false" tabindex="-1">Заметки</button>
+            <button type="button" id="left-tab-search" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="search" role="tab" aria-controls="left-panel-search" aria-selected="false" aria-pressed="false" tabindex="-1">Поиск</button>
           </div>
         </div>
         <div class="toolbar__row toolbar__row--secondary" data-left-search-panel hidden>
           <input type="text" class="modal__input" data-left-search-input placeholder="Поиск по проекту">
         </div>
-        <div class="sidebar__tree" data-tree></div>
-        <div class="sidebar__tree" data-outline-list hidden></div>
-        <div class="sidebar__tree" data-notes-left-list hidden></div>
-        <div class="sidebar__tree" data-search-results hidden></div>
+        <div class="sidebar__tree" id="left-panel-project" data-tree role="tabpanel" aria-labelledby="left-tab-project"></div>
+        <div class="sidebar__tree" id="left-panel-outline" data-outline-list role="tabpanel" aria-labelledby="left-tab-outline" hidden></div>
+        <div class="sidebar__tree" id="left-panel-notes" data-notes-left-list role="tabpanel" aria-labelledby="left-tab-notes" hidden></div>
+        <div class="sidebar__tree" id="left-panel-search" data-search-results role="tabpanel" aria-labelledby="left-tab-search" hidden></div>
         <div class="sidebar__resize-handle" data-sidebar-resizer aria-hidden="true"></div>
       </aside>
       <button
@@ -543,7 +543,7 @@
                 <div class="project-search-workspace__eyebrow">Поиск</div>
                 <h1 class="project-search-workspace__title">Проектный поиск</h1>
               </div>
-              <div class="project-search-workspace__status" data-project-search-status>Введите запрос</div>
+              <div class="project-search-workspace__status" data-project-search-status role="status">Введите запрос</div>
             </header>
             <div class="project-search-workspace__controls" aria-label="Параметры поиска">
               <select class="project-search-workspace__select" data-project-search-scope aria-label="Область поиска">
@@ -598,6 +598,9 @@
             <div
               id="editor"
               class="editor__input"
+              role="textbox"
+              aria-label="Текст сцены"
+              aria-multiline="true"
               contenteditable="true"
               spellcheck="false"
               autofocus

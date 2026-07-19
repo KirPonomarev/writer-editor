@@ -301,6 +301,16 @@ export function buildSettingsAggregation(input = {}) {
       status: 'read_only',
     },
     {
+      id: 'accessibility.reducedMotion',
+      sectionId: 'accessibility',
+      label: 'Reduced motion',
+      value: 'Follows system',
+      owner: 'Design OS accessibility layer',
+      scope: 'runtime',
+      persistenceClass: 'prefers-reduced-motion',
+      status: 'read_only',
+    },
+    {
       id: 'accessibility.customOverrides',
       sectionId: 'accessibility',
       label: 'Accessibility overrides',

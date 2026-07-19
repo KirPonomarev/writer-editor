@@ -10283,6 +10283,8 @@ function applyLeftTab(tab) {
   for (const button of leftTabButtons) {
     const active = button.dataset.leftTab === tab;
     button.classList.toggle('is-active', active);
+    button.tabIndex = active ? 0 : -1;
+    button.setAttribute('aria-selected', active ? 'true' : 'false');
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   }
   if (treeContainer) treeContainer.hidden = tab !== 'project';
@@ -12379,6 +12381,7 @@ function updateAlignmentButtons(activeAction) {
   alignButtons.forEach((button) => {
     const isActive = button.dataset.paragraphAlignment === activeAction;
     button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-checked', isActive ? 'true' : 'false');
     button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
 }
@@ -13114,7 +13117,9 @@ function renderToolbarColorPickerOverlay() {
     clearButton.type = 'button';
     clearButton.className = 'toolbar__swatch toolbar__swatch--clear';
     clearButton.dataset.toolbarColorSwatchValue = '';
+    clearButton.setAttribute('role', 'menuitemradio');
     clearButton.setAttribute('aria-label', `Clear ${TOOLBAR_COLOR_PICKER_MODE_LABELS[mode] || mode.toLowerCase()}`);
+    clearButton.setAttribute('aria-checked', selectedValue === '' ? 'true' : 'false');
     clearButton.setAttribute('aria-pressed', selectedValue === '' ? 'true' : 'false');
     clearButton.classList.toggle('is-active', selectedValue === '');
     clearButton.textContent = '×';
@@ -13125,7 +13130,9 @@ function renderToolbarColorPickerOverlay() {
       button.type = 'button';
       button.className = 'toolbar__swatch';
       button.dataset.toolbarColorSwatchValue = swatch.value;
+      button.setAttribute('role', 'menuitemradio');
       button.setAttribute('aria-label', swatch.label);
+      button.setAttribute('aria-checked', swatch.value === selectedValue ? 'true' : 'false');
       button.setAttribute('aria-pressed', swatch.value === selectedValue ? 'true' : 'false');
       button.classList.toggle('is-active', swatch.value === selectedValue);
       button.style.setProperty('--swatch-color', swatch.value);
@@ -13319,6 +13326,7 @@ function syncToolbarFormattingState(nextState = null) {
       || (action === 'ordered' && state.orderedList)
       || (action === 'no-list' && !state.bulletList && !state.orderedList);
     button.classList.toggle('is-active', active);
+    button.setAttribute('aria-checked', active ? 'true' : 'false');
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
   syncToolbarShellState();
@@ -13893,6 +13901,45 @@ if (leftTabsHost) {
     if (!button) return;
     const tab = button.dataset.leftTab;
     if (tab === 'project' || tab === 'outline' || tab === 'notes' || tab === 'search') {
+      applyLeftTab(tab);
+    }
+  });
+
+  leftTabsHost.addEventListener('keydown', (event) => {
+    const currentButton = event.target instanceof Element
+      ? event.target.closest('[data-left-tab]')
+      : null;
+    if (!(currentButton instanceof HTMLElement)) return;
+
+    const tabs = leftTabButtons.filter((button) => button instanceof HTMLElement);
+    const currentIndex = tabs.indexOf(currentButton);
+    if (currentIndex < 0) return;
+
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (event.key === 'Home') {
+      nextIndex = 0;
+    } else if (event.key === 'End') {
+      nextIndex = tabs.length - 1;
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      const tab = currentButton.dataset.leftTab;
+      if (tab === 'project' || tab === 'outline' || tab === 'notes' || tab === 'search') {
+        event.preventDefault();
+        applyLeftTab(tab);
+      }
+      return;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    const nextButton = tabs[nextIndex];
+    const tab = nextButton.dataset.leftTab;
+    if (tab === 'project' || tab === 'outline' || tab === 'notes' || tab === 'search') {
+      nextButton.focus();
       applyLeftTab(tab);
     }
   });
