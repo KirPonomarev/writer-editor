@@ -17,6 +17,23 @@ function pathToFileUrl(filePath) {
   return `file://${filePath}`;
 }
 
+function extractFunctionBlock(source, signature) {
+  const start = source.indexOf(signature);
+  assert.ok(start > -1, `missing function signature: ${signature}`);
+  const bodyStart = source.indexOf('{', start + signature.length);
+  assert.ok(bodyStart > start, `missing function body: ${signature}`);
+  let depth = 0;
+  for (let index = bodyStart; index < source.length; index += 1) {
+    const char = source[index];
+    if (char === '{') depth += 1;
+    if (char === '}') {
+      depth -= 1;
+      if (depth === 0) return source.slice(start, index + 1);
+    }
+  }
+  assert.fail(`unterminated function body: ${signature}`);
+}
+
 test('S20 search provider: builds pathless stable read results from documents notes and annotations', async () => {
   const provider = await loadProvider();
   const first = provider.buildProjectSearchReadModel({
@@ -182,10 +199,7 @@ test('S20 search bridge: main exposes read-only query and no write path in searc
   assert.ok(main.includes('async function buildProjectTreeRootsWithIdentitiesReadOnly()'));
   assert.ok(main.includes('buildProjectSearchReadModel({'));
 
-  const start = main.indexOf('async function handleWorkspaceProjectSearchQuery(payload = {})');
-  const end = main.indexOf('function makeReplaceSingleSafeError', start);
-  assert.ok(start > -1 && end > start);
-  const handler = main.slice(start, end);
+  const handler = extractFunctionBlock(main, 'async function handleWorkspaceProjectSearchQuery(payload = {})');
   assert.ok(handler.includes('buildProjectTreeRootsWithIdentitiesReadOnly()'));
   assert.equal(handler.includes('buildProjectTreeRootsWithIdentities()'), false);
   assert.equal(handler.includes('writeFileAtomic'), false);
