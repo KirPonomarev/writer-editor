@@ -89,7 +89,7 @@ test('S30 export surface: palette, runtime, and Tiptap routes converge on surfac
   assert.ok(paletteSection.includes("const exportDocxCommandId = 'cmd.project.export.docxMin';"));
   assert.ok(paletteSection.includes("const exportPdfCommandId = 'cmd.project.exportPdfV1';"));
   assert.ok(paletteSection.includes("const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';"));
-  assert.equal((paletteSection.match(/return openExportSurfaceModal\(normalizedCommandId\);/g) || []).length, 3);
+  assert.equal((paletteSection.match(/return openExportSurfaceModal\(normalizedCommandId\);/g) || []).length, 4);
 
   const runtimeSection = sectionBetween(
     editor,
@@ -106,7 +106,7 @@ test('S30 export surface: palette, runtime, and Tiptap routes converge on surfac
   ]) {
     assert.ok(runtimeSection.includes(marker), marker);
   }
-  assert.equal((runtimeSection.match(/openExportSurfaceModal\(commandId\);/g) || []).length, 6);
+  assert.equal((runtimeSection.match(/openExportSurfaceModal\(commandId\);/g) || []).length, 7);
   assert.ok(editor.includes('openExportSurface: (commandId = \'\') => openExportSurfaceModal(commandId),'));
 
   for (const commandId of [

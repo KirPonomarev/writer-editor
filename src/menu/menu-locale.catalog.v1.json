@@ -42,6 +42,11 @@
       "ru": "Экспорт PDF...",
       "en": "Export PDF..."
     },
+    "menu.file.exportFullArchive": {
+      "base": "Export Full Project Archive...",
+      "ru": "Экспорт полного архива проекта...",
+      "en": "Export Full Project Archive..."
+    },
     "menu.file.exportMarkdown": {
       "base": "Export Markdown...",
       "ru": "Экспорт Markdown...",

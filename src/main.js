@@ -48,6 +48,7 @@ const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/do
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
 const { runPdfExport } = require('./export/pdf/pdfExportHandler');
+const { runProjectArchiveExport } = require('./export/archive/projectArchiveExportHandler');
 const { createCommandSurfaceKernel } = require('./command/commandSurfaceKernel');
 
 const launchT0 = performance.now();
@@ -317,6 +318,8 @@ const EXPORT_ALL_SCENES_TXT_COMMAND_ID = 'cmd.project.exportAllScenesTxtV1';
 const EXPORT_ALL_SCENES_TXT_DEFAULT_REQUEST_ID = 'u3-export-all-scenes-txt-request';
 const EXPORT_PDF_COMMAND_ID = 'cmd.project.exportPdfV1';
 const EXPORT_PDF_DEFAULT_REQUEST_ID = 'u3-export-pdf-request';
+const EXPORT_PROJECT_ARCHIVE_COMMAND_ID = 'cmd.project.exportFullArchiveV1';
+const EXPORT_PROJECT_ARCHIVE_DEFAULT_REQUEST_ID = 'u3-export-full-archive-request';
 const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.markdown.previewLocalFile';
@@ -370,6 +373,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_SELECTED_SCENES_TXT_V1: EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
   PROJECT_EXPORT_ALL_SCENES_TXT_V1: EXPORT_ALL_SCENES_TXT_COMMAND_ID,
   PROJECT_EXPORT_PDF_V1: EXPORT_PDF_COMMAND_ID,
+  PROJECT_EXPORT_FULL_ARCHIVE_V1: EXPORT_PROJECT_ARCHIVE_COMMAND_ID,
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
@@ -6651,6 +6655,9 @@ function getInternalCommandSurfaceKernel() {
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_PDF_V1]: async (payload = {}) => {
       return handleExportPdf(payload);
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1]: async (payload = {}) => {
+      return handleExportProjectArchive(payload);
+    },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleImportMarkdownV1(payload);
     },
@@ -11377,6 +11384,18 @@ function makeTypedPdfExportError(code, reason, details) {
   return { ok: false, error };
 }
 
+function makeTypedProjectArchiveExportError(code, reason, details) {
+  const error = {
+    code: typeof code === 'string' && code.length > 0 ? code : 'E_PROJECT_ARCHIVE_EXPORT_FAILED',
+    op: EXPORT_PROJECT_ARCHIVE_COMMAND_ID,
+    reason: typeof reason === 'string' && reason.length > 0 ? reason : 'PROJECT_ARCHIVE_EXPORT_FAILED',
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = details;
+  }
+  return { ok: false, error };
+}
+
 function buildPathBoundaryDetails(pathBoundaryError) {
   const source = pathBoundaryError && typeof pathBoundaryError === 'object' ? pathBoundaryError : {};
   return {
@@ -12415,6 +12434,33 @@ const PDF_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
   'viewportDomText',
   'visibleWindowText',
 ]);
+const PROJECT_ARCHIVE_EXPORT_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'confirmed',
+  'createdAtUtc',
+  'outPath',
+  'requestId',
+]);
+const PROJECT_ARCHIVE_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'archiveBuffer',
+  'archiveManifest',
+  'backups',
+  'content',
+  'entries',
+  'files',
+  'manifest',
+  'paths',
+  'project',
+  'projectId',
+  'projectRoot',
+  'recovery',
+  'rendererState',
+  'scene',
+  'sceneIds',
+  'scenePaths',
+  'sourcePaths',
+  'text',
+  'zip',
+]);
 
 function normalizeCurrentSceneTxtExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
@@ -12426,6 +12472,12 @@ function normalizePdfExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
   const raw = filePath.trim();
   return raw.toLowerCase().endsWith('.pdf') ? raw : `${raw}.pdf`;
+}
+
+function normalizeProjectArchiveExportPath(filePath) {
+  if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
+  const raw = filePath.trim();
+  return /\.zip$/i.test(raw) ? raw : `${raw}.yalken.zip`;
 }
 
 function normalizeMarkdownExportPath(filePath) {
@@ -12627,6 +12679,53 @@ function normalizePdfExportPayload(payload = {}) {
   return pathGuard.payload;
 }
 
+function normalizeProjectArchiveExportPayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return null;
+  }
+
+  const keys = Object.keys(payload);
+  const forbiddenAuthorityKeys = keys
+    .filter((key) => PROJECT_ARCHIVE_EXPORT_FORBIDDEN_AUTHORITY_KEYS.includes(key))
+    .sort();
+  const unsupportedKeys = keys
+    .filter((key) => !PROJECT_ARCHIVE_EXPORT_ALLOWED_PAYLOAD_KEYS.includes(key))
+    .sort();
+  if (forbiddenAuthorityKeys.length > 0 || unsupportedKeys.length > 0) {
+    return {
+      ok: false,
+      code: 'E_PROJECT_ARCHIVE_EXPORT_PAYLOAD_INVALID',
+      reason: forbiddenAuthorityKeys.length > 0
+        ? 'project_archive_export_renderer_authority_denied'
+        : 'project_archive_export_payload_unsupported_fields',
+      details: {
+        fields: forbiddenAuthorityKeys.length > 0 ? forbiddenAuthorityKeys : unsupportedKeys,
+      },
+    };
+  }
+
+  const requestId = typeof payload.requestId === 'string' && payload.requestId.trim().length > 0
+    ? payload.requestId.trim()
+    : EXPORT_PROJECT_ARCHIVE_DEFAULT_REQUEST_ID;
+  const outPath = typeof payload.outPath === 'string' ? payload.outPath.trim() : '';
+  const normalized = {
+    requestId,
+    outPath,
+    confirmed: payload.confirmed === true,
+  };
+  if (typeof payload.createdAtUtc === 'string' && payload.createdAtUtc.trim()) {
+    normalized.createdAtUtc = payload.createdAtUtc.trim();
+  }
+  const pathGuard = sanitizePathFields(normalized, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      ...normalized,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return pathGuard.payload;
+}
+
 function buildMarkdownExportDefaultPath(payload) {
   const safeDefaultName = sanitizeFilename(
     typeof payload.defaultName === 'string' && payload.defaultName.trim()
@@ -12679,6 +12778,18 @@ function buildPdfExportDefaultPath() {
   ) || 'manuscript';
   return normalizePdfExportPath(
     path.join(fileManager.getDocumentsPath(), `${projectBaseName}.pdf`),
+  );
+}
+
+function buildProjectArchiveExportDefaultPath() {
+  const projectRoot = getProjectRootPath();
+  const projectBaseName = sanitizeFilename(
+    typeof projectRoot === 'string' && projectRoot.trim()
+      ? path.basename(projectRoot.trim())
+      : 'project',
+  ) || 'project';
+  return normalizeProjectArchiveExportPath(
+    path.join(fileManager.getDocumentsPath(), `${projectBaseName}.yalken.zip`),
   );
 }
 
@@ -12856,6 +12967,53 @@ async function resolvePdfExportPath(payload) {
       canceled: false,
       error: {
         code: 'E_EXPORT_PDF_PATH_REQUIRED',
+        reason: 'export_path_required',
+      },
+    };
+  }
+  const pathGuard = sanitizePathFields({ outPath }, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      canceled: false,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return { canceled: false, outPath: pathGuard.payload.outPath };
+}
+
+async function resolveProjectArchiveExportPath(payload) {
+  const fromPayload = normalizeProjectArchiveExportPath(payload.outPath);
+  if (fromPayload) {
+    return { canceled: false, outPath: fromPayload };
+  }
+  if (!mainWindow) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_PROJECT_ARCHIVE_EXPORT_SAVE_DIALOG_UNAVAILABLE',
+        reason: 'save_dialog_unavailable',
+      },
+    };
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: 'Экспорт полного архива проекта',
+    defaultPath: buildProjectArchiveExportDefaultPath(),
+    filters: [
+      { name: 'Yalken Archive', extensions: ['zip'] },
+      { name: 'Все файлы', extensions: ['*'] },
+    ],
+  });
+  if (result.canceled) {
+    return { canceled: true, outPath: '' };
+  }
+
+  const outPath = normalizeProjectArchiveExportPath(result.filePath);
+  if (!outPath) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_PROJECT_ARCHIVE_EXPORT_PATH_REQUIRED',
         reason: 'export_path_required',
       },
     };
@@ -13098,6 +13256,39 @@ async function validatePdfExportTarget(outPath, source = {}) {
   }
 }
 
+async function validateProjectArchiveExportTarget(outPath, source = {}) {
+  if (typeof outPath !== 'string' || !outPath.trim()) {
+    return {
+      ok: false,
+      code: 'E_PROJECT_ARCHIVE_EXPORT_PATH_REQUIRED',
+      reason: 'export_path_required',
+    };
+  }
+
+  try {
+    const validated = await validateExternalWriteTarget(outPath, {
+      projectRoot: typeof source.projectRoot === 'string' ? source.projectRoot : '',
+      sourcePaths: Array.isArray(source.sourcePaths) ? source.sourcePaths : [],
+      allowedExtensions: ['.zip'],
+    });
+    return { ok: true, outPath: validated.targetPath };
+  } catch (error) {
+    let reason = typeof error?.reason === 'string' && error.reason
+      ? error.reason
+      : 'external_target_authority_denied';
+    if (reason === 'EXTERNAL_TARGET_INSIDE_PROJECT_DENIED') {
+      reason = 'export_target_inside_project_root';
+    } else if (reason === 'EXTERNAL_TARGET_MATCHES_PROTECTED_SOURCE') {
+      reason = 'export_target_matches_project_source';
+    }
+    return {
+      ok: false,
+      code: 'E_PROJECT_ARCHIVE_EXPORT_TARGET_FORBIDDEN',
+      reason,
+    };
+  }
+}
+
 async function readSelectedScenesTxtExportSceneContent(sceneCandidate) {
   if (!sceneCandidate || typeof sceneCandidate !== 'object') {
     throw new Error('Selected scene export candidate is invalid');
@@ -13191,6 +13382,53 @@ async function readCanonicalPdfExportSource() {
       .filter(Boolean),
     bookProfile: await readPdfExportBookProfile(),
     scenes,
+  };
+}
+
+async function collectProjectArchiveSourcePaths(projectRoot) {
+  const sourcePaths = [];
+  async function visit(directoryPath) {
+    const dirents = await fs.readdir(directoryPath, { withFileTypes: true });
+    for (const dirent of dirents) {
+      const childPath = joinPathSegmentsWithinRoot(directoryPath, [dirent.name], { resolveSymlinks: false });
+      const stat = await fs.lstat(childPath);
+      if (stat.isSymbolicLink()) {
+        throw new Error('Project archive source contains an unsupported symlink');
+      }
+      if (stat.isDirectory()) {
+        await visit(childPath);
+      } else if (stat.isFile()) {
+        sourcePaths.push(childPath);
+      }
+    }
+  }
+  await visit(projectRoot);
+  return sourcePaths;
+}
+
+async function readProjectArchiveExportSource() {
+  if (isDirty || autoSaveInProgress) {
+    const error = new Error('Unsaved editor state cannot be used as full project archive source');
+    error.reason = 'project_archive_dirty_state_denied';
+    throw error;
+  }
+  const projectRoot = getProjectRootPath();
+  if (typeof projectRoot !== 'string' || !projectRoot.trim()) {
+    const error = new Error('Project root is unavailable for archive export');
+    error.reason = 'project_archive_root_unavailable';
+    throw error;
+  }
+  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const manifest = manifestRecord && isPlainObjectValue(manifestRecord.manifest)
+    ? manifestRecord.manifest
+    : {};
+  const projectId = typeof manifest.projectId === 'string' ? manifest.projectId : '';
+  const projectName = typeof manifest.projectName === 'string' ? manifest.projectName : '';
+  return {
+    projectId,
+    projectName,
+    projectRoot,
+    sourcePaths: await collectProjectArchiveSourcePaths(projectRoot),
   };
 }
 
@@ -13936,6 +14174,20 @@ async function handleExportPdf(payloadRaw = {}) {
     validatePdfExportTarget,
     readCanonicalPdfExportSource,
     renderPdfBuffer: renderPdfBufferFromHtml,
+    queueDiskOperation,
+    writeBufferAtomic,
+    updateStatus,
+  });
+}
+
+async function handleExportProjectArchive(payloadRaw = {}) {
+  return runProjectArchiveExport(payloadRaw, {
+    normalizeProjectArchiveExportPayload,
+    makeTypedProjectArchiveExportError,
+    buildPathBoundaryDetails,
+    resolveProjectArchiveExportPath,
+    validateProjectArchiveExportTarget,
+    readProjectArchiveExportSource,
     queueDiskOperation,
     writeBufferAtomic,
     updateStatus,
@@ -18396,6 +18648,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   EXPORT_SELECTED_SCENES_TXT_COMMAND_ID,
   EXPORT_ALL_SCENES_TXT_COMMAND_ID,
   EXPORT_PDF_COMMAND_ID,
+  EXPORT_PROJECT_ARCHIVE_COMMAND_ID,
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
   'cmd.project.docx.previewImportPlan',
@@ -18575,6 +18828,26 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     }
     const result = await dispatchCommandSurfaceKernel(
       COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_PDF_V1,
+      payload,
+    );
+    return normalizeUiBridgeMenuResult(result);
+  },
+  [EXPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}) => {
+    const confirmed = payload && payload.confirmed === true;
+    if (!confirmed) {
+      const delivered = sendCanonicalRuntimeCommand(
+        EXPORT_PROJECT_ARCHIVE_COMMAND_ID,
+        {
+          source: 'menu',
+          preview: true,
+        },
+      );
+      if (delivered) {
+        return { ok: true, preview: true };
+      }
+    }
+    const result = await dispatchCommandSurfaceKernel(
+      COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1,
       payload,
     );
     return normalizeUiBridgeMenuResult(result);
@@ -20025,6 +20298,7 @@ module.exports = {
   handleProjectLifecycleCreateBackupCommand,
   handleProjectLifecycleInspectIntegrityCommand,
   handleProjectLifecyclePermanentDeleteCommand,
+  handleExportProjectArchive,
   recoverProjectLifecycleJournal,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,

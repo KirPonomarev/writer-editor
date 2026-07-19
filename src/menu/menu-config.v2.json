@@ -119,6 +119,19 @@
           }
         },
         {
+          "id": "file-export-full-archive",
+          "label": "Export Full Project Archive...",
+          "labelKey": "menu.file.exportFullArchive",
+          "command": "cmd.project.exportFullArchiveV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "flag",
+            "name": "hasDocument"
+          }
+        },
+        {
           "id": "file-export-markdown",
           "label": "Export Markdown...",
           "labelKey": "menu.file.exportMarkdown",

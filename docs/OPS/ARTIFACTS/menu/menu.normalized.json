@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "24d5131be6957eae5c13d0ce265c790aadaf169ad5d1aa1f7bb7347dda1bebd2",
-  "generatedAt": "2026-07-19T04:02:40.470Z",
-  "generatedFromCommit": "106f230753a5fbcca4f11ce4538097b40ce31414",
+  "normalizedHashSha256": "23f440d8048041a53d96c340fc9bc164302c3a5c2729bd944bf541e38bb8ba75",
+  "generatedAt": "2026-07-19T04:26:29.634Z",
+  "generatedFromCommit": "e34bf3e1a152084a4983b2b422e945abf2b8b62e",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -34,6 +34,11 @@
         "base": "Export DOCX (Minimal)...",
         "en": "Export DOCX (Minimal)...",
         "ru": "Экспорт DOCX (минимальный)..."
+      },
+      "menu.file.exportFullArchive": {
+        "base": "Export Full Project Archive...",
+        "en": "Export Full Project Archive...",
+        "ru": "Экспорт полного архива проекта..."
       },
       "menu.file.exportMarkdown": {
         "base": "Export Markdown...",
@@ -286,6 +291,7 @@
     "cmd.project.export.docxMin",
     "cmd.project.exportAllScenesTxtV1",
     "cmd.project.exportCurrentSceneTxtV1",
+    "cmd.project.exportFullArchiveV1",
     "cmd.project.exportMarkdownV1",
     "cmd.project.exportPdfV1",
     "cmd.project.exportSelectedScenesTxtV1",
@@ -517,6 +523,36 @@
           "id": "file-export-pdf",
           "label": "Export PDF...",
           "labelKey": "menu.file.exportPdf",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.exportFullArchiveV1",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "name": "hasDocument",
+            "op": "flag"
+          },
+          "id": "file-export-full-archive",
+          "label": "Export Full Project Archive...",
+          "labelKey": "menu.file.exportFullArchive",
           "mode": [
             "offline"
           ],
