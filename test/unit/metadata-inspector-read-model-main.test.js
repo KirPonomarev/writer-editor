@@ -128,11 +128,15 @@ test('metadata inspector read model exposes active scene metadata without file p
   assert.equal(JSON.stringify(result).includes(projectRoot), false);
 });
 
-test('metadata inspector read model reports empty and unsupported states honestly', async (t) => {
+test('metadata inspector read model exposes legacy manuscript documents without granting metadata writes', async (t) => {
   const tempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'metadata-read-empty-'));
   t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
 
   const documentsRoot = path.join(tempRoot, 'Documents', 'craftsman');
+  const legacyRoot = path.join(documentsRoot, 'Роман', 'roman');
+  const legacyText = 'Первый сон возвращается перед рассветом.';
+  await fsPromises.mkdir(legacyRoot, { recursive: true });
+  await fsPromises.writeFile(path.join(legacyRoot, 'сны.txt'), legacyText, 'utf8');
   const { main, fileManager } = await loadMainWithElectronStub();
   const originalGetDocumentsPath = fileManager.getDocumentsPath;
   fileManager.getDocumentsPath = () => documentsRoot;
@@ -144,16 +148,31 @@ test('metadata inspector read model reports empty and unsupported states honestl
   assert.equal(empty.unavailableReason, 'NO_ACTIVE_NODE');
 
   const tree = await main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
-  const romanSection = findNode(tree.root, (node) => node.kind === 'roman-section');
+  const romanSection = findNode(tree.root, (node) => node.kind === 'roman-section' && node.label === 'сны');
   assert.ok(romanSection);
-  const unsupported = await main.handleWorkspaceMetadataInspectorQuery({
+  const legacyDocument = await main.handleWorkspaceMetadataInspectorQuery({
     projectId: tree.projectId,
     nodeId: romanSection.nodeId,
   });
-  assert.equal(unsupported.ok, true);
-  assert.equal(unsupported.state, 'unavailable');
-  assert.equal(unsupported.unavailableReason, 'METADATA_UNSUPPORTED_FOR_NODE');
-  assert.equal(JSON.stringify(unsupported).includes(documentsRoot), false);
+  assert.equal(legacyDocument.ok, true);
+  assert.equal(legacyDocument.state, 'ready');
+  assert.equal(legacyDocument.context.kind, 'roman-section');
+  assert.equal(legacyDocument.context.title, 'сны');
+  assert.equal(legacyDocument.context.metaEnabled, false);
+  assert.equal(legacyDocument.wordCount, 5);
+  assert.match(legacyDocument.modifiedAtUtc, /^\d{4}-\d{2}-\d{2}T/u);
+  assert.equal(Object.hasOwn(legacyDocument, 'contentHash'), false);
+  assert.equal(JSON.stringify(legacyDocument).includes(documentsRoot), false);
+
+  const blockedWrite = await main.handleMetadataUpdateCommand({
+    projectId: tree.projectId,
+    nodeId: romanSection.nodeId,
+    baselineHash: sha256(legacyText),
+    metadata: { synopsis: 'Не должно сохраниться' },
+  });
+  assert.equal(blockedWrite.ok, false);
+  assert.equal(blockedWrite.code, 'E_METADATA_UPDATE_KIND_BLOCKED');
+  assert.equal(await fsPromises.readFile(path.join(legacyRoot, 'сны.txt'), 'utf8'), legacyText);
 });
 
 test('metadata update command writes only metadata and preserves text plus unknown fields', async (t) => {
