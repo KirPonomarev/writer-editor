@@ -77,7 +77,7 @@ test('S17 notes schema normalizes Free note types and preserves unknown fields',
         id: 'inbox-1',
         scope: 'inbox',
         title: 'Inbox',
-        body: 'capture',
+        body: '  capture  ',
         proUnknown: { retained: true },
       },
       {
@@ -128,6 +128,7 @@ test('S17 notes schema normalizes Free note types and preserves unknown fields',
   assert.equal(result.value.notes.length, 6);
   const byId = Object.fromEntries(result.value.notes.map((note) => [note.id, note]));
   assert.equal(byId['inbox-1'].scope, 'inbox');
+  assert.equal(byId['inbox-1'].body, '  capture  ');
   assert.deepEqual(byId['inbox-1'].proUnknown, { retained: true });
   assert.equal(byId['project-1'].attachment.scope, 'project');
   assert.equal(byId['manuscript-1'].attachment.scope, 'manuscript');
@@ -138,6 +139,45 @@ test('S17 notes schema normalizes Free note types and preserves unknown fields',
   assert.equal(byId['selection-1'].attachment.futureSelectionField, 'kept');
   assert.equal(byId['deleted-1'].deleted, true);
   assert.equal(byId['deleted-1'].deletedAtUtc, '2026-07-18T20:00:00Z');
+});
+
+test('S17 notes mutations preserve body whitespace and reject oversized body', async () => {
+  const notesStorage = await loadNotesStorage();
+  const created = notesStorage.applyNotesMutation(
+    { schemaVersion: 1, projectId: 'project-alpha', notes: [] },
+    {
+      op: 'create',
+      noteId: 'lossless-1',
+      scope: 'inbox',
+      title: 'Lossless',
+      body: '  exact body  \n',
+    },
+    {
+      projectId: 'project-alpha',
+      now: () => '2026-07-18T20:00:00Z',
+    },
+  );
+
+  assert.equal(created.ok, true);
+  assert.equal(created.note.body, '  exact body  \n');
+  assert.equal(created.document.notes[0].body, '  exact body  \n');
+
+  const oversized = notesStorage.applyNotesMutation(
+    created.document,
+    {
+      op: 'update',
+      noteId: 'lossless-1',
+      body: 'x'.repeat(notesStorage.NOTES_BODY_MAX_LENGTH + 1),
+    },
+    {
+      projectId: 'project-alpha',
+      now: () => '2026-07-18T20:01:00Z',
+    },
+  );
+
+  assert.equal(oversized.ok, false);
+  assert.equal(oversized.code, 'E_NOTE_BODY_TOO_LARGE');
+  assert.equal(oversized.reason, 'NOTE_BODY_TOO_LARGE');
 });
 
 test('S17 notes storage missing project stays read-only until explicit atomic migration', async (t) => {

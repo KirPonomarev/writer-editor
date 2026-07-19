@@ -6,6 +6,7 @@ export const NOTES_STORAGE_SCHEMA_VERSION = 1;
 export const NOTES_STORAGE_FILENAME = 'notes.craftsman.json';
 export const NOTES_RECOVERY_DIRNAME = 'notes-recovery';
 export const NOTE_ID_PREFIX = 'note-';
+export const NOTES_BODY_MAX_LENGTH = 200000;
 
 const NOTE_SCOPES = new Set(['inbox', 'project', 'manuscript', 'scene', 'selection']);
 
@@ -27,6 +28,25 @@ function normalizeOptionalString(value, maxLength = 8192) {
   if (typeof value !== 'string') return '';
   const normalized = value.trim();
   return normalized.length > maxLength ? normalized.slice(0, maxLength) : normalized;
+}
+
+function normalizeLosslessBody(value) {
+  if (typeof value !== 'string') return '';
+  return value.length > NOTES_BODY_MAX_LENGTH ? value.slice(0, NOTES_BODY_MAX_LENGTH) : value;
+}
+
+function validateLosslessBody(value) {
+  if (typeof value !== 'string') return { ok: true };
+  if (value.length <= NOTES_BODY_MAX_LENGTH) return { ok: true };
+  return {
+    ok: false,
+    code: 'E_NOTE_BODY_TOO_LARGE',
+    reason: 'NOTE_BODY_TOO_LARGE',
+    details: {
+      maxLength: NOTES_BODY_MAX_LENGTH,
+      actualLength: value.length,
+    },
+  };
 }
 
 function stableJson(value) {
@@ -120,7 +140,7 @@ function normalizeNote(source, index, context) {
   note.scope = scope;
   note.id = normalizeNoteId(note.id) || createDeterministicNoteId(context.projectId, note, index);
   note.title = normalizeOptionalString(note.title, 512);
-  note.body = normalizeOptionalString(note.body, 200000);
+  note.body = normalizeLosslessBody(note.body);
   note.createdAtUtc = normalizeCreatedAt(note.createdAtUtc, context.nowIso);
   note.updatedAtUtc = normalizeCreatedAt(note.updatedAtUtc, note.createdAtUtc);
   note.deleted = note.deleted === true || note.tombstone === true;
@@ -247,6 +267,14 @@ export function applyNotesMutation(document, mutation = {}, options = {}) {
   const op = normalizeOptionalString(mutation.op, 64);
   let noteId = normalizeNoteId(mutation.noteId);
   let changed = false;
+
+  if (
+    (op === 'create' || op === 'update')
+    && Object.prototype.hasOwnProperty.call(mutation, 'body')
+  ) {
+    const bodyValidation = validateLosslessBody(mutation.body);
+    if (!bodyValidation.ok) return bodyValidation;
+  }
 
   if (op === 'create') {
     noteId = noteId || createNoteId(projectId, `${mutation.scope || 'inbox'}\u0000${mutation.title || ''}\u0000${mutation.body || ''}\u0000${nowIso}`);
