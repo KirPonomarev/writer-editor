@@ -17700,6 +17700,7 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
   }
 
   let content = '';
+  let modifiedAtUtc = '';
   try {
     content = await fs.readFile(guard.payload.path, 'utf8');
   } catch (error) {
@@ -17713,6 +17714,10 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
       unavailableReason: error && error.code === 'ENOENT' ? 'DOCUMENT_EMPTY' : 'DOCUMENT_READ_FAILED',
     };
   }
+  try {
+    const stats = await fs.stat(guard.payload.path);
+    modifiedAtUtc = stats.mtime instanceof Date ? stats.mtime.toISOString() : '';
+  } catch {}
 
   try {
     const envelopeModule = await loadDocumentContentEnvelopeModule();
@@ -17733,6 +17738,7 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
       context,
       metadata: normalizeMetadataInspectorMeta(parsed.meta),
       wordCount: countMetadataInspectorWords(parsed.text),
+      modifiedAtUtc,
       contentHash: computeHash(content),
       unavailableReason: '',
     };

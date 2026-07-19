@@ -253,16 +253,14 @@ const sceneHistoryHost = document.querySelector('[data-scene-history-host]');
 const reviewSurfaceHost = document.querySelector('[data-review-surface-host]');
 const inspectorCommentsAction = document.querySelector('[data-inspector-comments-action]');
 const inspectorFocusStatus = document.querySelector('[data-inspector-focus-status]');
-const inspectorFontValue = document.querySelector('[data-inspector-font]');
-const inspectorWeightValue = document.querySelector('[data-inspector-weight]');
-const inspectorFontSizeValue = document.querySelector('[data-inspector-font-size]');
-const inspectorLineHeightValue = document.querySelector('[data-inspector-line-height]');
 const inspectorMarginsValue = document.querySelector('[data-inspector-margins]');
+const inspectorEmptyState = document.querySelector('[data-inspector-empty-state]');
 const inspectorMetaContextValue = document.querySelector('[data-inspector-meta-context]');
 const inspectorMetaStatusValue = document.querySelector('[data-inspector-meta-status]');
 const inspectorMetaWordCountValue = document.querySelector('[data-inspector-meta-word-count]');
 const inspectorMetaSynopsisValue = document.querySelector('[data-inspector-meta-synopsis]');
 const inspectorMetaTagsValue = document.querySelector('[data-inspector-meta-tags]');
+const inspectorMetaModifiedValue = document.querySelector('[data-inspector-meta-modified]');
 const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.right-rail-form-row')).find((row) => {
   const key = row.querySelector('.right-rail-form-key');
   return key && key.textContent && key.textContent.trim() === 'Формат';
@@ -596,6 +594,7 @@ let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentId = null;
 let currentDocumentKind = null;
+let currentDocumentTitle = '';
 let currentProjectId = '';
 let activeDocumentRevealRequested = false;
 let navigatorSelectionState = createNavigatorSelectionState();
@@ -3183,13 +3182,13 @@ function syncLayoutPreviewControlStates() {
     const isEnabled = activeLayoutPreviewState.enabled;
     layoutPreviewToggleButton.classList.toggle('is-active', isEnabled);
     layoutPreviewToggleButton.setAttribute('aria-pressed', isEnabled ? 'true' : 'false');
-    layoutPreviewToggleButton.textContent = isEnabled ? 'On' : 'Off';
+    layoutPreviewToggleButton.textContent = isEnabled ? 'Вкл' : 'Выкл';
   }
   if (layoutPreviewFrameToggleButton) {
     const isFrameEnabled = activeLayoutPreviewState.frameMode;
     layoutPreviewFrameToggleButton.classList.toggle('is-active', isFrameEnabled);
     layoutPreviewFrameToggleButton.setAttribute('aria-pressed', isFrameEnabled ? 'true' : 'false');
-    layoutPreviewFrameToggleButton.textContent = isFrameEnabled ? 'On' : 'Off';
+    layoutPreviewFrameToggleButton.textContent = isFrameEnabled ? 'Вкл' : 'Выкл';
   }
 }
 
@@ -7695,6 +7694,7 @@ function showEditorPanelFor(title) {
   hideNotesWorkspace();
   hideProjectSearchWorkspace();
   editorPanel?.classList.add('active');
+  currentDocumentTitle = typeof title === 'string' ? title.trim() : '';
   mainContent?.classList.add('main-content--editor');
   emptyState?.classList.add('hidden');
   updateMetaVisibility();
@@ -7727,7 +7727,9 @@ function collapseSelection() {
   mainContent?.classList.remove('main-content--editor');
   emptyState?.classList.remove('hidden');
   metaPanel?.classList.add('is-hidden');
+  if (inspectorEmptyState) inspectorEmptyState.hidden = false;
   metaEnabled = false;
+  currentDocumentTitle = '';
   currentMetadataBaselineHash = '';
   metadataUpdatePending = false;
   clearPendingMetadataUpdate();
@@ -7745,7 +7747,9 @@ function collapseSelection() {
 function updateMetaInputs() {
   if (!metaSynopsis || !metaStatus || !metaTagPov || !metaTagLine || !metaTagPlace) return;
   metaSynopsis.value = currentMeta.synopsis || '';
-  metaStatus.value = currentMeta.status || 'черновик';
+  const status = currentMeta.status || 'черновик';
+  ensureSelectHasOption(metaStatus, status, status);
+  metaStatus.value = status;
   metaTagPov.value = currentMeta.tags.pov || '';
   metaTagLine.value = currentMeta.tags.line || '';
   metaTagPlace.value = currentMeta.tags.place || '';
@@ -7767,6 +7771,9 @@ function syncMetaFromInputs() {
 function updateMetaVisibility() {
   if (!metaPanel) return;
   metaPanel.classList.toggle('is-hidden', !metaEnabled);
+  if (inspectorEmptyState) {
+    inspectorEmptyState.hidden = metaEnabled;
+  }
 }
 
 function updateCardsList() {
@@ -9482,36 +9489,126 @@ function normalizeMetadataInspectorPayload(result) {
       },
     },
     wordCount: Number.isInteger(result?.wordCount) ? Math.max(0, result.wordCount) : 0,
+    modifiedAtUtc: typeof result?.modifiedAtUtc === 'string' ? result.modifiedAtUtc : '',
   };
+}
+
+function presentMetadataInspectorUnavailable(reason = '') {
+  if (reason === 'DOCUMENT_EMPTY') {
+    return {
+      title: 'Пустая сцена',
+      detail: 'Добавьте текст или сведения сцены.',
+    };
+  }
+  if (reason === 'METADATA_UNSUPPORTED_FOR_NODE') {
+    return {
+      title: 'Выберите сцену',
+      detail: 'Для папок и заметок сведения сцены не показываются.',
+    };
+  }
+  if (reason === 'NO_ACTIVE_NODE' || reason === 'E_TREE_NODE_ID_INVALID' || reason === 'TREE_NODE_UNAVAILABLE') {
+    return {
+      title: 'Выберите сцену',
+      detail: 'Сведения появятся после выбора сцены в навигаторе.',
+    };
+  }
+  return {
+    title: 'Сведения недоступны',
+    detail: 'Текст сцены остаётся доступен и не изменён.',
+  };
+}
+
+function formatMetadataInspectorModifiedAt(value = '') {
+  const date = new Date(value);
+  if (!value || Number.isNaN(date.getTime())) return '—';
+  const now = new Date();
+  const sameDay = date.getFullYear() === now.getFullYear()
+    && date.getMonth() === now.getMonth()
+    && date.getDate() === now.getDate();
+  const time = new Intl.DateTimeFormat('ru', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+  if (sameDay) return `сегодня, ${time}`;
+  return new Intl.DateTimeFormat('ru', {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
+function setMetadataInspectorEditingEnabled(enabled) {
+  const editable = enabled === true;
+  for (const control of [metaSynopsis, metaStatus, metaTagPov, metaTagLine, metaTagPlace]) {
+    if (control) control.disabled = !editable;
+  }
+  if (metaPanel) {
+    metaPanel.dataset.metadataEditable = editable ? 'true' : 'false';
+  }
+}
+
+function setMetadataInspectorSurfaceVisible(visible) {
+  const sceneVisible = visible === true;
+  metaPanel?.classList.toggle('is-hidden', !sceneVisible);
+  if (inspectorEmptyState) inspectorEmptyState.hidden = sceneVisible;
 }
 
 function renderMetadataInspectorState(rawState = {}) {
   const state = normalizeMetadataInspectorPayload(rawState);
-  if (typeof rawState?.contentHash === 'string' && /^[a-f0-9]{64}$/u.test(rawState.contentHash)) {
+  const hasWritableBaseline = typeof rawState?.contentHash === 'string' && /^[a-f0-9]{64}$/u.test(rawState.contentHash);
+  if (hasWritableBaseline) {
     currentMetadataBaselineHash = rawState.contentHash;
     if (metadataUpdatePending) {
       scheduleMetadataUpdate();
     }
+  } else if (state.state !== 'ready') {
+    currentMetadataBaselineHash = '';
+  }
+  const sceneAvailable = state.state === 'ready' && state.context?.metaEnabled === true;
+  const editable = sceneAvailable && hasWritableBaseline;
+  setMetadataInspectorSurfaceVisible(sceneAvailable);
+  setMetadataInspectorEditingEnabled(editable);
+
+  if (state.state === 'ready' && !metadataUpdatePending) {
+    currentMeta = {
+      synopsis: state.metadata.synopsis,
+      status: state.metadata.status,
+      tags: { ...state.metadata.tags },
+    };
+    updateMetaInputs();
+  }
+
+  const unavailable = presentMetadataInspectorUnavailable(state.unavailableReason);
+  if (inspectorEmptyState) {
+    const title = inspectorEmptyState.querySelector('strong');
+    const detail = inspectorEmptyState.querySelector('span');
+    if (title) title.textContent = unavailable.title;
+    if (detail) detail.textContent = unavailable.detail;
   }
   const contextLabel = state.context && state.context.title
-    ? `${state.context.title} · ${state.context.kind || 'document'}`
-    : (state.state === 'empty' ? 'Нет сцены' : 'Недоступно');
-  const tags = [
-    state.metadata.tags.pov,
-    state.metadata.tags.line,
-    state.metadata.tags.place,
-  ].filter(Boolean).join(' · ');
+    ? state.context.title
+    : (currentDocumentTitle || unavailable.title);
   if (inspectorMetaContextValue) inspectorMetaContextValue.textContent = contextLabel;
   if (inspectorMetaStatusValue) {
-    inspectorMetaStatusValue.textContent = state.state === 'ready' ? state.metadata.status : '—';
+    inspectorMetaStatusValue.value = currentMeta.status || 'черновик';
   }
-  if (inspectorMetaWordCountValue) inspectorMetaWordCountValue.textContent = String(state.wordCount);
-  if (inspectorMetaSynopsisValue) {
-    inspectorMetaSynopsisValue.textContent = state.state === 'ready' && state.metadata.synopsis
-      ? state.metadata.synopsis
-      : (state.unavailableReason || '—');
+  if (inspectorMetaWordCountValue) {
+    const liveWordCount = state.state === 'ready'
+      ? state.wordCount
+      : String(getPlainText() || '').trim().split(/\s+/u).filter(Boolean).length;
+    inspectorMetaWordCountValue.textContent = String(liveWordCount);
   }
-  if (inspectorMetaTagsValue) inspectorMetaTagsValue.textContent = tags || '—';
+  if (inspectorMetaSynopsisValue && document.activeElement !== inspectorMetaSynopsisValue) {
+    inspectorMetaSynopsisValue.value = currentMeta.synopsis || '';
+  }
+  if (inspectorMetaTagsValue) {
+    const hasTags = Boolean(currentMeta.tags?.pov || currentMeta.tags?.line || currentMeta.tags?.place);
+    inspectorMetaTagsValue.dataset.empty = hasTags ? 'false' : 'true';
+  }
+  if (inspectorMetaModifiedValue) {
+    inspectorMetaModifiedValue.textContent = formatMetadataInspectorModifiedAt(state.modifiedAtUtc);
+  }
 }
 
 function clearPendingMetadataUpdate() {
@@ -12237,6 +12334,9 @@ function updateWordCount(textOverride = null) {
   const trimmed = text.trim();
   const count = trimmed ? trimmed.split(/\s+/).filter(Boolean).length : 0;
   wordCountElement.textContent = `${count} words`;
+  if (inspectorMetaWordCountValue && !flowModeState.active) {
+    inspectorMetaWordCountValue.textContent = String(count);
+  }
   if (count > 20000) {
     updatePerfHintText('large document');
   }
@@ -12843,10 +12943,6 @@ function syncLiteralToolbarDisplays() {
       : lineHeightLabel;
     lineHeightDisplay.textContent = lineHeightLabel;
   }
-  if (inspectorFontValue) inspectorFontValue.textContent = fontLabel;
-  if (inspectorWeightValue) inspectorWeightValue.textContent = weightLabel;
-  if (inspectorFontSizeValue) inspectorFontSizeValue.textContent = sizeLabel;
-  if (inspectorLineHeightValue) inspectorLineHeightValue.textContent = lineHeightLabel;
 }
 
 function promptForCustomFontSize() {

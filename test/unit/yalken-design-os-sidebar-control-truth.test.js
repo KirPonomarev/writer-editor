@@ -53,29 +53,44 @@ test('sidebar control truth: inspector exposes one real action and two truthful 
   assert.ok(editor.includes("case 'review-open-comments':\n      void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);"));
 });
 
-test('sidebar product truth: inspector projects live values and unopened surfaces stay hidden', () => {
+test('sidebar product truth: scene inspector keeps canonical metadata primary and details collapsed', () => {
   const html = read('src/renderer/index.html');
   const editor = read('src/renderer/editor.js');
 
   for (const hook of [
-    'data-inspector-font',
-    'data-inspector-weight',
-    'data-inspector-font-size',
-    'data-inspector-line-height',
     'data-inspector-margins',
+    'data-inspector-empty-state',
     'data-inspector-meta-context',
     'data-inspector-meta-status',
     'data-inspector-meta-word-count',
     'data-inspector-meta-synopsis',
     'data-inspector-meta-tags',
+    'data-inspector-meta-modified',
   ]) {
     assert.ok(html.includes(hook), `missing live inspector hook: ${hook}`);
   }
+  for (const duplicatedTypographyHook of [
+    'data-inspector-font',
+    'data-inspector-weight',
+    'data-inspector-font-size',
+    'data-inspector-line-height',
+  ]) {
+    assert.equal(html.includes(duplicatedTypographyHook), false, `toolbar typography leaked into inspector: ${duplicatedTypographyHook}`);
+  }
+  assert.ok(html.includes('<details class="right-rail-details">'));
+  assert.ok(html.includes('Показать сведения'));
+  assert.ok(html.includes('Скрыть сведения'));
+  assert.ok(html.indexOf('Синопсис') < html.indexOf('Показать сведения'));
+  assert.ok(html.indexOf('Теги') < html.indexOf('Показать сведения'));
   assert.ok(editor.includes('function syncInspectorBookProfileValues('));
   assert.ok(editor.includes('function renderMetadataInspectorState('));
+  assert.ok(editor.includes('function setMetadataInspectorEditingEnabled(enabled)'));
+  assert.ok(editor.includes("reason === 'NO_ACTIVE_NODE' || reason === 'E_TREE_NODE_ID_INVALID'"));
+  assert.ok(editor.includes('setMetadataInspectorSurfaceVisible(sceneAvailable);'));
+  assert.equal(editor.includes('inspectorMetaSynopsisValue.textContent = state.unavailableReason'), false);
   assert.ok(editor.includes("const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';"));
-  assert.ok(editor.includes('if (inspectorFontValue) inspectorFontValue.textContent = fontLabel;'));
   assert.ok(editor.includes('if (!inspectorMarginsValue) return;'));
+  assert.equal(editor.includes('if (inspectorFontValue) inspectorFontValue.textContent = fontLabel;'), false);
 
   for (const demoClaim of [
     'data-history-placeholder',
@@ -140,7 +155,8 @@ test('sidebar spatial truth: right rail owns collapse and overlay controls', () 
   assert.ok(html.includes('data-right-rail-collapse'));
   assert.ok(html.includes('data-action="toggle-right-rail"'));
   assert.ok(styles.includes('.right-rail-collapse-button'));
-  assert.ok(styles.includes('.sidebar--right.is-collapsed > :not(.right-rail-collapse-button)'));
+  assert.ok(styles.includes('.sidebar--right.is-collapsed > :not(.right-rail-head)'));
+  assert.ok(styles.includes('.sidebar--right.is-collapsed .right-rail-head strong'));
   assert.ok(styles.includes('.app-layout[data-right-rail-mode="overlay"] .sidebar--right.is-overlay-mode.is-overlay-open'));
   assert.ok(editor.includes('let rightRailOverlayOpen = false;'));
   assert.ok(editor.includes('function setRightRailOverlayOpen(open, { restoreFocus = true } = {})'));
