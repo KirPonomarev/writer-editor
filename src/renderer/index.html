@@ -410,6 +410,7 @@
           <div class="toolbar__cluster x101-tabs-group">
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-left-tab="project" aria-pressed="true">Проект</button>
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="outline" aria-pressed="false">План</button>
+            <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="notes" aria-pressed="false">Заметки</button>
             <button type="button" class="toolbar__button toolbar__button--wide x101-tab-button" data-left-tab="search" aria-pressed="false">Поиск</button>
           </div>
         </div>
@@ -418,6 +419,7 @@
         </div>
         <div class="sidebar__tree" data-tree></div>
         <div class="sidebar__tree" data-outline-list hidden></div>
+        <div class="sidebar__tree" data-notes-left-list hidden></div>
         <div class="sidebar__tree" data-search-results hidden></div>
         <div class="sidebar__resize-handle" data-sidebar-resizer aria-hidden="true"></div>
       </aside>
@@ -485,6 +487,55 @@
             </div>
           </div>
         </div>
+        <section class="notes-workspace" data-notes-workspace hidden aria-label="Заметки">
+          <div class="notes-workspace__shell">
+            <header class="notes-workspace__header">
+              <div>
+                <div class="notes-workspace__eyebrow">Входящие</div>
+                <h2 class="notes-workspace__title">Заметки</h2>
+              </div>
+              <div class="notes-workspace__status" data-notes-status role="status">Готово</div>
+            </header>
+            <form class="notes-capture" data-notes-capture-form>
+              <label class="notes-capture__label" for="notes-capture-body">Быстрый захват</label>
+              <textarea
+                id="notes-capture-body"
+                class="notes-capture__input"
+                data-notes-capture-body
+                rows="3"
+                placeholder="Новая мысль, обрывок сцены или напоминание"
+              ></textarea>
+              <div class="notes-capture__footer">
+                <input
+                  class="notes-capture__title"
+                  type="text"
+                  data-notes-capture-title
+                  placeholder="Заголовок"
+                  aria-label="Заголовок заметки"
+                >
+                <button type="submit" class="notes-button notes-button--primary" data-notes-create>Сохранить</button>
+              </div>
+            </form>
+            <div class="notes-workspace__body">
+              <div class="notes-list" data-notes-list aria-label="Список заметок"></div>
+              <article class="notes-detail" data-notes-detail aria-label="Текущая заметка">
+                <div class="notes-detail__empty" data-notes-detail-empty>Выберите заметку или сохраните новую.</div>
+                <div class="notes-detail__content" data-notes-detail-content hidden>
+                  <div class="notes-detail__meta" data-notes-detail-meta></div>
+                  <input class="notes-detail__title-input" type="text" data-notes-detail-title aria-label="Заголовок выбранной заметки">
+                  <textarea class="notes-detail__body-input" data-notes-detail-body rows="10" aria-label="Текст выбранной заметки"></textarea>
+                  <div class="notes-detail__actions">
+                    <button type="button" class="notes-button" data-notes-save>Сохранить</button>
+                    <button type="button" class="notes-button" data-notes-attach-scene>К сцене</button>
+                    <button type="button" class="notes-button" data-notes-convert-scene>В сцену</button>
+                    <button type="button" class="notes-button notes-button--danger" data-notes-delete>Удалить</button>
+                    <button type="button" class="notes-button" data-notes-restore hidden>Вернуть</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
         <div class="editor-panel-wrapper">
           <div class="editor-panel">
             <div class="editor-panel__meta" data-meta-panel>
