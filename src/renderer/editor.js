@@ -220,6 +220,7 @@ let toolbarRuntimeRegistry = typeof toolbarRuntimeProjectionModule.createToolbar
   : null;
 const modeSwitcher = document.querySelector('[data-mode-switcher]');
 const modeButtons = Array.from(document.querySelectorAll('[data-mode]'));
+const flowViewModeButtons = Array.from(document.querySelectorAll('[data-flow-view-mode]'));
 const leftTabsHost = document.querySelector('[data-left-tabs]');
 const leftTabButtons = Array.from(document.querySelectorAll('[data-left-tab]'));
 const leftSearchPanel = document.querySelector('[data-left-search-panel]');
@@ -6276,6 +6277,16 @@ async function runFlowSaveCommand(scenes) {
   return dispatchUiCommand(COMMAND_IDS.PROJECT_FLOW_SAVE_V1, { scenes });
 }
 
+function syncFlowViewModeButtons() {
+  const activeMode = flowModeState.active ? 'continuous' : 'scene';
+  document.body.dataset.flowViewMode = activeMode;
+  for (const button of flowViewModeButtons) {
+    const active = button.dataset.flowViewMode === activeMode;
+    button.classList.toggle('is-active', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+}
+
 function clearFlowModeState() {
   flowModeState = {
     active: false,
@@ -6283,6 +6294,7 @@ function clearFlowModeState() {
     projection: null,
     dirty: false,
   };
+  syncFlowViewModeButtons();
 }
 
 function normalizeFlowSceneRefs(rawScenes) {
@@ -6362,6 +6374,7 @@ async function handleFlowModeOpenUiPath() {
     projection,
     dirty: false,
   };
+  syncFlowViewModeButtons();
 
   setPlainText(projection.text || composeFlowDocument(scenes));
   updateWordCount();
@@ -6407,6 +6420,7 @@ async function handleFlowModeSaveUiPath() {
     projection: nextProjection,
     dirty: false,
   };
+  syncFlowViewModeButtons();
   localDirty = false;
   await invokeSaveLifecycleSignalBridge('signal.localDirty.set', { state: false });
   updateStatusText(buildFlowModeM9KickoffStatus('save', payload.scenes.length, { m8Kickoff: true, m9Kickoff: true }));
@@ -13568,6 +13582,16 @@ function handleUiAction(action) {
     case 'open':
       openProjectLibraryModal();
       return true;
+    case 'open-current-scene':
+      if (flowModeState.active) {
+        void jumpToFlowProjectionSourceAtCaret();
+      } else {
+        updateStatusText('Открыта текущая сцена');
+      }
+      return true;
+    case 'open-flow-mode':
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_FLOW_OPEN);
+      return true;
     case 'save':
       commitSpatialLayoutState(currentProjectId);
       if (flowModeState.active) {
@@ -13894,6 +13918,7 @@ initializeLeftToolbarActionButtons();
 initializeLeftFloatingToolbarDragFoundation();
 
 loadTree();
+syncFlowViewModeButtons();
 
 if (modeSwitcher) {
   modeSwitcher.addEventListener('click', (event) => {
