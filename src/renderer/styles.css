@@ -5113,7 +5113,7 @@ body.dark-theme .status-bar {
 .project-library__list {
   flex: 1 1 auto;
   min-height: 180px;
-  max-height: min(320px, calc(100vh - 302px));
+  max-height: min(320px, calc(100vh - 350px));
   overflow: auto;
   border-top: 1px solid var(--divider);
   border-bottom: 1px solid var(--divider);
@@ -5123,6 +5123,10 @@ body.dark-theme .status-bar {
   justify-content: flex-start;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+.project-library__mutations--secondary {
+  padding-top: 2px;
 }
 
 .project-library__row {

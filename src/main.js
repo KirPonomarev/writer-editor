@@ -343,6 +343,12 @@ const PROJECT_LIFECYCLE_CONTINUE_COMMAND_ID = 'cmd.project.lifecycle.continue';
 const PROJECT_LIFECYCLE_RENAME_COMMAND_ID = 'cmd.project.lifecycle.rename';
 const PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID = 'cmd.project.lifecycle.duplicate';
 const PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID = 'cmd.project.lifecycle.moveLocation';
+const PROJECT_LIFECYCLE_ARCHIVE_COMMAND_ID = 'cmd.project.lifecycle.archive';
+const PROJECT_LIFECYCLE_TRASH_COMMAND_ID = 'cmd.project.lifecycle.trash';
+const PROJECT_LIFECYCLE_RESTORE_COMMAND_ID = 'cmd.project.lifecycle.restore';
+const PROJECT_LIFECYCLE_BACKUP_COMMAND_ID = 'cmd.project.lifecycle.createBackup';
+const PROJECT_LIFECYCLE_INTEGRITY_COMMAND_ID = 'cmd.project.lifecycle.inspectIntegrity';
+const PROJECT_LIFECYCLE_PERMANENT_DELETE_COMMAND_ID = 'cmd.project.lifecycle.permanentDelete';
 const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
 const HISTORY_CREATE_CHECKPOINT_COMMAND_ID = 'cmd.project.history.createCheckpoint';
 const HISTORY_RESTORE_PREVIEW_COMMAND_ID = 'cmd.project.history.restorePreview';
@@ -9554,13 +9560,23 @@ async function moveProjectDirectoryWithManifestMutation({
       manifestPath: joinPathSegmentsWithinRoot(targetRoot, [PROJECT_MANIFEST_FILENAME], { resolveSymlinks: false }),
       manifest: await normalizeProjectManifest(nextManifest, path.basename(targetRoot)),
     };
-    if (currentFilePath && (currentFilePath === sourceRoot || isPathInside(sourceRoot, currentFilePath))) {
+    const currentFileWasInsideSource = currentFilePath && (currentFilePath === sourceRoot || isPathInside(sourceRoot, currentFilePath));
+    if (currentFileWasInsideSource && options.clearActiveAfterMove === true) {
+      currentFilePath = null;
+      currentProjectName = '';
+      sendEditorText('');
+      setDirtyState(false);
+      await saveLastFile();
+    } else if (currentFileWasInsideSource) {
       const relative = path.relative(sourceRoot, currentFilePath);
       currentFilePath = relative ? joinPathSegmentsWithinRoot(targetRoot, [relative], { resolveSymlinks: false }) : null;
       setActiveProjectNameFromRoot(targetRoot);
       await saveLastFile({ projectBinding: nextBinding });
     }
-    await replaceProjectLibraryIndexBinding(sourceRoot, nextBinding, { status: 'available' });
+    await replaceProjectLibraryIndexBinding(sourceRoot, nextBinding, {
+      status: options.indexStatus || 'available',
+      markOpened: options.markOpened,
+    });
     return {
       ok: true,
       moved: true,
@@ -9766,6 +9782,356 @@ async function handleProjectLifecycleMoveLocationCommand(payload = {}, options =
   };
 }
 
+async function findProjectLibraryEntryByProjectId(projectId) {
+  const normalizedProjectId = typeof projectId === 'string' ? projectId.trim() : '';
+  if (!normalizedProjectId) return makeProjectLifecycleError('E_PROJECT_ID_REQUIRED', 'PROJECT_ID_REQUIRED');
+  try {
+    const entries = await buildProjectLibraryPrivateIndex();
+    const matches = entries.filter((entry) => entry.projectId === normalizedProjectId);
+    if (matches.length === 0) return makeProjectLifecycleError('E_PROJECT_NOT_FOUND', 'PROJECT_NOT_FOUND');
+    if (matches.length > 1) {
+      return makeProjectLifecycleError('E_PROJECT_DUPLICATE_ID', 'PROJECT_DUPLICATE_ID', {
+        duplicateCount: matches.length,
+      });
+    }
+    return { ok: true, entry: matches[0] };
+  } catch (error) {
+    logDevError('project lifecycle find library entry', error);
+    return makeProjectLifecycleError('E_PROJECT_LIBRARY_UNAVAILABLE', 'PROJECT_LIBRARY_UNAVAILABLE');
+  }
+}
+
+async function resolveProjectLibraryBindingFromEntry(entry) {
+  if (!entry || !entry.projectId || !entry.projectRoot || !entry.manifestPath) {
+    return makeProjectLifecycleError('E_PROJECT_NOT_FOUND', 'PROJECT_NOT_FOUND');
+  }
+  try {
+    const rawRecord = await readProjectManifestRawAtPath(entry.manifestPath);
+    const manifest = await normalizeProjectManifest(rawRecord.manifest, entry.projectName || path.basename(entry.projectRoot));
+    if (manifest.projectId !== entry.projectId) {
+      return makeProjectLifecycleError('E_PROJECT_ID_MISMATCH', 'PROJECT_ID_MISMATCH');
+    }
+    return {
+      ok: true,
+      binding: {
+        projectId: manifest.projectId,
+        projectRoot: entry.projectRoot,
+        manifestPath: entry.manifestPath,
+        manifest,
+        sourceSchemaVersion: rawRecord.sourceSchemaVersion,
+      },
+      rawRecord,
+    };
+  } catch (error) {
+    logDevError('project lifecycle resolve binding from entry', error);
+    return makeProjectLifecycleError('E_PROJECT_MANIFEST_UNREADABLE', 'PROJECT_MANIFEST_UNREADABLE');
+  }
+}
+
+async function getUniqueProjectLifecycleRoot(parentRoot, preferredName) {
+  const safeName = normalizeProjectLifecycleName(preferredName, 'Project');
+  let candidate = joinPathSegmentsWithinRoot(parentRoot, [safeName], { resolveSymlinks: false });
+  if (!(await fileExists(candidate))) return candidate;
+  for (let index = 2; index <= 999; index += 1) {
+    candidate = joinPathSegmentsWithinRoot(parentRoot, [`${safeName} ${index}`], { resolveSymlinks: false });
+    if (!(await fileExists(candidate))) return candidate;
+  }
+  const stampedName = `${safeName} ${Date.now()} ${crypto.randomBytes(3).toString('hex')}`;
+  return joinPathSegmentsWithinRoot(parentRoot, [stampedName], { resolveSymlinks: false });
+}
+
+async function countProjectDirectoryFiles(rootPath) {
+  const summary = { fileCount: 0, byteCount: 0 };
+  async function visit(directoryPath) {
+    let dirents = [];
+    try {
+      dirents = await fs.readdir(directoryPath, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const dirent of dirents) {
+      const childPath = joinPathSegmentsWithinRoot(directoryPath, [dirent.name], { resolveSymlinks: false });
+      if (dirent.isDirectory()) {
+        await visit(childPath);
+      } else if (dirent.isFile()) {
+        summary.fileCount += 1;
+        try {
+          const stat = await fs.stat(childPath);
+          summary.byteCount += stat.size;
+        } catch {}
+      }
+    }
+  }
+  await visit(rootPath);
+  return summary;
+}
+
+async function handleProjectLifecycleArchiveCommand(payload = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  const found = await findProjectLibraryEntryByProjectId(normalized.projectId);
+  if (!found.ok) return found;
+  if (found.entry.status === 'missing') return makeProjectLifecycleError('E_PROJECT_MISSING', 'PROJECT_MISSING');
+  const resolved = await resolveProjectLibraryBindingFromEntry(found.entry);
+  if (!resolved.ok) return resolved;
+  await replaceProjectLibraryIndexBinding(found.entry.projectRoot, resolved.binding, {
+    status: 'archived',
+    markOpened: false,
+  });
+  return {
+    ok: true,
+    archived: true,
+    projectId: resolved.binding.projectId,
+    status: 'archived',
+    receipt: makeProjectLifecycleReceipt(PROJECT_LIFECYCLE_ARCHIVE_COMMAND_ID, resolved.binding.projectId, {
+      archived: true,
+      indexOnly: true,
+      targetStatus: 'archived',
+    }),
+  };
+}
+
+async function handleProjectLifecycleTrashCommand(payload = {}, options = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  if (await hasPendingAutosaveRecovery()) {
+    return makeProjectLifecycleError('E_PROJECT_RECOVERY_PENDING', 'PROJECT_RECOVERY_PENDING');
+  }
+  const canProceed = await confirmDiscardChanges();
+  if (!canProceed) return { ok: false, cancelled: true };
+  const found = await findProjectLibraryEntryByProjectId(normalized.projectId);
+  if (!found.ok) return found;
+  if (found.entry.status === 'missing') return makeProjectLifecycleError('E_PROJECT_MISSING', 'PROJECT_MISSING');
+  if (found.entry.status === 'trashed') {
+    return {
+      ok: true,
+      trashed: false,
+      projectId: found.entry.projectId,
+      status: 'trashed',
+      receipt: makeProjectLifecycleReceipt(PROJECT_LIFECYCLE_TRASH_COMMAND_ID, found.entry.projectId, {
+        moved: false,
+        targetStatus: 'trashed',
+      }),
+    };
+  }
+  const resolved = await resolveProjectLibraryBindingFromEntry(found.entry);
+  if (!resolved.ok) return resolved;
+  const trashRoot = joinPathSegmentsWithinRoot(fileManager.getDocumentsPath(), ['trash'], { resolveSymlinks: false });
+  const targetRoot = await getUniqueProjectLifecycleRoot(
+    trashRoot,
+    resolved.binding.manifest?.projectName || path.basename(resolved.binding.projectRoot),
+  );
+  const result = await moveProjectDirectoryWithManifestMutation({
+    commandId: PROJECT_LIFECYCLE_TRASH_COMMAND_ID,
+    projectBinding: resolved.binding,
+    targetRoot,
+    statusText: 'trashed',
+    options: {
+      ...options,
+      clearActiveAfterMove: true,
+      indexStatus: 'trashed',
+      markOpened: false,
+    },
+    mutateManifest: (manifest) => manifest,
+  });
+  return {
+    ...result,
+    trashed: result.ok === true,
+    status: result.ok === true ? 'trashed' : undefined,
+  };
+}
+
+async function handleProjectLifecycleRestoreCommand(payload = {}, options = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  const found = await findProjectLibraryEntryByProjectId(normalized.projectId);
+  if (!found.ok) return found;
+  if (found.entry.status === 'missing') return makeProjectLifecycleError('E_PROJECT_MISSING', 'PROJECT_MISSING');
+  const resolved = await resolveProjectLibraryBindingFromEntry(found.entry);
+  if (!resolved.ok) return resolved;
+  if (found.entry.status === 'archived') {
+    await replaceProjectLibraryIndexBinding(found.entry.projectRoot, resolved.binding, {
+      status: 'available',
+      markOpened: false,
+    });
+    return {
+      ok: true,
+      restored: true,
+      projectId: resolved.binding.projectId,
+      status: 'available',
+      receipt: makeProjectLifecycleReceipt(PROJECT_LIFECYCLE_RESTORE_COMMAND_ID, resolved.binding.projectId, {
+        restored: true,
+        sourceStatus: 'archived',
+        targetStatus: 'available',
+      }),
+    };
+  }
+  if (found.entry.status !== 'trashed') {
+    return {
+      ok: true,
+      restored: false,
+      projectId: resolved.binding.projectId,
+      status: found.entry.status,
+      receipt: makeProjectLifecycleReceipt(PROJECT_LIFECYCLE_RESTORE_COMMAND_ID, resolved.binding.projectId, {
+        restored: false,
+        sourceStatus: found.entry.status,
+      }),
+    };
+  }
+  const targetRoot = await getUniqueProjectLifecycleRoot(
+    fileManager.getDocumentsPath(),
+    resolved.binding.manifest?.projectName || path.basename(resolved.binding.projectRoot),
+  );
+  const result = await moveProjectDirectoryWithManifestMutation({
+    commandId: PROJECT_LIFECYCLE_RESTORE_COMMAND_ID,
+    projectBinding: resolved.binding,
+    targetRoot,
+    statusText: 'restored',
+    options: {
+      ...options,
+      indexStatus: 'available',
+      markOpened: false,
+    },
+    mutateManifest: (manifest) => manifest,
+  });
+  return {
+    ...result,
+    restored: result.ok === true,
+    status: result.ok === true ? 'available' : undefined,
+  };
+}
+
+async function handleProjectLifecycleCreateBackupCommand(payload = {}, options = {}) {
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  const found = await findProjectLibraryEntryByProjectId(normalized.projectId);
+  if (!found.ok) return found;
+  if (found.entry.status === 'missing') return makeProjectLifecycleError('E_PROJECT_MISSING', 'PROJECT_MISSING');
+  const resolved = await resolveProjectLibraryBindingFromEntry(found.entry);
+  if (!resolved.ok) return resolved;
+  const backupRoot = joinPathSegmentsWithinRoot(
+    fileManager.getDocumentsPath(),
+    ['backups', 'manual-project-backups'],
+    { resolveSymlinks: false },
+  );
+  await fs.mkdir(backupRoot, { recursive: true });
+  const backupId = `${resolved.binding.projectId}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+  const targetRoot = joinPathSegmentsWithinRoot(backupRoot, [sanitizeFilename(backupId)], { resolveSymlinks: false });
+  const tempRoot = makeProjectLifecycleTempPath(targetRoot, 'project-manual-backup');
+  try {
+    await copyDirectoryContents(resolved.binding.projectRoot, tempRoot, { overwriteExisting: true });
+    const summary = await countProjectDirectoryFiles(tempRoot);
+    const receipt = makeProjectLifecycleReceipt(PROJECT_LIFECYCLE_BACKUP_COMMAND_ID, resolved.binding.projectId, {
+      backupCreated: true,
+      backupId,
+      sourceStatus: found.entry.status,
+      manifestHash: computeHash(resolved.rawRecord.raw),
+      fileCount: summary.fileCount,
+      byteCount: summary.byteCount,
+    });
+    const receiptPath = joinPathSegmentsWithinRoot(tempRoot, ['project-backup-receipt.v1.json'], {
+      resolveSymlinks: false,
+    });
+    await writeProjectManifestRawAtomic(receiptPath, receipt);
+    if (typeof options.afterCopyBeforeFinalMove === 'function') {
+      await options.afterCopyBeforeFinalMove({ tempRoot, targetRoot });
+    }
+    await fs.rename(tempRoot, targetRoot);
+    return {
+      ok: true,
+      backupCreated: true,
+      projectId: resolved.binding.projectId,
+      backupId,
+      receipt,
+    };
+  } catch (error) {
+    await fs.rm(tempRoot, { recursive: true, force: true }).catch(() => {});
+    logDevError('project lifecycle manual backup', error);
+    return makeProjectLifecycleError('E_PROJECT_BACKUP_FAILED', 'PROJECT_BACKUP_FAILED', {
+      message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+    });
+  }
+}
+
+async function handleProjectLifecycleInspectIntegrityCommand(payload = {}) {
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  const found = await findProjectLibraryEntryByProjectId(normalized.projectId);
+  if (!found.ok) return found;
+  const projectRootExists = await fileExists(found.entry.projectRoot);
+  const manifestExists = await fileExists(found.entry.manifestPath);
+  let raw = '';
+  let manifestJsonValid = false;
+  let projectIdMatches = false;
+  let manifestHash = '';
+  let projectName = found.entry.projectName;
+  if (manifestExists) {
+    try {
+      raw = await fs.readFile(found.entry.manifestPath, 'utf8');
+      manifestHash = computeHash(raw);
+      const parsed = JSON.parse(raw);
+      manifestJsonValid = isPlainObjectValue(parsed);
+      projectIdMatches = normalizeStableProjectId(parsed?.projectId) === found.entry.projectId;
+      if (typeof parsed?.projectName === 'string' && parsed.projectName.trim()) {
+        projectName = parsed.projectName.trim();
+      }
+    } catch {
+      manifestJsonValid = false;
+    }
+  }
+  const rootInsideDocuments = Boolean(normalizeProjectLibraryPrivatePath(found.entry.projectRoot, fileManager.getDocumentsPath()));
+  const summary = projectRootExists
+    ? await countProjectDirectoryFiles(found.entry.projectRoot)
+    : { fileCount: 0, byteCount: 0 };
+  const warnings = [];
+  if (!projectRootExists) warnings.push('PROJECT_ROOT_MISSING');
+  if (!manifestExists) warnings.push('PROJECT_MANIFEST_MISSING');
+  if (manifestExists && !manifestJsonValid) warnings.push('PROJECT_MANIFEST_CORRUPT');
+  if (manifestJsonValid && !projectIdMatches) warnings.push('PROJECT_ID_MISMATCH');
+  if (!rootInsideDocuments) warnings.push('PROJECT_ROOT_OUTSIDE_DOCUMENTS');
+  const integrityStatus = warnings.length === 0 ? 'ok' : (manifestExists && !manifestJsonValid ? 'corrupt' : 'attention');
+  return {
+    ok: true,
+    inspected: true,
+    projectId: found.entry.projectId,
+    projectName,
+    status: found.entry.status,
+    integrity: {
+      status: integrityStatus,
+      checks: {
+        projectRootExists,
+        manifestExists,
+        manifestJsonValid,
+        projectIdMatches,
+        rootInsideDocuments,
+      },
+      manifestHash,
+      fileCount: summary.fileCount,
+      byteCount: summary.byteCount,
+      warnings,
+    },
+    authority: {
+      pathsExposed: false,
+      networkRequired: false,
+    },
+  };
+}
+
+async function handleProjectLifecyclePermanentDeleteCommand(payload = {}) {
+  const normalized = normalizeProjectLifecyclePayload(payload);
+  return makeProjectLifecycleError(
+    'E_PROJECT_PERMANENT_DELETE_REQUIRES_SEPARATE_CONFIRMATION',
+    'PROJECT_PERMANENT_DELETE_REQUIRES_SEPARATE_CONFIRMATION',
+    {
+      projectId: normalized.projectId,
+      deleted: false,
+      requiresSeparateDestructiveConfirmation: true,
+      automatic: false,
+    },
+  );
+}
+
 function getProjectLibraryIndexPath() {
   return path.join(app.getPath('userData'), PROJECT_LIBRARY_INDEX_FILENAME);
 }
@@ -9774,6 +10140,15 @@ function normalizeProjectLibraryStatus(value) {
   const status = typeof value === 'string' ? value.trim().toLowerCase() : '';
   if (status === 'archived' || status === 'trashed' || status === 'missing') return status;
   return 'available';
+}
+
+function resolveProjectLibraryScanStatus(scanStatus, storedStatus) {
+  const scan = normalizeProjectLibraryStatus(scanStatus);
+  const stored = normalizeProjectLibraryStatus(storedStatus);
+  if (scan === 'available' && (stored === 'archived' || stored === 'trashed')) {
+    return stored;
+  }
+  return scan;
 }
 
 function normalizeProjectLibraryPrivatePath(value, documentsRoot) {
@@ -9871,7 +10246,7 @@ async function readProjectLibraryManifestCandidate(projectRoot, status, document
       projectName: manifest.projectName || path.basename(normalizedRoot),
       projectRoot: normalizedRoot,
       manifestPath,
-      status: normalizeProjectLibraryStatus(status || stored?.status),
+      status: resolveProjectLibraryScanStatus(status, stored?.status),
       createdAtUtc: manifest.createdAtUtc || '',
       lastOpenedAtUtc,
       lastSeenAtUtc: now,
@@ -17721,6 +18096,12 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   PROJECT_LIFECYCLE_RENAME_COMMAND_ID,
   PROJECT_LIFECYCLE_DUPLICATE_COMMAND_ID,
   PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID,
+  PROJECT_LIFECYCLE_ARCHIVE_COMMAND_ID,
+  PROJECT_LIFECYCLE_TRASH_COMMAND_ID,
+  PROJECT_LIFECYCLE_RESTORE_COMMAND_ID,
+  PROJECT_LIFECYCLE_BACKUP_COMMAND_ID,
+  PROJECT_LIFECYCLE_INTEGRITY_COMMAND_ID,
+  PROJECT_LIFECYCLE_PERMANENT_DELETE_COMMAND_ID,
   'cmd.project.save',
   'cmd.project.saveAs',
   EXPORT_CURRENT_SCENE_TXT_COMMAND_ID,
@@ -17830,6 +18211,24 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [PROJECT_LIFECYCLE_MOVE_LOCATION_COMMAND_ID]: async (payload = {}) => {
     return normalizeUiBridgeMenuResult(await handleProjectLifecycleMoveLocationCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_ARCHIVE_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleArchiveCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_TRASH_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleTrashCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_RESTORE_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleRestoreCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_BACKUP_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleCreateBackupCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_INTEGRITY_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecycleInspectIntegrityCommand(payload));
+  },
+  [PROJECT_LIFECYCLE_PERMANENT_DELETE_COMMAND_ID]: async (payload = {}) => {
+    return normalizeUiBridgeMenuResult(await handleProjectLifecyclePermanentDeleteCommand(payload));
   },
   'cmd.project.save': async () => {
     return dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_SAVE, {});
@@ -19311,6 +19710,12 @@ module.exports = {
   handleProjectLifecycleRenameCommand,
   handleProjectLifecycleDuplicateCommand,
   handleProjectLifecycleMoveLocationCommand,
+  handleProjectLifecycleArchiveCommand,
+  handleProjectLifecycleTrashCommand,
+  handleProjectLifecycleRestoreCommand,
+  handleProjectLifecycleCreateBackupCommand,
+  handleProjectLifecycleInspectIntegrityCommand,
+  handleProjectLifecyclePermanentDeleteCommand,
   recoverProjectLifecycleJournal,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
