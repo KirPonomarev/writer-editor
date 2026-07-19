@@ -269,6 +269,21 @@ body {
   box-shadow: none;
 }
 
+.literal-stage-a .work-bar::after {
+  content: 'Free · рукопись · текущая сцена';
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  color: var(--architecture-rail-muted);
+  font-size: 10.5px;
+  line-height: 14px;
+  font-weight: 500;
+  letter-spacing: 0.052em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
 .left-floating-toolbar {
   position: fixed;
   top: 56px;
@@ -2984,21 +2999,32 @@ body.dark-theme .toolbar__swatch::before {
   position: relative;
   flex-direction: column;
   align-items: flex-start;
-  gap: 11px;
+  gap: 7px;
   min-height: auto;
-  padding: 17px 56px 15px 24px;
+  padding: 16px 56px 14px 24px;
   border-bottom: 1px solid rgba(118, 92, 62, 0.07);
 }
 
 [data-left-tabs]::before {
-  content: 'Навигатор';
+  content: 'Рукопись';
   display: block;
-  color: #b8b1ab;
-  font-size: 11px;
+  color: var(--architecture-rail-ink);
+  font-size: 12px;
   line-height: 14px;
   font-weight: 500;
   letter-spacing: 0.072em;
   text-transform: uppercase;
+}
+
+[data-left-tabs]::after {
+  content: 'Проект · главы · сцены';
+  display: block;
+  order: 3;
+  color: var(--architecture-rail-muted);
+  font-size: 10.5px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 [data-left-tabs] .x101-tabs-group {
@@ -3171,9 +3197,9 @@ body.dark-theme .toolbar__swatch::before {
   position: relative;
   flex-direction: column;
   align-items: flex-start;
-  gap: 11px;
+  gap: 7px;
   min-height: auto;
-  padding: 17px 24px 15px 56px;
+  padding: 16px 24px 14px 56px;
   border-bottom: 1px solid rgba(118, 92, 62, 0.07);
 }
 
@@ -3229,14 +3255,25 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 [data-right-tabs]::before {
-  content: 'Контекст';
+  content: 'Контекст сцены';
   display: block;
-  color: var(--text-tertiary);
-  font-size: 11px;
+  color: var(--architecture-rail-ink);
+  font-size: 12px;
   line-height: 14px;
   font-weight: 500;
   letter-spacing: 0.072em;
   text-transform: uppercase;
+}
+
+[data-right-tabs]::after {
+  content: 'Инспектор · комментарии · история';
+  display: block;
+  order: 3;
+  color: var(--architecture-rail-muted);
+  font-size: 10.5px;
+  line-height: 14px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
 }
 
 [data-right-tabs] .x101-tabs-group {
@@ -3310,11 +3347,11 @@ body.dark-theme .toolbar__swatch::before {
 }
 
 .sidebar--left [data-tree]::before {
-  content: 'Документ';
+  content: 'Сцены';
   display: block;
   margin: 0 0 12px 0;
-  color: var(--text-tertiary);
-  font-size: 11px;
+  color: var(--architecture-rail-ink);
+  font-size: 12px;
   line-height: 14px;
   font-weight: 500;
   letter-spacing: 0.072em;
@@ -4089,6 +4126,21 @@ body.dark-theme .toolbar__swatch::before {
 
 .sidebar--left .tree__row[data-level="0"]:has(.tree__toggle:not(.is-empty)) .tree__label::before {
   background-image: var(--left-rail-folder-icon);
+}
+
+.sidebar--left .tree__row[data-level="0"],
+.sidebar--left .tree__row[data-level="1"] {
+  color: var(--architecture-rail-ink-strong);
+}
+
+.sidebar--left .tree__row[data-level="0"] .tree__label,
+.sidebar--left .tree__row[data-level="1"] .tree__label {
+  font-weight: 500;
+}
+
+.sidebar--left .tree__row[data-level="2"],
+.sidebar--left .tree__row[data-level="3"] {
+  color: var(--architecture-rail-ink);
 }
 
 .sidebar--left .tree__row[data-level="1"] .tree__label::before,
