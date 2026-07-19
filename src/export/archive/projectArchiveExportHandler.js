@@ -365,6 +365,62 @@ function verifyProjectArchiveBuffer(buffer) {
   };
 }
 
+function readProjectArchivePayload(buffer) {
+  const entries = readZipStoredEntries(buffer);
+  const manifestBuffer = entries.get(ARCHIVE_MANIFEST_PATH);
+  if (!manifestBuffer) {
+    throw createArchiveError('E_PROJECT_ARCHIVE_MANIFEST_MISSING', 'archive_manifest_missing');
+  }
+  let archiveManifest;
+  try {
+    archiveManifest = JSON.parse(manifestBuffer.toString('utf8'));
+  } catch {
+    throw createArchiveError('E_PROJECT_ARCHIVE_MANIFEST_CORRUPT', 'archive_manifest_corrupt');
+  }
+  if (archiveManifest.schemaVersion !== ARCHIVE_SCHEMA_VERSION) {
+    throw createArchiveError('E_PROJECT_ARCHIVE_SCHEMA_UNSUPPORTED', 'archive_schema_unsupported');
+  }
+  const declaredEntries = Array.isArray(archiveManifest.entries) ? archiveManifest.entries : [];
+  const projectEntries = declaredEntries.map((declared) => {
+    const archivePath = normalizeArchivePath(declared?.archivePath || '');
+    const relativePath = normalizeArchivePath(declared?.relativePath || '');
+    if (archivePath !== normalizeArchivePath(`${PROJECT_ARCHIVE_ROOT}/${relativePath}`)) {
+      throw createArchiveError('E_PROJECT_ARCHIVE_PATH_INVALID', 'archive_path_invalid', { archivePath });
+    }
+    const data = entries.get(archivePath);
+    if (!data) {
+      throw createArchiveError('E_PROJECT_ARCHIVE_ENTRY_MISSING', 'archive_entry_missing', { archivePath });
+    }
+    if (data.length !== declared.size || sha256Buffer(data) !== declared.sha256) {
+      throw createArchiveError('E_PROJECT_ARCHIVE_CHECKSUM_MISMATCH', 'archive_checksum_mismatch', { archivePath });
+    }
+    return {
+      archivePath,
+      relativePath,
+      size: data.length,
+      sha256: sha256Buffer(data),
+      buffer: Buffer.from(data),
+    };
+  });
+  const undeclared = [...entries.keys()]
+    .filter((archivePath) => archivePath !== ARCHIVE_MANIFEST_PATH)
+    .filter((archivePath) => !projectEntries.some((entry) => entry.archivePath === archivePath));
+  if (undeclared.length > 0) {
+    throw createArchiveError('E_PROJECT_ARCHIVE_UNDECLARED_ENTRY', 'archive_undeclared_entry', {
+      archivePath: undeclared.sort()[0],
+    });
+  }
+  return {
+    ok: true,
+    manifest: archiveManifest,
+    entries: projectEntries,
+    entryCount: projectEntries.length,
+    archiveSha256: sha256Buffer(buffer),
+    fileCount: projectEntries.length,
+    byteCount: projectEntries.reduce((sum, entry) => sum + entry.size, 0),
+  };
+}
+
 async function buildProjectArchiveBuffer(projectRoot, options = {}) {
   const source = await collectProjectArchiveSourceEntries(projectRoot);
   const projectManifest = readManifestFile(source.files);
@@ -523,6 +579,7 @@ module.exports = {
   collectProjectArchiveSourceEntries,
   crc32,
   normalizeArchivePath,
+  readProjectArchivePayload,
   runProjectArchiveExport,
   verifyProjectArchiveBuffer,
 };

@@ -32,6 +32,11 @@
       "ru": "Импорт содержимого Markdown...",
       "en": "Import Markdown Content..."
     },
+    "menu.file.importFullArchive": {
+      "base": "Import Full Project Archive...",
+      "ru": "Импорт полного архива проекта...",
+      "en": "Import Full Project Archive..."
+    },
     "menu.file.exportDocx": {
       "base": "Export DOCX (Minimal)...",
       "ru": "Экспорт DOCX (минимальный)...",

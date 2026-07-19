@@ -223,6 +223,7 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
     commandId === 'cmd.project.importDocxV1'
     || commandId === 'cmd.project.importTxtV1'
     || commandId === 'cmd.project.importMarkdownV1'
+    || commandId === 'cmd.project.importFullArchiveV1'
   ) {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.openImportSurface, commandId, commandId) }
   }

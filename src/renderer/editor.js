@@ -6456,6 +6456,73 @@ function buildMarkdownPreviewReadyStatus(value) {
     : 'Markdown import preview ready';
 }
 
+function getProjectArchiveImportBridgeValue(result) {
+  if (!result || typeof result !== 'object' || Array.isArray(result)) return {};
+  if (result.value && typeof result.value === 'object' && !Array.isArray(result.value)) {
+    return result.value;
+  }
+  return result;
+}
+
+function summarizeProjectArchiveImportPreview(value) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const manifest = source.archiveManifest && typeof source.archiveManifest === 'object' && !Array.isArray(source.archiveManifest)
+    ? source.archiveManifest
+    : {};
+  const projectName = typeof manifest.projectName === 'string' && manifest.projectName.trim()
+    ? manifest.projectName.trim()
+    : 'Project';
+  const fileCount = Number.isInteger(manifest.fileCount) ? manifest.fileCount : 0;
+  const byteCount = Number.isInteger(manifest.byteCount) ? manifest.byteCount : 0;
+  const mode = source.restoreAvailable === true ? 'restore' : 'copy';
+  return `Archive: ${projectName}. Files: ${fileCount}. Bytes: ${byteCount}. Mode: ${mode}.`;
+}
+
+async function handleProjectArchiveImportUiPath() {
+  const requestId = `project-archive-import-${Date.now()}`;
+  updateStatusText('Preparing project archive preview');
+  const previewBridgeResult = await invokePreloadUiCommandBridge(
+    COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1,
+    { requestId },
+  );
+  const previewValue = getProjectArchiveImportBridgeValue(previewBridgeResult);
+  if (!previewValue || previewValue.preview !== true) {
+    updateStatusText('Project archive preview unavailable');
+    return;
+  }
+  if (previewValue.canceled === true || previewValue.cancelled === true) {
+    updateStatusText('Project archive import cancelled');
+    return;
+  }
+  const mode = previewValue.restoreAvailable === true ? 'restore' : 'copy';
+  const previewSummary = summarizeProjectArchiveImportPreview(previewValue);
+  const confirmed = typeof window.confirm === 'function'
+    ? window.confirm(`${previewSummary}\n\nImport project archive?`)
+    : false;
+  if (!confirmed) {
+    updateStatusText('Project archive preview ready');
+    return;
+  }
+  updateStatusText('Importing project archive');
+  const importBridgeResult = await invokePreloadUiCommandBridge(
+    COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1,
+    {
+      confirmed: true,
+      requestId,
+      mode,
+      openAfterImport: true,
+    },
+  );
+  const importValue = getProjectArchiveImportBridgeValue(importBridgeResult);
+  if (importValue.imported === true) {
+    const importedMode = typeof importValue.mode === 'string' ? importValue.mode : mode;
+    updateStatusText(`Project archive imported: ${importedMode}`);
+    await refreshProjectLibraryModal();
+    return;
+  }
+  updateStatusText('Project archive import failed');
+}
+
 async function handleMarkdownImportUiPath() {
   updateStatusText('Preparing Markdown import preview');
   const previewBridgeResult = await invokePreloadUiCommandBridge(
@@ -11124,7 +11191,9 @@ function openImportSurfaceModal(commandId = '') {
     ? 'DOCX'
     : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1
       ? 'TXT'
-      : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1 ? 'Markdown' : ''));
+      : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1
+        ? 'Markdown'
+        : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1 ? 'Project Archive' : '')));
   const prefix = currentFormat ? `${currentFormat} selected. ` : '';
   setImportSurfaceStatus(
     `${prefix}Choose the existing safe import lane to preview before writing.`,
@@ -11148,6 +11217,9 @@ function runImportSurfaceFormat(format) {
   }
   if (normalizedFormat === 'markdown') {
     return handleMarkdownImportUiPath();
+  }
+  if (normalizedFormat === 'archive') {
+    return handleProjectArchiveImportUiPath();
   }
   updateStatusText('Import format unavailable');
   return undefined;
@@ -11272,6 +11344,7 @@ function runCommandPaletteAction(commandId) {
   const importDocxCommandId = 'cmd.project.importDocxV1';
   const importTxtCommandId = 'cmd.project.importTxtV1';
   const importMarkdownCommandId = 'cmd.project.importMarkdownV1';
+  const importFullArchiveCommandId = 'cmd.project.importFullArchiveV1';
   const exportDocxCommandId = 'cmd.project.export.docxMin';
   const exportPdfCommandId = 'cmd.project.exportPdfV1';
   const exportFullArchiveCommandId = 'cmd.project.exportFullArchiveV1';
@@ -11283,6 +11356,9 @@ function runCommandPaletteAction(commandId) {
     return openImportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === importMarkdownCommandId) {
+    return openImportSurfaceModal(normalizedCommandId);
+  }
+  if (normalizedCommandId === importFullArchiveCommandId) {
     return openImportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === exportDocxCommandId) {
@@ -14461,6 +14537,10 @@ if (window.electronAPI) {
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1) {
+      openImportSurfaceModal(commandId);
+      return true;
+    }
+    if (commandId === COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1) {
       openImportSurfaceModal(commandId);
       return true;
     }

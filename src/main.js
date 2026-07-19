@@ -48,7 +48,10 @@ const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/do
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { writeBufferAtomic } = require('./export/docx/atomicWriteBuffer');
 const { runPdfExport } = require('./export/pdf/pdfExportHandler');
-const { runProjectArchiveExport } = require('./export/archive/projectArchiveExportHandler');
+const {
+  readProjectArchivePayload,
+  runProjectArchiveExport,
+} = require('./export/archive/projectArchiveExportHandler');
 const { createCommandSurfaceKernel } = require('./command/commandSurfaceKernel');
 
 const launchT0 = performance.now();
@@ -62,6 +65,7 @@ let activeReviewSessionStore = null;
 let activeReviewSessionLifecycle = 'passive';
 let reviewExactTextApplyReconciliationState = { userRelevant: [], errors: [] };
 let pendingMarkdownLocalFilePreview = null;
+let pendingProjectArchiveImportPreview = null;
 let appInitializationPromise = Promise.resolve();
 let editorStartupReadyPromise = Promise.resolve();
 let isDirty = false;
@@ -320,6 +324,8 @@ const EXPORT_PDF_COMMAND_ID = 'cmd.project.exportPdfV1';
 const EXPORT_PDF_DEFAULT_REQUEST_ID = 'u3-export-pdf-request';
 const EXPORT_PROJECT_ARCHIVE_COMMAND_ID = 'cmd.project.exportFullArchiveV1';
 const EXPORT_PROJECT_ARCHIVE_DEFAULT_REQUEST_ID = 'u3-export-full-archive-request';
+const IMPORT_PROJECT_ARCHIVE_COMMAND_ID = 'cmd.project.importFullArchiveV1';
+const IMPORT_PROJECT_ARCHIVE_DEFAULT_REQUEST_ID = 'u3-import-full-archive-request';
 const IMPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:import:markdownV1:v1';
 const EXPORT_MARKDOWN_V1_CHANNEL = 'm:cmd:project:export:markdownV1:v1';
 const MARKDOWN_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_ID = 'cmd.project.markdown.previewLocalFile';
@@ -374,6 +380,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_ALL_SCENES_TXT_V1: EXPORT_ALL_SCENES_TXT_COMMAND_ID,
   PROJECT_EXPORT_PDF_V1: EXPORT_PDF_COMMAND_ID,
   PROJECT_EXPORT_FULL_ARCHIVE_V1: EXPORT_PROJECT_ARCHIVE_COMMAND_ID,
+  PROJECT_IMPORT_FULL_ARCHIVE_V1: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
@@ -6658,6 +6665,9 @@ function getInternalCommandSurfaceKernel() {
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1]: async (payload = {}) => {
       return handleExportProjectArchive(payload);
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1]: async (payload = {}) => {
+      return handleImportProjectArchive(payload);
+    },
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleImportMarkdownV1(payload);
     },
@@ -9479,6 +9489,7 @@ async function replaceProjectLibraryIndexBinding(previousRoot, projectBinding, o
     const retained = existing.filter((entry) => (
       path.resolve(entry.projectRoot) !== path.resolve(normalizedRoot)
       && (!normalizedPreviousRoot || path.resolve(entry.projectRoot) !== path.resolve(normalizedPreviousRoot))
+      && (options.dropSameProjectId === true ? entry.projectId !== projectBinding.projectId : true)
     ));
     await writeProjectLibraryPrivateIndex([nextEntry, ...retained]);
   } catch (error) {
@@ -9852,6 +9863,49 @@ async function getUniqueProjectLifecycleRoot(parentRoot, preferredName) {
   }
   const stampedName = `${safeName} ${Date.now()} ${crypto.randomBytes(3).toString('hex')}`;
   return joinPathSegmentsWithinRoot(parentRoot, [stampedName], { resolveSymlinks: false });
+}
+
+function summarizeProjectArchivePayload(payload) {
+  const manifest = isPlainObjectValue(payload?.manifest) ? payload.manifest : {};
+  const project = isPlainObjectValue(manifest.project) ? manifest.project : {};
+  return {
+    schemaVersion: typeof manifest.schemaVersion === 'string' ? manifest.schemaVersion : '',
+    archiveKind: typeof manifest.archiveKind === 'string' ? manifest.archiveKind : '',
+    projectId: typeof project.projectId === 'string' ? project.projectId : '',
+    projectName: typeof project.projectName === 'string' ? project.projectName : '',
+    fileCount: Number.isSafeInteger(payload?.fileCount) ? payload.fileCount : 0,
+    byteCount: Number.isSafeInteger(payload?.byteCount) ? payload.byteCount : 0,
+    entryCount: Number.isSafeInteger(payload?.entryCount) ? payload.entryCount : 0,
+    archiveSha256: typeof payload?.archiveSha256 === 'string' ? payload.archiveSha256 : '',
+  };
+}
+
+async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot) {
+  if (!archivePayload || !Array.isArray(archivePayload.entries) || archivePayload.entries.length === 0) {
+    throw new Error('PROJECT_ARCHIVE_IMPORT_EMPTY');
+  }
+  await fs.rm(tempRoot, { recursive: true, force: true });
+  await fs.mkdir(tempRoot, { recursive: true });
+  for (const entry of archivePayload.entries) {
+    const relativePath = typeof entry.relativePath === 'string' ? entry.relativePath : '';
+    const targetPath = joinPathSegmentsWithinRoot(tempRoot, [relativePath], { resolveSymlinks: false });
+    await fs.mkdir(path.dirname(targetPath), { recursive: true });
+    const writeResult = await fileManager.writeFileAtomic(targetPath, entry.buffer);
+    if (!writeResult || writeResult.success !== true) {
+      throw new Error(writeResult?.error || 'PROJECT_ARCHIVE_IMPORT_ENTRY_WRITE_FAILED');
+    }
+  }
+}
+
+function normalizeProjectArchiveImportMode(value) {
+  return value === 'restore' ? 'restore' : 'copy';
+}
+
+function makeProjectArchiveImportReceipt(commandId, projectId, extra = {}) {
+  return makeProjectLifecycleReceipt(commandId, projectId, {
+    archiveImport: true,
+    ...extra,
+  });
 }
 
 async function countProjectDirectoryFiles(rootPath) {
@@ -11396,6 +11450,18 @@ function makeTypedProjectArchiveExportError(code, reason, details) {
   return { ok: false, error };
 }
 
+function makeTypedProjectArchiveImportError(code, reason, details) {
+  const error = {
+    code: typeof code === 'string' && code.length > 0 ? code : 'E_PROJECT_ARCHIVE_IMPORT_FAILED',
+    op: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+    reason: typeof reason === 'string' && reason.length > 0 ? reason : 'PROJECT_ARCHIVE_IMPORT_FAILED',
+  };
+  if (details && typeof details === 'object' && !Array.isArray(details)) {
+    error.details = details;
+  }
+  return { ok: false, error };
+}
+
 function buildPathBoundaryDetails(pathBoundaryError) {
   const source = pathBoundaryError && typeof pathBoundaryError === 'object' ? pathBoundaryError : {};
   return {
@@ -12461,6 +12527,37 @@ const PROJECT_ARCHIVE_EXPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
   'text',
   'zip',
 ]);
+const PROJECT_ARCHIVE_IMPORT_ALLOWED_PAYLOAD_KEYS = Object.freeze([
+  'archivePath',
+  'confirmed',
+  'mode',
+  'openAfterImport',
+  'projectName',
+  'requestId',
+]);
+const PROJECT_ARCHIVE_IMPORT_FORBIDDEN_AUTHORITY_KEYS = Object.freeze([
+  'archiveBuffer',
+  'archiveManifest',
+  'backups',
+  'content',
+  'entries',
+  'files',
+  'manifest',
+  'paths',
+  'project',
+  'projectId',
+  'projectRoot',
+  'recovery',
+  'rendererState',
+  'scene',
+  'sceneIds',
+  'scenePaths',
+  'sourcePaths',
+  'targetRoot',
+  'text',
+  'zip',
+]);
+const PROJECT_ARCHIVE_IMPORT_MAX_BYTES = 256 * 1024 * 1024;
 
 function normalizeCurrentSceneTxtExportPath(filePath) {
   if (typeof filePath !== 'string' || filePath.trim().length === 0) return '';
@@ -12717,6 +12814,57 @@ function normalizeProjectArchiveExportPayload(payload = {}) {
     normalized.createdAtUtc = payload.createdAtUtc.trim();
   }
   const pathGuard = sanitizePathFields(normalized, ['outPath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      ...normalized,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return pathGuard.payload;
+}
+
+function normalizeProjectArchiveImportPayload(payload = {}) {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+    return null;
+  }
+
+  const keys = Object.keys(payload);
+  const forbiddenAuthorityKeys = keys
+    .filter((key) => PROJECT_ARCHIVE_IMPORT_FORBIDDEN_AUTHORITY_KEYS.includes(key))
+    .sort();
+  const unsupportedKeys = keys
+    .filter((key) => !PROJECT_ARCHIVE_IMPORT_ALLOWED_PAYLOAD_KEYS.includes(key))
+    .sort();
+  if (forbiddenAuthorityKeys.length > 0 || unsupportedKeys.length > 0) {
+    return {
+      ok: false,
+      code: 'E_PROJECT_ARCHIVE_IMPORT_PAYLOAD_INVALID',
+      reason: forbiddenAuthorityKeys.length > 0
+        ? 'project_archive_import_renderer_authority_denied'
+        : 'project_archive_import_payload_unsupported_fields',
+      details: {
+        fields: forbiddenAuthorityKeys.length > 0 ? forbiddenAuthorityKeys : unsupportedKeys,
+      },
+    };
+  }
+
+  const requestId = typeof payload.requestId === 'string' && payload.requestId.trim().length > 0
+    ? payload.requestId.trim()
+    : IMPORT_PROJECT_ARCHIVE_DEFAULT_REQUEST_ID;
+  const archivePath = typeof payload.archivePath === 'string' ? payload.archivePath.trim() : '';
+  const modeRaw = typeof payload.mode === 'string' ? payload.mode.trim().toLowerCase() : '';
+  const mode = modeRaw === 'restore' ? 'restore' : 'copy';
+  const normalized = {
+    requestId,
+    archivePath,
+    confirmed: payload.confirmed === true,
+    mode,
+    openAfterImport: payload.openAfterImport === true,
+  };
+  if (typeof payload.projectName === 'string' && payload.projectName.trim()) {
+    normalized.projectName = payload.projectName.trim();
+  }
+  const pathGuard = sanitizePathFields(normalized, ['archivePath'], { mode: 'any' });
   if (!pathGuard.ok) {
     return {
       ...normalized,
@@ -13026,6 +13174,64 @@ async function resolveProjectArchiveExportPath(payload) {
     };
   }
   return { canceled: false, outPath: pathGuard.payload.outPath };
+}
+
+async function resolveProjectArchiveImportPath(payload) {
+  const fromPayload = typeof payload.archivePath === 'string' ? payload.archivePath.trim() : '';
+  if (fromPayload) {
+    return { canceled: false, archivePath: fromPayload };
+  }
+  if (
+    payload.confirmed === true
+    && pendingProjectArchiveImportPreview
+    && pendingProjectArchiveImportPreview.requestId === payload.requestId
+    && typeof pendingProjectArchiveImportPreview.archivePath === 'string'
+    && pendingProjectArchiveImportPreview.archivePath
+  ) {
+    return { canceled: false, archivePath: pendingProjectArchiveImportPreview.archivePath };
+  }
+  if (!mainWindow) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_PROJECT_ARCHIVE_IMPORT_OPEN_DIALOG_UNAVAILABLE',
+        reason: 'open_dialog_unavailable',
+      },
+    };
+  }
+
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: 'Импорт полного архива проекта',
+    properties: ['openFile'],
+    filters: [
+      { name: 'Yalken Archive', extensions: ['zip'] },
+      { name: 'Все файлы', extensions: ['*'] },
+    ],
+  });
+  if (result.canceled) {
+    return { canceled: true, archivePath: '' };
+  }
+
+  const archivePath = Array.isArray(result.filePaths) && typeof result.filePaths[0] === 'string'
+    ? result.filePaths[0].trim()
+    : '';
+  if (!archivePath) {
+    return {
+      canceled: false,
+      error: {
+        code: 'E_PROJECT_ARCHIVE_IMPORT_PATH_REQUIRED',
+        reason: 'archive_path_required',
+      },
+    };
+  }
+  const pathGuard = sanitizePathFields({ archivePath }, ['archivePath'], { mode: 'any' });
+  if (!pathGuard.ok) {
+    return {
+      canceled: false,
+      pathBoundaryError: pathGuard,
+    };
+  }
+  return { canceled: false, archivePath: pathGuard.payload.archivePath };
 }
 
 function buildSelectedScenesTxtExportCandidateLabel(sceneId) {
@@ -13430,6 +13636,16 @@ async function readProjectArchiveExportSource() {
     projectRoot,
     sourcePaths: await collectProjectArchiveSourcePaths(projectRoot),
   };
+}
+
+async function readProjectArchiveImportSource(archivePath) {
+  const currentProjectRoot = getProjectRootPath();
+  return readExternalFileBounded(archivePath, {
+    allowedExtensions: ['.zip'],
+    allowEmpty: false,
+    maxBytes: PROJECT_ARCHIVE_IMPORT_MAX_BYTES,
+    projectRoot: currentProjectRoot,
+  });
 }
 
 async function resolveMarkdownExportPath(payload) {
@@ -14192,6 +14408,247 @@ async function handleExportProjectArchive(payloadRaw = {}) {
     writeBufferAtomic,
     updateStatus,
   });
+}
+
+async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
+  const recovered = await recoverProjectLifecycleJournal();
+  if (!recovered.ok) return recovered;
+
+  const payload = normalizeProjectArchiveImportPayload(payloadRaw);
+  if (!payload) {
+    return makeTypedProjectArchiveImportError(
+      'E_PROJECT_ARCHIVE_IMPORT_PAYLOAD_INVALID',
+      'project_archive_import_payload_invalid',
+    );
+  }
+  if (payload.ok === false) {
+    return makeTypedProjectArchiveImportError(payload.code, payload.reason, payload.details);
+  }
+  if (payload.pathBoundaryError) {
+    return makeTypedProjectArchiveImportError(
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(payload.pathBoundaryError),
+    );
+  }
+
+  let resolvedPath;
+  try {
+    resolvedPath = await resolveProjectArchiveImportPath(payload);
+  } catch (error) {
+    return makeTypedProjectArchiveImportError(
+      'E_PROJECT_ARCHIVE_IMPORT_OPEN_DIALOG_FAILED',
+      'open_dialog_failed',
+      { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+    );
+  }
+  if (resolvedPath?.canceled === true) {
+    return {
+      ok: true,
+      canceled: true,
+      preview: false,
+      imported: false,
+    };
+  }
+  if (resolvedPath?.pathBoundaryError) {
+    return makeTypedProjectArchiveImportError(
+      'E_PATH_BOUNDARY_VIOLATION',
+      'path_boundary_violation',
+      buildPathBoundaryDetails(resolvedPath.pathBoundaryError),
+    );
+  }
+  if (resolvedPath?.error) {
+    return makeTypedProjectArchiveImportError(
+      resolvedPath.error.code,
+      resolvedPath.error.reason,
+      resolvedPath.error.details,
+    );
+  }
+
+  let loaded;
+  try {
+    loaded = await readProjectArchiveImportSource(resolvedPath.archivePath);
+  } catch (error) {
+    return makeTypedProjectArchiveImportError(
+      'E_PROJECT_ARCHIVE_IMPORT_SOURCE_UNAVAILABLE',
+      typeof error?.reason === 'string' ? error.reason : 'archive_source_unavailable',
+      {
+        message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN',
+        ...(isPlainObjectValue(error?.details) ? error.details : {}),
+      },
+    );
+  }
+
+  let archivePayload;
+  try {
+    archivePayload = readProjectArchivePayload(loaded.bytes);
+  } catch (error) {
+    return makeTypedProjectArchiveImportError(
+      typeof error?.code === 'string' ? error.code : 'E_PROJECT_ARCHIVE_IMPORT_INVALID',
+      typeof error?.reason === 'string' ? error.reason : 'archive_invalid',
+      isPlainObjectValue(error?.details) ? error.details : {},
+    );
+  }
+
+  const archiveSummary = summarizeProjectArchivePayload(archivePayload);
+  const archiveProjectId = normalizeStableProjectId(archiveSummary.projectId);
+  if (!archiveProjectId) {
+    return makeTypedProjectArchiveImportError(
+      'E_PROJECT_ARCHIVE_IMPORT_PROJECT_ID_MISSING',
+      'project_id_missing',
+    );
+  }
+  const mode = normalizeProjectArchiveImportMode(payload.mode);
+  const existingBinding = await findProjectBindingByProjectId(archiveProjectId);
+  const collision = Boolean(existingBinding && existingBinding.projectRoot);
+  if (payload.confirmed !== true) {
+    pendingProjectArchiveImportPreview = {
+      requestId: payload.requestId,
+      archivePath: resolvedPath.archivePath,
+      archiveSha256: archiveSummary.archiveSha256,
+      projectId: archiveProjectId,
+      createdAtUtc: new Date().toISOString(),
+    };
+    return {
+      ok: true,
+      preview: true,
+      imported: false,
+      commandId: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+      requestId: payload.requestId,
+      mode,
+      archiveManifest: archiveSummary,
+      collision,
+      restoreAvailable: !collision,
+      copyAvailable: true,
+      authority: {
+        pathsExposed: false,
+        networkRequired: false,
+      },
+    };
+  }
+  if (mode === 'restore' && collision) {
+    pendingProjectArchiveImportPreview = null;
+    return makeTypedProjectArchiveImportError(
+      'E_PROJECT_ARCHIVE_IMPORT_PROJECT_ID_COLLISION',
+      'project_archive_import_project_id_collision',
+      {
+        projectId: archiveProjectId,
+        restorePreservesProjectId: true,
+        copyAvailable: true,
+      },
+    );
+  }
+
+  const preferredName = normalizeProjectLifecycleName(
+    payload.projectName || archiveSummary.projectName,
+    mode === 'copy' ? `${archiveSummary.projectName || 'Imported Project'} Copy` : (archiveSummary.projectName || 'Imported Project'),
+  );
+  const targetRoot = await getUniqueProjectLifecycleRoot(fileManager.getDocumentsPath(), preferredName);
+  const tempRoot = makeProjectLifecycleTempPath(targetRoot, 'project-archive-import');
+  const newProjectId = mode === 'copy' ? createStableProjectId() : archiveProjectId;
+
+  try {
+    await writeProjectLifecycleJournal({
+      commandId: IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+      projectId: archiveProjectId,
+      phase: 'importing-to-temp',
+      targetRoot,
+      tempRoot,
+    });
+    if (typeof options.beforeExtract === 'function') await options.beforeExtract({ tempRoot, targetRoot });
+    await queueDiskOperation(
+      () => writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot),
+      'import project archive entries',
+    );
+    const tempManifestPath = joinPathSegmentsWithinRoot(tempRoot, [PROJECT_MANIFEST_FILENAME], {
+      resolveSymlinks: false,
+    });
+    const rawRecord = await readProjectManifestRawAtPath(tempManifestPath);
+    const sourceManifest = isPlainObjectValue(rawRecord.manifest) ? rawRecord.manifest : {};
+    if (normalizeStableProjectId(sourceManifest.projectId) !== archiveProjectId) {
+      throw new Error('PROJECT_ARCHIVE_IMPORT_PROJECT_ID_MISMATCH');
+    }
+    let nextManifest = sourceManifest;
+    if (mode === 'copy') {
+      nextManifest = {
+        ...sourceManifest,
+        schemaVersion: PROJECT_MANIFEST_SCHEMA_VERSION,
+        projectId: newProjectId,
+        projectName: preferredName,
+        createdAtUtc: new Date().toISOString(),
+        copiedFromProjectId: archiveProjectId,
+      };
+      delete nextManifest.treeIdentity;
+      await writeProjectManifestRawAtomic(tempManifestPath, nextManifest);
+    }
+    if (typeof options.afterExtractBeforeFinalMove === 'function') {
+      await options.afterExtractBeforeFinalMove({ tempRoot, targetRoot });
+    }
+    if (await fileExists(targetRoot)) {
+      throw new Error('PROJECT_ARCHIVE_IMPORT_TARGET_EXISTS');
+    }
+    await fs.rename(tempRoot, targetRoot);
+    await clearProjectLifecycleJournal();
+
+    const manifestPath = joinPathSegmentsWithinRoot(targetRoot, [PROJECT_MANIFEST_FILENAME], { resolveSymlinks: false });
+    const normalizedManifest = await normalizeProjectManifest(nextManifest, preferredName);
+    const projectBinding = {
+      projectId: newProjectId,
+      projectRoot: targetRoot,
+      manifestPath,
+      manifest: normalizedManifest,
+      sourceSchemaVersion: Number(nextManifest?.schemaVersion),
+    };
+    await replaceProjectLibraryIndexBinding('', projectBinding, {
+      status: 'available',
+      markOpened: payload.openAfterImport === true,
+      dropSameProjectId: mode === 'restore',
+    });
+    if (payload.openAfterImport === true) {
+      setActiveProjectNameFromRoot(targetRoot);
+      const target = await resolveProjectContinueTarget(projectBinding, {});
+      if (target.filePath) {
+        await openProjectDocumentFile(target.filePath, {
+          statusText: 'Архив проекта импортирован',
+          projectId: newProjectId,
+          projectBinding,
+        });
+      }
+    }
+    updateStatus('Архив проекта импортирован');
+    pendingProjectArchiveImportPreview = null;
+    return {
+      ok: true,
+      imported: true,
+      mode,
+      projectId: newProjectId,
+      sourceProjectId: archiveProjectId,
+      projectName: normalizedManifest.projectName || preferredName,
+      archiveManifest: archiveSummary,
+      receipt: makeProjectArchiveImportReceipt(IMPORT_PROJECT_ARCHIVE_COMMAND_ID, newProjectId, {
+        mode,
+        restored: mode === 'restore',
+        copied: mode === 'copy',
+        sourceProjectId: archiveProjectId,
+        archiveSha256: archiveSummary.archiveSha256,
+        fileCount: archiveSummary.fileCount,
+        byteCount: archiveSummary.byteCount,
+      }),
+      authority: {
+        pathsExposed: false,
+        networkRequired: false,
+      },
+    };
+  } catch (error) {
+    await fs.rm(tempRoot, { recursive: true, force: true }).catch(() => {});
+    await clearProjectLifecycleJournal();
+    pendingProjectArchiveImportPreview = null;
+    logDevError('project archive import', error);
+    return makeTypedProjectArchiveImportError(
+      'E_PROJECT_ARCHIVE_IMPORT_FAILED',
+      error && typeof error.message === 'string' ? error.message : 'project_archive_import_failed',
+    );
+  }
 }
 
 async function handleImportMarkdownV1(payloadRaw) {
@@ -18649,6 +19106,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   EXPORT_ALL_SCENES_TXT_COMMAND_ID,
   EXPORT_PDF_COMMAND_ID,
   EXPORT_PROJECT_ARCHIVE_COMMAND_ID,
+  IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
   'cmd.project.export.docxMin',
   'cmd.project.docx.previewContent',
   'cmd.project.docx.previewImportPlan',
@@ -18848,6 +19306,26 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
     }
     const result = await dispatchCommandSurfaceKernel(
       COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1,
+      payload,
+    );
+    return normalizeUiBridgeMenuResult(result);
+  },
+  [IMPORT_PROJECT_ARCHIVE_COMMAND_ID]: async (payload = {}) => {
+    const confirmed = payload && payload.confirmed === true;
+    if (!confirmed) {
+      const delivered = sendCanonicalRuntimeCommand(
+        IMPORT_PROJECT_ARCHIVE_COMMAND_ID,
+        {
+          source: 'menu',
+          preview: true,
+        },
+      );
+      if (delivered) {
+        return { ok: true, preview: true };
+      }
+    }
+    const result = await dispatchCommandSurfaceKernel(
+      COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1,
       payload,
     );
     return normalizeUiBridgeMenuResult(result);
@@ -20299,6 +20777,7 @@ module.exports = {
   handleProjectLifecycleInspectIntegrityCommand,
   handleProjectLifecyclePermanentDeleteCommand,
   handleExportProjectArchive,
+  handleImportProjectArchive,
   recoverProjectLifecycleJournal,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
