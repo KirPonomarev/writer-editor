@@ -5889,6 +5889,7 @@ const commandRegistry = createCommandRegistry();
 const runCommand = createCommandRunner(commandRegistry, {
   capability: {
     defaultPlatformId: window.electronAPI ? 'node' : 'web',
+    defaultEntitlementTier: 'free',
   },
 });
 registerProjectCommands(commandRegistry, {
@@ -5947,7 +5948,10 @@ const PREVIEW_ORIENTATION_COMMAND_IDS = Object.freeze({
   PORTRAIT: EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_PORTRAIT,
   LANDSCAPE: EXTRA_COMMAND_IDS.VIEW_PREVIEW_ORIENTATION_LANDSCAPE,
 });
-const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, { defaultSurface: 'palette' });
+const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, {
+  defaultSurface: 'palette',
+  entitlementTier: 'free',
+});
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
@@ -11409,6 +11413,7 @@ function buildSettingsAggregationSnapshot() {
     bookFormat: profile.formatId || 'A4',
     bookOrientation: profile.orientation || 'portrait',
     toolbarProfile: getToolbarConfiguratorActiveProfile(),
+    entitlementTier: 'free',
   });
 }
 

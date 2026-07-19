@@ -1,4 +1,5 @@
 import { listCommandCatalog } from './command-catalog.v1.mjs';
+import { annotateSurfaceEntriesForEntitlement } from './localCapabilityProvider.mjs';
 
 function normalizeEntry(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
@@ -65,16 +66,44 @@ export function createPaletteDataProvider(source, options = {}) {
   const defaultSurface = typeof options.defaultSurface === 'string' && options.defaultSurface.trim().length > 0
     ? options.defaultSurface.trim()
     : 'palette';
+  const entitlementInput = options.entitlementState || options.entitlementTier
+    ? {
+      entitlementState: options.entitlementState,
+      entitlementTier: options.entitlementTier,
+      toolbarProfile: options.toolbarProfile,
+    }
+    : null;
+  const includeUnavailable = options.includeUnavailable === true;
+
+  function applyEntitlement(entries) {
+    if (!entitlementInput) return entries;
+    const projected = annotateSurfaceEntriesForEntitlement(entries, entitlementInput);
+    if (includeUnavailable) return projected;
+    return projected.filter((entry) => entry.entitlement.visible === true);
+  }
 
   return {
     listAll() {
-      return listBySurface(source, defaultSurface);
+      return applyEntitlement(listBySurface(source, defaultSurface));
     },
     listBySurface(surface = defaultSurface) {
-      return listBySurface(source, surface);
+      return applyEntitlement(listBySurface(source, surface));
     },
     listByGroup(surface = defaultSurface) {
-      return listByGroup(source, surface);
+      if (!entitlementInput) return listByGroup(source, surface);
+      const grouped = new Map();
+      for (const entry of applyEntitlement(listBySurface(source, surface))) {
+        if (!grouped.has(entry.group)) {
+          grouped.set(entry.group, []);
+        }
+        grouped.get(entry.group).push(entry);
+      }
+      return [...grouped.keys()]
+        .sort()
+        .map((group) => ({
+          group,
+          commands: grouped.get(group).slice().sort(byLabelThenId),
+        }));
     },
   };
 }
