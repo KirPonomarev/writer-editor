@@ -3955,6 +3955,20 @@
       "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S41_VISUAL_RECOVERY_NEGATIVE_HARDENING",
       "approvedAtUtc": "2026-07-19T10:52:00.000Z",
       "rationale": "Approve bounded S41 proof evaluator hardening so autosave restore foundation evidence is matched by semantic payload fields after the existing restore payload gained documentId; no product behavior, command semantics, storage format, dependency, network, cloud, UI design, release claim, or recovery widening is introduced."
+    },
+    {
+      "filePath": "scripts/ops/release-candidate.mjs",
+      "sha256": "0db814e8e9675a16db333958e9cc6e9bddada9e41851ba59fee06b78b2c9bb16",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S43_PROMOTION_EVIDENCE_ORDER",
+      "approvedAtUtc": "2026-07-19T11:45:00.000Z",
+      "rationale": "Approve bounded S43 promotion verifier lifecycle fix: collect strict doctor output before writing promotion evidence so failed promotion verification cannot leave untracked governance evidence; no product runtime, storage, import, export, UI, dependency, network, cloud, entitlement, or release capability claim is introduced."
+    },
+    {
+      "filePath": "test/contracts/release-candidate-lock-and-promotion-evidence.contract.test.js",
+      "sha256": "8f4b1e40b1425517ee62b52a3168c5b37b0431f48bc09f973e5a48d680327638",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S43_PROMOTION_EVIDENCE_ORDER",
+      "approvedAtUtc": "2026-07-19T11:45:00.000Z",
+      "rationale": "Approve bounded S43 regression coverage proving promotion verify writes no evidence when strict doctor fails; no product runtime, storage, import, export, UI, dependency, network, cloud, entitlement, or release capability claim is introduced."
     }
   ]
 }
