@@ -3916,10 +3916,10 @@
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "c21fa1ffc1831dce8f8ccdccd2448b5deaa57184128fc7fdc0866db59eb74219",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
-      "approvedAtUtc": "2026-07-19T04:55:00.000Z",
-      "rationale": "Approve S33 release candidate lock refresh after the menu artifact and snapshot registry were rebound for the full project archive import lane."
+      "sha256": "f66e0829314811af72a02c61e9acb777025ed0aa971b2104e7501b3a9db3df57",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S43_RELEASE_CANDIDATE_REBIND",
+      "approvedAtUtc": "2026-07-19T08:11:00.000Z",
+      "rationale": "Approve S43 final release candidate lock rebind to the verified remote main head after S42 factual capability status delivery; no runtime, menu, storage, recovery, dependency, network, cloud, UI design, entitlement, or project-format change is introduced."
     },
     {
       "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
