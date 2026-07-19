@@ -16,6 +16,11 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizeToolbarProfileName(value) {
+  const normalized = normalizeString(value).toLowerCase();
+  return normalized === 'master' || normalized === 'pro' ? 'master' : 'minimal';
+}
+
 function freezeToolbarProfiles(minimal, master) {
   const toolbarProfiles = Object.freeze({
     minimal: Object.freeze([...minimal]),
@@ -29,7 +34,7 @@ function freezeToolbarProfiles(minimal, master) {
 }
 
 function freezeToolbarProfileState(activeToolbarProfile, minimal, master) {
-  const normalizedActiveToolbarProfile = activeToolbarProfile === 'master' ? 'master' : 'minimal';
+  const normalizedActiveToolbarProfile = normalizeToolbarProfileName(activeToolbarProfile);
   return Object.freeze({
     version: 3,
     activeToolbarProfile: normalizedActiveToolbarProfile,
@@ -63,13 +68,17 @@ function hasExactToolbarProfileIds(actual, expected) {
 function normalizeToolbarProfileStateV3(raw) {
   if (!isPlainObject(raw) || raw.version !== 3) return null;
   const toolbarProfiles = isPlainObject(raw.toolbarProfiles) ? raw.toolbarProfiles : null;
-  if (!toolbarProfiles || !Array.isArray(toolbarProfiles.minimal) || !Array.isArray(toolbarProfiles.master)) {
+  if (!toolbarProfiles || !Array.isArray(toolbarProfiles.minimal)) {
+    return null;
+  }
+  const rawMasterProfile = Array.isArray(toolbarProfiles.master) ? toolbarProfiles.master : toolbarProfiles.pro;
+  if (!Array.isArray(rawMasterProfile)) {
     return null;
   }
   return freezeToolbarProfileState(
-    normalizeString(raw.activeToolbarProfile) === 'master' ? 'master' : 'minimal',
+    normalizeToolbarProfileName(raw.activeToolbarProfile),
     normalizeToolbarProfileIds(toolbarProfiles.minimal),
-    normalizeToolbarProfileIds(toolbarProfiles.master),
+    normalizeToolbarProfileIds(rawMasterProfile),
   );
 }
 
@@ -236,6 +245,8 @@ export function createToolbarProfileState(input = []) {
         ? input.masterIds
         : Array.isArray(input.toolbarProfiles?.master)
           ? input.toolbarProfiles.master
+          : Array.isArray(input.toolbarProfiles?.pro)
+            ? input.toolbarProfiles.pro
           : [],
     });
   }
