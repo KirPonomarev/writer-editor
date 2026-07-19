@@ -3208,20 +3208,6 @@
       "rationale": "Approve moving delivered DOCX, TXT, and Markdown file commands from the minimal-profile hidden allowlist into the visible core product set while keeping Flow commands hidden, stage gates intact, offline-only operation, and no new command or authority."
     },
     {
-      "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
-      "sha256": "3bceaa40503313dadfc43fcaac677a5af216bcaff7dacaaad83ba69a315810ab",
-      "approvedBy": "ticket:TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001",
-      "approvedAtUtc": "2026-04-14T11:06:30.000Z",
-      "rationale": "TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001 approves phase03 safe-reset artifact evaluator alignment to current canonical command dispatch and configurator restore adoption path."
-    },
-    {
-      "filePath": "scripts/ops/phase03-safe-reset-last-stable-foundation-state.mjs",
-      "sha256": "6f7a81b6dd049ae306e1c2cef29b576299eb447f1a17d3aa8675b4f3260967f5",
-      "approvedBy": "ticket:TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001",
-      "approvedAtUtc": "2026-04-14T11:06:30.000Z",
-      "rationale": "TOOLBAR_BASELINE_TRUTHFUL_CLOSEOUT_001 approves phase03 safe-reset foundation evaluator alignment to current honest hold chain semantics with bounded open-gap tolerance."
-    },
-    {
       "filePath": "docs/OPS/STATUS/FORMAL_KERNEL_MINIMAL_V1.json",
       "sha256": "fa49ce5e66e2ca2e21473f2dfd02af7b517f33c08b2f45c6950a678c57cb0a1c",
       "approvedBy": "ticket:TEXT_NO_LOSS_FORMAL_PROMOTION_001",
@@ -3948,6 +3934,20 @@
       "approvedBy": "ticket:S36_COMMAND_MENU_KEYMAP_AUDIT",
       "approvedAtUtc": "2026-07-19T00:00:00.000Z",
       "rationale": "Approve bounded S36 command menu keymap audit capability truth synchronization. The change documents already existing public menu, palette, lifecycle, import, export, and main-owned menu commands in runtime and OPS capability declarations while preserving offline-first scope, no new command semantics, no new dependency, no licensing implementation, no network or cloud behavior, and no toolbar redesign."
+    },
+    {
+      "filePath": "scripts/ops/phase03-safe-reset-last-stable-artifact-state.mjs",
+      "sha256": "0c21040025952206d23f31ec2bb943141c94fa61119a37df34cd840e591ec259",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S41_VISUAL_RECOVERY_NEGATIVE_HARDENING",
+      "approvedAtUtc": "2026-07-19T10:52:00.000Z",
+      "rationale": "Approve bounded S41 proof evaluator hardening so autosave restore evidence is matched by semantic payload fields after the existing restore payload gained documentId; no product behavior, command semantics, storage format, dependency, network, cloud, UI design, release claim, or recovery widening is introduced."
+    },
+    {
+      "filePath": "scripts/ops/phase03-safe-reset-last-stable-foundation-state.mjs",
+      "sha256": "5bce03b07917c0c6ae935afc381a7cb53e1c97ecc30ca521b75f4b8cc63b14e8",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S41_VISUAL_RECOVERY_NEGATIVE_HARDENING",
+      "approvedAtUtc": "2026-07-19T10:52:00.000Z",
+      "rationale": "Approve bounded S41 proof evaluator hardening so autosave restore foundation evidence is matched by semantic payload fields after the existing restore payload gained documentId; no product behavior, command semantics, storage format, dependency, network, cloud, UI design, release claim, or recovery widening is introduced."
     }
   ]
 }

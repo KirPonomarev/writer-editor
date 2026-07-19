@@ -84,17 +84,11 @@ function evaluatePhase03SafeResetLastStableFoundationState(input = {}) {
     const artifactPass = artifactPacket?.status === 'PASS'
       && (artifactPacket?.restoreStatus === 'HOLD' || artifactPacket?.restoreStatus === 'PASS');
 
-    const autosaveRestorePresent = (
-      matchesAll(mainSource, [
-        /async function restoreAutosaveIfExists\(\)/,
-        /sendEditorText\(\{ content, title: 'Автосохранение', path: '', kind: 'autosave', metaEnabled: false \}\);/,
-        /mainWindow\.webContents\.send\('ui:recovery-restored'/,
-      ]) || matchesAll(mainSource, [
-        /async function restoreAutosaveIfExists\(\)/,
-        /sendEditorText\(await attachProjectIdToEditorPayload\(\{ content, title: 'Автосохранение', path: '', kind: 'autosave', metaEnabled: false \}\)\);/,
-        /mainWindow\.webContents\.send\('ui:recovery-restored'/,
-      ])
-    );
+    const autosaveRestorePresent = matchesAll(mainSource, [
+      /async function restoreAutosaveIfExists\(\)/,
+      /sendEditorText\((?:await attachProjectIdToEditorPayload\()?[\s\S]*content,[\s\S]*title: 'Автосохранение'[\s\S]*kind: 'autosave'[\s\S]*metaEnabled: false[\s\S]*\);/,
+      /mainWindow\.webContents\.send\('ui:recovery-restored'/,
+    ]);
     const recoveryEntryPresent = matchesAll(rendererSource, [
       /const recoveryModal = document\.querySelector\('\[data-recovery-modal\]'\);/,
       /case 'open-recovery':/,
