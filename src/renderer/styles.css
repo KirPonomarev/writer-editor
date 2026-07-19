@@ -5066,6 +5066,128 @@ body.dark-theme .status-bar {
   word-break: break-word;
 }
 
+.settings-surface {
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(760px, calc(100vh - 32px));
+}
+
+.settings-surface__summary {
+  margin-bottom: 2px;
+}
+
+.settings-surface__controls {
+  display: grid;
+  grid-template-columns: minmax(112px, 0.42fr) minmax(180px, 1fr);
+  gap: 8px 12px;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-surface__sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.settings-surface__section {
+  min-width: 0;
+}
+
+.settings-surface__section-title {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.settings-surface__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 10px;
+  align-items: start;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+
+.settings-surface__row:first-of-type {
+  border-top: 0;
+}
+
+.settings-surface__row-main,
+.settings-surface__row-aside {
+  min-width: 0;
+}
+
+.settings-surface__row-label {
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.settings-surface__row-meta,
+.settings-surface__row-note {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.settings-surface__row-note {
+  grid-column: 1 / -1;
+}
+
+.settings-surface__row-aside {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.settings-surface__row-value,
+.settings-surface__status {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.settings-surface__row-value {
+  color: var(--text-muted);
+}
+
+.settings-surface__status {
+  border: 1px solid var(--toolbar-control-border);
+  border-radius: 999px;
+  padding: 2px 7px;
+  text-transform: capitalize;
+}
+
+.settings-surface__status--live {
+  background: var(--toolbar-chrome-active-bg);
+}
+
+.settings-surface__status--unavailable {
+  color: var(--text-muted);
+  border-style: dashed;
+}
+
+@media (max-width: 720px) {
+  .settings-surface__controls,
+  .settings-surface__sections {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-surface__row {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-surface__row-aside {
+    justify-content: flex-start;
+  }
+}
+
 .import-surface__content,
 .export-surface__content {
   width: min(460px, calc(100vw - 32px));

@@ -51,6 +51,10 @@ import {
   normalizeBookProfile,
 } from '../core/bookProfile.mjs';
 import {
+  buildSettingsAggregation,
+  summarizeSettingsAggregation,
+} from './settings/settingsAggregator.mjs';
+import {
   PX_PER_MM_AT_ZOOM_1,
   resolvePageLayoutMetrics,
 } from '../core/pageLayoutMetrics.mjs';
@@ -289,6 +293,8 @@ const cardModal = document.querySelector('[data-card-modal]');
 const settingsModal = document.querySelector('[data-settings-modal]');
 const settingsThemeSelect = document.querySelector('[data-settings-theme]');
 const settingsWrapSelect = document.querySelector('[data-settings-wrap]');
+const settingsSummary = document.querySelector('[data-settings-summary]');
+const settingsSections = document.querySelector('[data-settings-sections]');
 const settingsCloseButtons = Array.from(document.querySelectorAll('[data-settings-close]'));
 const commandPaletteModal = document.querySelector('[data-command-palette-modal]');
 const commandPaletteSearchInput = document.querySelector('[data-command-palette-search]');
@@ -11376,6 +11382,87 @@ function runCommandPaletteAction(commandId) {
   return dispatchUiCommand(commandId.trim());
 }
 
+function buildSettingsAggregationSnapshot() {
+  const profile = getActiveBookProfile(activeBookProfileState);
+  return buildSettingsAggregation({
+    theme: document.body.classList.contains('dark-theme') ? 'dark' : 'light',
+    fontFamily: fontSelect?.value || '',
+    fontWeight: weightSelect?.value || '',
+    fontSizePx: currentFontSizePx,
+    lineHeight: lineHeightSelect?.value || '',
+    wordWrap: wordWrapEnabled,
+    viewMode: styleSelect?.value || localStorage.getItem('editorViewMode') || 'default',
+    editorZoom,
+    projectId: currentProjectId,
+    bookFormat: profile.formatId || 'A4',
+    bookOrientation: profile.orientation || 'portrait',
+  });
+}
+
+function renderSettingsAggregation() {
+  if (!settingsSections && !settingsSummary) return;
+  const aggregation = buildSettingsAggregationSnapshot();
+  const summary = summarizeSettingsAggregation(aggregation);
+  if (settingsSummary) {
+    settingsSummary.textContent = `${summary.total} settings · ${summary.live} live · ${summary.readOnly} read-only · ${summary.unavailable} unavailable`;
+  }
+  if (!settingsSections) return;
+  settingsSections.replaceChildren();
+
+  aggregation.sections.forEach((section) => {
+    if (!section.settings.length) return;
+    const sectionElement = document.createElement('section');
+    sectionElement.className = 'settings-surface__section';
+    sectionElement.dataset.settingsSection = section.id;
+
+    const heading = document.createElement('h4');
+    heading.className = 'settings-surface__section-title';
+    heading.textContent = section.label;
+    sectionElement.appendChild(heading);
+
+    section.settings.forEach((setting) => {
+      const row = document.createElement('div');
+      row.className = 'settings-surface__row';
+      row.dataset.settingsId = setting.id;
+      row.dataset.settingsStatus = setting.status;
+      row.dataset.settingsOwner = setting.owner;
+      row.dataset.settingsPersistence = setting.persistenceClass;
+      row.dataset.settingsScope = setting.scope;
+
+      const main = document.createElement('div');
+      main.className = 'settings-surface__row-main';
+      const label = document.createElement('div');
+      label.className = 'settings-surface__row-label';
+      label.textContent = setting.label;
+      const meta = document.createElement('div');
+      meta.className = 'settings-surface__row-meta';
+      meta.textContent = `${setting.owner} · ${setting.scope} · ${setting.persistenceClass}`;
+      main.append(label, meta);
+
+      const aside = document.createElement('div');
+      aside.className = 'settings-surface__row-aside';
+      const value = document.createElement('span');
+      value.className = 'settings-surface__row-value';
+      value.textContent = setting.value;
+      const status = document.createElement('span');
+      status.className = `settings-surface__status settings-surface__status--${setting.status}`;
+      status.textContent = setting.status.replace('_', ' ');
+      aside.append(value, status);
+
+      row.append(main, aside);
+      if (setting.note) {
+        const note = document.createElement('div');
+        note.className = 'settings-surface__row-note';
+        note.textContent = setting.note;
+        row.appendChild(note);
+      }
+      sectionElement.appendChild(row);
+    });
+
+    settingsSections.appendChild(sectionElement);
+  });
+}
+
 function openSettingsModal() {
   if (settingsThemeSelect) {
     settingsThemeSelect.value = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
@@ -11383,6 +11470,7 @@ function openSettingsModal() {
   if (settingsWrapSelect) {
     settingsWrapSelect.value = wordWrapEnabled ? 'on' : 'off';
   }
+  renderSettingsAggregation();
   openSimpleModal(settingsModal);
 }
 
@@ -14066,6 +14154,7 @@ if (settingsThemeSelect) {
   settingsThemeSelect.addEventListener('change', () => {
     const nextTheme = settingsThemeSelect.value === 'dark' ? 'dark' : 'light';
     void dispatchUiCommand(UI_COMMAND_IDS.THEME_SET, { theme: nextTheme });
+    renderSettingsAggregation();
   });
 }
 
@@ -14074,6 +14163,7 @@ if (settingsWrapSelect) {
     const enabled = settingsWrapSelect.value !== 'off';
     applyWordWrap(enabled);
     updateInspectorSnapshot();
+    renderSettingsAggregation();
   });
 }
 
