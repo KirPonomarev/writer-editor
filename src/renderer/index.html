@@ -641,30 +641,6 @@
             <span>Локально</span>
           </div>
           <div class="editor-panel">
-            <div class="editor-panel__meta" data-meta-panel>
-              <div class="meta-row">
-                <label class="meta-label" for="meta-synopsis">Синопсис</label>
-                <textarea id="meta-synopsis" class="meta-textarea" data-meta-synopsis rows="3" placeholder="1–5 строк"></textarea>
-              </div>
-              <div class="meta-row meta-row--split">
-                <div class="meta-group">
-                  <label class="meta-label" for="meta-status">Статус</label>
-                  <select id="meta-status" class="meta-select" data-meta-status>
-                    <option value="черновик">черновик</option>
-                    <option value="в работе">в работе</option>
-                    <option value="готово">готово</option>
-                  </select>
-                </div>
-                <div class="meta-group meta-group--tags">
-                  <label class="meta-label">Теги</label>
-                  <div class="meta-tags">
-                    <input class="meta-input" type="text" placeholder="POV" data-meta-tag="pov">
-                    <input class="meta-input" type="text" placeholder="линия" data-meta-tag="line">
-                    <input class="meta-input" type="text" placeholder="место" data-meta-tag="place">
-                  </div>
-                </div>
-              </div>
-            </div>
             <div
               id="editor"
               class="editor__input"
@@ -679,17 +655,20 @@
         </div>
       </main>
       <aside class="sidebar sidebar--right" data-right-sidebar>
-        <button
-          type="button"
-          class="right-rail-collapse-button"
-          data-right-rail-collapse
-          data-action="toggle-right-rail"
-          aria-expanded="true"
-          aria-label="Свернуть контекст"
-          title="Свернуть контекст"
-        >
-          <span class="right-rail-collapse-button__icon" aria-hidden="true"></span>
-        </button>
+        <header class="right-rail-head">
+          <strong>Контекст</strong>
+          <button
+            type="button"
+            class="right-rail-collapse-button"
+            data-right-rail-collapse
+            data-action="toggle-right-rail"
+            aria-expanded="true"
+            aria-label="Свернуть контекст"
+            title="Свернуть контекст"
+          >
+            <span class="right-rail-collapse-button__icon" aria-hidden="true"></span>
+          </button>
+        </header>
         <div
           class="toolbar__row toolbar__row--secondary x101-tabs-row"
           data-right-tabs
@@ -706,7 +685,7 @@
               aria-controls="right-panel-inspector"
               aria-selected="true"
               aria-pressed="true"
-            >Инспектор</button>
+            >Сцена</button>
             <button
               type="button"
               id="right-tab-comments"
@@ -740,168 +719,193 @@
           aria-labelledby="right-tab-inspector"
         >
           <div class="right-rail-shell right-rail-shell--inspector">
-            <div class="right-rail-context-band" aria-hidden="true">
-              <span>Контекст сцены</span>
-              <span>Без записи в рукопись</span>
+            <div class="right-rail-scene-empty" data-inspector-empty-state>
+              <strong>Выберите сцену</strong>
+              <span>Сведения появятся после выбора сцены в навигаторе.</span>
             </div>
-            <section class="right-rail-surface" data-inspector-metadata-surface>
-              <div class="right-rail-section__label">Документ</div>
-              <div class="right-rail-form-grid">
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Контекст</span>
-                  <span class="right-rail-form-value" data-inspector-meta-context>Нет сцены</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Статус</span>
-                  <span class="right-rail-form-value" data-inspector-meta-status>—</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Слова</span>
-                  <span class="right-rail-form-value" data-inspector-meta-word-count>0</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Синопсис</span>
-                  <span class="right-rail-form-value" data-inspector-meta-synopsis>—</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Теги</span>
-                  <span class="right-rail-form-value" data-inspector-meta-tags>—</span>
-                </div>
+            <div class="right-rail-scene-editor is-hidden" data-meta-panel data-inspector-metadata-surface>
+              <div class="right-rail-scene-context">
+                <span>Сцена</span>
+                <strong data-inspector-meta-context>Без названия</strong>
               </div>
-            </section>
-            <section class="right-rail-surface">
-              <div class="right-rail-section__label">Типографика</div>
-              <div class="right-rail-form-grid">
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Гарнитура</span>
-                  <span class="right-rail-form-value" data-inspector-font>Roboto Ms</span>
+
+              <section class="right-rail-inspector-section">
+                <label class="right-rail-section__label" for="meta-synopsis">Синопсис</label>
+                <textarea
+                  id="meta-synopsis"
+                  class="right-rail-note-box"
+                  data-meta-synopsis
+                  data-inspector-meta-synopsis
+                  rows="5"
+                  placeholder="Кратко опишите, что происходит в сцене"
+                  disabled
+                ></textarea>
+              </section>
+
+              <section class="right-rail-inspector-section">
+                <div class="right-rail-section__label">Теги</div>
+                <div class="right-rail-tag-fields" data-inspector-meta-tags>
+                  <label class="right-rail-tag-field">
+                    <span>POV</span>
+                    <input type="text" placeholder="герой" data-meta-tag="pov" disabled>
+                  </label>
+                  <label class="right-rail-tag-field">
+                    <span>Линия</span>
+                    <input type="text" placeholder="сюжет" data-meta-tag="line" disabled>
+                  </label>
+                  <label class="right-rail-tag-field">
+                    <span>Место</span>
+                    <input type="text" placeholder="локация" data-meta-tag="place" disabled>
+                  </label>
                 </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Начертание</span>
-                  <span class="right-rail-form-value" data-inspector-weight>Light</span>
+              </section>
+
+              <details class="right-rail-details">
+                <summary class="right-rail-inspector-action">
+                  <span class="right-rail-details__show">Показать сведения</span>
+                  <span class="right-rail-details__hide">Скрыть сведения</span>
+                  <span class="right-rail-details__caret" aria-hidden="true"></span>
+                </summary>
+                <div class="right-rail-details__body">
+                  <section class="right-rail-surface">
+                    <div class="right-rail-section__label">Сведения</div>
+                    <div class="right-rail-form-grid">
+                      <label class="right-rail-form-row" for="meta-status">
+                        <span class="right-rail-form-key">Статус</span>
+                        <select id="meta-status" class="right-rail-inline-select" data-meta-status data-inspector-meta-status disabled>
+                          <option value="черновик">Черновик</option>
+                          <option value="в работе">В работе</option>
+                          <option value="готово">Готово</option>
+                        </select>
+                      </label>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Слова</span>
+                        <strong class="right-rail-inline-value" data-inspector-meta-word-count>0</strong>
+                      </div>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Изменено</span>
+                        <strong class="right-rail-inline-value" data-inspector-meta-modified>—</strong>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="right-rail-surface">
+                    <div class="right-rail-section__label">Макет</div>
+                    <div class="right-rail-form-grid">
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Формат</span>
+                        <div class="right-rail-segmented-control" data-preview-format-control aria-label="Формат листа">
+                          <button
+                            type="button"
+                            class="right-rail-segmented-button is-active"
+                            data-action="switch-preview-format-a4"
+                            data-preview-format-option="A4"
+                            aria-pressed="true"
+                          >A4</button>
+                          <button
+                            type="button"
+                            class="right-rail-segmented-button"
+                            data-action="switch-preview-format-a5"
+                            data-preview-format-option="A5"
+                            aria-pressed="false"
+                          >A5</button>
+                          <button
+                            type="button"
+                            class="right-rail-segmented-button"
+                            data-action="switch-preview-format-letter"
+                            data-preview-format-option="LETTER"
+                            aria-pressed="false"
+                          >Letter</button>
+                        </div>
+                      </div>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Ориентация</span>
+                        <div class="right-rail-segmented-control" data-preview-orientation-control aria-label="Ориентация листа">
+                          <button
+                            type="button"
+                            class="right-rail-segmented-button is-active"
+                            data-action="switch-preview-orientation-portrait"
+                            data-preview-orientation-option="portrait"
+                            aria-pressed="true"
+                          >Книжная</button>
+                          <button
+                            type="button"
+                            class="right-rail-segmented-button"
+                            data-action="switch-preview-orientation-landscape"
+                            data-preview-orientation-option="landscape"
+                            aria-pressed="false"
+                          >Альбомная</button>
+                        </div>
+                      </div>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Предпросмотр</span>
+                        <button
+                          type="button"
+                          class="right-rail-action-pill"
+                          data-action="toggle-preview"
+                          data-layout-preview-toggle
+                          aria-pressed="false"
+                        >Выкл</button>
+                      </div>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Рамка</span>
+                        <button
+                          type="button"
+                          class="right-rail-action-pill is-active"
+                          data-action="toggle-preview-frame"
+                          data-layout-preview-frame-toggle
+                          aria-pressed="true"
+                        >Вкл</button>
+                      </div>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Колонки</span>
+                        <strong class="right-rail-inline-value">1</strong>
+                      </div>
+                      <div class="right-rail-form-row">
+                        <span class="right-rail-form-key">Поля</span>
+                        <strong class="right-rail-inline-value" data-inspector-margins>25,4 мм</strong>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="right-rail-surface">
+                    <div class="right-rail-section__label">Состояние</div>
+                    <div class="right-rail-state-list">
+                      <div class="right-rail-state-row">
+                        <span class="right-rail-state-key">Автосохранение</span>
+                        <span class="right-rail-state-value" data-inspector-autosave-status role="status">Локально</span>
+                      </div>
+                      <div class="right-rail-state-row">
+                        <span class="right-rail-state-key">Комментарии</span>
+                        <button
+                          type="button"
+                          class="right-rail-state-action"
+                          data-action="review-open-comments"
+                          data-inspector-comments-action
+                          aria-pressed="false"
+                        >Открыть</button>
+                      </div>
+                      <div class="right-rail-state-row">
+                        <span class="right-rail-state-key">Режим фокуса</span>
+                        <span
+                          class="right-rail-state-value"
+                          data-inspector-focus-status
+                          data-state="off"
+                          role="status"
+                        >Выкл</span>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section class="right-rail-surface right-rail-surface--commands">
+                    <div class="right-rail-section__label">Команды</div>
+                    <div class="toolbar__cluster x101-action-buttons right-rail-commands-host">
+                      <button type="button" class="toolbar__button toolbar__button--wide x101-action-button right-rail-command-opener" data-action="open-command-palette">Команды</button>
+                    </div>
+                  </section>
                 </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Кегль</span>
-                  <span class="right-rail-form-value" data-inspector-font-size>12</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Интерлиньяж</span>
-                  <span class="right-rail-form-value" data-inspector-line-height>1.0</span>
-                </div>
-              </div>
-            </section>
-            <section class="right-rail-surface">
-              <div class="right-rail-section__label">Макет</div>
-              <div class="right-rail-form-grid">
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Формат</span>
-                  <div class="right-rail-segmented-control" data-preview-format-control aria-label="Формат листа">
-                    <button
-                      type="button"
-                      class="right-rail-segmented-button is-active"
-                      data-action="switch-preview-format-a4"
-                      data-preview-format-option="A4"
-                      aria-pressed="true"
-                    >A4</button>
-                    <button
-                      type="button"
-                      class="right-rail-segmented-button"
-                      data-action="switch-preview-format-a5"
-                      data-preview-format-option="A5"
-                      aria-pressed="false"
-                    >A5</button>
-                    <button
-                      type="button"
-                      class="right-rail-segmented-button"
-                      data-action="switch-preview-format-letter"
-                      data-preview-format-option="LETTER"
-                      aria-pressed="false"
-                    >Letter</button>
-                  </div>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Ориентация</span>
-                  <div class="right-rail-segmented-control" data-preview-orientation-control aria-label="Ориентация листа">
-                    <button
-                      type="button"
-                      class="right-rail-segmented-button is-active"
-                      data-action="switch-preview-orientation-portrait"
-                      data-preview-orientation-option="portrait"
-                      aria-pressed="true"
-                    >Книжная</button>
-                    <button
-                      type="button"
-                      class="right-rail-segmented-button"
-                      data-action="switch-preview-orientation-landscape"
-                      data-preview-orientation-option="landscape"
-                      aria-pressed="false"
-                    >Альбомная</button>
-                  </div>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Preview</span>
-                  <button
-                    type="button"
-                    class="right-rail-action-pill"
-                    data-action="toggle-preview"
-                    data-layout-preview-toggle
-                    aria-pressed="false"
-                  >Off</button>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Рамка</span>
-                  <button
-                    type="button"
-                    class="right-rail-action-pill is-active"
-                    data-action="toggle-preview-frame"
-                    data-layout-preview-frame-toggle
-                    aria-pressed="true"
-                  >On</button>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Колонки</span>
-                  <span class="right-rail-form-value">1</span>
-                </div>
-                <div class="right-rail-form-row">
-                  <span class="right-rail-form-key">Поля</span>
-                  <span class="right-rail-form-value" data-inspector-margins>25,4 мм</span>
-                </div>
-              </div>
-            </section>
-            <section class="right-rail-surface">
-              <div class="right-rail-section__label">Состояние</div>
-              <div class="right-rail-state-list">
-                <div class="right-rail-state-row">
-                  <span class="right-rail-state-key">Автосохранение</span>
-                  <span class="right-rail-state-value" data-inspector-autosave-status role="status">Локально</span>
-                </div>
-                <div class="right-rail-state-row">
-                  <span class="right-rail-state-key">Комментарии</span>
-                  <button
-                    type="button"
-                    class="right-rail-state-action"
-                    data-action="review-open-comments"
-                    data-inspector-comments-action
-                    aria-pressed="false"
-                  >Открыть</button>
-                </div>
-                <div class="right-rail-state-row">
-                  <span class="right-rail-state-key">Режим фокуса</span>
-                  <span
-                    class="right-rail-state-value"
-                    data-inspector-focus-status
-                    data-state="off"
-                    role="status"
-                  >Выкл</span>
-                </div>
-              </div>
-            </section>
-            <section class="right-rail-surface right-rail-surface--commands">
-              <div class="right-rail-section__label">Команды</div>
-              <div class="toolbar__cluster x101-action-buttons right-rail-commands-host">
-                <button type="button" class="toolbar__button toolbar__button--wide x101-action-button right-rail-command-opener" data-action="open-command-palette">Команды</button>
-              </div>
-            </section>
+              </details>
+            </div>
           </div>
         </div>
         <div

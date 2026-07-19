@@ -55,6 +55,22 @@ for (const dirName of ['appData', 'userData', 'documents']) {
   fs.mkdirSync(path.join(tempRoot, dirName), { recursive: true });
 }
 
+const seededSceneDir = path.join(tempRoot, 'documents', 'craftsman', 'Роман', 'roman', 'Imported');
+fs.mkdirSync(seededSceneDir, { recursive: true });
+fs.writeFileSync(
+  path.join(seededSceneDir, '01 Вокзал.txt'),
+  [
+    'Ирина приезжает на вокзал и замечает дату из будущего.',
+    '',
+    '[meta]',
+    'status: черновик',
+    'tags: POV=Ирина; линия=тайна; место=вокзал',
+    'synopsis: Ирина приезжает на вокзал, замечает дату из будущего и впервые слышит голос человека, который ждал её.',
+    '[/meta]',
+  ].join('\\n'),
+  'utf8'
+);
+
 dialog.showOpenDialog = async () => ({ canceled: true, filePaths: [] });
 dialog.showSaveDialog = async () => ({ canceled: true });
 dialog.showMessageBox = async () => ({ response: 0 });
@@ -416,16 +432,40 @@ async function exerciseLeftRailLastStableRestore(win) {
 }
 
 async function exerciseInspectorControls(win) {
-  const before = await win.webContents.executeJavaScript(
-    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; const commentsAction = document.querySelector('[data-inspector-comments-action]'); const autosaveStatus = document.querySelector('[data-inspector-autosave-status]'); const focusStatus = document.querySelector('[data-inspector-focus-status]'); return { commentsTag: commentsAction?.tagName || '', commentsAction: commentsAction?.dataset.action || '', autosaveTag: autosaveStatus?.tagName || '', autosaveText: autosaveStatus?.textContent?.trim() || '', focusTag: focusStatus?.tagName || '', focusText: focusStatus?.textContent?.trim() || '', focusState: focusStatus?.dataset.state || '', fontMatches: text('[data-font-display]') === text('[data-inspector-font]'), weightMatches: text('[data-weight-display]') === text('[data-inspector-weight]'), sizeMatches: text('[data-size-display]') === text('[data-inspector-font-size]'), lineHeightMatches: text('[data-line-height-display]') === text('[data-inspector-line-height]'), marginsText: text('[data-inspector-margins]'), marginsTitle: document.querySelector('[data-inspector-margins]')?.title || '', historyTabPresent: Boolean(document.querySelector('[data-right-tab=history]')), quickNotePresent: Boolean(document.querySelector('[data-left-quick-note]')) }; })()",
+  const sceneTarget = await win.webContents.executeJavaScript(
+    "(async () => { const tree = await window.electronAPI.getProjectTree('roman'); const stack = tree?.root ? [tree.root] : []; let target = null; while (stack.length && !target) { const node = stack.shift(); if (node && ['scene', 'chapter-file'].includes(node.kind)) target = node; for (const child of node?.children || []) stack.push(child); } if (!target) return { ok: false, reason: 'SCENE_TARGET_MISSING' }; const opened = await window.electronAPI.openDocument({ projectId: tree.projectId, nodeId: target.nodeId }); return { ok: opened?.ok !== false, targetId: target.nodeId, targetKind: target.kind }; })()",
     true
   );
+  if (!sceneTarget?.ok || !sceneTarget.targetId) {
+    throw new Error(sceneTarget?.reason || 'SCENE_INSPECTOR_TARGET_OPEN_FAILED');
+  }
+  await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => ({ visible: !document.querySelector('[data-meta-panel]')?.classList.contains('is-hidden'), editable: document.querySelector('[data-meta-panel]')?.dataset.metadataEditable === 'true', activeId: document.querySelector('.tree__row[data-active-document=true]')?.dataset.documentId || '' }))()",
+      true
+    ).then((state) => state.visible && state.editable && state.activeId === sceneTarget.targetId ? state : null),
+    'SCENE_INSPECTOR_NOT_READY'
+  );
+  const before = await win.webContents.executeJavaScript(
+    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; const commentsAction = document.querySelector('[data-inspector-comments-action]'); const autosaveStatus = document.querySelector('[data-inspector-autosave-status]'); const focusStatus = document.querySelector('[data-inspector-focus-status]'); const synopsis = document.querySelector('[data-inspector-meta-synopsis]'); const tags = document.querySelector('[data-inspector-meta-tags]'); const details = document.querySelector('.right-rail-details'); return { provider: document.querySelector('[data-right-panel-inspector]')?.dataset.rightSurfaceProvider || '', sceneTabText: text('[data-right-tab=inspector]'), synopsisBeforeTags: Boolean(synopsis && tags && (synopsis.compareDocumentPosition(tags) & Node.DOCUMENT_POSITION_FOLLOWING)), tagsBeforeDetails: Boolean(tags && details && (tags.compareDocumentPosition(details) & Node.DOCUMENT_POSITION_FOLLOWING)), detailsOpen: details?.open === true, detailsLabel: text('.right-rail-details__show'), commentsTag: commentsAction?.tagName || '', commentsAction: commentsAction?.dataset.action || '', autosaveTag: autosaveStatus?.tagName || '', autosaveText: autosaveStatus?.textContent?.trim() || '', focusTag: focusStatus?.tagName || '', focusText: focusStatus?.textContent?.trim() || '', focusState: focusStatus?.dataset.state || '', typographyHooksAbsent: ['[data-inspector-font]', '[data-inspector-weight]', '[data-inspector-font-size]', '[data-inspector-line-height]'].every((selector) => !document.querySelector(selector)), marginsText: text('[data-inspector-margins]'), marginsTitle: document.querySelector('[data-inspector-margins]')?.title || '', historyTabPresent: Boolean(document.querySelector('[data-right-tab=history]')), quickNotePresent: Boolean(document.querySelector('[data-left-quick-note]')), technicalCodeVisible: /E_[A-Z0-9_]+/u.test(document.querySelector('[data-right-sidebar]')?.textContent || '') }; })()",
+    true
+  );
+  await captureSelectorEvidence(win, '[data-right-sidebar]', 'sidebar-inspector-primary.png');
 
   await win.webContents.executeJavaScript("(() => { const change = (selector, value) => { const select = document.querySelector(selector); if (!select) return; select.value = value; select.dispatchEvent(new Event('change', { bubbles: true })); }; change('[data-font-select]', 'Georgia, serif'); change('[data-weight-select]', 'regular'); change('[data-size-select]', '16'); change('[data-line-height-select]', '1.4'); })()", true);
   await sleep(500);
   const typographyChanged = await win.webContents.executeJavaScript(
-    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; return { font: text('[data-inspector-font]'), weight: text('[data-inspector-weight]'), size: text('[data-inspector-font-size]'), lineHeight: text('[data-inspector-line-height]') }; })()",
+    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; return { font: text('[data-font-display]'), weight: text('[data-weight-display]'), size: text('[data-size-display]'), lineHeight: text('[data-line-height-display]'), inspectorTypographyAbsent: ['[data-inspector-font]', '[data-inspector-weight]', '[data-inspector-font-size]', '[data-inspector-line-height]'].every((selector) => !document.querySelector(selector)) }; })()",
     true
+  );
+
+  await win.webContents.executeJavaScript("document.querySelector('.right-rail-details > summary')?.click()", true);
+  const detailsOpened = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; const details = document.querySelector('.right-rail-details'); return { open: details?.open === true, statusVisible: Boolean(document.querySelector('[data-inspector-meta-status]')?.offsetParent), words: text('[data-inspector-meta-word-count]'), modified: text('[data-inspector-meta-modified]'), technicalCodeVisible: /E_[A-Z0-9_]+/u.test(document.querySelector('[data-right-sidebar]')?.textContent || '') }; })()",
+      true
+    ).then((state) => state.open && state.statusVisible ? state : null),
+    'SCENE_INSPECTOR_DETAILS_DID_NOT_OPEN'
   );
 
   await win.webContents.executeJavaScript("document.querySelector('[data-inspector-comments-action]')?.click()", true);
@@ -453,7 +493,7 @@ async function exerciseInspectorControls(win) {
     await win.webContents.executeJavaScript("(() => { const panel = document.querySelector('[data-right-panel-inspector]'); if (panel) panel.scrollTop = 0; })()", true);
   }
 
-  return { before, typographyChanged, commentsOpened, inspectorRestored };
+  return { sceneTarget, before, typographyChanged, detailsOpened, commentsOpened, inspectorRestored };
 }
 
 async function exerciseActiveDocumentReveal(win) {
@@ -831,6 +871,12 @@ try {
   assert.equal(result.navigatorSelection.productStateUnchanged, true);
 
   assert.deepEqual(result.inspectorControls.before, {
+    provider: 'query.metadataInspector',
+    sceneTabText: 'Сцена',
+    synopsisBeforeTags: true,
+    tagsBeforeDetails: true,
+    detailsOpen: false,
+    detailsLabel: 'Показать сведения',
     commentsTag: 'BUTTON',
     commentsAction: 'review-open-comments',
     autosaveTag: 'SPAN',
@@ -838,21 +884,25 @@ try {
     focusTag: 'SPAN',
     focusText: 'Выкл',
     focusState: 'off',
-    fontMatches: true,
-    weightMatches: true,
-    sizeMatches: true,
-    lineHeightMatches: true,
+    typographyHooksAbsent: true,
     marginsText: '25,4 мм',
     marginsTitle: 'Верх 25,4 мм, справа 25,4 мм, низ 25,4 мм, слева 25,4 мм',
     historyTabPresent: true,
     quickNotePresent: false,
+    technicalCodeVisible: false,
   });
   assert.deepEqual(result.inspectorControls.typographyChanged, {
     font: 'Georgia',
     weight: 'Regular',
     size: '16',
     lineHeight: '1.4',
+    inspectorTypographyAbsent: true,
   });
+  assert.equal(result.inspectorControls.detailsOpened.open, true);
+  assert.equal(result.inspectorControls.detailsOpened.statusVisible, true);
+  assert.match(result.inspectorControls.detailsOpened.words, /^\d+$/u);
+  assert.notEqual(result.inspectorControls.detailsOpened.modified, '');
+  assert.equal(result.inspectorControls.detailsOpened.technicalCodeVisible, false);
   assert.deepEqual(result.inspectorControls.commentsOpened, {
     mode: 'review',
     commentsVisible: true,

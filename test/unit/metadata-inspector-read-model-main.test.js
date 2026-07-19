@@ -123,6 +123,7 @@ test('metadata inspector read model exposes active scene metadata without file p
   assert.equal(result.metadata.status, 'чистовой текст');
   assert.deepEqual(result.metadata.tags, { pov: 'Kira', line: 'A', place: 'Station' });
   assert.equal(result.wordCount, 3);
+  assert.match(result.modifiedAtUtc, /^\d{4}-\d{2}-\d{2}T/u);
   assert.equal(result.contentHash, sha256(await fsPromises.readFile(path.join(importedRoot, '01_Alpha.txt'), 'utf8')));
   assert.equal(JSON.stringify(result).includes(projectRoot), false);
 });
