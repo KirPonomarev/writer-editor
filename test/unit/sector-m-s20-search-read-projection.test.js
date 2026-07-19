@@ -183,7 +183,7 @@ test('S20 search bridge: main exposes read-only query and no write path in searc
   assert.ok(main.includes('buildProjectSearchReadModel({'));
 
   const start = main.indexOf('async function handleWorkspaceProjectSearchQuery(payload = {})');
-  const end = main.indexOf('async function handleNotesCreateCommand', start);
+  const end = main.indexOf('function makeReplaceSingleSafeError', start);
   assert.ok(start > -1 && end > start);
   const handler = main.slice(start, end);
   assert.ok(handler.includes('buildProjectTreeRootsWithIdentitiesReadOnly()'));

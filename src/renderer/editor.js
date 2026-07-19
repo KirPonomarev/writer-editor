@@ -9533,10 +9533,12 @@ function renderProjectSearchCentralResults() {
   const list = document.createElement('div');
   list.className = 'project-search-results';
   projectSearchState.results.forEach((result) => {
-    const item = document.createElement('button');
-    item.type = 'button';
+    const item = document.createElement('div');
     item.className = 'project-search-result';
-    item.dataset.searchResultId = result.id || '';
+    const openButton = document.createElement('button');
+    openButton.type = 'button';
+    openButton.className = 'project-search-result__open';
+    openButton.dataset.searchResultId = result.id || '';
     const title = document.createElement('span');
     title.className = 'project-search-result__title';
     title.textContent = result.source?.title || result.title || 'Источник';
@@ -9548,7 +9550,16 @@ function renderProjectSearchCentralResults() {
     const preview = document.createElement('span');
     preview.className = 'project-search-result__preview';
     preview.textContent = result.preview?.text || '';
-    item.append(title, meta, preview);
+    openButton.append(title, meta, preview);
+    item.appendChild(openButton);
+    if (result.source?.type === 'document' && result.source?.kind === 'scene' && result.source?.field === 'body') {
+      const replaceButton = document.createElement('button');
+      replaceButton.type = 'button';
+      replaceButton.className = 'project-search-result__replace';
+      replaceButton.dataset.replaceSearchResultId = result.id || '';
+      replaceButton.textContent = 'Заменить';
+      item.appendChild(replaceButton);
+    }
     list.appendChild(item);
   });
   projectSearchResultsElement.appendChild(list);
@@ -9653,6 +9664,59 @@ async function activateProjectSearchResult(resultId) {
     void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
     updateStatusText('Аннотация открыта');
   }
+}
+
+async function replaceProjectSearchResult(resultId) {
+  const result = getProjectSearchResultById(resultId);
+  if (!result) return;
+  const source = result.source && typeof result.source === 'object' && !Array.isArray(result.source)
+    ? result.source
+    : {};
+  if (source.type !== 'document' || source.kind !== 'scene' || source.field !== 'body') {
+    updateStatusText('Можно заменить только текст сцены');
+    return;
+  }
+  const expectedText = typeof result.preview?.matchText === 'string' ? result.preview.matchText : '';
+  if (!expectedText) {
+    updateStatusText('Нет точного фрагмента для замены');
+    return;
+  }
+  if (typeof window.prompt !== 'function') {
+    updateStatusText('Замена недоступна');
+    return;
+  }
+  const replacementText = window.prompt('Заменить найденный фрагмент на:', expectedText);
+  if (replacementText === null) return;
+  const bridgeResult = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.EDIT_REPLACE_SINGLE_SAFE, {
+    requestId: `replace-single-safe-${Date.now()}`,
+    projectId: currentProjectId,
+    searchResultId: result.id || '',
+    source: {
+      type: source.type || '',
+      nodeId: source.nodeId || '',
+      kind: source.kind || '',
+      field: source.field || '',
+      contentHash: source.contentHash || '',
+    },
+    range: {
+      from: Number(result.preview?.from),
+      to: Number(result.preview?.to),
+    },
+    expectedText,
+    replacementText,
+  });
+  const value = bridgeResult && bridgeResult.ok === true && bridgeResult.value && typeof bridgeResult.value === 'object'
+    ? bridgeResult.value
+    : null;
+  if (value && value.ok === true) {
+    updateStatusText(value.applied === true ? 'Замена применена' : 'Замена не изменила текст');
+    await refreshProjectSearchResults(leftSearchInput ? leftSearchInput.value : '');
+    return;
+  }
+  const reason = value?.reason || bridgeResult?.reason || 'REPLACE_SINGLE_SAFE_FAILED';
+  updateStatusText(reason === 'REPLACE_SINGLE_SAFE_AMBIGUOUS_MATCH'
+    ? 'Замена заблокирована: найдено несколько таких фрагментов'
+    : 'Замена заблокирована: результат устарел или небезопасен');
 }
 
 function applyLeftTab(tab) {
@@ -12920,6 +12984,14 @@ searchResultsElement?.addEventListener('click', (event) => {
 });
 
 projectSearchResultsElement?.addEventListener('click', (event) => {
+  const replaceTarget = event.target instanceof Element
+    ? event.target.closest('[data-replace-search-result-id]')
+    : null;
+  if (replaceTarget) {
+    event.preventDefault();
+    void replaceProjectSearchResult(replaceTarget.dataset.replaceSearchResultId || '');
+    return;
+  }
   const target = event.target instanceof Element
     ? event.target.closest('[data-search-result-id]')
     : null;

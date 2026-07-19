@@ -5272,20 +5272,53 @@ body.dark-theme .notes-button {
 
 .project-search-result {
   display: grid;
-  gap: 5px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 8px;
   width: 100%;
   border: 0;
   border-radius: 6px;
-  padding: 10px;
+  padding: 4px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.project-search-result:hover,
+.project-search-left-list__button:hover {
+  background: rgba(84, 77, 68, 0.08);
+}
+
+.project-search-result__open {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  border: 0;
+  border-radius: 5px;
+  padding: 6px;
   background: transparent;
   color: inherit;
   text-align: left;
   cursor: pointer;
 }
 
-.project-search-result:hover,
-.project-search-left-list__button:hover {
-  background: rgba(84, 77, 68, 0.08);
+.project-search-result__replace {
+  min-width: 74px;
+  height: 30px;
+  border: 1px solid rgba(84, 77, 68, 0.14);
+  border-radius: 6px;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.project-search-result__replace:hover {
+  background: rgba(84, 77, 68, 0.1);
+  color: var(--text-primary);
 }
 
 .project-search-result__title {
@@ -5322,6 +5355,11 @@ body.dark-theme .project-search-workspace__select,
 body.dark-theme .project-search-workspace__check,
 body.dark-theme .project-search-workspace__body {
   background: rgba(22, 21, 19, 0.54);
+}
+
+body.dark-theme .project-search-result__replace {
+  border-color: rgba(230, 224, 214, 0.14);
+  background: rgba(230, 224, 214, 0.06);
 }
 
 [data-command-palette-modal] .modal__content {
