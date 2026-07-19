@@ -68,6 +68,7 @@ let isQuitting = false;
 let isWindowClosing = false;
 let lastAutosaveHash = null;
 let lastReplaceMassReceipt = null;
+let lastHistoryRestoreReceipt = null;
 const backupHashes = new Map();
 const isDevMode = process.argv.includes('--dev');
 const CSP_POLICY =
@@ -336,6 +337,9 @@ const REPLACE_MASS_APPLY_COMMAND_ID = 'cmd.project.edit.replaceMassApply';
 const REPLACE_MASS_ROLLBACK_COMMAND_ID = 'cmd.project.edit.replaceMassRollback';
 const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
 const HISTORY_CREATE_CHECKPOINT_COMMAND_ID = 'cmd.project.history.createCheckpoint';
+const HISTORY_RESTORE_PREVIEW_COMMAND_ID = 'cmd.project.history.restorePreview';
+const HISTORY_RESTORE_APPLY_COMMAND_ID = 'cmd.project.history.restoreApply';
+const HISTORY_RESTORE_UNDO_COMMAND_ID = 'cmd.project.history.restoreUndo';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -7542,6 +7546,348 @@ async function handleHistoryCreateCheckpointCommand(payload = {}) {
       'HISTORY_CHECKPOINT_FAILED',
     );
   }
+}
+
+function normalizeHistoryRestorePayload(payload = {}) {
+  const source = isPlainObjectValue(payload) ? payload : {};
+  return {
+    projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '',
+    nodeId: typeof source.nodeId === 'string' ? source.nodeId.trim() : '',
+    snapshotId: typeof source.snapshotId === 'string' ? source.snapshotId.trim() : '',
+    previewPlan: isPlainObjectValue(source.previewPlan) ? source.previewPlan : null,
+    confirmed: source.confirmed === true,
+    receiptId: typeof source.receiptId === 'string' ? source.receiptId.trim() : '',
+  };
+}
+
+function makeHistoryRestoreError(code, reason, details = {}) {
+  return {
+    ok: false,
+    code,
+    op: HISTORY_RESTORE_APPLY_COMMAND_ID,
+    reason,
+    ...(isPlainObjectValue(details) && Object.keys(details).length > 0 ? { details } : {}),
+  };
+}
+
+function computeHistoryRestorePlanHash(plan) {
+  const stable = {
+    schemaVersion: plan.schemaVersion,
+    projectId: plan.projectId,
+    nodeId: plan.nodeId,
+    snapshotId: plan.snapshotId,
+    currentHash: plan.currentHash,
+    snapshotHash: plan.snapshotHash,
+  };
+  return computeHash(JSON.stringify(stable));
+}
+
+async function resolveHistoryRestoreSceneTarget(payload) {
+  let resolvedNode;
+  let documentTarget;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(payload.nodeId, payload.projectId);
+  } catch (error) {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError(
+        error && typeof error.code === 'string' ? error.code : 'E_HISTORY_RESTORE_NODE_UNAVAILABLE',
+        'HISTORY_RESTORE_NODE_UNAVAILABLE',
+      ),
+    };
+  }
+  try {
+    documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
+  } catch (error) {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError('E_HISTORY_RESTORE_SCOPE_UNSUPPORTED', 'HISTORY_RESTORE_SCOPE_UNSUPPORTED', {
+        kind: resolvedNode.kind,
+      }),
+    };
+  }
+  if (documentTarget.kind !== 'scene' && documentTarget.kind !== 'chapter-file') {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError('E_HISTORY_RESTORE_SCOPE_UNSUPPORTED', 'HISTORY_RESTORE_SCOPE_UNSUPPORTED', {
+        kind: documentTarget.kind,
+      }),
+    };
+  }
+  const guard = sanitizePayloadWithinProjectRoot(
+    { path: documentTarget.filePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
+  if (!guard.ok || !guard.payload) {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError('E_PATH_BOUNDARY_VIOLATION', 'PATH_BOUNDARY_VIOLATION'),
+    };
+  }
+  return {
+    ok: true,
+    resolvedNode,
+    documentTarget,
+    filePath: guard.payload.path,
+  };
+}
+
+async function readHistoryRestoreSnapshotById(filePath, snapshotId) {
+  if (!/^recovery-snapshot-\d{13}$/u.test(snapshotId)) {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError('E_HISTORY_RESTORE_SNAPSHOT_ID_INVALID', 'HISTORY_RESTORE_SNAPSHOT_ID_INVALID'),
+    };
+  }
+  const markdownIo = await loadMarkdownIoModule();
+  const snapshotPaths = await markdownIo.listRecoverySnapshots(filePath);
+  const stamp = snapshotId.slice('recovery-snapshot-'.length);
+  const snapshotPath = snapshotPaths.find((candidate) => path.basename(candidate).endsWith(`.bak.${stamp}`)) || '';
+  if (!snapshotPath) {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError('E_HISTORY_RESTORE_SNAPSHOT_NOT_FOUND', 'HISTORY_RESTORE_SNAPSHOT_NOT_FOUND'),
+    };
+  }
+  try {
+    return {
+      ok: true,
+      snapshotPath,
+      snapshotText: await fs.readFile(snapshotPath, 'utf8'),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: makeHistoryRestoreError(
+        error && typeof error.code === 'string' ? error.code : 'E_HISTORY_RESTORE_SNAPSHOT_READ_FAILED',
+        'HISTORY_RESTORE_SNAPSHOT_READ_FAILED',
+      ),
+    };
+  }
+}
+
+async function buildHistoryRestorePreviewPlan(payload = {}) {
+  const safePayload = normalizeHistoryRestorePayload(payload);
+  if (!safePayload.nodeId || !safePayload.snapshotId) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_PAYLOAD_INVALID', 'HISTORY_RESTORE_PAYLOAD_INVALID');
+  }
+  const target = await resolveHistoryRestoreSceneTarget(safePayload);
+  if (!target.ok) return target.error;
+
+  let currentText = '';
+  try {
+    currentText = await fs.readFile(target.filePath, 'utf8');
+  } catch (error) {
+    return makeHistoryRestoreError(
+      error && error.code === 'ENOENT' ? 'E_HISTORY_RESTORE_TARGET_DELETED' : 'E_HISTORY_RESTORE_TARGET_READ_FAILED',
+      error && error.code === 'ENOENT' ? 'HISTORY_RESTORE_TARGET_DELETED' : 'HISTORY_RESTORE_TARGET_READ_FAILED',
+    );
+  }
+
+  const snapshot = await readHistoryRestoreSnapshotById(target.filePath, safePayload.snapshotId);
+  if (!snapshot.ok) return snapshot.error;
+  const sceneHistoryModule = await loadSceneHistoryReadModelModule();
+  const currentHash = computeHash(currentText);
+  const snapshotHash = computeHash(snapshot.snapshotText);
+  const plan = {
+    schemaVersion: 'scene-history-restore-plan.v1',
+    projectId: target.resolvedNode.projectId,
+    nodeId: target.resolvedNode.nodeId,
+    title: getDocumentContextFromPath(target.filePath).title,
+    kind: target.documentTarget.kind,
+    snapshotId: safePayload.snapshotId,
+    currentHash,
+    snapshotHash,
+    changed: currentHash !== snapshotHash,
+    diff: sceneHistoryModule.buildSimpleTextDiff(currentText, snapshot.snapshotText),
+    warnings: currentHash === snapshotHash ? ['HISTORY_RESTORE_NO_TEXT_CHANGE'] : [],
+  };
+  return {
+    ok: true,
+    previewPlan: {
+      ...plan,
+      planHash: computeHistoryRestorePlanHash(plan),
+    },
+  };
+}
+
+async function handleHistoryRestorePreviewCommand(payload = {}) {
+  return buildHistoryRestorePreviewPlan(payload);
+}
+
+async function syncHistoryRestoreEditorFromMainState(filePath, statusText) {
+  if (filePath !== currentFilePath || !mainWindow || !mainWindow.webContents || mainWindow.webContents.isDestroyed()) {
+    return { ok: false, skipped: true };
+  }
+  const content = await fs.readFile(filePath, 'utf8');
+  const context = getDocumentContextFromPath(filePath);
+  const documentIdentity = await getProjectDocumentIdentityPayload(filePath);
+  sendEditorText(await attachProjectIdToEditorPayload({
+    content,
+    title: context.title,
+    ...documentIdentity,
+    kind: context.kind,
+    metaEnabled: context.metaEnabled,
+  }, filePath));
+  const contentHash = computeHash(content);
+  lastAutosaveHash = contentHash;
+  backupHashes.set(filePath, contentHash);
+  setDirtyState(false);
+  updateStatus(statusText);
+  return { ok: true, contentHash };
+}
+
+async function handleHistoryRestoreApplyCommand(payload = {}) {
+  const safePayload = normalizeHistoryRestorePayload(payload);
+  if (!safePayload.confirmed) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_CONFIRMATION_REQUIRED', 'HISTORY_RESTORE_CONFIRMATION_REQUIRED');
+  }
+  if (!safePayload.previewPlan || typeof safePayload.previewPlan.planHash !== 'string') {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_PREVIEW_REQUIRED', 'HISTORY_RESTORE_PREVIEW_REQUIRED');
+  }
+  if (isDirty || autoSaveInProgress) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED', 'HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED', {
+      isDirty: Boolean(isDirty),
+      autoSaveInProgress: Boolean(autoSaveInProgress),
+    });
+  }
+
+  const rebuilt = await buildHistoryRestorePreviewPlan({
+    projectId: safePayload.previewPlan.projectId,
+    nodeId: safePayload.previewPlan.nodeId,
+    snapshotId: safePayload.previewPlan.snapshotId,
+  });
+  if (!rebuilt.ok) return rebuilt;
+  if (rebuilt.previewPlan.planHash !== safePayload.previewPlan.planHash) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_PREVIEW_MISMATCH', 'HISTORY_RESTORE_PREVIEW_MISMATCH');
+  }
+
+  const target = await resolveHistoryRestoreSceneTarget(rebuilt.previewPlan);
+  if (!target.ok) return target.error;
+  const snapshot = await readHistoryRestoreSnapshotById(target.filePath, rebuilt.previewPlan.snapshotId);
+  if (!snapshot.ok) return snapshot.error;
+  const markdownIo = await loadMarkdownIoModule();
+
+  let writeResult;
+  try {
+    writeResult = await queueDiskOperation(async () => {
+      if (isDirty || autoSaveInProgress) {
+        const error = new Error('HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED');
+        error.code = 'E_HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED';
+        throw error;
+      }
+      const currentText = await fs.readFile(target.filePath, 'utf8');
+      if (computeHash(currentText) !== rebuilt.previewPlan.currentHash) {
+        const error = new Error('HISTORY_RESTORE_STALE_TARGET');
+        error.code = 'E_HISTORY_RESTORE_STALE_TARGET';
+        throw error;
+      }
+      return markdownIo.writeMarkdownWithTransactionRecovery(target.filePath, snapshot.snapshotText, {
+        maxSnapshots: 20,
+        safetyMode: 'strict',
+      });
+    }, 'history restore apply');
+  } catch (error) {
+    return makeHistoryRestoreError(
+      error && typeof error.code === 'string' ? error.code : 'E_HISTORY_RESTORE_WRITE_FAILED',
+      error && error.code === 'E_HISTORY_RESTORE_STALE_TARGET'
+        ? 'HISTORY_RESTORE_STALE_TARGET'
+        : (error && error.code === 'E_HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED'
+          ? 'HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED'
+          : 'HISTORY_RESTORE_WRITE_FAILED'),
+    );
+  }
+
+  const contentHashAfter = computeHash(snapshot.snapshotText);
+  const receiptId = `history-restore-${Date.now()}-${contentHashAfter.slice(0, 12)}`;
+  const receipt = {
+    schemaVersion: 'scene-history-restore.receipt.v1',
+    receiptId,
+    commandId: HISTORY_RESTORE_APPLY_COMMAND_ID,
+    projectId: rebuilt.previewPlan.projectId,
+    nodeId: rebuilt.previewPlan.nodeId,
+    snapshotId: rebuilt.previewPlan.snapshotId,
+    planHash: rebuilt.previewPlan.planHash,
+    contentHashBefore: rebuilt.previewPlan.currentHash,
+    contentHashAfter,
+    preRestoreSnapshotCreated: writeResult?.snapshotCreated === true,
+    undoAvailable: Boolean(writeResult?.snapshotPath),
+  };
+  lastHistoryRestoreReceipt = {
+    receipt,
+    filePath: target.filePath,
+    preRestoreSnapshotPath: typeof writeResult?.snapshotPath === 'string' ? writeResult.snapshotPath : '',
+  };
+  await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановлено');
+  return {
+    ok: true,
+    applied: true,
+    receipt,
+  };
+}
+
+async function handleHistoryRestoreUndoCommand(payload = {}) {
+  const safePayload = normalizeHistoryRestorePayload(payload);
+  if (!safePayload.receiptId) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_UNDO_RECEIPT_REQUIRED', 'HISTORY_RESTORE_UNDO_RECEIPT_REQUIRED');
+  }
+  if (!lastHistoryRestoreReceipt || lastHistoryRestoreReceipt.receipt.receiptId !== safePayload.receiptId) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_UNDO_RECEIPT_NOT_FOUND', 'HISTORY_RESTORE_UNDO_RECEIPT_NOT_FOUND');
+  }
+  if (isDirty || autoSaveInProgress) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED', 'HISTORY_RESTORE_DIRTY_EDITOR_BLOCKED');
+  }
+  const receipt = lastHistoryRestoreReceipt.receipt;
+  const target = await resolveHistoryRestoreSceneTarget(receipt);
+  if (!target.ok) return target.error;
+  if (!lastHistoryRestoreReceipt.preRestoreSnapshotPath) {
+    return makeHistoryRestoreError('E_HISTORY_RESTORE_UNDO_SNAPSHOT_MISSING', 'HISTORY_RESTORE_UNDO_SNAPSHOT_MISSING');
+  }
+  let undoText = '';
+  try {
+    undoText = await fs.readFile(lastHistoryRestoreReceipt.preRestoreSnapshotPath, 'utf8');
+  } catch (error) {
+    return makeHistoryRestoreError(
+      error && typeof error.code === 'string' ? error.code : 'E_HISTORY_RESTORE_UNDO_SNAPSHOT_READ_FAILED',
+      'HISTORY_RESTORE_UNDO_SNAPSHOT_READ_FAILED',
+    );
+  }
+  const markdownIo = await loadMarkdownIoModule();
+  try {
+    await queueDiskOperation(async () => {
+      const currentText = await fs.readFile(target.filePath, 'utf8');
+      if (computeHash(currentText) !== receipt.contentHashAfter) {
+        const error = new Error('HISTORY_RESTORE_UNDO_STALE_TARGET');
+        error.code = 'E_HISTORY_RESTORE_UNDO_STALE_TARGET';
+        throw error;
+      }
+      return markdownIo.writeMarkdownWithTransactionRecovery(target.filePath, undoText, {
+        maxSnapshots: 20,
+        safetyMode: 'strict',
+      });
+    }, 'history restore undo');
+  } catch (error) {
+    return makeHistoryRestoreError(
+      error && typeof error.code === 'string' ? error.code : 'E_HISTORY_RESTORE_UNDO_WRITE_FAILED',
+      error && error.code === 'E_HISTORY_RESTORE_UNDO_STALE_TARGET'
+        ? 'HISTORY_RESTORE_UNDO_STALE_TARGET'
+        : 'HISTORY_RESTORE_UNDO_WRITE_FAILED',
+    );
+  }
+  lastHistoryRestoreReceipt = null;
+  await syncHistoryRestoreEditorFromMainState(target.filePath, 'Восстановление отменено');
+  return {
+    ok: true,
+    undone: true,
+    receipt: {
+      schemaVersion: 'scene-history-restore-undo.receipt.v1',
+      receiptId: safePayload.receiptId,
+      projectId: receipt.projectId,
+      nodeId: receipt.nodeId,
+      contentHashAfterUndo: computeHash(undoText),
+    },
+  };
 }
 
 function makeReplaceSingleSafeError(code, reason, details = {}) {
@@ -16332,6 +16678,9 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   REPLACE_MASS_APPLY_COMMAND_ID,
   REPLACE_MASS_ROLLBACK_COMMAND_ID,
   HISTORY_CREATE_CHECKPOINT_COMMAND_ID,
+  HISTORY_RESTORE_PREVIEW_COMMAND_ID,
+  HISTORY_RESTORE_APPLY_COMMAND_ID,
+  HISTORY_RESTORE_UNDO_COMMAND_ID,
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -16794,6 +17143,15 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [HISTORY_CREATE_CHECKPOINT_COMMAND_ID]: async (payload = {}) => {
     return handleHistoryCreateCheckpointCommand(payload);
+  },
+  [HISTORY_RESTORE_PREVIEW_COMMAND_ID]: async (payload = {}) => {
+    return handleHistoryRestorePreviewCommand(payload);
+  },
+  [HISTORY_RESTORE_APPLY_COMMAND_ID]: async (payload = {}) => {
+    return handleHistoryRestoreApplyCommand(payload);
+  },
+  [HISTORY_RESTORE_UNDO_COMMAND_ID]: async (payload = {}) => {
+    return handleHistoryRestoreUndoCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -17834,6 +18192,9 @@ module.exports = {
   handleReplaceMassRollbackCommand,
   handleReplaceSingleSafeCommand,
   handleHistoryCreateCheckpointCommand,
+  handleHistoryRestoreApplyCommand,
+  handleHistoryRestorePreviewCommand,
+  handleHistoryRestoreUndoCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
   handleWorkspaceProjectSearchQuery,

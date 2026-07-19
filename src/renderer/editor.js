@@ -538,6 +538,8 @@ let sceneHistoryState = {
   selectedSnapshotId: '',
   sequence: 0,
   unavailableReason: '',
+  restoreReceiptId: '',
+  restoreState: 'idle',
 };
 let plainTextBuffer = '';
 const activeTab = 'roman';
@@ -9983,6 +9985,8 @@ function normalizeSceneHistoryReadModel(result = {}, sequence = sceneHistoryStat
     selectedSnapshotId: selectedSnapshot?.snapshotId || sceneHistoryState.selectedSnapshotId || '',
     sequence,
     unavailableReason: typeof result.unavailableReason === 'string' ? result.unavailableReason : '',
+    restoreReceiptId: sceneHistoryState.restoreReceiptId || '',
+    restoreState: sceneHistoryState.restoreState || 'idle',
   };
 }
 
@@ -10041,6 +10045,16 @@ function renderSceneHistoryState() {
   }).join('');
 
   const diff = selected?.diff || null;
+  const canRestore = Boolean(selected?.readable && diff && diff.changed && selectedId);
+  const undoMarkup = sceneHistoryState.restoreReceiptId
+    ? `
+      <button
+        type="button"
+        class="right-rail-history-checkpoint right-rail-history-checkpoint--undo"
+        data-scene-history-restore-undo
+      >Отменить</button>
+    `
+    : '';
   const diffMarkup = diff
     ? `
       <section class="right-rail-surface right-rail-surface--history-diff">
@@ -10048,6 +10062,15 @@ function renderSceneHistoryState() {
         <div class="right-rail-history-delta">${diff.changed ? `${diff.deltaWords >= 0 ? '+' : ''}${diff.deltaWords} слов` : 'Без изменений'}</div>
         <pre class="right-rail-history-diff-block right-rail-history-diff-block--removed">${reviewSurfaceEscapeHtml(diff.removedPreview || '')}</pre>
         <pre class="right-rail-history-diff-block right-rail-history-diff-block--inserted">${reviewSurfaceEscapeHtml(diff.insertedPreview || '')}</pre>
+        <div class="right-rail-history-restore-row">
+          <button
+            type="button"
+            class="right-rail-history-restore"
+            data-scene-history-restore
+            ${canRestore ? '' : 'disabled'}
+          >Восстановить</button>
+          ${undoMarkup}
+        </div>
       </section>
     `
     : '<div class="right-rail-history-state">Выбранный снимок нельзя прочитать.</div>';
@@ -10086,6 +10109,79 @@ async function createSceneHistoryCheckpoint() {
     return;
   }
   updateStatusText('Снимок истории создан');
+  await refreshSceneHistory('');
+}
+
+async function restoreSelectedSceneHistorySnapshot() {
+  const selected = sceneHistoryState.selectedSnapshot;
+  const snapshotId = selected?.snapshotId || sceneHistoryState.selectedSnapshotId || '';
+  if (!currentProjectId || !currentDocumentId || !snapshotId) return;
+  sceneHistoryState = { ...sceneHistoryState, restoreState: 'previewing' };
+  renderSceneHistoryState();
+  const previewResult = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.HISTORY_RESTORE_PREVIEW, {
+    projectId: currentProjectId,
+    nodeId: currentDocumentId,
+    snapshotId,
+  });
+  const previewPlan = previewResult?.value?.previewPlan || previewResult?.previewPlan || null;
+  if (!previewResult || previewResult.ok !== true || !previewPlan) {
+    sceneHistoryState = { ...sceneHistoryState, restoreState: 'failed' };
+    updateStatusText('Восстановление недоступно');
+    renderSceneHistoryState();
+    return;
+  }
+  const delta = previewPlan.diff && Number.isFinite(previewPlan.diff.deltaWords)
+    ? previewPlan.diff.deltaWords
+    : 0;
+  const confirmed = window.confirm(`Восстановить выбранный снимок? Изменение: ${delta >= 0 ? '+' : ''}${delta} слов. Перед восстановлением будет создан новый checkpoint.`);
+  if (!confirmed) {
+    sceneHistoryState = { ...sceneHistoryState, restoreState: 'idle' };
+    renderSceneHistoryState();
+    return;
+  }
+  const applyResult = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.HISTORY_RESTORE_APPLY, {
+    projectId: currentProjectId,
+    nodeId: currentDocumentId,
+    snapshotId,
+    previewPlan,
+    confirmed: true,
+  });
+  const receipt = applyResult?.value?.receipt || applyResult?.receipt || null;
+  if (!applyResult || applyResult.ok !== true || !receipt) {
+    sceneHistoryState = { ...sceneHistoryState, restoreState: 'failed' };
+    updateStatusText('Восстановление не применено');
+    renderSceneHistoryState();
+    return;
+  }
+  sceneHistoryState = {
+    ...sceneHistoryState,
+    restoreReceiptId: typeof receipt.receiptId === 'string' ? receipt.receiptId : '',
+    restoreState: 'applied',
+    selectedSnapshotId: '',
+  };
+  updateStatusText('Снимок восстановлен');
+  await refreshSceneHistory('');
+}
+
+async function undoLastSceneHistoryRestore() {
+  const receiptId = sceneHistoryState.restoreReceiptId || '';
+  if (!receiptId) return;
+  const confirmed = window.confirm('Отменить последнее восстановление и вернуть текст, который был перед ним?');
+  if (!confirmed) return;
+  const undoResult = await invokePreloadUiCommandBridge(EXTRA_COMMAND_IDS.HISTORY_RESTORE_UNDO, {
+    receiptId,
+  });
+  if (!undoResult || undoResult.ok !== true) {
+    updateStatusText('Отмена восстановления недоступна');
+    return;
+  }
+  sceneHistoryState = {
+    ...sceneHistoryState,
+    restoreReceiptId: '',
+    restoreState: 'undone',
+    selectedSnapshotId: '',
+  };
+  updateStatusText('Восстановление отменено');
   await refreshSceneHistory('');
 }
 
@@ -13200,6 +13296,20 @@ sceneHistoryHost?.addEventListener('click', (event) => {
     : null;
   if (checkpointButton) {
     void createSceneHistoryCheckpoint();
+    return;
+  }
+  const restoreButton = event.target instanceof Element
+    ? event.target.closest('[data-scene-history-restore]')
+    : null;
+  if (restoreButton) {
+    void restoreSelectedSceneHistorySnapshot();
+    return;
+  }
+  const undoButton = event.target instanceof Element
+    ? event.target.closest('[data-scene-history-restore-undo]')
+    : null;
+  if (undoButton) {
+    void undoLastSceneHistoryRestore();
     return;
   }
   const snapshotButton = event.target instanceof Element
