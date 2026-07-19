@@ -66,6 +66,11 @@ test('sidebar product truth: scene inspector keeps canonical metadata primary an
     'data-inspector-meta-synopsis',
     'data-inspector-meta-tags',
     'data-inspector-meta-modified',
+    'data-inspector-context-kind',
+    'data-inspector-document-summary',
+    'data-inspector-document-type',
+    'data-inspector-document-word-count',
+    'data-inspector-document-modified',
   ]) {
     assert.ok(html.includes(hook), `missing live inspector hook: ${hook}`);
   }
@@ -85,8 +90,11 @@ test('sidebar product truth: scene inspector keeps canonical metadata primary an
   assert.ok(editor.includes('function syncInspectorBookProfileValues('));
   assert.ok(editor.includes('function renderMetadataInspectorState('));
   assert.ok(editor.includes('function setMetadataInspectorEditingEnabled(enabled)'));
+  assert.ok(editor.includes('function setMetadataInspectorContextPresentation(state, contextAvailable)'));
+  assert.ok(editor.includes("kind === 'roman-section'"));
   assert.ok(editor.includes("reason === 'NO_ACTIVE_NODE' || reason === 'E_TREE_NODE_ID_INVALID'"));
-  assert.ok(editor.includes('setMetadataInspectorSurfaceVisible(sceneAvailable);'));
+  assert.ok(editor.includes('setMetadataInspectorSurfaceVisible(contextAvailable);'));
+  assert.ok(editor.includes("metaPanel.dataset.contextMode = sceneFieldsVisible ? 'metadata' : 'document';"));
   assert.equal(editor.includes('inspectorMetaSynopsisValue.textContent = state.unavailableReason'), false);
   assert.ok(editor.includes("const METADATA_INSPECTOR_QUERY_ID = 'query.metadataInspector';"));
   assert.ok(editor.includes('if (!inspectorMarginsValue) return;'));

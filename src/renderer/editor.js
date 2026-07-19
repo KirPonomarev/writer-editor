@@ -249,18 +249,28 @@ const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]')
 const rightInspectorPanel = document.querySelector('[data-right-panel-inspector]');
 const rightCommentsPanel = document.querySelector('[data-right-panel-comments]');
 const rightHistoryPanel = document.querySelector('[data-right-panel-history]');
+const rightInspectorTabButton = document.querySelector('[data-right-tab="inspector"]');
 const sceneHistoryHost = document.querySelector('[data-scene-history-host]');
 const reviewSurfaceHost = document.querySelector('[data-review-surface-host]');
 const inspectorCommentsAction = document.querySelector('[data-inspector-comments-action]');
 const inspectorFocusStatus = document.querySelector('[data-inspector-focus-status]');
 const inspectorMarginsValue = document.querySelector('[data-inspector-margins]');
 const inspectorEmptyState = document.querySelector('[data-inspector-empty-state]');
+const inspectorContextKind = document.querySelector('[data-inspector-context-kind]');
 const inspectorMetaContextValue = document.querySelector('[data-inspector-meta-context]');
 const inspectorMetaStatusValue = document.querySelector('[data-inspector-meta-status]');
 const inspectorMetaWordCountValue = document.querySelector('[data-inspector-meta-word-count]');
 const inspectorMetaSynopsisValue = document.querySelector('[data-inspector-meta-synopsis]');
 const inspectorMetaTagsValue = document.querySelector('[data-inspector-meta-tags]');
 const inspectorMetaModifiedValue = document.querySelector('[data-inspector-meta-modified]');
+const inspectorSceneSections = Array.from(document.querySelectorAll('[data-inspector-scene-section]'));
+const inspectorSceneDetails = document.querySelector('[data-inspector-scene-details]');
+const inspectorDocumentSummary = document.querySelector('[data-inspector-document-summary]');
+const inspectorDocumentTypeValue = document.querySelector('[data-inspector-document-type]');
+const inspectorDocumentWordCountValue = document.querySelector('[data-inspector-document-word-count]');
+const inspectorDocumentModifiedValue = document.querySelector('[data-inspector-document-modified]');
+const inspectorDetailsShowLabel = document.querySelector('[data-inspector-details-show]');
+const inspectorDetailsHideLabel = document.querySelector('[data-inspector-details-hide]');
 const previewChromeFormatValueElement = Array.from(document.querySelectorAll('.right-rail-form-row')).find((row) => {
   const key = row.querySelector('.right-rail-form-key');
   return key && key.textContent && key.textContent.trim() === 'Формат';
@@ -9549,9 +9559,40 @@ function setMetadataInspectorEditingEnabled(enabled) {
 }
 
 function setMetadataInspectorSurfaceVisible(visible) {
-  const sceneVisible = visible === true;
-  metaPanel?.classList.toggle('is-hidden', !sceneVisible);
-  if (inspectorEmptyState) inspectorEmptyState.hidden = sceneVisible;
+  const contextVisible = visible === true;
+  metaPanel?.classList.toggle('is-hidden', !contextVisible);
+  if (inspectorEmptyState) inspectorEmptyState.hidden = contextVisible;
+}
+
+function getMetadataInspectorContextPresentation(kind = '') {
+  if (kind === 'chapter-file') {
+    return { label: 'Глава', tab: 'Глава', type: 'Глава рукописи', sceneFields: true };
+  }
+  if (kind === 'roman-section') {
+    return { label: 'Документ', tab: 'Документ', type: 'Раздел рукописи', sceneFields: false };
+  }
+  return { label: 'Сцена', tab: 'Сцена', type: 'Сцена рукописи', sceneFields: true };
+}
+
+function setMetadataInspectorContextPresentation(state, contextAvailable) {
+  const presentation = getMetadataInspectorContextPresentation(state.context?.kind || '');
+  const sceneFieldsVisible = contextAvailable && state.context?.metaEnabled === true && presentation.sceneFields;
+  if (rightInspectorTabButton) rightInspectorTabButton.textContent = contextAvailable ? presentation.tab : 'Сцена';
+  if (inspectorContextKind) inspectorContextKind.textContent = presentation.label;
+  for (const section of inspectorSceneSections) section.hidden = !sceneFieldsVisible;
+  if (inspectorSceneDetails) inspectorSceneDetails.hidden = !sceneFieldsVisible;
+  if (inspectorDocumentSummary) inspectorDocumentSummary.hidden = !contextAvailable || sceneFieldsVisible;
+  if (inspectorDocumentTypeValue) inspectorDocumentTypeValue.textContent = presentation.type;
+  if (inspectorDetailsShowLabel) {
+    inspectorDetailsShowLabel.textContent = sceneFieldsVisible ? 'Показать сведения' : 'Показать настройки';
+  }
+  if (inspectorDetailsHideLabel) {
+    inspectorDetailsHideLabel.textContent = sceneFieldsVisible ? 'Скрыть сведения' : 'Скрыть настройки';
+  }
+  if (metaPanel) {
+    metaPanel.dataset.contextKind = state.context?.kind || '';
+    metaPanel.dataset.contextMode = sceneFieldsVisible ? 'metadata' : 'document';
+  }
 }
 
 function renderMetadataInspectorState(rawState = {}) {
@@ -9562,12 +9603,14 @@ function renderMetadataInspectorState(rawState = {}) {
     if (metadataUpdatePending) {
       scheduleMetadataUpdate();
     }
-  } else if (state.state !== 'ready') {
+  } else {
     currentMetadataBaselineHash = '';
   }
-  const sceneAvailable = state.state === 'ready' && state.context?.metaEnabled === true;
+  const contextAvailable = state.state === 'ready' && Boolean(state.context);
+  const sceneAvailable = contextAvailable && state.context?.metaEnabled === true;
   const editable = sceneAvailable && hasWritableBaseline;
-  setMetadataInspectorSurfaceVisible(sceneAvailable);
+  setMetadataInspectorSurfaceVisible(contextAvailable);
+  setMetadataInspectorContextPresentation(state, contextAvailable);
   setMetadataInspectorEditingEnabled(editable);
 
   if (state.state === 'ready' && !metadataUpdatePending) {
@@ -9598,6 +9641,9 @@ function renderMetadataInspectorState(rawState = {}) {
       ? state.wordCount
       : String(getPlainText() || '').trim().split(/\s+/u).filter(Boolean).length;
     inspectorMetaWordCountValue.textContent = String(liveWordCount);
+    if (inspectorDocumentWordCountValue) {
+      inspectorDocumentWordCountValue.textContent = String(liveWordCount);
+    }
   }
   if (inspectorMetaSynopsisValue && document.activeElement !== inspectorMetaSynopsisValue) {
     inspectorMetaSynopsisValue.value = currentMeta.synopsis || '';
@@ -9607,7 +9653,9 @@ function renderMetadataInspectorState(rawState = {}) {
     inspectorMetaTagsValue.dataset.empty = hasTags ? 'false' : 'true';
   }
   if (inspectorMetaModifiedValue) {
-    inspectorMetaModifiedValue.textContent = formatMetadataInspectorModifiedAt(state.modifiedAtUtc);
+    const modifiedLabel = formatMetadataInspectorModifiedAt(state.modifiedAtUtc);
+    inspectorMetaModifiedValue.textContent = modifiedLabel;
+    if (inspectorDocumentModifiedValue) inspectorDocumentModifiedValue.textContent = modifiedLabel;
   }
 }
 
@@ -12336,6 +12384,7 @@ function updateWordCount(textOverride = null) {
   wordCountElement.textContent = `${count} words`;
   if (inspectorMetaWordCountValue && !flowModeState.active) {
     inspectorMetaWordCountValue.textContent = String(count);
+    if (inspectorDocumentWordCountValue) inspectorDocumentWordCountValue.textContent = String(count);
   }
   if (count > 20000) {
     updatePerfHintText('large document');
@@ -14735,6 +14784,8 @@ if (window.electronAPI) {
     metaEnabled = nextMetaEnabled;
     if (hasDocumentId) {
       currentDocumentId = documentId || null;
+    } else if (hasKind || hasProjectId) {
+      currentDocumentId = null;
     }
     if (hasKind) {
       currentDocumentKind = kind || null;

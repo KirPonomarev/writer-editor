@@ -55,7 +55,14 @@ for (const dirName of ['appData', 'userData', 'documents']) {
   fs.mkdirSync(path.join(tempRoot, dirName), { recursive: true });
 }
 
-const seededSceneDir = path.join(tempRoot, 'documents', 'craftsman', 'Роман', 'roman', 'Imported');
+const seededRomanDir = path.join(tempRoot, 'documents', 'craftsman', 'Роман', 'roman');
+fs.mkdirSync(seededRomanDir, { recursive: true });
+fs.writeFileSync(
+  path.join(seededRomanDir, 'сны.txt'),
+  'Первый сон возвращается перед рассветом.',
+  'utf8'
+);
+const seededSceneDir = path.join(seededRomanDir, 'Imported');
 fs.mkdirSync(seededSceneDir, { recursive: true });
 fs.writeFileSync(
   path.join(seededSceneDir, '01 Вокзал.txt'),
@@ -432,6 +439,40 @@ async function exerciseLeftRailLastStableRestore(win) {
 }
 
 async function exerciseInspectorControls(win) {
+  const legacyTarget = await win.webContents.executeJavaScript(
+    "(async () => { const tree = await window.electronAPI.getProjectTree('roman'); const stack = tree?.root ? [tree.root] : []; let target = null; while (stack.length && !target) { const node = stack.shift(); if (node?.kind === 'roman-section' && node?.label === 'сны') target = node; for (const child of node?.children || []) stack.push(child); } if (!target) return { ok: false, reason: 'LEGACY_DOCUMENT_TARGET_MISSING' }; const opened = await window.electronAPI.openDocument({ projectId: tree.projectId, nodeId: target.nodeId }); return { ok: opened?.ok !== false, targetId: target.nodeId, targetKind: target.kind }; })()",
+    true
+  );
+  if (!legacyTarget?.ok || !legacyTarget.targetId) {
+    throw new Error(legacyTarget?.reason || 'LEGACY_DOCUMENT_INSPECTOR_TARGET_OPEN_FAILED');
+  }
+  await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => ({ visible: !document.querySelector('[data-meta-panel]')?.classList.contains('is-hidden'), editable: document.querySelector('[data-meta-panel]')?.dataset.metadataEditable === 'true', contextMode: document.querySelector('[data-meta-panel]')?.dataset.contextMode || '', activeId: document.querySelector('.tree__row[data-active-document=true]')?.dataset.documentId || '' }))()",
+      true
+    ).then((state) => state.visible && !state.editable && state.contextMode === 'document' && state.activeId === legacyTarget.targetId ? state : null),
+    'LEGACY_DOCUMENT_INSPECTOR_NOT_READY'
+  );
+  const legacyDocument = await win.webContents.executeJavaScript(
+    "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; const sceneSections = [...document.querySelectorAll('[data-inspector-scene-section]')]; const summary = document.querySelector('[data-inspector-document-summary]'); return { tabText: text('[data-right-tab=inspector]'), contextKind: text('[data-inspector-context-kind]'), contextTitle: text('[data-inspector-meta-context]'), contextMode: document.querySelector('[data-meta-panel]')?.dataset.contextMode || '', editable: document.querySelector('[data-meta-panel]')?.dataset.metadataEditable || '', documentSummaryVisible: Boolean(summary && !summary.hidden && summary.offsetParent), documentType: text('[data-inspector-document-type]'), words: text('[data-inspector-document-word-count]'), modified: text('[data-inspector-document-modified]'), sceneSectionsHidden: sceneSections.length === 2 && sceneSections.every((section) => section.hidden), sceneDetailsHidden: document.querySelector('[data-inspector-scene-details]')?.hidden === true, detailsLabel: text('[data-inspector-details-show]'), technicalCodeVisible: /E_[A-Z0-9_]+/u.test(document.querySelector('[data-right-sidebar]')?.textContent || '') }; })()",
+    true
+  );
+  await captureSelectorEvidence(win, '[data-right-sidebar]', 'sidebar-inspector-legacy-document.png');
+  await win.webContents.executeJavaScript("document.querySelector('.right-rail-details > summary')?.click()", true);
+  const legacySettingsOpened = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => ({ open: document.querySelector('.right-rail-details')?.open === true, sceneDetailsHidden: document.querySelector('[data-inspector-scene-details]')?.hidden === true, formatVisible: Boolean(document.querySelector('[data-preview-format-control]')?.offsetParent), label: document.querySelector('[data-inspector-details-hide]')?.textContent?.trim() || '' }))()",
+      true
+    ).then((state) => state.open && state.sceneDetailsHidden && state.formatVisible ? state : null),
+    'LEGACY_DOCUMENT_SETTINGS_DID_NOT_OPEN'
+  );
+  await captureSelectorEvidence(win, '[data-right-sidebar]', 'sidebar-inspector-legacy-settings.png');
+  await win.webContents.executeJavaScript("document.querySelector('.right-rail-details > summary')?.click()", true);
+  await waitUntil(
+    () => win.webContents.executeJavaScript("document.querySelector('.right-rail-details')?.open === false", true),
+    'LEGACY_DOCUMENT_SETTINGS_DID_NOT_CLOSE'
+  );
+
   const sceneTarget = await win.webContents.executeJavaScript(
     "(async () => { const tree = await window.electronAPI.getProjectTree('roman'); const stack = tree?.root ? [tree.root] : []; let target = null; while (stack.length && !target) { const node = stack.shift(); if (node && ['scene', 'chapter-file'].includes(node.kind)) target = node; for (const child of node?.children || []) stack.push(child); } if (!target) return { ok: false, reason: 'SCENE_TARGET_MISSING' }; const opened = await window.electronAPI.openDocument({ projectId: tree.projectId, nodeId: target.nodeId }); return { ok: opened?.ok !== false, targetId: target.nodeId, targetKind: target.kind }; })()",
     true
@@ -441,15 +482,16 @@ async function exerciseInspectorControls(win) {
   }
   await waitUntil(
     () => win.webContents.executeJavaScript(
-      "(() => ({ visible: !document.querySelector('[data-meta-panel]')?.classList.contains('is-hidden'), editable: document.querySelector('[data-meta-panel]')?.dataset.metadataEditable === 'true', activeId: document.querySelector('.tree__row[data-active-document=true]')?.dataset.documentId || '' }))()",
+      "(() => ({ visible: !document.querySelector('[data-meta-panel]')?.classList.contains('is-hidden'), editable: document.querySelector('[data-meta-panel]')?.dataset.metadataEditable === 'true', contextMode: document.querySelector('[data-meta-panel]')?.dataset.contextMode || '', documentSummaryHidden: document.querySelector('[data-inspector-document-summary]')?.hidden === true, activeId: document.querySelector('.tree__row[data-active-document=true]')?.dataset.documentId || '' }))()",
       true
-    ).then((state) => state.visible && state.editable && state.activeId === sceneTarget.targetId ? state : null),
+    ).then((state) => state.visible && state.editable && state.contextMode === 'metadata' && state.documentSummaryHidden && state.activeId === sceneTarget.targetId ? state : null),
     'SCENE_INSPECTOR_NOT_READY'
   );
   const before = await win.webContents.executeJavaScript(
     "(() => { const text = (selector) => document.querySelector(selector)?.textContent?.trim() || ''; const commentsAction = document.querySelector('[data-inspector-comments-action]'); const autosaveStatus = document.querySelector('[data-inspector-autosave-status]'); const focusStatus = document.querySelector('[data-inspector-focus-status]'); const synopsis = document.querySelector('[data-inspector-meta-synopsis]'); const tags = document.querySelector('[data-inspector-meta-tags]'); const details = document.querySelector('.right-rail-details'); return { provider: document.querySelector('[data-right-panel-inspector]')?.dataset.rightSurfaceProvider || '', sceneTabText: text('[data-right-tab=inspector]'), synopsisBeforeTags: Boolean(synopsis && tags && (synopsis.compareDocumentPosition(tags) & Node.DOCUMENT_POSITION_FOLLOWING)), tagsBeforeDetails: Boolean(tags && details && (tags.compareDocumentPosition(details) & Node.DOCUMENT_POSITION_FOLLOWING)), detailsOpen: details?.open === true, detailsLabel: text('.right-rail-details__show'), commentsTag: commentsAction?.tagName || '', commentsAction: commentsAction?.dataset.action || '', autosaveTag: autosaveStatus?.tagName || '', autosaveText: autosaveStatus?.textContent?.trim() || '', focusTag: focusStatus?.tagName || '', focusText: focusStatus?.textContent?.trim() || '', focusState: focusStatus?.dataset.state || '', typographyHooksAbsent: ['[data-inspector-font]', '[data-inspector-weight]', '[data-inspector-font-size]', '[data-inspector-line-height]'].every((selector) => !document.querySelector(selector)), marginsText: text('[data-inspector-margins]'), marginsTitle: document.querySelector('[data-inspector-margins]')?.title || '', historyTabPresent: Boolean(document.querySelector('[data-right-tab=history]')), quickNotePresent: Boolean(document.querySelector('[data-left-quick-note]')), technicalCodeVisible: /E_[A-Z0-9_]+/u.test(document.querySelector('[data-right-sidebar]')?.textContent || '') }; })()",
     true
   );
+  await sleep(120);
   await captureSelectorEvidence(win, '[data-right-sidebar]', 'sidebar-inspector-primary.png');
 
   await win.webContents.executeJavaScript("(() => { const change = (selector, value) => { const select = document.querySelector(selector); if (!select) return; select.value = value; select.dispatchEvent(new Event('change', { bubbles: true })); }; change('[data-font-select]', 'Georgia, serif'); change('[data-weight-select]', 'regular'); change('[data-size-select]', '16'); change('[data-line-height-select]', '1.4'); })()", true);
@@ -493,7 +535,7 @@ async function exerciseInspectorControls(win) {
     await win.webContents.executeJavaScript("(() => { const panel = document.querySelector('[data-right-panel-inspector]'); if (panel) panel.scrollTop = 0; })()", true);
   }
 
-  return { sceneTarget, before, typographyChanged, detailsOpened, commentsOpened, inspectorRestored };
+  return { legacyTarget, legacyDocument, legacySettingsOpened, sceneTarget, before, typographyChanged, detailsOpened, commentsOpened, inspectorRestored };
 }
 
 async function exerciseActiveDocumentReveal(win) {
@@ -869,6 +911,37 @@ try {
     editorFocused: true,
   });
   assert.equal(result.navigatorSelection.productStateUnchanged, true);
+
+  assert.equal(result.inspectorControls.legacyTarget.targetKind, 'roman-section');
+  assert.deepEqual(
+    {
+      ...result.inspectorControls.legacyDocument,
+      modified: '<checked separately>',
+    },
+    {
+      tabText: 'Документ',
+      contextKind: 'Документ',
+      contextTitle: 'сны',
+      contextMode: 'document',
+      editable: 'false',
+      documentSummaryVisible: true,
+      documentType: 'Раздел рукописи',
+      words: '5',
+      modified: '<checked separately>',
+      sceneSectionsHidden: true,
+      sceneDetailsHidden: true,
+      detailsLabel: 'Показать настройки',
+      technicalCodeVisible: false,
+    }
+  );
+  assert.notEqual(result.inspectorControls.legacyDocument.modified, '');
+  assert.notEqual(result.inspectorControls.legacyDocument.modified, '—');
+  assert.deepEqual(result.inspectorControls.legacySettingsOpened, {
+    open: true,
+    sceneDetailsHidden: true,
+    formatVisible: true,
+    label: 'Скрыть настройки',
+  });
 
   assert.deepEqual(result.inspectorControls.before, {
     provider: 'query.metadataInspector',

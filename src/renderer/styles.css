@@ -3523,6 +3523,12 @@ body.dark-theme .toolbar__swatch::before {
   border-bottom: 1px solid var(--architecture-rail-border);
 }
 
+[data-inspector-scene-section][hidden],
+[data-inspector-scene-details][hidden],
+[data-inspector-document-summary][hidden] {
+  display: none;
+}
+
 .right-rail-note-box {
   width: 100%;
   min-height: 112px;

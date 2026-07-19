@@ -312,6 +312,7 @@ const ROMAN_SECTION_LABELS = [
 const ROMAN_MIND_MAP_SECTION_LABELS = ['карта сюжета', 'карта идей'];
 const PRINT_SECTION_LABELS = ['макет'];
 const ROMAN_META_KINDS = new Set(['chapter-file', 'scene']);
+const ROMAN_CONTEXT_KINDS = new Set([...ROMAN_META_KINDS, 'roman-section']);
 const EXPORT_DOCX_MIN_CHANNEL = 'u:cmd:project:export:docxMin:v1';
 const EXPORT_DOCX_DEFAULT_REQUEST_ID = 'u3-export-docxmin-request';
 const EXPORT_CURRENT_SCENE_TXT_COMMAND_ID = 'cmd.project.exportCurrentSceneTxtV1';
@@ -17676,7 +17677,7 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
     title: contextFromPath.title,
     metaEnabled: ROMAN_META_KINDS.has(documentTarget.kind),
   };
-  if (!context.metaEnabled) {
+  if (!ROMAN_CONTEXT_KINDS.has(documentTarget.kind)) {
     return {
       ok: true,
       state: 'unavailable',
@@ -17739,7 +17740,7 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
       metadata: normalizeMetadataInspectorMeta(parsed.meta),
       wordCount: countMetadataInspectorWords(parsed.text),
       modifiedAtUtc,
-      contentHash: computeHash(content),
+      ...(context.metaEnabled ? { contentHash: computeHash(content) } : {}),
       unavailableReason: '',
     };
   } catch (error) {

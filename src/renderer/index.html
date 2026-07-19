@@ -725,11 +725,11 @@
             </div>
             <div class="right-rail-scene-editor is-hidden" data-meta-panel data-inspector-metadata-surface>
               <div class="right-rail-scene-context">
-                <span>Сцена</span>
+                <span data-inspector-context-kind>Сцена</span>
                 <strong data-inspector-meta-context>Без названия</strong>
               </div>
 
-              <section class="right-rail-inspector-section">
+              <section class="right-rail-inspector-section" data-inspector-scene-section>
                 <label class="right-rail-section__label" for="meta-synopsis">Синопсис</label>
                 <textarea
                   id="meta-synopsis"
@@ -742,7 +742,7 @@
                 ></textarea>
               </section>
 
-              <section class="right-rail-inspector-section">
+              <section class="right-rail-inspector-section" data-inspector-scene-section>
                 <div class="right-rail-section__label">Теги</div>
                 <div class="right-rail-tag-fields" data-inspector-meta-tags>
                   <label class="right-rail-tag-field">
@@ -760,14 +760,32 @@
                 </div>
               </section>
 
+              <section class="right-rail-inspector-section right-rail-document-overview" data-inspector-document-summary hidden>
+                <div class="right-rail-section__label">Сведения</div>
+                <div class="right-rail-form-grid">
+                  <div class="right-rail-form-row">
+                    <span class="right-rail-form-key">Тип</span>
+                    <strong class="right-rail-inline-value" data-inspector-document-type>Раздел рукописи</strong>
+                  </div>
+                  <div class="right-rail-form-row">
+                    <span class="right-rail-form-key">Слова</span>
+                    <strong class="right-rail-inline-value" data-inspector-document-word-count>0</strong>
+                  </div>
+                  <div class="right-rail-form-row">
+                    <span class="right-rail-form-key">Изменено</span>
+                    <strong class="right-rail-inline-value" data-inspector-document-modified>—</strong>
+                  </div>
+                </div>
+              </section>
+
               <details class="right-rail-details">
                 <summary class="right-rail-inspector-action">
-                  <span class="right-rail-details__show">Показать сведения</span>
-                  <span class="right-rail-details__hide">Скрыть сведения</span>
+                  <span class="right-rail-details__show" data-inspector-details-show>Показать сведения</span>
+                  <span class="right-rail-details__hide" data-inspector-details-hide>Скрыть сведения</span>
                   <span class="right-rail-details__caret" aria-hidden="true"></span>
                 </summary>
                 <div class="right-rail-details__body">
-                  <section class="right-rail-surface">
+                  <section class="right-rail-surface" data-inspector-scene-details>
                     <div class="right-rail-section__label">Сведения</div>
                     <div class="right-rail-form-grid">
                       <label class="right-rail-form-row" for="meta-status">
