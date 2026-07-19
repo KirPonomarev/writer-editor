@@ -42,7 +42,7 @@ test('TXT import preview UI flow: editor routes palette and runtime commands thr
     'await loadTree();',
     'await openImportedTxtSceneAfterAccept(plan, createdSceneIds);',
     "if (commandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1) {",
-    'void openTxtImportPreviewFlow();',
+    'openImportSurfaceModal(commandId);',
   ]) {
     assert.ok(editor.includes(marker), marker);
   }
