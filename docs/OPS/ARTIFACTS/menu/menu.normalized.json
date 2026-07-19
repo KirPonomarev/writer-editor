@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "snapshotId": "menu-default-desktop-minimal",
-  "normalizedHashSha256": "23f440d8048041a53d96c340fc9bc164302c3a5c2729bd944bf541e38bb8ba75",
-  "generatedAt": "2026-07-19T04:26:29.634Z",
-  "generatedFromCommit": "e34bf3e1a152084a4983b2b422e945abf2b8b62e",
+  "normalizedHashSha256": "8a3b073eadd7832c6a898af38e140e36319ee2133db04dc66bb4caae66a5d3ea",
+  "generatedAt": "2026-07-19T04:54:44.418Z",
+  "generatedFromCommit": "1a25728cfa13bbdc08a87dba4a68e89b1f8387ac",
   "context": {
     "contextHashSha256": "0b9f41c629bef3558dc79abcbc0afcffdad95ff97ccb70bfb3d1ebf8ad9b9290",
     "contextRef": "test/fixtures/menu/context.default.json"
@@ -59,6 +59,11 @@
         "base": "Import DOCX Content (Content only)...",
         "en": "Import DOCX Content (Content only)...",
         "ru": "Импорт содержимого DOCX (только содержимое)..."
+      },
+      "menu.file.importFullArchive": {
+        "base": "Import Full Project Archive...",
+        "en": "Import Full Project Archive...",
+        "ru": "Импорт полного архива проекта..."
       },
       "menu.file.importMarkdownContent": {
         "base": "Import Markdown Content...",
@@ -297,6 +302,7 @@
     "cmd.project.exportSelectedScenesTxtV1",
     "cmd.project.format.alignLeft",
     "cmd.project.importDocxV1",
+    "cmd.project.importFullArchiveV1",
     "cmd.project.importMarkdownV1",
     "cmd.project.importTxtV1",
     "cmd.project.insert.addCard",
@@ -463,6 +469,36 @@
           "id": "file-import-markdown-content",
           "label": "Import Markdown Content...",
           "labelKey": "menu.file.importMarkdownContent",
+          "mode": [
+            "offline"
+          ],
+          "origin": "base",
+          "profile": [
+            "minimal",
+            "pro",
+            "guru"
+          ],
+          "sourceRefs": [
+            "src/menu/menu-config.v2.json"
+          ],
+          "stage": [
+            "X1",
+            "X2",
+            "X3",
+            "X4"
+          ],
+          "visibilityPolicy": "visible_enabled"
+        },
+        {
+          "canonicalCmdId": "cmd.project.importFullArchiveV1",
+          "disabledReasonCode": null,
+          "enabledWhenAst": {
+            "args": [],
+            "op": "all"
+          },
+          "id": "file-import-full-archive",
+          "label": "Import Full Project Archive...",
+          "labelKey": "menu.file.importFullArchive",
           "mode": [
             "offline"
           ],

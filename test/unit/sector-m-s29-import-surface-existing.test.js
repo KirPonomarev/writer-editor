@@ -28,6 +28,7 @@ test('S29 import surface: one truthful modal exposes existing bounded formats', 
     'data-import-surface-format="docx"',
     'data-import-surface-format="txt"',
     'data-import-surface-format="markdown"',
+    'data-import-surface-format="archive"',
     'Preview creates no project files.',
     'Unsupported structure stays outside automatic import.',
   ]) {
@@ -53,6 +54,8 @@ test('S29 import surface: buttons delegate to current preview flows and write no
   assert.ok(section.includes('return openTxtImportPreviewFlow();'));
   assert.ok(section.includes("if (normalizedFormat === 'markdown') {"));
   assert.ok(section.includes('return handleMarkdownImportUiPath();'));
+  assert.ok(section.includes("if (normalizedFormat === 'archive') {"));
+  assert.ok(section.includes('return handleProjectArchiveImportUiPath();'));
 
   for (const forbidden of [
     'accept: true',
@@ -79,26 +82,29 @@ test('S29 import surface: menu, palette, shortcut, and Tiptap runtime open the s
   assert.ok(paletteSection.includes("const importDocxCommandId = 'cmd.project.importDocxV1';"));
   assert.ok(paletteSection.includes("const importTxtCommandId = 'cmd.project.importTxtV1';"));
   assert.ok(paletteSection.includes("const importMarkdownCommandId = 'cmd.project.importMarkdownV1';"));
-  assert.equal((paletteSection.match(/return openImportSurfaceModal\(normalizedCommandId\);/g) || []).length, 3);
+  assert.ok(paletteSection.includes("const importFullArchiveCommandId = 'cmd.project.importFullArchiveV1';"));
+  assert.equal((paletteSection.match(/return openImportSurfaceModal\(normalizedCommandId\);/g) || []).length, 4);
 
   const runtimeSection = sectionBetween(
     editor,
     'function handleCanonicalRuntimeCommandId(commandId, runtimePayload = null)',
     'if (isTiptapMode) {',
   );
-  assert.equal((runtimeSection.match(/openImportSurfaceModal\(commandId\);/g) || []).length, 3);
+  assert.equal((runtimeSection.match(/openImportSurfaceModal\(commandId\);/g) || []).length, 4);
   assert.ok(editor.includes('openImportSurface: (commandId = \'\') => openImportSurfaceModal(commandId),'));
   assert.ok(editor.includes('openImportSurfaceModal();'));
 
   assert.ok(runtimeBridge.includes("commandId === 'cmd.project.importDocxV1'"));
   assert.ok(runtimeBridge.includes("commandId === 'cmd.project.importTxtV1'"));
   assert.ok(runtimeBridge.includes("commandId === 'cmd.project.importMarkdownV1'"));
+  assert.ok(runtimeBridge.includes("commandId === 'cmd.project.importFullArchiveV1'"));
   assert.ok(runtimeBridge.includes('runBridgeCallback(runtimeHandlers.openImportSurface, commandId, commandId)'));
 
   for (const commandId of [
     'cmd.project.importDocxV1',
     'cmd.project.importTxtV1',
     'cmd.project.importMarkdownV1',
+    'cmd.project.importFullArchiveV1',
   ]) {
     assert.ok(menu.includes(`"command": "${commandId}"`), commandId);
   }

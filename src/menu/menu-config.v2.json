@@ -93,6 +93,19 @@
           }
         },
         {
+          "id": "file-import-full-archive",
+          "label": "Import Full Project Archive...",
+          "labelKey": "menu.file.importFullArchive",
+          "command": "cmd.project.importFullArchiveV1",
+          "mode": ["offline"],
+          "profile": ["minimal", "pro", "guru"],
+          "stage": ["X1", "X2", "X3", "X4"],
+          "enabledWhen": {
+            "op": "all",
+            "args": []
+          }
+        },
+        {
           "id": "file-export-docx",
           "label": "Export DOCX (Minimal)...",
           "labelKey": "menu.file.exportDocx",

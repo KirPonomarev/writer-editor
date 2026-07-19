@@ -3923,31 +3923,31 @@
     },
     {
       "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
-      "sha256": "159cd63c1e3718dd1adb099081cc0a1b3c728fd271496690b79c0931cfc343d5",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S32_FULL_ARCHIVE_EXPORT",
-      "approvedAtUtc": "2026-07-19T04:30:00.000Z",
-      "rationale": "Approve S32 full project archive export menu artifact refresh: add the complete project archive export lane while preserving offline menu semantics and normalized artifact integrity."
+      "sha256": "a3154dceeb3e6c04d2b72f2932d78e42e83925620ad84bb28b257816f238cdd9",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
+      "approvedAtUtc": "2026-07-19T04:55:00.000Z",
+      "rationale": "Approve S33 full project archive import menu artifact refresh: add the complete project archive import lane while preserving offline menu semantics and normalized artifact integrity."
     },
     {
       "filePath": "docs/OPS/LOCKS/MENU_ARTIFACT_LOCK.json",
-      "sha256": "b6c88b7ba178c6ecd87e0623d608eefb9589f187a13567d216eb66581e5db50c",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S32_FULL_ARCHIVE_EXPORT",
-      "approvedAtUtc": "2026-07-19T04:30:00.000Z",
-      "rationale": "Approve S32 menu artifact lock refresh after the full project archive export lane became part of the minimal desktop menu."
+      "sha256": "da998f29da35ec49eecdf39101cf7cfc4fdffe8b6cf50727046a0db83fadca8d",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
+      "approvedAtUtc": "2026-07-19T04:55:00.000Z",
+      "rationale": "Approve S33 menu artifact lock refresh after the full project archive import lane became part of the minimal desktop menu."
     },
     {
       "filePath": "docs/OPS/STATUS/MENU_SNAPSHOT_REGISTRY.json",
-      "sha256": "430d13094eec1c437ce595dadac89dd552cf16c2f99f3c123986c60eec852995",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S32_FULL_ARCHIVE_EXPORT",
-      "approvedAtUtc": "2026-07-19T04:30:00.000Z",
-      "rationale": "Approve S32 menu snapshot registry refresh for the new full project archive export menu item."
+      "sha256": "30dbfd4ff4f44513c36b3993586adf0dfc9d4382d626a33cfa95d2b8042b3f73",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
+      "approvedAtUtc": "2026-07-19T04:55:00.000Z",
+      "rationale": "Approve S33 menu snapshot registry refresh for the new full project archive import menu item."
     },
     {
       "filePath": "docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json",
-      "sha256": "b0f7f885765b59be622c0e7ca044132a62da87bdd141b11b343241168ff91e11",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S32_FULL_ARCHIVE_EXPORT",
-      "approvedAtUtc": "2026-07-19T04:30:00.000Z",
-      "rationale": "Approve S32 release candidate lock refresh after the menu artifact and snapshot registry were rebound for the full project archive export lane."
+      "sha256": "c21fa1ffc1831dce8f8ccdccd2448b5deaa57184128fc7fdc0866db59eb74219",
+      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
+      "approvedAtUtc": "2026-07-19T04:55:00.000Z",
+      "rationale": "Approve S33 release candidate lock refresh after the menu artifact and snapshot registry were rebound for the full project archive import lane."
     }
   ]
 }
