@@ -6792,6 +6792,18 @@ function loadNavigatorCountersModule() {
   return navigatorCountersModulePromise;
 }
 
+let projectSearchReadModelModulePromise = null;
+function loadProjectSearchReadModelModule() {
+  if (!projectSearchReadModelModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'derived', 'projectSearchReadModel.mjs')).href;
+    projectSearchReadModelModulePromise = import(modulePath).catch((error) => {
+      projectSearchReadModelModulePromise = null;
+      throw error;
+    });
+  }
+  return projectSearchReadModelModulePromise;
+}
+
 async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
   const source = isPlainObjectValue(manifest) ? manifest : {};
   const stableProjectId = normalizeStableProjectId(source.projectId);
@@ -7043,6 +7055,285 @@ async function handleWorkspaceProjectNotesQuery(payload = {}) {
     scope: typeof payload.scope === 'string' ? payload.scope : '',
     includeDeleted: payload.includeDeleted === true,
   });
+}
+
+function normalizeProjectSearchPayload(payload = {}) {
+  const source = isPlainObjectValue(payload) ? payload : {};
+  const nodeIdPattern = /^tree-node-[a-f0-9]{32}$/u;
+  const query = typeof source.query === 'string' ? source.query.slice(0, 256) : '';
+  const scope = typeof source.scope === 'string' ? source.scope.slice(0, 64) : 'project';
+  const selectedNodeIds = Array.isArray(source.selectedNodeIds)
+    ? source.selectedNodeIds
+      .filter((value) => typeof value === 'string' && nodeIdPattern.test(value))
+      .slice(0, 100)
+    : [];
+  return {
+    query,
+    scope,
+    caseSensitive: source.caseSensitive === true,
+    wholeWord: source.wholeWord === true,
+    limit: Number.isFinite(Number(source.limit)) ? Number(source.limit) : 50,
+    activeNodeId: typeof source.activeNodeId === 'string' && nodeIdPattern.test(source.activeNodeId)
+      ? source.activeNodeId
+      : '',
+    scopeNodeId: typeof source.scopeNodeId === 'string' && nodeIdPattern.test(source.scopeNodeId)
+      ? source.scopeNodeId
+      : '',
+    selectedNodeIds,
+  };
+}
+
+function walkProjectTreeNodes(root, visitor) {
+  if (!root || typeof root !== 'object' || Array.isArray(root)) return;
+  visitor(root);
+  if (Array.isArray(root.children)) {
+    root.children.forEach((child) => walkProjectTreeNodes(child, visitor));
+  }
+}
+
+function collectProjectSearchScopeNodeIds(roots, scopeNodeId) {
+  if (!scopeNodeId) return null;
+  let scopeRoot = null;
+  Object.values(roots).forEach((root) => {
+    walkProjectTreeNodes(root, (node) => {
+      if (!scopeRoot && node && node.nodeId === scopeNodeId) {
+        scopeRoot = node;
+      }
+    });
+  });
+  if (!scopeRoot) return new Set([scopeNodeId]);
+  const ids = new Set();
+  walkProjectTreeNodes(scopeRoot, (node) => {
+    if (typeof node.nodeId === 'string' && node.nodeId) ids.add(node.nodeId);
+  });
+  return ids;
+}
+
+function projectSearchShouldIncludeDocument(node, options, scopeIds) {
+  const nodeId = typeof node.nodeId === 'string' ? node.nodeId : '';
+  if (!nodeId) return false;
+  if (options.scope === 'current') return nodeId === options.activeNodeId;
+  if (options.scope === 'selected') return options.selectedNodeIds.includes(nodeId);
+  if (options.scope === 'structure') return scopeIds ? scopeIds.has(nodeId) : false;
+  if (options.scope === 'notes' || options.scope === 'annotations') return false;
+  return true;
+}
+
+async function buildProjectSearchDocumentSources(roots, options, projectContext) {
+  const sources = [];
+  const scopeIds = collectProjectSearchScopeNodeIds(roots, options.scopeNodeId || options.activeNodeId);
+  const envelopeModule = await loadDocumentContentEnvelopeModule();
+  const candidateNodes = [];
+  Object.values(roots).forEach((root) => {
+    walkProjectTreeNodes(root, (node) => {
+      if (projectSearchShouldIncludeDocument(node, options, scopeIds)) {
+        candidateNodes.push(node);
+      }
+    });
+  });
+
+  for (const node of candidateNodes.slice(0, 500)) {
+    let documentTarget;
+    try {
+      documentTarget = getResolvedTreeDocumentTarget({
+        projectId: projectContext.projectId,
+        projectRoot: projectContext.projectRoot,
+        manifestPath: projectContext.manifestPath,
+        manifest: projectContext.manifest,
+        nodeId: node.nodeId,
+        nodePath: node.nodePath,
+        kind: node.kind,
+      });
+    } catch {
+      continue;
+    }
+    const guard = sanitizePayloadWithinProjectRoot(
+      { path: documentTarget.filePath },
+      ['path'],
+      projectContext.projectRoot,
+    );
+    if (!guard.ok || !guard.payload) continue;
+    const relativePath = path.relative(projectContext.projectRoot, guard.payload.path);
+    if (options.scope === 'manuscript' && relativePath.split(path.sep)[0] !== PROJECT_SUBFOLDERS.roman) {
+      continue;
+    }
+    let content = '';
+    try {
+      content = await fs.readFile(guard.payload.path, 'utf8');
+    } catch (error) {
+      if (error && error.code !== 'ENOENT') logDevError('query.projectSearch:fileRead', error);
+      continue;
+    }
+    let parsedText = content;
+    try {
+      const parsed = envelopeModule.parseObservablePayload(content);
+      if (parsed && !parsed.issue) parsedText = parsed.text || '';
+    } catch {
+      parsedText = content;
+    }
+    const context = getDocumentContextFromPath(guard.payload.path);
+    sources.push({
+      type: 'document',
+      sourceId: node.nodeId,
+      nodeId: node.nodeId,
+      kind: documentTarget.kind,
+      title: typeof node.label === 'string' && node.label ? node.label : context.title,
+      scope: options.scope === 'manuscript' ? 'manuscript' : 'project',
+      field: 'body',
+      text: parsedText,
+      contentHash: computeHash(content),
+    });
+  }
+  return sources;
+}
+
+async function buildProjectSearchNoteSources(options, projectId, projectRoot) {
+  if (options.scope !== 'project' && options.scope !== 'notes') return [];
+  const notesStorage = await loadNotesStorageModule();
+  let readResult;
+  try {
+    readResult = await notesStorage.readNotesStorage({
+      projectRoot,
+      projectId,
+      readFile: fs.readFile,
+    });
+  } catch (error) {
+    if (error && error.code !== 'ENOENT') logDevError('query.projectSearch:notesRead', error);
+    return [];
+  }
+  if (!readResult || readResult.ok !== true) return [];
+  const notesResult = notesStorage.buildNotesReadModel(readResult.document, {
+    projectId,
+    scope: '',
+    includeDeleted: false,
+  });
+  if (!notesResult || notesResult.ok !== true || !Array.isArray(notesResult.notes)) return [];
+  return notesResult.notes.map((note) => ({
+    type: 'note',
+    sourceId: note.id,
+    noteId: note.id,
+    nodeId: typeof note.nodeId === 'string' ? note.nodeId : '',
+    kind: 'note',
+    title: typeof note.title === 'string' && note.title ? note.title : 'Заметка',
+    scope: note.scope || 'note',
+    field: 'body',
+    text: [note.title, note.body].filter(Boolean).join('\n'),
+    contentHash: typeof note.updatedAtUtc === 'string' ? computeHash(`${note.id}\n${note.updatedAtUtc}`) : '',
+  }));
+}
+
+function pushReviewSurfaceAnnotationSources(target, surface, sourceName) {
+  if (!isPlainObjectValue(surface)) return;
+  const exactPreview = isPlainObjectValue(surface.exactTextPlanPreview)
+    ? surface.exactTextPlanPreview
+    : (isPlainObjectValue(surface.planPreview) ? surface.planPreview : {});
+  if (Array.isArray(exactPreview.applyOps)) {
+    exactPreview.applyOps.forEach((op, index) => {
+      if (!isPlainObjectValue(op)) return;
+      target.push({
+        type: 'annotation',
+        sourceId: `annotation-exact-${sourceName}-${index}`,
+        annotationId: typeof op.changeId === 'string' ? op.changeId : `exact-${index}`,
+        nodeId: typeof op.sceneId === 'string' ? op.sceneId : '',
+        kind: 'review-exact-text',
+        title: typeof op.changeId === 'string' ? op.changeId : 'Review change',
+        scope: 'annotations',
+        field: 'review',
+        text: [op.expectedText, op.replacementText, op.applyReason].filter((value) => typeof value === 'string').join('\n'),
+        contentHash: computeHash(JSON.stringify(op)),
+      });
+    });
+  }
+  const commentPreview = isPlainObjectValue(surface.commentSurvivalPreview)
+    ? surface.commentSurvivalPreview
+    : (isPlainObjectValue(surface.commentPreview) ? surface.commentPreview : {});
+  if (Array.isArray(commentPreview.orphanComments)) {
+    commentPreview.orphanComments.forEach((comment, index) => {
+      if (!isPlainObjectValue(comment)) return;
+      target.push({
+        type: 'annotation',
+        sourceId: `annotation-comment-${sourceName}-${index}`,
+        annotationId: typeof comment.threadId === 'string' ? comment.threadId : `comment-${index}`,
+        nodeId: typeof comment.sceneId === 'string' ? comment.sceneId : '',
+        kind: 'review-comment',
+        title: typeof comment.threadId === 'string' ? comment.threadId : 'Комментарий',
+        scope: 'annotations',
+        field: 'comment',
+        text: [comment.body, comment.reason, ...(Array.isArray(comment.reasonCodes) ? comment.reasonCodes : [])]
+          .filter((value) => typeof value === 'string')
+          .join('\n'),
+        contentHash: computeHash(JSON.stringify(comment)),
+      });
+    });
+  }
+}
+
+function buildProjectSearchAnnotationSources(options) {
+  if (options.scope !== 'project' && options.scope !== 'annotations') return [];
+  const sources = [];
+  pushReviewSurfaceAnnotationSources(sources, readActiveReviewSessionReviewSurface(), 'active');
+  return sources;
+}
+
+async function handleWorkspaceProjectSearchQuery(payload = {}) {
+  const options = normalizeProjectSearchPayload(payload);
+  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  const manifest = manifestRecord && manifestRecord.manifest ? manifestRecord.manifest : null;
+  if (!manifest) {
+    return {
+      ok: true,
+      schemaVersion: 'project-search-read-model.v1',
+      projectId: '',
+      state: 'unavailable',
+      options,
+      results: [],
+      counts: { total: 0, returned: 0, sources: 0 },
+      stale: true,
+      cancelled: false,
+      unavailableReason: 'PROJECT_MANIFEST_UNAVAILABLE',
+    };
+  }
+  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const projectRoot = path.dirname(manifestPath);
+  if (!options.query.trim()) {
+    const searchModule = await loadProjectSearchReadModelModule();
+    return searchModule.buildProjectSearchReadModel({
+      projectId: manifest.projectId,
+      options,
+      sources: [],
+    });
+  }
+  try {
+    const { projectId, roots } = await buildProjectTreeRootsWithIdentitiesReadOnly();
+    const searchModule = await loadProjectSearchReadModelModule();
+    const documents = await buildProjectSearchDocumentSources(roots, options, {
+      projectId,
+      projectRoot,
+      manifestPath,
+      manifest,
+    });
+    const notes = await buildProjectSearchNoteSources(options, projectId, projectRoot);
+    const annotations = buildProjectSearchAnnotationSources(options);
+    return searchModule.buildProjectSearchReadModel({
+      projectId,
+      options,
+      sources: [...documents, ...notes, ...annotations],
+    });
+  } catch (error) {
+    logDevError('query.projectSearch', error);
+    return {
+      ok: true,
+      schemaVersion: 'project-search-read-model.v1',
+      projectId: manifest.projectId,
+      state: 'unavailable',
+      options,
+      results: [],
+      counts: { total: 0, returned: 0, sources: 0 },
+      stale: true,
+      cancelled: false,
+      unavailableReason: error && typeof error.code === 'string' ? error.code : 'PROJECT_SEARCH_UNAVAILABLE',
+    };
+  }
 }
 
 async function handleNotesCreateCommand(payload = {}, options = {}) {
@@ -12004,6 +12295,57 @@ async function buildProjectTreeRootsWithIdentities() {
   };
 }
 
+async function buildProjectTreeRootsWithIdentitiesReadOnly() {
+  const manifestRecord = await readProjectManifest(DEFAULT_PROJECT_NAME);
+  if (!manifestRecord || !manifestRecord.manifest) {
+    const error = new Error('PROJECT_MANIFEST_UNAVAILABLE');
+    error.code = 'E_PROJECT_MANIFEST_UNAVAILABLE';
+    throw error;
+  }
+  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const projectRoot = path.dirname(manifestPath);
+  const manifest = manifestRecord.manifest;
+  const romanRoot = await buildRomanTree();
+  const mindmapRoot = await buildMindMapTree();
+  const printRoot = await buildPrintTree();
+  const roots = {
+    roman: buildNode({
+      name: 'Roman tab',
+      label: 'Roman',
+      kind: 'roman-tab-root',
+      nodePath: getProjectRootPath(),
+      children: [romanRoot, mindmapRoot, printRoot],
+    }),
+    materials: await buildMaterialsTree(),
+    reference: await buildReferenceTree(),
+  };
+  const descriptors = collectProjectTreeIdentityDescriptors(Object.values(roots), projectRoot);
+  const identityModule = await loadProjectTreeIdentityModule();
+  const result = identityModule.reconcileProjectTreeIdentity({
+    projectId: manifest.projectId,
+    registry: manifest.treeIdentity,
+    descriptors,
+  });
+  if (!result.ok) {
+    const error = new Error(result.error?.reason || 'PROJECT_TREE_IDENTITY_READ_FAILED');
+    error.code = result.error?.code || 'E_TREE_IDENTITY_READ_FAILED';
+    throw error;
+  }
+  if (result.changed) {
+    const error = new Error('PROJECT_TREE_IDENTITY_STALE');
+    error.code = 'E_TREE_IDENTITY_READONLY_STALE';
+    throw error;
+  }
+  annotateProjectTreeIdentities(roots, projectRoot, result.bindings);
+  await annotateProjectTreeDerivedCounters(Object.values(roots));
+  return {
+    projectId: manifest.projectId,
+    roots,
+    manifestPath,
+    manifest,
+  };
+}
+
 async function resolveProjectTreeNodeIdentity(nodeId, expectedProjectId = '') {
   const normalizedNodeId = typeof nodeId === 'string' ? nodeId.trim() : '';
   if (!/^tree-node-[a-f0-9]{32}$/u.test(normalizedNodeId)) {
@@ -13095,6 +13437,9 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   }
   if (queryId === 'query.projectNotes') {
     return handleWorkspaceProjectNotesQuery(payload);
+  }
+  if (queryId === 'query.projectSearch') {
+    return handleWorkspaceProjectSearchQuery(payload);
   }
   return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
@@ -14918,6 +15263,7 @@ const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.reviewSurface',
   'query.metadataInspector',
   'query.projectNotes',
+  'query.projectSearch',
 ]);
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
@@ -16389,6 +16735,7 @@ module.exports = {
   handleNotesUpdateCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
+  handleWorkspaceProjectSearchQuery,
   handleWorkspaceProjectTreeQuery,
   migrateProjectNotesStorage,
   normalizeProjectManifest,
