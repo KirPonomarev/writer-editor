@@ -334,6 +334,8 @@ const REPLACE_SINGLE_SAFE_COMMAND_ID = 'cmd.project.edit.replaceSingleSafe';
 const REPLACE_MASS_PREVIEW_COMMAND_ID = 'cmd.project.edit.replaceMassPreview';
 const REPLACE_MASS_APPLY_COMMAND_ID = 'cmd.project.edit.replaceMassApply';
 const REPLACE_MASS_ROLLBACK_COMMAND_ID = 'cmd.project.edit.replaceMassRollback';
+const SCENE_HISTORY_QUERY_ID = 'query.sceneHistory';
+const HISTORY_CREATE_CHECKPOINT_COMMAND_ID = 'cmd.project.history.createCheckpoint';
 const MARKDOWN_RELIABILITY_LOG_PATH = path.join(os.tmpdir(), 'writer-editor-ops-state', 'markdown-io.log');
 const MARKDOWN_IMPORT_PREVIEW_SCHEMA = 'markdown-import-preview.v1';
 const MARKDOWN_IMPORT_PREVIEW_TYPE = 'markdown.import.preview';
@@ -6809,6 +6811,18 @@ function loadProjectSearchReadModelModule() {
   return projectSearchReadModelModulePromise;
 }
 
+let sceneHistoryReadModelModulePromise = null;
+function loadSceneHistoryReadModelModule() {
+  if (!sceneHistoryReadModelModulePromise) {
+    const modulePath = pathToFileURL(path.join(__dirname, 'derived', 'sceneHistoryReadModel.mjs')).href;
+    sceneHistoryReadModelModulePromise = import(modulePath).catch((error) => {
+      sceneHistoryReadModelModulePromise = null;
+      throw error;
+    });
+  }
+  return sceneHistoryReadModelModulePromise;
+}
+
 async function normalizeProjectManifest(manifest, projectName = DEFAULT_PROJECT_NAME) {
   const source = isPlainObjectValue(manifest) ? manifest : {};
   const stableProjectId = normalizeStableProjectId(source.projectId);
@@ -7338,6 +7352,195 @@ async function handleWorkspaceProjectSearchQuery(payload = {}) {
       cancelled: false,
       unavailableReason: error && typeof error.code === 'string' ? error.code : 'PROJECT_SEARCH_UNAVAILABLE',
     };
+  }
+}
+
+function normalizeSceneHistoryPayload(payload = {}) {
+  const source = isPlainObjectValue(payload) ? payload : {};
+  return {
+    projectId: typeof source.projectId === 'string' ? source.projectId.trim() : '',
+    nodeId: typeof source.nodeId === 'string' ? source.nodeId.trim() : '',
+    selectedSnapshotId: typeof source.selectedSnapshotId === 'string' ? source.selectedSnapshotId.trim() : '',
+  };
+}
+
+async function buildSceneHistoryFromResolvedNode(resolvedNode, documentTarget, payload = {}) {
+  const sceneHistoryModule = await loadSceneHistoryReadModelModule();
+  const guard = sanitizePayloadWithinProjectRoot(
+    { path: documentTarget.filePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
+  if (!guard.ok || !guard.payload) {
+    return sceneHistoryModule.buildSceneHistoryReadModel({
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      title: '',
+      unavailableReason: 'PATH_BOUNDARY_VIOLATION',
+    });
+  }
+
+  const filePath = guard.payload.path;
+  const context = getDocumentContextFromPath(filePath);
+  let currentText = '';
+  try {
+    currentText = await fs.readFile(filePath, 'utf8');
+  } catch (error) {
+    return sceneHistoryModule.buildSceneHistoryReadModel({
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      title: context.title,
+      unavailableReason: error && error.code === 'ENOENT' ? 'DOCUMENT_DELETED_OR_EMPTY' : 'DOCUMENT_READ_FAILED',
+    });
+  }
+
+  let snapshotPaths = [];
+  try {
+    const markdownIo = await loadMarkdownIoModule();
+    snapshotPaths = await markdownIo.listRecoverySnapshots(filePath);
+  } catch (error) {
+    logDevError('query.sceneHistory:listRecoverySnapshots', error);
+    return sceneHistoryModule.buildSceneHistoryReadModel({
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      title: context.title,
+      currentText,
+      unavailableReason: error && typeof error.code === 'string' ? error.code : 'SNAPSHOT_INDEX_UNAVAILABLE',
+    });
+  }
+
+  const snapshots = [];
+  for (const snapshotPath of snapshotPaths.slice(0, 20)) {
+    const match = /\.bak\.(\d{13})$/u.exec(path.basename(snapshotPath));
+    try {
+      const text = await fs.readFile(snapshotPath, 'utf8');
+      snapshots.push({
+        snapshotPath,
+        stamp: match ? Number(match[1]) : 0,
+        text,
+        readable: true,
+      });
+    } catch (error) {
+      snapshots.push({
+        snapshotPath,
+        stamp: match ? Number(match[1]) : 0,
+        readable: false,
+        error: error && typeof error.code === 'string' ? error.code : 'SNAPSHOT_READ_FAILED',
+      });
+    }
+  }
+
+  return sceneHistoryModule.buildSceneHistoryReadModel({
+    projectId: resolvedNode.projectId,
+    nodeId: resolvedNode.nodeId,
+    title: context.title,
+    currentText,
+    snapshots,
+    selectedSnapshotId: payload.selectedSnapshotId,
+  });
+}
+
+async function handleWorkspaceSceneHistoryQuery(payload = {}) {
+  const safePayload = normalizeSceneHistoryPayload(payload);
+  const sceneHistoryModule = await loadSceneHistoryReadModelModule();
+  if (!safePayload.nodeId) {
+    return sceneHistoryModule.buildSceneHistoryReadModel({
+      projectId: safePayload.projectId,
+      nodeId: '',
+      unavailableReason: '',
+    });
+  }
+
+  let resolvedNode;
+  let documentTarget;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
+    documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
+  } catch (error) {
+    return sceneHistoryModule.buildSceneHistoryReadModel({
+      projectId: safePayload.projectId,
+      nodeId: safePayload.nodeId,
+      unavailableReason: error && typeof error.code === 'string' ? error.code : 'TREE_NODE_UNAVAILABLE',
+    });
+  }
+
+  if (!ROMAN_META_KINDS.has(documentTarget.kind)) {
+    return sceneHistoryModule.buildSceneHistoryReadModel({
+      projectId: resolvedNode.projectId,
+      nodeId: resolvedNode.nodeId,
+      title: '',
+      unavailableReason: 'TEXT_HISTORY_UNSUPPORTED_FOR_NODE',
+    });
+  }
+
+  return buildSceneHistoryFromResolvedNode(resolvedNode, documentTarget, safePayload);
+}
+
+function makeHistoryCheckpointError(code, reason, details = {}) {
+  return {
+    ok: false,
+    code,
+    op: HISTORY_CREATE_CHECKPOINT_COMMAND_ID,
+    reason,
+    ...(isPlainObjectValue(details) && Object.keys(details).length > 0 ? { details } : {}),
+  };
+}
+
+async function handleHistoryCreateCheckpointCommand(payload = {}) {
+  const safePayload = normalizeSceneHistoryPayload(payload);
+  if (!safePayload.nodeId) {
+    return makeHistoryCheckpointError('E_HISTORY_CHECKPOINT_NODE_REQUIRED', 'HISTORY_CHECKPOINT_NODE_REQUIRED');
+  }
+
+  let resolvedNode;
+  let documentTarget;
+  try {
+    resolvedNode = await resolveProjectTreeNodeIdentity(safePayload.nodeId, safePayload.projectId);
+    documentTarget = getResolvedTreeDocumentTarget(resolvedNode);
+  } catch (error) {
+    return makeHistoryCheckpointError(
+      error && typeof error.code === 'string' ? error.code : 'E_HISTORY_CHECKPOINT_NODE_UNAVAILABLE',
+      'HISTORY_CHECKPOINT_NODE_UNAVAILABLE',
+    );
+  }
+
+  if (!ROMAN_META_KINDS.has(documentTarget.kind)) {
+    return makeHistoryCheckpointError('E_HISTORY_CHECKPOINT_KIND_BLOCKED', 'HISTORY_CHECKPOINT_UNSUPPORTED_FOR_NODE', {
+      kind: documentTarget.kind,
+    });
+  }
+
+  const guard = sanitizePayloadWithinProjectRoot(
+    { path: documentTarget.filePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
+  if (!guard.ok || !guard.payload) {
+    return makeHistoryCheckpointError('E_PATH_BOUNDARY_VIOLATION', 'PATH_BOUNDARY_VIOLATION');
+  }
+
+  try {
+    const markdownIo = await loadMarkdownIoModule();
+    const result = await markdownIo.createRecoverySnapshot(guard.payload.path, { maxSnapshots: 20 });
+    return {
+      ok: true,
+      receipt: {
+        schemaVersion: 'scene-history-checkpoint.receipt.v1',
+        projectId: resolvedNode.projectId,
+        nodeId: resolvedNode.nodeId,
+        snapshotCreated: result.snapshotCreated === true,
+        snapshotId: result.snapshotPath
+          ? `recovery-snapshot-${path.basename(result.snapshotPath).slice(-13)}`
+          : '',
+        purgedSnapshots: Array.isArray(result.purgedSnapshots) ? result.purgedSnapshots.length : 0,
+        boundedRetention: true,
+      },
+    };
+  } catch (error) {
+    return makeHistoryCheckpointError(
+      error && typeof error.code === 'string' ? error.code : 'E_HISTORY_CHECKPOINT_FAILED',
+      'HISTORY_CHECKPOINT_FAILED',
+    );
   }
 }
 
@@ -14310,6 +14513,9 @@ ipcMain.handle('ui:workspace-query-bridge', async (_, request) => {
   if (queryId === 'query.projectSearch') {
     return handleWorkspaceProjectSearchQuery(payload);
   }
+  if (queryId === SCENE_HISTORY_QUERY_ID) {
+    return handleWorkspaceSceneHistoryQuery(payload);
+  }
   return { ok: false, error: 'QUERY_ID_NOT_ALLOWED' };
 });
 
@@ -16125,6 +16331,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   REPLACE_MASS_PREVIEW_COMMAND_ID,
   REPLACE_MASS_APPLY_COMMAND_ID,
   REPLACE_MASS_ROLLBACK_COMMAND_ID,
+  HISTORY_CREATE_CHECKPOINT_COMMAND_ID,
   'cmd.ui.theme.set',
   'cmd.ui.font.set',
   'cmd.ui.fontSize.set',
@@ -16137,6 +16344,7 @@ const WORKSPACE_QUERY_BRIDGE_ALLOWED_QUERY_IDS = new Set([
   'query.metadataInspector',
   'query.projectNotes',
   'query.projectSearch',
+  SCENE_HISTORY_QUERY_ID,
 ]);
 const SAVE_LIFECYCLE_SIGNAL_BRIDGE_ALLOWED_SIGNAL_IDS = new Set([
   'signal.localDirty.set',
@@ -16583,6 +16791,9 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   },
   [REPLACE_MASS_ROLLBACK_COMMAND_ID]: async (payload = {}) => {
     return handleReplaceMassRollbackCommand(payload);
+  },
+  [HISTORY_CREATE_CHECKPOINT_COMMAND_ID]: async (payload = {}) => {
+    return handleHistoryCreateCheckpointCommand(payload);
   },
   'cmd.ui.font.set': (payload = {}) => {
     const fontFamily = typeof payload.fontFamily === 'string'
@@ -17622,9 +17833,11 @@ module.exports = {
   handleReplaceMassPreviewCommand,
   handleReplaceMassRollbackCommand,
   handleReplaceSingleSafeCommand,
+  handleHistoryCreateCheckpointCommand,
   handleWorkspaceMetadataInspectorQuery,
   handleWorkspaceProjectNotesQuery,
   handleWorkspaceProjectSearchQuery,
+  handleWorkspaceSceneHistoryQuery,
   handleWorkspaceProjectTreeQuery,
   migrateProjectNotesStorage,
   normalizeProjectManifest,

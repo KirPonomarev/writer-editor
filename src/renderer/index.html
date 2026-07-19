@@ -645,6 +645,17 @@
               aria-pressed="false"
               tabindex="-1"
             >Комментарии</button>
+            <button
+              type="button"
+              id="right-tab-history"
+              class="toolbar__button toolbar__button--wide x101-tab-button"
+              data-right-tab="history"
+              role="tab"
+              aria-controls="right-panel-history"
+              aria-selected="false"
+              aria-pressed="false"
+              tabindex="-1"
+            >История</button>
           </div>
         </div>
         <div
@@ -829,6 +840,21 @@
             class="right-rail-shell right-rail-shell--comments"
             data-review-surface-host
             data-review-surface-provider="query.reviewSurface"
+          ></div>
+        </div>
+        <div
+          id="right-panel-history"
+          class="sidebar__tree"
+          data-right-panel-history
+          data-right-surface-provider="query.sceneHistory"
+          role="tabpanel"
+          aria-labelledby="right-tab-history"
+          hidden
+        >
+          <div
+            class="right-rail-shell right-rail-shell--history"
+            data-scene-history-host
+            data-scene-history-provider="query.sceneHistory"
           ></div>
         </div>
         <div class="sidebar__resize-handle sidebar__resize-handle--right" data-right-sidebar-resizer aria-hidden="true"></div>

@@ -55,6 +55,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   EDIT_REPLACE_MASS_PREVIEW: 'cmd.project.edit.replaceMassPreview',
   EDIT_REPLACE_MASS_APPLY: 'cmd.project.edit.replaceMassApply',
   EDIT_REPLACE_MASS_ROLLBACK: 'cmd.project.edit.replaceMassRollback',
+  HISTORY_CREATE_CHECKPOINT: 'cmd.project.history.createCheckpoint',
   VIEW_ZOOM_OUT: 'cmd.project.view.zoomOut',
   VIEW_ZOOM_IN: 'cmd.project.view.zoomIn',
   VIEW_TOGGLE_WRAP: 'cmd.project.view.toggleWrap',
