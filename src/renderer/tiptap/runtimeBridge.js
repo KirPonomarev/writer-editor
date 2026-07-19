@@ -209,6 +209,13 @@ function handleCanonicalRuntimeCommandId(runtimeBridge, runtimeHandlers, command
   if (commandId === 'cmd.project.export.docxMin' && payload.preview === true) {
     return { handled: true, result: runBridgeCallback(runtimeHandlers.openExportPreview, commandId) }
   }
+  if (
+    commandId === 'cmd.project.importDocxV1'
+    || commandId === 'cmd.project.importTxtV1'
+    || commandId === 'cmd.project.importMarkdownV1'
+  ) {
+    return { handled: true, result: runBridgeCallback(runtimeHandlers.openImportSurface, commandId, commandId) }
+  }
   return { handled: false, result: null }
 }
 

@@ -307,6 +307,11 @@ const selectedScenesTxtExportSummary = document.querySelector('[data-selected-sc
 const selectedScenesTxtExportList = document.querySelector('[data-selected-scenes-txt-export-list]');
 const selectedScenesTxtExportConfirmButtons = Array.from(document.querySelectorAll('[data-selected-scenes-txt-export-confirm]'));
 const selectedScenesTxtExportCancelButtons = Array.from(document.querySelectorAll('[data-selected-scenes-txt-export-cancel]'));
+const importSurfaceModal = document.querySelector('[data-import-surface-modal]');
+const importSurfaceStatus = document.querySelector('[data-import-surface-status]');
+const importSurfaceDetail = document.querySelector('[data-import-surface-detail]');
+const importSurfaceFormatButtons = Array.from(document.querySelectorAll('[data-import-surface-format]'));
+const importSurfaceCloseButtons = Array.from(document.querySelectorAll('[data-import-surface-close]'));
 const projectLibraryModal = document.querySelector('[data-project-library-modal]');
 const projectLibraryList = document.querySelector('[data-project-library-list]');
 const projectLibraryStatus = document.querySelector('[data-project-library-status]');
@@ -11095,6 +11100,50 @@ function openCommandPaletteModal() {
   commandPaletteSearchInput?.focus();
 }
 
+function setImportSurfaceStatus(message = '', detail = '') {
+  if (importSurfaceStatus) {
+    importSurfaceStatus.textContent = message || 'Choose a local source format. Preview creates no project files.';
+  }
+  if (importSurfaceDetail) {
+    importSurfaceDetail.textContent = detail || 'Unsupported structure stays outside automatic import.';
+  }
+}
+
+function openImportSurfaceModal(commandId = '') {
+  const normalizedCommandId = typeof commandId === 'string' ? commandId.trim() : '';
+  const currentFormat = normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_DOCX_V1
+    ? 'DOCX'
+    : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1
+      ? 'TXT'
+      : (normalizedCommandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1 ? 'Markdown' : ''));
+  const prefix = currentFormat ? `${currentFormat} selected. ` : '';
+  setImportSurfaceStatus(
+    `${prefix}Choose the existing safe import lane to preview before writing.`,
+    'Preview remains zero-write; accept delegates to the format safe-create command.',
+  );
+  openSimpleModal(importSurfaceModal);
+}
+
+function closeImportSurfaceModal() {
+  closeSimpleModal(importSurfaceModal);
+}
+
+function runImportSurfaceFormat(format) {
+  const normalizedFormat = typeof format === 'string' ? format.trim().toLowerCase() : '';
+  closeImportSurfaceModal();
+  if (normalizedFormat === 'docx') {
+    return openDocxImportPreviewFlow();
+  }
+  if (normalizedFormat === 'txt') {
+    return openTxtImportPreviewFlow();
+  }
+  if (normalizedFormat === 'markdown') {
+    return handleMarkdownImportUiPath();
+  }
+  updateStatusText('Import format unavailable');
+  return undefined;
+}
+
 function runCommandPaletteAction(commandId) {
   if (typeof commandId !== 'string' || commandId.trim().length === 0) return;
   closeSimpleModal(commandPaletteModal);
@@ -11104,13 +11153,13 @@ function runCommandPaletteAction(commandId) {
   const importMarkdownCommandId = 'cmd.project.importMarkdownV1';
   const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';
   if (normalizedCommandId === importDocxCommandId) {
-    return openDocxImportPreviewFlow();
+    return openImportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === importTxtCommandId) {
-    return openTxtImportPreviewFlow();
+    return openImportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === importMarkdownCommandId) {
-    return handleMarkdownImportUiPath();
+    return openImportSurfaceModal(normalizedCommandId);
   }
   if (normalizedCommandId === exportMarkdownCommandId) {
     return handleMarkdownExportUiPath();
@@ -13197,7 +13246,7 @@ function handleUiAction(action) {
       void dispatchUiCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
       return true;
     case 'import-markdown-v1':
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
+      openImportSurfaceModal(COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1);
       return true;
     case 'export-markdown-v1':
       void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_EXPORT_MARKDOWN);
@@ -13856,6 +13905,14 @@ selectedScenesTxtExportConfirmButtons.forEach((button) => {
     void confirmSelectedScenesTxtExportAndRun();
   });
 });
+importSurfaceCloseButtons.forEach((button) => {
+  button.addEventListener('click', () => closeImportSurfaceModal());
+});
+importSurfaceFormatButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    void runImportSurfaceFormat(button.dataset.importSurfaceFormat || '');
+  });
+});
 docxImportPreviewCancelButtons.forEach((button) => {
   button.addEventListener('click', () => closeDocxImportPreviewModal());
 });
@@ -13991,7 +14048,7 @@ document.addEventListener('keydown', (event) => {
     }
     if ((key === 'I' || key === 'i') && event.shiftKey) {
       event.preventDefault();
-      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_MARKDOWN_PROMPT);
+      openImportSurfaceModal();
       return;
     }
     if ((key === 'M' || key === 'm') && event.shiftKey) {
@@ -14255,15 +14312,15 @@ if (window.electronAPI) {
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_IMPORT_DOCX_V1) {
-      void openDocxImportPreviewFlow();
+      openImportSurfaceModal(commandId);
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_IMPORT_TXT_V1) {
-      void openTxtImportPreviewFlow();
+      openImportSurfaceModal(commandId);
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1) {
-      void handleMarkdownImportUiPath();
+      openImportSurfaceModal(commandId);
       return true;
     }
     if (commandId === COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1) {
@@ -14289,6 +14346,7 @@ if (window.electronAPI) {
       openDiagnostics: () => openDiagnosticsModal(),
       openRecovery: () => openRecoveryModal('Recovery modal opened from menu'),
       openExportPreview: () => openExportPreviewModal(),
+      openImportSurface: (commandId = '') => openImportSurfaceModal(commandId),
       insertAddCard: () => handleInsertAddCard(),
       find: () => {
         void dispatchUiCommand(EXTRA_COMMAND_IDS.EDIT_FIND);

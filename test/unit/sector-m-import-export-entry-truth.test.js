@@ -68,6 +68,6 @@ test('import export entry truth: palette canonical ids route to main-owned local
 
   assert.ok(section.includes("const importMarkdownCommandId = 'cmd.project.importMarkdownV1';"));
   assert.ok(section.includes("const exportMarkdownCommandId = 'cmd.project.exportMarkdownV1';"));
-  assert.ok(section.includes('return handleMarkdownImportUiPath();'));
+  assert.ok(section.includes('return openImportSurfaceModal(normalizedCommandId);'));
   assert.ok(section.includes('return handleMarkdownExportUiPath();'));
 });
