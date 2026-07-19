@@ -1,3 +1,5 @@
+import { resolveCommandEntitlement } from './localCapabilityProvider.mjs';
+
 export const CAPABILITY_BINDING = Object.freeze({
   'project.create': 'cap.core.project.create',
   'project.applyTextEdit': 'cap.core.project.applyTextEdit',
@@ -466,6 +468,36 @@ function resolvePlatformId(input, options) {
   return 'node';
 }
 
+function hasEntitlementInput(input, options) {
+  const inputSource = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
+  const optionSource = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
+  return Object.prototype.hasOwnProperty.call(inputSource, 'entitlementState')
+    || Object.prototype.hasOwnProperty.call(inputSource, 'entitlementTier')
+    || Object.prototype.hasOwnProperty.call(inputSource, 'tier')
+    || Object.prototype.hasOwnProperty.call(inputSource, 'plan')
+    || Object.prototype.hasOwnProperty.call(optionSource, 'entitlementState')
+    || Object.prototype.hasOwnProperty.call(optionSource, 'entitlementTier')
+    || Object.prototype.hasOwnProperty.call(optionSource, 'defaultEntitlementTier');
+}
+
+function resolveEntitlementInput(input, options) {
+  const inputSource = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
+  const optionSource = options && typeof options === 'object' && !Array.isArray(options) ? options : {};
+  return {
+    ...(optionSource.entitlementState && typeof optionSource.entitlementState === 'object' && !Array.isArray(optionSource.entitlementState)
+      ? optionSource.entitlementState
+      : {}),
+    entitlementTier: inputSource.entitlementTier
+      || inputSource.tier
+      || inputSource.plan
+      || optionSource.entitlementTier
+      || optionSource.defaultEntitlementTier
+      || '',
+    entitlementState: inputSource.entitlementState || optionSource.entitlementState || undefined,
+    profileId: inputSource.profileId || inputSource.toolbarProfile || optionSource.profileId || optionSource.toolbarProfile || '',
+  };
+}
+
 export function enforceCapabilityForCommand(commandId, input = {}, options = {}) {
   if (typeof commandId !== 'string' || commandId.length === 0) {
     return {
@@ -550,6 +582,27 @@ export function enforceCapabilityForCommand(commandId, input = {}, options = {})
         { platformId, capabilityId, commandId, editorMode: resolveEditorMode(input, options) || 'unknown' },
       ),
     };
+  }
+
+  if (hasEntitlementInput(input, options)) {
+    const entitlement = resolveCommandEntitlement(commandId, resolveEntitlementInput(input, options));
+    if (!entitlement.available) {
+      return {
+        ok: false,
+        error: makeCapabilityError(
+          'E_CAPABILITY_DISABLED_FOR_ENTITLEMENT',
+          commandId,
+          entitlement.reason || 'CAPABILITY_DISABLED_FOR_ENTITLEMENT',
+          {
+            platformId,
+            capabilityId,
+            commandId,
+            entitlementTier: entitlement.state.tier,
+            access: entitlement.access,
+          },
+        ),
+      };
+    }
   }
 
   return { ok: true };

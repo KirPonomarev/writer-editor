@@ -1,3 +1,5 @@
+import { normalizeLocalCapabilityState } from '../commands/localCapabilityProvider.mjs';
+
 const STATUS_ORDER = Object.freeze({
   live: 0,
   read_only: 1,
@@ -84,6 +86,11 @@ export function buildSettingsAggregation(input = {}) {
   const bookOrientation = normalizeString(source.bookOrientation, 'Portrait');
   const menuLocale = normalizeString(source.menuLocale, 'Base');
   const toolbarProfile = normalizeToolbarProfileLabel(source.toolbarProfile);
+  const localCapabilityState = normalizeLocalCapabilityState({
+    entitlementTier: source.entitlementTier,
+    entitlementState: source.entitlementState,
+    toolbarProfile: source.toolbarProfile,
+  });
 
   const settings = [
     {
@@ -323,6 +330,17 @@ export function buildSettingsAggregation(input = {}) {
       scope: 'application',
       persistenceClass: 'not-collected',
       status: 'read_only',
+    },
+    {
+      id: 'privacy.entitlement',
+      sectionId: 'privacy',
+      label: 'Plan',
+      value: localCapabilityState.label,
+      owner: 'Local capability provider',
+      scope: 'application',
+      persistenceClass: 'local-runtime-entitlement',
+      status: 'read_only',
+      note: 'Capability state is local and never owns project truth.',
     },
     {
       id: 'reset.safeReset',
