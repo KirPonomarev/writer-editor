@@ -43,6 +43,12 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_EXPORT_SELECTED_SCENES_TXT: 'cmd.project.exportSelectedScenesTxtV1',
   PROJECT_EXPORT_ALL_SCENES_TXT: 'cmd.project.exportAllScenesTxtV1',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
+  PROJECT_VIEW_SET_MENU_PRESENTATION_CLASSIC: 'cmd.project.view.setMenuPresentationClassic',
+  PROJECT_VIEW_SET_MENU_PRESENTATION_COMPACT: 'cmd.project.view.setMenuPresentationCompact',
+  PROJECT_VIEW_SET_MENU_LOCALE_BASE: 'cmd.project.view.setMenuLocaleBase',
+  PROJECT_VIEW_SET_MENU_LOCALE_RU: 'cmd.project.view.setMenuLocaleRu',
+  PROJECT_VIEW_SET_MENU_LOCALE_EN: 'cmd.project.view.setMenuLocaleEn',
+  PROJECT_VIEW_RESET_MENU_CUSTOMIZATION: 'cmd.project.view.resetMenuCustomization',
   VIEW_OPEN_SETTINGS: 'cmd.project.view.openSettings',
   VIEW_SAFE_RESET: 'cmd.project.view.safeReset',
   VIEW_RESTORE_LAST_STABLE: 'cmd.project.view.restoreLastStable',
@@ -103,6 +109,7 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   INSERT_LINK_PROMPT: 'cmd.project.insert.linkPrompt',
   REVIEW_IMPORT_LOCAL_PACKET: 'cmd.project.review.importLocalPacket',
   REVIEW_EXPORT_LOCAL_PACKET: 'cmd.project.review.exportLocalPacket',
+  REVIEW_OPEN_DOCX_REVIEW_PREVIEW_SESSION: 'cmd.project.review.openDocxReviewPreviewSession',
   REVIEW_OPEN_COMMENTS: 'cmd.project.review.openComments',
   REVIEW_CLEAR_SESSION: 'cmd.project.review.clearSession',
   PLAN_FLOW_SAVE: 'cmd.project.plan.flowSave',
@@ -1138,6 +1145,22 @@ export function registerProjectCommands(registry, options = {}) {
 
   registry.registerCommand(
     {
+      id: EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT,
+      label: 'Export Current Scene as TXT',
+      group: 'file',
+      surface: ['menu', 'palette'],
+      hotkey: '',
+    },
+    async () => runUiAction(
+      uiActions,
+      'openExportSurface',
+      EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT,
+      { commandId: EXTRA_COMMAND_IDS.PROJECT_EXPORT_CURRENT_SCENE_TXT },
+    ),
+  );
+
+  registry.registerCommand(
+    {
       id: EXTRA_COMMAND_IDS.PROJECT_EXPORT_SELECTED_SCENES_TXT,
       label: 'Export Selected Scenes as TXT',
       group: 'file',
@@ -1214,6 +1237,22 @@ export function registerProjectCommands(registry, options = {}) {
               : 'SELECTED_SCENES_TXT_EXPORT_FAILED',
       );
     },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT,
+      label: 'Export All Scenes as TXT',
+      group: 'file',
+      surface: ['menu', 'palette'],
+      hotkey: '',
+    },
+    async () => runUiAction(
+      uiActions,
+      'openExportSurface',
+      EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT,
+      { commandId: EXTRA_COMMAND_IDS.PROJECT_EXPORT_ALL_SCENES_TXT },
+    ),
   );
 
   registry.registerCommand(
@@ -2568,6 +2607,33 @@ export function registerProjectCommands(registry, options = {}) {
       'E_COMMAND_FAILED',
       COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
       'EXPORT_DOCXMIN_INVALID_RESPONSE',
+    );
+  });
+
+  registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_PDF_V1, async () => {
+    return runUiAction(
+      uiActions,
+      'openExportSurface',
+      COMMAND_IDS.PROJECT_EXPORT_PDF_V1,
+      { commandId: COMMAND_IDS.PROJECT_EXPORT_PDF_V1 },
+    );
+  });
+
+  registerCatalogCommand(registry, COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1, async () => {
+    return runUiAction(
+      uiActions,
+      'openExportSurface',
+      COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1,
+      { commandId: COMMAND_IDS.PROJECT_EXPORT_FULL_ARCHIVE_V1 },
+    );
+  });
+
+  registerCatalogCommand(registry, COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1, async () => {
+    return runUiAction(
+      uiActions,
+      'openImportSurface',
+      COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1,
+      { commandId: COMMAND_IDS.PROJECT_IMPORT_FULL_ARCHIVE_V1 },
     );
   });
 

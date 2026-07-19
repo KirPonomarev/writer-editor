@@ -3194,13 +3194,6 @@
       "rationale": "SCENE_RICH_CONTENT_TRUTH_FOUNDATION_001 approves the bounded recovery truth contract for versioned rich scene payload v2."
     },
     {
-      "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
-      "sha256": "3fbb48eef1616d7cea1b5d589a7ccfe140693e6123fec2ef877fd8b7216e3c3b",
-      "approvedBy": "ticket:REVIEW_BRIDGE_FIRST_USEFUL_RELEASE_TRUTH_REPAIR_001",
-      "approvedAtUtc": "2026-07-04T00:00:00.000Z",
-      "rationale": "Approve bounded governance registry SHA rebind for current capabilities matrix bytes discovered while closing Review Bridge truth repair; this is a byte-truth rebind only and does not widen capability semantics, runtime behavior, dependency, network, release, or Y9."
-    },
-    {
       "filePath": "docs/OPS/STATUS/COMMAND_NAMESPACE_CANON.json",
       "sha256": "1603e6a6728fcc259cdef384be532f983d27fad00632926401f1cdca5778309d",
       "approvedBy": "ticket:DOCX_IMPORT_PREVIEW_ACCEPT_FLOW_001",
@@ -3915,13 +3908,6 @@
       "rationale": "Approve bounded project manifest contract coverage proving unknown future and Pro fields survive normalization while known project fields remain canonical; no governance weakening, network, dependency, UI claim, or project-data deletion is introduced."
     },
     {
-      "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
-      "sha256": "aac4240d60add70cbda4f4451c6172fd879fdeb5e86b2b9489ffcb148fae661a",
-      "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S11_METADATA_WRITE_COMMANDS",
-      "approvedAtUtc": "2026-07-18T22:20:00.000Z",
-      "rationale": "Approve bounded S11 command-capability binding update for cmd.project.metadata.update while preserving existing command bindings; this adds pathless stable-id metadata write capability coverage with stale-context guard, atomic write, backup recovery evidence, and no network, dependency, toolbar visual, project path authority, or unsupported platform claims."
-    },
-    {
       "filePath": "docs/OPS/ARTIFACTS/menu/menu.normalized.json",
       "sha256": "a3154dceeb3e6c04d2b72f2932d78e42e83925620ad84bb28b257816f238cdd9",
       "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
@@ -3948,6 +3934,20 @@
       "approvedBy": "ticket:YALKEN_NEXT_STAGE_AUTONOMOUS_V2_3_S33_FULL_ARCHIVE_IMPORT",
       "approvedAtUtc": "2026-07-19T04:55:00.000Z",
       "rationale": "Approve S33 release candidate lock refresh after the menu artifact and snapshot registry were rebound for the full project archive import lane."
+    },
+    {
+      "filePath": "docs/OPS/CAPABILITIES_MATRIX.json",
+      "sha256": "dd2f1a15986811a231e46245001cbf1430951f4e3583dd1b398d8db64de31bba",
+      "approvedBy": "ticket:S36_COMMAND_MENU_KEYMAP_AUDIT",
+      "approvedAtUtc": "2026-07-19T00:00:00.000Z",
+      "rationale": "Approve bounded S36 command menu keymap audit capability truth synchronization. The change documents already existing public menu, palette, lifecycle, import, export, and main-owned menu commands in runtime and OPS capability declarations while preserving offline-first scope, no new command semantics, no new dependency, no licensing implementation, no network or cloud behavior, and no toolbar redesign."
+    },
+    {
+      "filePath": "docs/OPS/STATUS/COMMAND_CAPABILITY_BINDING.json",
+      "sha256": "ca58c1e9f921dd26c0795c6d10e4e13164804fb7ed17599b0386cca01b53eda6",
+      "approvedBy": "ticket:S36_COMMAND_MENU_KEYMAP_AUDIT",
+      "approvedAtUtc": "2026-07-19T00:00:00.000Z",
+      "rationale": "Approve bounded S36 command menu keymap audit capability truth synchronization. The change documents already existing public menu, palette, lifecycle, import, export, and main-owned menu commands in runtime and OPS capability declarations while preserving offline-first scope, no new command semantics, no new dependency, no licensing implementation, no network or cloud behavior, and no toolbar redesign."
     }
   ]
 }
