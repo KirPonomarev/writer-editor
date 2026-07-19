@@ -221,6 +221,7 @@ const leftTabButtons = Array.from(document.querySelectorAll('[data-left-tab]'));
 const leftSearchPanel = document.querySelector('[data-left-search-panel]');
 const leftSearchInput = document.querySelector('[data-left-search-input]');
 const outlineListElement = document.querySelector('[data-outline-list]');
+const notesLeftListElement = document.querySelector('[data-notes-left-list]');
 const searchResultsElement = document.querySelector('[data-search-results]');
 const rightSidebar = document.querySelector('[data-right-sidebar]');
 const rightTabsHost = document.querySelector('[data-right-tabs]');
@@ -311,6 +312,22 @@ const cardTextInput = document.querySelector('[data-card-text]');
 const cardTagsInput = document.querySelector('[data-card-tags]');
 const cardSaveButtons = Array.from(document.querySelectorAll('[data-card-save]'));
 const cardCancelButtons = Array.from(document.querySelectorAll('[data-card-cancel]'));
+const notesWorkspace = document.querySelector('[data-notes-workspace]');
+const notesStatusElement = document.querySelector('[data-notes-status]');
+const notesCaptureForm = document.querySelector('[data-notes-capture-form]');
+const notesCaptureTitle = document.querySelector('[data-notes-capture-title]');
+const notesCaptureBody = document.querySelector('[data-notes-capture-body]');
+const notesListElement = document.querySelector('[data-notes-list]');
+const notesDetailEmpty = document.querySelector('[data-notes-detail-empty]');
+const notesDetailContent = document.querySelector('[data-notes-detail-content]');
+const notesDetailMeta = document.querySelector('[data-notes-detail-meta]');
+const notesDetailTitle = document.querySelector('[data-notes-detail-title]');
+const notesDetailBody = document.querySelector('[data-notes-detail-body]');
+const notesSaveButton = document.querySelector('[data-notes-save]');
+const notesAttachSceneButton = document.querySelector('[data-notes-attach-scene]');
+const notesConvertSceneButton = document.querySelector('[data-notes-convert-scene]');
+const notesDeleteButton = document.querySelector('[data-notes-delete]');
+const notesRestoreButton = document.querySelector('[data-notes-restore]');
 const TOOLBAR_COMPACT_CLASS = 'is-compact';
 const TEXT_STYLE_DEFAULT = 'paragraph-none';
 const ALIGNMENT_PREFIX_BY_ACTION = {
@@ -344,6 +361,7 @@ const SAFE_RESET_BASELINE_FONT_WEIGHT = 'light';
 const SAFE_RESET_BASELINE_LINE_HEIGHT = '1.0';
 const SAFE_RESET_BASELINE_VIEW_MODE = 'default';
 const PROJECT_WORKSPACE_RESET_TABS = Object.freeze(['project', 'outline', 'search', 'roman']);
+const NOTES_WORKSPACE_QUERY_ID = 'query.projectNotes';
 const TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT = 4;
 const TOOLBAR_CONFIGURATOR_LIBRARY_MIN_SLOT_COUNT = 20;
 const TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT = 'New Slot';
@@ -466,6 +484,13 @@ let wordWrapEnabled = true;
 let collabScopeLocal = false;
 let currentMode = 'write';
 let currentLeftTab = 'project';
+let notesWorkspaceState = {
+  state: 'idle',
+  notes: [],
+  counts: { total: 0, deleted: 0, inbox: 0 },
+  selectedId: '',
+  includeDeleted: false,
+};
 let currentRightTab = 'inspector';
 let pendingDocxImportPreviewValue = null;
 let pendingDocxImportPreviewPlan = null;
@@ -5971,6 +5996,7 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
     && queryId !== 'query.collabScopeLocal'
     && queryId !== REVIEW_SURFACE_QUERY_ID
     && queryId !== METADATA_INSPECTOR_QUERY_ID
+    && queryId !== NOTES_WORKSPACE_QUERY_ID
   ) {
     return null;
   }
@@ -7480,6 +7506,7 @@ function updateSpatialLayoutForViewportChange() {
 }
 
 function showEditorPanelFor(title) {
+  hideNotesWorkspace();
   editorPanel?.classList.add('active');
   mainContent?.classList.add('main-content--editor');
   emptyState?.classList.add('hidden');
@@ -7507,6 +7534,7 @@ function showEditorPanelFor(title) {
 
 function collapseSelection() {
   clearFlowModeState();
+  hideNotesWorkspace();
   editorPanel?.classList.remove('active');
   mainContent?.classList.remove('main-content--editor');
   emptyState?.classList.remove('hidden');
@@ -8969,6 +8997,316 @@ async function refreshMetadataInspector() {
   renderMetadataInspectorState(result);
 }
 
+function normalizeNotesWorkspaceReadModel(result = {}) {
+  const notes = Array.isArray(result.notes)
+    ? result.notes
+        .filter((note) => note && typeof note === 'object' && !Array.isArray(note))
+        .map((note) => ({
+          id: typeof note.id === 'string' ? note.id : '',
+          scope: typeof note.scope === 'string' ? note.scope : 'inbox',
+          title: typeof note.title === 'string' ? note.title : '',
+          body: typeof note.body === 'string' ? note.body : '',
+          createdAtUtc: typeof note.createdAtUtc === 'string' ? note.createdAtUtc : '',
+          updatedAtUtc: typeof note.updatedAtUtc === 'string' ? note.updatedAtUtc : '',
+          deleted: note.deleted === true,
+          attachment: note.attachment && typeof note.attachment === 'object' && !Array.isArray(note.attachment)
+            ? note.attachment
+            : {},
+          conversions: Array.isArray(note.conversions) ? note.conversions : [],
+          contentHash: typeof note.contentHash === 'string' ? note.contentHash : '',
+        }))
+        .filter((note) => note.id)
+    : [];
+  const counts = result.counts && typeof result.counts === 'object' && !Array.isArray(result.counts)
+    ? result.counts
+    : {};
+  return {
+    ok: result.ok === true,
+    state: typeof result.state === 'string' ? result.state : 'unavailable',
+    notes,
+    counts: {
+      total: Number.isInteger(counts.total) ? Math.max(0, counts.total) : notes.filter((note) => !note.deleted).length,
+      deleted: Number.isInteger(counts.deleted) ? Math.max(0, counts.deleted) : notes.filter((note) => note.deleted).length,
+      inbox: Number.isInteger(counts.inbox) ? Math.max(0, counts.inbox) : notes.filter((note) => !note.deleted && note.scope === 'inbox').length,
+    },
+  };
+}
+
+function getSelectedNotesWorkspaceNote() {
+  return notesWorkspaceState.notes.find((note) => note.id === notesWorkspaceState.selectedId) || null;
+}
+
+function setNotesWorkspaceStatus(text) {
+  if (notesStatusElement) {
+    notesStatusElement.textContent = text || 'Готово';
+  }
+}
+
+function presentNoteScope(scope) {
+  switch (scope) {
+    case 'scene':
+      return 'сцена';
+    case 'selection':
+      return 'фрагмент';
+    case 'manuscript':
+      return 'рукопись';
+    case 'project':
+      return 'проект';
+    default:
+      return 'входящие';
+  }
+}
+
+function presentNoteTitle(note) {
+  const title = typeof note?.title === 'string' ? note.title.trim() : '';
+  if (title) return title;
+  const body = typeof note?.body === 'string' ? note.body.trim() : '';
+  return body ? body.slice(0, 42) : 'Без названия';
+}
+
+function renderNotesLeftList() {
+  if (!notesLeftListElement) return;
+  notesLeftListElement.innerHTML = '';
+  const activeNotes = notesWorkspaceState.notes.filter((note) => !note.deleted).slice(0, 12);
+  if (!activeNotes.length) {
+    const empty = document.createElement('div');
+    empty.className = 'tree__empty';
+    empty.textContent = 'Заметок пока нет';
+    notesLeftListElement.appendChild(empty);
+    return;
+  }
+  const list = document.createElement('ul');
+  list.className = 'tree__list notes-left-list';
+  for (const note of activeNotes) {
+    const item = document.createElement('li');
+    item.className = 'tree__node notes-left-list__item';
+    item.textContent = presentNoteTitle(note);
+    list.appendChild(item);
+  }
+  notesLeftListElement.appendChild(list);
+}
+
+function renderNotesWorkspaceList() {
+  if (!notesListElement) return;
+  notesListElement.innerHTML = '';
+  if (notesWorkspaceState.state === 'loading') {
+    const loading = document.createElement('div');
+    loading.className = 'notes-list__empty';
+    loading.textContent = 'Загружаю заметки';
+    notesListElement.appendChild(loading);
+    return;
+  }
+  if (notesWorkspaceState.state === 'unavailable') {
+    const unavailable = document.createElement('div');
+    unavailable.className = 'notes-list__empty notes-list__empty--error';
+    unavailable.textContent = 'Заметки недоступны. Данные проекта не изменены.';
+    notesListElement.appendChild(unavailable);
+    return;
+  }
+  if (!notesWorkspaceState.notes.length) {
+    const empty = document.createElement('div');
+    empty.className = 'notes-list__empty';
+    empty.textContent = 'Входящие пусты';
+    notesListElement.appendChild(empty);
+    return;
+  }
+  for (const note of notesWorkspaceState.notes) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'notes-list__item';
+    button.dataset.noteId = note.id;
+    button.classList.toggle('is-active', note.id === notesWorkspaceState.selectedId);
+    button.classList.toggle('is-deleted', note.deleted);
+    button.setAttribute('aria-pressed', note.id === notesWorkspaceState.selectedId ? 'true' : 'false');
+    const title = document.createElement('span');
+    title.className = 'notes-list__title';
+    title.textContent = presentNoteTitle(note);
+    const meta = document.createElement('span');
+    meta.className = 'notes-list__meta';
+    meta.textContent = `${presentNoteScope(note.scope)} · ${note.deleted ? 'удалена' : 'активна'}`;
+    button.append(title, meta);
+    notesListElement.appendChild(button);
+  }
+}
+
+function renderNotesWorkspaceDetail() {
+  const note = getSelectedNotesWorkspaceNote();
+  const hasNote = Boolean(note);
+  if (notesDetailEmpty) notesDetailEmpty.hidden = hasNote;
+  if (notesDetailContent) notesDetailContent.hidden = !hasNote;
+  if (!hasNote) {
+    if (notesDetailTitle) notesDetailTitle.value = '';
+    if (notesDetailBody) notesDetailBody.value = '';
+    return;
+  }
+  if (notesDetailMeta) {
+    const attached = note.attachment && typeof note.attachment.nodeId === 'string' && note.attachment.nodeId
+      ? ' · привязана'
+      : '';
+    notesDetailMeta.textContent = `${presentNoteScope(note.scope)}${attached}`;
+  }
+  if (notesDetailTitle && notesDetailTitle.value !== note.title) notesDetailTitle.value = note.title;
+  if (notesDetailBody && notesDetailBody.value !== note.body) notesDetailBody.value = note.body;
+  if (notesSaveButton) notesSaveButton.disabled = note.deleted;
+  if (notesAttachSceneButton) {
+    notesAttachSceneButton.disabled = note.deleted || !currentDocumentId || currentDocumentKind !== 'scene';
+  }
+  if (notesConvertSceneButton) notesConvertSceneButton.disabled = note.deleted || !note.body.trim();
+  if (notesDeleteButton) notesDeleteButton.hidden = note.deleted;
+  if (notesRestoreButton) notesRestoreButton.hidden = !note.deleted;
+}
+
+function renderNotesWorkspace() {
+  renderNotesLeftList();
+  renderNotesWorkspaceList();
+  renderNotesWorkspaceDetail();
+  const countText = `${notesWorkspaceState.counts.inbox || 0} входящих`;
+  setNotesWorkspaceStatus(notesWorkspaceState.state === 'ready' ? countText : notesWorkspaceState.state);
+}
+
+function getNotesCommandResult(dispatchResult) {
+  const value = dispatchResult && dispatchResult.value && typeof dispatchResult.value === 'object'
+    ? dispatchResult.value
+    : null;
+  const result = value && value.result && typeof value.result === 'object' ? value.result : value;
+  return result && result.ok === true ? result : null;
+}
+
+async function refreshNotesWorkspace(options = {}) {
+  if (!notesWorkspace) return;
+  notesWorkspaceState = {
+    ...notesWorkspaceState,
+    state: 'loading',
+    includeDeleted: options.includeDeleted === true || notesWorkspaceState.includeDeleted === true,
+  };
+  renderNotesWorkspace();
+  const result = await invokeWorkspaceQueryBridge(NOTES_WORKSPACE_QUERY_ID, {
+    projectId: currentProjectId,
+    scope: '',
+    includeDeleted: notesWorkspaceState.includeDeleted,
+  });
+  if (!result || result.ok === false) {
+    notesWorkspaceState = {
+      ...notesWorkspaceState,
+      state: 'unavailable',
+      notes: [],
+      counts: { total: 0, deleted: 0, inbox: 0 },
+      selectedId: '',
+    };
+    renderNotesWorkspace();
+    return;
+  }
+  const readModel = normalizeNotesWorkspaceReadModel(result);
+  const selectedStillExists = readModel.notes.some((note) => note.id === notesWorkspaceState.selectedId);
+  notesWorkspaceState = {
+    ...notesWorkspaceState,
+    state: readModel.state === 'ready' ? 'ready' : readModel.state,
+    notes: readModel.notes,
+    counts: readModel.counts,
+    selectedId: selectedStillExists ? notesWorkspaceState.selectedId : (readModel.notes[0]?.id || ''),
+  };
+  renderNotesWorkspace();
+}
+
+function showNotesWorkspace() {
+  notesWorkspace?.removeAttribute('hidden');
+  notesWorkspace?.classList.add('is-active');
+  editorPanel?.classList.remove('active');
+  mainContent?.classList.remove('main-content--editor');
+  mainContent?.classList.add('main-content--notes');
+  emptyState?.classList.add('hidden');
+  metaPanel?.classList.add('is-hidden');
+  void refreshNotesWorkspace();
+  requestAnimationFrame(() => {
+    notesCaptureBody?.focus({ preventScroll: true });
+  });
+}
+
+function hideNotesWorkspace() {
+  notesWorkspace?.setAttribute('hidden', '');
+  notesWorkspace?.classList.remove('is-active');
+  mainContent?.classList.remove('main-content--notes');
+}
+
+async function runNotesMutation(commandId, payload, successStatus) {
+  const result = await dispatchUiCommand(commandId, payload);
+  const notesResult = getNotesCommandResult(result);
+  if (!notesResult) {
+    setNotesWorkspaceStatus('Не сохранено');
+    return null;
+  }
+  if (notesResult.note && typeof notesResult.note.id === 'string') {
+    notesWorkspaceState.selectedId = notesResult.note.id;
+  }
+  setNotesWorkspaceStatus(successStatus || 'Сохранено');
+  await refreshNotesWorkspace();
+  return notesResult;
+}
+
+async function createInboxNoteFromCapture() {
+  const body = notesCaptureBody?.value.trim() || '';
+  const title = notesCaptureTitle?.value.trim() || '';
+  if (!body && !title) {
+    setNotesWorkspaceStatus('Пустая заметка');
+    notesCaptureBody?.focus();
+    return;
+  }
+  const created = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_CREATE, {
+    projectId: currentProjectId,
+    scope: 'inbox',
+    title,
+    body,
+  }, 'Заметка сохранена');
+  if (created) {
+    if (notesCaptureTitle) notesCaptureTitle.value = '';
+    if (notesCaptureBody) notesCaptureBody.value = '';
+  }
+}
+
+async function saveSelectedNote() {
+  const note = getSelectedNotesWorkspaceNote();
+  if (!note || note.deleted) return;
+  await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_UPDATE, {
+    projectId: currentProjectId,
+    noteId: note.id,
+    title: notesDetailTitle?.value || '',
+    body: notesDetailBody?.value || '',
+  }, 'Заметка обновлена');
+}
+
+async function attachSelectedNoteToActiveScene() {
+  const note = getSelectedNotesWorkspaceNote();
+  if (!note || note.deleted || !currentDocumentId || currentDocumentKind !== 'scene') return;
+  await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_ATTACH_SCENE, {
+    projectId: currentProjectId,
+    noteId: note.id,
+    nodeId: currentDocumentId,
+  }, 'Привязано к сцене');
+}
+
+async function convertSelectedNoteToScene() {
+  const note = getSelectedNotesWorkspaceNote();
+  if (!note || note.deleted) return;
+  const title = notesDetailTitle?.value.trim() || note.title || 'Новая сцена';
+  const preview = await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_CONVERT_SCENE, {
+    projectId: currentProjectId,
+    noteId: note.id,
+    title,
+  }, 'Готово к созданию сцены');
+  if (!preview || preview.preview !== true) return;
+  if (!window.confirm('Создать сцену из выбранной заметки? Заметка останется во входящих.')) {
+    setNotesWorkspaceStatus('Создание отменено');
+    return;
+  }
+  await runNotesMutation(EXTRA_COMMAND_IDS.NOTES_CONVERT_SCENE, {
+    projectId: currentProjectId,
+    noteId: note.id,
+    title,
+    confirmed: true,
+  }, 'Сцена создана');
+  await loadTree();
+}
+
 function renderOutlineList() {
   if (!outlineListElement) return;
   outlineListElement.innerHTML = '';
@@ -9059,6 +9397,7 @@ function renderSearchResults(query = '') {
 }
 
 function applyLeftTab(tab) {
+  const wasNotesWorkspaceVisible = notesWorkspace instanceof HTMLElement && notesWorkspace.hidden !== true;
   currentLeftTab = tab;
   for (const button of leftTabButtons) {
     const active = button.dataset.leftTab === tab;
@@ -9067,10 +9406,24 @@ function applyLeftTab(tab) {
   }
   if (treeContainer) treeContainer.hidden = tab !== 'project';
   if (outlineListElement) outlineListElement.hidden = tab !== 'outline';
+  if (notesLeftListElement) notesLeftListElement.hidden = tab !== 'notes';
   if (searchResultsElement) searchResultsElement.hidden = tab !== 'search';
   if (leftSearchPanel) leftSearchPanel.hidden = tab !== 'search';
   if (tab === 'outline') {
+    hideNotesWorkspace();
     renderOutlineList();
+  }
+  if (tab === 'notes') {
+    showNotesWorkspace();
+  } else if (tab !== 'outline') {
+    hideNotesWorkspace();
+  }
+  if (tab !== 'notes' && wasNotesWorkspaceVisible) {
+    if (currentDocumentId) {
+      showEditorPanelFor('');
+    } else {
+      collapseSelection();
+    }
   }
   if (tab === 'search') {
     renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
@@ -12153,11 +12506,70 @@ if (leftTabsHost) {
     const button = event.target.closest('[data-left-tab]');
     if (!button) return;
     const tab = button.dataset.leftTab;
-    if (tab === 'project' || tab === 'outline' || tab === 'search') {
+    if (tab === 'project' || tab === 'outline' || tab === 'notes' || tab === 'search') {
       applyLeftTab(tab);
     }
   });
 }
+
+if (notesCaptureForm) {
+  notesCaptureForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    void createInboxNoteFromCapture();
+  });
+}
+
+if (notesCaptureBody) {
+  notesCaptureBody.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+      event.preventDefault();
+      void createInboxNoteFromCapture();
+    }
+  });
+}
+
+if (notesListElement) {
+  notesListElement.addEventListener('click', (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest('[data-note-id]')
+      : null;
+    if (!(button instanceof HTMLElement)) return;
+    const noteId = button.dataset.noteId || '';
+    if (!noteId) return;
+    notesWorkspaceState = { ...notesWorkspaceState, selectedId: noteId };
+    renderNotesWorkspace();
+  });
+}
+
+notesSaveButton?.addEventListener('click', () => {
+  void saveSelectedNote();
+});
+
+notesAttachSceneButton?.addEventListener('click', () => {
+  void attachSelectedNoteToActiveScene();
+});
+
+notesConvertSceneButton?.addEventListener('click', () => {
+  void convertSelectedNoteToScene();
+});
+
+notesDeleteButton?.addEventListener('click', () => {
+  const note = getSelectedNotesWorkspaceNote();
+  if (!note || note.deleted) return;
+  void runNotesMutation(EXTRA_COMMAND_IDS.NOTES_DELETE, {
+    projectId: currentProjectId,
+    noteId: note.id,
+  }, 'Заметка удалена');
+});
+
+notesRestoreButton?.addEventListener('click', () => {
+  const note = getSelectedNotesWorkspaceNote();
+  if (!note || !note.deleted) return;
+  void runNotesMutation(EXTRA_COMMAND_IDS.NOTES_RESTORE, {
+    projectId: currentProjectId,
+    noteId: note.id,
+  }, 'Заметка возвращена');
+});
 
 if (rightTabsHost) {
   const activateRightRailTabButton = (button) => {
