@@ -187,6 +187,71 @@ async function dragRail(win, side, delta) {
   })()\`, true);
 }
 
+async function exerciseLeftRailStructure(win) {
+  const productStateBefore = snapshotProjectProductFiles();
+  const initial = await win.webContents.executeJavaScript(
+    "(() => ({ header: document.querySelector('[data-left-rail-header]')?.textContent.trim() || '', actionCount: document.querySelectorAll('[data-left-rail-action]').length, projectControlsHidden: document.querySelector('[data-left-rail-project-controls]')?.hidden === true, summaryHidden: document.querySelector('[data-left-rail-summary]')?.hidden === true }))()",
+    true
+  );
+
+  await win.webContents.executeJavaScript(
+    "document.querySelector('[data-left-rail-action=search]')?.click()",
+    true
+  );
+  const search = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const tab = document.querySelector('[data-left-tab=search]'); const input = document.querySelector('[data-left-search-input]'); const controls = document.querySelector('[data-left-rail-project-controls]'); const summary = document.querySelector('[data-left-rail-summary]'); return { selected: tab?.getAttribute('aria-selected') === 'true', inputFocused: document.activeElement === input, projectControlsHidden: controls?.hidden === true, summaryHidden: summary?.hidden === true }; })()",
+      true
+    ).then((state) => state.selected && state.inputFocused ? state : null),
+    'LEFT_RAIL_SEARCH_ACTION_FAILED'
+  );
+
+  await win.webContents.executeJavaScript(
+    "document.querySelector('[data-left-tab=project]')?.click()",
+    true
+  );
+  const restored = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const tab = document.querySelector('[data-left-tab=project]'); const controls = document.querySelector('[data-left-rail-project-controls]'); const summary = document.querySelector('[data-left-rail-summary]'); return { selected: tab?.getAttribute('aria-selected') === 'true', projectControlsHidden: controls?.hidden === true, summaryHidden: summary?.hidden === true }; })()",
+      true
+    ).then((state) => state.selected && !state.projectControlsHidden && !state.summaryHidden ? state : null),
+    'LEFT_RAIL_PROJECT_RESTORE_FAILED'
+  );
+
+  await win.webContents.executeJavaScript(
+    "document.querySelector('[data-left-rail-action=add]')?.click()",
+    true
+  );
+  const addMenu = await waitUntil(
+    () => win.webContents.executeJavaScript(
+      "(() => { const menu = document.querySelector('[data-context-menu]'); const items = Array.from(menu?.querySelectorAll('.context-menu__item') || []).map((item) => ({ label: item.textContent.trim(), commandId: item.dataset.commandId || '' })); return { open: menu?.hidden === false, items }; })()",
+      true
+    ).then((state) => state.open && state.items.length === 3 ? state : null),
+    'LEFT_RAIL_ADD_MENU_FAILED'
+  );
+  await win.webContents.executeJavaScript("document.querySelector('.main-content')?.click()", true);
+  const menuClosed = await win.webContents.executeJavaScript(
+    "document.querySelector('[data-context-menu]')?.hidden === true",
+    true
+  );
+  const finalState = await win.webContents.executeJavaScript(
+    "(() => { const projectTab = document.querySelector('[data-left-tab=project]'); const searchPanel = document.querySelector('[data-left-search-panel]'); const searchResults = document.querySelector('[data-search-results]'); const tree = document.querySelector('[data-tree]'); const controls = document.querySelector('[data-left-rail-project-controls]'); const summary = document.querySelector('[data-left-rail-summary]'); return { projectSelected: projectTab?.getAttribute('aria-selected') === 'true', searchPanelHidden: searchPanel?.hidden === true, searchPanelDisplay: searchPanel ? getComputedStyle(searchPanel).display : '', searchResultsHidden: searchResults?.hidden === true, searchResultsDisplay: searchResults ? getComputedStyle(searchResults).display : '', treeHidden: tree?.hidden === true, treeDisplay: tree ? getComputedStyle(tree).display : '', projectControlsHidden: controls?.hidden === true, summaryHidden: summary?.hidden === true }; })()",
+    true
+  );
+  await sleep(120);
+  await captureSelectorEvidence(win, '.sidebar--left', 'sidebar-left-structure.png');
+
+  return {
+    initial,
+    search,
+    restored,
+    addMenu,
+    menuClosed,
+    finalState,
+    productStateUnchanged: JSON.stringify(snapshotProjectProductFiles()) === JSON.stringify(productStateBefore),
+  };
+}
+
 async function exerciseLeftRailCollapse(win) {
   const productStateBefore = snapshotProjectProductFiles();
   const expanded = await collectProbe(win, 'left-rail-expanded');
@@ -578,6 +643,7 @@ app.whenReady().then(async () => {
     await sleep(400);
 
     const initialWide = await resizeAndProbe(win, 1440, 850, 'initial-wide');
+    const leftRailStructure = await exerciseLeftRailStructure(win);
     const activeDocumentReveal = await exerciseActiveDocumentReveal(win);
     const navigatorSelection = await exerciseNavigatorSelection(win);
     const inspectorControls = await exerciseInspectorControls(win);
@@ -604,6 +670,7 @@ app.whenReady().then(async () => {
     emit({
       ok: 1,
       initialWide,
+      leftRailStructure,
       activeDocumentReveal,
       navigatorSelection,
       inspectorControls,
@@ -690,6 +757,42 @@ try {
   assert.equal(result.initialWide.rightHidden, false);
   assert.equal(result.initialWide.documentFits, true);
   assert.equal(result.initialWide.bodyFits, true);
+  assert.equal(result.leftRailStructure.initial.header.includes('Навигатор'), true);
+  assert.equal(result.leftRailStructure.initial.actionCount, 2);
+  assert.equal(result.leftRailStructure.initial.projectControlsHidden, false);
+  assert.equal(result.leftRailStructure.initial.summaryHidden, false);
+  assert.deepEqual(result.leftRailStructure.search, {
+    selected: true,
+    inputFocused: true,
+    projectControlsHidden: true,
+    summaryHidden: true,
+  });
+  assert.deepEqual(result.leftRailStructure.restored, {
+    selected: true,
+    projectControlsHidden: false,
+    summaryHidden: false,
+  });
+  assert.deepEqual(
+    result.leftRailStructure.addMenu.items.map((item) => item.label),
+    ['Новая часть', 'Новая глава (документ)', 'Новая глава (со сценами)'],
+  );
+  assert.equal(
+    result.leftRailStructure.addMenu.items.every((item) => item.commandId === 'cmd.project.tree.createNode'),
+    true,
+  );
+  assert.equal(result.leftRailStructure.menuClosed, true);
+  assert.deepEqual(result.leftRailStructure.finalState, {
+    projectSelected: true,
+    searchPanelHidden: true,
+    searchPanelDisplay: 'none',
+    searchResultsHidden: true,
+    searchResultsDisplay: 'none',
+    treeHidden: false,
+    treeDisplay: 'block',
+    projectControlsHidden: false,
+    summaryHidden: false,
+  });
+  assert.equal(result.leftRailStructure.productStateUnchanged, true);
   assert.equal(result.initialWide.tree.height > 236, true, 'project tree should use available rail height');
   assert.equal(result.initialWide.leftToolbar.right + 8 <= result.initialWide.mainToolbar.left, true);
   assert.equal(result.initialWide.mainToolbar.right <= result.initialWide.innerWidth, true);

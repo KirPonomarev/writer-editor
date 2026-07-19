@@ -53,6 +53,23 @@ test('left rail presentation uses canonical Russian project labels', () => {
   assert.equal(presentation.children[1].label, 'Заметки');
 });
 
+test('left rail presentation projects derived manuscript counters without owning them', () => {
+  const raw = makeRawTree();
+  const counters = {
+    wordCount: 61240,
+    sceneCount: 12,
+    completedSceneCount: 9,
+    progressPercent: 75,
+  };
+  raw.children[0].derivedCounters = counters;
+
+  const presentation = buildLeftRailPresentationTree(raw);
+
+  assert.equal(presentation.derivedCounters, counters);
+  assert.equal(presentation.children[0].derivedCounters, counters);
+  assert.equal(presentation.children[1].derivedCounters, undefined);
+});
+
 test('active reveal opens every collapsed ancestor and remains stable after rename', () => {
   const initial = buildLeftRailPresentationTree(makeRawTree());
   const collapsed = new Set([

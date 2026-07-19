@@ -46,6 +46,11 @@ const ICON_CLASS_BY_BIND_KEY = Object.freeze({
   'history-redo': 'redo',
 });
 
+const SHARED_SHELL_ICON_FILES = Object.freeze([
+  'regular/magnifying-glass.svg',
+  'regular/plus.svg',
+]);
+
 function read(parts) {
   return fs.readFileSync(path.join(ROOT, ...parts), 'utf8');
 }
@@ -61,6 +66,7 @@ function getToolbarItemFragment(toolbarControls, bindKey) {
 test('sector-m toolbar phosphor icons: bundled asset set is bounded, local, and licensed', () => {
   const expectedFiles = Object.values(ICON_FILE_BY_CLASS)
     .map((fileName) => fileName.includes('/') ? fileName : `regular/${fileName}`)
+    .concat(SHARED_SHELL_ICON_FILES)
     .sort();
   const actualFiles = [
     ...fs.readdirSync(REGULAR_ICON_ROOT)

@@ -406,6 +406,30 @@
         >
           <span class="left-rail-collapse-button__icon" aria-hidden="true"></span>
         </button>
+        <header class="left-rail-header" data-left-rail-header>
+          <strong class="left-rail-header__title">Навигатор</strong>
+          <div class="left-rail-header__actions" aria-label="Команды навигатора">
+            <button
+              type="button"
+              class="left-rail-header__action"
+              data-left-rail-action="search"
+              aria-label="Поиск по рукописи"
+              title="Поиск по рукописи"
+            >
+              <span class="left-rail-header__icon left-rail-header__icon--search" aria-hidden="true"></span>
+            </button>
+            <button
+              type="button"
+              class="left-rail-header__action"
+              data-left-rail-action="add"
+              aria-label="Добавить в рукопись"
+              title="Добавить в рукопись"
+              aria-haspopup="menu"
+            >
+              <span class="left-rail-header__icon left-rail-header__icon--add" aria-hidden="true"></span>
+            </button>
+          </div>
+        </header>
         <div class="toolbar__row toolbar__row--secondary x101-tabs-row" data-left-tabs role="tablist" aria-label="Навигатор">
           <div class="toolbar__cluster x101-tabs-group">
             <button type="button" id="left-tab-project" class="toolbar__button toolbar__button--wide x101-tab-button is-active" data-left-tab="project" role="tab" aria-controls="left-panel-project" aria-selected="true" aria-pressed="true">Проект</button>
@@ -417,23 +441,19 @@
         <div class="toolbar__row toolbar__row--secondary" data-left-search-panel hidden>
           <input type="text" class="modal__input" data-left-search-input placeholder="Поиск по проекту">
         </div>
-        <div class="workspace-map" aria-label="Структура проекта">
-          <div class="workspace-map__path" aria-hidden="true">
-            <span class="workspace-map__path-item">Проект</span>
-            <span class="workspace-map__path-item">Рукопись</span>
-            <span class="workspace-map__path-item">Сцены</span>
-          </div>
-          <div class="workspace-map__mode" role="group" aria-label="Режим текста">
+        <div class="left-rail-projection" data-left-rail-project-controls>
+          <span class="left-rail-projection__label">Текст</span>
+          <div class="left-rail-projection__switch" role="group" aria-label="Режим текста">
             <button
               type="button"
-              class="workspace-map__mode-button is-active"
+              class="left-rail-projection__button is-active"
               data-flow-view-mode="scene"
               data-action="open-current-scene"
               aria-pressed="true"
             >Сцена</button>
             <button
               type="button"
-              class="workspace-map__mode-button"
+              class="left-rail-projection__button"
               data-flow-view-mode="continuous"
               data-action="open-flow-mode"
               aria-pressed="false"
@@ -444,6 +464,28 @@
         <div class="sidebar__tree" id="left-panel-outline" data-outline-list role="tabpanel" aria-labelledby="left-tab-outline" hidden></div>
         <div class="sidebar__tree" id="left-panel-notes" data-notes-left-list role="tabpanel" aria-labelledby="left-tab-notes" hidden></div>
         <div class="sidebar__tree" id="left-panel-search" data-search-results role="tabpanel" aria-labelledby="left-tab-search" hidden></div>
+        <footer class="left-rail-summary" data-left-rail-summary>
+          <div class="left-rail-summary__heading">
+            <strong>Рукопись</strong>
+            <span data-left-rail-unit-count>Локально</span>
+          </div>
+          <div class="left-rail-summary__details">
+            <span data-left-rail-word-count>Без ограничений</span>
+            <span data-left-rail-progress-label>На этом устройстве</span>
+          </div>
+          <span
+            class="left-rail-summary__progress"
+            data-left-rail-progress
+            role="progressbar"
+            aria-label="Заполненность сцен рукописи"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            hidden
+          >
+            <span data-left-rail-progress-value></span>
+          </span>
+        </footer>
         <div class="sidebar__resize-handle" data-sidebar-resizer aria-hidden="true"></div>
       </aside>
       <button
