@@ -5149,6 +5149,181 @@ body.dark-theme .notes-button {
   background: rgba(255, 255, 255, 0.05);
 }
 
+.project-search-workspace[hidden] {
+  display: none;
+}
+
+.main-content--search {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 32px;
+}
+
+.project-search-workspace {
+  width: min(100%, 880px);
+  min-height: min(620px, calc(100vh - 168px));
+  color: var(--foreground);
+}
+
+.project-search-workspace__shell {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 16px;
+  min-height: inherit;
+}
+
+.project-search-workspace__header,
+.project-search-workspace__controls {
+  display: flex;
+  align-items: center;
+}
+
+.project-search-workspace__header {
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.project-search-workspace__eyebrow,
+.project-search-result__meta {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.project-search-workspace__title {
+  margin: 4px 0 0;
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.project-search-workspace__status {
+  flex: 0 0 auto;
+  max-width: 220px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 18px;
+  text-align: right;
+}
+
+.project-search-workspace__controls {
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.project-search-workspace__select,
+.project-search-workspace__check {
+  min-height: 36px;
+  border: 1px solid var(--toolbar-control-border);
+  border-radius: 6px;
+  background: rgba(255, 252, 246, 0.56);
+  color: var(--foreground);
+  font: inherit;
+}
+
+.project-search-workspace__select {
+  min-width: 170px;
+  padding: 0 10px;
+}
+
+.project-search-workspace__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  color: var(--text-muted);
+}
+
+.project-search-workspace__body {
+  min-height: 0;
+  overflow: auto;
+  border: 1px solid var(--toolbar-control-border);
+  border-radius: 8px;
+  background: rgba(255, 252, 246, 0.56);
+  box-shadow: 0 12px 30px rgba(84, 69, 56, 0.04);
+  padding: 10px;
+}
+
+.project-search-workspace__empty {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.project-search-workspace__summary {
+  padding: 6px 8px 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.project-search-results {
+  display: grid;
+  gap: 4px;
+}
+
+.project-search-result {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 10px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.project-search-result:hover,
+.project-search-left-list__button:hover {
+  background: rgba(84, 77, 68, 0.08);
+}
+
+.project-search-result__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.project-search-result__preview {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 19px;
+}
+
+.project-search-left-list__button {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.dark-theme .project-search-workspace__select,
+body.dark-theme .project-search-workspace__check,
+body.dark-theme .project-search-workspace__body {
+  background: rgba(22, 21, 19, 0.54);
+}
+
 [data-command-palette-modal] .modal__content {
   width: min(420px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);
@@ -5255,12 +5430,33 @@ body.dark-theme .notes-button {
     padding: 24px;
   }
 
-  .main-content--notes {
+  .main-content--notes,
+  .main-content--search {
     padding: 18px;
   }
 
-  .notes-workspace {
+  .notes-workspace,
+  .project-search-workspace {
     min-height: calc(100vh - 132px);
+  }
+
+  .project-search-workspace__header,
+  .project-search-workspace__controls {
+    align-items: stretch;
+  }
+
+  .project-search-workspace__header {
+    flex-direction: column;
+  }
+
+  .project-search-workspace__status {
+    max-width: none;
+    text-align: left;
+  }
+
+  .project-search-workspace__select,
+  .project-search-workspace__check {
+    width: 100%;
   }
 
   .notes-workspace__body {

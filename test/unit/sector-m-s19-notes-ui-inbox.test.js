@@ -59,9 +59,10 @@ test('S19 notes UI: tab routing returns from notes without creating a second edi
   const editor = read('src/renderer/editor.js');
 
   assert.ok(editor.includes("if (notesLeftListElement) notesLeftListElement.hidden = tab !== 'notes';"));
-  assert.ok(editor.includes("if (tab === 'notes') {\n    showNotesWorkspace();"));
+  assert.ok(editor.includes("if (tab === 'notes') {"));
+  assert.ok(editor.includes('hideProjectSearchWorkspace();\n    showNotesWorkspace();'));
   assert.ok(editor.includes('const wasNotesWorkspaceVisible = notesWorkspace instanceof HTMLElement && notesWorkspace.hidden !== true;'));
   assert.ok(editor.includes('editorPanel?.classList.remove(\'active\');'));
   assert.ok(editor.includes('mainContent?.classList.add(\'main-content--notes\');'));
-  assert.ok(editor.includes('hideNotesWorkspace();\n  editorPanel?.classList.add(\'active\');'));
+  assert.ok(editor.includes('hideNotesWorkspace();\n  hideProjectSearchWorkspace();\n  editorPanel?.classList.add(\'active\');'));
 });

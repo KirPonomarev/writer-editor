@@ -536,6 +536,39 @@
             </div>
           </div>
         </section>
+        <section class="project-search-workspace" data-project-search-workspace hidden aria-label="Поиск по проекту">
+          <div class="project-search-workspace__shell">
+            <header class="project-search-workspace__header">
+              <div>
+                <div class="project-search-workspace__eyebrow">Поиск</div>
+                <h1 class="project-search-workspace__title">Проектный поиск</h1>
+              </div>
+              <div class="project-search-workspace__status" data-project-search-status>Введите запрос</div>
+            </header>
+            <div class="project-search-workspace__controls" aria-label="Параметры поиска">
+              <select class="project-search-workspace__select" data-project-search-scope aria-label="Область поиска">
+                <option value="project">Проект</option>
+                <option value="manuscript">Рукопись</option>
+                <option value="current">Текущая сцена</option>
+                <option value="selected">Выбранные сцены</option>
+                <option value="structure">Текущая ветка</option>
+                <option value="notes">Заметки</option>
+                <option value="annotations">Аннотации</option>
+              </select>
+              <label class="project-search-workspace__check">
+                <input type="checkbox" data-project-search-case>
+                <span>Регистр</span>
+              </label>
+              <label class="project-search-workspace__check">
+                <input type="checkbox" data-project-search-whole-word>
+                <span>Слово целиком</span>
+              </label>
+            </div>
+            <div class="project-search-workspace__body" data-project-search-results>
+              <div class="project-search-workspace__empty">Введите запрос слева, чтобы найти текст в рукописи, заметках и аннотациях.</div>
+            </div>
+          </div>
+        </section>
         <div class="editor-panel-wrapper">
           <div class="editor-panel">
             <div class="editor-panel__meta" data-meta-panel>

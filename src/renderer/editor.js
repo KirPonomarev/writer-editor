@@ -223,6 +223,12 @@ const leftSearchInput = document.querySelector('[data-left-search-input]');
 const outlineListElement = document.querySelector('[data-outline-list]');
 const notesLeftListElement = document.querySelector('[data-notes-left-list]');
 const searchResultsElement = document.querySelector('[data-search-results]');
+const projectSearchWorkspace = document.querySelector('[data-project-search-workspace]');
+const projectSearchStatusElement = document.querySelector('[data-project-search-status]');
+const projectSearchScopeSelect = document.querySelector('[data-project-search-scope]');
+const projectSearchCaseCheckbox = document.querySelector('[data-project-search-case]');
+const projectSearchWholeWordCheckbox = document.querySelector('[data-project-search-whole-word]');
+const projectSearchResultsElement = document.querySelector('[data-project-search-results]');
 const rightSidebar = document.querySelector('[data-right-sidebar]');
 const rightTabsHost = document.querySelector('[data-right-tabs]');
 const rightTabButtons = Array.from(document.querySelectorAll('[data-right-tab]'));
@@ -362,6 +368,7 @@ const SAFE_RESET_BASELINE_LINE_HEIGHT = '1.0';
 const SAFE_RESET_BASELINE_VIEW_MODE = 'default';
 const PROJECT_WORKSPACE_RESET_TABS = Object.freeze(['project', 'outline', 'search', 'roman']);
 const NOTES_WORKSPACE_QUERY_ID = 'query.projectNotes';
+const PROJECT_SEARCH_QUERY_ID = 'query.projectSearch';
 const TOOLBAR_CONFIGURATOR_LIBRARY_COLUMN_COUNT = 4;
 const TOOLBAR_CONFIGURATOR_LIBRARY_MIN_SLOT_COUNT = 20;
 const TOOLBAR_CONFIGURATOR_LIBRARY_PLACEHOLDER_TEXT = 'New Slot';
@@ -511,6 +518,17 @@ let toolbarStylesMenuState = {
   },
 };
 let lastSearchQuery = '';
+let projectSearchState = {
+  state: 'idle',
+  results: [],
+  counts: { total: 0, returned: 0, sources: 0 },
+  options: {},
+  sequence: 0,
+  selectedResultId: '',
+  unavailableReason: '',
+};
+let projectSearchRefreshTimer = null;
+let pendingProjectSearchJump = null;
 let plainTextBuffer = '';
 const activeTab = 'roman';
 let currentDocumentId = null;
@@ -5997,6 +6015,7 @@ async function invokeWorkspaceQueryBridge(queryId, payload = {}) {
     && queryId !== REVIEW_SURFACE_QUERY_ID
     && queryId !== METADATA_INSPECTOR_QUERY_ID
     && queryId !== NOTES_WORKSPACE_QUERY_ID
+    && queryId !== PROJECT_SEARCH_QUERY_ID
   ) {
     return null;
   }
@@ -7507,6 +7526,7 @@ function updateSpatialLayoutForViewportChange() {
 
 function showEditorPanelFor(title) {
   hideNotesWorkspace();
+  hideProjectSearchWorkspace();
   editorPanel?.classList.add('active');
   mainContent?.classList.add('main-content--editor');
   emptyState?.classList.add('hidden');
@@ -7535,6 +7555,7 @@ function showEditorPanelFor(title) {
 function collapseSelection() {
   clearFlowModeState();
   hideNotesWorkspace();
+  hideProjectSearchWorkspace();
   editorPanel?.classList.remove('active');
   mainContent?.classList.remove('main-content--editor');
   emptyState?.classList.remove('hidden');
@@ -9228,6 +9249,27 @@ function hideNotesWorkspace() {
   mainContent?.classList.remove('main-content--notes');
 }
 
+function showProjectSearchWorkspace() {
+  projectSearchWorkspace?.removeAttribute('hidden');
+  projectSearchWorkspace?.classList.add('is-active');
+  editorPanel?.classList.remove('active');
+  mainContent?.classList.remove('main-content--editor');
+  mainContent?.classList.add('main-content--search');
+  emptyState?.classList.add('hidden');
+  metaPanel?.classList.add('is-hidden');
+  renderProjectSearchResults();
+  scheduleProjectSearchResults(leftSearchInput ? leftSearchInput.value : '');
+  requestAnimationFrame(() => {
+    leftSearchInput?.focus({ preventScroll: true });
+  });
+}
+
+function hideProjectSearchWorkspace() {
+  projectSearchWorkspace?.setAttribute('hidden', '');
+  projectSearchWorkspace?.classList.remove('is-active');
+  mainContent?.classList.remove('main-content--search');
+}
+
 async function runNotesMutation(commandId, payload, successStatus) {
   const result = await dispatchUiCommand(commandId, payload);
   const notesResult = getNotesCommandResult(result);
@@ -9348,56 +9390,274 @@ function renderOutlineList() {
   outlineListElement.appendChild(list);
 }
 
-function renderSearchResults(query = '') {
+function normalizeProjectSearchReadModel(result, sequence = projectSearchState.sequence) {
+  const source = result && typeof result === 'object' && !Array.isArray(result) ? result : {};
+  const results = Array.isArray(source.results)
+    ? source.results
+      .filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+      .slice(0, 100)
+    : [];
+  const counts = source.counts && typeof source.counts === 'object' && !Array.isArray(source.counts)
+    ? source.counts
+    : {};
+  return {
+    state: typeof source.state === 'string' ? source.state : 'unavailable',
+    results,
+    counts: {
+      total: Number.isFinite(Number(counts.total)) ? Number(counts.total) : results.length,
+      returned: Number.isFinite(Number(counts.returned)) ? Number(counts.returned) : results.length,
+      sources: Number.isFinite(Number(counts.sources)) ? Number(counts.sources) : 0,
+    },
+    options: source.options && typeof source.options === 'object' && !Array.isArray(source.options)
+      ? source.options
+      : {},
+    sequence,
+    selectedResultId: projectSearchState.selectedResultId,
+    unavailableReason: typeof source.unavailableReason === 'string' ? source.unavailableReason : '',
+    stale: source.stale === true,
+    truncated: source.truncated === true,
+  };
+}
+
+function setProjectSearchStatus(message) {
+  if (projectSearchStatusElement) {
+    projectSearchStatusElement.textContent = message;
+  }
+}
+
+function getProjectSearchPayload(query) {
+  const descriptor = getNavigatorSelectionDescriptor();
+  const selectedNodeIds = Array.isArray(descriptor.selectedIds) ? descriptor.selectedIds : [];
+  const scope = projectSearchScopeSelect instanceof HTMLSelectElement
+    ? projectSearchScopeSelect.value
+    : 'project';
+  return {
+    projectId: currentProjectId,
+    query: String(query || ''),
+    scope,
+    caseSensitive: projectSearchCaseCheckbox instanceof HTMLInputElement
+      ? projectSearchCaseCheckbox.checked
+      : false,
+    wholeWord: projectSearchWholeWordCheckbox instanceof HTMLInputElement
+      ? projectSearchWholeWordCheckbox.checked
+      : false,
+    activeNodeId: currentDocumentId || descriptor.activeDocumentId || '',
+    scopeNodeId: descriptor.focusedId || currentDocumentId || '',
+    selectedNodeIds,
+    limit: 100,
+  };
+}
+
+function renderProjectSearchLeftResults() {
   if (!searchResultsElement) return;
   searchResultsElement.innerHTML = '';
-  const needle = String(query || '').trim().toLowerCase();
-  if (!needle) {
+  const query = leftSearchInput ? leftSearchInput.value.trim() : '';
+  if (!query) {
     const empty = document.createElement('div');
     empty.className = 'tree__empty';
-    empty.textContent = 'Type to search';
+    empty.textContent = 'Введите запрос';
     searchResultsElement.appendChild(empty);
     return;
   }
-  const matches = [];
-  const pushNode = (node) => {
-    if (!node || typeof node !== 'object') return;
-    const label = String(node.label || '');
-    const kind = String(node.kind || '');
-    if (label.toLowerCase().includes(needle)) {
-      matches.push(`${kind}: ${label}`);
-    }
-    if (Array.isArray(node.children)) {
-      node.children.forEach(pushNode);
-    }
-  };
-  if (treeRoot && Array.isArray(treeRoot.children)) {
-    treeRoot.children.forEach(pushNode);
+  if (projectSearchState.state === 'loading') {
+    const loading = document.createElement('div');
+    loading.className = 'tree__empty';
+    loading.textContent = 'Ищу...';
+    searchResultsElement.appendChild(loading);
+    return;
   }
-  const plain = getPlainText();
-  if (plain.toLowerCase().includes(needle)) {
-    matches.push('editor: text match');
-  }
-  if (matches.length === 0) {
+  if (projectSearchState.results.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'tree__empty';
-    empty.textContent = 'No matches';
+    empty.textContent = projectSearchState.state === 'unavailable' ? 'Поиск недоступен' : 'Нет совпадений';
     searchResultsElement.appendChild(empty);
     return;
   }
   const list = document.createElement('ul');
-  list.className = 'tree__list';
-  for (const line of matches.slice(0, 100)) {
+  list.className = 'tree__list project-search-left-list';
+  projectSearchState.results.slice(0, 24).forEach((result) => {
     const li = document.createElement('li');
-    li.className = 'tree__node';
-    li.textContent = line;
+    li.className = 'tree__node project-search-left-list__item';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'project-search-left-list__button';
+    button.dataset.searchResultId = result.id || '';
+    button.textContent = `${result.source?.title || result.title || 'Источник'} - ${result.preview?.matchText || ''}`;
+    li.appendChild(button);
     list.appendChild(li);
-  }
+  });
   searchResultsElement.appendChild(list);
+}
+
+function renderProjectSearchCentralResults() {
+  if (!projectSearchResultsElement) return;
+  projectSearchResultsElement.innerHTML = '';
+  const query = leftSearchInput ? leftSearchInput.value.trim() : '';
+  if (!query) {
+    const empty = document.createElement('div');
+    empty.className = 'project-search-workspace__empty';
+    empty.textContent = 'Введите запрос слева, чтобы найти текст в рукописи, заметках и аннотациях.';
+    projectSearchResultsElement.appendChild(empty);
+    setProjectSearchStatus('Введите запрос');
+    return;
+  }
+  if (projectSearchState.state === 'loading') {
+    const loading = document.createElement('div');
+    loading.className = 'project-search-workspace__empty';
+    loading.textContent = 'Идёт поиск. Старые результаты не будут показаны поверх нового запроса.';
+    projectSearchResultsElement.appendChild(loading);
+    setProjectSearchStatus('Поиск...');
+    return;
+  }
+  if (projectSearchState.state === 'unavailable') {
+    const unavailable = document.createElement('div');
+    unavailable.className = 'project-search-workspace__empty';
+    unavailable.textContent = `Поиск сейчас недоступен: ${projectSearchState.unavailableReason || 'нужно безопасно перечитать проект'}. Данные не изменены.`;
+    projectSearchResultsElement.appendChild(unavailable);
+    setProjectSearchStatus('Недоступен');
+    return;
+  }
+  if (projectSearchState.results.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'project-search-workspace__empty';
+    empty.textContent = 'Совпадений нет. Проект не изменялся.';
+    projectSearchResultsElement.appendChild(empty);
+    setProjectSearchStatus('0 совпадений');
+    return;
+  }
+  const summary = document.createElement('div');
+  summary.className = 'project-search-workspace__summary';
+  summary.textContent = `${projectSearchState.counts.returned} из ${projectSearchState.counts.total} совпадений`;
+  projectSearchResultsElement.appendChild(summary);
+
+  const list = document.createElement('div');
+  list.className = 'project-search-results';
+  projectSearchState.results.forEach((result) => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'project-search-result';
+    item.dataset.searchResultId = result.id || '';
+    const title = document.createElement('span');
+    title.className = 'project-search-result__title';
+    title.textContent = result.source?.title || result.title || 'Источник';
+    const meta = document.createElement('span');
+    meta.className = 'project-search-result__meta';
+    meta.textContent = [result.source?.scope, result.source?.kind, result.source?.field]
+      .filter(Boolean)
+      .join(' / ');
+    const preview = document.createElement('span');
+    preview.className = 'project-search-result__preview';
+    preview.textContent = result.preview?.text || '';
+    item.append(title, meta, preview);
+    list.appendChild(item);
+  });
+  projectSearchResultsElement.appendChild(list);
+  setProjectSearchStatus(projectSearchState.truncated ? 'Показан лимит' : 'Готово');
+}
+
+function renderProjectSearchResults() {
+  renderProjectSearchLeftResults();
+  renderProjectSearchCentralResults();
+}
+
+async function refreshProjectSearchResults(query = '') {
+  const sequence = projectSearchState.sequence + 1;
+  projectSearchState = {
+    ...projectSearchState,
+    state: query.trim() ? 'loading' : 'empty',
+    results: [],
+    sequence,
+  };
+  renderProjectSearchResults();
+  if (!query.trim()) return;
+  const result = await invokeWorkspaceQueryBridge(PROJECT_SEARCH_QUERY_ID, getProjectSearchPayload(query));
+  if (sequence !== projectSearchState.sequence) return;
+  projectSearchState = normalizeProjectSearchReadModel(result, sequence);
+  renderProjectSearchResults();
+}
+
+function scheduleProjectSearchResults(query = '') {
+  if (projectSearchRefreshTimer) {
+    window.clearTimeout(projectSearchRefreshTimer);
+  }
+  projectSearchRefreshTimer = window.setTimeout(() => {
+    projectSearchRefreshTimer = null;
+    void refreshProjectSearchResults(query);
+  }, 120);
+}
+
+function renderSearchResults(query = '') {
+  if (currentLeftTab !== 'search') {
+    renderProjectSearchResults();
+    return;
+  }
+  scheduleProjectSearchResults(query);
+}
+
+function getProjectSearchResultById(resultId) {
+  const normalized = typeof resultId === 'string' ? resultId : '';
+  if (!normalized) return null;
+  return projectSearchState.results.find((result) => result && result.id === normalized) || null;
+}
+
+function applyPendingProjectSearchJump(documentId) {
+  if (!pendingProjectSearchJump || pendingProjectSearchJump.nodeId !== documentId) return;
+  const jump = pendingProjectSearchJump;
+  pendingProjectSearchJump = null;
+  if (!Number.isFinite(jump.from) || !Number.isFinite(jump.to) || jump.to < jump.from) return;
+  requestAnimationFrame(() => {
+    focusEditorSurface('current');
+    setSelectionRange(jump.from, jump.to);
+  });
+}
+
+async function activateProjectSearchResult(resultId) {
+  const result = getProjectSearchResultById(resultId);
+  if (!result) return;
+  const source = result.source && typeof result.source === 'object' && !Array.isArray(result.source)
+    ? result.source
+    : {};
+  if (source.type === 'note' && source.noteId) {
+    notesWorkspaceState = {
+      ...notesWorkspaceState,
+      selectedId: source.noteId,
+    };
+    applyLeftTab('notes');
+    updateStatusText('Заметка открыта');
+    return;
+  }
+  if (source.nodeId) {
+    pendingProjectSearchJump = {
+      nodeId: source.nodeId,
+      from: Number(result.preview?.from),
+      to: Number(result.preview?.to),
+    };
+    const opened = await openDocumentNode({
+      nodeId: source.nodeId,
+      id: source.nodeId,
+      kind: source.kind || result.kind || 'scene',
+      label: source.title || result.title || '',
+      name: source.title || result.title || '',
+    });
+    if (opened) {
+      applyLeftTab('project');
+      updateStatusText('Источник открыт');
+    } else {
+      pendingProjectSearchJump = null;
+      updateStatusText('Источник недоступен');
+    }
+    return;
+  }
+  if (source.type === 'annotation') {
+    applyMode('review');
+    void dispatchUiCommand(EXTRA_COMMAND_IDS.REVIEW_OPEN_COMMENTS);
+    updateStatusText('Аннотация открыта');
+  }
 }
 
 function applyLeftTab(tab) {
   const wasNotesWorkspaceVisible = notesWorkspace instanceof HTMLElement && notesWorkspace.hidden !== true;
+  const wasSearchWorkspaceVisible = projectSearchWorkspace instanceof HTMLElement && projectSearchWorkspace.hidden !== true;
   currentLeftTab = tab;
   for (const button of leftTabButtons) {
     const active = button.dataset.leftTab === tab;
@@ -9411,14 +9671,20 @@ function applyLeftTab(tab) {
   if (leftSearchPanel) leftSearchPanel.hidden = tab !== 'search';
   if (tab === 'outline') {
     hideNotesWorkspace();
+    hideProjectSearchWorkspace();
     renderOutlineList();
   }
   if (tab === 'notes') {
+    hideProjectSearchWorkspace();
     showNotesWorkspace();
+  } else if (tab === 'search') {
+    hideNotesWorkspace();
+    showProjectSearchWorkspace();
   } else if (tab !== 'outline') {
     hideNotesWorkspace();
+    hideProjectSearchWorkspace();
   }
-  if (tab !== 'notes' && wasNotesWorkspaceVisible) {
+  if (tab !== 'notes' && tab !== 'search' && (wasNotesWorkspaceVisible || wasSearchWorkspaceVisible)) {
     if (currentDocumentId) {
       showEditorPanelFor('');
     } else {
@@ -12627,6 +12893,40 @@ if (leftSearchInput) {
   });
 }
 
+projectSearchScopeSelect?.addEventListener('change', () => {
+  if (currentLeftTab === 'search') {
+    renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
+  }
+});
+
+projectSearchCaseCheckbox?.addEventListener('change', () => {
+  if (currentLeftTab === 'search') {
+    renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
+  }
+});
+
+projectSearchWholeWordCheckbox?.addEventListener('change', () => {
+  if (currentLeftTab === 'search') {
+    renderSearchResults(leftSearchInput ? leftSearchInput.value : '');
+  }
+});
+
+searchResultsElement?.addEventListener('click', (event) => {
+  const target = event.target instanceof Element
+    ? event.target.closest('[data-search-result-id]')
+    : null;
+  if (!target) return;
+  void activateProjectSearchResult(target.dataset.searchResultId || '');
+});
+
+projectSearchResultsElement?.addEventListener('click', (event) => {
+  const target = event.target instanceof Element
+    ? event.target.closest('[data-search-result-id]')
+    : null;
+  if (!target) return;
+  void activateProjectSearchResult(target.dataset.searchResultId || '');
+});
+
 if (settingsThemeSelect) {
   settingsThemeSelect.addEventListener('change', () => {
     const nextTheme = settingsThemeSelect.value === 'dark' ? 'dark' : 'light';
@@ -12961,6 +13261,7 @@ if (window.electronAPI) {
     updatePerfHintText('normal');
     updateInspectorSnapshot();
     refreshMetadataInspector();
+    applyPendingProjectSearchJump(currentDocumentId || '');
   });
 
   window.electronAPI.onEditorTextRequest(({ requestId }) => {
