@@ -1753,7 +1753,8 @@ function applyDesignOsRuntimeWiring() {
 }
 
 function normalizeToolbarConfiguratorProfileName(profileName) {
-  return profileName === 'master' ? 'master' : 'minimal';
+  const normalizedProfileName = typeof profileName === 'string' ? profileName.trim().toLowerCase() : '';
+  return normalizedProfileName === 'master' || normalizedProfileName === 'pro' ? 'master' : 'minimal';
 }
 
 function normalizeToolbarConfiguratorItemIds(rawIds) {
@@ -1787,6 +1788,7 @@ function createToolbarConfiguratorState(rawState = {}) {
   const rawToolbarProfiles = isPlainObject(source.toolbarProfiles) ? source.toolbarProfiles : {};
   const hasMinimal = Object.prototype.hasOwnProperty.call(rawToolbarProfiles, 'minimal');
   const hasMaster = Object.prototype.hasOwnProperty.call(rawToolbarProfiles, 'master');
+  const hasPro = Object.prototype.hasOwnProperty.call(rawToolbarProfiles, 'pro');
 
   return Object.freeze({
     version: 3,
@@ -1796,6 +1798,8 @@ function createToolbarConfiguratorState(rawState = {}) {
       master: Object.freeze(
         hasMaster
           ? normalizeToolbarConfiguratorItemIds(rawToolbarProfiles.master)
+          : hasPro
+            ? normalizeToolbarConfiguratorItemIds(rawToolbarProfiles.pro)
           : createToolbarConfiguratorCanonicalProfileIds()
       ),
     }),
@@ -11396,6 +11400,7 @@ function buildSettingsAggregationSnapshot() {
     projectId: currentProjectId,
     bookFormat: profile.formatId || 'A4',
     bookOrientation: profile.orientation || 'portrait',
+    toolbarProfile: getToolbarConfiguratorActiveProfile(),
   });
 }
 

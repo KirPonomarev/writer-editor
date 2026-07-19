@@ -28,6 +28,11 @@ function normalizeBooleanLabel(value) {
   return value === true ? 'On' : 'Off';
 }
 
+function normalizeToolbarProfileLabel(value) {
+  const normalized = normalizeString(value).toLowerCase();
+  return normalized === 'master' || normalized === 'pro' ? 'Полный' : 'Минимальный';
+}
+
 function normalizeSetting(setting) {
   const source = setting && typeof setting === 'object' && !Array.isArray(setting) ? setting : {};
   const id = normalizeString(source.id);
@@ -78,6 +83,7 @@ export function buildSettingsAggregation(input = {}) {
   const bookFormat = normalizeString(source.bookFormat, 'A4');
   const bookOrientation = normalizeString(source.bookOrientation, 'Portrait');
   const menuLocale = normalizeString(source.menuLocale, 'Base');
+  const toolbarProfile = normalizeToolbarProfileLabel(source.toolbarProfile);
 
   const settings = [
     {
@@ -194,6 +200,16 @@ export function buildSettingsAggregation(input = {}) {
       scope: 'project',
       persistenceClass: 'project-manifest:bookProfile',
       status: projectId ? 'live' : 'read_only',
+    },
+    {
+      id: 'layout.toolbarProfile',
+      sectionId: 'layout',
+      label: 'Toolbar profile',
+      value: toolbarProfile,
+      owner: 'Toolbar profile state',
+      scope: projectId ? 'project' : 'application',
+      persistenceClass: 'localStorage:toolbarProfiles:projectId',
+      status: 'live',
     },
     {
       id: 'saveRecovery.autosave',

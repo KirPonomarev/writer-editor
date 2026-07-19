@@ -67,7 +67,8 @@ function normalizeCatalogEntries(catalogEntries) {
 }
 
 function normalizeProfileName(profileName) {
-  return profileName === 'master' ? 'master' : 'minimal';
+  const normalizedProfileName = typeof profileName === 'string' ? profileName.trim().toLowerCase() : '';
+  return normalizedProfileName === 'master' || normalizedProfileName === 'pro' ? 'master' : 'minimal';
 }
 
 function getToolbarProfileIds(profileState, profileName) {
