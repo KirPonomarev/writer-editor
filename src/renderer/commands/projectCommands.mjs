@@ -27,6 +27,9 @@ export const EXTRA_COMMAND_IDS = Object.freeze({
   PROJECT_LIFECYCLE_CREATE: 'cmd.project.lifecycle.create',
   PROJECT_LIFECYCLE_OPEN: 'cmd.project.lifecycle.open',
   PROJECT_LIFECYCLE_CONTINUE: 'cmd.project.lifecycle.continue',
+  PROJECT_LIFECYCLE_RENAME: 'cmd.project.lifecycle.rename',
+  PROJECT_LIFECYCLE_DUPLICATE: 'cmd.project.lifecycle.duplicate',
+  PROJECT_LIFECYCLE_MOVE_LOCATION: 'cmd.project.lifecycle.moveLocation',
   PROJECT_DOCUMENT_OPEN: 'cmd.project.document.open',
   PROJECT_EXPORT_SELECTED_SCENES_TXT: 'cmd.project.exportSelectedScenesTxtV1',
   PROJECT_SAVE_AS: 'cmd.project.saveAs',
@@ -1425,6 +1428,182 @@ export function registerProjectCommands(registry, options = {}) {
         'E_COMMAND_FAILED',
         EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_CONTINUE,
         bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_CONTINUE_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME,
+      label: 'Rename Local Project',
+      group: 'file',
+      surface: ['palette', 'toolbar'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const projectName = typeof input.projectName === 'string' ? input.projectName.trim() : '';
+      if (!projectId) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME, 'PROJECT_ID_REQUIRED');
+      }
+      if (!projectName) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME, 'PROJECT_NAME_REQUIRED');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME,
+          { projectId, projectName },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME,
+          'PROJECT_RENAME_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
+        return ok({ renamed: false, cancelled: true, projectId });
+      }
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          renamed: true,
+          projectId,
+          projectName,
+          receipt: bridged.receipt && typeof bridged.receipt === 'object' ? bridged.receipt : null,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_RENAME,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_RENAME_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE,
+      label: 'Duplicate Local Project',
+      group: 'file',
+      surface: ['palette', 'toolbar'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      const projectName = typeof input.projectName === 'string' ? input.projectName.trim() : '';
+      if (!projectId) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE, 'PROJECT_ID_REQUIRED');
+      }
+      if (!projectName) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE, 'PROJECT_NAME_REQUIRED');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE,
+          { projectId, projectName },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE,
+          'PROJECT_DUPLICATE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
+        return ok({ duplicated: false, cancelled: true, projectId });
+      }
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          duplicated: true,
+          sourceProjectId: projectId,
+          projectId: typeof bridged.projectId === 'string' ? bridged.projectId : '',
+          projectName,
+          receipt: bridged.receipt && typeof bridged.receipt === 'object' ? bridged.receipt : null,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_DUPLICATE,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_DUPLICATE_FAILED',
+      );
+    },
+  );
+
+  registry.registerCommand(
+    {
+      id: EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION,
+      label: 'Move Local Project',
+      group: 'file',
+      surface: ['palette', 'toolbar'],
+      hotkey: '',
+    },
+    async (input = {}) => {
+      if (!electronAPI || typeof electronAPI !== 'object') {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION, 'ELECTRON_API_UNAVAILABLE');
+      }
+      const projectId = typeof input.projectId === 'string' ? input.projectId.trim() : '';
+      if (!projectId) {
+        return fail('E_COMMAND_FAILED', EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION, 'PROJECT_ID_REQUIRED');
+      }
+
+      let response;
+      try {
+        response = await invokeBridgeOnlyCommand(
+          electronAPI,
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION,
+          { projectId },
+        );
+      } catch (error) {
+        return fail(
+          'E_COMMAND_FAILED',
+          EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION,
+          'PROJECT_MOVE_IPC_FAILED',
+          { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
+        );
+      }
+
+      const bridged = response && typeof response === 'object' && !Array.isArray(response)
+        && response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : response;
+      if (bridged && bridged.cancelled) {
+        return ok({ moved: false, cancelled: true, projectId });
+      }
+      if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
+        return ok({
+          moved: bridged.moved !== false,
+          projectId,
+          receipt: bridged.receipt && typeof bridged.receipt === 'object' ? bridged.receipt : null,
+        });
+      }
+      return fail(
+        'E_COMMAND_FAILED',
+        EXTRA_COMMAND_IDS.PROJECT_LIFECYCLE_MOVE_LOCATION,
+        bridged && typeof bridged.reason === 'string' ? bridged.reason : 'PROJECT_MOVE_FAILED',
       );
     },
   );

@@ -5074,6 +5074,7 @@ body.dark-theme .status-bar {
 
 .project-library__header,
 .project-library__create-row,
+.project-library__mutations,
 .project-library__actions {
   display: flex;
   align-items: center;
@@ -5112,10 +5113,16 @@ body.dark-theme .status-bar {
 .project-library__list {
   flex: 1 1 auto;
   min-height: 180px;
-  max-height: min(340px, calc(100vh - 260px));
+  max-height: min(320px, calc(100vh - 302px));
   overflow: auto;
   border-top: 1px solid var(--divider);
   border-bottom: 1px solid var(--divider);
+}
+
+.project-library__mutations {
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .project-library__row {
