@@ -2438,6 +2438,7 @@ function resolveCentralSheetLineGuardPx(proseMirror) {
 function resolveCentralSheetStructuralMinimumPageCount({
   proseMirror,
   pageStridePx,
+  pageHeightPx,
   marginBottomPx,
 } = {}) {
   if (!(proseMirror instanceof HTMLElement)) {
@@ -2450,12 +2451,21 @@ function resolveCentralSheetStructuralMinimumPageCount({
   const proseRect = proseMirror.getBoundingClientRect();
   const lastBlockRect = lastBlock.getBoundingClientRect();
   const resolvedPageStridePx = Math.max(1, Math.round(Number(pageStridePx) || 1));
+  const resolvedPageHeightPx = Math.max(1, Math.round(Number(pageHeightPx) || resolvedPageStridePx));
+  const resolvedPageGapPx = Math.max(0, resolvedPageStridePx - resolvedPageHeightPx);
+  const resolvedTextPageHeightPx = Math.max(1, resolvedPageHeightPx - resolvedPageGapPx);
   const resolvedMarginBottomPx = Math.max(0, Math.round(Number(marginBottomPx) || 0));
   const requiredBottomOffsetPx = Math.max(
     0,
     Math.ceil(lastBlockRect.bottom - proseRect.top) + resolvedMarginBottomPx,
   );
-  return Math.max(1, Math.ceil(requiredBottomOffsetPx / resolvedPageStridePx));
+  // Natural text height is measured without sheet gaps, so long continuous prose needs text-capacity lower bounds.
+  return Math.max(
+    1,
+    Math.ceil(requiredBottomOffsetPx / resolvedPageStridePx),
+    Math.ceil(requiredBottomOffsetPx / resolvedPageHeightPx),
+    Math.ceil(requiredBottomOffsetPx / resolvedTextPageHeightPx),
+  );
 }
 
 function beginCentralSheetStripStructuralTransition() {
@@ -2804,6 +2814,7 @@ function buildCentralSheetStripRuntimeState({ proseMirror, reuseCachedDecision =
   const structuralMinimumPageCount = resolveCentralSheetStructuralMinimumPageCount({
     proseMirror,
     pageStridePx,
+    pageHeightPx: metrics.pageHeightPx,
     marginBottomPx: metrics.marginBottomPx,
   });
   const activeLayoutPreviewSnapshot = buildActiveLayoutPreviewSnapshot();
