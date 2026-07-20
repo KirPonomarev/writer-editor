@@ -236,6 +236,17 @@ DECISION_07: ONLY_SMALL_EXCEPTION_IS_VISUAL_PLUS_UI_BINDING
 
 Это задачи про разметку, стили, отступы, размеры, композицию, иконки и шрифты. Если задачу можно решить без изменения механики, она должна решаться без изменения механики.
 
+Перед исследованием, макетом и финальной шлифовкой Group 01 использовать
+`docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md`. Матрица является
+рекомендательным маршрутизатором инструментов и не расширяет разрешенный набор
+файлов, зависимости или исполняемые права этого гайда.
+
+Текущая шрифтовая политика Group 01: использовать готовые лицензированные
+гарнитуры с доказанным правом встраивания в desktop-приложение. Самостоятельное
+редактирование шрифтов, Glyphs MCP, Fontra и шрифтовый CI не входят в текущий контур.
+Наличие `Circe-Regular.ttf` в репозитории не делает Circe финальным визуальным
+или лицензионным базовым шрифтом.
+
 ```text
 GROUP_ID: GROUP_01_VISUAL_AND_TYPOGRAPHY
 WHEN: HTML CSS SPACING SIZING TYPOGRAPHY ICONS VISUAL_COMPOSITION
@@ -248,6 +259,8 @@ PRECHECK_COMMANDS: git_status_short_branch git_rev_parse_HEAD git_rev_parse_orig
 POSTCHECK_COMMANDS: npm_run_build_renderer git_diff_name_only
 ACCEPTANCE_ARTIFACTS: SELECTED_SCREENSHOT_OR_VISUAL_COMPARISON_PLUS_CLEAN_SCOPE_DIFF
 STOP_IF: ANY_RUNTIME_FILE_OUTSIDE_TOUCH_SET_IS_NEEDED
+TOOL_MATRIX: docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md
+FONT_POLICY: READY_LICENSED_FONTS_ONLY_WITH_APP_EMBEDDING_PROOF
 ```
 
 ## 9. Group 02 — привязка интерфейса
