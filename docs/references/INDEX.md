@@ -14,6 +14,7 @@
 | Project | License | MVP Now | Later | Notes |
 |---|---|---|---|---|
 | Матрица дизайн-инструментов Yalken v1 | Смешанные лицензии, только справочное использование | исследование, макет, цвет, аудит и шлифовка | визуальная регрессия Argos | `docs/references/YALKEN_DESIGN_TOOL_MATRIX_V1.md` |
+| Резерв дизайн-инструментов Yalken v1 | Смешанные лицензии, только внешний исследовательский контур | узкие пилоты по триггерам | архивирование, document intelligence, MCP isolation и agent observability | `docs/references/YALKEN_DESIGN_TOOL_RESERVE_V1.md` |
 | Spec Kit (GitHub) | MIT | процесс спека→план→таски→проверки | — | `docs/references/spec-kit.md` |
 | Native Fluency and Typographic Sharpness | Reference-only | advisory quality guard for sharp native-feel UI and viewport text sharpness | execution brief input only | `docs/references/native-fluency-typographic-sharpness.md` |
 | Manuskript | GPLv3+ | UX структуры (outline/cards), идеи хранения | multi-file проект, экспорт | `docs/references/projects/manuskript.md` |
