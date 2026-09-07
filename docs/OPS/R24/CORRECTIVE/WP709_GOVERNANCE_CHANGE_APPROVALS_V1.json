@@ -37,7 +37,7 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_CARRIER_REGISTRY_V1.json",
-      "sha256": "2bea9e6dfefedbdfcf200bdcb14319cdfaabad232c1eb9970bcead2e5925be85",
+      "sha256": "eb98371ce982b716af88cd7103be12eb69e08bf8efff97623f11a82ba595eae8",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
       "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
