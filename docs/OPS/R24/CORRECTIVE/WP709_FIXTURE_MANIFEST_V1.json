@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_FIXTURE_MANIFEST_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-MODEL",
+  "status": "LOCAL_TEST_FIXTURES_ONLY",
+  "programDone": false,
+  "fixtureModule": "r24-wp709-mixed-chain-fixtures.js",
+  "declaredFieldDenominator": 4,
+  "declaredFields": ["BODY", "COMMENT_ANCHORS", "EMPHASIS", "TITLE"],
+  "modes": [
+    { "id": "pending", "purpose": "ASSERT_CONDITIONAL_EXTERNAL_STATE", "physicalEvidence": false },
+    { "id": "pass", "purpose": "PURE_COMPILER_TEST_CORPUS", "physicalEvidence": false }
+  ],
+  "dataBoundary": {
+    "syntheticOnly": true,
+    "userDocuments": 0,
+    "secrets": 0,
+    "network": false,
+    "providerEffects": false
+  },
+  "nonClaim": "FULL_TEST_CORPUS_IS_NOT_EXTERNAL_PHYSICAL_EVIDENCE"
+}

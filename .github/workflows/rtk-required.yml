@@ -172,7 +172,20 @@ jobs:
           )
 
       - name: Run R2.4 WP-707 explicit single-scene Word apply gate
-        run: node --test test/unit/r24-wp707-word-apply.test.js test/unit/r24-wp707-word-apply-integration.test.js test/unit/r24-wp707-word-apply-mutants.test.js test/contracts/r24-wp707-terminal-carriers.contract.test.mjs test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs
+        run: |
+          wp707_checkout="$(mktemp -d)"
+          cleanup_wp707() {
+            git worktree remove --force "$wp707_checkout"
+          }
+          trap cleanup_wp707 EXIT
+          git worktree add --detach "$wp707_checkout" 098c1d1ed7aa47277807f1719f6720e27f9b31eb
+          (
+            cd "$wp707_checkout"
+            node --test test/unit/r24-wp707-word-apply.test.js test/unit/r24-wp707-word-apply-integration.test.js test/unit/r24-wp707-word-apply-mutants.test.js test/contracts/r24-wp707-terminal-carriers.contract.test.mjs test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs
+          )
+
+      - name: Run R2.4 WP-709 mixed-chain cumulative fidelity gate
+        run: node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
 
       - name: Run maintained Atlas event contract graph
         run: npm run -s test:atlas-event-contract

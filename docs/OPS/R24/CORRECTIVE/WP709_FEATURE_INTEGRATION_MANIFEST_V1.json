@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_FEATURE_INTEGRATION_MANIFEST_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CONTRACT",
+  "status": "IMPLEMENTED_EXTERNAL_OBSERVATIONS_COMPLETE_SEVEN_OF_SEVEN",
+  "programDone": false,
+  "productPlane": "DOCX_INTAKE_QUERY_AND_INTERCHANGE_EVIDENCE_VALIDATION",
+  "interfacePlane": "NOT_APPLICABLE_NO_UI_CHANGE",
+  "commands": [],
+  "queries": ["COMPILE_MIXED_CHAIN_EVIDENCE", "INSPECT_DOCX_HOSTILE_FILE_GATE", "VERIFY_MIXED_CHAIN_RECEIPT"],
+  "events": [],
+  "effects": ["ORCHESTRATOR_OWNED_DISPOSABLE_WORD_OR_GOOGLE_OBSERVATION"],
+  "productPorts": ["EXTERNAL_OBSERVATION_FILE_READ_ONLY_INPUT"],
+  "designOsPorts": [],
+  "stateClasses": ["DERIVED_STATE"],
+  "identityGuards": ["PROJECT", "ENTITY", "SOURCE_REVISION", "GENERATION", "PROFILE", "SCHEMA", "CAPABILITY", "ARTIFACT"],
+  "capabilityFallback": "MALFORMED_AMBIGUOUS_ZIP64_OR_MISMATCHED_DESCRIPTOR_BLOCKED_TYPED",
+  "recovery": "RECOMPILE_FROM_IMMUTABLE_OBSERVATION_INPUT",
+  "performance": { "maximumInputBytes": 524288, "maximumChains": 7, "maximumHopsPerChain": 6, "maximumDeclaredFields": 64 },
+  "accessibility": "TYPED_LOSS_IS_MACHINE_READABLE_AND_PREVIEWABLE",
+  "security": {
+    "runtimeNetwork": false,
+    "providerWritesInProductRuntime": false,
+    "defaultEffectAdmission": "DENY",
+    "newDependencies": 0,
+    "secondWriter": false
+  }
+}

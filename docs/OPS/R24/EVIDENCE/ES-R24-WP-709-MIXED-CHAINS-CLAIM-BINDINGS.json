@@ -1,0 +1,223 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "contourId": "WP-709_MIXED_CHAINS",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "098c1d1ed7aa47277807f1719f6720e27f9b31eb",
+  "originMainSha": "098c1d1ed7aa47277807f1719f6720e27f9b31eb",
+  "generatedAtUtc": "2026-09-07T22:31:01.218Z",
+  "oracle": "WP709_EXACT_HASH_BOUND_SEVEN_OF_SEVEN_PHYSICAL_RESULT_WITH_GOOGLE_NATIVE_DATA_DESCRIPTOR_REPARSE_AND_REQUIRED_DELIVERY_NOT_PRECLAIMED",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "e3da18b004558902961b683e697e43d556f7661235e97503695977086e24ec5b",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_ADMISSION_PATH_CORRECTION_V1.json",
+      "sha256": "e28e96ba62f3d9682175564574decd19bb9e60772022b126d367e7bfc6aa4145",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_GRAPH_BASELINE_V1.json",
+      "sha256": "660aefd19394f5be077f5e6449d435ca23ab61f87f1b47a11c01b6699f12e1d7",
+      "claimTerms": [
+        "READY"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_STATE_V1.json",
+      "sha256": "008026b18928d3f7a6ae9fe2aa3f8b9426ad2690ac6de463aa3b79e48e416431",
+      "claimTerms": [
+        "SAFE"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_OWNER_AUTHORITY_AMENDMENT_V1.json",
+      "sha256": "43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V2.json",
+      "sha256": "fc1842ee254bf9f39cfc65e51f01fdc5ee2a727783397302a905681ac4eb1ad0",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V2.json",
+      "sha256": "39dca294fd633838e02f5b09dc5707cbf2d2754396fba754bda8fcdb7235c3dc",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MIXED_CHAIN_PHYSICAL_RECEIPT_V1.json",
+      "sha256": "4dfeafeacca6089651e3bb62b18b9b5e8f8ca5e2d90f863e8804c508702fb5b4",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_ACCEPTANCE_MATRIX_V1.json",
+      "sha256": "fde87070946ad8970d20465f97460155b912420ad5bef955e9339d388b3b0ca3",
+      "claimTerms": [
+        "SAFE"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_STAGE_REGISTRY_V1.json",
+      "sha256": "54bb87d634d6533195c0abfabe71885535be3e76b843bfd7fc4bab392cf5ca95",
+      "claimTerms": [
+        "SAFE"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_TERMINAL_RECEIPT_V1.json",
+      "sha256": "2eb7e2003d9479bc3eb040d2a0fc084b482b845aef802dbf7f8064011d55c478",
+      "claimTerms": [
+        "SAFE"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP709_LEASE_RELEASE_V1.json",
+      "sha256": "153fc7b430cb916c0346bccb98d74ba18052bb747333089c706d019cb412f17b",
+      "claimTerms": [
+        "SAFE"
+      ]
+    }
+  ],
+  "implementationArtifactDigests": [
+    {
+      "path": "src/interchange/mixed-chain-fidelity-v1.mjs",
+      "sha256": "9b4a77a7e5e870a7f9cce25b20ee6129ec0dc3c882bc5cf24412a33b56172263",
+      "terms": [
+        "WP709_LOCAL_CONTRACT"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/mixed-chain-wp709.mjs",
+      "sha256": "e3ae7c5ab27c893f033cd9df6bbec964d3a4bd24beb03d3e611512cfd888d1a8",
+      "terms": [
+        "WP709_READ_ONLY_CHECKER"
+      ]
+    },
+    {
+      "path": "src/io/revisionBridge/index.mjs",
+      "sha256": "2adba881feb3faeb4a57add8b0c7a53ef1f959b8ce166970336ccc5d3bb7ca1d",
+      "terms": [
+        "WP709_DOCX_DATA_DESCRIPTOR_INTAKE"
+      ]
+    },
+    {
+      "path": "test/fixtures/r24-wp709-mixed-chain-fixtures.js",
+      "sha256": "09ac0b6a73a36b0476141858cf0baa992107f39e6a218e863a70f00641cec964",
+      "terms": [
+        "WP709_SYNTHETIC_TEST_ONLY"
+      ]
+    },
+    {
+      "path": "test/unit/r24-wp709-mixed-chain.test.js",
+      "sha256": "e33eb9f08c2ce32186592a570a9a0dc3f7aeffceb4073584bbd7dae2a8d91d68",
+      "terms": [
+        "WP709_UNIT"
+      ]
+    },
+    {
+      "path": "test/unit/r24-wp709-mixed-chain-integration.test.js",
+      "sha256": "cf47ae7d86ff77f8cc567b659185c46fe13d70c418a335c686be1eefc1d8f29e",
+      "terms": [
+        "WP709_INTEGRATION"
+      ]
+    },
+    {
+      "path": "test/unit/r24-wp709-mixed-chain-mutants.test.js",
+      "sha256": "614c4e9a8f5deae29029daa4d9bc803d22cfcff083eb96310aade2363b172ef1",
+      "terms": [
+        "WP709_ACTUAL_SOURCE_MUTANTS"
+      ]
+    },
+    {
+      "path": "test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
+      "sha256": "52aecf3432ea690e15cec1ab55e3b1b524c77ff3f22ebb9b40829029f681b588",
+      "terms": [
+        "WP709_DESCRIPTOR_BOUNDARY_ORACLE"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-wp709-terminal-carriers.contract.test.mjs",
+      "sha256": "cb6dd0eba70860f6f45873f9b8e8e1f5ff6a196e0d143ea05a8c3f1a4130571c",
+      "terms": [
+        "WP709_SEVEN_ROUTE_CARRIER_ORACLE"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
+      "sha256": "4f8df0462400c3809d8042ab1ea3aefb2265c783715a75de28951cbdb29d2e13",
+      "terms": [
+        "WP709_POST_AUDIT_CANDIDATE_ORACLE"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "node test runner WP709 pure unit integration and mutant profiles",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 12,
+        "fail": 0
+      }
+    },
+    {
+      "command": "node test runner WP709 full focused contract and post audit profiles",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 20,
+        "fail": 0
+      }
+    },
+    {
+      "command": "hostile observation mutation profiles",
+      "verdict": "PASS",
+      "mutants": {
+        "killed": 20,
+        "survived": 0
+      }
+    },
+    {
+      "command": "actual source mutation profiles",
+      "verdict": "PASS",
+      "mutants": {
+        "killed": 13,
+        "survived": 0
+      }
+    },
+    {
+      "command": "DOCX signed and unsigned data descriptor boundary contract",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 12,
+        "fail": 0
+      }
+    },
+    {
+      "command": "external Word Google Native Google Office Compat and local physical observations",
+      "verdict": "PASS",
+      "requiredDisposition": "SEVEN_EXACT_ROUTE_PASSES_GOOGLE_NATIVE_FINAL_YALKEN_IMPORT_AND_INDEPENDENT_REPARSE_PASS_STAGE_DONE_TRUE_DELIVERY_PENDING"
+    }
+  ],
+  "nonClaims": [
+    "NO_LEASE_RELEASE_BEFORE_REQUIRED_DELIVERY",
+    "NO_PROGRAM_DONE",
+    "NO_REQUIRED_DELIVERY_PRECLAIM",
+    "NO_PROVIDER_RUNTIME_NETWORK",
+    "NO_AUTOMATIC_OR_MULTI_SCENE_APPLY"
+  ]
+}

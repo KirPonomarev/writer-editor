@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_EFFECTIVE_STATE_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "status": "CONDITIONAL_DONE_PENDING_REQUIRED_DELIVERY",
+  "programDone": false,
+  "stageDone": true,
+  "sourceCounts": { "BLOCKED_TYPED": 2, "DONE": 89, "INELIGIBLE_OPTIONAL": 10, "PENDING": 8 },
+  "targetCounts": { "BLOCKED_TYPED": 2, "DONE": 90, "INELIGIBLE_OPTIONAL": 10, "PENDING": 7 },
+  "transition": {
+    "nodeId": "WP-709_MIXED_CHAINS",
+    "from": "PENDING",
+    "to": "DONE",
+    "reason": "SEVEN_EXACT_ROUTE_ORACLES_VERIFIED_WITH_GOOGLE_OFFICE_COMPAT_QUALIFIED_PENDING_REQUIRED_DELIVERY"
+  },
+  "routeEvidence": { "denominator": 7, "exactRoutePasses": 7, "blockedTyped": 0, "externalPending": 0 },
+  "googleOfficeCompatQualified": true,
+  "nextReadySet": [],
+  "nextReadyActivated": false
+}

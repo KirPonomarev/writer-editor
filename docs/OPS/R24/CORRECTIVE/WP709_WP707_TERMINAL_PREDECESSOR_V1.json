@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_WP707_TERMINAL_PREDECESSOR_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-707-WORD-APPLY-CLAIM-BINDINGS",
+  "status": "EXTERNALLY_VERIFIED_PREDECESSOR_ONLY",
+  "programDone": false,
+  "predecessorStageId": "WP-707_WORD_APPLY",
+  "normalizedTerminalReceiptDigest": "cddf8b88e46c797a440ce29c08e3a1d3cae6ee753ce8e0e714431cd3cb4fd2a2",
+  "normalizedTerminalVerificationDigest": "809bafe4137b0761eba21281ba6a4f3258b45be1853270b5a3cbfcf1381f29c6",
+  "externalTerminalReceiptDigest": "557e893277e8c069a242a63215fe306950120fa50c05f2328593c8b82bf7d7db",
+  "externalTerminalVerificationDigest": "1b400f2a4383b248594dfa8b3f52972cf90657ea978c740b0aba5f96dcce159d",
+  "leaseReleaseDispositionDigest": "cb41020b28721cbf997ac926b5e7987a75037749c72f3a0fb72b9f3c93b39f67",
+  "fencingCounter": 101,
+  "wip": 0,
+  "maySeedWp709RoutePass": false
+}

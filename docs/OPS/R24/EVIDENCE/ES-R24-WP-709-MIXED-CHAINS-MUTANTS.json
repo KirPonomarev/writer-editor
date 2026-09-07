@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "YALKEN_R24_EVIDENCE_STAMP_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-MUTANTS",
+  "programDone": false,
+  "status": "PASS",
+  "kind": "IMPLEMENTATION_MUTANTS",
+  "artifact": {
+    "implementationArtifacts": [
+      { "path": "src/interchange/mixed-chain-fidelity-v1.mjs", "sha256": "9b4a77a7e5e870a7f9cce25b20ee6129ec0dc3c882bc5cf24412a33b56172263" },
+      { "path": "test/unit/r24-wp709-mixed-chain-mutants.test.js", "sha256": "614c4e9a8f5deae29029daa4d9bc803d22cfcff083eb96310aade2363b172ef1" }
+    ]
+  },
+  "test": { "denominator": 33, "passed": 33, "failed": 0, "skipped": 0, "todo": 0 },
+  "claim": {
+    "ceiling": "WP709_LOCAL_HOSTILE_AND_ACTUAL_SOURCE_MUTATION_SCORE_ONLY",
+    "hostileObservationMutants": 20,
+    "actualSourceMutants": 13,
+    "killed": 33,
+    "survived": 0,
+    "syntaxOrImportFailuresCountedAsKills": false
+  }
+}

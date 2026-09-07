@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "YALKEN_R24_EVIDENCE_STAMP_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CONTRACT",
+  "programDone": false,
+  "status": "PASS",
+  "kind": "CONTRACT",
+  "artifact": {
+    "implementationArtifacts": [
+      { "path": "src/interchange/mixed-chain-fidelity-v1.mjs", "sha256": "9b4a77a7e5e870a7f9cce25b20ee6129ec0dc3c882bc5cf24412a33b56172263" },
+      { "path": "test/unit/r24-wp709-mixed-chain.test.js", "sha256": "e33eb9f08c2ce32186592a570a9a0dc3f7aeffceb4073584bbd7dae2a8d91d68" }
+    ]
+  },
+  "test": { "denominator": 5, "passed": 5, "failed": 0, "skipped": 0, "todo": 0 },
+  "claim": {
+    "ceiling": "WP709_SEVEN_CHAIN_DEFAULT_DENY_CONTRACT_ONLY",
+    "routePassInheritanceAllowed": false,
+    "officeFreshEvidenceRequired": true,
+    "productOrProviderAuthorityGranted": false
+  }
+}

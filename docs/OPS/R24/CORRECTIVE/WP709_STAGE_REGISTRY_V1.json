@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_STAGE_REGISTRY_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "status": "CONDITIONAL_DONE_PENDING_DELIVERY",
+  "programDone": false,
+  "fencingCounter": 103,
+  "wip": 1,
+  "admission": {
+    "authorityDigest": "43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
+    "stageInstanceDigest": "fc1842ee254bf9f39cfc65e51f01fdc5ee2a727783397302a905681ac4eb1ad0",
+    "stageAdmissionDigest": "39dca294fd633838e02f5b09dc5707cbf2d2754396fba754bda8fcdb7235c3dc",
+    "ownerDecisionDigest": "b46be7de3995e544a3e3081254cc4b28ac6a5af4da9fda59b506d6e01daaf220"
+  },
+  "terminalEligibility": "ELIGIBLE_AFTER_REQUIRED_DELIVERY",
+  "nodeOutcome": {
+    "sourceState": "PENDING",
+    "targetStateAfterRequiredDelivery": "DONE",
+    "exactRoutePasses": 7,
+    "blockedTyped": 0,
+    "nextReadyActivated": false
+  },
+  "requiredDeliveryPredicates": [
+    "COMMIT",
+    "PUSH",
+    "PULL_REQUEST",
+    "CANDIDATE_CI",
+    "PROTECTED_MERGE",
+    "EXACT_POSTMERGE_CI",
+    "EXTERNAL_TERMINAL_RECEIPT_AND_LEASE_RELEASE"
+  ]
+}

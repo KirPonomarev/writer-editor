@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_TERMINAL_RECEIPT_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "status": "CONDITIONAL_DONE_PENDING_REQUIRED_LOCAL_AND_EXTERNAL_DELIVERY_PREDICATES",
+  "programDone": false,
+  "stageDone": true,
+  "baseIdentity": {
+    "sha": "098c1d1ed7aa47277807f1719f6720e27f9b31eb",
+    "tree": "1a10ed79200f29c9bc6a9615b7d5a2827c426f33",
+    "branch": "codex/r24-wp709-mixed-chains-scope-correction-v1-20260908"
+  },
+  "routeEvidence": {
+    "denominator": 7,
+    "verifiedPass": 7,
+    "blockedTyped": 0,
+    "requiredNotPreclaimed": 0,
+    "googleOfficeCompatQualified": true
+  },
+  "requiredDeliveryPredicates": [
+    { "id": "WORD_PHYSICAL", "status": "PASS" },
+    { "id": "GOOGLE_NATIVE_PHYSICAL", "status": "PASS" },
+    { "id": "GOOGLE_OFFICE_COMPAT_PHYSICAL", "status": "PASS" },
+    { "id": "ALL_SEVEN_ROUTE_ORACLES", "status": "PASS_7_OF_7" },
+    { "id": "COMMIT", "status": "PENDING" },
+    { "id": "PUSH", "status": "PENDING" },
+    { "id": "PULL_REQUEST", "status": "PENDING" },
+    { "id": "CANDIDATE_CI", "status": "PENDING" },
+    { "id": "PROTECTED_MERGE", "status": "PENDING" },
+    { "id": "EXACT_POSTMERGE_CI", "status": "PENDING" },
+    { "id": "EXTERNAL_TERMINAL_AND_LEASE_RELEASE", "status": "PENDING" }
+  ],
+  "blocker": null,
+  "nonClaims": [
+    "NO_REQUIRED_DELIVERY_PRECLAIM",
+    "NO_ROUTE_PASS_INHERITANCE",
+    "NO_LEASE_RELEASE_BEFORE_EXTERNAL_TERMINAL",
+    "NO_AUTOMATIC_OR_MULTI_SCENE_APPLY",
+    "NO_PROGRAM_DONE"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_LEASE_RELEASE_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "status": "CONDITIONAL_RELEASE_PENDING_REQUIRED_DELIVERY",
+  "programDone": false,
+  "currentLease": {
+    "fencingCounter": 103,
+    "status": "ACTIVE",
+    "wip": 1,
+    "predecessorReleaseDigest": "cb41020b28721cbf997ac926b5e7987a75037749c72f3a0fb72b9f3c93b39f67"
+  },
+  "targetLease": {
+    "fencingCounter": 103,
+    "status": "RELEASED",
+    "wip": 0,
+    "releaseBasis": "WP709_REQUIRED_DELIVERY_AND_EXTERNAL_TERMINAL_VERIFIED"
+  },
+  "releasePredicates": [
+    "SEVEN_OWN_ROUTE_EVIDENCE_ATOMS_VERIFIED",
+    "GOOGLE_OFFICE_COMPAT_INDEPENDENTLY_QUALIFIED",
+    "PROVIDER_CLEANUP_ZERO_REMAINING",
+    "COMMIT_PUSH_PULL_REQUEST_CANDIDATE_CI",
+    "PROTECTED_MERGE_EXACT_POSTMERGE_CI",
+    "EXTERNAL_TERMINAL_RECEIPT_VERIFIED",
+    "PROTECTED_WIP_PRESERVED"
+  ],
+  "blockingPredicate": "REQUIRED_DELIVERY_NOT_YET_VERIFIED",
+  "releaseForbiddenUntilRequiredDeliveryVerified": true
+}

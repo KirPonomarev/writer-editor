@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "WP709_ADMISSION_PATH_CORRECTION_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "status": "APPEND_ONLY_SCOPE_CORRECTION_ADMITTED_BEFORE_CONTINUATION_WRITES",
+  "ownerResumeAuthority": "OWNER_RESUME_ORDER_WP709_PERMANENT_NARROW_DOCX_DATA_DESCRIPTOR_CORRECTION",
+  "observedAtUtc": "2026-09-07T21:52:55Z",
+  "originalContour": {
+    "branch": "codex/r24-wp709-mixed-chains-v1-20260906",
+    "worktree": "/Volumes/T7-Secure/worktrees/yalken/r24-wp709-mixed-chains-v1-20260906",
+    "baseSha": "098c1d1ed7aa47277807f1719f6720e27f9b31eb",
+    "treeSha": "1a10ed79200f29c9bc6a9615b7d5a2827c426f33",
+    "statusSha256": "f18c1c32e4865f1e0bb1d479d381aabada332dec02bdbdc59737bfd9bf9ac5cf",
+    "pauseCheckpointSha256": "76ff1de15ad3c15c84b4fd0f0135f4a07d0900f23877ee0156e3f3404a136642",
+    "ownedPathDenominator": 38,
+    "fencingCounter": 102,
+    "executionLease": false,
+    "disposition": "FROZEN_UNCHANGED_SUPERSEDED_BY_EXACT_BASE_SCOPE_CORRECTION"
+  },
+  "activeContour": {
+    "branch": "codex/r24-wp709-mixed-chains-scope-correction-v1-20260908",
+    "worktree": "/Volumes/T7-Secure/worktrees/yalken/r24-wp709-mixed-chains-scope-correction-v1-20260908",
+    "baseSha": "098c1d1ed7aa47277807f1719f6720e27f9b31eb",
+    "treeSha": "1a10ed79200f29c9bc6a9615b7d5a2827c426f33",
+    "fencingCounter": 103,
+    "executionLease": true,
+    "wip": 1
+  },
+  "admission": {
+    "authorityPath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_OWNER_AUTHORITY_AMENDMENT_V1.json",
+    "authoritySha256": "43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
+    "instancePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V2.json",
+    "instanceSha256": "fc1842ee254bf9f39cfc65e51f01fdc5ee2a727783397302a905681ac4eb1ad0",
+    "attestationPath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V2.json",
+    "attestationSha256": "39dca294fd633838e02f5b09dc5707cbf2d2754396fba754bda8fcdb7235c3dc",
+    "writeSetSha256": "912d1ccd96386a5e194ede37a5804c78f0ba31c35b7f6e646a7ae902fe54b483",
+    "generatedPlanSha256": "c8da468266cf5292fea329fcd763add942d0ec1f321d187c6b33ba9434207789",
+    "nativeVerifierSha256": "b9cb1d3ad98bbdd0e56dedc4563796f40d9768f1345b57324625ef8386c5bd3f",
+    "preparationStatus": "PASS",
+    "outputPathDenominator": 44
+  },
+  "scopeCorrection": {
+    "cause": "DOCX_ZIP_DATA_DESCRIPTOR_UNSUPPORTED",
+    "oldAcceptance": "SIX_OF_SEVEN_TYPED_BLOCKED",
+    "requiredAcceptance": "SEVEN_OF_SEVEN_REAL_SYNTHETIC_PROVIDER_EVIDENCE",
+    "modifyPathDenominator": 6,
+    "createPathDenominator": 38,
+    "newRuntimeModifyPaths": [
+      "src/io/revisionBridge/index.mjs"
+    ],
+    "newFocusedCreatePaths": [
+      "test/contracts/revision-bridge-docx-data-descriptor.contract.test.js"
+    ],
+    "securityCeiling": [
+      "NO_ZIP64",
+      "NO_ENCRYPTION",
+      "NO_UNKNOWN_FLAGS",
+      "NO_PATH_TRAVERSAL",
+      "NO_DESCRIPTOR_OVERLAP_OR_AMBIGUITY",
+      "NO_CRC_SIZE_OR_INFLATE_BUDGET_WEAKENING",
+      "NO_NEW_DEPENDENCY",
+      "NO_RUNTIME_NETWORK"
+    ]
+  },
+  "writerPolicy": {
+    "soleActiveContour": "WP709_FENCE_103",
+    "orchestratorWrites": "OPS_CARRIERS_COPY_AND_DELIVERY_ONLY",
+    "runtimeAndBehaviorTests": "SEPARATE_CODE_AGENT_ONLY",
+    "parallelWriters": 0
+  }
+}

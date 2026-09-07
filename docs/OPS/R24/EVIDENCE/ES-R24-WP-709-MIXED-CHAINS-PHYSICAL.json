@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "YALKEN_R24_EVIDENCE_STAMP_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-PHYSICAL",
+  "programDone": false,
+  "status": "PASS",
+  "kind": "PHYSICAL",
+  "artifact": {
+    "implementationArtifacts": [
+      {
+        "path": "src/io/revisionBridge/index.mjs",
+        "sha256": "2adba881feb3faeb4a57add8b0c7a53ef1f959b8ce166970336ccc5d3bb7ca1d"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
+        "sha256": "52aecf3432ea690e15cec1ab55e3b1b524c77ff3f22ebb9b40829029f681b588"
+      }
+    ],
+    "observationCarrier": "WP709_MIXED_CHAIN_PHYSICAL_RECEIPT_V1.json",
+    "observationFileInjected": true,
+    "observationSha256": "12c3322d6e26050fe122679a722484cca8e1092e02b8c8851f8cbc61798939aa",
+    "compiledResultDigest": "aeb728c2a760eee0e9f52abc4d8a115e4513c9eb6c37443dc6f3d0fdfaebfaa3",
+    "compiledReceiptSha256": "3794015edcb0130c8d88fa8a0bcf469eefc00c7cff3b55e1128d419a991cffdb",
+    "reparseOracleSha256": "4bb7629b71e78ed69cfd4f0bb0853001e88ccc913be3244db8396e4de7953194",
+    "providerEffectsExecutedByThisImplementation": false
+  },
+  "test": { "denominator": 7, "passed": 7, "blockedTyped": 0, "failed": 0, "skipped": 0, "todo": 0 },
+  "descriptorContract": { "denominator": 12, "passed": 12, "failed": 0, "skipped": 0, "todo": 0 },
+  "claim": {
+    "ceiling": "SEVEN_EXACT_CHAIN_PASSES_PENDING_REQUIRED_DELIVERY",
+    "wordPhysical": "PASS",
+    "googleNativePhysical": "CREATE_READBACK_EXPORT_AND_FINAL_YALKEN_IMPORT_PASS",
+    "googleOfficeCompatPhysical": "PASS_WP709_FRESH_EXACT_BYTES",
+    "stageDone": true
+  }
+}
