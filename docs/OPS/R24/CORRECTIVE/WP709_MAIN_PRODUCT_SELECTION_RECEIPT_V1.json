@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_MAIN_PRODUCT_SELECTION_RECEIPT_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CONTRACT",
+  "status": "ADMITTED_IMPLEMENTATION_SELECTED",
+  "programDone": false,
+  "authorityDigest": "e76042b149a8569877512c55a6cd925af9b614258bf13a6694704e236fde8c64",
+  "stageInstanceDigest": "26a87057fa50bb2bac47e16d41d8336704bd474ada90ec786e242e49794b635f",
+  "stageAdmissionDigest": "031d3fe3b79067cd5faafd03e3ee617b097b9152ef1fc23e3ccb7af5e4826557",
+  "ownerDecisionDigest": "b46be7de3995e544a3e3081254cc4b28ac6a5af4da9fda59b506d6e01daaf220",
+  "writeSetDigest": "82984b150e40cc32664d39dedfffd2894a3e4b9a46abb0c195cf7e7b058041bb",
+  "selection": "PURE_MIXED_CHAIN_VALIDATOR_AND_READ_ONLY_LOCAL_CHECKER",
+  "externalExecutionOwner": "ORCHESTRATOR",
+  "externalPhysicalStatus": "REQUIRED_NOT_PRECLAIMED"
+}

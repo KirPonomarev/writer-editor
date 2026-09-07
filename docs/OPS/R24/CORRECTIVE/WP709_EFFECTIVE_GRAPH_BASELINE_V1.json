@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_EFFECTIVE_GRAPH_BASELINE_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "status": "BASELINE_BOUND",
+  "programDone": false,
+  "completeGraphDenominator": 109,
+  "counts": { "BLOCKED_TYPED": 2, "DONE": 89, "INELIGIBLE_OPTIONAL": 10, "PENDING": 8 },
+  "nodes": {
+    "WP-707_WORD_APPLY": "DONE",
+    "WP-709_MIXED_CHAINS": "PENDING"
+  },
+  "basis": "WP707_EXTERNALLY_VERIFIED_TERMINAL_AND_WP709_ADMITTED_WITHOUT_PHYSICAL_ROUTE_EVIDENCE"
+}

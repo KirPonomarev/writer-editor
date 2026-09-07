@@ -121,6 +121,8 @@ jobs:
           )
       - name: Verify WP-707 explicit single-scene Word apply and physical proof
         run: node --test test/unit/r24-wp707-word-apply.test.js test/unit/r24-wp707-word-apply-integration.test.js test/unit/r24-wp707-word-apply-mutants.test.js test/contracts/r24-wp707-terminal-carriers.contract.test.mjs test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs
+      - name: Verify WP-709 seven mixed chains, monotone loss and bounded DOCX descriptor intake
+        run: node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
 
   e0-mutants:
     runs-on: ubuntu-latest
@@ -155,7 +157,7 @@ jobs:
       - name: Run focused post-audit negative contracts after real build
         run: |
           npm run test:r24-post-audit
-          node --test test/contracts/r24-post-audit-certification-set.contract.test.mjs test/contracts/r24-protected-wip-snapshot.contract.test.mjs test/contracts/r24-wp604-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp605-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp710-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp606-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp607-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp800-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp801-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp802-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp803-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp804-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp805-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs
+          node --test test/contracts/r24-post-audit-certification-set.contract.test.mjs test/contracts/r24-protected-wip-snapshot.contract.test.mjs test/contracts/r24-wp604-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp605-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp710-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp606-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp607-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp800-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp801-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp802-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp803-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp804-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp805-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
       - name: Run full maintained RTK after real build
         run: npm run test:rtk
 
@@ -175,8 +177,8 @@ jobs:
       - run: node scripts/ops/r24/corrective/audit-r2-corrections.mjs --check
       - env:
           EFFECTIVE_MODE: STRICT
-          GOVERNANCE_CHANGE_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/WP707_GOVERNANCE_CHANGE_APPROVALS_V1.json
-        run: node scripts/ops/governance-change-detection.mjs --json --base-ref origin/main --approvals-path docs/OPS/R24/CORRECTIVE/WP707_GOVERNANCE_CHANGE_APPROVALS_V1.json
+          GOVERNANCE_CHANGE_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/WP709_GOVERNANCE_CHANGE_APPROVALS_V1.json
+        run: node scripts/ops/governance-change-detection.mjs --json --base-ref origin/main --approvals-path docs/OPS/R24/CORRECTIVE/WP709_GOVERNANCE_CHANGE_APPROVALS_V1.json
 
   oss-policy-core:
     runs-on: ubuntu-latest

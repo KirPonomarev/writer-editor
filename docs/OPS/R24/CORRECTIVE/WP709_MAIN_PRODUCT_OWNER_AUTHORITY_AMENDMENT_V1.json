@@ -1,0 +1,310 @@
+{
+  "schemaVersion": "POST_AUDIT_CORRECTIONS_OWNER_AUTHORITY_V1",
+  "authorityId": "OWNER_AUTHORIZED_YALKEN_R24_WP709_MIXED_CHAINS_SCOPE_CORRECTION_V1",
+  "ownerAuthorityBindingDigest": "b46be7de3995e544a3e3081254cc4b28ac6a5af4da9fda59b506d6e01daaf220",
+  "sourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
+  "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
+  "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
+  "baseSha": "098c1d1ed7aa47277807f1719f6720e27f9b31eb",
+  "baseTree": "1a10ed79200f29c9bc6a9615b7d5a2827c426f33",
+  "branch": "codex/r24-wp709-mixed-chains-scope-correction-v1-20260908",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "verifierDigest": "b9cb1d3ad98bbdd0e56dedc4563796f40d9768f1345b57324625ef8386c5bd3f",
+  "fixedBindings": [
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/STANDING_AUTHORITY_BINDING_V1.json",
+      "sha256": "be68bd97021d13fbfb75c73791bda7f6bfeebecebf525d4a927d1a4c9fe9efd6"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP707_EFFECTIVE_STATE_V1.json",
+      "sha256": "1344c3855e68cff420a52bfe01b4991e7addc1b46a2eaab12e7e5ec063e8bb1a"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP707_LEASE_RELEASE_V1.json",
+      "sha256": "9aa7769f1c8a0492cfe7b962abcdbc9d4b6abb71d2db55620619582ed5e132ae"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP707_TERMINAL_RECEIPT_V1.json",
+      "sha256": "3452b53cec6d0f86f9f05c863bf3693e5372ffbb1eea9a9f486e9784ece709f5"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP708_GOOGLE_PROVIDER_CONTRACT_V1.json",
+      "sha256": "8303fabf51b2eaaa62f31092a5ead08c986b0f0f1f2f0806820454905f32257c"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP708_GOOGLE_PROVIDER_PHYSICAL_RECEIPT_V1.json",
+      "sha256": "36e3541cfee9629ca98470cfce20722a5e9812f1abbb379b86bb446955bdb5e6"
+    },
+    {
+      "path": "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json",
+      "sha256": "7185d649974289e8b3a0b310203b32dbd0bac96a613adf3cf26b308ff0067df5"
+    },
+    {
+      "path": "docs/OPS/R24/EXECUTION_ENVELOPES_R2_4.json",
+      "sha256": "0b2154eb93769ecb6a3b3164159cfe2c87d73c5345fdcb008af5576c630ae9d3"
+    },
+    {
+      "path": "docs/OPS/R24/MISSION_CONTRACT_R2_4.json",
+      "sha256": "981dd5c2f9e8d5071e79083c17daed1474d753d34610e1c456d3d07d0969a1ce"
+    },
+    {
+      "path": "docs/OPS/R24/OWNER_GATE_REGISTRY_R2_4.json",
+      "sha256": "4d8e3e0f7fcafb84f6e4b625af930b7a5fb06d64bbb5e59af6fe2940284315c8"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/admission-preparation.mjs",
+      "sha256": "04b4e13f3046535e8d4a396a29605ef1dadbc6bc1d92810e57f1fef1d29b050f"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/stage-admission-verifier-v2.mjs",
+      "sha256": "b9cb1d3ad98bbdd0e56dedc4563796f40d9768f1345b57324625ef8386c5bd3f"
+    },
+    {
+      "path": "src/core/google-provider-profile-v1.mjs",
+      "sha256": "8094820e7ad46b71f393c7dd434e32f99a946902d729f60bde13ef094e8a4a3f"
+    },
+    {
+      "path": "src/interchange/word-single-scene-apply-v1.mjs",
+      "sha256": "7e02a0ee99ab0e67c9246688d603bc0eebdf15fc6dd699bbfe2e324364be5d6e"
+    }
+  ],
+  "allowedCommands": [
+    "npm run agent:bootstrap",
+    "npm run agent:preflight",
+    "node scripts/ops/r24/corrective/stage-admission-verifier-v2.mjs",
+    "node scripts/ops/r24/corrective/admission-preparation.mjs",
+    "node --test test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
+    "node scripts/ops/r24/mixed-chain-wp709.mjs",
+    "node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
+    "node read-only exact synthetic Google native DOCX reparse and SHA-256 verification",
+    "npm ci --engine-strict",
+    "npm run build:renderer",
+    "npm run design-os:doctrine",
+    "npm run test:r24-post-audit",
+    "npm run test:r24-e0",
+    "npm run test:rtk",
+    "npm run test:electron",
+    "npm run security:audit:generic-sast",
+    "npm run oss:policy",
+    "npm audit --audit-level=high",
+    "npm test",
+    "npm run agent:guardrails",
+    "node scripts/ops/r24/test-inventory.mjs",
+    "npm run r24:test-inventory",
+    "git diff --check",
+    "git diff --cached --check",
+    "git status --short --branch",
+    "git add -- EXACT_WP709_SCOPE_CORRECTION_WRITE_SET",
+    "git commit -m Complete WP709 mixed-chain DOCX descriptor support",
+    "git fetch origin main",
+    "git push origin codex/r24-wp709-mixed-chains-scope-correction-v1-20260908",
+    "gh pr create",
+    "gh pr checks PR --watch",
+    "gh pr merge PR --merge",
+    "gh run watch RUN --exit-status",
+    "node scripts/ops/r24/corrective/protected-wip-snapshot.mjs",
+    "node WP709_EXTERNAL_TERMINAL_V1.mjs --issue",
+    "node WP709_EXTERNAL_TERMINAL_V1.mjs --verify"
+  ],
+  "allowedOperations": {
+    "readPaths": [
+      "AGENTS.md",
+      "CANON.md",
+      "docs/AGENT_START_PROTOCOL.md",
+      "docs/ARCHITECTURE_ONE_PAGE.md",
+      "docs/BIBLE.md",
+      "docs/CONTEXT.md",
+      "docs/DOCUMENTATION_CONSTITUTION.md",
+      "docs/HANDOFF.md",
+      "docs/OPS/R24/CORRECTIVE/PROGRAM_TEMPLATE_V1_1.json",
+      "docs/OPS/R24/CORRECTIVE/STAGE_REGISTRY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/STANDING_AUTHORITY_BINDING_V1.json",
+      "docs/OPS/R24/CORRECTIVE/TERMINAL_ATTESTATION_TRUST_MODEL_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP707_EFFECTIVE_STATE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP707_LEASE_RELEASE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP707_TERMINAL_RECEIPT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP708_GOOGLE_PROVIDER_CONTRACT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP708_GOOGLE_PROVIDER_PHYSICAL_RECEIPT_V1.json",
+      "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json",
+      "docs/OPS/R24/EXECUTION_ENVELOPES_R2_4.json",
+      "docs/OPS/R24/MISSION_CONTRACT_R2_4.json",
+      "docs/OPS/R24/OWNER_GATE_REGISTRY_R2_4.json",
+      "docs/OPS/RTK/YALKEN_INTEROP_CHAIN_MATRIX_V1.json",
+      "docs/OPS/STATUS/CANON_STATUS.json",
+      "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+      "docs/PROCESS.md",
+      "docs/PRODUCT_GLOSSARY.md",
+      "docs/YALKEN_DESIGN_OS_FEATURE_INTEGRATION_DOCTRINE_V1.md",
+      "scripts/ops/r24/corrective/admission-preparation.mjs",
+      "scripts/ops/r24/corrective/protected-wip-snapshot.mjs",
+      "scripts/ops/r24/corrective/stage-admission-verifier-anchor-v2.mjs",
+      "scripts/ops/r24/corrective/stage-admission-verifier-v2.mjs",
+      "scripts/ops/rtk-interop-chain-matrix-v1.mjs",
+      "src/core/google-provider-profile-v1.mjs",
+      "src/interchange/word-single-scene-apply-v1.mjs",
+      "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "test/contracts/rtk-interop-chain-matrix.contract.test.js",
+      "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js"
+    ],
+    "modifyPaths": [
+      ".github/workflows/oss-policy.yml",
+      ".github/workflows/rtk-required.yml",
+      "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "scripts/ops/r24/docs-claim-lint.mjs",
+      "src/io/revisionBridge/index.mjs"
+    ],
+    "createPaths": [
+      "docs/OPS/R24/CORRECTIVE/WP709_ACCEPTANCE_MATRIX_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_ADMISSION_PATH_CORRECTION_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_CARRIER_REGISTRY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_GRAPH_BASELINE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_STATE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_FEATURE_INTEGRATION_MANIFEST_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_FIXTURE_MANIFEST_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_LEASE_RELEASE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_OWNER_AUTHORITY_AMENDMENT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_OWNER_AUTHORITY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_SELECTION_RECEIPT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V2.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V2.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MIXED_CHAIN_CONTRACT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MIXED_CHAIN_PHYSICAL_RECEIPT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_PROTECTED_WIP_BEFORE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_QUALIFIED_PROVIDER_SET_OWNER_DECISION_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_STAGE_REGISTRY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_TERMINAL_RECEIPT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_WP707_TERMINAL_PREDECESSOR_V1.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-CONTRACT.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-INTEGRATION.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-MODEL.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-MUTANTS.json",
+      "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-PHYSICAL.json",
+      "scripts/ops/r24/mixed-chain-wp709.mjs",
+      "src/interchange/mixed-chain-fidelity-v1.mjs",
+      "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
+      "test/contracts/r24-wp709-terminal-carriers.contract.test.mjs",
+      "test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
+      "test/fixtures/r24-wp709-mixed-chain-fixtures.js",
+      "test/unit/r24-wp709-mixed-chain-integration.test.js",
+      "test/unit/r24-wp709-mixed-chain-mutants.test.js",
+      "test/unit/r24-wp709-mixed-chain.test.js"
+    ],
+    "deletePaths": [],
+    "renamePairs": []
+  },
+  "acceptanceSignals": [
+    "EXACT_MISSION_DIGEST_QUALIFIED_PROVIDER_SET_DECISION_BOUND",
+    "WP707_EXTERNALLY_VERIFIED_DONE_FENCE_101_RELEASED_WIP_0",
+    "SEVEN_DECLARED_THREE_TO_SIX_HOP_CHAIN_DENOMINATOR",
+    "EVERY_HOP_EXACT_SOURCE_TARGET_SCHEMA_CAPABILITY_IDENTITY",
+    "DECLARED_FIELD_PRESERVATION_AND_EXPLICIT_LOSS_DENOMINATORS",
+    "NO_SILENT_FIELD_DROP",
+    "MONOTONE_HASH_LINKED_CUMULATIVE_LOSS_LEDGER",
+    "DOWNSTREAM_PASS_CANNOT_ERASE_UPSTREAM_LOSS",
+    "INDEPENDENT_FINAL_REPARSE_OR_READBACK_PER_CHAIN",
+    "WORD_LOCAL_PHYSICAL_CHAIN_EVIDENCE_AT_FIXED_SANDBOX_ROOT",
+    "GOOGLE_NATIVE_AND_GOOGLE_OFFICE_COMPAT_OWN_CHAIN_EVIDENCE",
+    "TASK_CREATED_PROVIDER_ARTIFACTS_CLEANED_ZERO_REMAINING",
+    "AUTOMATIC_AND_MULTI_SCENE_APPLY_DENIED",
+    "NO_USER_DOCUMENT_DEPENDENCY_SECRET_OR_RUNTIME_NETWORK",
+    "ACTUAL_SOURCE_IMPLEMENTATION_MUTANTS_KILLED",
+    "NORMAL_PROTECTED_MERGE_EXACT_POSTMERGE_AND_TERMINAL_RELEASE",
+    "PRODUCT_GRAPH_INCREMENT_ONE",
+    "PROGRAM_DONE_FALSE",
+    "ORIGINAL_WP709_FENCE_102_CONTOUR_FROZEN_UNCHANGED_WITH_NO_EXECUTION_LEASE",
+    "STANDARD_SIGNED_AND_UNSIGNED_32_BIT_DATA_DESCRIPTORS_VALIDATED_EXACTLY",
+    "MALFORMED_TRUNCATED_OVERLAPPING_OR_MISMATCHED_DESCRIPTORS_FAIL_CLOSED",
+    "ZIP64_ENCRYPTION_UNKNOWN_FLAGS_PATH_TRAVERSAL_RESOURCE_AND_CRC_GUARDS_UNCHANGED",
+    "EXACT_SYNTHETIC_GOOGLE_NATIVE_EXPORT_SHA256_REPARSED_SUCCESSFULLY",
+    "WP709_FENCE_103_RELEASED_WIP_0"
+  ],
+  "authorityCeiling": [
+    "BOUNDED_CI_OPERATION",
+    "BOUNDED_REPOSITORY_WRITE",
+    "BRANCH_WORKTREE",
+    "COMMIT",
+    "GITHUB_PR",
+    "GITHUB_PROTECTED_MERGE",
+    "GOOGLE_CONNECTOR_EXACT_SYNTHETIC_LIFECYCLE",
+    "LOCAL_EXTERNAL_TERMINAL_ARTIFACT",
+    "LOCAL_SYNTHETIC_WORD_PHYSICAL_EFFECT",
+    "LOCAL_TEST_BUILD_EVIDENCE",
+    "PR_CREATE_OR_UPDATE",
+    "PUSH",
+    "READ_ONLY_GITHUB_API"
+  ],
+  "externalEffects": [
+    "GITHUB_CI",
+    "GITHUB_PR",
+    "GITHUB_PROTECTED_MERGE",
+    "GIT_PUSH",
+    "GOOGLE_NATIVE_DOCUMENT_CREATE_EXPORT_DELETE_ONE",
+    "GOOGLE_OFFICE_COMPAT_DOCX_UPLOAD_READBACK_DELETE_ONE",
+    "LOCAL_EXTERNAL_TERMINAL_ARTIFACT",
+    "LOCAL_SYNTHETIC_WORD_PHYSICAL_EFFECT"
+  ],
+  "predecessors": [
+    {
+      "id": "WP707_NORMALIZED_TERMINAL_RECEIPT_SCOPE_CORRECTION",
+      "digest": "03be31de74669c98dfb3ed69eca2ce5704712e9dc3b6f4ca5a404c1e469cdcdf",
+      "status": "CERTIFIED_DONE"
+    },
+    {
+      "id": "WP707_NORMALIZED_TERMINAL_VERIFICATION_SCOPE_CORRECTION",
+      "digest": "d98ce1318f50287849b8691eedd5d7f8ae2e62d96ee736f947a1cc0a9c402f2d",
+      "status": "PASS"
+    },
+    {
+      "id": "WP707_LEASE_RELEASE_DISPOSITION",
+      "digest": "cb41020b28721cbf997ac926b5e7987a75037749c72f3a0fb72b9f3c93b39f67",
+      "status": "RELEASED_WIP_0"
+    },
+    {
+      "id": "WP709_ORIGINAL_OWNER_DECISION",
+      "digest": "b46be7de3995e544a3e3081254cc4b28ac6a5af4da9fda59b506d6e01daaf220",
+      "status": "APPROVED"
+    },
+    {
+      "id": "WP709_ORIGINAL_OWNER_AUTHORITY",
+      "digest": "e76042b149a8569877512c55a6cd925af9b614258bf13a6694704e236fde8c64",
+      "status": "FROZEN_SUPERSEDED_NO_EXECUTION_LEASE"
+    },
+    {
+      "id": "WP709_ORIGINAL_STAGE_INSTANCE",
+      "digest": "26a87057fa50bb2bac47e16d41d8336704bd474ada90ec786e242e49794b635f",
+      "status": "FROZEN_SUPERSEDED_NO_EXECUTION_LEASE"
+    },
+    {
+      "id": "WP709_ORIGINAL_STAGE_ADMISSION",
+      "digest": "031d3fe3b79067cd5faafd03e3ee617b097b9152ef1fc23e3ccb7af5e4826557",
+      "status": "FROZEN_SUPERSEDED_NO_EXECUTION_LEASE"
+    },
+    {
+      "id": "WP709_ORIGINAL_PROTECTED_WIP_BEFORE",
+      "digest": "6f543806e2e10eddbe093f880fb87c991b1af794307a7d45c0301a4be8d86e6b",
+      "status": "FROZEN_UNCHANGED"
+    },
+    {
+      "id": "WP709_PAUSE_CHECKPOINT",
+      "digest": "76ff1de15ad3c15c84b4fd0f0135f4a07d0900f23877ee0156e3f3404a136642",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "STANDING_OWNER_AUTHORITY_BINDING",
+      "digest": "be68bd97021d13fbfb75c73791bda7f6bfeebecebf525d4a927d1a4c9fe9efd6",
+      "status": "ACTIVE_DELEGATE_ROUTING"
+    }
+  ],
+  "lease": {
+    "fencingCounter": 103,
+    "status": "ACTIVE",
+    "wip": 1,
+    "predecessorReleaseDigest": "cb41020b28721cbf997ac926b5e7987a75037749c72f3a0fb72b9f3c93b39f67"
+  }
+}

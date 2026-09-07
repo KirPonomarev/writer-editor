@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_MIXED_CHAIN_PHYSICAL_RECEIPT_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-PHYSICAL",
+  "missionDigest": "2d188140211c4e2a65f0f1bf1bef5bac53e396e3c3887cb3563fa253a10b0c80",
+  "status": "PASS",
+  "programDone": false,
+  "observationFileInjected": true,
+  "observationSha256": "12c3322d6e26050fe122679a722484cca8e1092e02b8c8851f8cbc61798939aa",
+  "compiledResultDigest": "aeb728c2a760eee0e9f52abc4d8a115e4513c9eb6c37443dc6f3d0fdfaebfaa3",
+  "compiledReceiptSha256": "3794015edcb0130c8d88fa8a0bcf469eefc00c7cff3b55e1128d419a991cffdb",
+  "exactPassCount": 7,
+  "stageDone": true,
+  "routes": [
+    { "chainId": "MC1_YALKEN_DOCX_YALKEN", "status": "PASS", "inheritedEvidence": false },
+    { "chainId": "MC2_YALKEN_DOCX_WORD_DOCX_YALKEN", "status": "PASS", "inheritedEvidence": false },
+    { "chainId": "MC3_YALKEN_DOCX_GOOGLE_OFFICE_DOCX_YALKEN", "status": "PASS", "inheritedEvidence": false },
+    { "chainId": "MC4_YALKEN_GOOGLE_NATIVE_DOCX_YALKEN", "status": "PASS", "inheritedEvidence": false },
+    { "chainId": "MC5_YALKEN_MARKDOWN_YALKEN_DOCX_YALKEN", "status": "PASS", "inheritedEvidence": false },
+    { "chainId": "MC6_YALKEN_ARCHIVE_RESTORED_YALKEN_PDF", "status": "PASS", "inheritedEvidence": false },
+    { "chainId": "MC7_YALKEN_REVIEW_PACKET_DECISION_IMPORT_YALKEN", "status": "PASS", "inheritedEvidence": false }
+  ],
+  "googleOfficeCompat": {
+    "requiredProfileId": "GOOGLE_OFFICE_COMPAT_WP709_V1",
+    "qualification": "QUALIFIED_WP709_FRESH_PHYSICAL",
+    "wp708Disposition": "INPUT_CONTEXT_ONLY_NO_PASS_INHERITANCE",
+    "returnedDocxSha256": "af3f2e0660bc9ccbb673adb8758184a23133e513ba88c84ef745349ef3bfca9e",
+    "exactSourceByteIdentity": true,
+    "blocksStageDone": false
+  },
+  "word": {
+    "requiredProfileId": "WORD_LOCAL_PHYSICAL_WP709_V1",
+    "fixedSandboxRootBinding": "OWNER_DECISION_ONLY_RAW_PATH_NOT_REPEATED",
+    "observation": "PASS",
+    "receiptDigest": "1103d1692132eab9eb1b47d92be699d38b025faa9cf0ae51f1aac81d524d075e",
+    "docxSha256": "af3f2e0660bc9ccbb673adb8758184a23133e513ba88c84ef745349ef3bfca9e",
+    "dispatchCount": 1
+  },
+  "googleNative": {
+    "profileId": "GOOGLE_NATIVE_WP709_V1",
+    "createReadback": "PASS",
+    "docxExport": "PASS",
+    "exportSha256": "0958d0d55a0011286beaa79b13772f8ff7c2c8de22fa9829ef1d777031acff64",
+    "yalkenImport": "PASS",
+    "preflightCode": "STAGE02_GATE_PASS",
+    "sourceCode": "DOCX_ZIP_DATA_DESCRIPTOR_VALIDATED",
+    "offendingEntry": null,
+    "contentPreviewCode": "DOCX_CONTENT_PREVIEW_READY",
+    "reviewTransportCode": "DOCX_REVIEW_TRANSPORT_PARTS_READY",
+    "semanticSha256": "ce230267f2de410d15a0c6b42ec1f574a44727a74eeefa1abc63ac9ba2df8da3",
+    "reparseOracleSha256": "4bb7629b71e78ed69cfd4f0bb0853001e88ccc913be3244db8396e4de7953194"
+  },
+  "localPhysical": {
+    "receiptSha256": "eb88505c250aee5ca5c6cc409f091877c6eaa46b17d9015daf874447cef267ba",
+    "docxSha256": "9f6b46834866d4c5a45c9d76aaae715a67d9a74faf93ed79739312c3f8bd7306",
+    "markdownSha256": "9199bf91b54fec1a7e9eba02f81a3590986722cca68639523746f1c9f815774f",
+    "archiveSha256": "3f327e452958a61e120a6fffba987d54260ff72fde16b231b2699239698304dc",
+    "pdfSha256": "4053283ce56212be6f19fa30d3a5ef2cc93bbeb4f214baf1a5ef90a54e32b306",
+    "reviewPacketSha256": "971f2f6aa4c3b6758ffde2372c135413047b5e16effd2bac94abd6306e4f6bd8"
+  },
+  "cleanup": {
+    "createdArtifactCount": 4,
+    "providerArtifactsRemaining": 0,
+    "verification": "COMPLETE_ZERO_REMAINING",
+    "browserFallbackScopeDeviation": "ONE_TASK_CREATED_UPLOAD_TO_NONDEDICATED_UI_ACCOUNT_DELETED_FOREVER_NOT_USED_AS_EVIDENCE"
+  },
+  "nonClaims": [
+    "NO_EXTERNAL_EFFECT_EXECUTED_BY_LOCAL_CHECKER",
+    "NO_PROGRAM_DONE",
+    "NO_REQUIRED_DELIVERY_PRECLAIM",
+    "NO_ACCIDENTAL_BROWSER_UPLOAD_EVIDENCE_USE"
+  ]
+}

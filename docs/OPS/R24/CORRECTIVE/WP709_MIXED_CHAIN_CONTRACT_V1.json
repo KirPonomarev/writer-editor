@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "YALKEN_R24_WP709_MIXED_CHAIN_CONTRACT_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "missionDigest": "2d188140211c4e2a65f0f1bf1bef5bac53e396e3c3887cb3563fa253a10b0c80",
+  "status": "PASS",
+  "programDone": false,
+  "chainDenominator": 7,
+  "chains": [
+    { "id": "MC1_YALKEN_DOCX_YALKEN", "route": ["YALKEN", "DOCX", "YALKEN"], "requiredDisposition": "OWN_EXACT_EVIDENCE" },
+    { "id": "MC2_YALKEN_DOCX_WORD_DOCX_YALKEN", "route": ["YALKEN", "DOCX", "WORD", "DOCX", "YALKEN"], "requiredDisposition": "OWN_EXACT_EVIDENCE" },
+    { "id": "MC3_YALKEN_DOCX_GOOGLE_OFFICE_DOCX_YALKEN", "route": ["YALKEN", "DOCX", "GOOGLE_OFFICE", "DOCX", "YALKEN"], "requiredDisposition": "OWN_EXACT_EVIDENCE" },
+    { "id": "MC4_YALKEN_GOOGLE_NATIVE_DOCX_YALKEN", "route": ["YALKEN", "GOOGLE_NATIVE", "DOCX", "YALKEN"], "requiredDisposition": "OWN_EXACT_EVIDENCE" },
+    { "id": "MC5_YALKEN_MARKDOWN_YALKEN_DOCX_YALKEN", "route": ["YALKEN", "MARKDOWN", "YALKEN", "DOCX", "YALKEN"], "requiredDisposition": "OWN_EXACT_EVIDENCE" },
+    { "id": "MC6_YALKEN_ARCHIVE_RESTORED_YALKEN_PDF", "route": ["YALKEN", "PROJECT_ARCHIVE", "RESTORED_YALKEN", "PDF"], "requiredDisposition": "OWN_EXACT_EVIDENCE" },
+    { "id": "MC7_YALKEN_REVIEW_PACKET_DECISION_IMPORT_YALKEN", "route": ["YALKEN", "REVIEW_PACKET", "DECISION_IMPORT", "YALKEN"], "requiredDisposition": "OWN_EXACT_EVIDENCE" }
+  ],
+  "invariants": {
+    "declaredFieldDenominatorRequired": true,
+    "everyNonPreservedFieldInLossLedger": true,
+    "silentDropAllowed": false,
+    "reportOnlySourceMustRemainByteIdentical": true,
+    "independentTargetReparseOrReadbackRequired": true,
+    "lossMustBeTypedAndPreviewable": true,
+    "cumulativeLossMonotoneAndHashLinked": true,
+    "downstreamPassMayEraseUpstreamLoss": false,
+    "everyHopExactIdentityBound": true,
+    "finalSemanticOracleIndependent": true,
+    "routePassInheritanceAllowed": false
+  },
+  "providerBoundary": {
+    "googleOfficeCompatFreshQualificationRequired": true,
+    "wp707OrWp708PassInheritanceAllowed": false,
+    "taskCreatedDisposableSyntheticTargetsOnly": true,
+    "automaticApply": false,
+    "multiSceneApply": false,
+    "userDocuments": 0,
+    "productRuntimeNetwork": false,
+    "secondWriterCreated": false
+  }
+}

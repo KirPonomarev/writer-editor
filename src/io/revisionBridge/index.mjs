@@ -1145,8 +1145,11 @@ const DOCX_ZIP_FLAG_ENCRYPTED = 1;
 const DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_1 = 2;
 const DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_2 = 4;
 const DOCX_ZIP_FLAG_DATA_DESCRIPTOR = 8;
+const DOCX_ZIP_FLAG_UTF8_NAMES = 0x0800;
 const DOCX_ZIP_FLAGS_ALLOWED_MASK = DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_1
-  | DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_2;
+  | DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_2
+  | DOCX_ZIP_FLAG_DATA_DESCRIPTOR
+  | DOCX_ZIP_FLAG_UTF8_NAMES;
 const DOCX_ZIP_U16_MAX = 0xffff;
 const DOCX_ZIP_U32_MAX = 0xffffffff;
 
@@ -1727,6 +1730,27 @@ function docxHostileFileGateCentralEntries(bytes) {
   if (cursor !== centralEnd) {
     return { failure: docxZipInventoryFailure('DOCX_ZIP_CENTRAL_DIRECTORY_TRUNCATED') };
   }
+
+  // Local records are not required to appear in central-directory order. Bind
+  // each entry to the next greater local-header offset (or to the central
+  // directory for the last record) so every downstream consumer validates the
+  // same byte-exact record boundary. Duplicate offsets are deliberately kept
+  // as typed per-entry errors: there is no safe way to decide which central
+  // record owns the shared local bytes.
+  const entriesByLocalOffset = entries.slice().sort((left, right) => (
+    left.localOffset - right.localOffset
+    || left.entryId.localeCompare(right.entryId)
+  ));
+  for (let index = 0; index < entriesByLocalOffset.length; index += 1) {
+    const entry = entriesByLocalOffset[index];
+    const previous = entriesByLocalOffset[index - 1];
+    const next = entriesByLocalOffset[index + 1];
+    if (previous?.localOffset === entry.localOffset || next?.localOffset === entry.localOffset) {
+      entry.localRecordBoundaryError = 'DOCX_ZIP_LOCAL_OFFSET_AMBIGUOUS';
+      continue;
+    }
+    entry.localRecordEnd = next?.localOffset ?? endResult.record.centralOffset;
+  }
   return { entries };
 }
 
@@ -1747,7 +1771,18 @@ function docxHostileFileGateInvalidScanResult(entryId, sourceCode) {
 
 function docxHostileFileGateValidateLocalHeader(bytes, entry) {
   const localOffset = entry.localOffset;
-  if (localOffset + 30 > bytes.byteLength) {
+  if (entry.localRecordBoundaryError) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, entry.localRecordBoundaryError) };
+  }
+  const localRecordEnd = entry.localRecordEnd;
+  if (
+    !Number.isSafeInteger(localRecordEnd)
+    || localRecordEnd <= localOffset
+    || localRecordEnd > bytes.byteLength
+  ) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_RECORD_BOUNDARY_INVALID') };
+  }
+  if (localOffset + 30 > localRecordEnd) {
     return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_ENTRY_OFFSET_INVALID') };
   }
   if (docxZipReadU32(bytes, localOffset) !== 0x04034b50) {
@@ -1761,6 +1796,10 @@ function docxHostileFileGateValidateLocalHeader(bytes, entry) {
   const localByteSize = docxZipReadU32(bytes, localOffset + 22);
   const nameSize = docxZipReadU16(bytes, localOffset + 26);
   const extraSize = docxZipReadU16(bytes, localOffset + 28);
+  const dataOffset = localOffset + 30 + nameSize + extraSize;
+  if (dataOffset > localRecordEnd) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_HEADER_OVERLAP') };
+  }
   const localName = docxZipReadAsciiName(bytes, localOffset + 30, nameSize);
   if ((localFlags & DOCX_ZIP_FLAG_ENCRYPTED) || (entry.flags & DOCX_ZIP_FLAG_ENCRYPTED)) {
     return {
@@ -1781,26 +1820,43 @@ function docxHostileFileGateValidateLocalHeader(bytes, entry) {
   if (localFlags !== entry.flags) {
     return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_FLAG_MISMATCH') };
   }
-  if (entry.flags & DOCX_ZIP_FLAG_DATA_DESCRIPTOR) {
-    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_UNSUPPORTED') };
-  }
   if (entry.flags & ~DOCX_ZIP_FLAGS_ALLOWED_MASK) {
     return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_FLAGS_UNSUPPORTED') };
   }
-  if (entry.flags !== 0 && entry.method !== 8) {
+  const deflateOptionFlags = entry.flags & (
+    DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_1
+    | DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_2
+  );
+  if (deflateOptionFlags !== 0 && entry.method !== 8) {
     return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_FLAGS_METHOD_UNSUPPORTED') };
   }
   if (
     localMethod !== entry.method
-    || localCompressedSize !== entry.compressedSize
-    || localByteSize !== entry.byteSize
     || localName !== entry.entryId
   ) {
     return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_HEADER_MISMATCH') };
   }
+
+  const dataEnd = dataOffset + entry.compressedSize;
+  if (!Number.isSafeInteger(dataEnd) || dataEnd > localRecordEnd) {
+    return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_RECORD_OVERLAP') };
+  }
+
+  const usesDataDescriptor = (entry.flags & DOCX_ZIP_FLAG_DATA_DESCRIPTOR) !== 0;
+  if (!usesDataDescriptor) {
+    if (
+      localCompressedSize !== entry.compressedSize
+      || localByteSize !== entry.byteSize
+    ) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_HEADER_MISMATCH') };
+    }
+    if (dataEnd !== localRecordEnd) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_RECORD_GAP') };
+    }
+  }
   // CRC evidence: central vs local header must agree. A divergence is a typed
   // CRC mismatch — never admitted as a silent structural MISMATCH fallback.
-  if (Number.isSafeInteger(entry.centralCrc32) && localCrc32 !== entry.centralCrc32) {
+  if (!usesDataDescriptor && Number.isSafeInteger(entry.centralCrc32) && localCrc32 !== entry.centralCrc32) {
     return {
       failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_CENTRAL_CRC_MISMATCH'),
       crcMismatch: {
@@ -1809,8 +1865,69 @@ function docxHostileFileGateValidateLocalHeader(bytes, entry) {
       },
     };
   }
+
+  if (usesDataDescriptor) {
+    const localFieldsAreZero = localCrc32 === 0 && localCompressedSize === 0 && localByteSize === 0;
+    const localFieldsMatchCentral = localCrc32 === entry.centralCrc32
+      && localCompressedSize === entry.compressedSize
+      && localByteSize === entry.byteSize;
+    if (!localFieldsAreZero && !localFieldsMatchCentral) {
+      const invalid = {
+        failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_LOCAL_FIELDS_INVALID'),
+      };
+      if (localCrc32 !== 0 && localCrc32 !== entry.centralCrc32) {
+        invalid.crcMismatch = {
+          centralCrc32: entry.centralCrc32,
+          localCrc32,
+        };
+      }
+      return invalid;
+    }
+
+    const descriptorSize = localRecordEnd - dataEnd;
+    if (descriptorSize < 12) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_TRUNCATED') };
+    }
+    if (descriptorSize > 16) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_LOCAL_RECORD_GAP') };
+    }
+    if (descriptorSize !== 12 && descriptorSize !== 16) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_LENGTH_INVALID') };
+    }
+
+    let descriptorCursor = dataEnd;
+    if (descriptorSize === 16) {
+      if (docxZipReadU32(bytes, descriptorCursor) !== 0x08074b50) {
+        return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_SIGNATURE_INVALID') };
+      }
+      descriptorCursor += 4;
+    } else if (docxZipReadU32(bytes, descriptorCursor) === 0x08074b50) {
+      // A signature-valued CRC makes the 12-byte form indistinguishable from a
+      // truncated signed descriptor. Refuse to guess which record was meant.
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_AMBIGUOUS') };
+    }
+
+    const descriptorCrc32 = docxZipReadU32(bytes, descriptorCursor);
+    const descriptorCompressedSize = docxZipReadU32(bytes, descriptorCursor + 4);
+    const descriptorByteSize = docxZipReadU32(bytes, descriptorCursor + 8);
+    if (descriptorCrc32 !== entry.centralCrc32) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_CRC_MISMATCH') };
+    }
+    if (descriptorCompressedSize !== entry.compressedSize) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_COMPRESSED_SIZE_MISMATCH') };
+    }
+    if (descriptorByteSize !== entry.byteSize) {
+      return { failure: docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_ZIP_DATA_DESCRIPTOR_UNCOMPRESSED_SIZE_MISMATCH') };
+    }
+    return {
+      dataOffset,
+      // Downstream ZIP evidence treats this as local-record CRC evidence. For
+      // bit-3 entries the descriptor, not an all-zero local header, owns it.
+      localCrc32: descriptorCrc32,
+    };
+  }
   return {
-    dataOffset: localOffset + 30 + nameSize + extraSize,
+    dataOffset,
     localCrc32,
   };
 }

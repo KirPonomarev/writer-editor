@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "YALKEN_R24_EVIDENCE_STAMP_V1",
+  "stageId": "WP-709_MIXED_CHAINS",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-INTEGRATION",
+  "programDone": false,
+  "status": "PASS",
+  "kind": "INTEGRATION",
+  "artifact": {
+    "implementationArtifacts": [
+      { "path": "scripts/ops/r24/mixed-chain-wp709.mjs", "sha256": "e3ae7c5ab27c893f033cd9df6bbec964d3a4bd24beb03d3e611512cfd888d1a8" },
+      { "path": "test/unit/r24-wp709-mixed-chain-integration.test.js", "sha256": "cf47ae7d86ff77f8cc567b659185c46fe13d70c418a335c686be1eefc1d8f29e" }
+    ]
+  },
+  "test": { "denominator": 5, "passed": 5, "failed": 0, "skipped": 0, "todo": 0 },
+  "claim": {
+    "ceiling": "WP709_LOCAL_STDOUT_COMPILE_AND_READ_ONLY_REPLAY_ONLY",
+    "providerWriteModes": 0,
+    "networkModes": 0,
+    "conditionalWithoutPhysicalInput": true
+  }
+}
