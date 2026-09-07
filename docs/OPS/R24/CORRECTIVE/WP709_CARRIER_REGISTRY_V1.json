@@ -20,7 +20,7 @@
     },
     {
       "path": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c87c5dd7f4895b905b91618aa5ae477ba6d855f5751e0531d01310e15b3ca182",
+      "sha256": "e3da18b004558902961b683e697e43d556f7661235e97503695977086e24ec5b",
       "byteLength": 440836
     },
     {
@@ -130,8 +130,8 @@
     },
     {
       "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "c2257b7c714017fb167dbae03a0ba9d02f4b9dd2262c9730629449643e8bbc61",
-      "byteLength": 757222
+      "sha256": "16d9f220017743be523406b43a11f887b70a8677a59f598b88a7c38a74d2cb4e",
+      "byteLength": 757289
     },
     {
       "path": "scripts/ops/r24/docs-claim-lint.mjs",
@@ -155,8 +155,8 @@
     },
     {
       "path": "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
-      "sha256": "16659620c193752a019ff8ca8663668ec8a1b83725ea9691266f95f1a6803f07",
-      "byteLength": 7196
+      "sha256": "4f8df0462400c3809d8042ab1ea3aefb2265c783715a75de28951cbdb29d2e13",
+      "byteLength": 7329
     },
     {
       "path": "test/contracts/r24-wp709-terminal-carriers.contract.test.mjs",

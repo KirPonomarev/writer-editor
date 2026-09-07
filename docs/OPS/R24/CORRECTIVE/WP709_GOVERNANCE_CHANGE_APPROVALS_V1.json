@@ -16,247 +16,247 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c87c5dd7f4895b905b91618aa5ae477ba6d855f5751e0531d01310e15b3ca182",
+      "sha256": "e3da18b004558902961b683e697e43d556f7661235e97503695977086e24ec5b",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_ACCEPTANCE_MATRIX_V1.json",
       "sha256": "fde87070946ad8970d20465f97460155b912420ad5bef955e9339d388b3b0ca3",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_ADMISSION_PATH_CORRECTION_V1.json",
       "sha256": "e28e96ba62f3d9682175564574decd19bb9e60772022b126d367e7bfc6aa4145",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_CARRIER_REGISTRY_V1.json",
-      "sha256": "7783c68bebc85f9b862c34b6a4ee6e380edd7597789684c977b44d05fe7bdae3",
+      "sha256": "2bea9e6dfefedbdfcf200bdcb14319cdfaabad232c1eb9970bcead2e5925be85",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_GRAPH_BASELINE_V1.json",
       "sha256": "660aefd19394f5be077f5e6449d435ca23ab61f87f1b47a11c01b6699f12e1d7",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_STATE_V1.json",
       "sha256": "008026b18928d3f7a6ae9fe2aa3f8b9426ad2690ac6de463aa3b79e48e416431",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_FEATURE_INTEGRATION_MANIFEST_V1.json",
       "sha256": "76114b0ccbe078c233c6b727ebdf938847ad7d67b2b6b1693ca9842c7b71b63e",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_FIXTURE_MANIFEST_V1.json",
       "sha256": "3dae368e8db9acaced2bfaefca0111f0455971297695f5c2f32c22deeb2506ca",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_LEASE_RELEASE_V1.json",
       "sha256": "153fc7b430cb916c0346bccb98d74ba18052bb747333089c706d019cb412f17b",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_OWNER_AUTHORITY_AMENDMENT_V1.json",
       "sha256": "43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_OWNER_AUTHORITY_V1.json",
       "sha256": "e76042b149a8569877512c55a6cd925af9b614258bf13a6694704e236fde8c64",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_SELECTION_RECEIPT_V1.json",
       "sha256": "f714b2e6e0e40193835dd149fcd68761f508d3da078dcfdf9d197b465024918d",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
       "sha256": "031d3fe3b79067cd5faafd03e3ee617b097b9152ef1fc23e3ccb7af5e4826557",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V2.json",
       "sha256": "39dca294fd633838e02f5b09dc5707cbf2d2754396fba754bda8fcdb7235c3dc",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
       "sha256": "26a87057fa50bb2bac47e16d41d8336704bd474ada90ec786e242e49794b635f",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V2.json",
       "sha256": "fc1842ee254bf9f39cfc65e51f01fdc5ee2a727783397302a905681ac4eb1ad0",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MIXED_CHAIN_CONTRACT_V1.json",
       "sha256": "917b4010140b8a07d459e2bd11920128acc0ab6e23e16ae7c9a381e38afd8f00",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_MIXED_CHAIN_PHYSICAL_RECEIPT_V1.json",
       "sha256": "4dfeafeacca6089651e3bb62b18b9b5e8f8ca5e2d90f863e8804c508702fb5b4",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_PROTECTED_WIP_BEFORE_V1.json",
       "sha256": "6f543806e2e10eddbe093f880fb87c991b1af794307a7d45c0301a4be8d86e6b",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_QUALIFIED_PROVIDER_SET_OWNER_DECISION_V1.json",
       "sha256": "b46be7de3995e544a3e3081254cc4b28ac6a5af4da9fda59b506d6e01daaf220",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_STAGE_REGISTRY_V1.json",
       "sha256": "54bb87d634d6533195c0abfabe71885535be3e76b843bfd7fc4bab392cf5ca95",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_TERMINAL_RECEIPT_V1.json",
       "sha256": "2eb7e2003d9479bc3eb040d2a0fc084b482b845aef802dbf7f8064011d55c478",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP709_WP707_TERMINAL_PREDECESSOR_V1.json",
       "sha256": "4972ae66bbe5b9a055b7c20549934bf3f7f65a133a4f5054adf641d3dbd2d846",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS.json",
-      "sha256": "b699589ae4ecdf01eda5546b0c62cab24cf0e50634931179c81c1c499945b73e",
+      "sha256": "89948f28238b890fc1634c7ab23ef8b6130d06e90e3738a829a5defc834e99e5",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-CONTRACT.json",
       "sha256": "95a5c51e79abc9469d4505381171e4a5d75421dd9d6a2513a3a5a6275d0f2878",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-INTEGRATION.json",
       "sha256": "d0eaf811cbccf1deea648af76bb93f6502d767c1fa327e3aa61251c01d1c035a",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-MODEL.json",
       "sha256": "997b176c538e2916754475cbc5c35c9d9205b7b4c51668433cd466617ba1f4bb",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-MUTANTS.json",
       "sha256": "d758d9ef53b59a6fc30b7d52b52c702de98b41a1a1393bf719fd22ebb479a8a2",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-PHYSICAL.json",
       "sha256": "b4540516c4fca61adad9b6e685138f98fbc26c020dd29e0d1dd19f4339c3b95b",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "c2257b7c714017fb167dbae03a0ba9d02f4b9dd2262c9730629449643e8bbc61",
+      "sha256": "16d9f220017743be523406b43a11f887b70a8677a59f598b88a7c38a74d2cb4e",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
       "sha256": "15ce09b66c15447749814eb893efeb5fc50bfbfbc36c8caa8091b7b8fecdd503",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "scripts/ops/r24/mixed-chain-wp709.mjs",
       "sha256": "e3ae7c5ab27c893f033cd9df6bbec964d3a4bd24beb03d3e611512cfd888d1a8",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
-      "sha256": "16659620c193752a019ff8ca8663668ec8a1b83725ea9691266f95f1a6803f07",
+      "sha256": "4f8df0462400c3809d8042ab1ea3aefb2265c783715a75de28951cbdb29d2e13",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "test/contracts/r24-wp709-terminal-carriers.contract.test.mjs",
       "sha256": "cb6dd0eba70860f6f45873f9b8e8e1f5ff6a196e0d143ea05a8c3f1a4130571c",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
       "sha256": "52aecf3432ea690e15cec1ab55e3b1b524c77ff3f22ebb9b40829029f681b588",
       "approvedBy": "owner-resume-authority:43108447e78f8c9b8e3ae106b13d9e2eb1c7b59a73334dffe32feba632e958b1",
-      "approvedAtUtc": "2026-09-07T22:21:33.358Z",
+      "approvedAtUtc": "2026-09-07T22:31:01.221Z",
       "rationale": "Owner-authorized WP709 bounded mixed-chain completion and narrow DOCX data-descriptor intake; no dependency, runtime-network, automatic-apply, multi-scene, or user-document authority added."
     }
   ]

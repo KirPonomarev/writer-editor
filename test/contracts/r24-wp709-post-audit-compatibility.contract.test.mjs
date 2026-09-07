@@ -93,4 +93,5 @@ test('WP709 routing pins the WP707 oracle to the immutable WP709 base', () => {
   assert.match(source, /const wp709Enabled=allowMainProductWp709Admission/u);
   assert.match(source, /verifyWp707MainProductPostEvaluationException\(\{candidateSha:wp709Enabled\?WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION\.baseSha:resolvedCandidate,git\}\)/u);
   assert.match(source, /verifyWp709MainProductPostEvaluationException\(\{candidateSha:resolvedCandidate,git\}\)/u);
+  assert.match(source, /allowAuditCycle2Admission:options\['audit-cycle2-admission'\]===true,allowMainProductWp709Admission:true/u);
 });
