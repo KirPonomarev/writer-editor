@@ -27,6 +27,10 @@ import {
   WP702_CI_MERGE_REF_TEST_BINDING_ADMISSION_EXPECTATION,
   WP702_PK0_SECURITY_SUCCESSOR_ADMISSION_EXPECTATION,
   WP702_WP504_HISTORICAL_SURFACE_ADMISSION_EXPECTATION,
+  PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION,
+  PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA,
+  PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_TREE,
+  PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   verifyAuditCycle2DurableCarrier,
@@ -49,6 +53,8 @@ import {
   verifyWp501TerminalExceptionPostEvaluationException,
   verifyWp502MainProductPostEvaluationException,
   verifyWp503MainProductPostEvaluationException,
+  verifyPre00bLifecycleReconciliationPostEvaluationException,
+  verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -226,6 +232,48 @@ test('post-evaluation bytes require the exact chained audit-cycle-two WP401 WP40
   assert.equal(result.wp502MainProductPostEvaluationException.changedPaths.every((entry)=>wp502.admittedPaths.includes(entry)),true);
   assert.equal(result.wp503MainProductPostEvaluationException.status,'PASS');
   assert.equal(result.wp503MainProductPostEvaluationException.changedPaths.every((entry)=>wp503.admittedPaths.includes(entry)),true);
+});
+test('PRE00B lifecycle reconciliation verifier is pinned to the delivered merge',()=>{
+  const result=verifyPre00bLifecycleReconciliationPostEvaluationException({candidateSha:'HEAD'});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.deliverySha,PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA);
+  assert.equal(result.deliveryTree,PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_TREE);
+  assert.equal(result.changedPathDenominator,10);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
+});
+test('PRE00B lifecycle reconciliation verifier rejects a mutated delivered-stage delta',()=>{
+  const hostileGit=(args,options={})=>{
+    if(args[0]==='diff'&&args[2]===`${PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.issuedCandidateSha}..${PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA}`){
+      return options.encoding==='utf8'?'README.md\n':Buffer.from('README.md\n');
+    }
+    return execFileSync('git',args,options);
+  };
+  assert.throws(()=>verifyPre00bLifecycleReconciliationPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_PRE00B_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00C closed-stage candidate verifier accepts the bounded repair delta',()=>{
+  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:'HEAD'});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha);
+  assert.equal(result.baseTree,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree);
+  assert.deepEqual(result.changedPaths,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.admittedPaths);
+  assert.equal(result.graphIncrement,0);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
+});
+test('PRE00C closed-stage candidate verifier rejects an unadmitted future path',()=>{
+  const candidateSha='c'.repeat(40);
+  const hostileGit=(args,options={})=>{
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)return options.encoding==='utf8'?`${candidateSha}\n`:Buffer.from(`${candidateSha}\n`);
+    if(args[0]==='rev-parse'&&args[1]===`${PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha}^{tree}`)return options.encoding==='utf8'?`${PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree}\n`:Buffer.from(`${PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree}\n`);
+    if(args[0]==='merge-base')return options.encoding==='utf8'?'':Buffer.from('');
+    if(args[0]==='diff'&&args[2]===`${PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha}..${candidateSha}`){
+      const mutantChanged=[...PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.admittedPaths,'README.md'].sort().join('\n')+'\n';
+      return options.encoding==='utf8'?mutantChanged:Buffer.from(mutantChanged);
+    }
+    return execFileSync('git',args,options);
+  };
+  assert.throws(()=>verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha,git:hostileGit}),/E_PRE00C_CLOSED_STAGE_EXACT_ADMITTED_DELTA/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

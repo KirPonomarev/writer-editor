@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "YALKEN_R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EVIDENCE_V1",
+  "taskId": "R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001",
+  "stampId": "ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR",
+  "verdict": "PASS",
+  "claimCeiling": "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_ONLY",
+  "binding": {
+    "baseSha": "4107b0b30e870c446768171dd8afff02cebe0436",
+    "baseTree": "f87f72fda113c53e5328b73bd074ee256e360ab2",
+    "pre00bSourceHeadSha": "af74b9542c17c24a7515ce9017d98ea7b2e4d55a",
+    "pre00bSourceTree": "9ba68855d2b3735bde543213e389e58490dc5c80"
+  },
+  "repair": {
+    "pre00bArtifactReadEndpoint": "PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA",
+    "pre00bExactDeltaEndpoint": "PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA",
+    "pre00cCandidateDeltaBase": "PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA",
+    "descendantCandidateAllowedOnlyThroughSeparatePre00cException": true
+  },
+  "proofOracles": [
+    "PRE00B_PINNED_DELIVERY_POSITIVE_CONTRACT",
+    "PRE00B_DELIVERED_STAGE_DELTA_MUTATION_NEGATIVE_CONTRACT",
+    "PRE00C_BOUNDED_REPAIR_DELTA_POSITIVE_CONTRACT",
+    "PRE00C_UNADMITTED_FUTURE_PATH_NEGATIVE_CONTRACT",
+    "PRE00C_EXACT_ADMITTED_DELTA_MUTANT_PROOF"
+  ],
+  "nonClaims": {
+    "programDone": false,
+    "productionReleaseReady": false,
+    "graphIncrement": 0,
+    "pk1ReleaseSecurityPhysical": false,
+    "v3PackageClaimCompiler": false,
+    "wp900PlanDelivery": false,
+    "runtimeMutation": false,
+    "processInspectionOrTermination": false,
+    "dependencyChange": false,
+    "networkOrCloudTruth": false
+  }
+}
