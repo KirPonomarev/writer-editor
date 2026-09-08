@@ -267,7 +267,7 @@ test('PRE00C next-contour selection verifier is pinned to its delivered merge',(
   assert.equal(result.productionReleaseReady,false);
 });
 test('PRE00C closed-stage candidate verifier accepts the bounded repair delta',()=>{
-  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:'HEAD'});
+  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.baseSha});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha);
   assert.equal(result.baseTree,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree);
