@@ -48,6 +48,7 @@ export const PRE00C_NEXT_CONTOUR_SELECTION_EXPECTATION=Object.freeze({
   baseTree:'f87f72fda113c53e5328b73bd074ee256e360ab2',
   admittedPaths:[
     'docs/tasks/R24_PRE00C_NEXT_CONTOUR_SELECTION_BRIEF_001.md',
+    'scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   ].sort(),
 });
@@ -3100,10 +3101,13 @@ export function verifyPre00cNextContourSelectionPostEvaluationException({candida
   let taskBytes;try{taskBytes=objectBytes(git,resolvedCandidate,'docs/tasks/R24_PRE00C_NEXT_CONTOUR_SELECTION_BRIEF_001.md');}catch{fail('E_PRE00C_TASK_MISSING');}
   assert(taskBytes.at(-1)===0x0a,'E_PRE00C_TASK_CANONICAL_LF');
   const taskText=taskBytes.toString('utf8');
-  for(const token of ['TASK_ID: R24_PRE00C_NEXT_CONTOUR_SELECTION_BRIEF_001','TASK_STATUS: PREPARED_WITH_STATIC_VERIFIER_DESCENDANT_REPAIR','CURRENT_FOLLOW_ON_GRAPH_MUTATION_ADMISSIBLE: false','CURRENT_ADMISSIBLE_MUTATION_COUNT: 0','NEXT_ALLOWED_STATE: WAIT_OWNER_GATE_OR_ADMITTED_PLAN_STATE_GENERATOR_REWRITE','STATIC_VERIFIER_REPAIR: PRE00B_HISTORICAL_DELTA_PINNED_TO_DELIVERY_MERGE'])assert(taskText.includes(token),'E_PRE00C_TASK_TOKEN',token);
+  for(const token of ['TASK_ID: R24_PRE00C_NEXT_CONTOUR_SELECTION_BRIEF_001','TASK_STATUS: PREPARED_WITH_STATIC_VERIFIER_DESCENDANT_REPAIR','CURRENT_FOLLOW_ON_GRAPH_MUTATION_ADMISSIBLE: false','CURRENT_ADMISSIBLE_MUTATION_COUNT: 0','NEXT_ALLOWED_STATE: WAIT_OWNER_GATE_OR_ADMITTED_PLAN_STATE_GENERATOR_REWRITE','STATIC_VERIFIER_REPAIR: PRE00B_HISTORICAL_DELTA_AND_DIGESTS_PINNED_TO_DELIVERY_MERGE'])assert(taskText.includes(token),'E_PRE00C_TASK_TOKEN',token);
   let verifierBytes;try{verifierBytes=objectBytes(git,resolvedCandidate,'scripts/ops/r24/corrective/post-audit-certification-set.mjs');}catch{fail('E_PRE00C_VERIFIER_MISSING');}
   const verifierText=verifierBytes.toString('utf8');
   for(const token of ['PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA','PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_TREE','E_PRE00B_DELIVERY_NOT_ANCESTOR','verifyPre00cNextContourSelectionPostEvaluationException'])assert(verifierText.includes(token),'E_PRE00C_VERIFIER_TOKEN',token);
+  let pre00bVerifierBytes;try{pre00bVerifierBytes=objectBytes(git,resolvedCandidate,'scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs');}catch{fail('E_PRE00C_PRE00B_VERIFIER_MISSING');}
+  const pre00bVerifierText=pre00bVerifierBytes.toString('utf8');
+  for(const token of ['EXPECTED_DELIVERY_HEAD_SHA','EXPECTED_DELIVERY_TREE_SHA','readFileDigestAtGit','E_PRE00B_DELIVERY_HEAD_NOT_ANCESTOR'])assert(pre00bVerifierText.includes(token),'E_PRE00C_PRE00B_VERIFIER_TOKEN',token);
   return{schemaVersion:'PRE00C_NEXT_CONTOUR_SELECTION_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 

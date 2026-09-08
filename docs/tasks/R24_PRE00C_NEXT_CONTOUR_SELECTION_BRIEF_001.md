@@ -13,9 +13,10 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 Bind the post-PRE00B next-contour decision without starting a package, Word,
 runtime, plan-state generator, release, credential, signing, notarization, or
 public distribution contour by implication. The delivery also repairs the
-static PRE00B post-evaluation verifier so PRE00B historical exact-delta proof
-is checked at its verified delivery merge while later descendant commits remain
-eligible for CI evaluation.
+static PRE00B post-evaluation and PRE00B lifecycle verifiers so PRE00B
+historical exact-delta and artifact-digest proof are checked at the verified
+PRE00B delivery merge while later descendant commits remain eligible for CI
+evaluation.
 
 ## MAP Baseline
 
@@ -46,7 +47,8 @@ I: base and initial evaluation HEAD are
 4107b0b30e870c446768171dd8afff02cebe0436; branch identity is
 codex/r24-pre00c-next-contour-admissibility-v1-20260908; selection artifact
 identity is this brief; companion verifier repair identity is the static
-post-audit certification verifier pinned to the verified PRE00B delivery merge.
+post-audit certification verifier and PRE00B lifecycle verifier pinned to the
+verified PRE00B delivery merge.
 
 ## Evidence Snapshot
 
@@ -81,6 +83,9 @@ post-audit certification verifier pinned to the verified PRE00B delivery merge.
   `E_PRE00B_EXACT_ADMITTED_DELTA` because the PRE00B verifier compared the
   historical PRE00B exact delta to the later descendant HEAD instead of the
   verified PRE00B delivery merge.
+- Focused PRE00B recheck rejected the branch with
+  `E_PRE00B_CLAIM_BINDING_DRIFT` until PRE00B lifecycle artifact digests were
+  pinned to the same verified PRE00B delivery merge.
 
 ## Admissibility Decision
 
@@ -111,7 +116,7 @@ DEPENDENCY_CHANGE: false
 CREDENTIAL_USE: false
 RELEASE_PUBLICATION: false
 PROCESS_INSPECTION_OR_TERMINATION: false
-STATIC_VERIFIER_REPAIR: PRE00B_HISTORICAL_DELTA_PINNED_TO_DELIVERY_MERGE
+STATIC_VERIFIER_REPAIR: PRE00B_HISTORICAL_DELTA_AND_DIGESTS_PINNED_TO_DELIVERY_MERGE
 
 ## Non-Authorization Boundary
 
