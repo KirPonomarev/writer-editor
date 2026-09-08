@@ -1,979 +1,501 @@
-TASK_ID: R24_CONSOLIDATED_REMEDIATION_AND_COMPLETION_PLAN_V1
+TASK_ID: R24_CONSOLIDATED_REMEDIATION_AND_COMPLETION_PLAN_V2
 MILESTONE: R2_4_CORRECTIVE_RECOVERY_AND_PROGRAM_COMPLETION
 TYPE: OPS_WRITE
-STATUS: OWNER_AUTHORIZED_PLAN_READY_FOR_SEQUENTIAL_EXECUTION_AFTER_MERGE
+STATUS: PLAN_ORDER_APPROVED_ONLY_PRECURSOR_REQUIRED
 DOCUMENT_CLASS: EXECUTION_PLAN_HARD_TZ
 CLAIM_BOUNDARY: PLAN_ONLY_NO_RUNTIME_CHANGE_NO_GRAPH_PROMOTION_NO_RELEASE_CLAIM
 CANON_VERSION: v3.13a-final
 CHECKS_BASELINE_VERSION: v1.3
-BINDING_BASE_SHA: af74b9542c17c24a7515ce9017d98ea7b2e4d55a
-BINDING_BASE_TREE: 9ba68855d2b3735bde543213e389e58490dc5c80
-CURRENT_GRAPH_STATE: 90_DONE_7_PENDING_2_BLOCKED_TYPED_10_INELIGIBLE_OPTIONAL
-CURRENT_REQUIRED_PROGRESS: 90_OF_99
+AUTHORING_BASE_SHA: c9bc88522327cb28be0690d89d6edc8259cc48c8
+PROGRAM_OBSERVATION_BASE_SHA: af74b9542c17c24a7515ce9017d98ea7b2e4d55a
+PROGRAM_OBSERVATION_BASE_TREE: 9ba68855d2b3735bde543213e389e58490dc5c80
+RECORDED_EFFECTIVE_GRAPH_PROGRESS: 90_OF_99_MANDATORY_AT_PROGRAM_OBSERVATION_BASE
+RECORDED_OPTIONAL_STATE: 10_INELIGIBLE_OPTIONAL
 CURRENT_PROGRAM_DONE: false
+CURRENT_PRODUCTION_RELEASE_READY: false
+CURRENT_PUBLICATION_AUTHORITY: false
 CURRENT_REPOSITORY_VERDICT: NOT_READY
-DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED_PR_REQUIRED_MERGE_REQUIRED_POSTMERGE_EXACT_HEAD_REQUIRED
-AUTONOMY_POLICY: ROUTINE_REPOSITORY_BUILD_TEST_CI_AND_DELIVERY_ACTIONS_PREAUTHORIZED_WITHIN_EACH_FRESHLY_ADMITTED_CONTOUR
+MUTATION_AUTHORITY: NONE_FROM_THIS_DOCUMENT_FRESH_MACHINE_ADMISSION_REQUIRED_PER_CONTOUR
+SESSION_AUTHORITY_RECORD: OWNER_REQUESTED_FINAL_PLAN_AND_AUTONOMOUS_EXECUTION_ORDER
+AUTHORITY_EFFECT: PLAN_SEQUENCE_ONLY_NO_STANDING_WRITE_OR_PUBLICATION_PERMIT
+AUTHORING_DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED_PR_REQUIRED_MERGE_REQUIRED_AFTER_PRECURSOR_REBIND
+CURRENT_PR_ROLE: REVIEW_CARRIER_ONLY_DO_NOT_MERGE_BEFORE_PRECURSOR
+AUTONOMY_POLICY: ROUTINE_REPOSITORY_BUILD_TEST_CI_AND_DELIVERY_ACTIONS_CONTINUE_WITHOUT_OWNER_INTERRUPTION_AFTER_FRESH_ADMISSION
+OWNER_OBSERVER_CADENCE: TEN_MINUTES_WHILE_ACTIVE_NOTIFY_ONLY_ON_MEANINGFUL_CHANGE_FAILURE_COMPLETION_OR_REQUIRED_OWNER_FACT
 DESIGN_TOOL_ROUTER: NO_DESIGN_CONTRACT_CHANGE_DOCS_ONLY
-DEPENDENCY_POLICY: NO_NEW_DEPENDENCIES_FOR_THIS_PLAN_AND_NO_NEW_DEPENDENCY_IN_FUTURE_CONTOURS_WITHOUT_EXPLICIT_OWNER_DECISION
-NETWORK_POLICY: PRODUCT_RUNTIME_REMAINS_OFFLINE_FIRST_NETWORK_ONLY_FOR_EXISTING_GIT_CI_NOTARIZATION_AND_RELEASE_EVIDENCE_WHEN_SEPARATELY_ADMITTED
+DEPENDENCY_POLICY: NO_NEW_DEPENDENCIES_WITHOUT_EXPLICIT_OWNER_DECISION
+NETWORK_POLICY: PRODUCT_RUNTIME_OFFLINE_FIRST_EXISTING_GIT_CI_NOTARIZATION_AND_RELEASE_EVIDENCE_ONLY_WHEN_SEPARATELY_ADMITTED
 
 ## MICRO_GOAL
 
-Create one deduplicated, executable engineering plan for every still-active R2.4 defect, evidence gap, integration gap, maintainability risk and mandatory release node proven by the independent audits of 2026-08-27 and 2026-09-08. The plan must make the next agent able to work autonomously, one bounded contour at a time, without reopening corrected historical findings or converting narrative confidence into a product claim.
+Produce one final, contradiction-free engineering order for correcting every
+still-open R2.4 implementation defect, evidence defect, control-plane defect,
+required product gap and release blocker established by the independent audits.
 
-The observable final outcome of the whole program is all of the following on one exact merged release candidate:
+The plan has four immediate outcomes:
 
-- no confirmed open P1 or P2 implementation finding;
-- all product data-safety journeys pass with disk-observed results and crash recovery;
-- every privileged mutation enters through Command Kernel with dispatch-time capability, identity, revision and replay enforcement;
-- all current required tests execute on the current head with a closed denominator and no unexplained or required skips;
-- every evidence compiler rejects the independently reproduced false-green counterexamples;
-- the seven pending and two blocked mandatory graph nodes are terminally resolved by real evidence;
-- the current-state compiler reports 99 of 99 mandatory nodes terminal, ten optional nodes remain explicitly ineligible unless separately promoted, and `programDone` is true only after all independent oracles pass;
-- publication remains impossible until the exact profile has physical signing, notarization, package, install, update, rollback and recovery evidence plus the required owner release permit.
+1. break the admission deadlock before attempting to merge this plan;
+2. restore a resumable autonomous controller that selects and completes one
+   bounded contour at a time;
+3. repair product behavior and evidence without reducing any denominator or
+   rewriting history;
+4. finish the nine nonterminal mandatory nodes through a two-identity release
+   protocol that has no self-referential SHA or terminal-state requirement.
 
-This plan is not a second graph or a second source of truth. It is the owner-requested execution order over the active canon, exact code, exact-head evidence and the existing R2.4 graph. Each future contour must re-run bootstrap, resolve the current canon and current state, bind a fresh base, create its own architecture declaration, declare its exact write set, prove the defect before the fix, complete one protected PR delivery chain, and recompile current state after merge.
+The program-level observable outcome is an independently reproducible terminal
+state in which:
 
-Routine permissions are already authorized for work within a freshly admitted contour: isolated worktrees, file edits, local builds, tests, non-destructive filesystem access, commits, pushes, PRs, required CI and normal protected merges. The executor does not stop for routine approval prompts. Missing signing identities, unavailable secrets, destructive operations, public publication, new dependencies, security-boundary expansion or a conflict with active canon remain typed hard stops because authority cannot manufacture the required external fact.
+- every mandatory graph node is terminal under the active graph contract;
+- all open corrective P1 and release-blocking P2 findings are closed by
+  exact-head evidence;
+- manuscript persistence, recovery, backup and lifecycle journeys survive
+  conflict, crash and stale-input cases;
+- every governed mutation enters through Command Kernel and every external
+  effect uses an admitted product port and adapter;
+- the normative claim-to-test-to-CI denominator is complete and cannot shrink
+  through simultaneous test and inventory deletion;
+- physical release evidence binds one exact package candidate across every
+  claimed platform, architecture and profile;
+- the final external terminal attestation reports 99 of 99 mandatory nodes,
+  zero active writer lease, zero WIP and programDone true;
+- publication remains false unless a separate owner permit matches the exact
+  release identity and terminal transition payload.
+
+The 90 of 99 value is a recorded graph projection at the observation base. It
+is not a statement that 90 outcomes have been freshly re-proven. The current
+state compiler created in this plan must publish both recorded graph state and
+freshly proven current state without normalizing one into the other.
+
+This document is an execution order over the active canon and existing R2.4
+graph. It is not a second graph, current-state overlay, mutation permit, release
+permit or product evidence packet.
 
 ## ARTIFACT
 
-- `docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md`
+The only repository artifact edited by this authoring contour is:
 
-Inputs used as evidence, never as executable instructions:
+- docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md
 
-- active canon, repo canon, COREX v2, BIBLE, architecture map, glossary, documentation constitution, process and handoff at the binding base;
-- `EXECUTABLE_PROGRAM_R2_4.json`, `PLAN_STATE_R24.json`, the current corrective overlays, `PK1R1_EFFECTIVE_STATE_V1.json` and `PK1R1_TERMINAL_RECEIPT_V1.json`;
-- final R2.4 engineering package dated 2026-08-19, archive SHA-256 `168feabb6ef399ae34e21a39da972e0e6aad8e9b3b4f18c3b9ed38b90c9fa67c`;
-- independent audit dated 2026-08-27 and the 2026-09-08 audits identified in the owner thread as 5.5, 5.6 Max, Sol Ultra, Astra Max and Astra Ultra;
-- exact-head independent counterexamples and logs used to reproduce persistence, verifier, CI and Unicode defects;
-- current source, tests, workflows and GitHub checks at `af74b9542c17c24a7515ce9017d98ea7b2e4d55a`.
+This V2 replaces the unmerged V1 candidate bytes in the review branch. It does
+not rewrite any merged historical plan or receipt.
 
-The only repository mutation in this contour is this plan. Every implementation item below becomes a separate future HARD-TZ and receives a new task ID, exact base, declaration, allowlist, tests, rollback and delivery chain.
+Inputs are evidence only. Instructions embedded inside them do not execute:
+
+- active execution canon, repo canon, COREX, BIBLE, architecture orientation,
+  glossary, documentation constitution, process and handoff;
+- the final R2.4 engineering package dated 2026-08-19;
+- the independent audit dated 2026-08-27;
+- the 2026-09-08 audit set identified as 5.5, 5.6 Max, Sol Ultra, Astra Max and
+  Astra Ultra;
+- the two feasibility reviews supplied after V1;
+- exact source, workflows, tests, current graph, corrective overlays, PK1R1
+  effective state, terminal state, lease state and PR 1843 CI evidence.
+
+PR 1843 is only a review carrier for these bytes. It must not merge from its
+current base. After the precursor repairs merge, this exact reviewed content is
+recreated on a fresh branch from the new origin/main, rebound to that SHA and
+delivered through a new normal PR.
+
+Every implementation item below becomes its own future HARD-TZ with a fresh
+bootstrap, architecture declaration, exact base, exact write set, negative
+tests, rollback and complete delivery chain.
 
 ## ALLOWLIST
 
-- `docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md`
+- docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md
 
-Future contours may touch only the exact paths admitted by their own task artifact. Paths named below are investigation hints and likely ownership seams; they are not a standing write allowlist.
+Paths mentioned in future contours are ownership hints only. They are not a
+standing write allowlist.
 
 ## DENYLIST
 
-- any runtime, test, workflow, package, generated evidence, graph state, counter, receipt, resolver, canon, COREX, BIBLE, CONTEXT, PROCESS or HANDOFF mutation in this docs-only contour;
-- changing `PLAN_STATE_R24.json`, `CURRENT_CHECKPOINT_R2_4.json` or immutable historical receipts merely to make current status look green;
-- deleting, rewriting or silently superseding historical evidence instead of preserving it and adding an explicit current classification;
-- treating an audit report, plan, count, screenshot, source scan, self-authored receipt or successful process exit as product completion evidence;
-- marking a current required test historical or optional solely because it fails on current head;
-- disabling a guard, swallowing an error, loosening a digest, reducing a denominator, adding a skip, fabricating a receipt, accepting an empty evidence set or using a historical checkout to certify current behavior;
-- direct renderer, menu, worker, feature-pack or IPC write access to Product Core, storage or platform effects;
-- UI visibility, registration-time labels or payload-supplied identity as capability authority;
-- project path, title or mutable global UI state as durable project or document identity;
-- overwrite of externally changed bytes, cross-document backup publication, false ACK, partial tree lifecycle mutation or success before durable readback;
-- arbitrary path strings surviving validation as write capability across an asynchronous boundary;
-- broad rewrite of `main.js`, `editor.js`, persistence, command routing or the R2.4 evidence system in one contour;
-- new UI framework, state manager, executable plugin runtime, Tiptap Cloud or Pro, cloud truth, network product dependency, account requirement or widened Writer v1 release scope;
-- real user documents, private data, secrets, signing credentials or key material in fixtures, logs, commits or evidence bundles;
-- direct protected-branch push, force push, rebase, amend, stash, reset, clean, destructive worktree cleanup or mutation of the dirty canonical owner checkout;
-- starting a second writer, holding more than one active mutation contour, or beginning a new write cluster before the previous commit, push, PR, CI, merge and exact-head verification are complete;
-- public release before `WP-906_RELEASE_VERDICT`, an exact owner permit and all physical evidence are terminally valid.
+This authoring contour must not change:
+
+- runtime code, tests, scripts, workflows, packages or lockfiles;
+- active canon, COREX, BIBLE, CONTEXT, PROCESS or HANDOFF;
+- graph state, counters, leases, receipts, evidence, registries or generated
+  projections;
+- the dirty canonical owner checkout;
+- any public or private external system other than the existing review branch
+  and PR delivery path.
+
+The whole program must not:
+
+- merge PR 1843 before the precursor admission repair is independently green;
+- use this document as mutation authority or infer authority from its status;
+- add a new repository task file before the precursor fixes the exact-delta
+  admission deadlock;
+- edit frozen graph or historical receipt bytes to make status appear current;
+- create a second graph, second scheduler, second command catalog or competing
+  corrective tracker;
+- promote target architecture, recorded counts, source scans, screenshots,
+  successful exit codes or self-authored receipts into current product truth;
+- delete a failing test, its inventory row or its CI lane to obtain green;
+- reduce a test, route, stage, platform, artifact or mutant denominator;
+- add required skip, todo or flaky exception without owner, reason, affected
+  claim, expiry stage and same-run replacement proof;
+- interpret every static effect token under src/core as a real violation or add
+  all detected files to an exception list;
+- require broad main.js, editor.js or certification-compiler decomposition as
+  a release condition solely because a file is large;
+- allow renderer, menu, worker, feature pack, IPC registration or raw payload
+  to obtain product mutation or platform effect authority;
+- treat Query as permission to mutate, UI visibility as capability, mutable
+  path as stable identity or path string as asynchronous write capability;
+- overwrite externally changed manuscript bytes, acknowledge before durable
+  readback, publish a backup for the wrong document or leave a partial
+  lifecycle transaction without readable recovery;
+- treat a synthetic evaluator pass as physical signing, package, install,
+  update, rollback, recovery or publication proof;
+- embed real documents, private data, signing credentials, keys or secrets in
+  fixtures, logs, commits or evidence;
+- add a dependency, account, cloud truth, product network requirement,
+  executable plugin runtime or broader Writer v1 scope without an explicit
+  owner decision;
+- run reset, clean, stash, rebase, amend, force push, direct protected-branch
+  push or unscoped destructive cleanup;
+- start a second mutation contour or keep two active writer leases;
+- release publicly without the exact owner permit and final external terminal
+  attestation.
 
 ## CONTRACT / SHAPES
 
-### Authority and current-state contract
+### 1. Authority model
 
-The plan binds to the following observed state only:
+The owner session authorizes the plan order and autonomous routine execution.
+That direction prevents repeated conversational approval prompts for ordinary
+work, but it does not make the document an authority source.
 
-| Field | Bound value |
-| --- | --- |
-| Repository head | `af74b9542c17c24a7515ce9017d98ea7b2e4d55a` |
-| Repository tree | `9ba68855d2b3735bde543213e389e58490dc5c80` |
-| Required nodes | 99 |
-| Recorded DONE | 90 |
-| Required pending | 7 |
-| Required blocked | 2 |
-| Optional ineligible | 10 |
-| Program done | false |
-| Production release ready | false |
-| Publication authority | false |
-| Current verdict | NOT_READY |
+Mutation is permitted only when all of the following are true:
 
-The state above is a starting observation, not a completion claim. All later runs must recompute it from fresh exact-head inputs. Audit repairs do not increment graph progress unless an existing graph node is legitimately transitioned under its graph contract. Open corrective findings are an additional release hold and cannot be hidden by unchanged `90 DONE` counts.
+- the current task objective is within this approved sequence;
+- bootstrap resolves one active canon and one exact repository identity;
+- the current graph/effective-state compiler selects the contour or records a
+  justified corrective prerequisite;
+- a fresh StageAdmission binds exact base, head, tree, branch, write set,
+  command scope, acceptance signals and owner authority ceiling;
+- one active lease and monotonically increasing fencing counter are valid;
+- runtime revalidation passes, or the task validly declares that runtime
+  mutation is not applicable;
+- the worktree is isolated and clean before the first write.
 
-### Evidence-source disposition
+Routine authorized actions after admission include investigation, edits,
+non-destructive local filesystem work, builds, tests, commits, pushes, PR
+creation, required CI inspection and normal protected merge. The executor
+continues without asking the owner to click routine approvals.
 
-| Source class | Use | Prohibited interpretation |
+A missing signing identity, secret, required platform, notarization response,
+owner policy choice, owner public-release permit, destructive target decision,
+new dependency decision or security-boundary expansion becomes a typed
+WAIT_OWNER_FACT or WAIT_EXTERNAL_FACT. It is not converted into PASS.
+
+### 2. Current, target and evidence classes
+
+Every state-bearing output must declare one of:
+
+- RECORDED_GRAPH_STATE: graph value preserved from its authoritative carrier;
+- PROVEN_CURRENT: independently executed on the named current SHA and identity;
+- CANDIDATE: branch-local output awaiting protected merge;
+- HISTORICAL: valid only for its named earlier SHA or artifact;
+- TARGET: required behavior not yet established;
+- UNKNOWN: missing, stale, skipped, self-authored or identity-incomplete proof;
+- BLOCKED_TYPED: a named unavailable authority, platform or external fact.
+
+The current compiler must never collapse RECORDED_GRAPH_STATE into
+PROVEN_CURRENT.
+
+### 3. Initial state binding
+
+The observation base records:
+
+| Field | Value | Claim class |
 | --- | --- | --- |
-| Active execution canon | Binding execution law | It does not prove runtime behavior by itself |
-| Existing R2.4 graph | Mandatory-node topology and owner gates | Frozen node state is not automatically current effective state |
-| Corrective overlays and receipts | Append-only transition evidence | A historical `PASS` cannot certify a later head |
-| Independent audits | Defect hypotheses, counterexamples and claim ceilings | They do not grant mutation or release authority |
-| Exact source and tests | Current implementation shape | Source presence and test names do not prove user outcomes |
-| Physical execution | Product and package outcome evidence | A synthetic evaluator fixture cannot replace it |
-| GitHub CI | Exact run and merge evidence | Green jobs prove only the commands they actually executed |
-
-### Consolidated active finding register
-
-The register deduplicates overlapping reports. `ACTIVE_CONFIRMED` means the behavior was reproduced or directly established at the binding head. `REVALIDATE_CURRENT` means the audit evidence is credible but the first implementation contour must reconfirm it on its fresh base. `DEFERRED_DEBT` is real debt that does not outrank current data-safety and release blockers.
-
-| ID | Priority | Status | Consolidated defect or gap | Required disposition |
-| --- | --- | --- | --- | --- |
-| GOV-01 | P1 | ACTIVE_CONFIRMED | Frozen PlanState and scheduler still select old W0 while effective overlays show 90 DONE and PK1 as the earliest unmet dependency | One current-state reducer and one operational resolver drive scheduler, status and completion |
-| GOV-02 | P2 | ACTIVE_CONFIRMED | Historical checkpoint dated 2026-08-19 remains easy to mistake for current | Preserve sealed bytes, classify it historical and route all current readers through the new resolver |
-| GOV-03 | P2 | ACTIVE_CONFIRMED | C3 generated entrypoint state drifts on current head | Regenerate only from canonical inputs and add current-head drift enforcement |
-| GOV-04 | P1 | ACTIVE_CONFIRMED | Required/current test inventory and actual CI execution disagree | Classify every test as current, historical replay or superseded and execute every current required test |
-| GOV-05 | P1 | ACTIVE_CONFIRMED | WP709 compatibility is tested in historical detached checkout while current-head compatibility fails | Current claims require current-head execution; historical capsule remains historical only |
-| GOV-06 | P2 | ACTIVE_CONFIRMED | Conditional skip accounting uses stale expiry semantics and does not prove the required denominator | Version expiry against current stage and prove replacement lanes on every required head |
-| GOV-07 | P1 | ACTIVE_CONFIRMED | The closed PK1R1 verifier compares its fixed 19-path admitted delta with the moving current `HEAD`; adding this one plan file produces `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` in five required lanes and deadlocks every successor contour | Pin closed-stage verification to its immutable terminal candidate and require a fresh admission for each successor head |
-| DATA-01 | P1 | ACTIVE_CONFIRMED | External change after open and before save can be overwritten with successful ACK | Bind save CAS to the revision opened by the editor and preserve both versions on conflict |
-| DATA-02 | P1 | ACTIVE_CONFIRMED | Project rename or move leaves absolute-path commit records that block the next save | Bind commit metadata to stable project and scene identity with relocation-safe resolution |
-| DATA-03 | P1 | ACTIVE_CONFIRMED | Legitimate shared-manifest advancement by scene B makes the next save of scene A look corrupt | Separate scene commit integrity from monotonic project-manifest lineage |
-| DATA-04 | P1 | ACTIVE_CONFIRMED | Backup for document B can contain snapshot bytes from document A | Carry immutable document and revision identity through snapshot, queue and publication |
-| DATA-05 | P1 | REVALIDATE_CURRENT | Correct durable coordinator exists but the live Stage10 path can ACK through a weaker writer without file and parent fsync | One live save port must own durable publish, readback and ACK truth |
-| DATA-06 | P2 | REVALIDATE_CURRENT | Tree create and rename cross filesystem and identity-registry commits without crash-total recovery | Add journaled idempotent lifecycle transactions and killpoint recovery |
-| DATA-07 | P2 | ACTIVE_CONFIRMED | TEMP_WRITE failure can leak an opened file descriptor | Close every acquired handle on every exit while preserving the primary error |
-| DATA-08 | P3 | ACTIVE_CONFIRMED | Cleanup errors are swallowed and OLD versus NEW committed states are collapsed | Add bounded cleanup diagnostics and marker-aware classification without changing success semantics |
-| DATA-09 | P3 | ACTIVE_CONFIRMED | Recovery ledger rewrites the full bounded file on append and its upper bound is not a hard policy | Bind the bound, measure it and optimize only if the measured budget fails |
-| AUTH-01 | P1 | ACTIVE_CONFIRMED | Legacy menu and privileged paths can invoke handlers outside full command dispatch enforcement | All governed mutations enter one kernel dispatch path |
-| AUTH-02 | P2 | ACTIVE_CONFIRMED | Capability class registration checks the existence of a label, not the operation-to-class semantic match | One canonical channel-to-operation-to-capability map must be enforced at registration and dispatch |
-| AUTH-03 | P1 | ACTIVE_CONFIRMED | Only a small bridge subset receives full versioned envelope enforcement while the privileged denominator is larger | Generate and close the exact privileged-channel inventory; no unclassified route |
-| AUTH-04 | P1 | ACTIVE_CONFIRMED | `ui:open-section` is classified as Query while creating files/directories and mutating application state | Reclassify the operation and deny effects from Query contexts |
-| AUTH-05 | P1 | ACTIVE_CONFIRMED | `issuedAt` is parse-only, correlation IDs lack replay protection and timed-out mutations can execute twice | Enforce freshness, bounded replay ledger, idempotency and recoverable timeout semantics |
-| AUTH-06 | P1 | ACTIVE_CONFIRMED | External target validation returns a path string vulnerable to symlink swap before write | Carry an opaque physical path capability to the final effect and revalidate at publish |
-| EVID-01 | P2 | ACTIVE_CONFIRMED | Certification-set verifier accepts one valid binding duplicated 137 times across 33 stages | Verify exact normative stage-to-role-to-artifact set equality and uniqueness |
-| EVID-02 | P2 | ACTIVE_CONFIRMED | PK1 accepts missing ASAR hashes and missing or wrong platform identifiers | Require complete identity in every mandatory receipt before cross-receipt equality |
-| EVID-03 | P1 | ACTIVE_CONFIRMED | PK1 positive path can be exercised with self-authored in-memory receipts instead of an independent physical oracle | Separate evaluator tests from physical certification and require external tool observations |
-| EVID-04 | P2 | ACTIVE_CONFIRMED | WP709 only checks ledger losses forward and accepts additional LOSS reported solely by final oracle | Require bidirectional equality between accumulated loss ledger and final oracle losses |
-| EVID-05 | P2 | ACTIVE_CONFIRMED | C2A, C2B2 and C5C1 are marked required, fail on current head and are absent from current CI | Repair current contracts or classify pinned historical replay with explicit successors; never hide failure |
-| EVID-06 | P2 | ACTIVE_CONFIRMED | Several files named UI E2E smoke inspect source strings without running the user flow | Rename their claim class and add real Electron journeys for release-critical behavior |
-| PROD-01 | P2 | ACTIVE_CONFIRMED | Pulse exposes a read bridge and manifests but lacks a complete user opt-in, aggregate, correction, export and delete loop | Implement the already-declared privacy-safe loop or explicitly narrow capability before closure |
-| PROD-02 | P3 | ACTIVE_CONFIRMED | Contextual Greek sigma fold loses the next lowercase character across run boundaries | Preserve full-context fold and coordinate mapping for mixed-case Greek and Latin neighbors |
-| OPS-01 | P2 | ACTIVE_CONFIRMED | Host default Node can be outside the supported range even though repository pins 22.12.0 and npm 10.9.0 | One typed bootstrap route selects or rejects the toolchain before expensive gates |
-| OPS-02 | P3 | ACTIVE_CONFIRMED | Flaky/conditional exception records can outlive their intended stage without issue and expiry truth | Require owner, reason, affected claim, expiry stage and current replacement proof |
-| OPS-03 | P1 | ACTIVE_CONFIRMED | Legacy E0 core-purity admission is stale: on the binding head `ops-gate --task` stops on `anchor-lineage-v1.cjs`, while a complete static inventory finds 31 core files with effect tokens and the gate recognizes only four narrow exceptions | Repair the core/effect boundary and E0 from a complete machine inventory; never obtain green by appending the 31 paths to an exception list |
-| MAINT-01 | P2 | ACTIVE_CONFIRMED | `main.js`, `editor.js` and the certification compiler concentrate unrelated authority and are costly to review | Extract only touched seams behind existing contracts; no big-bang rewrite |
-| MAINT-02 | P2 | ACTIVE_CONFIRMED | Thousands of corrective artifacts and hard-coded successor exceptions obscure current truth | Freeze history, generate a concise current projection and stop adding competing trackers |
-| REL-01 | BLOCKER | ACTIVE_CONFIRMED | PK1 physical release security is blocked and current receipts are not exact for the candidate | Execute real signing, notarization, fuses, ASAR, packaged recovery and critical journeys |
-| REL-02 | BLOCKER | ACTIVE_CONFIRMED | V3 cannot issue a final package claim before a valid current PK1 result | Recompile from exact current PK1 without promoting unrelated profiles |
-| REL-03 | REQUIRED | ACTIVE_CONFIRMED | WP-900 BBR policy is pending | Approve and bind crypto, key custody, off-host and retention policy |
-| REL-04 | REQUIRED | ACTIVE_CONFIRMED | WP-901 restore is pending | Prove encrypted capsule, separate key, restore-as-new and corruption drills |
-| REL-05 | REQUIRED | ACTIVE_CONFIRMED | WP-902 entitlement product is pending | Prove signed offline capability truth, expiry/refund and non-destructive downgrade |
-| REL-06 | REQUIRED | ACTIVE_CONFIRMED | WP-903 brand release is pending | Bind licensed assets, accessible tokens and owner-approved baseline |
-| REL-07 | REQUIRED | ACTIVE_CONFIRMED | WP-904 package content is pending | Produce SBOM, pinned inputs, allowlist and builder provenance |
-| REL-08 | REQUIRED | ACTIVE_CONFIRMED | WP-905 package physical is pending | Prove final package install, update, rollback, recovery and security on supported targets |
-| REL-09 | REQUIRED | ACTIVE_CONFIRMED | WP-906 release verdict is pending | Compile exact-profile verdict and consume an explicit owner public-release permit |
-
-### Findings already corrected or outside repository implementation
-
-These items remain in audit history but must not create duplicate corrective work:
-
-| Historical item | Current disposition |
-| --- | --- |
-| Main branch lacked platform protection | Corrected by active ruleset; revalidate before release, do not reopen by reading only the classic protection endpoint |
-| Four raw CTRs remained nonterminal | Corrective overlays preserve immutable history; current C2A/C2B2 tests still require GOV-04 and EVID-05 repair |
-| First thirteen contours lacked complete current-style receipts | Retrospective certification exists with claim ceilings; do not rewrite original receipts |
-| Quadratic UTF-16 offset construction | Corrected by linear prefix table; PROD-02 is a different semantic defect |
-| Canonical owner checkout is behind and contains owner `AGENTS.md` work | Local hygiene fact, not a product defect; preserve it and use agent-managed worktrees |
-| Production dependency audit had old findings | Current audit reports zero known production vulnerabilities; re-run at release, create work only if a fresh reachable finding exists |
-| CI/OPS injection concerns from older state | Revalidate exact current workflows; fix only a current executable interpolation or `shell:true` path, without inventing debt |
-
-### Non-negotiable engineering invariants
-
-1. Stable identity is `projectId`, `sceneId`, source revision and generation. Path and title are locators, never durable identity.
-2. The editor saves against the exact source revision it opened. A later external or internal advancement yields typed conflict, not overwrite.
-3. ACK means file bytes, parent directory publication, commit metadata and required readback are durable under the admitted platform contract.
-4. Backup bytes and target identity are captured in one immutable request and revalidated immediately before publication.
-5. Query has no mutation or effect port. A mutating operation is a Command even if the UI calls it “open”.
-6. Every governed Command is revalidated at dispatch for caller, capability, payload, project, entity, revision, idempotency and effect budget.
-7. A path check returns an opaque capability or typed refusal. A raw string never becomes long-lived write authority.
-8. Evidence completeness is set equality over normative roles and identities. Counts alone never prove coverage.
-9. Current means current exact head, exact build, exact profile and actual current command set. Historical replay is labeled historical.
-10. Synthetic receipts test validators; independent physical observations certify real packages.
-11. No new release claim while any confirmed P1/P2 defect, current required test failure or unexplained required skip is open.
-12. One contour has one outcome, one exact write set, one rollback and one completed delivery chain.
-
-### Common future-contour packet
-
-Every implementation contour must carry:
-
-- exact task ID, current base SHA/tree, branch and fresh `origin/main`;
-- one product outcome and one failure signature;
-- O/T/H/B/P/I map: outcome, truth path, hypothesis, protected state, proof and identities;
-- `FEATURE_INTEGRATION_MANIFEST_V1` for product/process changes and `SURFACE_MANIFEST_V1` only when a visual surface changes;
-- exact Product, Command and Design authority boundaries;
-- exact create/modify/delete/rename path set;
-- pre-fix counterexample captured on unchanged base;
-- focused positive, boundary/adversarial and stale/race/recovery negatives;
-- implementation mutants for every release-blocking validator change;
-- affected-chain baseline and required repository gates;
-- commit, push, PR, required CI, protected merge and exact merged-head re-run;
-- a current-state transition that preserves NOT_READY unless the exact graph and physical conditions are satisfied.
-
-### Release claim strength
-
-The maximum claim is the minimum of source trust, executed coverage, artifact integrity, snapshot freshness and oracle independence. Missing identity, stale input, historical checkout, skipped required case, self-authored physical evidence or unexecuted user flow yields `UNKNOWN` or `FAIL`, never `PASS`.
-
-## IMPLEMENTATION_STEPS
-
-Execution is strictly sequential under the one-writer rule. A later contour may be prepared read-only while CI runs, but no second repository write contour starts before the prior delivery chain is terminal. Within each contour, `CHECK_01` is performed before any edit; all other checks follow the edit unless explicitly named as pre-fix evidence.
-
-### Phase 0 — restore trustworthy current control
-
-#### R24-RCV-00A — Closed-stage candidate pin and successor-admission repair
-
-Purpose: remove the control-plane deadlock in which an immutable completed stage is re-evaluated against every later repository head. The unchanged PK1R1 admitted set contains 19 paths; this docs-only successor adds one path, and five required lanes fail with `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` before assessing the successor's own scope.
-
-Bootstrap rule for this contour only:
-
-1. Capture the exact unchanged-head failure in `ops-vector`, `actual-renderer-build-rtk` and all three hermetic platform lanes. Treat repeated instances as one signature.
-2. Admit only the verifier boundary, its focused contracts, the smallest required successor-admission carrier set and generated governance bindings. No product runtime or graph transition is authorized.
-3. A red pre-fix PK1R1 delta check is expected evidence for this repair and cannot be reported as a passed gate. Every affected lane must be green after the change on the exact PR merge candidate.
-
-Implementation:
-
-1. Identify the immutable PK1R1 terminal candidate from a digest-bound terminal receipt and protected merge evidence. Do not infer it from `HEAD`, filename order or the latest branch.
-2. Verify PK1R1 base ancestry, its exact 19-path admitted delta, artifact bytes and governance bindings against that pinned candidate only.
-3. Verify the new contour against a fresh current-head StageAdmission whose operation set equals the current base-to-candidate delta. A historical admission never authorizes a successor write.
-4. Make the active resolver declare exactly one closed-stage candidate and exactly one active successor admission. Missing, duplicate, forked, stale or non-ancestor candidates fail typed.
-5. Split failure codes for historical-stage corruption, successor admission absence, successor extra path, wrong operation class and current-base drift.
-6. Preserve every PK1R1 artifact byte and its original claim ceiling. The repair changes how its verifier selects the candidate; it does not rewrite PK1R1 history or promote PK1/V3.
-
-Required tests and mutants:
-
-- the original 19-path PK1R1 candidate passes when the current head contains a separately admitted twentieth path;
-- the same twentieth path without a fresh successor admission fails;
-- one omitted, extra, modified, deleted or misclassified successor path fails;
-- substituting current `HEAD` for the pinned PK1R1 candidate kills a mutant;
-- altering one historical PK1R1 byte, its merge identity, ancestry or candidate digest still fails;
-- a valid docs-only successor and a valid runtime successor use the same set-equality law without sharing mutation authority;
-- all previously failing required CI lanes pass on the merge candidate and exact merged head.
-
-Rollback: revert the verifier/admission repair as one chain. The rollback restores the known successor deadlock and therefore blocks later write contours; it cannot be claimed healthy.
-
-#### R24-RCV-00B — E0 admission and core-effect boundary repair
-
-Purpose: restore a truthful executable admission gate before any ordinary remediation contour. At the binding head, the global core-purity scan fails before it parses a task: the first reported violation is the Node crypto import in `anchor-lineage-v1.cjs`, and the full source inventory contains 31 core files with Node, filesystem, path or process effect tokens. Adding those paths to the current exception set would hide the architecture problem and is forbidden.
-
-Bootstrap rule for this contour only:
-
-1. Record the unchanged-head E0 failure and the complete deterministic inventory before any edit. Do not report `PRE_E0=PASS`.
-2. Use the current successful repository bootstrap and architecture preflight as admission only for the bounded repair of E0 itself. This exception cannot authorize product work, release work or a second contour.
-3. The repair is accepted only when E0 passes against the whole exact tree after the change, its focused contracts and mutants pass, normal guardrails pass, and the complete protected delivery chain is closed.
-
-Implementation:
-
-1. Replace line-token/file-name exceptions with an explicit machine-readable module-boundary model derived from the active architecture manifest and actual import graph.
-2. Classify every source in the current 31-file inventory as pure domain logic, product port, platform adapter, persistence adapter or invalid placement. Every classification has an owner, allowed effect family and import-direction rule.
-3. Move deterministic hashing in pure modules to the existing browser-safe deterministic hash seam or an injected product port. `anchor-lineage-v1.cjs` must no longer receive a special file-path exemption.
-4. Move filesystem, process and platform access behind already-declared product ports/adapters in bounded substeps inside this one repair chain, or fail the contour with an exact residual inventory. Do not rename an effectful file to make the scanner miss it.
-5. Make E0 scan the declared pure closure structurally and verify the adapter set separately: an adapter may use only its declared effects, pure modules may not import adapters, and renderer/worker paths may not import physical writers.
-6. Preserve the existing evidence-bound path exception until its replacement is proven, then close the 2026-07-17 `ARCH_DIFF_LOG` entry with exact successor evidence rather than silently deleting it.
-7. Make task-format parsing independently testable so a global source failure and a malformed HARD-TZ return distinct typed results.
-
-Acceptance:
-
-- all 31 current effect-token files have exactly one reviewed architectural classification and no unclassified residual;
-- E0 parses and accepts this plan and a valid fixture against the full exact tree;
-- adding Node crypto, filesystem, process, Electron or console effects to a pure module fails;
-- adding an undeclared adapter, widening an adapter effect family, reversing an import edge, deleting one inventory row or duplicating an exception kills a focused mutant;
-- existing deterministic hash results, persistence durability and recovery behavior remain byte-compatible where their contracts require it;
-- E0, focused contracts, architecture guardrails and required affected tests pass after normal merge on the exact merged head.
-
-Rollback: revert the complete boundary/gate repair. The rollback returns E0 to known red and therefore blocks all later contours; it cannot be presented as an operationally healthy state.
-
-#### R24-RCV-00 — Current effective-state reducer and operational resolver
-
-Purpose: eliminate split-brain among frozen PlanState, corrective overlays, scheduler output and late effective-state sidecars before autonomous implementation resumes.
-
-Implementation:
-
-1. Preserve `PLAN_STATE_R24.json`, raw CTRs and `CURRENT_CHECKPOINT_R2_4.json` as immutable historical inputs.
-2. Define one registry-declared ordered transition stream. Discovery by arbitrary filename scan is forbidden.
-3. Implement one read-only reducer that validates every transition schema, predecessor digest, fence, head ancestry, node identity and monotonic state rule.
-4. Emit one generated current projection and one small resolver/pointer. The projection includes graph counts, open corrective findings, earliest actionable node, owner gates, current head/tree, source-set digest, timestamp class and claim ceiling.
-5. Make `executable-program.mjs`, scheduler, `test:r24-authority-sot`, C3 operational entrypoint and human status commands consume the same reducer output.
-6. Mark the 2026-08-19 checkpoint historical through the resolver and documentation classification without editing its sealed bytes.
-7. Reject duplicate current authorities, gaps, forks, stale heads, invalid ancestry, lower fencing counters and a scheduler result that differs from effective state.
-
-Acceptance:
-
-- current output selects PK1/corrective recovery rather than W0;
-- exactly 90 DONE, seven PENDING, two BLOCKED_TYPED and ten optional are reconstructed at the binding baseline;
-- deleting, reordering, duplicating or substituting one overlay fails with a typed reason;
-- scheduler and reducer state are byte/digest consistent;
-- `programDone` cannot become true while the corrective register or mandatory graph set is open;
-- no historical artifact is rewritten.
-
-Rollback: revert the reducer/resolver contour; historical sources remain untouched.
-
-#### R24-RCV-01 — Current test inventory, CI denominator and generated-artifact truth
-
-Purpose: make green CI mean that every test declared current and required actually ran on the exact candidate.
-
-Implementation:
-
-1. Add an explicit classification to each governed test: `CURRENT_REQUIRED`, `HISTORICAL_REPLAY_REQUIRED`, `SUPERSEDED_WITH_SUCCESSOR` or `OPTIONAL_EXCLUDED`.
-2. Repair C2A, C2B2 and C5C1 if they are current. If a contract is historical, bind its historical base and exact successor without using it for a current claim.
-3. Remove fragile unique string-anchor mutation mechanics from C5C1; mutate an AST, structured fixture or exact bounded function seam.
-4. Add deterministic current-required contract shards to maintained CI. Each shard reports file identities and TAP denominator; the merge gate consumes all shards.
-5. Run WP709 compatibility on the current head. Keep its historical capsule replay as a separate historical job.
-6. Regenerate and verify C3 artifacts from their canonical inputs; current drift is a hard failure.
-7. Rebuild inventory from current files and validate hashes, lane assignment, skip policy, expiry and replacement-lane execution.
-8. Ensure the full Sector U lane executes U6, U7 and U8 under the required environment on every qualifying head.
-9. A skipped current required test fails. Conditional skips must have unexpired policy and a proven replacement lane in the same run.
-
-Acceptance:
-
-- the three known contract failures are either green as current tests or explicitly historical with valid current successors;
-- all current required tests are present in CI and accounted for exactly once;
-- current WP709 compatibility and C3 drift checks pass on the merged head;
-- zero required and zero unexplained skips, zero todo, zero cancelled and nonzero denominators;
-- removing one test from CI, misclassifying one current test or substituting a historical result kills the negative test.
-
-Rollback: revert inventory, runner and workflow changes together; never leave a new classification without its executing lane.
-
-### Phase 1 — close manuscript and recovery safety defects
-
-#### R24-RCV-02 — Editor-open revision CAS and external divergence
-
-Purpose: prevent a successful save from overwriting bytes changed after the editor opened them.
-
-Implementation:
-
-1. Main owns an immutable open-revision token containing project, scene, canonical source digest, format identity and revision.
-2. Renderer sends intent and editor generation only; it cannot author the base digest.
-3. Save re-reads canonical bytes and compares them to the stored open revision before admitting mutation, including the first WP201 save and standalone-file path.
-4. On mismatch, write neither version over the other. Return a typed conflict and create a readable recovery/conflict record containing hashes and safe references to both variants.
-5. Offer conflict resolution only through explicit Commands: reload external, preserve local as a new recovery copy, or owner-selected merge. No automatic merge.
-6. A successful save advances the open revision atomically with persisted truth.
-
-Required tests:
-
-- open, external edit, save: external bytes remain and save refuses;
-- same scenario before the first commit marker and after an existing marker;
-- project scene and standalone document;
-- external delete, replace, inode swap and same-content rewrite;
-- conflict recovery is readable and does not disclose paths to renderer;
-- normal save, autosave, reopen and crash recovery remain green;
-- stale renderer digest and forged payload cannot authorize overwrite.
-
-#### R24-RCV-03 — Relocation-safe commit records and shared-manifest lineage
-
-Purpose: allow legitimate rename, move and unrelated manifest advancement without disabling corruption detection.
-
-Implementation:
-
-1. Replace absolute path identity in commit records with stable `projectId`, `sceneId`, project-relative validated locator and format version.
-2. Resolve current project root at open and at effect time; rename/move carries or reconstructs valid commit metadata through an atomic lifecycle transaction.
-3. Split scene content integrity from project-manifest lineage. A scene record binds the scene pre/post digests and the manifest revision it observed, not a forever-equal digest of all shared metadata.
-4. Accept only proven monotonic manifest lineage. Reject rollback, fork, unrecognized project identity, swapped scene locator and invalid digest chain.
-5. Provide migration and readable recovery for legacy absolute-path records; do not silently delete them.
-
-Required tests:
-
-- open, save, rename project, save, close and reopen;
-- move project directory, save and reopen;
-- save A, valid manifest/book-profile update through B, save A;
-- save A, corrupt manifest, save A must fail;
-- project clone receives new identity; ordinary move retains identity;
-- legacy record migration, crash at every metadata phase and rollback;
-- previous scene bytes remain readable on refusal and no false ACK occurs.
-
-#### R24-RCV-04 — Backup snapshot-to-target identity binding
-
-Purpose: guarantee that backup B can contain only a snapshot of B at the declared revision.
-
-Implementation:
-
-1. Snapshot reply includes immutable project, document, revision, generation and source digest.
-2. Backup Command captures its target identity before any asynchronous wait.
-3. The disk-queue closure carries the captured request, never reads mutable `currentFilePath` or current UI selection.
-4. Revalidate snapshot identity, current canonical identity and generation immediately before write.
-5. Mismatch cancels with typed refusal and writes no backup. Retry requires a fresh snapshot.
-
-Required tests:
-
-- delayed snapshot A while opening B;
-- delayed settings write during A-to-B and B-to-A transitions;
-- backup during close, rename, move and external divergence;
-- dirty authoring buffer policy is explicit and no saved-state backup claims unsaved bytes;
-- backup restore selects the correct document and verifies its digest;
-- no target path or recovery authority is accepted from renderer.
-
-#### R24-RCV-05 — One live durable save port and total handle cleanup
-
-Purpose: make production save semantics equal the proven durability model and close descriptor leaks.
-
-Implementation:
-
-1. Trace every live save/autosave/project-transaction route to its final writer.
-2. Select one product port for durable write. Existing Stage10 and file-manager routes must delegate to it rather than maintain a weaker parallel algorithm.
-3. Enforce temp creation, write, file fsync, close, atomic publish, parent fsync, readback, commit/journal finalization and ACK in that order.
-4. Track acquired resources explicitly. Every exit after open closes the handle in a `finally`-equivalent cleanup while preserving the primary failure and recording bounded secondary cleanup diagnostics.
-5. Do not delete a recoverable temp or journal until the durable outcome is known.
-
-Required tests:
-
-- ENOSPC and injected failures at open, write, file fsync, close, rename, parent fsync, readback and journal finalization;
-- actual close-call proof and zero descriptor growth over repeated failures;
-- SIGKILL matrix around every phase with old-or-new readable outcome;
-- production handler integration, not only direct coordinator unit tests;
-- no ACK before readback and commit truth;
-- all existing import/export and Review safe writers remain compatible.
-
-#### R24-RCV-06 — Crash-total create and rename lifecycle transactions
-
-Purpose: keep filesystem objects and identity registry convergent through process death.
-
-Implementation:
-
-1. Introduce one lifecycle journal with operation ID, project identity, source/target locators, expected registry revision and phase.
-2. Create and rename become idempotent transactions with deterministic startup reconciliation.
-3. Reconciliation distinguishes not-started, filesystem-applied/registry-pending, registry-applied/filesystem-pending, completed and conflict.
-4. Never auto-attach an ambiguous object or overwrite a conflicting target.
-5. Journal publication and cleanup use the durable port from R24-RCV-05.
-
-Required tests:
-
-- kill after each filesystem, registry and journal phase;
-- retry same operation ID is idempotent;
-- different operation ID cannot consume the first operation’s residue;
-- existing target, case-only rename, Unicode normalization, reserved names and cross-device move refusal;
-- recovery produces one canonical object and one registry identity or a typed conflict, never an orphaned silent success.
-
-### Phase 2 — close authority, IPC and effect-boundary defects
-
-#### R24-RCV-07 — Descriptor-bound external path capability
-
-Purpose: prevent a validated external target from being redirected by symlink or directory replacement before publication.
-
-Implementation:
-
-1. Path admission returns an opaque capability bound to canonical parent identity, device/inode where supported, basename, access mode, project-boundary decision and expiry/generation.
-2. The capability is created in main after dialog resolution and never serialized to renderer.
-3. The disk queue receives the capability, revalidates parent and target immediately before temp creation and publication, and uses no-follow semantics where available.
-4. Platform adapters report whether descriptor-bound or equivalent safe publication is supported. Missing protection yields typed unavailable, not raw-path fallback.
-5. External export, review packet, Markdown, TXT, DOCX and package writers adopt the same port incrementally without widening scope.
-
-Required tests:
-
-- symlink swap after validation and before queue execution;
-- parent replacement, target hardlink, project-root alias, case/Unicode alias and cross-device behavior;
-- capability replay, wrong operation, wrong target and expired generation;
-- normal Save As and external export remain functional;
-- renderer never receives path capability internals.
-
-#### R24-RCV-08 — Canonical operation taxonomy and semantic capability map
-
-Purpose: make registration-time metadata agree with actual operation semantics.
-
-Implementation:
-
-1. Generate one inventory of all IPC channels and command routes with exact operation kind, state class, effect class, capability and payload schema.
-2. `createCapabilityBoundRegistration` validates the exact channel-to-class mapping, not membership in an allowed label set.
-3. Query context exposes no mutation, filesystem, registry, shell-write or platform-effect port.
-4. Reclassify `ui:open-section` as a Command if it creates storage or changes governed state; split a pure read query if one is needed.
-5. Startup fails on an unclassified route, semantic mismatch, duplicate channel or Query with effects.
-
-Required tests:
-
-- registering `ui:create-node` as `query.read` fails before handler execution;
-- a Query attempting directory/file creation or state mutation cannot obtain the effect port;
-- each existing route’s declared class matches observed ports and state writes;
-- allowlist renaming or label substitution is caught structurally;
-- all current pure Queries remain read-only.
-
-#### R24-RCV-09 — Full privileged IPC admission denominator
-
-Purpose: apply one complete admission contract to every privileged route.
-
-Implementation:
-
-1. Derive the exact privileged denominator from actual registrations; do not hard-code “three bridge channels” as the whole system.
-2. Route every privileged handler through one guarded factory that enforces caller identity, envelope version, payload schema, operation class, capability, project/entity identity, expected revision and effect budget.
-3. Explicitly list nonprivileged channels and prove they have no product, shell, filesystem or process effect.
-4. Bound payload bytes, depth, breadth and collection sizes before normalization or interpretation.
-5. Add a static/runtime guard that raw privileged `ipcMain.handle` registrations fail CI.
-
-Required tests:
-
-- inventory equality between registrations and policy;
-- foreign, destroyed, stale and unbound senders;
-- missing/extra/inherited fields, prototype confusion, oversize and cyclic inputs;
-- wrong project, entity, revision, capability and operation class;
-- direct raw registration and unclassified route mutants;
-- exact live handler integration for every privileged family.
-
-#### R24-RCV-10 — Freshness, replay, idempotency and timeout semantics
-
-Purpose: make retries safe when renderer timeouts and main-process completion diverge.
-
-Implementation:
-
-1. Enforce bounded `issuedAt` age and future skew using a monotonic/server-observed admission time.
-2. Maintain a bounded per-session replay ledger keyed by caller identity, command ID and correlation/idempotency ID.
-3. Every mutating Command declares its idempotency policy: deduplicate and return prior result, resumable operation, or explicit non-retriable refusal.
-4. Timeout cancels only cancelable work. Noncancelable committed work remains queryable by operation ID and a retry cannot duplicate it.
-5. Persist idempotency for crash-sensitive mutations when process-lifetime memory is insufficient.
-
-Required tests:
-
-- expired, future, duplicate and cross-caller correlation IDs;
-- renderer timeout immediately before and after commit;
-- duplicate tree create/save/export/apply requests create at most one product effect;
-- restart recovery of in-flight durable operations;
-- bounded ledger eviction never permits replay inside the declared safety window;
-- clocks and injected timers remain deterministic in tests.
-
-#### R24-RCV-11 — One Command Kernel entry for menu, hotkey, palette, button and context routes
-
-Purpose: remove direct governed handler invocation and enforce the same policy regardless of UI source.
-
-Implementation:
-
-1. Generate the canonical governed command inventory and all UI source bindings.
-2. Define a single dispatch API with command ID plus intent payload. Kernel owns availability, capability, revision, idempotency and effect reservation.
-3. Migrate menu routes first, then hotkeys, palette, toolbar/buttons and context actions in bounded route-family subcontours.
-4. Legacy action IDs may map to canonical command IDs but cannot execute directly.
-5. Direct handler functions become internal use cases callable only by admitted Command execution.
-6. Visibility remains a Design OS projection and never changes authority.
-
-Required tests:
-
-- five mandatory bypass negatives: menu, hotkey, palette, direct IPC and context/button;
-- hidden but directly dispatched command still enforces capability;
-- visible but unavailable command refuses at dispatch;
-- Free/Pro, project lifecycle, dirty/revision and platform capability matrices;
-- no change to labels, visual composition or keyboard parity unless separately admitted.
-
-### Phase 3 — eliminate verifier and evidence false-green paths
-
-#### R24-RCV-12 — Certification-set normative coverage compiler
-
-Purpose: make a certification-set PASS prove the exact required artifacts for every stage.
-
-Implementation:
-
-1. Define one normative manifest mapping stage ID to required artifact roles, canonical relative paths, schema versions and source-set digest.
-2. Derive expected coverage from the stage registry and contracts, never from the candidate set itself.
-3. Compare exact sets: missing, extra, duplicate, wrong-stage, wrong-role, wrong-path and wrong-digest all fail.
-4. Require global uniqueness where a role is single-owner and explicitly model legitimate shared artifacts.
-5. Bind the normative manifest digest into the terminal attestation.
-6. Keep historical certification sets verifiable against their historical manifest; current state uses the current manifest.
-
-Required mutants:
-
-- one artifact duplicated 137 times;
-- two stages swapped;
-- correct file under wrong role;
-- correct count with one missing and one extra;
-- supplied self-consistent digest not equal to normative digest;
-- path alias, Unicode confusable and different-head object;
-- terminal attestation with substituted certification-set digest.
-
-#### R24-RCV-13 — WP709 bidirectional fidelity and current-head certification
-
-Purpose: prove that every final loss is declared and every declared loss remains observable.
-
-Implementation:
-
-1. Canonicalize field identity and compare accumulated loss ledger with final oracle LOSS entries as exact sets.
-2. Require typed reason, first-loss hop, source identity and deterministic ordering for every loss.
-3. Reject a final-only loss, ledger-only loss, duplicate, contradictory PRESERVED/LOSS pair, unknown field or hash-consistent substitution.
-4. Run compile and verify against current head and current routing/carrier registry.
-5. Preserve historical chain capsules as historical evidence only.
-
-Required tests:
-
-- the reproduced BODY=LOSS with empty ledger fails;
-- loss introduced and later preserved cannot disappear from history;
-- expected downgrade path passes with exact ledger;
-- all seven routes and hostile inputs run on current head;
-- source mutants for both comparison directions are killed;
-- current compatibility checks are required CI.
-
-#### R24-RCV-14 — PK1 evaluator identity completeness and oracle separation
-
-Purpose: make a positive PK1 candidate impossible without complete artifact and platform identity, while keeping evaluator tests distinct from physical certification.
-
-Implementation:
-
-1. Every mandatory receipt requires a valid nonempty ASAR SHA-256, build ID, app version, platform ID, architecture, artifact digest and evidence timestamp.
-2. Check completeness per receipt before checking equality across receipts.
-3. Remove positive platform fallback. Unsupported, missing or mixed platform identity is a typed refusal.
-4. Bind signer identity, hardened-runtime status, fuse state and notarization identity to the same exact artifact.
-5. Mark synthetic receipts `EVALUATOR_TEST_ONLY`; they can prove rejection/acceptance logic but never set physical evidence ready.
-6. Define the physical oracle interface now, but execute it only in R24-RCV-22 with real admitted tooling and credentials.
-
-Required mutants:
-
-- remove each of four ASAR hashes independently and in combinations;
-- wrong/missing platform, wrong architecture and mixed artifacts;
-- stale, different-head and different-build receipt;
-- self-authored physical flag without tool observation;
-- correct hashes attached to the wrong package;
-- positive evaluator result still leaves publication authority false before physical certification.
-
-#### R24-RCV-15 — User-journey evidence truth
-
-Purpose: ensure that release-critical “E2E” evidence runs the product instead of scanning source text.
-
-Implementation:
-
-1. Reclassify source-inspection tests as static source contracts; preserve their utility without calling them UI E2E.
-2. Define a small physical Electron journey set: create/open, type, selection, undo/redo, save, close, reopen, recovery, export and the corrected rename/external-edit/backup cases.
-3. Use disposable synthetic projects and exact application build identity.
-4. Observe disk bytes, visible state, receipts and recovery; source strings and screenshots alone cannot pass.
-5. Keep platform-specific accessibility, IME and screen-reader evidence explicit and profile-bound.
-
-Acceptance:
-
-- each journey reports exact build, platform, fixture, actions and observed outputs;
-- a no-op button, stale renderer, skipped action or source-only substitute fails;
-- no private user document or persistent test residue;
-- required physical lanes are present in the merge/release gate appropriate to their cost.
-
-### Phase 4 — close bounded product and operational completeness gaps
-
-#### R24-RCV-16 — Pulse privacy-safe complete user loop
-
-Purpose: align the declared Pulse profile with a usable local product path while preserving default opt-out.
-
-Implementation:
-
-1. Confirm the existing WP804/WP806 contract and use current Settings/History surfaces; do not create a new analytics system.
-2. Add canonical Commands for explicit opt-in, opt-out, correction, export and delete through the kernel fixed in Phase 2.
-3. Collect only declared local aggregates after consent. No raw manuscript content, network, cloud or background collection before opt-in.
-4. Provide a revision-bound history projection and clear stale/empty/opted-out states.
-5. Opt-out stops future collection; delete removes governed Pulse records without deleting manuscript truth; downgrade preserves readable data according to policy.
-6. If the manifest promises more than the accepted Writer v1 scope, narrow the claim explicitly instead of shipping an inert command.
-
-Required tests:
-
-- new profile starts opted out and empty;
-- opt-in, eligible activity, aggregate, history display, correction, export, opt-out and delete;
-- no collection before consent or after opt-out;
-- stale revision, Free/Pro change, project switch and restart;
-- export contains only declared aggregate data;
-- real user-flow evidence, not fixture-injected history alone.
-
-If composition or a new visual surface is required, that implementation contour must activate the Lazyweb-first design router and obtain a bounded owner-selected direction before UI code.
-
-#### R24-RCV-17 — Context-correct Unicode fold
-
-Purpose: restore search correctness without changing the declared normalization or UTF-16 coordinate policy.
-
-Implementation:
-
-1. Preserve the already-computed full-context fold when closing a run, or pass the next code point into the run fold explicitly.
-2. Keep tape mappings deterministic for original-to-folded and folded-to-original offsets.
-3. Do not use host locale.
-
-Required tests:
-
-- `Σα`, `ΟΣα`, `Σa`, `ΣΑ`, word-final sigma, combining marks and supplementary characters;
-- search and project-search ranges return the original UTF-16 spans;
-- mixed Greek/Latin case and run-boundary mutations;
-- roundtrip, hostile corpus and performance budget;
-- mutant that drops next-character context is killed.
-
-#### R24-RCV-18 — Low-level storage diagnostics and bounded ledger policy
-
-Purpose: close the remaining low-level storage debt without destabilizing the proven persistence model.
-
-Implementation:
-
-1. Report best-effort cleanup failure as secondary typed diagnostics while preserving the primary save result.
-2. Use commit marker context to distinguish OLD_COMMITTED, NEW_COMMITTED and ambiguous old-or-new recovery states where physically knowable.
-3. Make recovery-ledger maximum entries and bytes an explicit policy with compaction threshold and measured append budget.
-4. Optimize append only if the current bound violates the budget; prefer a simple reliable implementation over speculative storage framework.
-
-Acceptance:
-
-- cleanup failure is observable but cannot convert a failed primary write into success;
-- classification matches killpoint outcomes;
-- ledger cannot grow beyond policy and compaction remains crash-safe;
-- no loss of recovery readability or digest-chain integrity.
-
-#### R24-RCV-19 — Toolchain and exception-policy reproducibility
-
-Purpose: stop unsupported host runtimes and expired skip/flaky records before they create misleading failures or greens.
-
-Implementation:
-
-1. Keep `.node-version`, package engines and package-manager pin aligned at Node 22.12.0 and npm 10.9.0 until an explicit toolchain upgrade.
-2. Add one cheap toolchain preflight used by local R2.4 entrypoints and CI. It reports actual and required versions before tests.
-3. Use an existing installed/pinned runtime or an explicitly admitted fetch; do not silently run under Node 26.
-4. Validate every conditional skip/flaky exception against current stage, owner, reason, affected claim, expiry and same-run replacement proof.
-5. A toolchain mismatch is environment UNKNOWN/BLOCKED, not a product failure and not a reason to waive tests.
-
-#### R24-RCV-20 — Bounded authority-seam decomposition
-
-Purpose: reduce review and regression risk after behavioral fixes are stable.
-
-Implementation:
-
-1. Extract only already-corrected persistence, lifecycle, IPC inventory, command routing and Pulse seams from `main.js` into named modules with unchanged contracts.
-2. Extract renderer orchestration only where the corresponding product contract is already immutable; do not redesign UI.
-3. Split the certification compiler into pure normative manifest, reducer, verifier and CLI layers while preserving historical verification.
-4. Add dependency-boundary tests and prevent new governed logic from returning to monolith entrypoints.
-5. Freeze the old corrective history and generate indexes/projections; do not mass-delete evidence.
-
-Acceptance:
-
-- byte/behavior-equivalent product baselines and existing fixtures pass;
-- no new private bus, registry or abstraction framework;
-- each extracted module has one owner and no direct cross-plane write;
-- current-state reconstruction becomes simpler and has fewer hard-coded successor exceptions;
-- this contour does not change release status.
-
-### Phase 5 — reopen the existing mandatory release graph only after correction gates are green
-
-#### R24-RCV-21 — Pre-release corrective acceptance checkpoint
-
-Purpose: prove that Phases 0–4 are merged and no known P1/P2 false-green remains before consuming signing or release authority.
-
-Required result:
-
-- current reducer, current inventory and all correction-specific negative tests pass on one fresh `origin/main`;
-- complete product safety journeys and privileged-route denominator pass;
-- certification-set, WP709 and PK1 counterexamples fail as intended;
-- full baseline, RTK, multi-OS parity, renderer/preload build, SAST, privacy, OSS and production dependency audit are green;
-- an independent read-only audit confirms the exact SHA and build;
-- verdict remains NOT_READY solely for named mandatory release nodes.
-
-This checkpoint does not increment the 109-node graph and does not issue publication authority.
-
-#### R24-RCV-22 — `PK1_RELEASE_SECURITY_PHYSICAL`
-
-Purpose: satisfy the existing graph outcome with real, exact-artifact physical evidence.
-
-Execution:
-
-1. Build the distribution candidate from a clean exact merged SHA with pinned inputs.
-2. Record package, executable and ASAR hashes before and after signing steps.
-3. Verify Developer ID signing, designated requirement, deep strict validation and Hardened Runtime using platform tools.
-4. Verify Electron fuse state from the packaged executable.
-5. Submit for notarization through the admitted Apple path, verify returned identity, staple and validate offline where supported.
-6. Run packaged create/open/type/save/close/reopen/recovery/export critical journeys on each supported target/profile.
-7. Bind every receipt to the same head, tree, build, platform, architecture and artifact.
-8. Have a separate verifier execute the physical oracle; the builder cannot self-certify.
-
-Hard stops:
-
-- no configured signing identity or credential;
-- notarization unavailable or rejected;
-- any identity mismatch, unstapled artifact, unsafe fuse, missing ASAR hash, failed recovery or different build;
-- secrets would be printed, copied into repo or embedded in evidence.
-
-Completion: terminal PK1 receipt with exact physical denominator and publication authority still false until later graph gates.
-
-#### R24-RCV-23 — `V3_PACKAGE_CLAIM_COMPILER`
-
-Purpose: compute the package/security verdict from current PK1 and existing Writer claim inputs without promoting Atlas, Word, Google or optional profiles.
-
-Acceptance:
-
-- raw current PK1 is re-evaluated internally;
-- stale, synthetic, different-head/build/platform or partial PK1 fails;
-- positive package classification is exact-profile only;
-- current corrective findings and delivery state remain inputs;
-- `programDone` stays false while WP-900 through WP-906 are pending;
-- implementation mutants kill every identity and claim-promotion bypass.
-
-#### R24-RCV-24 — `WP-900_BBR_POLICY`
-
-Purpose: record the approved backup/restore policy before implementing encrypted capsules.
-
-Required decisions and evidence:
-
-- approved cryptographic construction and versioning;
-- key creation, custody, rotation, loss and recovery policy with key separate from capsule;
-- off-host strategy and retention schedule compatible with offline-first Writer v1;
-- metadata/privacy boundary and explicit exclusion of secrets from repository;
-- threat model, rollback and unsupported states;
-- owner gate `BBR_CRYPTO_KEY_ADR` bound to exact policy bytes.
-
-No encrypted runtime is implemented until the policy is approved and machine validated.
-
-#### R24-RCV-25 — `WP-901_BBR_RESTORE`
-
-Purpose: implement and physically prove encrypted backup capsule and restore-as-new.
-
-Acceptance:
-
-- authenticated, versioned capsule with independent key material;
-- atomic creation and readable inventory;
-- restore creates a new project identity and never overwrites the live project silently;
-- correct key succeeds; wrong key, corrupt header/body/tag, truncation, reordering and unsupported version fail before product mutation;
-- killpoint tests leave the original project readable;
-- off-host copy roundtrip and retention behavior are physically tested;
-- no private fixture or key enters logs, Git or receipts.
-
-#### R24-RCV-26 — `WP-902_ENTITLEMENT_PRODUCT`
-
-Purpose: complete signed local capability truth without locking user data.
-
-Acceptance:
-
-- exact owner pricing/entitlement ADR is bound before behavior changes;
-- signed entitlement is validated locally with version, product, device/profile and expiry identity;
-- offline, clock skew, grace, expiry, refund and revoked/invalid signature behaviors are typed;
-- downgrade disables capability but preserves all project data in readable shared format;
-- Free editing invalidates or marks dependent Pro-derived data stale without deletion;
-- no account or network truth becomes required to open, edit, save, recover or export owned text;
-- capability is revalidated at Command dispatch, not inferred from UI visibility.
-
-#### R24-RCV-27 — `WP-903_BRAND_RELEASE`
-
-Purpose: bind only licensed and accessible release assets to the exact product baseline.
-
-Acceptance:
-
-- asset inventory includes origin, license, permitted use and exact digest;
-- no unlicensed font, icon, image, trademark or placeholder remains in package;
-- owner-approved baseline is exact and does not overwrite the established toolbar visual decision by accident;
-- contrast, focus, keyboard labels, reduced motion and platform asset variants pass;
-- generated assets are reproducible from governed sources;
-- visual evidence is exact build/profile and does not substitute for functional tests.
-
-Any material UI composition change uses the Lazyweb-first design protocol in its own product-UI contour.
-
-#### R24-RCV-28 — `WP-904_PACKAGE_CONTENT`
-
-Purpose: prove exactly what enters the release package and how it was built.
-
-Acceptance:
-
-- deterministic file allowlist and forbidden-file scan;
-- SBOM for production package and complete license notices;
-- pinned lockfile, toolchain, builder image/environment and source SHA;
-- provenance binds inputs, commands, outputs, artifact/ASAR hashes and builder identity;
-- no source maps, tests, secrets, private evidence, dev-only modules, unexpected native binaries or network bootstrap code;
-- clean rebuild comparison documents deterministic and platform-signature differences;
-- production dependency audit has zero unresolved reachable critical/high findings or an explicit time-bound policy-compliant exception.
-
-#### R24-RCV-29 — `WP-905_PACKAGE_PHYSICAL`
-
-Purpose: validate the final package after BBR, entitlement, brand and content inputs are complete.
-
-Acceptance:
-
-- signing, notarization, fuses and ASAR are re-run for the final artifact, not reused from an earlier candidate;
-- fresh install, first launch, existing-project open, create/write/save/close/reopen, recovery and export pass;
-- update from the supported previous version preserves project and shell-state boundaries;
-- rollback restores a runnable prior version without making newer project data unreadable or deleting it;
-- corrupted installer/update, interrupted install, no-space, permission and offline scenarios fail safely;
-- uninstall behavior preserves user documents according to policy;
-- macOS and every other claimed supported target have exact physical receipts;
-- package identity is unchanged across every receipt consumed by WP-906.
-
-#### R24-RCV-30 — `WP-906_RELEASE_VERDICT`
-
-Purpose: compile the final exact-profile release verdict and consume the explicit public-release permit.
-
-Acceptance:
-
-- consumes only current exact-head outputs from WP-905 and its dependency chain;
-- recomputes all mandatory graph and corrective conditions rather than trusting nested summaries;
-- current-state reducer reports 99 mandatory terminal nodes, zero PENDING and zero BLOCKED_TYPED;
-- ten optional nodes remain explicit optional/ineligible unless separately and lawfully promoted;
-- no open P1/P2 finding, required test failure, stale receipt, required skip, WIP, active lease or incomplete delivery;
-- two independent exact-head audits agree on artifact identity and claim ceiling;
-- owner public-release permit names exact SHA, build, profile, platform set and artifact hashes;
-- permit mismatch or absence leaves `publicationAuthority=false` and `programDone=false`;
-- after a valid permit, the compiler may set the exact bounded release claim without promoting untested profiles.
-
-### Phase 6 — final program closure and factual cutover
-
-#### R24-RCV-31 — Exact merged-head closure
-
-Purpose: close the program once, with one authoritative current result.
-
-Execution:
-
-1. Fetch and verify the exact merged release head and tree in a clean detached/worktree checkout.
-2. Run the complete current required test inventory, correction negatives, implementation mutants, RTK, platform parity, package security, physical journeys and independent verifiers.
-3. Verify all evidence hashes, source bindings, denominators, CI job identities, ruleset and protected merge history.
-4. Compile one final effective state and terminal receipt from canonical inputs.
-5. Perform one factual documentation cutover so current docs no longer present frozen August state as operational truth.
-6. Preserve all historical evidence and link it through the resolver; do not mass-rewrite it.
-7. Release the writer lease, prove WIP zero and archive only task-owned temporary resources.
-
-Final success criteria:
-
-- `programDone=true` is independently reproduced from source inputs;
-- `productionReleaseReady=true` applies only to the exact certified profile and artifacts;
-- `publicationAuthorityGranted=true` appears only with the exact owner permit;
-- all other capabilities remain at their proven `LIVE`, `PARTIAL`, `BLOCKED`, `MANUAL_ONLY` or optional status;
-- clean worktree, complete delivery chain and no unresolved blocking finding.
-
-### Relative effort and critical path
-
-| Group | Contours | Relative effort | Critical-path role |
-| --- | --- | --- | --- |
-| Admission, current truth and CI | 00A–01 | Extra large | Admission prerequisite; 00A then 00B before 00 |
-| Manuscript safety | 02–06 | Extra large | Release blocker |
-| Authority and security | 07–11 | Extra large | Release blocker |
-| Evidence correctness | 12–15 | Large | Release blocker |
-| Product/operational completeness | 16–20 | Large | 16 required for Pulse claim; remaining debt must meet final severity policy |
-| Existing release graph | 21–30 | Extra large plus external latency | Mandatory graph critical path |
-| Final closure | 31 | Large | Terminal step |
-
-No calendar estimate is asserted because physical signing/notarization latency, CI load, platform access and the number of route-family migrations are external variables. Progress reporting uses completed contours and passed acceptance, never elapsed time or changed-line counts.
-
-## CHECKS
-
-CHECK_01_PRE_EXACT_BASE_CANON_AND_ISOLATION
-CMD: verify fresh origin main, exact head and tree, canonical registry identity, encrypted T7 identity, clean isolated branch worktree, active canon and current COREX before the first repository edit
-PASS: head and origin main equal the declared binding SHA, tree equals the declared tree, T7 is mounted writable encrypted and unlocked with the registered UUID, the task worktree is clean, and the dirty canonical owner checkout remains untouched
-
-CHECK_02_POST_TASK_FORMAT
-CMD: execute the task-format parser in an isolated fixture with no `src/core`, then run node scripts/ops-gate.mjs --task docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md against the complete repository
-PASS: the isolated parser accepts the HARD-TZ structure, task type, canon version, baseline version, DENYLIST and PRE/POST check contract; until R24-RCV-00B closes OPS-03, the full-tree command is recorded as the expected pre-existing `CORE_PURITY_VIOLATION` and cannot be represented as green
-
-CHECK_03_POST_SCOPE_AND_DIFF
-CMD: inspect Git status, staged paths and diff check for the isolated task worktree
-PASS: the plan document is the only changed path, no unrelated bytes or generated files changed, and the diff has no whitespace errors
-
-CHECK_04_POST_PLAN_COMPLETENESS
-CMD: verify the document contains every consolidated finding ID, all nine nonterminal mandatory graph nodes, phases 0 through 6, one bounded contour per outcome, acceptance, negative proof, rollback discipline, delivery discipline and final definition of done
-PASS: no confirmed active finding or mandatory node is absent, overlapping findings are deduplicated, corrected historical findings are not reopened, and no plan statement promotes current product or release status
-
-CHECK_05_POST_ARCHITECTURE_AND_CLAIM_BOUNDARY
-CMD: review the plan against active canon, CANON, COREX, BIBLE, architecture map, glossary, documentation constitution, process and exact current state
-PASS: Product Core, Command Kernel, Design OS, renderer, product ports and adapters remain separated; current and target are explicit; evidence creates no authority; Writer v1 scope and offline-first constraints remain intact
-
-CHECK_06_POST_GUARDRAILS
-CMD: PATH=/opt/homebrew/opt/node@22/bin:$PATH npm run agent:guardrails
-PASS: repository agent guardrails exit zero on the candidate with no runtime or governance drift caused by this document
-
-CHECK_07_POST_DELIVERY
-CMD: commit the exact plan scope, push the task branch, create a PR against main, wait for all required checks, merge normally, fetch origin main and verify the exact merged tree in a clean checkout
-PASS: commit, push, PR, required CI, protected merge and exact merged-head verification all complete without bypass or base drift
-
-CHECK_08_POSTMERGE_PLAN_PRESENCE_AND_TRUTH
-CMD: read the plan from exact merged origin main and rerun task format, guardrails, scope history and current-state nonpromotion checks
-PASS: merged bytes match the reviewed plan, current graph still honestly reports NOT_READY until implementation contours complete, and the next action resolves to R24-RCV-00A
-
-## STOP_CONDITION
-
-- active canon, current graph identity or current effective state cannot be resolved unambiguously;
-- origin main changes in a way that makes the declared task base or PR unmergeable and normal merge cannot preserve scope;
-- the isolated worktree contains unrelated or unowned changes;
-- any implementation contour attempts to combine independent outcomes, broaden Writer v1, add a dependency, enable product network/cloud truth or create a second active tracker without an explicit owner amendment;
-- a data-safety fix would remove corruption detection, recovery or CAS instead of repairing identity/lineage;
-- a security fix relies on UI visibility, a label, renderer payload or raw path string as authority;
-- a verifier fix reduces the denominator, deletes a failing current test, accepts self-authored physical evidence or moves current checks to historical execution to obtain green;
-- real user data, secrets, signing keys or private evidence would be exposed or committed;
-- destructive cleanup, reset, force action, direct protected-branch push or publication outside the exact permit is required;
-- a required physical platform, signing identity, notarization service or owner-gated policy is unavailable;
-- the same failure signature occurs three times without a new evidence-backed hypothesis;
-- required tests, CI, merge or exact postmerge verification cannot complete normally.
-
-On stop, preserve the branch and all owned evidence, release only the exact owned lease when safe, report expected versus actual, exact identities and one next hypothesis. Do not mark the contour done or advance to the next write cluster.
-
-## REPORT_FORMAT
+| Program observation SHA | af74b9542c17c24a7515ce9017d98ea7b2e4d55a | HISTORICAL_AFTER_MAIN_ADVANCES |
+| Program observation tree | 9ba68855d2b3735bde543213e389e58490dc5c80 | HISTORICAL_AFTER_MAIN_ADVANCES |
+| Mandatory nodes | 99 | RECORDED_GRAPH_STATE |
+| Recorded DONE | 90 | RECORDED_GRAPH_STATE |
+| Recorded PENDING | 7 | RECORDED_GRAPH_STATE |
+| Recorded BLOCKED_TYPED | 2 | RECORDED_GRAPH_STATE |
+| Optional ineligible | 10 | RECORDED_GRAPH_STATE |
+| Program done | false | RECORDED_GRAPH_STATE |
+| Production release ready | false | RECORDED_GRAPH_STATE |
+| Publication authority | false | RECORDED_GRAPH_STATE |
+| Repository verdict | NOT_READY | PROVEN_AT_OBSERVATION_BASE |
+
+Every later contour recompiles these values on its own exact base. A corrective
+finding can hold release without incrementing the 109-node graph. A graph count
+can change only through an existing graph node and its lawful transition
+contract.
+
+### 4. Evidence strength and finding status
+
+Claim strength equals the weakest mandatory link among source trust, executed
+coverage, artifact integrity, snapshot freshness and oracle independence.
+
+A finding may be:
+
+- ACTIVE_CONFIRMED only when the plan carries source ID, finding ID, exact SHA,
+  reproducer, expected, actual and oracle class;
+- REVALIDATE_CURRENT when credible audit evidence exists but the first
+  implementation contour must reproduce it on its fresh base;
+- RECORDED_GRAPH_OPEN for a nonterminal graph node;
+- DEFERRED_DEBT when the issue is real but not a release blocker under current
+  severity;
+- HISTORICAL_CORRECTED when current evidence proves the old finding closed.
+
+No ACTIVE_CONFIRMED label may be added from narrative confidence.
+
+### 5. Exact evidence ledger for ACTIVE_CONFIRMED findings
+
+#### EV-GOV-01-AF74
+
+- Finding ID: GOV-01.
+- Exact SHA: af74b9542c17c24a7515ce9017d98ea7b2e4d55a.
+- Source: raw R2.4 PlanState/current checkpoint compared with PK1R1 effective
+  state and terminal receipt.
+- Reproducer: resolve the scheduler-selected node from raw state, then resolve
+  earliest unmet mandatory dependency from PK1R1 effective state on the same
+  SHA.
+- Expected: one current scheduler and one effective-state reducer agree.
+- Actual: raw/current narrative can select the old W0 contour while the later
+  effective state records 90 DONE and PK1 as the earliest unmet dependency.
+- Oracle class: deterministic repository-state comparison.
+- Claim ceiling: control-plane split-brain only; no graph node is promoted.
+
+#### EV-GOV-07-PR1843
+
+- Finding ID: GOV-07.
+- Exact SHA: c9bc88522327cb28be0690d89d6edc8259cc48c8.
+- Source: GitHub checks for PR 1843.
+- Reproducer: inspect all required checks and the first failing assertion in
+  each primary failed lane at the exact PR head.
+- Expected: a docs-only successor is evaluated through its own fresh admission.
+- Actual: five primary lanes stop with
+  E_PK1R1_EXACT_ADMITTED_DELTA:20:19; two aggregate jobs fail downstream;
+  ten of seventeen jobs pass.
+- Oracle class: exact-head protected CI.
+- Claim ceiling: admission deadlock only; it does not prove any product defect.
+
+#### EV-OPS-03-C9BC
+
+- Finding ID: OPS-03.
+- Exact SHA: c9bc88522327cb28be0690d89d6edc8259cc48c8.
+- Source: full repository E0 invocation plus static candidate inventory.
+- Reproducer: run the full ops gate for this task and separately enumerate
+  core files matching the gate's effect-token vocabulary.
+- Expected: the docs-only task reaches its task validation or emits a complete,
+  semantically classified core-boundary result.
+- Actual: E0 stops on anchor-lineage-v1.cjs through CORE_PURITY_VIOLATION;
+  the current matcher recognizes four narrow exceptions while the candidate
+  scan returns 31 files requiring semantic classification.
+- Oracle class: local exact-head process plus source inventory.
+- Claim ceiling: E0 is stale/incomplete; the 31 files are candidates, not 31
+  proven architecture violations.
+
+Every other finding below is REVALIDATE_CURRENT, RECORDED_GRAPH_OPEN or
+DEFERRED_DEBT until its first contour creates an evidence record of this shape.
+
+### 6. Single machine-readable corrective register
+
+The implementation creates one versioned corrective register consumed by the
+current-state reducer. It extends the existing append-only corrective layer and
+does not replace the program graph.
+
+Each row contains:
+
+- findingId and sourceAuditId;
+- status and severity;
+- exact observed SHA/tree/build/profile/platform where applicable;
+- evidenceId, reproducer, expected, actual and oracleClass;
+- primaryContourId and optional secondaryContourIds;
+- mappedExistingGraphNode or explicit NO_GRAPH_NODE;
+- affected claim IDs;
+- required proof and nonzero mutant denominator where critical;
+- closure receipt digest and merged SHA;
+- historical predecessor;
+- last transition and fencing counter.
+
+The validator rejects duplicate finding IDs, multiple primary contours,
+unmapped active findings, graph promotion from NO_GRAPH_NODE, missing evidence
+fields for ACTIVE_CONFIRMED and status disagreement with the effective-state
+compiler.
+
+### 7. Normative claim-test-lane manifest
+
+A fixed, authority-bound manifest defines every current required claim and its
+minimum proof denominator independently of filesystem discovery.
+
+Each entry binds:
+
+- claimId and invariant;
+- exact test IDs and fixture classes;
+- required CI lane IDs and supported OS/profile identities;
+- positive, boundary, stale/race/recovery and adversarial classes;
+- minimum nonzero mutant count for critical safety, security and autonomy
+  invariants;
+- skip policy and replacement proof;
+- source owner and version.
+
+Filesystem inventory is compared with this manifest. Deleting a test and its
+inventory row does not remove the normative obligation. Missing test, missing
+lane, zero-test result, reduced mutant set, duplicate test identity or expired
+exception fails closed.
+
+### 8. Autonomous controller contract
+
+The controller is a local repository orchestration process, not product
+runtime, cloud truth or a second scheduler.
+
+Its state machine is:
+
+- IDLE
+- SELECTED
+- ADMITTED
+- LEASED
+- IMPLEMENTING
+- PROVING
+- DELIVERING
+- WAIT_EXTERNAL_FACT
+- WAIT_OWNER_FACT
+- POSTMERGE_VERIFY
+- TERMINAL
+- FAILED_TYPED
+- REVOKED
+
+Every transition is CAS-bound to:
+
+- program ID and graph revision;
+- stage/finding ID;
+- exact base/head/tree and branch;
+- StageInstance, admission and write-set digests;
+- lease ID, fencing counter, holder identity and expiry;
+- current process/run identity;
+- prior transition digest;
+- expected next state.
+
+The controller performs one cycle:
+
+1. bootstrap and resolve canon;
+2. compile current graph plus corrective register;
+3. select the highest-priority dependency-closed item from machine state;
+4. prepare the full exact output set before the first repository write;
+5. acquire one lease and fencing token;
+6. reproduce the finding on the exact base;
+7. implement one bounded conceptual delta;
+8. run focused proof, required baseline and negative/mutant coverage;
+9. review exact diff and preserve unrelated work;
+10. commit, push, create PR, observe required CI and merge normally;
+11. fetch exact origin/main and independently verify the merged result;
+12. emit terminal or typed-failure evidence;
+13. release the exact owned lease only after delivery is verified;
+14. recompile state and select the next item.
+
+Restart/resume rules:
+
+- restart reads durable controller state and never infers success from an open
+  PR, local commit or expired process;
+- stale holder cannot mutate after a higher fencing counter exists;
+- expired lease is inspected for commit, PR, merge and external-effect outcome
+  before retry;
+- uncertain mutating/external operations are reconciled by idempotency identity;
+- revocation stops future writes and preserves the worktree;
+- a second writer is rejected;
+- after three identical failure signatures, the contour becomes FAILED_TYPED
+  with one new hypothesis instead of looping.
+
+Observer rules:
+
+- inspect controller, lease, branch, PR, CI and external-wait state every ten
+  minutes while a contour is active;
+- remain quiet when nothing meaningful changed;
+- notify on transition, failed required check, lost lease, unresolved external
+  outcome, completion or a fact that only the owner can supply;
+- the observer has read-only authority and cannot advance state.
+
+### 9. Per-contour mandatory packet
+
+Every future contour must declare:
+
+- one observable outcome and one primary finding or graph node;
+- exact prerequisites and dependency-closed proof;
+- exact base, branch, worktree, entities, build/profile/platform identities;
+- product truth owner, Command/Query/Event/Effect taxonomy and write/read path;
+- exact create/modify/delete/rename set;
+- protected state, invariants, non-goals and rollback;
+- defect reproducer with expected and actual result;
+- focused positive and negative tests;
+- stale/race/recovery/killpoint tests when the invariant requires them;
+- nonzero implementation mutants for critical safety, security and autonomy
+  behavior;
+- required normative claims and CI lanes;
+- complete delivery policy;
+- postmerge exact-head verification;
+- an AGENT_FINAL_REPORT_V1-compatible report.
+
+A contour cannot carry unrelated cleanup or a broad architecture refactor. New
+independent findings return to the corrective register.
+
+### 10. Release identity and fixed-point contract
+
+Release uses distinct identities.
+
+Release candidate R contains:
+
+- sourceShaR and sourceTreeR;
+- packageSourceManifestDigest;
+- build ID, product version and channel;
+- profile;
+- exact platform and architecture cut set;
+- update-from version cut set;
+- package, executable, resources and ASAR hashes;
+- signing/notarization/fuse identity;
+- SBOM and production dependency digest;
+- builder/toolchain/provenance identity.
+
+Evidence carrier C contains:
+
+- candidateCarrierShaC1;
+- terminalCarrierShaC2;
+- exact evidence/control-only changed paths;
+- packageSourceManifest equality proof showing C1/C2 cannot alter R;
+- candidate verdict digest;
+- terminal transition payload digest;
+- graph revision and corrective-register digest;
+- external audit and owner permit bindings.
+
+All factual documentation and package-input changes finish before R is built.
+C1 and C2 may contain only admitted evidence/control carriers excluded from the
+package source manifest. Any package-source delta invalidates R and returns to
+WP-905.
+
+The owner release permit binds R, the platform/profile/update cut set, artifact
+hashes, candidate verdict digest, terminal transition payload digest and the
+allowed evidence-carrier policy. It does not authorize a different artifact or
+public release of another profile.
+
+The terminal sequence has no recursive commit requirement:
+
+1. C1 records the candidate verdict with 98 of 99 mandatory nodes terminal,
+   WP-906 still pending, lease active and programDone false.
+2. Two independent oracles verify C1 and R.
+3. The owner permit binds R and the precomputed terminal transition payload.
+4. C2 contains only the admitted terminal-candidate transition and requests
+   fenced lease release; it is merged normally.
+5. A detached independent postmerge terminal attestation verifies exact C2,
+   R, both audits, permit, package-source equality and the actual external
+   lease release.
+6. The effective-state compiler accepts that detached attestation as an
+   explicit input and reports 99 of 99, WIP zero and programDone true.
+7. No tracked commit follows the terminal attestation. A later tracked change
+   is a post-R2.4 successor and cannot rewrite the certified result.
+
+Without the detached terminal attestation, C2 remains a candidate and
+programDone stays false.
+
+### 11. Final report schema
+
+Every contour report must validate exactly against
+AGENT_FINAL_REPORT_V1.schema.json. It contains only:
 
 - TASK_ID
 - STATUS
@@ -981,40 +503,1206 @@ On stop, preserve the branch and all owned evidence, release only the exact owne
 - HEAD_SHA_AFTER
 - COMMIT_SHA
 - MERGED_SHA
-- MERGED_TREE
 - CHANGED_BASENAMES
 - STAGED_SCOPE_MATCH
-- DESIGN_TOOL_ROUTER
-- TEST_RESULTS_WITH_NUMERATOR_DENOMINATOR_SKIP_TODO
-- COUNTEREXAMPLE_RESULT
-- IMPLEMENTATION_MUTANT_RESULT
-- INVARIANTS_RESULT
-- CURRENT_GRAPH_COUNTS
-- CURRENT_CLAIM_SCOPE
+- TEST_RESULTS
 - COMMIT_OUTCOME
 - PUSH_RESULT
 - PR_RESULT
 - CI_RESULT
 - MERGE_RESULT
-- POSTMERGE_RESULT
-- EXTERNAL_ORACLE_RESULT
+- POST_MERGE_VERIFICATION
+- CURRENT_CLAIM_SCOPE
 - OPEN_LIMITATIONS
 - ROLLBACK
 - NEXT_STEP
 
-For implementation tasks governed by repository output policy, return exactly one `text` code block containing `KEY: VALUE` lines. `CHANGED_BASENAMES` contains basenames only. Claims name the exact SHA, build, profile, numerator, denominator, artifact hashes and oracle actually executed.
+TEST_RESULTS entries carry name, status, passed, total, skipped, todo and scope.
+Extra renamed fields are forbidden.
+
+### 12. Consolidated finding-to-contour crosswalk
+
+| ID | Severity | Current status | Source class | Primary contour |
+| --- | --- | --- | --- | --- |
+| GOV-01 | P1 | ACTIVE_CONFIRMED | EV-GOV-01-AF74 | R24-RCV-00B |
+| GOV-02 | P2 | REVALIDATE_CURRENT | audit/state | R24-RCV-00B |
+| GOV-03 | P2 | REVALIDATE_CURRENT | audit/generated drift | R24-RCV-00B |
+| GOV-04 | P1 | REVALIDATE_CURRENT | audit/CI | R24-RCV-01A |
+| GOV-05 | P1 | REVALIDATE_CURRENT | audit/current replay | R24-RCV-01D |
+| GOV-06 | P2 | REVALIDATE_CURRENT | audit/skip policy | R24-RCV-01E |
+| GOV-07 | P1 | ACTIVE_CONFIRMED | EV-GOV-07-PR1843 | R24-PRE-00C |
+| DATA-01 | P1 | REVALIDATE_CURRENT | audit counterexample | R24-RCV-13 |
+| DATA-02 | P1 | REVALIDATE_CURRENT | audit counterexample | R24-RCV-11 |
+| DATA-03 | P1 | REVALIDATE_CURRENT | audit counterexample | R24-RCV-12 |
+| DATA-04 | P1 | REVALIDATE_CURRENT | audit counterexample | R24-RCV-14 |
+| DATA-05 | P1 | REVALIDATE_CURRENT | audit/source path | R24-RCV-10A |
+| DATA-06 | P2 | REVALIDATE_CURRENT | audit/lifecycle | R24-RCV-15 |
+| DATA-07 | P2 | REVALIDATE_CURRENT | audit counterexample | R24-RCV-10B |
+| DATA-08 | P3 | REVALIDATE_CURRENT | audit cleanup semantics | R24-RCV-10B |
+| DATA-09 | P3 | DEFERRED_DEBT | audit/performance | R24-RCV-16 |
+| AUTH-01 | P1 | REVALIDATE_CURRENT | audit/bypass | R24-RCV-25 |
+| AUTH-02 | P2 | REVALIDATE_CURRENT | audit mutation probe | R24-RCV-20B |
+| AUTH-03 | P1 | REVALIDATE_CURRENT | audit denominator | R24-RCV-21 |
+| AUTH-04 | P1 | REVALIDATE_CURRENT | audit operation taxonomy | R24-RCV-20C |
+| AUTH-05 | P1 | REVALIDATE_CURRENT | audit replay probe | R24-RCV-22 |
+| AUTH-06 | P1 | REVALIDATE_CURRENT | audit path race | R24-RCV-23 |
+| EVID-01 | P2 | REVALIDATE_CURRENT | Astra Ultra F02 | R24-RCV-30 |
+| EVID-02 | P2 | REVALIDATE_CURRENT | Astra Ultra F03 evaluator identity | R24-RCV-31 |
+| EVID-03 | P1 | REVALIDATE_CURRENT | claim-boundary hypothesis | R24-RCV-32 |
+| EVID-04 | P2 | REVALIDATE_CURRENT | Astra Ultra F04 | R24-RCV-33 |
+| EVID-05 | P2 | REVALIDATE_CURRENT | Astra Ultra F05 | R24-RCV-01C |
+| EVID-06 | P2 | REVALIDATE_CURRENT | audit/source-only smoke | R24-RCV-34 |
+| PROD-01 | P2 | REVALIDATE_CURRENT | audit/Pulse | R24-RCV-40A |
+| PROD-02 | P3 | REVALIDATE_CURRENT | audit/Unicode | R24-RCV-41 |
+| OPS-01 | P2 | REVALIDATE_CURRENT | host/runtime observation | R24-RCV-00A |
+| OPS-02 | P3 | REVALIDATE_CURRENT | audit/exception lifecycle | R24-RCV-01E |
+| OPS-03 | P1 | ACTIVE_CONFIRMED | EV-OPS-03-C9BC | R24-RCV-00G |
+| MAINT-01 | P3 | DEFERRED_DEBT | maintainability observation | R24-RCV-50 |
+| MAINT-02 | P3 | DEFERRED_DEBT | artifact-volume observation | R24-RCV-00C |
+| REL-01 | BLOCKER | RECORDED_GRAPH_OPEN | PK1 effective state | R24-RCV-61 |
+| REL-02 | BLOCKER | RECORDED_GRAPH_OPEN | V3 dependency state | R24-RCV-62 |
+| REL-03 | REQUIRED | RECORDED_GRAPH_OPEN | WP-900 | R24-RCV-63 |
+| REL-04 | REQUIRED | RECORDED_GRAPH_OPEN | WP-901 | R24-RCV-64 |
+| REL-05 | REQUIRED | RECORDED_GRAPH_OPEN | WP-902 | R24-RCV-65 |
+| REL-06 | REQUIRED | RECORDED_GRAPH_OPEN | WP-903 | R24-RCV-66 |
+| REL-07 | REQUIRED | RECORDED_GRAPH_OPEN | WP-904 | R24-RCV-67 |
+| REL-08 | REQUIRED | RECORDED_GRAPH_OPEN | WP-905 | R24-RCV-69 |
+| REL-09 | REQUIRED | RECORDED_GRAPH_OPEN | WP-906 | R24-RCV-70A |
+
+EVID-03 is deliberately not ACTIVE_CONFIRMED. The existing synthetic positive
+evaluator case can establish an identity/completeness false positive, but it
+does not prove that real physical certification or publication can be bypassed.
+R24-RCV-32 must reproduce the exact claim boundary before assigning a stronger
+status.
+
+MAINT-01 and MAINT-02 are not release blockers by file size or artifact count.
+Extraction occurs only when a proven behavioral fix already touches the seam
+and a smaller module directly reduces that fix's risk.
+
+## IMPLEMENTATION_STEPS
+
+### Phase PRE — bootstrap recovery before this plan may merge
+
+These tasks execute from an owner-approved external copy of this plan. They do
+not require adding this plan or a new task file to the repository before the
+admission defect is fixed.
+
+#### R24-PRE-00A — Exact toolchain observation
+
+Outcome: establish a trustworthy execution environment for the recovery.
+
+Actions:
+
+1. Verify the current host versions before interpreting any local test result.
+2. Select an already installed exact Node 22.12.0 and npm 10.9.0 route.
+3. If the exact runtime is unavailable, emit TOOLCHAIN_BLOCKED with actual and
+   required versions. Do not classify product tests.
+4. Record OS, architecture, executable paths and binary digests where
+   available.
+
+Acceptance:
+
+- exact Node/npm identity is printed before repository gates;
+- no silent Node 26 execution;
+- no dependency or network fetch without separate admission;
+- environment failure is not reported as product failure.
+
+#### R24-PRE-00B — PK1R1 lifecycle reconciliation
+
+Outcome: determine the truthful state of the current PK1R1 lease, WIP and
+terminal delivery before creating a successor.
+
+Actions:
+
+1. Bind the immutable PK1R1 candidate, its admitted 19-path delta, delivery
+   receipt, merge identity and external terminal verification separately.
+2. Reconcile the active lease and WIP=1 record against actual commit, PR, merge
+   and postmerge outcomes.
+3. Release only the exact owned lease when delivery is independently verified.
+4. Preserve an active or uncertain lease as typed state; never manufacture a
+   terminal release.
+
+Acceptance:
+
+- candidate identity and current repository head are separate fields;
+- no stale holder remains writable after a higher fence;
+- lease release is idempotent and independently observable;
+- graph progress does not change.
+
+#### R24-PRE-00C — Closed-stage candidate verifier repair
+
+Primary finding: GOV-07.
+
+Outcome: a completed stage is verified against its immutable admitted candidate
+instead of the moving successor HEAD.
+
+Actions:
+
+1. Reproduce E_PK1R1_EXACT_ADMITTED_DELTA:20:19 from the exact PR head.
+2. Separate closed-stage candidate verification from successor current-head
+   admission.
+3. Bind the closed verifier to candidate SHA/tree, exact admitted delta and
+   terminal receipt.
+4. Reject a mutated closed candidate, wrong delta, wrong receipt or
+   different-head evidence.
+5. Do not widen the 19-path historical admission.
+
+Acceptance:
+
+- unchanged closed candidate passes regardless of later unrelated successor
+  paths;
+- any change to the closed candidate fails;
+- successor changes remain untrusted until their own admission;
+- focused positive, negative and implementation-mutant tests pass.
+
+#### R24-PRE-00D — Fresh successor admission and lease handoff
+
+Outcome: every successor receives a fresh StageInstance and admission against
+its own current base and exact planned output set.
+
+Actions:
+
+1. Compile the successor from current graph state and approved sequence.
+2. Prepare create/modify/delete/rename paths before the first write.
+3. Verify exact base/head/tree, branch, authority ceiling, command scope and
+   acceptance signals.
+4. Acquire a new fencing counter only after predecessor reconciliation.
+5. Reject omitted paths, extra paths, operation-class mismatch, base drift and
+   simultaneous writer.
+
+Acceptance:
+
+- the plan-file successor is admitted as its own one-path docs contour;
+- closed PK1R1 evidence is neither rebound nor rewritten;
+- crash/restart and stale-lease negative tests pass;
+- no general bypass or wildcard admission is added.
+
+#### R24-PRE-00E — Recovery CI and external confirmation
+
+Outcome: prove the recovery itself before rebinding the plan.
+
+Acceptance:
+
+- all seventeen required jobs pass on the recovery candidate;
+- the five formerly failing primary lanes execute the repaired semantics;
+- aggregate lanes pass from their real dependencies;
+- exact merged origin/main is clean and independently verified;
+- the old PR 1843 result remains historical evidence.
+
+#### R24-PRE-00F — Fresh V2 plan delivery
+
+Outcome: deliver the reviewed V2 plan from the new exact main.
+
+Actions:
+
+1. Close or supersede PR 1843 without merging it.
+2. Create a new isolated branch/worktree from exact recovered origin/main.
+3. Re-run bootstrap and architecture preflight.
+4. Rebind AUTHORING_BASE_SHA and program observation fields without changing
+   plan meaning.
+5. Commit, push, open a new PR, pass all required CI, merge normally and verify
+   exact merged bytes.
+6. Set the merged plan's next step to R24-RCV-00A.
+
+Acceptance:
+
+- no rebase, force push or hidden carry-over;
+- reviewed V2 content is preserved;
+- plan merge itself is green;
+- programDone remains false.
+
+### Phase 0 — trustworthy toolchain, current state and autonomous execution
+
+#### R24-RCV-00A — Canonical exact-toolchain entrypoint
+
+Primary finding: OPS-01.
+
+Outcome: every R2.4 local and CI entrypoint checks or selects the exact supported
+Node/npm pair before expensive work.
+
+Acceptance:
+
+- actual and required versions are machine-readable;
+- local and CI semantics match;
+- unsupported runtime exits typed before tests;
+- upgrade is a separate owner decision;
+- no product claim changes.
+
+#### R24-RCV-00B — Effective-state compiler
+
+Primary findings: GOV-01, GOV-02 and GOV-03.
+
+Outcome: one read-only compiler resolves raw graph plus append-only overlays,
+leases, delivery and external attestations into one current projection.
+
+Acceptance:
+
+- scheduler, status, next-node selection and completion use the same result;
+- raw/frozen state remains immutable;
+- generated output is reproducible and drift-checked;
+- conflicting overlays, stale SHA, missing predecessor, cycles, duplicate
+  transitions and self-promotion fail;
+- recorded and freshly proven progress are separate;
+- no automatic graph transition occurs.
+
+#### R24-RCV-00C — Corrective register and crosswalk
+
+Primary finding: MAINT-02.
+
+Outcome: one concise machine register maps every audit finding to evidence,
+primary contour and existing graph relationship.
+
+Acceptance:
+
+- every active finding has exactly one primary contour;
+- every ACTIVE_CONFIRMED row has the full evidence shape;
+- history is indexed, not deleted;
+- the register cannot create a new graph node;
+- reducer/register disagreement fails.
+
+#### R24-RCV-00D — Graph-derived selector
+
+Outcome: select the next dependency-closed work item from the effective state
+and corrective severity policy.
+
+Acceptance:
+
+- release blockers and P1 data/authority findings outrank P3 debt;
+- only one item is selected;
+- blocked external nodes remain blocked;
+- selection is deterministic for equal input;
+- narrative NEXT_STEP cannot override the graph/compiler.
+
+#### R24-RCV-00E — Lease, fencing and CAS transition engine
+
+Outcome: enforce one writer and monotonic state transitions across crash and
+restart.
+
+Acceptance:
+
+- stale fence cannot write;
+- duplicate acquisition is rejected;
+- terminal/revoked state cannot return to active without a new successor;
+- uncertain delivery is reconciled before retry;
+- lease release requires verified delivery;
+- crash, expired holder, second writer and out-of-order transition mutants die.
+
+#### R24-RCV-00F — Resumable executor and ten-minute observer
+
+Outcome: autonomously drive one admitted contour and safely resume it.
+
+Acceptance:
+
+- restart resumes from durable evidence rather than chat memory;
+- routine actions do not pause for conversational approval;
+- external/owner facts enter typed wait states;
+- observer is read-only and reports only meaningful changes;
+- no second pump, writer, scheduler or product runtime dependency is created;
+- stop/revoke preserves work and authority boundaries.
+
+#### R24-RCV-00G — Complete E0 candidate inventory
+
+Primary finding: OPS-03.
+
+Outcome: classify every core effect-token match semantically before changing
+the boundary.
+
+Acceptance:
+
+- complete deterministic inventory with reason and owner;
+- candidates are separated into real violation, allowed pure reference,
+  generated/historical input and false lexical match;
+- adding paths to an exception list cannot satisfy the task;
+- no runtime file moves in this contour.
+
+#### R24-RCV-00H — Minimal E0 parser and purity repair
+
+Outcome: make E0 enforce the real current boundary and validate docs-only tasks
+without broad architecture movement.
+
+Acceptance:
+
+- complete inventory drives the gate;
+- real violations fail with precise path/reason;
+- lexical false positives do not;
+- task parser reaches the V2 plan;
+- historical compatibility remains explicit;
+- no speculative module extraction.
+
+#### R24-RCV-00I-N — Proven effect-seam repairs
+
+Outcome: for each real violation established by 00G, move only that bounded
+effect behind an existing named port/adapter.
+
+Each violation gets a separate task ID and delivery chain. Acceptance requires
+unchanged domain semantics, no new dependency, no direct platform import from
+Core and targeted architecture negative tests.
+
+### Phase 1 — immutable test and CI denominator
+
+#### R24-RCV-01A — Normative claim-test-lane manifest
+
+Primary finding: GOV-04.
+
+Outcome: establish the fixed denominator described in Contract 7.
+
+Acceptance:
+
+- all current required claims have named tests and lanes;
+- manifest removal requires an explicit versioned authority decision;
+- simultaneous test and inventory-row deletion fails;
+- zero-test and duplicate-test results fail.
+
+#### R24-RCV-01B — Test classification
+
+Outcome: classify every R2.4 test as current required, current optional,
+historical replay or superseded with an exact successor.
+
+Acceptance:
+
+- no unexplained skip/todo;
+- historical tests cannot certify current head;
+- current required tests cannot be demoted because they fail;
+- counts reconcile with filesystem and normative manifest.
+
+#### R24-RCV-01C — Required CI lane closure
+
+Primary finding: EVID-05.
+
+Outcome: execute every current required test in protected CI.
+
+Acceptance:
+
+- C2A, C2B2, C5C1 and every other current required test either pass on current
+  head or have a machine-proven historical role plus an exact current successor;
+- no absent required lane;
+- aggregate gates consume exact primary jobs;
+- multi-OS identities are explicit.
+
+#### R24-RCV-01D — WP709 current-head compatibility
+
+Primary finding: GOV-05.
+
+Outcome: run WP709 compatibility on current head with its normative loss
+contract.
+
+Acceptance:
+
+- historical detached execution remains historical;
+- current result binds current code, fixtures and oracle;
+- incompatible current behavior fails without fallback;
+- output feeds R24-RCV-33.
+
+#### R24-RCV-01E — Skip, flaky and expiry lifecycle
+
+Primary findings: GOV-06 and OPS-02.
+
+Acceptance:
+
+- each exception has owner, reason, affected claim, issue/reference, start and
+  expiry stage;
+- expired exception fails;
+- replacement proof runs in the same required context;
+- exception cannot lower denominator or issue release PASS.
+
+### Phase 2 — manuscript durability in dependency order
+
+#### R24-RCV-10A — One durable publication port
+
+Primary finding: DATA-05.
+
+Outcome: every live save ACK derives from one coordinator that owns temp write,
+file fsync, atomic publication, parent-directory fsync, readback and receipt.
+
+Acceptance:
+
+- weaker live writer cannot bypass the port;
+- ACK occurs only after durable readback;
+- no-space, permission, partial write, rename and crash cases preserve the last
+  readable version;
+- product port and platform adapter boundaries remain explicit.
+
+#### R24-RCV-10B — Resource-total writer cleanup
+
+Primary findings: DATA-07 and DATA-08.
+
+Outcome: close every acquired handle on every exit while preserving the primary
+error and bounded cleanup diagnostics.
+
+Acceptance:
+
+- repeated TEMP_WRITE failures do not grow open descriptors;
+- cleanup failure is diagnostic and never replaces primary error;
+- OLD versus NEW committed markers remain distinct;
+- killpoint and mutant suites have nonzero denominators.
+
+#### R24-RCV-11 — Stable project/scene identity and relocation
+
+Primary finding: DATA-02.
+
+Outcome: commit and recovery metadata resolve through stable identity after
+project rename or move.
+
+Acceptance:
+
+- projectId and sceneId survive rename/move;
+- path is resolved and revalidated at effect time;
+- clone/import identity policy remains explicit;
+- stale absolute path cannot block or redirect the next save;
+- foreign project identity fails before write.
+
+#### R24-RCV-12 — Scene integrity and project-manifest lineage
+
+Primary finding: DATA-03.
+
+Outcome: legitimate manifest advancement by another scene does not appear as
+scene corruption.
+
+Acceptance:
+
+- scene commit identity and monotonic project lineage are separate;
+- concurrent scene A/B saves converge under declared policy;
+- rollback/recovery preserves both identities;
+- manifest regression, fork and foreign lineage fail.
+
+#### R24-RCV-13 — Editor-open revision CAS
+
+Primary finding: DATA-01.
+
+Outcome: save compares against the revision opened by the editor, not a
+freshly restated value substituted at save time.
+
+Acceptance:
+
+- external modification between open and save returns typed conflict;
+- external bytes are never overwritten;
+- both versions remain recoverable;
+- retry requires explicit reconciliation;
+- stale renderer state cannot reset CAS.
+
+#### R24-RCV-14 — Document-bound backup pipeline
+
+Primary finding: DATA-04.
+
+Outcome: snapshot capture, queue, publication and restore carry immutable
+document and source-revision identity.
+
+Acceptance:
+
+- backup B cannot contain A bytes under interleaving;
+- mismatched document/revision is rejected;
+- queue cancellation and app restart preserve truth;
+- restore identifies its exact source and does not overwrite silently.
+
+#### R24-RCV-15 — Journaled lifecycle transactions
+
+Primary finding: DATA-06.
+
+Outcome: create, rename, move and delete are idempotent transactions across
+filesystem, manifest and identity registry.
+
+Acceptance:
+
+- killpoints at every boundary recover to declared OLD or NEW state;
+- no partial tree, orphan identity or false ACK;
+- replay is idempotent;
+- cross-device and permission failures are typed;
+- unrelated scenes remain byte-identical.
+
+#### R24-RCV-16 — Recovery-ledger budget
+
+Primary finding: DATA-09.
+
+Outcome: prove the bounded ledger meets its declared append/compaction budget.
+
+Acceptance:
+
+- hard maximum and compaction semantics are policy-bound;
+- size and latency are measured at the maximum;
+- optimization occurs only if budget fails;
+- no release block exists when measured budget passes;
+- readability and recovery semantics cannot regress.
+
+### Phase 3 — command, capability, IPC and path authority
+
+#### R24-RCV-20A — Operation-to-capability manifest
+
+Outcome: one canonical map binds channel, operation kind, command ID, capability
+class, effect reservation and handler owner.
+
+Acceptance:
+
+- no unclassified privileged operation;
+- Query entries cannot reserve effects;
+- duplicate/conflicting mappings fail;
+- renderer labels cannot alter the map.
+
+#### R24-RCV-20B — Semantic capability enforcement
+
+Primary finding: AUTH-02.
+
+Outcome: registration and dispatch verify that each operation's required class
+matches the canonical map.
+
+Acceptance:
+
+- registering ui:create-node as query.read fails;
+- dispatch revalidates class and current capability;
+- label presence alone is insufficient;
+- negative mutants cover class substitution and missing revalidation.
+
+#### R24-RCV-20C — Query/effect taxonomy repair
+
+Primary finding: AUTH-04.
+
+Outcome: reclassify ui:open-section and any similarly proven route according to
+actual mutation/effect behavior.
+
+Acceptance:
+
+- Query path performs zero filesystem/application-state mutation;
+- mutating variant is a Command with reserved Effect;
+- callers receive typed unavailable fallback;
+- no UI behavior is claimed until real runtime tests pass.
+
+#### R24-RCV-21 — Privileged route and envelope denominator
+
+Primary finding: AUTH-03.
+
+Outcome: enumerate the complete privileged IPC surface and apply versioned
+validation to every route.
+
+Acceptance:
+
+- every route has operation kind, capability, input schema and result envelope;
+- inherited/non-plain payload, unknown field, oversized input and wrong version
+  fail before normalization;
+- unclassified route blocks CI;
+- route inventory cannot shrink silently.
+
+#### R24-RCV-22 — Freshness, replay and timeout semantics
+
+Primary finding: AUTH-05.
+
+Outcome: enforce issuedAt freshness, bounded replay identity and idempotent
+mutation outcomes.
+
+Acceptance:
+
+- duplicate correlation/idempotency identity returns the original committed
+  result or typed conflict;
+- timed-out request cannot execute twice;
+- replay survives the declared restart boundary;
+- stale/future issuedAt and ledger overflow are typed;
+- no silent retry of uncertain mutation.
+
+#### R24-RCV-23 — Physical path capability feasibility
+
+Primary finding: AUTH-06.
+
+Outcome: select a feasible Node 22/macOS plus cross-platform design before
+promising descriptor-bound safety.
+
+Evaluate, without product mutation:
+
+- native descriptor-relative helper;
+- platform bookmark/portal or equivalent capability;
+- main-owned open handle with final identity comparison;
+- bounded restat plus typed unavailable where atomic primitive is absent.
+
+Acceptance:
+
+- threat model covers symlink swap, rename, mount swap, case/confusable and
+  TOCTOU;
+- supported guarantees are explicit per platform;
+- unsupported guarantee becomes typed unavailable;
+- no native dependency or expanded security boundary without owner decision.
+
+#### R24-RCV-24 — Opaque physical path capability
+
+Outcome: implement the selected admitted design.
+
+Acceptance:
+
+- renderer never receives or returns authority-bearing raw path;
+- capability is opaque, single-purpose, identity-bound and expiry-bound;
+- final effect revalidates the physical target;
+- swap/replay/foreign-project/expired-capability cases fail;
+- external write remains atomic and recoverable.
+
+#### R24-RCV-25 — Menu command route
+
+Primary finding: AUTH-01.
+
+Outcome: migrate governed menu mutations through canonical Command Kernel.
+
+Acceptance:
+
+- no direct handler execution;
+- dispatch-time capability and payload checks;
+- unavailable command has honest UI fallback;
+- menu visibility does not create authority.
+
+#### R24-RCV-26 — Hotkey command route
+
+Outcome: migrate governed hotkeys without intercepting system editing shortcuts
+or bypassing kernel policy.
+
+#### R24-RCV-27 — Palette command route
+
+Outcome: migrate governed palette actions through the same canonical command
+identity and result semantics.
+
+#### R24-RCV-28 — Toolbar, button and context routes
+
+Outcome: migrate remaining governed renderer entrypoints by route family. Each
+family is a separate task/delivery chain if it changes different handlers.
+
+#### R24-RCV-29 — Whole-denominator bypass proof
+
+Outcome: prove zero governed mutation bypass across the manifest.
+
+Acceptance:
+
+- menu, hotkey, palette, toolbar, button, context menu, IPC direct call and
+  feature-pack probes are included;
+- unknown route and semantic-class substitution fail;
+- denominator matches the normative manifest;
+- nonzero mutants kill every bypass family.
+
+### Phase 4 — verifier and physical-evidence correctness
+
+#### R24-RCV-30 — Exact certification set
+
+Primary finding: EVID-01.
+
+Outcome: compare exact normative stage-role-artifact set equality and
+uniqueness.
+
+Acceptance:
+
+- one valid binding duplicated 137 times cannot satisfy 33 distinct stages;
+- missing, duplicate, unexpected and wrong-role entries fail;
+- normative set has independent authority;
+- history remains verifiable.
+
+#### R24-RCV-31 — Complete PK1 identity
+
+Primary finding: EVID-02.
+
+Outcome: require complete identity before comparing receipts.
+
+Acceptance:
+
+- source/head/tree/build/profile/platform/architecture/package/executable/ASAR
+  hashes are mandatory as applicable;
+- missing ASAR or platform fails;
+- cross-receipt equality occurs only after completeness;
+- synthetic fixtures cannot populate physical fields without a synthetic class.
+
+#### R24-RCV-32 — Evaluator versus physical oracle boundary
+
+Primary finding: EVID-03.
+
+Outcome: determine and enforce the exact boundary without claiming a bypass that
+has not been observed.
+
+Acceptance:
+
+- evaluator unit tests are explicitly synthetic/internal;
+- physical status requires externally observed tool output and artifact
+  identity;
+- builder cannot self-certify;
+- any actual promotion bypass, if reproduced, receives a new exact evidence
+  record;
+- absence of reproduced bypass does not remove the independence requirement.
+
+#### R24-RCV-33 — Bidirectional WP709 loss equality
+
+Primary finding: EVID-04.
+
+Outcome: require exact equality between accumulated ledger losses and final
+oracle losses.
+
+Acceptance:
+
+- added, missing, duplicated, reordered or identity-mismatched loss fails;
+- zero-loss case is explicit;
+- current-head compatibility from 01D is consumed;
+- historic loss evidence cannot certify current output.
+
+#### R24-RCV-34 — Honest UI proof classes
+
+Primary finding: EVID-06.
+
+Outcome: rename source-string checks to static contract tests and add real
+Electron journeys where release claims require UI behavior.
+
+Acceptance:
+
+- source scan cannot carry E2E label;
+- real journey observes visible action, effect, disk result and restart/recovery
+  where applicable;
+- exact build/profile is bound;
+- screenshots remain supporting evidence only.
+
+#### R24-RCV-35 — Critical mutant denominator
+
+Outcome: bind nonzero implementation-mutant sets for each critical data-safety,
+authority, autonomy and release-evidence invariant.
+
+Acceptance:
+
+- mutant IDs are stable and normative;
+- deletion/reduction fails;
+- equivalent mutant is documented and replaced;
+- survivor blocks the affected claim.
+
+### Phase 5 — remaining product gaps
+
+#### R24-RCV-40A — Pulse product contract
+
+Primary finding: PROD-01.
+
+Outcome: decide the already-declared bounded Pulse capability and its data,
+privacy and command authority without widening Writer v1.
+
+Acceptance:
+
+- opt-in default, canonical data owner, retention and deletion semantics;
+- no text content collection beyond approved local aggregates;
+- commands, queries, events and effects declared;
+- no UI or runtime mutation in this contract contour.
+
+#### R24-RCV-40B — Pulse durable local ledger
+
+Outcome: implement bounded local opt-in records, correction and deletion through
+canonical persistence and recovery.
+
+#### R24-RCV-40C — Pulse aggregate projection
+
+Outcome: compute deterministic aggregates/formulas as derived state with
+identity/revision/generation guards.
+
+#### R24-RCV-40D — Pulse command lifecycle and export
+
+Outcome: canonical opt-in, correction, export and delete commands with
+dispatch-time capability and privacy enforcement.
+
+#### R24-RCV-40E — Pulse UI and physical journey
+
+Outcome: expose the admitted capability and prove opt-in, record, aggregate,
+correct, export and delete in the exact Electron build.
+
+If composition or state design materially changes, use the Lazyweb-first UI
+protocol in this separate UI contour. UI visibility never becomes authority.
+
+#### R24-RCV-41 — Contextual Unicode sigma
+
+Primary finding: PROD-02.
+
+Outcome: preserve the following lowercase character and coordinate mapping
+across run boundaries.
+
+Acceptance:
+
+- mixed Greek/Latin, combining marks, surrogate pairs and boundary chunks;
+- differential oracle against full-context transformation;
+- roundtrip coordinate stability;
+- no unrelated normalization change.
+
+### Phase 6 — bounded maintenance disposition
+
+#### R24-RCV-50 — Deferred seam-debt projection
+
+Primary finding: MAINT-01.
+
+Outcome: record remaining large-file and evidence-volume debt after behavioral
+fixes without blocking release by size alone.
+
+Rules:
+
+- extract a seam only inside the contour that proves the affected defect;
+- no mandatory broad RCV-20 refactor;
+- no mass deletion or rewrite of corrective history;
+- generated current projections may replace manual navigation, not authority;
+- remaining debt has measured review/runtime impact, owner and later trigger.
+
+### Phase 7 — corrective acceptance and existing release graph
+
+#### R24-RCV-60 — Corrective acceptance checkpoint
+
+Outcome: prove all release-blocking corrective work before spending final
+signing/notarization authority.
+
+Acceptance on one fresh exact origin/main:
+
+- no open P1 corrective finding;
+- no release-blocking P2 finding;
+- data-safety physical journeys and crash recovery pass;
+- whole privileged-route denominator passes;
+- certification, PK1 identity, WP709 and physical-oracle counterexamples fail
+  as designed;
+- normative tests, nonzero mutants and required CI lanes are complete;
+- full baseline, RTK, renderer/preload build, platform parity, SAST, privacy,
+  OSS policy and production dependency audit are green;
+- one independent read-only audit agrees;
+- verdict remains NOT_READY solely for named open graph nodes.
+
+This checkpoint creates no graph progress.
+
+#### R24-RCV-61 — PK1_RELEASE_SECURITY_PHYSICAL
+
+Primary graph finding: REL-01.
+
+Outcome: create exact physical security evidence on the complete declared cut
+set.
+
+Acceptance:
+
+- clean exact source and pinned builder;
+- Developer ID signing, designated requirement, deep strict validation,
+  Hardened Runtime and Electron fuses;
+- complete package/executable/resources/ASAR hashes;
+- notarization identity, staple and offline validation where supported;
+- packaged create/open/type/save/close/reopen/recovery/export journeys;
+- every platform/architecture/profile row explicit, including exclusions;
+- separate physical verifier;
+- missing identity or external service remains BLOCKED_TYPED.
+
+#### R24-RCV-62 — V3_PACKAGE_CLAIM_COMPILER
+
+Primary graph finding: REL-02.
+
+Outcome: compute exact-profile package claim from current PK1 without promoting
+Atlas, Word, Google or optional profiles.
+
+Acceptance:
+
+- raw PK1 is re-evaluated;
+- stale, synthetic, partial or different-identity PK1 fails;
+- corrective register and delivery state are inputs;
+- programDone remains false.
+
+#### R24-RCV-63 — WP-900 BBR policy
+
+Primary graph finding: REL-03.
+
+Outcome: bind the owner-approved cryptography, key custody, off-host and
+retention policy.
+
+No encrypted runtime is implemented before this decision. Missing owner policy
+is WAIT_OWNER_FACT.
+
+#### R24-RCV-64 — WP-901 BBR restore
+
+Primary graph finding: REL-04.
+
+Outcome: implement authenticated versioned capsules and restore-as-new.
+
+Acceptance:
+
+- key separate from capsule;
+- atomic creation and readable inventory;
+- restore creates a new project identity;
+- wrong key, corrupt/truncated/reordered/unsupported capsule fails before
+  mutation;
+- killpoint and off-host roundtrip tests;
+- no secret in Git or logs.
+
+#### R24-RCV-65 — WP-902 entitlement product
+
+Primary graph finding: REL-05.
+
+Outcome: signed local capability truth that never locks owned text.
+
+Acceptance:
+
+- owner pricing/entitlement ADR first;
+- offline signature, expiry, skew, grace, refund and revocation semantics;
+- downgrade preserves readable shared-format data;
+- Command Kernel revalidation;
+- no account/network requirement for open/edit/save/recover/export.
+
+#### R24-RCV-66 — WP-903 brand release
+
+Primary graph finding: REL-06.
+
+Outcome: bind licensed, accessible release assets to the exact baseline.
+
+Acceptance:
+
+- source/license/use/digest inventory;
+- no placeholder or unlicensed asset;
+- toolbar baseline preserved unless separately changed by owner;
+- contrast, focus, keyboard and reduced-motion proof;
+- exact build visual evidence supports but does not replace function tests.
+
+#### R24-RCV-67 — WP-904 package content
+
+Primary graph finding: REL-07.
+
+Outcome: define the deterministic package source manifest and release cut set.
+
+Acceptance:
+
+- file allowlist and forbidden-file scan;
+- SBOM and complete notices;
+- pinned source, lockfile, toolchain and builder;
+- platform/architecture/profile/update-from inclusion and exclusion list;
+- no sources, tests, secrets, private evidence, dev modules, unexpected native
+  binary or network bootstrap;
+- reproducibility classification for signing differences.
+
+#### R24-RCV-68 — Factual documentation cutover before freeze
+
+Outcome: update factual docs and current resolver wording before the final
+package candidate is built.
+
+Acceptance:
+
+- current docs resolve status through the current compiler;
+- no frozen August artifact is presented as current;
+- docs do not claim programDone or release readiness;
+- all tracked documentation intended for R2.4 is complete;
+- later evidence carriers cannot change the package source manifest.
+
+#### R24-RCV-69 — WP-905 final package physical candidate R
+
+Primary graph finding: REL-08.
+
+Outcome: build and freeze R after BBR, entitlement, brand, content and factual
+inputs are complete.
+
+Acceptance:
+
+- final signing/notarization/fuses/ASAR rerun;
+- fresh install and first launch;
+- existing project plus create/write/save/close/reopen/recovery/export;
+- update from every claimed predecessor;
+- rollback without deleting or making newer project data unreadable;
+- corrupt/interrupted/no-space/permission/offline cases;
+- uninstall document-preservation policy;
+- exact R identity constant across every receipt.
+
+#### R24-RCV-70A — WP-906 candidate verdict C1
+
+Primary graph finding: REL-09.
+
+Outcome: test the release candidate when all predecessors are terminal, without
+requiring WP-906 to be already complete.
+
+Acceptance:
+
+- exactly 98 of 99 mandatory nodes terminal;
+- WP-906 is the sole pending mandatory node;
+- zero open release-blocking corrective findings;
+- R complete and immutable;
+- lease remains active and WIP remains one for the terminal contour;
+- candidateCarrier C1 binds R and programDone remains false;
+- no owner permit is consumed yet.
+
+#### R24-RCV-70B — Independent candidate audits
+
+Outcome: two independent read-only oracles verify C1 and R.
+
+Acceptance:
+
+- exact artifact, platform/profile/update cut set and package-source manifest;
+- one oracle cannot be the builder or candidate compiler;
+- disagreements remain NOT_READY;
+- outputs are detached immutable attestations.
+
+#### R24-RCV-70C — Exact owner release permit
+
+Outcome: obtain the external owner fact for the exact candidate.
+
+The permit binds R, candidate verdict digest, terminal transition payload
+digest, allowed evidence-carrier policy and publication scope. Absence or
+mismatch leaves publicationAuthority false.
+
+#### R24-RCV-70D — WP-906 terminal carrier C2
+
+Outcome: merge only the precomputed evidence/control transition for WP-906.
+
+Acceptance:
+
+- C2 changes no package-source input;
+- consumes C1, both audits and exact permit;
+- requests fenced release of the one owned lease;
+- reports terminal candidate state, not self-certified final PASS;
+- normal commit, PR, CI and protected merge complete.
+
+#### R24-RCV-70E — Detached terminal attestation
+
+Outcome: independently prove exact merged C2 and finish without another commit.
+
+Acceptance:
+
+- verifies R, C1, C2, audits, permit and allowed delta;
+- observes actual lease RELEASED and WIP zero;
+- current compiler reports 99 of 99, zero pending, zero blocked mandatory and
+  programDone true;
+- productionReleaseReady and publicationAuthority are limited to exact R;
+- optional ten nodes remain explicit;
+- no later tracked write is required;
+- public publication, if desired, is a separately executed external action
+  under the exact permit.
+
+### Critical path and dependencies
+
+The strict path is:
+
+PRE-00A -> PRE-00B -> PRE-00C -> PRE-00D -> PRE-00E -> PRE-00F
+-> 00A -> 00B -> 00C -> 00D -> 00E -> 00F
+-> 00G -> 00H -> proven 00I tasks
+-> 01A -> 01B -> 01C -> 01D -> 01E
+-> 10A -> 10B -> 11 -> 12 -> 13 -> 14 -> 15
+-> 20A -> 20B -> 20C -> 21 -> 22 -> 23 -> 24
+-> 25 -> 26 -> 27 -> 28 -> 29
+-> 30 -> 31 -> 32 -> 33 -> 34 -> 35
+-> 40A -> 40B -> 40C -> 40D -> 40E -> 41
+-> 60 -> 61 -> 62 -> 63 -> 64 -> 65 -> 66 -> 67 -> 68 -> 69
+-> 70A -> 70B -> 70C -> 70D -> 70E.
+
+R24-RCV-16 and R24-RCV-50 are off the release critical path when their measured
+severity remains P3. If measurement proves a release-blocking defect, the
+corrective register raises severity through a fresh evidence record and the
+selector places it before R24-RCV-60.
+
+Read-only audits may execute concurrently with a frozen candidate. Mutation
+contours remain one-writer sequential.
+
+### Progress reporting
+
+Report three independent measures:
+
+- GRAPH_RECORDED: terminal mandatory nodes divided by 99;
+- CORRECTIVE_CLOSED: closed active release-blocking findings divided by the
+  fixed corrective denominator;
+- PHYSICAL_RELEASE_CUT_SET: passed exact platform/profile/artifact rows divided
+  by the frozen release cut set.
+
+Never average them into one readiness percentage. Changed files, lines,
+commits, elapsed time and artifact counts are not progress.
+
+## CHECKS
+
+CHECK_01_PRE_EXACT_BASE_CANON_AND_ISOLATION
+CMD: verify project registry identity, encrypted T7 UUID and writability, exact authoring head, branch, clean isolated worktree, active canon and current COREX before the first edit
+PASS: canonical identity is unambiguous, T7 UUID is D1F2E2C1-3210-4A39-A4E0-0AA0AD5110E2, encrypted/unlocked/writable are true, head is c9bc88522327cb28be0690d89d6edc8259cc48c8 and only the isolated plan worktree is used
+
+CHECK_02_POST_TASK_FORMAT
+CMD: run the HARD-TZ parser in an isolated fixture without repository core files, then run the complete repository E0
+PASS: the isolated parser accepts TYPE, canon, baseline, ALLOWLIST, DENYLIST, PRE/POST check order and required sections; complete E0 may retain the exact pre-existing OPS-03 failure until its precursor/00G-00H repair, but that failure is recorded as FAIL and never represented as green
+
+CHECK_03_POST_SCOPE_AND_DIFF
+CMD: inspect status, path diff and whitespace
+PASS: exactly one plan path changed, no unrelated or generated bytes changed and diff check is clean
+
+CHECK_04_POST_REVIEW_CORRECTIONS
+CMD: machine-check required V2 concepts
+PASS: precursor-before-plan-merge, exact early toolchain, non-self-authorizing status, full ACTIVE_CONFIRMED evidence, autonomous state machine, fixed test denominator, bounded contours, EVID-03 downgrade, deferred maintenance, two release identities, WP-906 candidate/terminal split, pre-freeze docs and exact report schema are all present
+
+CHECK_05_POST_FINDING_AND_GRAPH_COVERAGE
+CMD: verify unique crosswalk IDs and release nodes
+PASS: every consolidated finding has exactly one primary contour, all nine open mandatory nodes are present, no duplicate active tracker exists and 90 of 99 remains recorded rather than freshly proven
+
+CHECK_06_POST_ARCHITECTURE_AND_CLAIM_BOUNDARY
+CMD: review against active canon, CANON, COREX, BIBLE, architecture map, glossary, documentation constitution, PROCESS and exact current evidence
+PASS: Product Core, Command Kernel, Design OS, renderer, ports and adapters remain separated; offline-first Writer v1 scope is unchanged; no plan statement creates capability, authority, graph promotion or release truth
+
+CHECK_07_POST_GUARDRAILS
+CMD: run agent guardrails with the supported exact toolchain when available
+PASS: guardrails exit zero and report no drift created by the document; a mismatched host runtime is typed separately
+
+CHECK_08_POST_REVIEW_CARRIER_DELIVERY
+CMD: commit and push the one-path V2 update and refresh PR 1843 for review
+PASS: commit and push succeed, PR remains explicitly unmerged, its known admission failure is preserved as precursor evidence and no bypass is attempted
+
+CHECK_09_POST_PRECURSOR_REBIND_AND_FINAL_DELIVERY
+CMD: after PRE-00E, create a fresh branch from recovered origin/main, rebind the plan, deliver a new PR, pass all required CI, merge normally and verify exact merged bytes
+PASS: reviewed V2 is present on exact origin/main, all required checks pass, programDone remains false and NEXT_STEP resolves to R24-RCV-00A
+
+## STOP_CONDITION
+
+Stop the active contour when:
+
+- canon, graph revision, exact base, branch, worktree, authority or owner of a
+  write path is ambiguous;
+- the worktree contains unrelated changes;
+- PR 1843 is about to merge before the precursor;
+- exact Node/npm cannot be selected and the next result depends on local tests;
+- a planned output is missing from admission or an extra path appears;
+- predecessor delivery, active lease or external mutation outcome is uncertain;
+- a second writer or stale fencing counter appears;
+- target architecture would be presented as current runtime;
+- a test/route/stage/platform/mutant denominator would shrink;
+- a required proof is stale, skipped, self-authored, zero-test or
+  different-head/build/profile;
+- a behavioral contour contains an unrelated refactor;
+- external data, secret, signing identity, notarization, required platform,
+  policy decision or owner permit is unavailable;
+- a new dependency, product network/cloud truth or broader security boundary is
+  required without explicit owner decision;
+- destructive cleanup, reset, rebase, force action, direct protected push or
+  public publication would occur outside exact authority;
+- the same failure signature repeats three times without a new evidence-backed
+  hypothesis;
+- required CI, normal merge or exact postmerge verification cannot complete.
+
+A stop preserves owned work, immutable evidence and the last durable state. It
+does not advance the graph or begin another mutation contour.
+
+## REPORT_FORMAT
+
+The final report must validate exactly against AGENT_FINAL_REPORT_V1 and contain
+only these keys:
+
+- TASK_ID
+- STATUS
+- HEAD_SHA_BEFORE
+- HEAD_SHA_AFTER
+- COMMIT_SHA
+- MERGED_SHA
+- CHANGED_BASENAMES
+- STAGED_SCOPE_MATCH
+- TEST_RESULTS
+- COMMIT_OUTCOME
+- PUSH_RESULT
+- PR_RESULT
+- CI_RESULT
+- MERGE_RESULT
+- POST_MERGE_VERIFICATION
+- CURRENT_CLAIM_SCOPE
+- OPEN_LIMITATIONS
+- ROLLBACK
+- NEXT_STEP
+
+For tasks governed by CODEX_OUTPUT_POLICY, return exactly one text code block
+with KEY: VALUE lines, no URLs or slash-containing paths, and basenames only in
+CHANGED_BASENAMES.
 
 ## FAIL_PROTOCOL
 
-1. Fail closed. A failed or unknown mandatory link remains failed or unknown.
-2. Preserve pre-existing work, user documents, canonical checkout changes, immutable evidence and recovery artifacts.
-3. Record the exact command, phase, error code, expected observation, actual observation, head/tree, runtime, fixture or seed, affected identities and the last known durable state.
-4. Distinguish product failure, test failure, environment/toolchain failure, external service failure and evidence-verifier failure.
-5. Keep the primary error. Secondary cleanup errors are attached as diagnostics and never replace it.
-6. Do not retry an external or mutating operation without knowing its idempotency outcome.
-7. After three identical failure signatures, stop the loop and state one next hypothesis.
-8. Correct only the admitted contour. A newly discovered independent defect enters the reducer’s open-finding register and receives a later bounded task.
-9. Do not weaken a test or claim to fit current behavior. If the accepted product contract is wrong, obtain an explicit owner amendment and preserve the old contract as history.
-10. A branch-local fix remains candidate-only until commit, push, required CI, normal protected merge and exact merged-head verification are complete.
-11. A positive evaluator result remains internal evidence until an independent physical oracle proves the artifact.
-12. Public release remains blocked unless the final owner permit matches the exact certified artifact set.
+1. Fail closed. UNKNOWN and BLOCKED_TYPED never normalize to PASS.
+2. Preserve user work, canonical checkout changes, immutable history, recovery
+   material and every unrelated byte.
+3. Record command, phase, error code, expected, actual, exact SHA/tree,
+   runtime, build/profile/platform, fixture/seed and last durable state.
+4. Separate product, test, toolchain, CI, external-service, authority and
+   verifier failures.
+5. Keep the primary error; cleanup errors remain diagnostics.
+6. Reconcile uncertain mutation or external effects through idempotency identity
+   before retry.
+7. After three identical signatures, stop with one new hypothesis.
+8. Correct only the admitted contour. New independent defects enter the single
+   corrective register.
+9. Do not weaken tests or accepted contract to fit current behavior.
+10. Candidate remains candidate until protected merge and exact postmerge proof.
+11. Synthetic evaluator output remains internal evidence.
+12. Public release remains impossible without the exact permit and detached
+    terminal attestation.
+13. Review-carrier completion is not program completion.
+14. No final claim exceeds its exact SHA, artifact, cut set, denominator and
+    oracle.
