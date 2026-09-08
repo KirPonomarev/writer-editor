@@ -14,6 +14,7 @@ const WP806_MERGE_SHA = '7734cc48666f260c9554fbf46357c0a3b8b97c4d';
 const WP708_SUCCESSOR_PATHS = new Set([
   '.github/workflows/oss-policy.yml',
   'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  'docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   'scripts/ops/r24/docs-claim-lint.mjs',
   'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs',

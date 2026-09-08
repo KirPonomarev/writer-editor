@@ -16,6 +16,7 @@ const WP708_SUCCESSOR_PATHS = new Set([
   'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   'scripts/ops/r24/docs-claim-lint.mjs',
+  'docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json',
   'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs',
   'test/contracts/r24-wp806-terminal-carriers.contract.test.mjs',
 ]);

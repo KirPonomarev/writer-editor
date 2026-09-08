@@ -20,6 +20,8 @@ const V2_SUCCESSOR_PATHS = new Set([
   'scripts/ops/r24/docs-claim-lint.mjs',
   'test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs',
   'test/contracts/r24-wp708-terminal-carriers.contract.test.mjs',
+  'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs',
+  'test/contracts/r24-wp806-terminal-carriers.contract.test.mjs',
 ]);
 const response = (value, encoding) => encoding === 'utf8' ? `${value}\n` : Buffer.from(`${value}\n`);
 
