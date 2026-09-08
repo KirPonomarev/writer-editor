@@ -10,6 +10,8 @@ const STAGE_ID = 'PRE00B_LIFECYCLE_RECONCILIATION';
 const OWNER_INSTRUCTION_BINDING = 'OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08';
 const EXPECTED_SOURCE_HEAD_SHA = 'af74b9542c17c24a7515ce9017d98ea7b2e4d55a';
 const EXPECTED_SOURCE_HEAD_LABEL = 'PK1R1_MERGED_HEAD';
+const EXPECTED_DELIVERY_HEAD_SHA = '4107b0b30e870c446768171dd8afff02cebe0436';
+const EXPECTED_DELIVERY_TREE_SHA = 'f87f72fda113c53e5328b73bd074ee256e360ab2';
 const EXPECTED_PK1R1_STAGE_ID = 'PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY';
 const EXPECTED_LEGACY_COUNTS = Object.freeze({
   BLOCKED_TYPED: 4,
@@ -165,6 +167,53 @@ function readFileDigest(repoRoot, relative) {
     path: relative,
     sha256: sha256(bytes),
   };
+}
+
+function gitObjectBytes(repoRoot, revision, relative) {
+  const result = spawnSync('git', ['show', `${revision}:${relative}`], {
+    cwd: repoRoot,
+    encoding: null,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    timeout: 10000,
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  if (result.status !== 0) {
+    fail('E_PRE00B_GIT_OBJECT', `${revision}:${relative}:${String(result.stderr || '').trim()}`);
+  }
+  return result.stdout;
+}
+
+function readJsonSourceAtGit(repoRoot, key, revision, relative) {
+  const bytes = gitObjectBytes(repoRoot, revision, relative);
+  assert(bytes.length > 0 && bytes[bytes.length - 1] === 0x0a, 'E_PRE00B_CANONICAL_LF', relative);
+  return {
+    byteLength: bytes.length,
+    path: relative,
+    sha256: sha256(bytes),
+    value: JSON.parse(bytes.toString('utf8')),
+  };
+}
+
+function readFileDigestAtGit(repoRoot, revision, relative) {
+  const bytes = gitObjectBytes(repoRoot, revision, relative);
+  assert(bytes.length > 0 && bytes[bytes.length - 1] === 0x0a, 'E_PRE00B_CANONICAL_LF', relative);
+  return {
+    byteLength: bytes.length,
+    path: relative,
+    sha256: sha256(bytes),
+  };
+}
+
+function verifyPre00bDeliveryBinding(repoRoot, git = defaultGit) {
+  const deliveryHead = git(repoRoot, ['rev-parse', EXPECTED_DELIVERY_HEAD_SHA]);
+  assertEqual(deliveryHead, EXPECTED_DELIVERY_HEAD_SHA, 'E_PRE00B_DELIVERY_SHA_DRIFT');
+  const deliveryTree = git(repoRoot, ['rev-parse', `${deliveryHead}^{tree}`]);
+  assertEqual(deliveryTree, EXPECTED_DELIVERY_TREE_SHA, 'E_PRE00B_DELIVERY_TREE_DRIFT');
+  const sourceToDelivery = git(repoRoot, ['merge-base', '--is-ancestor', EXPECTED_SOURCE_HEAD_SHA, deliveryHead], { allowFailure: true }) !== null;
+  const deliveryToHead = git(repoRoot, ['merge-base', '--is-ancestor', deliveryHead, 'HEAD'], { allowFailure: true }) !== null;
+  assertEqual(sourceToDelivery, true, 'E_PRE00B_DELIVERY_SOURCE_NOT_ANCESTOR');
+  assertEqual(deliveryToHead, true, 'E_PRE00B_DELIVERY_HEAD_NOT_ANCESTOR');
+  return { deliveryHead, deliveryTree };
 }
 
 export function readPre00bSources({ repoRoot = ROOT, git = defaultGit } = {}) {
@@ -409,9 +458,9 @@ export function buildPre00bLifecycleReconciliation(evidence) {
   };
 }
 
-export function buildPre00bGovernanceApprovals({ repoRoot = ROOT, approvedAtUtc = '2026-09-08T00:00:00Z' } = {}) {
+export function buildPre00bGovernanceApprovals({ repoRoot = ROOT, approvedAtUtc = '2026-09-08T00:00:00Z', artifactRevision = EXPECTED_DELIVERY_HEAD_SHA } = {}) {
   const approvals = APPROVED_OUTPUT_PATHS.map((relative) => {
-    const digest = readFileDigest(repoRoot, relative);
+    const digest = readFileDigestAtGit(repoRoot, artifactRevision, relative);
     return {
       approvedAtUtc,
       approvedBy: OWNER_INSTRUCTION_BINDING,
@@ -434,13 +483,13 @@ export function buildPre00bGovernanceApprovals({ repoRoot = ROOT, approvedAtUtc 
   };
 }
 
-export function buildPre00bClaimBindings({ repoRoot = ROOT, generatedAtUtc = '2026-09-08T00:00:00Z' } = {}) {
-  const inventoryDigest = readFileDigest(repoRoot, PRE00B_PATHS.testInventory);
-  const statusDigest = readFileDigest(repoRoot, PRE00B_PATHS.status);
-  const claimLintDigest = readFileDigest(repoRoot, PRE00B_PATHS.claimLint);
-  const postAuditCertificationDigest = readFileDigest(repoRoot, PRE00B_PATHS.postAuditCertificationSet);
-  const scriptDigest = readFileDigest(repoRoot, PRE00B_PATHS.script);
-  const testDigest = readFileDigest(repoRoot, PRE00B_PATHS.test);
+export function buildPre00bClaimBindings({ repoRoot = ROOT, generatedAtUtc = '2026-09-08T00:00:00Z', artifactRevision = EXPECTED_DELIVERY_HEAD_SHA } = {}) {
+  const inventoryDigest = readFileDigestAtGit(repoRoot, artifactRevision, PRE00B_PATHS.testInventory);
+  const statusDigest = readFileDigestAtGit(repoRoot, artifactRevision, PRE00B_PATHS.status);
+  const claimLintDigest = readFileDigestAtGit(repoRoot, artifactRevision, PRE00B_PATHS.claimLint);
+  const postAuditCertificationDigest = readFileDigestAtGit(repoRoot, artifactRevision, PRE00B_PATHS.postAuditCertificationSet);
+  const scriptDigest = readFileDigestAtGit(repoRoot, artifactRevision, PRE00B_PATHS.script);
+  const testDigest = readFileDigestAtGit(repoRoot, artifactRevision, PRE00B_PATHS.test);
   return {
     schemaVersion: 'ClaimBindingV1',
     stampId: 'ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS',
@@ -513,6 +562,7 @@ export function buildPre00bClaimBindings({ repoRoot = ROOT, generatedAtUtc = '20
 }
 
 function verifyCheckedInClaimBindings(repoRoot) {
+  verifyPre00bDeliveryBinding(repoRoot);
   const expected = buildPre00bClaimBindings({ repoRoot });
   const actual = readJsonSource(repoRoot, 'claimBindings', PRE00B_PATHS.claimBindings).value;
   assertDeepEqual(actual, expected, 'E_PRE00B_CLAIM_BINDING_DRIFT');
@@ -525,6 +575,7 @@ function verifyCheckedInStatus(repoRoot, expectedStatus) {
 }
 
 function verifyCheckedInApprovals(repoRoot) {
+  verifyPre00bDeliveryBinding(repoRoot);
   const approvals = readJsonSource(repoRoot, 'approvals', PRE00B_PATHS.approvals).value;
   assertEqual(approvals.schemaVersion, 'YALKEN_R24_PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1', 'E_PRE00B_APPROVALS_SCHEMA');
   assertEqual(approvals.stageId, STAGE_ID, 'E_PRE00B_APPROVALS_STAGE');
@@ -537,28 +588,32 @@ function verifyCheckedInApprovals(repoRoot) {
     assertEqual(row.filePath, expectedPath, 'E_PRE00B_APPROVALS_PATH_DRIFT');
     assertEqual(row.approvedBy, OWNER_INSTRUCTION_BINDING, 'E_PRE00B_APPROVALS_AUTHORITY');
     assert(typeof row.approvedAtUtc === 'string' && row.approvedAtUtc.length > 0, 'E_PRE00B_APPROVALS_TIME');
-    assertEqual(row.sha256, readFileDigest(repoRoot, expectedPath).sha256, 'E_PRE00B_APPROVALS_DIGEST_DRIFT', expectedPath);
+    assertEqual(row.sha256, readFileDigestAtGit(repoRoot, EXPECTED_DELIVERY_HEAD_SHA, expectedPath).sha256, 'E_PRE00B_APPROVALS_DIGEST_DRIFT', expectedPath);
   }
   return { approvalDenominator: approvals.approvals.length };
 }
 
 function verifyCheckedInCiApprovals(repoRoot) {
-  const approvals = readJsonSource(repoRoot, 'ciApprovals', PRE00B_PATHS.ciApprovals).value;
+  verifyPre00bDeliveryBinding(repoRoot);
+  const approvals = readJsonSourceAtGit(repoRoot, 'ciApprovals', EXPECTED_DELIVERY_HEAD_SHA, PRE00B_PATHS.ciApprovals).value;
   assertEqual(approvals.version, 'v1.0', 'E_PRE00B_CI_APPROVALS_SCHEMA');
   assert(Array.isArray(approvals.approvals), 'E_PRE00B_CI_APPROVALS_SHAPE');
-  const byPath = new Map();
+  const byPathAndSha = new Map();
   for (const row of approvals.approvals) {
     assert(isObject(row), 'E_PRE00B_CI_APPROVALS_ROW');
     assert(typeof row.filePath === 'string' && row.filePath.length > 0, 'E_PRE00B_CI_APPROVALS_ROW_PATH');
-    assert(!byPath.has(row.filePath), 'E_PRE00B_CI_APPROVALS_DUPLICATE_PATH', row.filePath);
-    byPath.set(row.filePath, row);
+    assert(typeof row.sha256 === 'string' && row.sha256.length > 0, 'E_PRE00B_CI_APPROVALS_ROW_SHA', row.filePath);
+    const key = `${row.filePath}\u0000${row.sha256}`;
+    assert(!byPathAndSha.has(key), 'E_PRE00B_CI_APPROVALS_DUPLICATE_KEY', row.filePath);
+    byPathAndSha.set(key, row);
   }
   for (const expectedPath of PRE00B_CI_APPROVED_OUTPUT_PATHS) {
-    const row = byPath.get(expectedPath);
-    assert(isObject(row), 'E_PRE00B_CI_APPROVAL_MISSING', expectedPath);
+    const expectedSha = readFileDigestAtGit(repoRoot, EXPECTED_DELIVERY_HEAD_SHA, expectedPath).sha256;
+    const row = byPathAndSha.get(`${expectedPath}\u0000${expectedSha}`);
+    assert(isObject(row), 'E_PRE00B_CI_APPROVAL_DELIVERY_ROW_MISSING', expectedPath);
     assertEqual(row.approvedBy, OWNER_INSTRUCTION_BINDING, 'E_PRE00B_CI_APPROVAL_AUTHORITY', expectedPath);
     assert(String(row.rationale || '').includes('PRE00B lifecycle reconciliation'), 'E_PRE00B_CI_APPROVAL_RATIONALE', expectedPath);
-    assertEqual(row.sha256, readFileDigest(repoRoot, expectedPath).sha256, 'E_PRE00B_CI_APPROVAL_DIGEST_DRIFT', expectedPath);
+    assertEqual(row.sha256, expectedSha, 'E_PRE00B_CI_APPROVAL_DIGEST_DRIFT', expectedPath);
   }
   return { ciApprovalDenominator: PRE00B_CI_APPROVED_OUTPUT_PATHS.length };
 }

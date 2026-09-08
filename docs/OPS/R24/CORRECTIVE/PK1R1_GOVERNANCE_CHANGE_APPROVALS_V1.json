@@ -110,10 +110,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "9e4942beae218be30000d8667980e3c3a670c2e79784eb4c63c708c95a21e9b4",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "78d559a853022186df0caa5e79935e5bbf1d7c367dc1a48fcbf4b31c09a4fc70",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_VERIFIER_DESCENDANT_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-08T16:30:51Z",
+      "rationale": "Bounded PRE00C verifier descendant repair; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -145,10 +145,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
-      "sha256": "9491f7ac6a48b0484c578a8cb9ca35c951f5d4645bca2cf8fda471ed576e7a7f",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "1de7960dea2c65651fb63337840fbaccfffdac0da5ceccdee9991b0b6e95173f",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_VERIFIER_DESCENDANT_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-08T16:30:51Z",
+      "rationale": "Bounded PRE00C verifier descendant repair; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
