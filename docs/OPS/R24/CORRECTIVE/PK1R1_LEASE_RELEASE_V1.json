@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_LEASE_RELEASE_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "CONDITIONAL_RELEASE_PENDING_REQUIRED_DELIVERY",
+  "programDone": false,
+  "predecessorLeaseReleaseDispositionDigest": "a767794805349ec022287d669067c553dc46b9b31908234a9c50971b04bcd16a",
+  "currentLease": {
+    "fencingCounter": 104,
+    "status": "ACTIVE",
+    "wip": 1
+  },
+  "targetLease": {
+    "fencingCounter": 104,
+    "status": "RELEASED",
+    "wip": 0
+  },
+  "releaseForbiddenUntilRequiredDeliveryVerified": true
+}

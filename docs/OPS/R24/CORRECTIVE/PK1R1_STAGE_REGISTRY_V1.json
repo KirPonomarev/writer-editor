@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_STAGE_REGISTRY_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "CONDITIONAL_DELIVERY_PENDING",
+  "programDone": false,
+  "fencingCounter": 104,
+  "wip": 1,
+  "admission": {
+    "authorityDigest": "9aa17ad1739364f0a3beb3a987732042235c0605a1ecafa67e64867f51663877",
+    "stageInstanceDigest": "8bdeaead198e91974af5b4f0a87853144569e85d15f20cbd8dbffae69ef9b2cc",
+    "stageAdmissionDigest": "397bd9f0bbde478a8baffe25834ce0e71f01844cb9b2cf52e35194e6a6679e8a",
+    "supervisorScopeDecisionDigest": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b"
+  },
+  "nodeOutcome": {
+    "correctionDeliveredAfterRequiredDelivery": true,
+    "pk1GraphState": "BLOCKED_TYPED",
+    "v3GraphState": "BLOCKED_TYPED",
+    "graphIncrement": 0
+  },
+  "requiredDeliveryPredicates": [
+    "COMMIT",
+    "PUSH",
+    "PULL_REQUEST",
+    "CANDIDATE_CI",
+    "PROTECTED_MERGE",
+    "EXACT_POSTMERGE_CI",
+    "EXTERNAL_TERMINAL_RECEIPT_AND_LEASE_RELEASE"
+  ]
+}

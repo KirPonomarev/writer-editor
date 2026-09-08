@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_ACCEPTANCE_MATRIX_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "VERIFIED_PENDING_DELIVERY",
+  "programDone": false,
+  "rowDenominator": 12,
+  "rows": [
+    {"id": "A01", "condition": "CURRENT_RECEIPTS", "observation": "TYPED_NOT_READY", "result": "VERIFIED"},
+    {"id": "A02", "condition": "STRICT_POSITIVE_RECEIPTS", "observation": "SECURITY_EVIDENCE_SATISFIED", "result": "VERIFIED"},
+    {"id": "A03", "condition": "MISSING_SIGNING_VERIFICATION", "observation": "REJECTED", "result": "VERIFIED"},
+    {"id": "A04", "condition": "FUSE_DRIFT", "observation": "REJECTED", "result": "VERIFIED"},
+    {"id": "A05", "condition": "HARDENED_RUNTIME_DRIFT", "observation": "REJECTED", "result": "VERIFIED"},
+    {"id": "A06", "condition": "C04_STATUS_MISMATCH", "observation": "REJECTED", "result": "VERIFIED"},
+    {"id": "A07", "condition": "STALE_RECEIPT", "observation": "TYPED_BLOCKER", "result": "VERIFIED"},
+    {"id": "A08", "condition": "EXTERNAL_SIGNING_CLAIM", "observation": "REJECTED", "result": "VERIFIED"},
+    {"id": "A09", "condition": "PUBLICATION_AUTHORITY", "observation": "DENIED", "result": "VERIFIED"},
+    {"id": "A10", "condition": "EXTERNAL_EFFECTS", "observation": "ZERO", "result": "VERIFIED"},
+    {"id": "A11", "condition": "GRAPH_TRANSITION", "observation": "ZERO", "result": "VERIFIED"},
+    {"id": "A12", "condition": "PROGRAM_SCALAR", "observation": "FALSE", "result": "VERIFIED"}
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_RELEASE_SECURITY_EVALUATOR_CONTRACT_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "CORRECTION_IMPLEMENTED_PENDING_DELIVERY",
+  "programDone": false,
+  "objective": "Make strict future package-security evidence classifiable without granting release authority.",
+  "currentRepositoryVerdict": "NOT_READY",
+  "positiveEvidenceClassification": "EVIDENCE_SATISFIED",
+  "requiredPositiveEvidence": [
+    "DEVELOPER_ID_APPLICATION_SIGNATURE",
+    "ACCEPTED_NOTARIZATION_WITH_STAPLED_TICKET",
+    "ELECTRON_FUSE_POLICY_V1",
+    "HARDENED_RUNTIME_AND_ENTITLEMENTS",
+    "EXACT_HEAD_RECEIPT_SET",
+    "EXACT_EXECUTABLE_HASH_BINDING",
+    "ASAR_ATS_JOURNEY_RECOVERY_AND_SAST_INTEGRITY"
+  ],
+  "classificationBoundary": {
+    "securityEvidenceReadyMayBecomeTrue": true,
+    "productionReleaseReadyMayBecomeTrue": false,
+    "publicationAuthorityGranted": false,
+    "distributionPublished": false,
+    "externalPositiveClaimAccepted": false,
+    "credentialUse": false
+  },
+  "negativeProbeDenominator": 6,
+  "graph": {
+    "increment": 0,
+    "pk1State": "BLOCKED_TYPED",
+    "v3State": "BLOCKED_TYPED",
+    "programDone": false
+  }
+}

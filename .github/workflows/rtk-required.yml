@@ -187,6 +187,9 @@ jobs:
       - name: Run R2.4 WP-709 mixed-chain cumulative fidelity gate
         run: node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
 
+      - name: Run PK1 evaluator evidence reachability gate
+        run: node scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs --check
+
       - name: Run maintained Atlas event contract graph
         run: npm run -s test:atlas-event-contract
 

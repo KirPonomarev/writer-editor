@@ -1,0 +1,251 @@
+{
+  "schemaVersion": "STAGE_INSTANCE_V2",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "authorityId": "OWNER_AUTHORIZED_YALKEN_R24_PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY_V1",
+  "ownerAuthorityBindingDigest": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+  "sourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
+  "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
+  "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
+  "baseSha": "efc37eae45fa30965b5a9c28eb4c4fc6b44b4bc0",
+  "headSha": "efc37eae45fa30965b5a9c28eb4c4fc6b44b4bc0",
+  "treeSha": "8c4e70cc48da31a5b743132048780813f9a7397d",
+  "branch": "codex/r24-pk1-evaluator-reachability-v1-20260908",
+  "targetRemote": "origin",
+  "fixedBindings": [
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/STANDING_AUTHORITY_BINDING_V1.json",
+      "sha256": "be68bd97021d13fbfb75c73791bda7f6bfeebecebf525d4a927d1a4c9fe9efd6"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_STATE_V1.json",
+      "sha256": "008026b18928d3f7a6ae9fe2aa3f8b9426ad2690ac6de463aa3b79e48e416431"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP709_LEASE_RELEASE_V1.json",
+      "sha256": "153fc7b430cb916c0346bccb98d74ba18052bb747333089c706d019cb412f17b"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
+      "sha256": "031d3fe3b79067cd5faafd03e3ee617b097b9152ef1fc23e3ccb7af5e4826557"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
+      "sha256": "26a87057fa50bb2bac47e16d41d8336704bd474ada90ec786e242e49794b635f"
+    },
+    {
+      "path": "docs/OPS/R24/CORRECTIVE/WP709_TERMINAL_RECEIPT_V1.json",
+      "sha256": "2eb7e2003d9479bc3eb040d2a0fc084b482b845aef802dbf7f8064011d55c478"
+    },
+    {
+      "path": "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json",
+      "sha256": "7185d649974289e8b3a0b310203b32dbd0bac96a613adf3cf26b308ff0067df5"
+    },
+    {
+      "path": "docs/OPS/R24/EXECUTION_ENVELOPES_R2_4.json",
+      "sha256": "0b2154eb93769ecb6a3b3164159cfe2c87d73c5345fdcb008af5576c630ae9d3"
+    },
+    {
+      "path": "docs/OPS/R24/MISSION_CONTRACT_R2_4.json",
+      "sha256": "981dd5c2f9e8d5071e79083c17daed1474d753d34610e1c456d3d07d0969a1ce"
+    },
+    {
+      "path": "docs/OPS/R24/OWNER_GATE_REGISTRY_R2_4.json",
+      "sha256": "4d8e3e0f7fcafb84f6e4b625af930b7a5fb06d64bbb5e59af6fe2940284315c8"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e1eb71358e8cdd8d114814f6ad6286ced35bf21229210b385a939b1e4c149e57"
+    },
+    {
+      "path": "scripts/ops/r24/corrective/stage-admission-verifier-v2.mjs",
+      "sha256": "b9cb1d3ad98bbdd0e56dedc4563796f40d9768f1345b57324625ef8386c5bd3f"
+    },
+    {
+      "path": "test/unit/r24-pk1-release-security-mutants.test.js",
+      "sha256": "520cded5b380bacab84dc60e3e22b11e083816b57f480a3ba4f00d3b6e4cc4cd"
+    },
+    {
+      "path": "test/unit/r24-pk1-release-security-physical.test.js",
+      "sha256": "963f9b22b086cb9d0113ec00fa68289c88288b381c557def369991b8323e7d92"
+    },
+    {
+      "path": "test/unit/r24-pk1-release-security-physics.test.js",
+      "sha256": "95c29ff251a21bf57c42ec39bc73a50a1e988418183c8c21e167b08bcea7da25"
+    }
+  ],
+  "operations": {
+    "readPaths": [
+      "AGENTS.md",
+      "CANON.md",
+      "docs/AGENT_START_PROTOCOL.md",
+      "docs/ARCHITECTURE_ONE_PAGE.md",
+      "docs/BIBLE.md",
+      "docs/CONTEXT.md",
+      "docs/DOCUMENTATION_CONSTITUTION.md",
+      "docs/HANDOFF.md",
+      "docs/OPS/R24/CORRECTIVE/STANDING_AUTHORITY_BINDING_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_EFFECTIVE_STATE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_LEASE_RELEASE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/WP709_TERMINAL_RECEIPT_V1.json",
+      "docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json",
+      "docs/OPS/R24/EXECUTION_ENVELOPES_R2_4.json",
+      "docs/OPS/R24/MISSION_CONTRACT_R2_4.json",
+      "docs/OPS/R24/OWNER_GATE_REGISTRY_R2_4.json",
+      "docs/OPS/STATUS/CANON_STATUS.json",
+      "docs/OPS/STATUS/XPLAT_UNIFIED_MASTER_EXECUTION_CONTRACT_v3.13a-final.md",
+      "docs/PROCESS.md",
+      "docs/PRODUCT_GLOSSARY.md",
+      "docs/YALKEN_DESIGN_OS_FEATURE_INTEGRATION_DOCTRINE_V1.md",
+      "package.json",
+      "scripts/ops/r24/corrective/admission-preparation.mjs",
+      "scripts/ops/r24/corrective/protected-wip-snapshot.mjs",
+      "scripts/ops/r24/corrective/stage-admission-verifier-v2.mjs",
+      "test/unit/r24-pk1-release-security-mutants.test.js",
+      "test/unit/r24-pk1-release-security-physical.test.js",
+      "test/unit/r24-pk1-release-security-physics.test.js"
+    ],
+    "modifyPaths": [
+      ".github/workflows/oss-policy.yml",
+      ".github/workflows/rtk-required.yml",
+      "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "scripts/ops/r24/release-security-physical-pk1.mjs"
+    ],
+    "createPaths": [
+      "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_EFFECTIVE_STATE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_LEASE_RELEASE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_OWNER_AUTHORITY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_SELECTION_RECEIPT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_PROTECTED_WIP_BEFORE_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_RELEASE_SECURITY_EVALUATOR_CONTRACT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_STAGE_REGISTRY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_SUPERVISOR_SCOPE_DECISION_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_TERMINAL_RECEIPT_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_WP709_TERMINAL_PREDECESSOR_V1.json",
+      "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs"
+    ],
+    "deletePaths": [],
+    "renamePairs": []
+  },
+  "commands": [
+    "npm run agent:bootstrap",
+    "npm run agent:preflight",
+    "node scripts/ops/r24/corrective/stage-admission-verifier-v2.mjs",
+    "node scripts/ops/r24/corrective/admission-preparation.mjs",
+    "node scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs --check",
+    "node --test test/unit/r24-pk1-release-security-physical.test.js test/unit/r24-pk1-release-security-mutants.test.js test/unit/r24-pk1-release-security-physics.test.js",
+    "npm ci --engine-strict",
+    "npm run build:renderer",
+    "npm run design-os:doctrine",
+    "npm run test:r24-post-audit",
+    "npm run test:r24-e0",
+    "npm run test:rtk",
+    "npm run test:electron",
+    "npm run security:audit:generic-sast",
+    "npm run oss:policy",
+    "npm audit --audit-level=high",
+    "npm test",
+    "npm run agent:guardrails",
+    "node scripts/ops/r24/test-inventory.mjs",
+    "npm run r24:test-inventory",
+    "git diff --check",
+    "git diff --cached --check",
+    "git status --short --branch",
+    "git add -- EXACT_PK1R1_WRITE_SET",
+    "git commit -m Repair PK1 evaluator evidence reachability",
+    "git fetch origin main",
+    "git push origin codex/r24-pk1-evaluator-reachability-v1-20260908",
+    "gh pr create",
+    "gh pr checks PR --watch",
+    "gh pr merge PR --merge",
+    "gh run watch RUN --exit-status",
+    "node scripts/ops/r24/corrective/protected-wip-snapshot.mjs",
+    "node PK1R1_EXTERNAL_TERMINAL_V1.mjs --issue",
+    "node PK1R1_EXTERNAL_TERMINAL_V1.mjs --verify"
+  ],
+  "acceptanceSignals": [
+    "WP709_EXTERNALLY_VERIFIED_FENCE_103_RELEASED_WIP_0",
+    "EXACT_GRAPH_DENOMINATOR_90_DONE_7_REQUIRED_PENDING_2_BLOCKED_TYPED_10_OPTIONAL_INELIGIBLE",
+    "PK1_IDENTIFIED_AS_EARLIEST_UNSATISFIED_REQUIRED_DEPENDENCY",
+    "CURRENT_CHECKED_IN_RECEIPTS_REMAIN_TYPED_NOT_READY",
+    "STRICT_FUTURE_SIGNING_NOTARIZATION_FUSE_AND_HARDENED_RUNTIME_EVIDENCE_REACHABLE",
+    "UNBOUND_OR_MALFORMED_POSITIVE_CLAIMS_REJECTED",
+    "SECURITY_EVIDENCE_READY_SEPARATE_FROM_PUBLICATION_AUTHORITY",
+    "ZERO_CREDENTIAL_SIGNING_NOTARIZATION_STAPLING_PUBLICATION_OR_DISTRIBUTION_EFFECTS",
+    "NO_GRAPH_STATE_TRANSITION",
+    "NORMAL_PROTECTED_MERGE_EXACT_POSTMERGE_AND_TERMINAL_RELEASE",
+    "PK1R1_FENCE_104_RELEASED_WIP_0",
+    "PRODUCT_GRAPH_INCREMENT_ZERO",
+    "PROGRAM_DONE_FALSE"
+  ],
+  "authorityCeiling": [
+    "BOUNDED_CI_OPERATION",
+    "BOUNDED_REPOSITORY_WRITE",
+    "BRANCH_WORKTREE",
+    "COMMIT",
+    "GITHUB_PR",
+    "GITHUB_PROTECTED_MERGE",
+    "LOCAL_EXTERNAL_TERMINAL_ARTIFACT",
+    "LOCAL_SYNTHETIC_SECURITY_EVIDENCE",
+    "LOCAL_TEST_BUILD_EVIDENCE",
+    "PR_CREATE_OR_UPDATE",
+    "PUSH",
+    "READ_ONLY_GITHUB_API"
+  ],
+  "externalEffects": [
+    "GITHUB_CI",
+    "GITHUB_PR",
+    "GITHUB_PROTECTED_MERGE",
+    "GIT_PUSH",
+    "LOCAL_EXTERNAL_TERMINAL_ARTIFACT"
+  ],
+  "predecessors": [
+    {
+      "id": "WP709_TERMINAL_RECEIPT",
+      "digest": "633e08cec195ce743656794dd105f3e1104704152fe3426d3f2089c7943a852c",
+      "status": "EXTERNALLY_VERIFIED_PREDECESSOR"
+    },
+    {
+      "id": "WP709_TERMINAL_VERIFICATION",
+      "digest": "82e988c8b04edb66abce282da90a1d17d19866260787f337b4a6afa4cefe2084",
+      "status": "VERIFIED"
+    },
+    {
+      "id": "WP709_LEASE_RELEASE_DISPOSITION",
+      "digest": "a767794805349ec022287d669067c553dc46b9b31908234a9c50971b04bcd16a",
+      "status": "RELEASED_WIP_0"
+    },
+    {
+      "id": "PK1R1_SUPERVISOR_SCOPE_DECISION",
+      "digest": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "status": "APPROVED_BOUNDED_CORRECTION"
+    },
+    {
+      "id": "STANDING_OWNER_AUTHORITY_BINDING",
+      "digest": "be68bd97021d13fbfb75c73791bda7f6bfeebecebf525d4a927d1a4c9fe9efd6",
+      "status": "ACTIVE_DELEGATE_ROUTING"
+    }
+  ],
+  "lease": {
+    "fencingCounter": 104,
+    "status": "ACTIVE",
+    "wip": 1,
+    "predecessorReleaseDigest": "a767794805349ec022287d669067c553dc46b9b31908234a9c50971b04bcd16a"
+  },
+  "model": "gpt-5.6-sol",
+  "reasoningEffort": "xhigh",
+  "stopConditions": [
+    "PROJECT_DESTRUCTION_RISK",
+    "CREDENTIAL_OR_KEYCHAIN_ACCESS_REQUIRED",
+    "SIGNING_NOTARIZATION_STAPLING_PUBLICATION_OR_DISTRIBUTION_REQUESTED",
+    "GRAPH_TRANSITION_REQUESTED",
+    "PREDECESSOR_OR_SCOPE_DECISION_DIGEST_DRIFT",
+    "ACTIVE_SECOND_WRITER_OR_CONTOUR",
+    "TARGET_BRANCH_DRIFT_OR_MERGEABILITY_LOSS"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_MAIN_PRODUCT_SELECTION_RECEIPT_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "ADMITTED_IMPLEMENTATION_SELECTED",
+  "programDone": false,
+  "authorityDigest": "9aa17ad1739364f0a3beb3a987732042235c0605a1ecafa67e64867f51663877",
+  "stageInstanceDigest": "8bdeaead198e91974af5b4f0a87853144569e85d15f20cbd8dbffae69ef9b2cc",
+  "stageAdmissionDigest": "397bd9f0bbde478a8baffe25834ce0e71f01844cb9b2cf52e35194e6a6679e8a",
+  "supervisorScopeDecisionDigest": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+  "writeSetDigest": "4cf8cf8a3497f6a039ec52ba3fd828ce45d8b8f941fe62e9fbf93599052ba6fe",
+  "selection": "STRICT_READ_ONLY_RELEASE_SECURITY_EVIDENCE_CLASSIFIER",
+  "externalExecutionOwner": "NONE_FOR_RELEASE_EFFECTS",
+  "credentialStatus": "UNAVAILABLE_AND_NOT_REQUESTED"
+}

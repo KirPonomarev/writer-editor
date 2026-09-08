@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_SUPERVISOR_SCOPE_DECISION_V1",
+  "decisionId": "PK1R1_CREDENTIAL_FREE_EVALUATOR_REACHABILITY",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "APPROVED_BOUNDED_CORRECTION",
+  "authoritySource": "NEXT_GRAPH_ORDER_STANDING_DELEGATION",
+  "objective": "Repair the read-only PK1 evaluator so strict future physical security evidence is reachable while retaining the current typed blocker.",
+  "approvedScope": [
+    "STRICT_RECEIPT_VALIDATION",
+    "READ_ONLY_SECURITY_EVIDENCE_CLASSIFICATION",
+    "LOCAL_SYNTHETIC_REACHABILITY_PROOF",
+    "REPOSITORY_DELIVERY_CHAIN"
+  ],
+  "deniedScope": [
+    "APPLE_CREDENTIAL_ACCESS",
+    "CODE_SIGNING",
+    "NOTARIZATION_OR_STAPLING",
+    "PUBLICATION_OR_DISTRIBUTION",
+    "PK1_OR_V3_GRAPH_TRANSITION",
+    "PACKAGE_OR_DEPENDENCY_CHANGE",
+    "RUNTIME_NETWORK",
+    "USER_DOCUMENT_ACCESS"
+  ],
+  "exactGraphObservation": {
+    "done": 90,
+    "pendingRequired": 7,
+    "blockedTyped": 2,
+    "ineligibleOptional": 10,
+    "earliestUnsatisfiedRequiredDependency": "PK1_RELEASE_SECURITY_PHYSICAL",
+    "secondaryBlockedDependency": "V3_PACKAGE_CLAIM_COMPILER",
+    "programDone": false
+  },
+  "currentCredentialObservation": "ZERO_VALID_CODE_SIGNING_IDENTITIES",
+  "decisionAtUtc": "2026-09-08T01:40:00Z"
+}

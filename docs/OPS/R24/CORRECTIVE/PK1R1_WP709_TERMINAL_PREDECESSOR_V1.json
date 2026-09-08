@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_WP709_TERMINAL_PREDECESSOR_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "evidenceStampId": "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+  "status": "EXTERNALLY_VERIFIED_PREDECESSOR_ONLY",
+  "programDone": false,
+  "predecessorStageId": "WP-709_MIXED_CHAINS",
+  "externalTerminalReceiptDigest": "633e08cec195ce743656794dd105f3e1104704152fe3426d3f2089c7943a852c",
+  "externalTerminalVerificationDigest": "82e988c8b04edb66abce282da90a1d17d19866260787f337b4a6afa4cefe2084",
+  "durableCarrierDigest": "ba610ddae20193a00d0c4ebb5ab02036bb12c3072d79c88d9c6bde3abdddf0a5",
+  "leaseReleaseDispositionDigest": "a767794805349ec022287d669067c553dc46b9b31908234a9c50971b04bcd16a",
+  "predecessorMergeSha": "efc37eae45fa30965b5a9c28eb4c4fc6b44b4bc0",
+  "predecessorMergeTree": "8c4e70cc48da31a5b743132048780813f9a7397d",
+  "fencingCounter": 103,
+  "wip": 0,
+  "maySeedPk1GraphTransition": false
+}
