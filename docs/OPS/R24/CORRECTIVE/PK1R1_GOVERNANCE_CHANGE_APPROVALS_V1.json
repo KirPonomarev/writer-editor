@@ -110,14 +110,14 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "7a50a2b59c89d9b19afca0f467ef420b9944e43d26c9a0f23ff25fe6d5cd238c",
+      "sha256": "004a72f3c5ce1c23057e025e032a2ac256f2c867619f8c5c350728a2a1a6e627",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json",
-      "sha256": "3276069731da3081a4738a5267a79aa61056a4acc161ffe58bf72a21476586c7",
+      "sha256": "aefa5d7e866313ef2d9a3680d875d1248f16d6fbdf9567d99f1b9117b47dd2c3",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."

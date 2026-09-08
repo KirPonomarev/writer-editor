@@ -1,41 +1,73 @@
 {
-  "schemaVersion": "YALKEN_R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EVIDENCE_V1",
-  "taskId": "R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001",
+  "schemaVersion": "ClaimBindingV1",
   "stampId": "ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR",
+  "contourId": "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR",
+  "evidenceClass": "CONTRACT",
   "verdict": "PASS",
-  "claimCeiling": "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_ONLY",
-  "binding": {
-    "baseSha": "8c76b8610511f81f7977dcdf6d618c5586b5459a",
-    "baseTree": "514c24c206b153b540aae083e616948d13f61870",
-    "pre00bDeliverySha": "4107b0b30e870c446768171dd8afff02cebe0436",
-    "pre00bDeliveryTree": "f87f72fda113c53e5328b73bd074ee256e360ab2",
-    "pre00bSourceHeadSha": "af74b9542c17c24a7515ce9017d98ea7b2e4d55a",
-    "pre00bSourceTree": "9ba68855d2b3735bde543213e389e58490dc5c80"
-  },
-  "repair": {
-    "pre00bArtifactReadEndpoint": "PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA",
-    "pre00bExactDeltaEndpoint": "PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA",
-    "pre00cCandidateDeltaBase": "PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_SHA",
-    "descendantCandidateAllowedOnlyThroughSeparatePre00cException": true
-  },
-  "proofOracles": [
-    "PRE00B_PINNED_DELIVERY_POSITIVE_CONTRACT",
-    "PRE00B_DELIVERED_STAGE_DELTA_MUTATION_NEGATIVE_CONTRACT",
-    "PRE00C_NEXT_CONTOUR_SELECTION_PINNED_DELIVERY_POSITIVE_CONTRACT",
-    "PRE00C_BOUNDED_REPAIR_DELTA_POSITIVE_CONTRACT",
-    "PRE00C_UNADMITTED_FUTURE_PATH_NEGATIVE_CONTRACT",
-    "PRE00C_EXACT_ADMITTED_DELTA_MUTANT_PROOF"
+  "headSha": "8c76b8610511f81f7977dcdf6d618c5586b5459a",
+  "originMainSha": "8c76b8610511f81f7977dcdf6d618c5586b5459a",
+  "generatedAtUtc": "2026-09-08T00:00:00Z",
+  "oracle": "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_ONLY",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b3b32f776da3195440aedad348d2300c714a0775b7ce7f74887a28a632b1f816",
+      "claimTerms": [
+        "PASS"
+      ]
+    }
   ],
-  "nonClaims": {
-    "programDone": false,
-    "productionReleaseReady": false,
-    "graphIncrement": 0,
-    "pk1ReleaseSecurityPhysical": false,
-    "v3PackageClaimCompiler": false,
-    "wp900PlanDelivery": false,
-    "runtimeMutation": false,
-    "processInspectionOrTermination": false,
-    "dependencyChange": false,
-    "networkOrCloudTruth": false
-  }
+  "implementationArtifactDigests": [
+    {
+      "path": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
+      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
+      "terms": [
+        "PRE00C_CLOSED_STAGE_TASK_BRIEF"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "004a72f3c5ce1c23057e025e032a2ac256f2c867619f8c5c350728a2a1a6e627",
+      "terms": [
+        "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "25b854924372af5cfdcb7fefff2ac3a1f965f279a15574dbc3b610cea3ed115f",
+      "terms": [
+        "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_CONTRACT_TEST"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "node --test --test-name-pattern PRE00B/PRE00C closed-stage verifier contracts test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 5,
+        "fail": 0
+      }
+    },
+    {
+      "command": "npm run test:r24-e0",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 121,
+        "fail": 0
+      }
+    }
+  ],
+  "nonClaims": [
+    "NO_PROGRAM_DONE",
+    "NO_PRODUCTION_RELEASE_READY",
+    "NO_GRAPH_INCREMENT",
+    "NO_PK1_RELEASE_SECURITY_PHYSICAL",
+    "NO_V3_PACKAGE_CLAIM_COMPILER",
+    "NO_WP900_PLAN_DELIVERY",
+    "NO_RUNTIME_UI_CORE_MUTATION",
+    "NO_PROCESS_INSPECTION_OR_TERMINATION",
+    "NO_DEPENDENCY_CHANGE",
+    "NO_NETWORK_OR_CLOUD_TRUTH"
+  ]
 }
