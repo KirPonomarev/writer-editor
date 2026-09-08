@@ -355,13 +355,15 @@ test('PRE00E recovery CI external confirmation rejects an unadmitted future path
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());
   assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
 });
-function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,baseTree}={}){
+function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,evidenceBytes,baseTree}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);
   const bytesByPath=new Map([
     [e.planPath,planBytes??fs.readFileSync(e.planPath)],
     [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
     [e.postAuditTestPath,testBytes??fs.readFileSync(e.postAuditTestPath)],
     [e.postAuditVerifierPath,verifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
+    [e.evidencePath,evidenceBytes??fs.readFileSync(e.evidencePath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
