@@ -28,7 +28,11 @@ jobs:
       - name: Reject admission identity and complete output-set drift before heavy gates
         run: node --test test/contracts/r24-admission-preparation.contract.test.mjs test/contracts/r24-p01-admission-preparation-compatibility.contract.test.mjs test/contracts/r24-stage-admission-verifier-v2.contract.test.mjs
       - name: Reject stale context caches and handoff overwrite before heavy gates
-        run: node --test test/contracts/agent-context-restoration.contract.test.mjs test/contracts/r24-p03-context-restoration-compatibility.contract.test.mjs
+        env:
+          P03_CONTEXT_RESTORATION_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/WP709_GOVERNANCE_CHANGE_APPROVALS_V1.json
+        run: |
+          test -f "$P03_CONTEXT_RESTORATION_APPROVALS_PATH"
+          node --test test/contracts/agent-context-restoration.contract.test.mjs test/contracts/r24-p03-context-restoration-compatibility.contract.test.mjs
       - run: npm ci --engine-strict
       - name: Verify literal exhaustive inventory command
         run: npm run r24:test-inventory
@@ -37,7 +41,10 @@ jobs:
       - name: Run broad maintained baseline
         env:
           GOVERNANCE_CHANGE_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
-        run: npm test
+          P03_CONTEXT_RESTORATION_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/WP709_GOVERNANCE_CHANGE_APPROVALS_V1.json
+        run: |
+          test -f "$P03_CONTEXT_RESTORATION_APPROVALS_PATH"
+          npm test
       - name: Verify WP-500 association scope semantics and mutants
         run: node --test test/unit/r24-wp500-associations.test.js test/unit/r24-wp500-associations-integration.test.js test/unit/r24-wp500-associations-mutants.test.js
       - name: Verify WP-501 triple-time knowledge semantics and mutants
@@ -200,7 +207,10 @@ jobs:
       - env:
           EFFECTIVE_MODE: STRICT
           GOVERNANCE_CHANGE_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
-        run: node scripts/ops/governance-change-detection.mjs --json --base-ref origin/main --approvals-path docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+          P03_CONTEXT_RESTORATION_APPROVALS_PATH: docs/OPS/R24/CORRECTIVE/WP709_GOVERNANCE_CHANGE_APPROVALS_V1.json
+        run: |
+          test -f "$P03_CONTEXT_RESTORATION_APPROVALS_PATH"
+          node scripts/ops/governance-change-detection.mjs --json --base-ref origin/main --approvals-path docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
 
   oss-policy-core:
     runs-on: ubuntu-latest
