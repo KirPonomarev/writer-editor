@@ -2,7 +2,7 @@
 
 TASK_ID: R24_PRE00C_NEXT_CONTOUR_SELECTION_BRIEF_001
 TYPE: OPS_REPORT
-TASK_STATUS: PREPARED_ONLY_NOT_OPENING_MUTATION_CONTOUR
+TASK_STATUS: PREPARED_WITH_STATIC_VERIFIER_DESCENDANT_REPAIR
 CANON_VERSION: v3.13a-final
 BASE_SHA: 4107b0b30e870c446768171dd8afff02cebe0436
 DESIGN_TOOL_ROUTER: NOT_APPLICABLE
@@ -12,7 +12,10 @@ DELIVERY_POLICY: COMMIT_REQUIRED=true PUSH_REQUIRED=true PR_REQUIRED=true MERGE_
 
 Bind the post-PRE00B next-contour decision without starting a package, Word,
 runtime, plan-state generator, release, credential, signing, notarization, or
-public distribution contour by implication.
+public distribution contour by implication. The delivery also repairs the
+static PRE00B post-evaluation verifier so PRE00B historical exact-delta proof
+is checked at its verified delivery merge while later descendant commits remain
+eligible for CI evaluation.
 
 ## MAP Baseline
 
@@ -41,8 +44,9 @@ exact-head verification.
 
 I: base and initial evaluation HEAD are
 4107b0b30e870c446768171dd8afff02cebe0436; branch identity is
-codex/r24-pre00c-next-contour-admissibility-v1-20260908; artifact identity is
-this brief only.
+codex/r24-pre00c-next-contour-admissibility-v1-20260908; selection artifact
+identity is this brief; companion verifier repair identity is the static
+post-audit certification verifier pinned to the verified PRE00B delivery merge.
 
 ## Evidence Snapshot
 
@@ -73,6 +77,10 @@ this brief only.
   `releaseReadyClaim=false`, `signingPassClaim=false`,
   `notarizationPassClaim=false`, `fusePassClaim=false`, and
   `programScalarPass=false`.
+- Initial PRE00C CI rejected the branch with
+  `E_PRE00B_EXACT_ADMITTED_DELTA` because the PRE00B verifier compared the
+  historical PRE00B exact delta to the later descendant HEAD instead of the
+  verified PRE00B delivery merge.
 
 ## Admissibility Decision
 
@@ -103,6 +111,7 @@ DEPENDENCY_CHANGE: false
 CREDENTIAL_USE: false
 RELEASE_PUBLICATION: false
 PROCESS_INSPECTION_OR_TERMINATION: false
+STATIC_VERIFIER_REPAIR: PRE00B_HISTORICAL_DELTA_PINNED_TO_DELIVERY_MERGE
 
 ## Non-Authorization Boundary
 
