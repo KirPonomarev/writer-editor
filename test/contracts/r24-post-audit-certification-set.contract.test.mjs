@@ -30,6 +30,8 @@ import {
   PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION,
   PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA,
   PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_TREE,
+  PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_SHA,
+  PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_TREE,
   PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
@@ -54,6 +56,7 @@ import {
   verifyWp502MainProductPostEvaluationException,
   verifyWp503MainProductPostEvaluationException,
   verifyPre00bLifecycleReconciliationPostEvaluationException,
+  verifyPre00cNextContourSelectionPostEvaluationException,
   verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
@@ -250,6 +253,16 @@ test('PRE00B lifecycle reconciliation verifier rejects a mutated delivered-stage
     return execFileSync('git',args,options);
   };
   assert.throws(()=>verifyPre00bLifecycleReconciliationPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_PRE00B_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00C next-contour selection verifier is pinned to its delivered merge',()=>{
+  const result=verifyPre00cNextContourSelectionPostEvaluationException({candidateSha:'HEAD'});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.deliverySha,PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_SHA);
+  assert.equal(result.deliveryTree,PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_TREE);
+  assert.equal(result.changedPathDenominator,4);
+  assert.equal(result.graphIncrement,0);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
 });
 test('PRE00C closed-stage candidate verifier accepts the bounded repair delta',()=>{
   const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:'HEAD'});

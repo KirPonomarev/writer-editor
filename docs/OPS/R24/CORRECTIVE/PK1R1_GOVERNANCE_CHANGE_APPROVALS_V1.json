@@ -110,35 +110,35 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "9bd05ef812568c10cd1be4c1e655a557856262385a80926e416a9ce41e86e75a",
+      "sha256": "7a50a2b59c89d9b19afca0f467ef420b9944e43d26c9a0f23ff25fe6d5cd238c",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json",
-      "sha256": "0622cfedc5517d297a0810fde80eb02d107a04567aa1c50093669caf08a6cb59",
+      "sha256": "3276069731da3081a4738a5267a79aa61056a4acc161ffe58bf72a21476586c7",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
-      "sha256": "9c761106c190129b4dde413fa762f3ecb46af1728e3efaa91bc404189ceb78f6",
+      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "1a73d2e86a3eb1dab515a1ca0a23295f6cb16fdf99b626c05d8fac164e38a111",
+      "sha256": "25b854924372af5cfdcb7fefff2ac3a1f965f279a15574dbc3b610cea3ed115f",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "6898471e2bd87aeea3d360d0f9d331cd6c8fadfd90086be2ef9926f58bb587ef",
+      "sha256": "b3b32f776da3195440aedad348d2300c714a0775b7ce7f74887a28a632b1f816",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
@@ -166,10 +166,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
-      "sha256": "9491f7ac6a48b0484c578a8cb9ca35c951f5d4645bca2cf8fda471ed576e7a7f",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "1de7960dea2c65651fb63337840fbaccfffdac0da5ceccdee9991b0b6e95173f",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_VERIFIER_DESCENDANT_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-08T16:30:51Z",
+      "rationale": "Bounded PRE00C verifier descendant repair; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
