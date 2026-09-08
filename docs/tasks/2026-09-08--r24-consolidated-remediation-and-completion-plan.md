@@ -222,11 +222,29 @@ The observation base records:
 | Production release ready | false | RECORDED_GRAPH_STATE |
 | Publication authority | false | RECORDED_GRAPH_STATE |
 | Repository verdict | NOT_READY | PROVEN_AT_OBSERVATION_BASE |
+| W7/C1-C8 full-book portability route matrix | C1 BLOCKED; C2-C8 NEEDS_MORE_EVIDENCE | HISTORICAL_ROUTE_DENOMINATOR |
+| WP707, WP708 and WP709 evidence ceiling | bounded disposable synthetic fixtures only | HISTORICAL_BOUNDED_EVIDENCE |
+| Broad Word/Google/mixed portability | NOT_PROVEN_NO_PASS_PROMOTION | OWNER_REQUIREMENT_RECORDED |
 
 Every later contour recompiles these values on its own exact base. A corrective
 finding can hold release without incrementing the 109-node graph. A graph count
 can change only through an existing graph node and its lawful transition
 contract.
+
+The owner portability requirement is stricter than the closed WP707-WP709
+bounded scenarios. The supported Yalken interchange format must prove 100%
+portability across Word, Google and mixed provider routes, including full-book
+fixtures and repeated cycles, before any final product or release claim can
+advance. Existing WP707 single-scene Word apply evidence, WP708 Gate05
+synthetic provider lifecycle evidence and WP709 seven-chain disposable
+synthetic evidence remain useful bounded evidence only. They cannot raise the
+W7/C1-C8 route matrix, broad C1-C8 portability, full-book route closure,
+provider-mixed rows or repeated-cycle portability to PASS.
+
+The owner thread 019fdbc4-6eb0-7632-bfd5-75f05dceaba7 is historical
+denominator evidence only. Its recorded partial-progress observations cannot
+seed any current PASS without exact-head revalidation against the W7/C1-C8
+route matrix.
 
 ### 4. Evidence strength and finding status
 
@@ -553,6 +571,7 @@ Extra renamed fields are forbidden.
 | EVID-04 | P2 | REVALIDATE_CURRENT | Astra Ultra F04 | R24-RCV-33 |
 | EVID-05 | P2 | REVALIDATE_CURRENT | Astra Ultra F05 | R24-RCV-01C |
 | EVID-06 | P2 | REVALIDATE_CURRENT | audit/source-only smoke | R24-RCV-34 |
+| PORT-01 | BLOCKER | REVALIDATE_CURRENT | owner portability gap + W7 route matrix | R24-RCV-01F |
 | PROD-01 | P2 | REVALIDATE_CURRENT | audit/Pulse | R24-RCV-40A |
 | PROD-02 | P3 | REVALIDATE_CURRENT | audit/Unicode | R24-RCV-41 |
 | OPS-01 | P2 | REVALIDATE_CURRENT | host/runtime observation | R24-RCV-00A |
@@ -905,6 +924,29 @@ Acceptance:
 - expired exception fails;
 - replacement proof runs in the same required context;
 - exception cannot lower denominator or issue release PASS.
+
+#### R24-RCV-01F — W7 full-book portability gap
+
+Primary finding: PORT-01.
+
+Outcome: bind the owner-required portability denominator before any final
+product or release claim can advance.
+
+Acceptance:
+
+- W7/C1-C8 source matrix is recompiled on the fresh exact base;
+- C1 remains BLOCKED unless a full-book synthetic route proves every required
+  semantic, structure, comments, suggestions, formatting, recovery and cleanup
+  oracle;
+- C2-C8 remain NEEDS_MORE_EVIDENCE until their full-book and repeated-cycle
+  routes execute with fresh round/effect/apply ids, provider identity,
+  revision/generation bindings and loss ledgers;
+- WP707, WP708 and WP709 bounded synthetic passes are recorded as bounded
+  evidence only and cannot seed broad C1-C8 route PASS;
+- no user documents, private data, account documents or non-disposable provider
+  artifacts are used;
+- the output feeds R24-RCV-33 and becomes a release-blocking input to
+  R24-RCV-60.
 
 ### Phase 2 — manuscript durability in dependency order
 
@@ -1557,7 +1599,7 @@ The strict path is:
 PRE-00A -> PRE-00B -> PRE-00C -> PRE-00D -> PRE-00E -> PRE-00F
 -> 00A -> 00B -> 00C -> 00D -> 00E -> 00F
 -> 00G -> 00H -> proven 00I tasks
--> 01A -> 01B -> 01C -> 01D -> 01E
+-> 01A -> 01B -> 01C -> 01D -> 01E -> 01F
 -> 10A -> 10B -> 11 -> 12 -> 13 -> 14 -> 15
 -> 20A -> 20B -> 20C -> 21 -> 22 -> 23 -> 24
 -> 25 -> 26 -> 27 -> 28 -> 29
