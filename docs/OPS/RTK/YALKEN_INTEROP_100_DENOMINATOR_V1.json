@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "yalken.interop100.denominator.v1",
+  "contractId": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
+  "documentClass": "CURRENT_TARGET_CONTRACT_NOT_CURRENT_RUNTIME_PASS",
+  "observedAtUtc": "2026-09-09T00:00:00.000Z",
+  "bindingBaseSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+  "status": "DENOMINATOR_FROZEN_EVIDENCE_OPEN",
+  "claimBoundary": "This is the closed supported interchange denominator. It is not a claim of arbitrary Microsoft Word or Google Docs feature parity and it does not promote any route or platform to PASS.",
+  "currentGap": {
+    "code": "NO_EXACT_HEAD_FIELD_VOLUME_ROUTE_BUILD_CELL_EVIDENCE",
+    "requiredCellDenominator": 1120,
+    "exactHeadPassedNumerator": 0,
+    "percentage": 0,
+    "reason": "The C1-C8 matrix is a stale route-only register and WP709 7-of-7 is a separate bounded route corpus; neither supplies current exact-head cell evidence over the frozen field, volume, route, and execution-profile axes."
+  },
+  "fields": [
+    { "id": "TEXT", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "NOVEL_SCENE_STRUCTURE", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "ORDER", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "STYLES", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "COMMENTS", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "NOTES", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "FOOTNOTES_ENDNOTES", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "TABLES", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "MEDIA_ASSETS", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "SECTIONS", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "UNICODE_IME_LOCALE", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "IDENTIFIERS_ANCHORS", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "TRACKED_REVIEW_SEMANTICS", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
+    { "id": "METADATA", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" }
+  ],
+  "volumes": [
+    { "id": "SINGLE_SCENE", "inputClass": "VALID_SUPPORTED", "passOutcome": "PRESERVED" },
+    { "id": "MULTI_SCENE", "inputClass": "VALID_SUPPORTED", "passOutcome": "PRESERVED" },
+    { "id": "FULL_SYNTHETIC_NOVEL", "inputClass": "VALID_SUPPORTED", "passOutcome": "PRESERVED" },
+    { "id": "LARGE_DOCUMENT", "inputClass": "VALID_SUPPORTED", "passOutcome": "PRESERVED" },
+    { "id": "MALFORMED_HOSTILE_INPUT", "inputClass": "INVALID_OR_ADVERSARIAL", "passOutcome": "INDEPENDENTLY_CLASSIFIED_REJECTION_WITH_ZERO_MUTATION_OR_PRESERVED_IF_ACCEPTED" }
+  ],
+  "routes": [
+    {
+      "id": "C1",
+      "title": "Yalken to Word to Yalken",
+      "hops": ["YALKEN_EXPORT", "WORD_LIFECYCLE", "YALKEN_RETURN_INTAKE"],
+      "requiredProviderProfiles": ["WORD_DESKTOP"],
+      "cyclePolicy": { "kind": "ONE_ROUND_TRIP", "requiredCycles": 1 }
+    },
+    {
+      "id": "C2",
+      "title": "Yalken to Word to Yalken to Word",
+      "hops": ["YALKEN_EXPORT", "WORD_LIFECYCLE", "YALKEN_RETURN_INTAKE", "YALKEN_APPLY", "YALKEN_REEXPORT", "WORD_REOPEN_READBACK"],
+      "requiredProviderProfiles": ["WORD_DESKTOP"],
+      "cyclePolicy": { "kind": "RETURN_APPLY_REEXPORT", "requiredCycles": 1 }
+    },
+    {
+      "id": "C3",
+      "title": "Repeated Yalken and Word",
+      "hops": ["YALKEN_EXPORT_ROUND_N", "WORD_LIFECYCLE_ROUND_N", "YALKEN_RETURN_INTAKE_ROUND_N", "YALKEN_APPLY_ROUND_N"],
+      "requiredProviderProfiles": ["WORD_DESKTOP"],
+      "cyclePolicy": { "kind": "FIXED_SATURATION", "requiredCycles": 5 }
+    },
+    {
+      "id": "C4",
+      "title": "Yalken to Google Office to Yalken",
+      "hops": ["YALKEN_DOCX_EXPORT", "GOOGLE_OFFICE_LIFECYCLE", "YALKEN_RETURN_INTAKE"],
+      "requiredProviderProfiles": ["GOOGLE_OFFICE"],
+      "cyclePolicy": { "kind": "ONE_ROUND_TRIP", "requiredCycles": 1 }
+    },
+    {
+      "id": "C5",
+      "title": "Yalken to Google Native to DOCX to Yalken",
+      "hops": ["YALKEN_SOURCE_EXPORT", "GOOGLE_NATIVE_LIFECYCLE", "GOOGLE_NATIVE_DOCX_EXPORT", "YALKEN_RETURN_INTAKE"],
+      "requiredProviderProfiles": ["GOOGLE_NATIVE"],
+      "cyclePolicy": { "kind": "ONE_ROUND_TRIP", "requiredCycles": 1 }
+    },
+    {
+      "id": "C6",
+      "title": "Yalken to Google to Yalken to Google",
+      "hops": ["YALKEN_TO_GOOGLE", "GOOGLE_EDIT_OR_SUGGEST", "YALKEN_RETURN_INTAKE", "YALKEN_APPLY", "YALKEN_TO_GOOGLE_REEXPORT", "GOOGLE_READBACK"],
+      "requiredProviderProfiles": ["GOOGLE_OFFICE", "GOOGLE_NATIVE"],
+      "cyclePolicy": { "kind": "RETURN_APPLY_REEXPORT", "requiredCycles": 1 }
+    },
+    {
+      "id": "C7",
+      "title": "Yalken to Word to Google to Yalken",
+      "hops": ["YALKEN_EXPORT", "WORD_LIFECYCLE", "GOOGLE_LIFECYCLE", "YALKEN_RETURN_INTAKE"],
+      "requiredProviderProfiles": ["WORD_DESKTOP", "GOOGLE_OFFICE", "GOOGLE_NATIVE"],
+      "cyclePolicy": { "kind": "ONE_CROSS_PROVIDER_ROUND_TRIP", "requiredCycles": 1 }
+    },
+    {
+      "id": "C8",
+      "title": "Yalken to Google to Word to Yalken",
+      "hops": ["YALKEN_TO_GOOGLE", "GOOGLE_LIFECYCLE", "WORD_LIFECYCLE", "YALKEN_RETURN_INTAKE"],
+      "requiredProviderProfiles": ["GOOGLE_OFFICE", "GOOGLE_NATIVE", "WORD_DESKTOP"],
+      "cyclePolicy": { "kind": "ONE_CROSS_PROVIDER_ROUND_TRIP", "requiredCycles": 1 }
+    }
+  ],
+  "executionProfiles": [
+    {
+      "id": "SOURCE_RUNTIME",
+      "requiredProof": ["EXACT_HEAD", "EXECUTED_RUNTIME", "INDEPENDENT_READBACK", "PER_HOP_PROVENANCE", "PER_HOP_LOSS_LEDGER", "PHYSICAL_PROVIDER_LIFECYCLE"]
+    },
+    {
+      "id": "PACKAGED_BUILD_RUNTIME",
+      "requiredProof": ["EXACT_HEAD", "SIGNED_OR_HASHED_PACKAGE_IDENTITY", "INSTALLED_PACKAGED_RUNTIME", "INDEPENDENT_READBACK", "PER_HOP_PROVENANCE", "PER_HOP_LOSS_LEDGER", "PHYSICAL_PROVIDER_LIFECYCLE"]
+    }
+  ],
+  "denominator": {
+    "kind": "CARTESIAN_PRODUCT",
+    "axisOrder": ["field", "volume", "route", "executionProfile"],
+    "cellIdFormat": "FIELD__VOLUME__ROUTE__EXECUTION_PROFILE",
+    "formula": "14*5*8*2",
+    "expectedRequiredCells": 1120,
+    "zeroDenominatorVerdict": "FAIL",
+    "missingCellStatus": "NOT_EXECUTED"
+  },
+  "passPolicy": {
+    "countedStatus": "PASS",
+    "nonCountedStatuses": ["FAIL", "BLOCKED", "MANUAL", "SKIPPED", "STALE", "DIFFERENT_HEAD", "NOT_EXECUTED", "UNSUPPORTED", "OPAQUE_ONLY", "TYPED_REFUSAL"],
+    "validSupportedOutcome": "PRESERVED",
+    "typedRefusalCanPassValidSupportedElement": false,
+    "evidenceInheritanceAcrossRoutesProvidersBuildsOrHeads": false,
+    "parserOnlySyntheticReplayOrRouteOnlyPassCanCloseCell": false,
+    "silentLossAllowed": false,
+    "requiredOracleClasses": ["SEMANTIC", "STRUCTURE", "ORDER", "LOSS", "PROVENANCE", "INDEPENDENT_READBACK", "CLEANUP"]
+  },
+  "outsideContractPolicy": {
+    "silentDropAllowed": false,
+    "requiredDisposition": ["OPAQUE_PRESERVED", "EXPLICIT_LOSS", "MANUAL", "UNSUPPORTED"],
+    "outsideContractDispositionNeverCountsAsSupportedElementPreservation": true
+  },
+  "securityPolicy": {
+    "fixtures": "SEEDED_DISPOSABLE_SYNTHETIC_ONLY",
+    "userDocumentsAllowed": false,
+    "existingDriveDocumentsAllowed": false,
+    "runtimeNetworkAllowed": false,
+    "externalTestConnectorNetworkAllowed": true,
+    "externalPayloadAuthority": "NO_PATH_COMMAND_OR_PROJECT_WRITE_AUTHORITY",
+    "hostilePassRequiresIndependentInvalidityClassification": true,
+    "hostileRejectionRequiresZeroMutation": true
+  },
+  "wordPhysicalRuntimePolicy": {
+    "persistentRoot": "/Users/kirillponomarev/Library/Containers/com.microsoft.Word/Data/Documents/YalkenWordAutomation/R2_4",
+    "allWordDocxArtifactsMustBeDescendants": true,
+    "perRunUniqueChildDirectoryRequired": true,
+    "deleteOnlyOwnRunSubdirectories": true,
+    "preserveRootAndHistoricalEvidence": ["ROOT", "WP707", "WP709"],
+    "grantFileAccessTargetIfPrompted": "PERSISTENT_ROOT_ONLY",
+    "repeatGrantAfterRootGrantStatus": "ACCESS_REGRESSION"
+  },
+  "providerTransportPolicy": {
+    "googleLocalDocxToNativeImport": {
+      "status": "ROUTE_QUALIFIED_NOT_CELL_PASS",
+      "directLocalPathImport": {
+        "supported": false,
+        "countsAsPass": false,
+        "typedBlocker": "GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED"
+      },
+      "sourceReferenceKind": "INTERNAL_UPLOADED_FILE_REFERENCE",
+      "requiredSteps": [
+        "DIRECT_LOCAL_PATH_IMPORT_NEGATIVE",
+        "UPLOAD_LOCAL_DOCX_AS_RAW_DRIVE_FILE",
+        "FETCH_UPLOADED_DOCX_AS_INTERNAL_FILE_URI",
+        "IMPORT_INTERNAL_FILE_URI_AS_NATIVE_GOOGLE_DOC",
+        "VERIFY_NATIVE_READBACK",
+        "EXPORT_NATIVE_DOCX",
+        "DELETE_EXACT_CREATED_GOOGLE_FILES"
+      ],
+      "createdDriveFilesCleanup": "EXACT_CREATED_IDS_DELETE_REQUIRED",
+      "routeQualificationCountsAsCellPass": false,
+      "productRuntimeNetworkPolicy": "OFFLINE_FIRST_RUNTIME_NETWORK_DENIED",
+      "externalConnectorUse": "DISPOSABLE_SYNTHETIC_TEST_EVIDENCE_ONLY"
+    }
+  },
+  "legacyEvidenceDisposition": [
+    { "id": "W7_WP700_WP710", "status": "SCOPED_COMPONENT_OR_NODE_EVIDENCE_NOT_CELL_PASS" },
+    { "id": "WP707_WORD_APPLY_PHYSICAL", "status": "STALE_BOUNDED_SINGLE_SCENE_PHYSICAL_INPUT_NOT_CELL_PASS" },
+    { "id": "WP708_GOOGLE_PROVIDER_PHYSICAL", "status": "STALE_BOUNDED_PROVIDER_INPUT_NOT_CELL_PASS" },
+    { "id": "WP709_MIXED_CHAIN_7_OF_7", "status": "STALE_BOUNDED_SEVEN_ROUTE_INPUT_NOT_CELL_PASS" },
+    { "id": "YALKEN_INTEROP_CHAIN_MATRIX_C1_C8", "status": "STALE_ROUTE_REGISTER_NOT_CELL_PASS" }
+  ],
+  "rollback": "Revert this bounded denominator contour; do not reinterpret or rewrite historical receipts."
+}

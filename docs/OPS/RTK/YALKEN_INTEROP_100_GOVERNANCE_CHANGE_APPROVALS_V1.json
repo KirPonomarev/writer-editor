@@ -1,0 +1,41 @@
+{
+  "version": "v1.0",
+  "approvals": [
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
+      "sha256": "9acc802db0717a286f5c7b83e422514eff9ab1df5498e0ccfefcea4e2a13f92b",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-08T23:50:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded interop denominator route-policy update: preserves the 1120-cell zero-pass baseline, fixes the Google local DOCX to native import blocker by requiring an internal uploaded-file reference, preserves offline-first product runtime policy, and grants no broad C1-C8 portability PASS, user-document access, dependency, cloud runtime, UI, release, or program-done authority.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
+      "sha256": "69941a68e40e34fea5c73aebea7f375c79d56f31d902fae89d87110c79c25924",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-08T23:50:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded interop denominator route-policy update: records exact-head disposable routeu2 Google DOCX import qualification and cleanup as non-cell evidence only, preserves the 1120-cell zero-pass baseline, and grants no broad C1-C8 portability PASS, user-document access, dependency, cloud runtime, UI, release, or program-done authority.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "sha256": "012eee82028346eeb4703abad820a70af05d3ea6d139f2419bf185091b058093",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-08T23:50:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded interop denominator validator update: enforces Word sandbox root containment, Google internal uploaded-file reference routing, non-counted route qualification, exact-head evidence, and cleanup guards without changing product runtime behavior, dependencies, UI, or supported portability denominator outcomes.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "sha256": "866fb20c214cb24ac1c8cde33b42c1ac4e8fd6671a95d39727eaa3bc89722af8",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-08T23:50:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded interop denominator contract tests: rejects direct local DOCX import counting as PASS, unsafe Word roots, uncleaned Google files, and route qualification promoted to denominator success; no runtime mutation, dependency, UI, or user-document authority is added.",
+      "approved": true
+    }
+  ]
+}
