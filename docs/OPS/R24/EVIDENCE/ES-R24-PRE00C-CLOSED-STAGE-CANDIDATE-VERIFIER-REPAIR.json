@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR",
+  "contourId": "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "8c76b8610511f81f7977dcdf6d618c5586b5459a",
+  "originMainSha": "8c76b8610511f81f7977dcdf6d618c5586b5459a",
+  "generatedAtUtc": "2026-09-08T00:00:00Z",
+  "oracle": "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_ONLY",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b3b32f776da3195440aedad348d2300c714a0775b7ce7f74887a28a632b1f816",
+      "claimTerms": [
+        "PASS"
+      ]
+    }
+  ],
+  "implementationArtifactDigests": [
+    {
+      "path": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
+      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
+      "terms": [
+        "PRE00C_CLOSED_STAGE_TASK_BRIEF"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "a09134756de903ae9307e91ec8e95e54f73b119511e0ad4f5d500f92fdae8d39",
+      "terms": [
+        "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "b323d24a2fa34f71fb61cf06523e387749a1e758dc85b35f4f8b661acd22277e",
+      "terms": [
+        "PRE00C_PRE00B_HISTORICAL_INVENTORY_PIN"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "25b854924372af5cfdcb7fefff2ac3a1f965f279a15574dbc3b610cea3ed115f",
+      "terms": [
+        "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_CONTRACT_TEST"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "node --test --test-name-pattern PRE00B/PRE00C closed-stage verifier contracts test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 5,
+        "fail": 0
+      }
+    },
+    {
+      "command": "npm run test:r24-e0",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 121,
+        "fail": 0
+      }
+    }
+  ],
+  "nonClaims": [
+    "NO_PROGRAM_DONE",
+    "NO_PRODUCTION_RELEASE_READY",
+    "NO_GRAPH_INCREMENT",
+    "NO_PK1_RELEASE_SECURITY_PHYSICAL",
+    "NO_V3_PACKAGE_CLAIM_COMPILER",
+    "NO_WP900_PLAN_DELIVERY",
+    "NO_RUNTIME_UI_CORE_MUTATION",
+    "NO_PROCESS_INSPECTION_OR_TERMINATION",
+    "NO_DEPENDENCY_CHANGE",
+    "NO_NETWORK_OR_CLOUD_TRUTH"
+  ]
+}
