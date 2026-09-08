@@ -139,7 +139,18 @@ jobs:
             node --test test/unit/r24-wp707-word-apply.test.js test/unit/r24-wp707-word-apply-integration.test.js test/unit/r24-wp707-word-apply-mutants.test.js test/contracts/r24-wp707-terminal-carriers.contract.test.mjs test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs
           )
       - name: Verify WP-709 seven mixed chains, monotone loss and bounded DOCX descriptor intake
-        run: node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
+        run: |
+          node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
+          wp709_checkout="$(mktemp -d)"
+          cleanup_wp709() {
+            git worktree remove --force "$wp709_checkout"
+          }
+          trap cleanup_wp709 EXIT
+          git worktree add --detach "$wp709_checkout" efc37eae45fa30965b5a9c28eb4c4fc6b44b4bc0
+          (
+            cd "$wp709_checkout"
+            node --test test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
+          )
       - name: Verify PK1 evaluator evidence reachability without release effects
         run: node scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs --check
 
@@ -176,7 +187,7 @@ jobs:
       - name: Run focused post-audit negative contracts after real build
         run: |
           npm run test:r24-post-audit
-          node --test test/contracts/r24-post-audit-certification-set.contract.test.mjs test/contracts/r24-protected-wip-snapshot.contract.test.mjs test/contracts/r24-wp604-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp605-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp710-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp606-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp607-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp800-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp801-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp802-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp803-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp804-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp805-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
+          node --test test/contracts/r24-post-audit-certification-set.contract.test.mjs test/contracts/r24-protected-wip-snapshot.contract.test.mjs test/contracts/r24-wp604-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp605-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp710-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp606-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp607-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp800-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp801-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp802-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp803-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp804-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp805-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs
           wp707_checkout="$(mktemp -d)"
           cleanup_wp707() {
             git worktree remove --force "$wp707_checkout"
@@ -186,6 +197,18 @@ jobs:
           (
             cd "$wp707_checkout"
             node --test test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs
+          )
+          cleanup_wp707
+          trap - EXIT
+          wp709_checkout="$(mktemp -d)"
+          cleanup_wp709() {
+            git worktree remove --force "$wp709_checkout"
+          }
+          trap cleanup_wp709 EXIT
+          git worktree add --detach "$wp709_checkout" efc37eae45fa30965b5a9c28eb4c4fc6b44b4bc0
+          (
+            cd "$wp709_checkout"
+            node --test test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
           )
       - name: Run full maintained RTK after real build
         run: npm run test:rtk
