@@ -169,7 +169,9 @@ export const PRE00F_PLAN_DELIVERY_EXPECTATION=Object.freeze({
   baseTree:'9c8a063181cb1765047b993e0052844a0ac27250',
   sourceHeadSha:'46fcb00b56a4d36482a13d5734fc21d2423f0b81',
   sourceDigest:'c3844bf00e56577bd9a6509c6cdddf8a9ff067791367ee6ccfeb9051d3e72ea8',
-  targetDigest:'75f161cd4fceac61cfdef069ccf7c3b4b1eeaf9cdec28206724983b066b80bf6',
+  preOwnerAmendmentTargetDigest:'75f161cd4fceac61cfdef069ccf7c3b4b1eeaf9cdec28206724983b066b80bf6',
+  ownerAmendedSourceDigest:'37bed795e06e3d304acb6c56b5559220c3455605aecf10e1c4720c880b54477d',
+  targetDigest:'aaaa2560d77e4ea82b3393926fb8f9e66de10709dcdcefbc04bbac52d98ab5c5',
   planPath:'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
   inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   approvalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
@@ -3381,6 +3383,60 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
   const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),approvalRegistry=readJson(e.approvalsPath),evidence=readJson(e.evidencePath),postAuditVerifier=readText(e.postAuditVerifierPath),claimLint=readText(e.claimLintPath),postAuditTest=readText(e.postAuditTestPath);
   const postAuditVerifierText=postAuditVerifier.text,claimLintText=claimLint.text,postAuditTestText=postAuditTest.text;
   assert(plan.digest===e.targetDigest,'E_PRE00F_TARGET_DIGEST',plan.digest);
+  const ownerPortabilityAmendmentBlocks=[
+`| W7/C1-C8 full-book portability route matrix | C1 BLOCKED; C2-C8 NEEDS_MORE_EVIDENCE | HISTORICAL_ROUTE_DENOMINATOR |
+| WP707, WP708 and WP709 evidence ceiling | bounded disposable synthetic fixtures only | HISTORICAL_BOUNDED_EVIDENCE |
+| Broad Word/Google/mixed portability | NOT_PROVEN_NO_PASS_PROMOTION | OWNER_REQUIREMENT_RECORDED |
+`,
+`The owner portability requirement is stricter than the closed WP707-WP709
+bounded scenarios. The supported Yalken interchange format must prove 100%
+portability across Word, Google and mixed provider routes, including full-book
+fixtures and repeated cycles, before any final product or release claim can
+advance. Existing WP707 single-scene Word apply evidence, WP708 Gate05
+synthetic provider lifecycle evidence and WP709 seven-chain disposable
+synthetic evidence remain useful bounded evidence only. They cannot raise the
+W7/C1-C8 route matrix, broad C1-C8 portability, full-book route closure,
+provider-mixed rows or repeated-cycle portability to PASS.
+
+`,
+`The owner thread 019fdbc4-6eb0-7632-bfd5-75f05dceaba7 is historical
+denominator evidence only. Its recorded partial-progress observations cannot
+seed any current PASS without exact-head revalidation against the W7/C1-C8
+route matrix.
+
+`,
+`| PORT-01 | BLOCKER | REVALIDATE_CURRENT | owner portability gap + W7 route matrix | R24-RCV-01F |
+`,
+`#### R24-RCV-01F — W7 full-book portability gap
+
+Primary finding: PORT-01.
+
+Outcome: bind the owner-required portability denominator before any final
+product or release claim can advance.
+
+Acceptance:
+
+- W7/C1-C8 source matrix is recompiled on the fresh exact base;
+- C1 remains BLOCKED unless a full-book synthetic route proves every required
+  semantic, structure, comments, suggestions, formatting, recovery and cleanup
+  oracle;
+- C2-C8 remain NEEDS_MORE_EVIDENCE until their full-book and repeated-cycle
+  routes execute with fresh round/effect/apply ids, provider identity,
+  revision/generation bindings and loss ledgers;
+- WP707, WP708 and WP709 bounded synthetic passes are recorded as bounded
+  evidence only and cannot seed broad C1-C8 route PASS;
+- no user documents, private data, account documents or non-disposable provider
+  artifacts are used;
+- the output feeds R24-RCV-33 and becomes a release-blocking input to
+  R24-RCV-60.
+
+`,
+  ];
+  let sourceEquivalent=plan.text;
+  for(const block of ownerPortabilityAmendmentBlocks){assert(sourceEquivalent.includes(block),'E_PRE00F_OWNER_PORTABILITY_AMENDMENT',block.slice(0,80));sourceEquivalent=sourceEquivalent.replace(block,'');}
+  assert(sourceEquivalent.includes('-> 01A -> 01B -> 01C -> 01D -> 01E -> 01F'),'E_PRE00F_OWNER_PORTABILITY_CHAIN');
+  sourceEquivalent=sourceEquivalent.replace('-> 01A -> 01B -> 01C -> 01D -> 01E -> 01F','-> 01A -> 01B -> 01C -> 01D -> 01E');
+  assert(h(Buffer.from(sourceEquivalent,'utf8'))===e.preOwnerAmendmentTargetDigest,'E_PRE00F_PRE_OWNER_AMENDMENT_DIGEST');
   const sourceLines=[
     ['STATUS: FRESH_PRE00F_PLAN_DELIVERY_CANDIDATE_AFTER_PRE00E_CLOSURE','STATUS: PLAN_ORDER_APPROVED_ONLY_PRECURSOR_REQUIRED'],
     [`AUTHORING_BASE_SHA: ${e.baseSha}`,'AUTHORING_BASE_SHA: c9bc88522327cb28be0690d89d6edc8259cc48c8'],
@@ -3389,12 +3445,13 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
     ['AUTHORING_DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED_PR_REQUIRED_MERGE_REQUIRED_POSTMERGE_VERIFICATION_REQUIRED','AUTHORING_DELIVERY_POLICY: COMMIT_REQUIRED_PUSH_REQUIRED_PR_REQUIRED_MERGE_REQUIRED_AFTER_PRECURSOR_REBIND'],
     ['CURRENT_PR_ROLE: FRESH_PRE00F_DELIVERY_PR_SUPERSEDES_PR1843_WITHOUT_MERGE','CURRENT_PR_ROLE: REVIEW_CARRIER_ONLY_DO_NOT_MERGE_BEFORE_PRECURSOR'],
   ];
-  let normalized=plan.text;
-  for(const [target,source] of sourceLines){assert(normalized.includes(target),'E_PRE00F_HEADER_REBINDING',target);normalized=normalized.replace(target,source);}
-  assert(normalized.includes('\nNEXT_STEP: R24-RCV-00A\n'),'E_PRE00F_NEXT_STEP');
-  normalized=normalized.replace('\nNEXT_STEP: R24-RCV-00A\n','\n');
-  assert(h(Buffer.from(normalized,'utf8'))===e.sourceDigest,'E_PRE00F_SOURCE_DIGEST');
+  const normalizeSourceHeader=(text)=>{let normalized=text;for(const [target,source] of sourceLines){assert(normalized.includes(target),'E_PRE00F_HEADER_REBINDING',target);normalized=normalized.replace(target,source);}assert(normalized.includes('\nNEXT_STEP: R24-RCV-00A\n'),'E_PRE00F_NEXT_STEP');return normalized.replace('\nNEXT_STEP: R24-RCV-00A\n','\n');};
+  const ownerAmendedSourceDigest=h(Buffer.from(normalizeSourceHeader(plan.text),'utf8'));
+  assert(ownerAmendedSourceDigest===e.ownerAmendedSourceDigest,'E_PRE00F_OWNER_AMENDED_SOURCE_DIGEST',ownerAmendedSourceDigest);
+  const sourceDigest=h(Buffer.from(normalizeSourceHeader(sourceEquivalent),'utf8'));
+  assert(sourceDigest===e.sourceDigest,'E_PRE00F_SOURCE_DIGEST',sourceDigest);
   for(const token of [`AUTHORING_BASE_SHA: ${e.baseSha}`,`PROGRAM_OBSERVATION_BASE_SHA: ${e.baseSha}`,`PROGRAM_OBSERVATION_BASE_TREE: ${e.baseTree}`,'CURRENT_PROGRAM_DONE: false','CURRENT_PRODUCTION_RELEASE_READY: false','CURRENT_PUBLICATION_AUTHORITY: false','CURRENT_REPOSITORY_VERDICT: NOT_READY','NEXT_STEP: R24-RCV-00A','CURRENT_PR_ROLE: FRESH_PRE00F_DELIVERY_PR_SUPERSEDES_PR1843_WITHOUT_MERGE'])assert(plan.text.includes(token),'E_PRE00F_PLAN_TOKEN',token);
+  for(const token of ['W7/C1-C8 full-book portability route matrix','C1 BLOCKED; C2-C8 NEEDS_MORE_EVIDENCE','Broad Word/Google/mixed portability','NOT_PROVEN_NO_PASS_PROMOTION','owner thread 019fdbc4-6eb0-7632-bfd5-75f05dceaba7 is historical','R24-RCV-01F','WP707, WP708 and WP709 bounded synthetic passes are recorded as bounded','no user documents, private data, account documents or non-disposable provider','artifacts are used'])assert(plan.text.includes(token),'E_PRE00F_PORTABILITY_GAP_TOKEN',token);
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1458&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00F_INVENTORY_SHAPE');
   const inventoryEntry=inventory.value.entries.find((entry)=>entry.path===e.postAuditTestPath);
   assert(inventoryEntry?.sha256===h(objectBytes(git,resolvedCandidate,e.postAuditTestPath)),'E_PRE00F_INVENTORY_TEST_DIGEST');
@@ -3408,11 +3465,11 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
   const approvalMap=new Map(approvalRegistry.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
   for(const [relative,digest] of [[e.inventoryPath,inventory.digest],[e.evidencePath,evidence.digest],[e.postAuditVerifierPath,postAuditVerifier.digest],[e.claimLintPath,claimLint.digest],[e.postAuditTestPath,postAuditTest.digest]]){const approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approvedBy==='OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08','E_PRE00F_APPROVAL_REGISTRY_DIGEST',relative);}
   const nonClaims=new Set(evidence.value.nonClaims??[]);
-  for(const token of ['NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH'])assert(nonClaims.has(token),'E_PRE00F_NONCLAIMS',token);
+  for(const token of ['NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH','NO_BROAD_W7_C1_C8_PORTABILITY_PASS','NO_FULL_BOOK_PROVIDER_MIXED_REPEATED_CYCLE_PASS','NO_USER_DOCUMENTS_OR_PRIVATE_PROVIDER_ARTIFACTS'])assert(nonClaims.has(token),'E_PRE00F_NONCLAIMS',token);
   for(const token of ['PRE00F_PLAN_DELIVERY_EXPECTATION','verifyPre00fPlanDeliveryPostEvaluationException','E_PRE00F_EXACT_ADMITTED_DELTA','PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1'])assert(postAuditVerifierText.includes(token),'E_PRE00F_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V26','ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION','296768b66b7c59a4c2a852c612ec042360be5ec86c24079f49a51cf088840c3f'])assert(claimLintText.includes(token),'E_PRE00F_CLAIM_LINT_TOKEN',token);
   for(const token of ['PRE00F plan delivery accepts the exact plan doc and verifier-support delta','PRE00F plan delivery rejects an unadmitted future path','PRE00E recovery CI external confirmation accepts the bounded delta'])assert(postAuditTestText.includes(token),'E_PRE00F_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),sourceHeadSha:e.sourceHeadSha,sourceDigest:e.sourceDigest,targetDigest:e.targetDigest,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,evidenceDigest:evidence.digest,programDone:false,productionReleaseReady:false,graphIncrement:0,nextStep:'R24-RCV-00A'};
+  return{schemaVersion:'PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),sourceHeadSha:e.sourceHeadSha,sourceDigest:e.sourceDigest,preOwnerAmendmentTargetDigest:e.preOwnerAmendmentTargetDigest,ownerAmendedSourceDigest:e.ownerAmendedSourceDigest,targetDigest:e.targetDigest,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,evidenceDigest:evidence.digest,programDone:false,productionReleaseReady:false,graphIncrement:0,portabilityGapRecorded:true,nextStep:'R24-RCV-00A'};
 }
 
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){

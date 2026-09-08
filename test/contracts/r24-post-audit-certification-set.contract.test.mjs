@@ -390,6 +390,8 @@ test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta
   assert.equal(result.changedPathDenominator,7);
   assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
   assert.equal(result.sourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.sourceDigest);
+  assert.equal(result.ownerAmendedSourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.ownerAmendedSourceDigest);
+  assert.equal(result.portabilityGapRecorded,true);
   assert.equal(result.nextStep,'R24-RCV-00A');
 });
 test('PRE00F plan delivery rejects an unadmitted future path',()=>{
