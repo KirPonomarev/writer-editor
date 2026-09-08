@@ -35,6 +35,7 @@ import {
   PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION,
   PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,
   PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,
+  PRE00F_PLAN_DELIVERY_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   verifyAuditCycle2DurableCarrier,
@@ -62,6 +63,7 @@ import {
   verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException,
   verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException,
   verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException,
+  verifyPre00fPlanDeliveryPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -332,8 +334,7 @@ function pre00eGitFixture(changedPaths){
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      const bytes=fs.readFileSync(repoPath);
-      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
+      return execFileSync('git',['show',`${PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha}:${repoPath}`],options);
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -353,6 +354,62 @@ test('PRE00E recovery CI external confirmation accepts the bounded delta',()=>{
 test('PRE00E recovery CI external confirmation rejects an unadmitted future path',()=>{
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());
   assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
+});
+function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,evidenceBytes,approvalsBytes,baseTree}={}){
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);
+  const bytesByPath=new Map([
+    [e.planPath,planBytes??fs.readFileSync(e.planPath)],
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.postAuditTestPath,testBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.postAuditVerifierPath,verifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
+    [e.evidencePath,evidenceBytes??fs.readFileSync(e.evidencePath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=`${(changedPaths??e.admittedPaths).join('\n')}\n`;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
+  }};
+}
+test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta',()=>{
+  const fixture=pre00fGitFixture(),result=verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha);
+  assert.equal(result.admittedPathDenominator,7);
+  assert.equal(result.changedPathDenominator,7);
+  assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
+  assert.equal(result.sourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.sourceDigest);
+  assert.equal(result.ownerAmendedSourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.ownerAmendedSourceDigest);
+  assert.equal(result.portabilityGapRecorded,true);
+  assert.equal(result.nextStep,'R24-RCV-00A');
+});
+test('PRE00F plan delivery rejects an unadmitted future path',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,fixture=pre00fGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00F plan delivery rejects semantic content drift',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION;
+  const planBytes=Buffer.from(fs.readFileSync(e.planPath,'utf8').replace('CURRENT_PROGRAM_DONE: false','CURRENT_PROGRAM_DONE: true'));
+  const fixture=pre00fGitFixture({planBytes});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_TARGET_DIGEST/);
+});
+test('PRE00F plan delivery rejects stale CI approval registry binding',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,approvalRegistry=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  approvalRegistry.approvals.find((entry)=>entry.filePath===e.evidencePath).sha256='0'.repeat(64);
+  const approvalsBytes=Buffer.from(`${JSON.stringify(approvalRegistry,null,2)}\n`);
+  const fixture=pre00fGitFixture({approvalsBytes});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});
