@@ -33,6 +33,7 @@ import {
   PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_SHA,
   PRE00C_NEXT_CONTOUR_SELECTION_DELIVERY_TREE,
   PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION,
+  PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   verifyAuditCycle2DurableCarrier,
@@ -58,6 +59,7 @@ import {
   verifyPre00bLifecycleReconciliationPostEvaluationException,
   verifyPre00cNextContourSelectionPostEvaluationException,
   verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException,
+  verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -265,7 +267,7 @@ test('PRE00C next-contour selection verifier is pinned to its delivered merge',(
   assert.equal(result.productionReleaseReady,false);
 });
 test('PRE00C closed-stage candidate verifier accepts the bounded repair delta',()=>{
-  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:'HEAD'});
+  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.baseSha});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha);
   assert.equal(result.baseTree,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree);
@@ -287,6 +289,36 @@ test('PRE00C closed-stage candidate verifier rejects an unadmitted future path',
     return execFileSync('git',args,options);
   };
   assert.throws(()=>verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha,git:hostileGit}),/E_PRE00C_CLOSED_STAGE_EXACT_ADMITTED_DELTA/);
+});
+function pre00dGitFixture(changedPaths){
+  const e=PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,candidateSha='c'.repeat(40),candidateTree='d'.repeat(40);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=fs.readFileSync(repoPath);
+      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
+  }};
+}
+test('PRE00D fresh successor admission lease handoff accepts the bounded delta',()=>{
+  const e=PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,fixture=pre00dGitFixture(e.admittedPaths);
+  const result=verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,e.baseSha);
+  assert.equal(result.admittedPathDenominator,11);
+  assert.equal(result.approvalDenominator,10);
+  assert.equal(result.negativeProbeDenominator,9);
+});
+test('PRE00D fresh successor admission lease handoff rejects an unadmitted future path',()=>{
+  const e=PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,fixture=pre00dGitFixture([...e.admittedPaths,'package.json'].sort());
+  assert.throws(()=>verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00D_EXACT_ADMITTED_DELTA/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

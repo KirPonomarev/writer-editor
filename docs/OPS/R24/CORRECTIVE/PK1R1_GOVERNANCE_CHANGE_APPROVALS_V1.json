@@ -2,7 +2,8 @@
   "version": "v1.0",
   "evidenceStampIds": [
     "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
-    "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS"
+    "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS",
+    "ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF"
   ],
   "sourcePlanRoles": {
     "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
@@ -10,6 +11,13 @@
     "rolesDistinct": true
   },
   "approvals": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "5acef82da77c7a5f7db107c080c4d7f2d908f68ec2489bed2923fadbffaeaf32",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
       "sha256": "d692a84e8b83793e7d130a6746fdb749c2378a577e8b388e573843c1305406e4",
@@ -102,48 +110,6 @@
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
     },
     {
-      "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
-      "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
-      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
-      "approvedAtUtc": "2026-09-08T01:50:00Z",
-      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "a09134756de903ae9307e91ec8e95e54f73b119511e0ad4f5d500f92fdae8d39",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json",
-      "sha256": "7c221f0df6e05fca1f95435a05e24fc7ee52eb044677e372c1742744a7a8542a",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
-    },
-    {
-      "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
-      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "25b854924372af5cfdcb7fefff2ac3a1f965f279a15574dbc3b610cea3ed115f",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b3b32f776da3195440aedad348d2300c714a0775b7ce7f74887a28a632b1f816",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "65725e3cbd32d8e1e607361e3ebdc027cab82025e70f38337883f3f11d35691e",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
@@ -158,11 +124,60 @@
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00D_SUCCESSOR_ADMISSION_PACKET_V1.json",
+      "sha256": "cb698c56267ff2a372c6169d5906ee23fcd4999b606dc4cdde9b6b92331cac89",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
       "sha256": "3eceb21ce2f187da971c734485403ce1df06e6d82ef6b10890a5abd4b01ad3fd",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json",
+      "sha256": "7c221f0df6e05fca1f95435a05e24fc7ee52eb044677e372c1742744a7a8542a",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF.json",
+      "sha256": "56abe80967b6604035f07ebc1b4f4a4ed9ad441693cf75897f03df6a20a94f98",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
+      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/tasks/R24_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_001.md",
+      "sha256": "2efbbaaf609675dd8f04c98023d7473e44364e8908af664e4f3b73f82d94ae19",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
+      "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "af65204db5e6cfc3b8482f54cd712d7063b8f1bf0ed02f872e15c08a957281af",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
@@ -172,11 +187,39 @@
       "rationale": "Bounded PRE00C verifier descendant repair; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
+      "filePath": "scripts/ops/r24/corrective/pre00d-successor-admission-lease-handoff.mjs",
+      "sha256": "a654535e15d01dd5200470723a5c9c3f8e7d363c27cdeb45af43d9e9f65b3e63",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "b323d24a2fa34f71fb61cf06523e387749a1e758dc85b35f4f8b661acd22277e",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00Z",
-      "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "e31325a8c1a6cad47ce7ecd584c249b234f0850f47f3d7f2b1f57898fac02a97",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
+      "sha256": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "34ab6b6b5a0462d070dc57cda3101bb1888392541578dab5b411b05813fc85f2",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "6ce2289c9c5371184e69b56587e1c1158cc6810c36fb4ac8906ba187858413f2",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",
@@ -186,11 +229,11 @@
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
-      "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
-      "sha256": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030",
-      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
-      "approvedAtUtc": "2026-09-08T01:50:00Z",
-      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+      "filePath": "test/contracts/r24-pre00d-successor-admission-lease-handoff.contract.test.mjs",
+      "sha256": "e54e15a0376dc734bb94fa8c45e484b7bf0dad30e510f35e4f6b3572beecf41d",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     }
   ]
 }
