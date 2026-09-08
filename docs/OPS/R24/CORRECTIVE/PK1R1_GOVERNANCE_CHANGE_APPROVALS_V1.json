@@ -4,7 +4,8 @@
     "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
     "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF",
-    "ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION"
+    "ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION",
+    "ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS"
   ],
   "sourcePlanRoles": {
     "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
@@ -14,10 +15,17 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "296768b66b7c59a4c2a852c612ec042360be5ec86c24079f49a51cf088840c3f",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "sha256": "471376bbd57b912dbfdca0680fbd7ffefc3cd4cefa11e00d4aca5fd1dc2469c2",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+      "rationale": "Bounded PRE00F plan delivery and CI verifier repair; PR1843 remains closed as review carrier only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, or publication authority is added."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
+      "sha256": "cc01bfa6bc3b0d93d3f043ff1cde56c0db9564b392c8178512b81be671362808",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00F plan delivery and CI verifier repair; PR1843 remains closed as review carrier only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, or publication authority is added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -196,10 +204,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "d0a78c47c9a0afac4b2ae7e61d03fe066e77fae2b7964f93212313ee237260f1",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "sha256": "50837798f638154f3af64a0cf789207d2d39325bf6d9dc0a1996d3213c483580",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+      "rationale": "Bounded PRE00F plan delivery and CI verifier repair; PR1843 remains closed as review carrier only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, or publication authority is added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
@@ -224,10 +232,10 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "1b5b9b0dffb8c3c831d41b372bacb79c91b984022a754cf2c22572dd65ed5bb7",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "sha256": "b5d8230afef65a259344e40e9817c95bc2db2e6dc5457b63c79df14e8765407e",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+      "rationale": "Bounded PRE00F plan delivery and CI verifier repair; PR1843 remains closed as review carrier only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, or publication authority is added."
     },
     {
       "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
@@ -245,10 +253,10 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "33c6933e9d82f63b2aa7df3b5655c865cb09fc09e8ca049cca55ae1bc04e999c",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "sha256": "2dee024638ebc755bd15686193ecccb8e230024d96fc1f74786d060a6a2a14a4",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+      "rationale": "Bounded PRE00F plan delivery and CI verifier repair; PR1843 remains closed as review carrier only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, or publication authority is added."
     },
     {
       "filePath": "test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",

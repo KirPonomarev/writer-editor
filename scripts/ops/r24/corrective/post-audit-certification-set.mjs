@@ -172,12 +172,14 @@ export const PRE00F_PLAN_DELIVERY_EXPECTATION=Object.freeze({
   targetDigest:'75f161cd4fceac61cfdef069ccf7c3b4b1eeaf9cdec28206724983b066b80bf6',
   planPath:'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
   inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   evidencePath:'docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   admittedPaths:[
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json',
     'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
     'scripts/ops/r24/docs-claim-lint.mjs',
@@ -3376,7 +3378,8 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00F_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00F_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00F_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),evidence=readJson(e.evidencePath),postAuditVerifierText=readText(e.postAuditVerifierPath).text,claimLintText=readText(e.claimLintPath).text,postAuditTestText=readText(e.postAuditTestPath).text;
+  const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),approvalRegistry=readJson(e.approvalsPath),evidence=readJson(e.evidencePath),postAuditVerifier=readText(e.postAuditVerifierPath),claimLint=readText(e.claimLintPath),postAuditTest=readText(e.postAuditTestPath);
+  const postAuditVerifierText=postAuditVerifier.text,claimLintText=claimLint.text,postAuditTestText=postAuditTest.text;
   assert(plan.digest===e.targetDigest,'E_PRE00F_TARGET_DIGEST',plan.digest);
   const sourceLines=[
     ['STATUS: FRESH_PRE00F_PLAN_DELIVERY_CANDIDATE_AFTER_PRE00E_CLOSURE','STATUS: PLAN_ORDER_APPROVED_ONLY_PRECURSOR_REQUIRED'],
@@ -3401,6 +3404,9 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
   assert(inventoryBinding?.sha256===inventory.digest&&inventoryBinding.claimTerms?.includes('PASS'),'E_PRE00F_EVIDENCE_INVENTORY_BINDING');
   const implementationDigestMap=new Map((evidence.value.implementationArtifactDigests??[]).map((entry)=>[entry.path,entry]));
   for(const relative of [e.planPath,e.postAuditVerifierPath,e.claimLintPath,e.postAuditTestPath]){const artifact=implementationDigestMap.get(relative);assert(artifact?.sha256===h(objectBytes(git,resolvedCandidate,relative)),'E_PRE00F_EVIDENCE_ARTIFACT_DIGEST',relative);}
+  assert(approvalRegistry.value.version==='v1.0'&&Array.isArray(approvalRegistry.value.approvals)&&approvalRegistry.value.evidenceStampIds?.includes('ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS'),'E_PRE00F_APPROVAL_REGISTRY_SHAPE');
+  const approvalMap=new Map(approvalRegistry.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
+  for(const [relative,digest] of [[e.inventoryPath,inventory.digest],[e.evidencePath,evidence.digest],[e.postAuditVerifierPath,postAuditVerifier.digest],[e.claimLintPath,claimLint.digest],[e.postAuditTestPath,postAuditTest.digest]]){const approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approvedBy==='OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08','E_PRE00F_APPROVAL_REGISTRY_DIGEST',relative);}
   const nonClaims=new Set(evidence.value.nonClaims??[]);
   for(const token of ['NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH'])assert(nonClaims.has(token),'E_PRE00F_NONCLAIMS',token);
   for(const token of ['PRE00F_PLAN_DELIVERY_EXPECTATION','verifyPre00fPlanDeliveryPostEvaluationException','E_PRE00F_EXACT_ADMITTED_DELTA','PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1'])assert(postAuditVerifierText.includes(token),'E_PRE00F_POST_AUDIT_VERIFIER_TOKEN',token);
