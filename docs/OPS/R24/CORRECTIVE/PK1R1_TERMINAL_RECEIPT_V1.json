@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_TERMINAL_RECEIPT_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "CONDITIONAL_DELIVERY_PENDING",
+  "programDone": false,
+  "correctionImplemented": true,
+  "currentRepositoryVerdict": "NOT_READY",
+  "positiveSecurityEvidenceReachable": true,
+  "productionReleaseReady": false,
+  "publicationAuthorityGranted": false,
+  "externalEffectsExecuted": 0,
+  "negativeProbeDenominator": 6,
+  "graphCounts": {
+    "BLOCKED_TYPED": 2,
+    "DONE_COUNT": 90,
+    "INELIGIBLE_OPTIONAL": 10,
+    "PENDING": 7
+  },
+  "graphIncrement": 0,
+  "fencingCounter": 104,
+  "wip": 1,
+  "requiredDeliveryPending": true
+}

@@ -1,0 +1,125 @@
+{
+  "version": "v1.0",
+  "evidenceStampIds": [
+    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS"
+  ],
+  "sourcePlanRoles": {
+    "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
+    "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
+    "rolesDistinct": true
+  },
+  "approvals": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
+      "sha256": "d692a84e8b83793e7d130a6746fdb749c2378a577e8b388e573843c1305406e4",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_EFFECTIVE_STATE_V1.json",
+      "sha256": "2647906b92454e64cc42afd541ed2abb6b9d8aa58a3db4ba2554bf2d8626f132",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_LEASE_RELEASE_V1.json",
+      "sha256": "db3a53cfa2e9b93b2952861c43f627411827bb777163736e07a52b5dcce87c31",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_OWNER_AUTHORITY_V1.json",
+      "sha256": "9aa17ad1739364f0a3beb3a987732042235c0605a1ecafa67e64867f51663877",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_SELECTION_RECEIPT_V1.json",
+      "sha256": "4e7d9d3a60fcc0de9e1b88ddd6c789c9c5224d1c4570f40e86ec95abea621949",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
+      "sha256": "397bd9f0bbde478a8baffe25834ce0e71f01844cb9b2cf52e35194e6a6679e8a",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
+      "sha256": "8bdeaead198e91974af5b4f0a87853144569e85d15f20cbd8dbffae69ef9b2cc",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_PROTECTED_WIP_BEFORE_V1.json",
+      "sha256": "4854cc09c4e4369e97079fa3ebdccda2b54897afdf6367aa3ab7cebf8c36bba2",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_RELEASE_SECURITY_EVALUATOR_CONTRACT_V1.json",
+      "sha256": "9192c159db8cb3baf5bbb7d687eacb3ff90848fa32e2b7073a8b1dda53c87bbe",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_STAGE_REGISTRY_V1.json",
+      "sha256": "12a988dfc9a0d107cf626a1b5cdb5e2a4cdbca62d71ad50471a208ff811901b1",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_SUPERVISOR_SCOPE_DECISION_V1.json",
+      "sha256": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_TERMINAL_RECEIPT_V1.json",
+      "sha256": "39f455df253c6828c368544dacac8be29b2afd84fd36081e95e3332674c6dfff",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_WP709_TERMINAL_PREDECESSOR_V1.json",
+      "sha256": "d1450b31610affc394b43227568a11adca8a6af89db850dee6f94afd50041cce",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
+      "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "948d699cdc725b2ce1602296b2926b21f987fe04bdeacbc3cd8ea2ecbeeada31",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
+      "sha256": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030",
+      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "approvedAtUtc": "2026-09-08T01:50:00Z",
+      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+    }
+  ]
+}

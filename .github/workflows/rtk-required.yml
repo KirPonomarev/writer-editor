@@ -185,7 +185,21 @@ jobs:
           )
 
       - name: Run R2.4 WP-709 mixed-chain cumulative fidelity gate
-        run: node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
+        run: |
+          node --test test/unit/r24-wp709-mixed-chain.test.js test/unit/r24-wp709-mixed-chain-integration.test.js test/unit/r24-wp709-mixed-chain-mutants.test.js test/contracts/revision-bridge-docx-data-descriptor.contract.test.js
+          wp709_checkout="$(mktemp -d)"
+          cleanup_wp709() {
+            git worktree remove --force "$wp709_checkout"
+          }
+          trap cleanup_wp709 EXIT
+          git worktree add --detach "$wp709_checkout" efc37eae45fa30965b5a9c28eb4c4fc6b44b4bc0
+          (
+            cd "$wp709_checkout"
+            node --test test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
+          )
+
+      - name: Run PK1 evaluator evidence reachability gate
+        run: node scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs --check
 
       - name: Run maintained Atlas event contract graph
         run: npm run -s test:atlas-event-contract

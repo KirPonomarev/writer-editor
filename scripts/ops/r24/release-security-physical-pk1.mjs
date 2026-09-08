@@ -13,7 +13,7 @@ export const PK1_PROFILE_ID = 'PACKAGED_RELEASE_SECURITY';
 export const PK1_SCHEMA_VERSION = 'yalken.r24.pk1.release-security-physical.v1';
 
 export const PK1_REQUIRED_RECEIPT_STATUSES = Object.freeze({
-  c01: 'PASS_UNSIGNED_LOCAL_ARTIFACT',
+  c01: Object.freeze(['PASS_UNSIGNED_LOCAL_ARTIFACT', 'PASS_SIGNED_NOTARIZED_ARTIFACT']),
   c02: 'PASS_PACKAGE_BOUND_RUNTIME_JOURNEY',
   c03: 'PASS_PACKAGED_ACCESSIBILITY_RESPONSIVE_VISUAL_REGRESSION',
   c04: 'PASS_PACKAGED_PERFORMANCE_SECURITY_FINAL_PLATFORM_HANDOFF',
@@ -76,6 +76,90 @@ function isSha256(value) {
 
 function isGitSha(value) {
   return /^[a-f0-9]{40}$/u.test(String(value || ''));
+}
+
+function isTeamId(value) {
+  return /^[A-Z0-9]{10}$/u.test(String(value || ''));
+}
+
+function matchesExecutableSha(evidence, executableSha256) {
+  return isSha256(executableSha256) && evidence?.executableSha256 === executableSha256;
+}
+
+function classifyDistributionEvidence(c01, c04, errors) {
+  const executableSha256 = c01?.physicalArtifactEvidence?.artifactSet?.executable?.sha256 || '';
+  const signing = c01?.signing || {};
+  const notarization = c01?.notarization || {};
+  const electronFuses = c01?.electronFuses || {};
+  const hardenedRuntime = c01?.hardenedRuntime || {};
+  const packageOfflineSecurity = c04?.securityEvidence?.packageOfflineSecurity || {};
+
+  const signingNegative = signing.status === 'NOT_READY_NO_DEVELOPER_ID' && signing.passClaim === false;
+  const signingPass = signing.status === 'PASS_DEVELOPER_ID'
+    && signing.passClaim === true
+    && signing.verification?.codesignVerifyDeepStrictExitCode === 0
+    && signing.identityKind === 'DEVELOPER_ID_APPLICATION'
+    && isTeamId(signing.teamId)
+    && matchesExecutableSha(signing, executableSha256);
+  if (!signingNegative && !signingPass) errors.push('PK1_SIGNING_EVIDENCE_INVALID');
+
+  const notarizationNegative = notarization.status === 'NOT_READY_NO_NOTARYTOOL_PROFILE' && notarization.passClaim === false;
+  const notarizationPass = notarization.status === 'PASS_NOTARIZED'
+    && notarization.passClaim === true
+    && notarization.verification?.status === 'Accepted'
+    && typeof notarization.submissionId === 'string'
+    && notarization.submissionId.trim().length > 0
+    && notarization.staplerValidateExitCode === 0
+    && notarization.ticketStapled === true
+    && matchesExecutableSha(notarization, executableSha256);
+  if (!notarizationNegative && !notarizationPass) errors.push('PK1_NOTARIZATION_EVIDENCE_INVALID');
+
+  const fusePass = electronFuses.status === 'PASS_FUSE_POLICY'
+    && electronFuses.passClaim === true
+    && electronFuses.policyVersion === 'YALKEN_ELECTRON_FUSE_POLICY_V1'
+    && matchesExecutableSha(electronFuses, executableSha256)
+    && electronFuses.checks?.runAsNode === false
+    && electronFuses.checks?.cookieEncryption === true
+    && electronFuses.checks?.nodeOptions === false
+    && electronFuses.checks?.nodeCliInspect === false
+    && electronFuses.checks?.embeddedAsarIntegrityValidation === true
+    && electronFuses.checks?.onlyLoadAppFromAsar === true;
+  const fuseClaimed = electronFuses.status !== undefined || electronFuses.passClaim !== undefined;
+  if (fuseClaimed && !fusePass) errors.push('PK1_FUSE_EVIDENCE_INVALID');
+
+  const hardenedRuntimePass = hardenedRuntime.status === 'PASS_HARDENED_RUNTIME'
+    && hardenedRuntime.passClaim === true
+    && hardenedRuntime.runtimeOptionVerified === true
+    && hardenedRuntime.entitlementsVerified === true
+    && matchesExecutableSha(hardenedRuntime, executableSha256);
+  const hardenedRuntimeClaimed = hardenedRuntime.status !== undefined || hardenedRuntime.passClaim !== undefined;
+  if (hardenedRuntimeClaimed && !hardenedRuntimePass) errors.push('PK1_HARDENED_RUNTIME_EVIDENCE_INVALID');
+
+  const securityModes = [signingPass, notarizationPass, fusePass, hardenedRuntimePass];
+  const anyPositive = securityModes.some(Boolean);
+  const allPositive = securityModes.every(Boolean);
+  if (anyPositive && !allPositive) errors.push('PK1_PARTIAL_DISTRIBUTION_EVIDENCE_FORBIDDEN');
+  if (c01?.status === 'PASS_SIGNED_NOTARIZED_ARTIFACT' && !allPositive) errors.push('PK1_C01_POSITIVE_STATUS_UNPROVEN');
+  if (c01?.status === 'PASS_UNSIGNED_LOCAL_ARTIFACT' && anyPositive) errors.push('PK1_C01_UNSIGNED_STATUS_CONTRADICTS_SECURITY_EVIDENCE');
+
+  const c04Positive = packageOfflineSecurity.signingStatus === 'PASS_DEVELOPER_ID'
+    && packageOfflineSecurity.notarizationStatus === 'PASS_NOTARIZED'
+    && packageOfflineSecurity.fuseStatus === 'PASS_FUSE_POLICY'
+    && packageOfflineSecurity.hardenedRuntimeStatus === 'PASS_HARDENED_RUNTIME'
+    && packageOfflineSecurity.signingPass === true
+    && packageOfflineSecurity.notarizationPass === true
+    && packageOfflineSecurity.fusePass === true
+    && packageOfflineSecurity.hardenedRuntimePass === true
+    && packageOfflineSecurity.executableSha256 === executableSha256;
+  const c04Negative = [undefined, 'NOT_READY_NO_DEVELOPER_ID'].includes(packageOfflineSecurity.signingStatus)
+    && [undefined, 'NOT_READY_NO_NOTARYTOOL_PROFILE'].includes(packageOfflineSecurity.notarizationStatus)
+    && packageOfflineSecurity.signingPass !== true
+    && packageOfflineSecurity.notarizationPass !== true
+    && packageOfflineSecurity.fusePass !== true
+    && packageOfflineSecurity.hardenedRuntimePass !== true;
+  if (allPositive ? !c04Positive : !c04Negative) errors.push('PK1_C04_DISTRIBUTION_EVIDENCE_MISMATCH');
+
+  return { signingPass, notarizationPass, fusePass, hardenedRuntimePass, executableSha256, allPositive };
 }
 
 function pushUnique(list, code) {
@@ -157,7 +241,8 @@ function validateReceipts(receipts) {
   const errors = [];
   for (const [key, expected] of Object.entries(PK1_REQUIRED_RECEIPT_STATUSES)) {
     const receipt = receipts?.[key] || {};
-    if (receipt.status !== expected) errors.push(`PK1_RECEIPT_STATUS_MISMATCH:${key}`);
+    const accepted = Array.isArray(expected) ? expected.includes(receipt.status) : receipt.status === expected;
+    if (!accepted) errors.push(`PK1_RECEIPT_STATUS_MISMATCH:${key}`);
     if (receipt.pass !== true) errors.push(`PK1_RECEIPT_NOT_PASS:${key}`);
   }
 
@@ -173,10 +258,7 @@ function validateReceipts(receipts) {
   const c04 = receipts?.c04 || {};
   if (c01?.atsPolicy?.ok !== true) errors.push('PK1_C01_ATS_POLICY_NOT_PASS');
   if (c01?.negativeAssertions?.runtimeNetworkActivated !== false) errors.push('PK1_C01_RUNTIME_NETWORK_ASSERTION_DRIFT');
-  if (c01?.signing?.status !== 'NOT_READY_NO_DEVELOPER_ID' || c01?.signing?.passClaim !== false) errors.push('PK1_SIGNING_STATUS_UNEXPECTED');
-  if (c01?.notarization?.status !== 'NOT_READY_NO_NOTARYTOOL_PROFILE' || c01?.notarization?.passClaim !== false) {
-    errors.push('PK1_NOTARIZATION_STATUS_UNEXPECTED');
-  }
+  const distributionEvidence = classifyDistributionEvidence(c01, c04, errors);
   const c02First = c02?.runtimeJourney?.firstLaunch || {};
   const c02Second = c02?.runtimeJourney?.secondLaunch || {};
   if (c02First.createOk !== true || c02First.saveOk !== true || c02First.sameLaunchReopenOk !== true) {
@@ -217,6 +299,7 @@ function validateReceipts(receipts) {
     errors,
     asarBindingPass,
     appAsarSha256: asarBindingPass ? uniqueAsarShas[0] : '',
+    distributionEvidence,
   };
 }
 
@@ -281,8 +364,7 @@ export function evaluateReleaseSecurityPhysical(input = {}) {
   const externalClaims = validateExternalClaims(input.externalClaims);
   if (!externalClaims.ok) errors.push(...externalClaims.errors);
 
-  const signingPass = receipts?.c01?.signing?.status === 'PASS_DEVELOPER_ID' && receipts?.c01?.signing?.passClaim === true;
-  const notarizationPass = receipts?.c01?.notarization?.status === 'PASS_NOTARIZED' && receipts?.c01?.notarization?.passClaim === true;
+  const { signingPass, notarizationPass, fusePass, hardenedRuntimePass } = receiptValidation.distributionEvidence;
   const atsPolicyPass = receipts?.c01?.atsPolicy?.ok === true && receipts?.c04?.securityEvidence?.packageOfflineSecurity?.atsPolicyPass === true;
   const criticalJourneyPass = receipts?.c02?.runtimeJourney?.firstLaunch?.createOk === true
     && receipts?.c02?.runtimeJourney?.firstLaunch?.saveOk === true
@@ -304,15 +386,28 @@ export function evaluateReleaseSecurityPhysical(input = {}) {
 
   if (!signingPass) pushUnique(blockers, 'DEVELOPER_ID_SIGNATURE_NOT_READY');
   if (!notarizationPass) pushUnique(blockers, 'APPLE_NOTARIZATION_NOT_READY');
-  pushUnique(blockers, 'ELECTRON_FUSE_POLICY_NOT_PROVEN');
-  pushUnique(blockers, 'HARDENED_RUNTIME_NOT_PROVEN_FOR_DISTRIBUTION');
-  pushUnique(blockers, 'PRODUCTION_RELEASE_PUBLICATION_NOT_AUTHORIZED');
-  pushUnique(blockers, 'NON_MACOS_TARGETS_NOT_ACTIVATED');
+  if (!fusePass) pushUnique(blockers, 'ELECTRON_FUSE_POLICY_NOT_PROVEN');
+  if (!hardenedRuntimePass) pushUnique(blockers, 'HARDENED_RUNTIME_NOT_PROVEN_FOR_DISTRIBUTION');
+
+  const securityEvidenceReady = errors.length === 0
+    && freshness.physicalEvidenceFreshForCurrentHead
+    && receiptValidation.asarBindingPass
+    && signingPass
+    && notarizationPass
+    && fusePass
+    && hardenedRuntimePass
+    && atsPolicyPass
+    && criticalJourneyPass
+    && packagedRecoveryPass
+    && sastPass
+    && !runtimeNetworkActivated;
 
   const targetMatrix = {
     macosPackagedElectronLocalUnsigned: receipts?.activePlatform?.activePlatformScope?.macosPackagedElectron
       || 'CERTIFIED_FOR_LOCAL_UNSIGNED_PACKAGED_PROOF',
-    macosProductionDistribution: 'NOT_READY_UNSIGNED_UNNOTARIZED_NO_FUSE_OR_HARDENED_RUNTIME_PROOF',
+    macosProductionDistribution: securityEvidenceReady
+      ? 'SECURITY_EVIDENCE_SATISFIED_PUBLICATION_AUTHORITY_STILL_REQUIRED'
+      : 'NOT_READY_UNSIGNED_UNNOTARIZED_NO_FUSE_OR_HARDENED_RUNTIME_PROOF',
     windows: 'NOT_ACTIVATED_NO_PASS_NO_HOLD',
     linux: 'NOT_ACTIVATED_NO_PASS_NO_HOLD',
     web: 'NOT_ACTIVATED_NO_PASS_NO_HOLD',
@@ -329,8 +424,10 @@ export function evaluateReleaseSecurityPhysical(input = {}) {
     errors: uniqSorted(errors),
     blockers: uniqSorted(blockers),
     blockersHash: hashCanonicalValue(uniqSorted(blockers)),
-    profileVerdictCandidate: 'NOT_READY',
-    stageClosureKind: 'TYPED_RELEASE_SECURITY_NOT_READY_CLASSIFICATION',
+    profileVerdictCandidate: securityEvidenceReady ? 'PASS' : 'NOT_READY',
+    stageClosureKind: securityEvidenceReady
+      ? 'SECURITY_EVIDENCE_SATISFIED_WITHOUT_PUBLICATION_AUTHORITY'
+      : 'TYPED_RELEASE_SECURITY_NOT_READY_CLASSIFICATION',
     programBinding: {
       stageId: PK1_STAGE_ID,
       profileId: PK1_PROFILE_ID,
@@ -360,15 +457,16 @@ export function evaluateReleaseSecurityPhysical(input = {}) {
       wordOrGoogleClaim: false,
     },
     releaseReadiness: {
-      status: 'NOT_READY',
+      status: securityEvidenceReady ? 'READY_FOR_AUTHORIZED_PUBLICATION' : 'NOT_READY',
+      securityEvidenceReady,
       productionReleaseReady: false,
       currentHeadPhysicalPackageProof: freshness.physicalEvidenceFreshForCurrentHead,
       physicalEvidenceFreshForCurrentHead: freshness.physicalEvidenceFreshForCurrentHead,
       staleReceipts: freshness.staleReceipts,
       signingPass,
       notarizationPass,
-      fusePass: false,
-      hardenedRuntimePass: false,
+      fusePass,
+      hardenedRuntimePass,
       productionDistributionPublished: false,
       blockers: uniqSorted(blockers),
     },
@@ -382,8 +480,8 @@ export function evaluateReleaseSecurityPhysical(input = {}) {
       runtimeNetworkActivated,
       signingStatus: receipts?.c01?.signing?.status || 'UNKNOWN',
       notarizationStatus: receipts?.c01?.notarization?.status || 'UNKNOWN',
-      fuseStatus: 'NOT_PROVEN_TYPED_BLOCKER',
-      hardenedRuntimeStatus: 'NOT_PROVEN_FOR_DISTRIBUTION_TYPED_BLOCKER',
+      fuseStatus: fusePass ? 'PASS_FUSE_POLICY' : 'NOT_PROVEN_TYPED_BLOCKER',
+      hardenedRuntimeStatus: hardenedRuntimePass ? 'PASS_HARDENED_RUNTIME' : 'NOT_PROVEN_FOR_DISTRIBUTION_TYPED_BLOCKER',
     },
     evidence: {
       expectedHeadSha,

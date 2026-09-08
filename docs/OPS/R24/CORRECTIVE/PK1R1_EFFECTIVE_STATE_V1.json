@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "YALKEN_R24_PK1R1_EFFECTIVE_STATE_V1",
+  "stageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY",
+  "status": "CONDITIONAL_DELIVERY_PENDING",
+  "programDone": false,
+  "correctionOutcome": "EVALUATOR_REACHABILITY_VERIFIED",
+  "currentRepositoryOutcome": "TYPED_NOT_READY_PRESERVED",
+  "targetCounts": {
+    "BLOCKED_TYPED": 2,
+    "DONE_COUNT": 90,
+    "INELIGIBLE_OPTIONAL": 10,
+    "PENDING": 7
+  },
+  "requiredPendingNodes": [
+    "WP-900_BBR_POLICY",
+    "WP-901_BBR_RESTORE",
+    "WP-902_ENTITLEMENT_PRODUCT",
+    "WP-903_BRAND_RELEASE",
+    "WP-904_PACKAGE_CONTENT",
+    "WP-905_PACKAGE_PHYSICAL",
+    "WP-906_RELEASE_VERDICT"
+  ],
+  "blockedTypedNodes": [
+    "PK1_RELEASE_SECURITY_PHYSICAL",
+    "V3_PACKAGE_CLAIM_COMPILER"
+  ],
+  "earliestUnsatisfiedRequiredDependency": "PK1_RELEASE_SECURITY_PHYSICAL",
+  "graphIncrement": 0,
+  "externalEffectsExecuted": 0
+}
