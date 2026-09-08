@@ -124,6 +124,7 @@ The register deduplicates overlapping reports. `ACTIVE_CONFIRMED` means the beha
 | GOV-04 | P1 | ACTIVE_CONFIRMED | Required/current test inventory and actual CI execution disagree | Classify every test as current, historical replay or superseded and execute every current required test |
 | GOV-05 | P1 | ACTIVE_CONFIRMED | WP709 compatibility is tested in historical detached checkout while current-head compatibility fails | Current claims require current-head execution; historical capsule remains historical only |
 | GOV-06 | P2 | ACTIVE_CONFIRMED | Conditional skip accounting uses stale expiry semantics and does not prove the required denominator | Version expiry against current stage and prove replacement lanes on every required head |
+| GOV-07 | P1 | ACTIVE_CONFIRMED | The closed PK1R1 verifier compares its fixed 19-path admitted delta with the moving current `HEAD`; adding this one plan file produces `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` in four required lanes and deadlocks every successor contour | Pin closed-stage verification to its immutable terminal candidate and require a fresh admission for each successor head |
 | DATA-01 | P1 | ACTIVE_CONFIRMED | External change after open and before save can be overwritten with successful ACK | Bind save CAS to the revision opened by the editor and preserve both versions on conflict |
 | DATA-02 | P1 | ACTIVE_CONFIRMED | Project rename or move leaves absolute-path commit records that block the next save | Bind commit metadata to stable project and scene identity with relocation-safe resolution |
 | DATA-03 | P1 | ACTIVE_CONFIRMED | Legitimate shared-manifest advancement by scene B makes the next save of scene A look corrupt | Separate scene commit integrity from monotonic project-manifest lineage |
@@ -218,7 +219,38 @@ Execution is strictly sequential under the one-writer rule. A later contour may 
 
 ### Phase 0 — restore trustworthy current control
 
-#### R24-RCV-00A — E0 admission and core-effect boundary repair
+#### R24-RCV-00A — Closed-stage candidate pin and successor-admission repair
+
+Purpose: remove the control-plane deadlock in which an immutable completed stage is re-evaluated against every later repository head. The unchanged PK1R1 admitted set contains 19 paths; this docs-only successor adds one path, and four required lanes fail with `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` before assessing the successor's own scope.
+
+Bootstrap rule for this contour only:
+
+1. Capture the exact unchanged-head failure in `ops-vector`, `actual-renderer-build-rtk` and all three hermetic platform lanes. Treat repeated instances as one signature.
+2. Admit only the verifier boundary, its focused contracts, the smallest required successor-admission carrier set and generated governance bindings. No product runtime or graph transition is authorized.
+3. A red pre-fix PK1R1 delta check is expected evidence for this repair and cannot be reported as a passed gate. Every affected lane must be green after the change on the exact PR merge candidate.
+
+Implementation:
+
+1. Identify the immutable PK1R1 terminal candidate from a digest-bound terminal receipt and protected merge evidence. Do not infer it from `HEAD`, filename order or the latest branch.
+2. Verify PK1R1 base ancestry, its exact 19-path admitted delta, artifact bytes and governance bindings against that pinned candidate only.
+3. Verify the new contour against a fresh current-head StageAdmission whose operation set equals the current base-to-candidate delta. A historical admission never authorizes a successor write.
+4. Make the active resolver declare exactly one closed-stage candidate and exactly one active successor admission. Missing, duplicate, forked, stale or non-ancestor candidates fail typed.
+5. Split failure codes for historical-stage corruption, successor admission absence, successor extra path, wrong operation class and current-base drift.
+6. Preserve every PK1R1 artifact byte and its original claim ceiling. The repair changes how its verifier selects the candidate; it does not rewrite PK1R1 history or promote PK1/V3.
+
+Required tests and mutants:
+
+- the original 19-path PK1R1 candidate passes when the current head contains a separately admitted twentieth path;
+- the same twentieth path without a fresh successor admission fails;
+- one omitted, extra, modified, deleted or misclassified successor path fails;
+- substituting current `HEAD` for the pinned PK1R1 candidate kills a mutant;
+- altering one historical PK1R1 byte, its merge identity, ancestry or candidate digest still fails;
+- a valid docs-only successor and a valid runtime successor use the same set-equality law without sharing mutation authority;
+- all previously failing required CI lanes pass on the merge candidate and exact merged head.
+
+Rollback: revert the verifier/admission repair as one chain. The rollback restores the known successor deadlock and therefore blocks later write contours; it cannot be claimed healthy.
+
+#### R24-RCV-00B — E0 admission and core-effect boundary repair
 
 Purpose: restore a truthful executable admission gate before any ordinary remediation contour. At the binding head, the global core-purity scan fails before it parses a task: the first reported violation is the Node crypto import in `anchor-lineage-v1.cjs`, and the full source inventory contains 31 core files with Node, filesystem, path or process effect tokens. Adding those paths to the current exception set would hide the architecture problem and is forbidden.
 
@@ -880,7 +912,7 @@ Final success criteria:
 
 | Group | Contours | Relative effort | Critical-path role |
 | --- | --- | --- | --- |
-| Admission, current truth and CI | 00A–01 | Extra large | Admission prerequisite |
+| Admission, current truth and CI | 00A–01 | Extra large | Admission prerequisite; 00A then 00B before 00 |
 | Manuscript safety | 02–06 | Extra large | Release blocker |
 | Authority and security | 07–11 | Extra large | Release blocker |
 | Evidence correctness | 12–15 | Large | Release blocker |
@@ -898,7 +930,7 @@ PASS: head and origin main equal the declared binding SHA, tree equals the decla
 
 CHECK_02_POST_TASK_FORMAT
 CMD: execute the task-format parser in an isolated fixture with no `src/core`, then run node scripts/ops-gate.mjs --task docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md against the complete repository
-PASS: the isolated parser accepts the HARD-TZ structure, task type, canon version, baseline version, DENYLIST and PRE/POST check contract; until R24-RCV-00A closes OPS-03, the full-tree command is recorded as the expected pre-existing `CORE_PURITY_VIOLATION` and cannot be represented as green
+PASS: the isolated parser accepts the HARD-TZ structure, task type, canon version, baseline version, DENYLIST and PRE/POST check contract; until R24-RCV-00B closes OPS-03, the full-tree command is recorded as the expected pre-existing `CORE_PURITY_VIOLATION` and cannot be represented as green
 
 CHECK_03_POST_SCOPE_AND_DIFF
 CMD: inspect Git status, staged paths and diff check for the isolated task worktree
