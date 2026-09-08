@@ -171,10 +171,14 @@ export const PRE00F_PLAN_DELIVERY_EXPECTATION=Object.freeze({
   sourceDigest:'c3844bf00e56577bd9a6509c6cdddf8a9ff067791367ee6ccfeb9051d3e72ea8',
   targetDigest:'75f161cd4fceac61cfdef069ccf7c3b4b1eeaf9cdec28206724983b066b80bf6',
   planPath:'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
+  inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   admittedPaths:[
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
     'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   ].sort(),
 });
 export const AUDIT_CYCLE_2_ADMISSION_EXPECTATION=Object.freeze({
@@ -3367,7 +3371,8 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
   const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00F_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00F_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00F_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
-  const plan=readText(e.planPath),postAuditVerifierText=readText(e.postAuditVerifierPath).text;
+  const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
+  const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),postAuditVerifierText=readText(e.postAuditVerifierPath).text,postAuditTestText=readText(e.postAuditTestPath).text;
   assert(plan.digest===e.targetDigest,'E_PRE00F_TARGET_DIGEST',plan.digest);
   const sourceLines=[
     ['STATUS: FRESH_PRE00F_PLAN_DELIVERY_CANDIDATE_AFTER_PRE00E_CLOSURE','STATUS: PLAN_ORDER_APPROVED_ONLY_PRECURSOR_REQUIRED'],
@@ -3383,8 +3388,12 @@ export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='H
   normalized=normalized.replace('\nNEXT_STEP: R24-RCV-00A\n','\n');
   assert(h(Buffer.from(normalized,'utf8'))===e.sourceDigest,'E_PRE00F_SOURCE_DIGEST');
   for(const token of [`AUTHORING_BASE_SHA: ${e.baseSha}`,`PROGRAM_OBSERVATION_BASE_SHA: ${e.baseSha}`,`PROGRAM_OBSERVATION_BASE_TREE: ${e.baseTree}`,'CURRENT_PROGRAM_DONE: false','CURRENT_PRODUCTION_RELEASE_READY: false','CURRENT_PUBLICATION_AUTHORITY: false','CURRENT_REPOSITORY_VERDICT: NOT_READY','NEXT_STEP: R24-RCV-00A','CURRENT_PR_ROLE: FRESH_PRE00F_DELIVERY_PR_SUPERSEDES_PR1843_WITHOUT_MERGE'])assert(plan.text.includes(token),'E_PRE00F_PLAN_TOKEN',token);
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1458&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00F_INVENTORY_SHAPE');
+  const inventoryEntry=inventory.value.entries.find((entry)=>entry.path===e.postAuditTestPath);
+  assert(inventoryEntry?.sha256===h(objectBytes(git,resolvedCandidate,e.postAuditTestPath)),'E_PRE00F_INVENTORY_TEST_DIGEST');
   for(const token of ['PRE00F_PLAN_DELIVERY_EXPECTATION','verifyPre00fPlanDeliveryPostEvaluationException','E_PRE00F_EXACT_ADMITTED_DELTA','PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1'])assert(postAuditVerifierText.includes(token),'E_PRE00F_POST_AUDIT_VERIFIER_TOKEN',token);
-  return{schemaVersion:'PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),sourceHeadSha:e.sourceHeadSha,sourceDigest:e.sourceDigest,targetDigest:e.targetDigest,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,programDone:false,productionReleaseReady:false,graphIncrement:0,nextStep:'R24-RCV-00A'};
+  for(const token of ['PRE00F plan delivery accepts the exact plan doc and verifier-support delta','PRE00F plan delivery rejects an unadmitted future path','PRE00E recovery CI external confirmation accepts the bounded delta'])assert(postAuditTestText.includes(token),'E_PRE00F_POST_AUDIT_TEST_TOKEN',token);
+  return{schemaVersion:'PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),sourceHeadSha:e.sourceHeadSha,sourceDigest:e.sourceDigest,targetDigest:e.targetDigest,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,programDone:false,productionReleaseReady:false,graphIncrement:0,nextStep:'R24-RCV-00A'};
 }
 
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
