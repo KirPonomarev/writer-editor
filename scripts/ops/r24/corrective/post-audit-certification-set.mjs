@@ -65,6 +65,7 @@ export const PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION=Object.fr
   evidencePath:'docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json',
   taskPath:'docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md',
   verifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
   testPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   admittedPaths:[
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
@@ -72,6 +73,7 @@ export const PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION=Object.fr
     'docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json',
     'docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/docs-claim-lint.mjs',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   ].sort(),
 });
@@ -3149,14 +3151,14 @@ export function verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationExce
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00C_CLOSED_STAGE_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readJson=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00C_CLOSED_STAGE_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00C_CLOSED_STAGE_CANONICAL_LF',p);return{value:JSON.parse(bytes),digest:h(bytes),bytes};};
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00C_CLOSED_STAGE_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00C_CLOSED_STAGE_CANONICAL_LF',p);return bytes.toString('utf8');};
-  const approvals=readJson(e.approvalsPath),inventory=readJson(e.inventoryPath),evidence=readJson(e.evidencePath),taskText=readText(e.taskPath),verifierText=readText(e.verifierPath),testText=readText(e.testPath);
+  const approvals=readJson(e.approvalsPath),inventory=readJson(e.inventoryPath),evidence=readJson(e.evidencePath),taskText=readText(e.taskPath),verifierText=readText(e.verifierPath),claimLintText=readText(e.claimLintPath),testText=readText(e.testPath);
   assert(evidence.value.schemaVersion==='ClaimBindingV1'&&evidence.value.stampId==='ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR'&&evidence.value.contourId==='PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR'&&evidence.value.evidenceClass==='CONTRACT'&&evidence.value.verdict==='PASS'&&evidence.value.oracle==='PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_ONLY','E_PRE00C_EVIDENCE_SHAPE');
   assert(evidence.value.headSha===e.baseSha&&evidence.value.originMainSha===e.baseSha,'E_PRE00C_EVIDENCE_HEAD_BINDING');
   const claimBindingMap=new Map(evidence.value.claimBindings.map((binding)=>[binding.filePath,binding]));
   const inventoryBinding=claimBindingMap.get(e.inventoryPath);
   assert(inventoryBinding?.sha256===inventory.digest&&inventoryBinding.claimTerms?.includes('PASS'),'E_PRE00C_EVIDENCE_INVENTORY_BINDING');
   const implementationDigestMap=new Map((evidence.value.implementationArtifactDigests??[]).map((entry)=>[entry.path,entry]));
-  for(const relative of [e.taskPath,e.verifierPath,e.testPath]){const artifact=implementationDigestMap.get(relative);assert(artifact?.sha256===h(objectBytes(git,resolvedCandidate,relative)),'E_PRE00C_EVIDENCE_ARTIFACT_DIGEST',relative);}
+  for(const relative of [e.taskPath,e.verifierPath,e.claimLintPath,e.testPath]){const artifact=implementationDigestMap.get(relative);assert(artifact?.sha256===h(objectBytes(git,resolvedCandidate,relative)),'E_PRE00C_EVIDENCE_ARTIFACT_DIGEST',relative);}
   const nonClaims=new Set(evidence.value.nonClaims??[]);
   for(const token of ['NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_GRAPH_INCREMENT','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_PROCESS_INSPECTION_OR_TERMINATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH'])assert(nonClaims.has(token),'E_PRE00C_NONCLAIMS',token);
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1456&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00C_INVENTORY_SHAPE');
@@ -3164,6 +3166,7 @@ export function verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationExce
   assert(inventoryEntry?.sha256===h(objectBytes(git,resolvedCandidate,e.testPath)),'E_PRE00C_INVENTORY_TEST_DIGEST');
   for(const token of ['TASK_ID: R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001','TASK_STATUS: PREPARED_FOR_DELIVERY','PRE00B_DELIVERY_SHA: 4107b0b30e870c446768171dd8afff02cebe0436','FOLLOW_ON_GRAPH_MUTATION: false','PK1_RELEASE_SECURITY_PHYSICAL: OUT_OF_SCOPE','V3_PACKAGE_CLAIM_COMPILER: OUT_OF_SCOPE','WP900_PLAN_DELIVERY: OUT_OF_SCOPE'])assert(taskText.includes(token),'E_PRE00C_TASK_TOKEN',token);
   for(const token of ['PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA','E_PRE00B_DELIVERY_NOT_ANCESTOR','verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException','E_PRE00C_CLOSED_STAGE_EXACT_ADMITTED_DELTA'])assert(verifierText.includes(token),'E_PRE00C_VERIFIER_TOKEN',token);
+  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V23','ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS'])assert(claimLintText.includes(token),'E_PRE00C_CLAIM_LINT_TOKEN',token);
   for(const token of ['PRE00B lifecycle reconciliation verifier is pinned to the delivered merge','PRE00C closed-stage candidate verifier accepts the bounded repair delta','PRE00C closed-stage candidate verifier rejects an unadmitted future path'])assert(testText.includes(token),'E_PRE00C_TEST_TOKEN',token);
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_PRE00C_APPROVALS_SHAPE');
   const approvalMap=new Map();

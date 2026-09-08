@@ -27,9 +27,16 @@
     },
     {
       "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "004a72f3c5ce1c23057e025e032a2ac256f2c867619f8c5c350728a2a1a6e627",
+      "sha256": "a09134756de903ae9307e91ec8e95e54f73b119511e0ad4f5d500f92fdae8d39",
       "terms": [
         "PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "b323d24a2fa34f71fb61cf06523e387749a1e758dc85b35f4f8b661acd22277e",
+      "terms": [
+        "PRE00C_PRE00B_HISTORICAL_INVENTORY_PIN"
       ]
     },
     {
