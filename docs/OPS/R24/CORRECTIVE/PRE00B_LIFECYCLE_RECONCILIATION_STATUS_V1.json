@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "YALKEN_R24_PRE00B_LIFECYCLE_RECONCILIATION_STATUS_V1",
+  "stageId": "PRE00B_LIFECYCLE_RECONCILIATION",
+  "status": "RECONCILED_TO_PK1R1_MERGED_HEAD",
+  "ownerInstructionBinding": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+  "binding": {
+    "sourceHeadLabel": "PK1R1_MERGED_HEAD",
+    "sourceHeadSha": "af74b9542c17c24a7515ce9017d98ea7b2e4d55a",
+    "sourceHeadMustRemainAncestorOfDeliveryHead": true
+  },
+  "sourceArtifacts": [
+    {
+      "byteLength": 268070,
+      "path": "docs/OPS/R24/PLAN_STATE_R24.json",
+      "role": "planState",
+      "sha256": "f037355e4f1d87107f1593927463d94fa3f7128038790616c4d5611cf42f12f9"
+    },
+    {
+      "byteLength": 666,
+      "path": "docs/OPS/R24/CORRECTIVE/PK1R1_TERMINAL_RECEIPT_V1.json",
+      "role": "terminalReceipt",
+      "sha256": "39f455df253c6828c368544dacac8be29b2afd84fd36081e95e3332674c6dfff"
+    },
+    {
+      "byteLength": 893,
+      "path": "docs/OPS/R24/CORRECTIVE/PK1R1_EFFECTIVE_STATE_V1.json",
+      "role": "effectiveState",
+      "sha256": "2647906b92454e64cc42afd541ed2abb6b9d8aa58a3db4ba2554bf2d8626f132"
+    },
+    {
+      "byteLength": 10223,
+      "path": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_OWNER_AUTHORITY_V1.json",
+      "role": "ownerAuthority",
+      "sha256": "9aa17ad1739364f0a3beb3a987732042235c0605a1ecafa67e64867f51663877"
+    },
+    {
+      "byteLength": 556,
+      "path": "docs/OPS/R24/CORRECTIVE/PK1R1_LEASE_RELEASE_V1.json",
+      "role": "leaseRelease",
+      "sha256": "db3a53cfa2e9b93b2952861c43f627411827bb777163736e07a52b5dcce87c31"
+    },
+    {
+      "byteLength": 1489,
+      "path": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
+      "role": "acceptanceMatrix",
+      "sha256": "d692a84e8b83793e7d130a6746fdb749c2378a577e8b388e573843c1305406e4"
+    },
+    {
+      "byteLength": 860,
+      "path": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_SELECTION_RECEIPT_V1.json",
+      "role": "selectionReceipt",
+      "sha256": "4e7d9d3a60fcc0de9e1b88ddd6c789c9c5224d1c4570f40e86ec95abea621949"
+    }
+  ],
+  "legacyPlanState": {
+    "classification": "STALE_ARCHIVAL_INPUT_NOT_CURRENT_LIFECYCLE_AUTHORITY",
+    "contourDenominator": 109,
+    "counts": {
+      "BLOCKED_TYPED": 4,
+      "DONE": 49,
+      "INELIGIBLE_OPTIONAL": 10,
+      "PENDING": 46
+    },
+    "fencingCounter": 47,
+    "latestUpdate": {
+      "headSha": "f51a678a89cb7dfba1bd4249dabffbf5ec0fea5a",
+      "id": "WP-308_BRAND_BASELINE",
+      "state": "DONE",
+      "updatedAt": "2026-08-26T19:52:30.005Z"
+    },
+    "path": "docs/OPS/R24/PLAN_STATE_R24.json",
+    "revision": 283,
+    "schemaVersion": "yalken.plan-state.r24.v2"
+  },
+  "reconciledLifecycleProjection": {
+    "blockedTypedNodes": [
+      "PK1_RELEASE_SECURITY_PHYSICAL",
+      "V3_PACKAGE_CLAIM_COMPILER"
+    ],
+    "counts": {
+      "BLOCKED_TYPED": 2,
+      "DONE": 90,
+      "INELIGIBLE_OPTIONAL": 10,
+      "PENDING": 7
+    },
+    "currentRepositoryVerdict": "NOT_READY",
+    "earliestUnsatisfiedRequiredDependency": "PK1_RELEASE_SECURITY_PHYSICAL",
+    "externalEffectsExecuted": 0,
+    "graphIncrement": 0,
+    "positiveSecurityEvidenceReachable": true,
+    "productionReleaseReady": false,
+    "programDone": false,
+    "publicationAuthorityGranted": false,
+    "requiredPendingNodes": [
+      "WP-900_BBR_POLICY",
+      "WP-901_BBR_RESTORE",
+      "WP-902_ENTITLEMENT_PRODUCT",
+      "WP-903_BRAND_RELEASE",
+      "WP-904_PACKAGE_CONTENT",
+      "WP-905_PACKAGE_PHYSICAL",
+      "WP-906_RELEASE_VERDICT"
+    ],
+    "sourceStageId": "PK1R1_RELEASE_SECURITY_EVALUATOR_REACHABILITY"
+  },
+  "reconciliation": {
+    "countsDeltaFromLegacyPlanState": {
+      "BLOCKED_TYPED": -2,
+      "DONE": 41,
+      "INELIGIBLE_OPTIONAL": 0,
+      "PENDING": -39
+    },
+    "defectClosed": "LEGACY_PLAN_STATE_LAGS_MERGED_R24_CORRECTIVE_CHAIN",
+    "legacyPlanStateMutated": false,
+    "productRuntimeMutated": false,
+    "releaseAuthorityGranted": false,
+    "selectionGuidance": "USE_PRE00B_RECONCILED_PROJECTION_FOR_CURRENT_R24_LIFECYCLE_UNTIL_A_SEPARATE_PLAN_STATE_GENERATOR_REWRITE_IS_ADMITTED"
+  },
+  "checks": {
+    "acceptanceRowsVerified": 12,
+    "acceptanceRowDenominator": 12,
+    "ciFacingApprovalDenominator": 8,
+    "ownerSignalsVerified": 5,
+    "ownerSignalDenominator": 13,
+    "negativeProbeDenominator": 6
+  },
+  "deliveryPolicy": {
+    "commitRequired": true,
+    "mergeRequired": true,
+    "postMergeExactHeadVerificationRequired": true,
+    "prRequired": true,
+    "pushRequired": true
+  },
+  "nonClaims": {
+    "noCredentialUse": true,
+    "noDependencyChange": true,
+    "noProcessInspectionOrTermination": true,
+    "noProductGraphTransition": true,
+    "noReleasePublication": true,
+    "noRuntimeUiCoreMutation": true
+  }
+}

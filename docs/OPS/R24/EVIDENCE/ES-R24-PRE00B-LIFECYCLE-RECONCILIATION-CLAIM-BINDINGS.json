@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS",
+  "contourId": "PRE00B_LIFECYCLE_RECONCILIATION",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "af74b9542c17c24a7515ce9017d98ea7b2e4d55a",
+  "originMainSha": "af74b9542c17c24a7515ce9017d98ea7b2e4d55a",
+  "generatedAtUtc": "2026-09-08T00:00:00Z",
+  "oracle": "PRE00B_RECONCILES_LEGACY_PLAN_STATE_TO_PK1R1_MERGED_LIFECYCLE_WITH_NO_RELEASE_AUTHORITY",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "50be585929512f39c4c219b36c2d3836a4326afa8620a2a2f64f994131dcec3b",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_LIFECYCLE_RECONCILIATION_STATUS_V1.json",
+      "sha256": "3a2002339c257535ea8899460b3077b01cb1cd8b1a43b6c7a5133bc0853dcc26",
+      "claimTerms": [
+        "DONE",
+        "READY",
+        "PASS",
+        "SAFE",
+        "COMPLETE"
+      ]
+    }
+  ],
+  "implementationArtifactDigests": [
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "d3a186b163628cba1423099ceef6c8a6ecb7492a529d78e2c41b136fcc688a47",
+      "terms": [
+        "PRE00B_WP709_HISTORICAL_INVENTORY_PIN"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "9e4942beae218be30000d8667980e3c3a670c2e79784eb4c63c708c95a21e9b4",
+      "terms": [
+        "PRE00B_POST_AUDIT_SUCCESSOR_ADMISSION_ORACLE"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
+      "sha256": "9491f7ac6a48b0484c578a8cb9ca35c951f5d4645bca2cf8fda471ed576e7a7f",
+      "terms": [
+        "PRE00B_LIFECYCLE_RECONCILIATION_ORACLE"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",
+      "sha256": "e4828bf36e17b8ad38427e0ee7fdf970f82d6197a1d04d05e478d8e5104a4381",
+      "terms": [
+        "PRE00B_LIFECYCLE_RECONCILIATION_CONTRACT_TEST"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "node scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs --check",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 1,
+        "fail": 0
+      }
+    },
+    {
+      "command": "node scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs --probe",
+      "verdict": "PASS",
+      "mutants": {
+        "killed": 6,
+        "survived": 0
+      }
+    },
+    {
+      "command": "node --test test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 4,
+        "fail": 0
+      }
+    }
+  ],
+  "nonClaims": [
+    "NO_PROGRAM_DONE",
+    "NO_PRODUCTION_RELEASE_READY",
+    "NO_PUBLICATION_AUTHORITY",
+    "NO_RUNTIME_UI_CORE_MUTATION",
+    "NO_PROCESS_INSPECTION_OR_TERMINATION"
+  ]
+}

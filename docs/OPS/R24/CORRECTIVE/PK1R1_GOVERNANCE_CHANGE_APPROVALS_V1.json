@@ -1,7 +1,8 @@
 {
   "version": "v1.0",
   "evidenceStampIds": [
-    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS"
+    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+    "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS"
   ],
   "sourcePlanRoles": {
     "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
@@ -109,10 +110,59 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "948d699cdc725b2ce1602296b2926b21f987fe04bdeacbc3cd8ea2ecbeeada31",
-      "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
-      "approvedAtUtc": "2026-09-08T01:50:00Z",
-      "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
+      "sha256": "9e4942beae218be30000d8667980e3c3a670c2e79784eb4c63c708c95a21e9b4",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "50be585929512f39c4c219b36c2d3836a4326afa8620a2a2f64f994131dcec3b",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "65725e3cbd32d8e1e607361e3ebdc027cab82025e70f38337883f3f11d35691e",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_LIFECYCLE_RECONCILIATION_STATUS_V1.json",
+      "sha256": "3a2002339c257535ea8899460b3077b01cb1cd8b1a43b6c7a5133bc0853dcc26",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
+      "sha256": "3eceb21ce2f187da971c734485403ce1df06e6d82ef6b10890a5abd4b01ad3fd",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
+      "sha256": "9491f7ac6a48b0484c578a8cb9ca35c951f5d4645bca2cf8fda471ed576e7a7f",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "d3a186b163628cba1423099ceef6c8a6ecb7492a529d78e2c41b136fcc688a47",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",
+      "sha256": "e4828bf36e17b8ad38427e0ee7fdf970f82d6197a1d04d05e478d8e5104a4381",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00Z",
+      "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
