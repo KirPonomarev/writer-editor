@@ -3,7 +3,8 @@
   "evidenceStampIds": [
     "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
     "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS",
-    "ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF"
+    "ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF",
+    "ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION"
   ],
   "sourcePlanRoles": {
     "externalSourcePlanDigest": "1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73df3fe51f9a5d699d52f4c3fb9a",
@@ -13,10 +14,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "5acef82da77c7a5f7db107c080c4d7f2d908f68ec2489bed2923fadbffaeaf32",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "sha256": "296768b66b7c59a4c2a852c612ec042360be5ec86c24079f49a51cf088840c3f",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -131,6 +132,13 @@
       "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_STATUS_V1.json",
+      "sha256": "55a18087999826fe4150198b77749ff8ed3167f06165a2e8953552db97528e9a",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+    },
+    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
       "sha256": "3eceb21ce2f187da971c734485403ce1df06e6d82ef6b10890a5abd4b01ad3fd",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
@@ -152,6 +160,13 @@
       "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION.json",
+      "sha256": "f534b84f0d2e657c9f9b71115899e5e36ad61c90f8e36894ba869afac982fcfe",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+    },
+    {
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
       "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
@@ -166,6 +181,13 @@
       "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
+      "filePath": "docs/tasks/R24_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_001.md",
+      "sha256": "a031e712510c24a00be0d23f6fa43497dd6dde13ee686de089c65efe98bdf9a8",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+    },
+    {
       "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
       "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
@@ -174,10 +196,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "af65204db5e6cfc3b8482f54cd712d7063b8f1bf0ed02f872e15c08a957281af",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "sha256": "d0a78c47c9a0afac4b2ae7e61d03fe066e77fae2b7964f93212313ee237260f1",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
@@ -194,11 +216,18 @@
       "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "e31325a8c1a6cad47ce7ecd584c249b234f0850f47f3d7f2b1f57898fac02a97",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "filePath": "scripts/ops/r24/corrective/pre00e-recovery-ci-external-confirmation.mjs",
+      "sha256": "f30db76f72ffafcd28101d12841cb1532e1c9bbc8cc36307e98ed2c352dfcfd6",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "1b5b9b0dffb8c3c831d41b372bacb79c91b984022a754cf2c22572dd65ed5bb7",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     },
     {
       "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
@@ -209,17 +238,17 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "34ab6b6b5a0462d070dc57cda3101bb1888392541578dab5b411b05813fc85f2",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "sha256": "83d9de164e3fb7fd78947bc24533ed044ad72015c322fe1df38a3a1751eb9511",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "6ce2289c9c5371184e69b56587e1c1158cc6810c36fb4ac8906ba187858413f2",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
+      "sha256": "33c6933e9d82f63b2aa7df3b5655c865cb09fc09e8ca049cca55ae1bc04e999c",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     },
     {
       "filePath": "test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",
@@ -234,6 +263,13 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
       "approvedAtUtc": "2026-09-08T00:00:00.000Z",
       "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+    },
+    {
+      "filePath": "test/contracts/r24-pre00e-recovery-ci-external-confirmation.contract.test.mjs",
+      "sha256": "de2aa872089be4031e35ac039da9257f5ecf0d1629374e6f6fee5212c7840d61",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
+      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
+      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     }
   ]
 }
