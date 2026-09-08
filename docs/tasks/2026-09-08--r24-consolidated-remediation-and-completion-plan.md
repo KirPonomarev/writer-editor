@@ -124,7 +124,7 @@ The register deduplicates overlapping reports. `ACTIVE_CONFIRMED` means the beha
 | GOV-04 | P1 | ACTIVE_CONFIRMED | Required/current test inventory and actual CI execution disagree | Classify every test as current, historical replay or superseded and execute every current required test |
 | GOV-05 | P1 | ACTIVE_CONFIRMED | WP709 compatibility is tested in historical detached checkout while current-head compatibility fails | Current claims require current-head execution; historical capsule remains historical only |
 | GOV-06 | P2 | ACTIVE_CONFIRMED | Conditional skip accounting uses stale expiry semantics and does not prove the required denominator | Version expiry against current stage and prove replacement lanes on every required head |
-| GOV-07 | P1 | ACTIVE_CONFIRMED | The closed PK1R1 verifier compares its fixed 19-path admitted delta with the moving current `HEAD`; adding this one plan file produces `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` in four required lanes and deadlocks every successor contour | Pin closed-stage verification to its immutable terminal candidate and require a fresh admission for each successor head |
+| GOV-07 | P1 | ACTIVE_CONFIRMED | The closed PK1R1 verifier compares its fixed 19-path admitted delta with the moving current `HEAD`; adding this one plan file produces `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` in five required lanes and deadlocks every successor contour | Pin closed-stage verification to its immutable terminal candidate and require a fresh admission for each successor head |
 | DATA-01 | P1 | ACTIVE_CONFIRMED | External change after open and before save can be overwritten with successful ACK | Bind save CAS to the revision opened by the editor and preserve both versions on conflict |
 | DATA-02 | P1 | ACTIVE_CONFIRMED | Project rename or move leaves absolute-path commit records that block the next save | Bind commit metadata to stable project and scene identity with relocation-safe resolution |
 | DATA-03 | P1 | ACTIVE_CONFIRMED | Legitimate shared-manifest advancement by scene B makes the next save of scene A look corrupt | Separate scene commit integrity from monotonic project-manifest lineage |
@@ -221,7 +221,7 @@ Execution is strictly sequential under the one-writer rule. A later contour may 
 
 #### R24-RCV-00A — Closed-stage candidate pin and successor-admission repair
 
-Purpose: remove the control-plane deadlock in which an immutable completed stage is re-evaluated against every later repository head. The unchanged PK1R1 admitted set contains 19 paths; this docs-only successor adds one path, and four required lanes fail with `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` before assessing the successor's own scope.
+Purpose: remove the control-plane deadlock in which an immutable completed stage is re-evaluated against every later repository head. The unchanged PK1R1 admitted set contains 19 paths; this docs-only successor adds one path, and five required lanes fail with `E_PK1R1_EXACT_ADMITTED_DELTA:20:19` before assessing the successor's own scope.
 
 Bootstrap rule for this contour only:
 
