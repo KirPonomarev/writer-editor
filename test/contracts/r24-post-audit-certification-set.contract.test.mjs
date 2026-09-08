@@ -383,8 +383,8 @@ test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta
   const fixture=pre00fGitFixture(),result=verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha);
-  assert.equal(result.admittedPathDenominator,4);
-  assert.equal(result.changedPathDenominator,4);
+  assert.equal(result.admittedPathDenominator,6);
+  assert.equal(result.changedPathDenominator,6);
   assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
   assert.equal(result.sourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.sourceDigest);
   assert.equal(result.nextStep,'R24-RCV-00A');
