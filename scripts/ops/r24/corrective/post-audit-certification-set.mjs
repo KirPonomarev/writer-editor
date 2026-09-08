@@ -47,6 +47,7 @@ export const PRE00C_NEXT_CONTOUR_SELECTION_EXPECTATION=Object.freeze({
   baseSha:'4107b0b30e870c446768171dd8afff02cebe0436',
   baseTree:'f87f72fda113c53e5328b73bd074ee256e360ab2',
   admittedPaths:[
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'docs/tasks/R24_PRE00C_NEXT_CONTOUR_SELECTION_BRIEF_001.md',
     'scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
@@ -3107,7 +3108,10 @@ export function verifyPre00cNextContourSelectionPostEvaluationException({candida
   for(const token of ['PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_SHA','PRE00B_LIFECYCLE_RECONCILIATION_DELIVERY_TREE','E_PRE00B_DELIVERY_NOT_ANCESTOR','verifyPre00cNextContourSelectionPostEvaluationException'])assert(verifierText.includes(token),'E_PRE00C_VERIFIER_TOKEN',token);
   let pre00bVerifierBytes;try{pre00bVerifierBytes=objectBytes(git,resolvedCandidate,'scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs');}catch{fail('E_PRE00C_PRE00B_VERIFIER_MISSING');}
   const pre00bVerifierText=pre00bVerifierBytes.toString('utf8');
-  for(const token of ['EXPECTED_DELIVERY_HEAD_SHA','EXPECTED_DELIVERY_TREE_SHA','readFileDigestAtGit','E_PRE00B_DELIVERY_HEAD_NOT_ANCESTOR'])assert(pre00bVerifierText.includes(token),'E_PRE00C_PRE00B_VERIFIER_TOKEN',token);
+  for(const token of ['EXPECTED_DELIVERY_HEAD_SHA','EXPECTED_DELIVERY_TREE_SHA','readJsonSourceAtGit','readFileDigestAtGit','E_PRE00B_CI_APPROVAL_DELIVERY_ROW_MISSING','E_PRE00B_DELIVERY_HEAD_NOT_ANCESTOR'])assert(pre00bVerifierText.includes(token),'E_PRE00C_PRE00B_VERIFIER_TOKEN',token);
+  let approvalBytes;try{approvalBytes=objectBytes(git,resolvedCandidate,'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json');}catch{fail('E_PRE00C_APPROVAL_REGISTRY_MISSING');}
+  const approvalText=approvalBytes.toString('utf8');
+  for(const token of ['OWNER_CHAT_DIRECT_PRE00C_VERIFIER_DESCENDANT_REPAIR_2026_09_08','scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs','scripts/ops/r24/corrective/post-audit-certification-set.mjs'])assert(approvalText.includes(token),'E_PRE00C_APPROVAL_REGISTRY_TOKEN',token);
   return{schemaVersion:'PRE00C_NEXT_CONTOUR_SELECTION_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 

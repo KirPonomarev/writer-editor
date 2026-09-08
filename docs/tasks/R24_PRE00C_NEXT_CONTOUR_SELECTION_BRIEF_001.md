@@ -16,7 +16,8 @@ public distribution contour by implication. The delivery also repairs the
 static PRE00B post-evaluation and PRE00B lifecycle verifiers so PRE00B
 historical exact-delta and artifact-digest proof are checked at the verified
 PRE00B delivery merge while later descendant commits remain eligible for CI
-evaluation.
+evaluation. The companion governance approval registry remains current-head
+bound for changed verifier file hashes.
 
 ## MAP Baseline
 
@@ -86,6 +87,10 @@ verified PRE00B delivery merge.
 - Focused PRE00B recheck rejected the branch with
   `E_PRE00B_CLAIM_BINDING_DRIFT` until PRE00B lifecycle artifact digests were
   pinned to the same verified PRE00B delivery merge.
+- PRE00C governance-vector CI requires current-head approval rows for changed
+  governance scripts while PRE00B historical proof reads its delivery-merge
+  approval registry through git object binding; the PRE00B CI-approval verifier
+  therefore keys historical rows by `filePath + sha256`.
 
 ## Admissibility Decision
 
@@ -117,6 +122,7 @@ CREDENTIAL_USE: false
 RELEASE_PUBLICATION: false
 PROCESS_INSPECTION_OR_TERMINATION: false
 STATIC_VERIFIER_REPAIR: PRE00B_HISTORICAL_DELTA_AND_DIGESTS_PINNED_TO_DELIVERY_MERGE
+GOVERNANCE_APPROVAL_REGISTRY_REPAIR: CURRENT_HEAD_SCRIPT_HASH_ROWS_UPDATED_WITH_PRE00B_DELIVERY_ROWS_READ_FROM_MERGE
 
 ## Non-Authorization Boundary
 

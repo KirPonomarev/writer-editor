@@ -183,6 +183,17 @@ function gitObjectBytes(repoRoot, revision, relative) {
   return result.stdout;
 }
 
+function readJsonSourceAtGit(repoRoot, key, revision, relative) {
+  const bytes = gitObjectBytes(repoRoot, revision, relative);
+  assert(bytes.length > 0 && bytes[bytes.length - 1] === 0x0a, 'E_PRE00B_CANONICAL_LF', relative);
+  return {
+    byteLength: bytes.length,
+    path: relative,
+    sha256: sha256(bytes),
+    value: JSON.parse(bytes.toString('utf8')),
+  };
+}
+
 function readFileDigestAtGit(repoRoot, revision, relative) {
   const bytes = gitObjectBytes(repoRoot, revision, relative);
   assert(bytes.length > 0 && bytes[bytes.length - 1] === 0x0a, 'E_PRE00B_CANONICAL_LF', relative);
@@ -584,22 +595,25 @@ function verifyCheckedInApprovals(repoRoot) {
 
 function verifyCheckedInCiApprovals(repoRoot) {
   verifyPre00bDeliveryBinding(repoRoot);
-  const approvals = readJsonSource(repoRoot, 'ciApprovals', PRE00B_PATHS.ciApprovals).value;
+  const approvals = readJsonSourceAtGit(repoRoot, 'ciApprovals', EXPECTED_DELIVERY_HEAD_SHA, PRE00B_PATHS.ciApprovals).value;
   assertEqual(approvals.version, 'v1.0', 'E_PRE00B_CI_APPROVALS_SCHEMA');
   assert(Array.isArray(approvals.approvals), 'E_PRE00B_CI_APPROVALS_SHAPE');
-  const byPath = new Map();
+  const byPathAndSha = new Map();
   for (const row of approvals.approvals) {
     assert(isObject(row), 'E_PRE00B_CI_APPROVALS_ROW');
     assert(typeof row.filePath === 'string' && row.filePath.length > 0, 'E_PRE00B_CI_APPROVALS_ROW_PATH');
-    assert(!byPath.has(row.filePath), 'E_PRE00B_CI_APPROVALS_DUPLICATE_PATH', row.filePath);
-    byPath.set(row.filePath, row);
+    assert(typeof row.sha256 === 'string' && row.sha256.length > 0, 'E_PRE00B_CI_APPROVALS_ROW_SHA', row.filePath);
+    const key = `${row.filePath}\u0000${row.sha256}`;
+    assert(!byPathAndSha.has(key), 'E_PRE00B_CI_APPROVALS_DUPLICATE_KEY', row.filePath);
+    byPathAndSha.set(key, row);
   }
   for (const expectedPath of PRE00B_CI_APPROVED_OUTPUT_PATHS) {
-    const row = byPath.get(expectedPath);
-    assert(isObject(row), 'E_PRE00B_CI_APPROVAL_MISSING', expectedPath);
+    const expectedSha = readFileDigestAtGit(repoRoot, EXPECTED_DELIVERY_HEAD_SHA, expectedPath).sha256;
+    const row = byPathAndSha.get(`${expectedPath}\u0000${expectedSha}`);
+    assert(isObject(row), 'E_PRE00B_CI_APPROVAL_DELIVERY_ROW_MISSING', expectedPath);
     assertEqual(row.approvedBy, OWNER_INSTRUCTION_BINDING, 'E_PRE00B_CI_APPROVAL_AUTHORITY', expectedPath);
     assert(String(row.rationale || '').includes('PRE00B lifecycle reconciliation'), 'E_PRE00B_CI_APPROVAL_RATIONALE', expectedPath);
-    assertEqual(row.sha256, readFileDigestAtGit(repoRoot, EXPECTED_DELIVERY_HEAD_SHA, expectedPath).sha256, 'E_PRE00B_CI_APPROVAL_DIGEST_DRIFT', expectedPath);
+    assertEqual(row.sha256, expectedSha, 'E_PRE00B_CI_APPROVAL_DIGEST_DRIFT', expectedPath);
   }
   return { ciApprovalDenominator: PRE00B_CI_APPROVED_OUTPUT_PATHS.length };
 }
