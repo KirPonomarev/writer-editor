@@ -11,15 +11,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
-      "sha256": "69941a68e40e34fea5c73aebea7f375c79d56f31d902fae89d87110c79c25924",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-08T23:50:00Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded interop denominator route-policy update: records exact-head disposable routeu2 Google DOCX import qualification and cleanup as non-cell evidence only, preserves the 1120-cell zero-pass baseline, and grants no broad C1-C8 portability PASS, user-document access, dependency, cloud runtime, UI, release, or program-done authority.",
-      "approved": true
-    },
-    {
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
       "sha256": "012eee82028346eeb4703abad820a70af05d3ea6d139f2419bf185091b058093",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
@@ -29,30 +20,12 @@
       "approved": true
     },
     {
-      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "sha256": "866fb20c214cb24ac1c8cde33b42c1ac4e8fd6671a95d39727eaa3bc89722af8",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-08T23:50:00Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded interop denominator contract tests: rejects direct local DOCX import counting as PASS, unsafe Word roots, uncleaned Google files, and route qualification promoted to denominator success; no runtime mutation, dependency, UI, or user-document authority is added.",
-      "approved": true
-    },
-    {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "d2d8593b5ca207e5af2c94616d72527d565b28a27c4609391177ea5445dc667e",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:08:00Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
       "rationale": "Approve bounded CI delivery wiring for the new interop denominator RTK contract: admits rtk-interop-100-denominator.contract.test.js into the maintained fail-closed RTK graph so required CI executes the contract instead of reporting catalog drift. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "28ec4f7298a8b8eba6605eebb04421899c83733c33143ced9268edea1d9b3da6",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:18:29Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve generated C1B inventory refresh caused by the new interop denominator contract test, docs-claim-lint PRE00F historical regression, governance secondary-registry regression tests, and post-audit verifier coverage: total test file denominator remains 1459 with zero required or unexplained skips. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
       "approved": true
     },
     {
@@ -74,48 +47,48 @@
       "approved": true
     },
     {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "77ccc0a6b363d176abc187958503648764d77a56e374225b184bf9853305a74d",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:40:00Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve append-only historical inventory pin V27 for PRE00F after the interop denominator inventory refresh: preserves the PRE00F claim-binding bytes as historical evidence while requiring a separate current C1B binding carrier, with no denominator-cell PASS or product runtime behavior change.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "f08ca2572999086dede82729bf10b8f3cbebb5a4420ca410916880b51273c240",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:40:00Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve regression coverage proving the PRE00F C1B inventory binding is accepted only as exact historical bytes after the interop denominator refresh, without broad portability PASS, dependency, UI, release, or program-done authority.",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d77ae16c7e5b4e4fb1ce208f46fde5d677ce3b42c4b722491560187f2c58eb55",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:00:50.000Z",
+      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded PR1857 U+000C DOCX page-break re-export repair from exact origin/main 6e9be072: admits only structural WordprocessingML page-break/control-code serialization, inventory/claim/post-audit admission bindings, and dedicated regression tests. No dependency, runtime network, UI, user-document, release-publication, broad C1-C8 portability PASS, denominator promotion, or program-done authority is added.",
       "approved": true
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "eef8d35c4463c743a5cd080dfc7b79f930a6a4e8f4deb9060583d2c4ea434135",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:18:29Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded post-audit verifier support for the interop denominator contour: preserves PRE00F as historical evidence, admits the new exact-base interop Google DOCX import route delta, enforces the current C1B claim-binding carrier, verifies governance secondary-registry support, and enforces typed-blocker/non-cell accounting without product runtime, dependency, UI, release, or portability PASS authority.",
+      "sha256": "2e822044403be22398116a19577e586e99f79be4b2e4fa73b25bdd9ea3c79df9",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:00:50.000Z",
+      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded PR1857 U+000C DOCX page-break re-export repair from exact origin/main 6e9be072: admits only structural WordprocessingML page-break/control-code serialization, inventory/claim/post-audit admission bindings, and dedicated regression tests. No dependency, runtime network, UI, user-document, release-publication, broad C1-C8 portability PASS, denominator promotion, or program-done authority is added.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "249ae0656afdf23517b0a5e07915436eea04424090e13095f8ff719dc1b248c8",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:00:50.000Z",
+      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded PR1857 U+000C DOCX page-break re-export repair from exact origin/main 6e9be072: admits only structural WordprocessingML page-break/control-code serialization, inventory/claim/post-audit admission bindings, and dedicated regression tests. No dependency, runtime network, UI, user-document, release-publication, broad C1-C8 portability PASS, denominator promotion, or program-done authority is added.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "e153dd3e8e88646142b9fae89330590a8f70a14f2c2ab8ca84fd1a0abc50cd08",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:00:50.000Z",
+      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded PR1857 U+000C DOCX page-break re-export repair from exact origin/main 6e9be072: admits only structural WordprocessingML page-break/control-code serialization, inventory/claim/post-audit admission bindings, and dedicated regression tests. No dependency, runtime network, UI, user-document, release-publication, broad C1-C8 portability PASS, denominator promotion, or program-done authority is added.",
       "approved": true
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "7b7b560c3188bf9c6ecbd6e9974b46787b9e3616ed7c496cb05db24e7dfeb30b",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:18:29Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded post-audit regression tests for the interop denominator contour: proves exact admitted delta including the current C1B claim-binding carrier and governance secondary-registry support, rejects unadmitted future paths, and rejects route-qualification promotion into required-cell PASS. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "e792459c82561a4aa2959116d82505e0c19ba32c2246c4b609d69b9ab0fd9ed1",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:40:00Z",
-      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded current C1B claim-binding carrier required by docs-claim-lint after the interop denominator inventory refresh: binds only the current C1B_TEST_INVENTORY_V1.json digest and explicitly denies denominator-cell PASS, broad C1-C8 portability PASS, product runtime network, dependency, UI, release, and program-done authority.",
+      "sha256": "fe4805f4c226d951dbbab573ad5a4d44168e31e8403cc8a68a461d5e14ac5dd3",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:00:50.000Z",
+      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded PR1857 U+000C DOCX page-break re-export repair from exact origin/main 6e9be072: admits only structural WordprocessingML page-break/control-code serialization, inventory/claim/post-audit admission bindings, and dedicated regression tests. No dependency, runtime network, UI, user-document, release-publication, broad C1-C8 portability PASS, denominator promotion, or program-done authority is added.",
       "approved": true
     }
   ]

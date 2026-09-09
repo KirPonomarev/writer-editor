@@ -652,8 +652,8 @@ test('R24 interop 100 U+000C page-break re-export exception accepts exact PR1857
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,10);
-  assert.equal(result.changedPathDenominator,10);
+  assert.equal(result.admittedPathDenominator,11);
+  assert.equal(result.changedPathDenominator,11);
   assert.equal(result.pageBreakReexport,'STRUCTURAL_W_BR_PAGE_BOUNDARY_ONLY');
   assert.equal(result.supportedDenominatorPromotion,false);
   assert.equal(result.programDone,false);

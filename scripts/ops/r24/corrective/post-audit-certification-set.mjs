@@ -342,9 +342,11 @@ export const R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION=Object.freeze(
   textXmlPath:'src/export/docx/docxTextXml.js',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   controlBoundaryTestPath:'test/unit/r24-docx-text-xml-control-boundary.test.mjs',
+  governanceApprovalsPath:'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   inventoryFileDenominator:1460,
   admittedPaths:[
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'scripts/ops/r24/docs-claim-lint.mjs',
     'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
