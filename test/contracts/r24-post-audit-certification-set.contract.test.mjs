@@ -421,11 +421,12 @@ test('PRE00E recovery CI external confirmation rejects an unadmitted future path
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());
   assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
 });
-function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,claimLintTestBytes,interopCurrentClaimBindingBytes,rcv00aCurrentClaimBindingBytes,evidenceBytes,approvalsBytes,baseTree}={}){
+function pre00fGitFixture({changedPaths,planBytes,globalApprovalsBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,claimLintTestBytes,interopCurrentClaimBindingBytes,rcv00aCurrentClaimBindingBytes,evidenceBytes,approvalsBytes,baseTree}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);
   const candidateBytes=(repoPath)=>fs.readFileSync(repoPath);
   const bytesByPath=new Map([
     [e.planPath,planBytes??candidateBytes(e.planPath)],
+    [e.globalApprovalsPath,globalApprovalsBytes??candidateBytes(e.globalApprovalsPath)],
     [e.inventoryPath,inventoryBytes??candidateBytes(e.inventoryPath)],
     [e.postAuditTestPath,testBytes??candidateBytes(e.postAuditTestPath)],
     [e.postAuditVerifierPath,verifierBytes??candidateBytes(e.postAuditVerifierPath)],
@@ -458,11 +459,12 @@ test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta
   assert.equal(result.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
   assert.equal(result.currentCandidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,10);
-  assert.equal(result.changedPathDenominator,10);
+  assert.equal(result.admittedPathDenominator,11);
+  assert.equal(result.changedPathDenominator,11);
   assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
   assert.equal(result.sourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.sourceDigest);
   assert.equal(result.ownerAmendedSourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.ownerAmendedSourceDigest);
+  assert.equal(result.globalApprovalDenominator,9);
   assert.equal(result.portabilityGapRecorded,true);
   assert.equal(result.nextStep,'R24-RCV-00A');
 });
@@ -482,6 +484,13 @@ test('PRE00F plan delivery rejects stale CI approval registry binding',()=>{
   const approvalsBytes=Buffer.from(`${JSON.stringify(approvalRegistry,null,2)}\n`);
   const fixture=pre00fGitFixture({approvalsBytes});
   assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
+});
+test('PRE00F plan delivery rejects stale global governance approval binding',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,globalRegistry=JSON.parse(fs.readFileSync(e.globalApprovalsPath,'utf8'));
+  globalRegistry.approvals.find((entry)=>entry.filePath===e.evidencePath).sha256='0'.repeat(64);
+  const globalApprovalsBytes=Buffer.from(`${JSON.stringify(globalRegistry,null,2)}\n`);
+  const fixture=pre00fGitFixture({globalApprovalsBytes});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_GLOBAL_APPROVAL_DIGEST/);
 });
 function rcv00aGitFixture({changedPaths}={}){
   const e=R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,deliverySha=e.deliverySha,candidateSha='4'.repeat(40),deliveryTree=e.deliveryTree,candidateTree='6'.repeat(40);
