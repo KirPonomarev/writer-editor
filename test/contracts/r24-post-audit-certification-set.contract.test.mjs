@@ -399,7 +399,7 @@ function pre00eGitFixture(changedPaths){
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      return fs.readFileSync(repoPath);
+      return objectFromCommit(PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha,repoPath);
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -421,33 +421,34 @@ test('PRE00E recovery CI external confirmation rejects an unadmitted future path
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());
   assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
 });
-function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,evidenceBytes,approvalsBytes,baseTree}={}){
+function pre00fGitFixture({changedPaths,planBytes,globalApprovalsBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,claimLintTestBytes,interopCurrentClaimBindingBytes,rcv00aCurrentClaimBindingBytes,evidenceBytes,approvalsBytes,baseTree}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);
-  const deliveryBytes=(repoPath)=>execFileSync('git',['show',`${e.deliverySha}:${repoPath}`]);
+  const candidateBytes=(repoPath)=>fs.readFileSync(repoPath);
   const bytesByPath=new Map([
-    [e.planPath,planBytes??deliveryBytes(e.planPath)],
-    [e.inventoryPath,inventoryBytes??deliveryBytes(e.inventoryPath)],
-    [e.postAuditTestPath,testBytes??deliveryBytes(e.postAuditTestPath)],
-    [e.postAuditVerifierPath,verifierBytes??deliveryBytes(e.postAuditVerifierPath)],
-    [e.claimLintPath,claimLintBytes??deliveryBytes(e.claimLintPath)],
-    [e.evidencePath,evidenceBytes??deliveryBytes(e.evidencePath)],
-    [e.approvalsPath,approvalsBytes??deliveryBytes(e.approvalsPath)],
-  ]);
-  const currentBytesByPath=new Map([
-    [e.postAuditTestPath,Buffer.from(`${deliveryBytes(e.postAuditTestPath).toString('utf8')}\n// current candidate drift must not rebind historical PRE00F delivery bytes\n`)],
+    [e.planPath,planBytes??candidateBytes(e.planPath)],
+    [e.globalApprovalsPath,globalApprovalsBytes??candidateBytes(e.globalApprovalsPath)],
+    [e.inventoryPath,inventoryBytes??candidateBytes(e.inventoryPath)],
+    [e.postAuditTestPath,testBytes??candidateBytes(e.postAuditTestPath)],
+    [e.postAuditVerifierPath,verifierBytes??candidateBytes(e.postAuditVerifierPath)],
+    [e.claimLintPath,claimLintBytes??candidateBytes(e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??candidateBytes(e.claimLintTestPath)],
+    [e.interopCurrentClaimBindingPath,interopCurrentClaimBindingBytes??candidateBytes(e.interopCurrentClaimBindingPath)],
+    [e.rcv00aCurrentClaimBindingPath,rcv00aCurrentClaimBindingBytes??candidateBytes(e.rcv00aCurrentClaimBindingPath)],
+    [e.governanceDetectorPath,candidateBytes(e.governanceDetectorPath)],
+    [e.governanceDetectorTestPath,candidateBytes(e.governanceDetectorTestPath)],
+    [e.evidencePath,evidenceBytes??candidateBytes(e.evidencePath)],
+    [e.approvalsPath,approvalsBytes??candidateBytes(e.approvalsPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
-    else if(args[0]==='rev-parse'&&args[1]===e.deliverySha)value=e.deliverySha;
     else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
-    else if(args[0]==='rev-parse'&&args[1]===`${e.deliverySha}^{tree}`)value=e.deliveryTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
     else if(args[0]==='diff')value=`${(changedPaths??e.admittedPaths).join('\n')}\n`;
     else if(args[0]==='show'){
       const spec=String(args[1]),separator=spec.indexOf(':'),objectish=spec.slice(0,separator),repoPath=spec.slice(separator+1);
-      const bytes=objectish===e.deliverySha?bytesByPath.get(repoPath):(currentBytesByPath.get(repoPath)??bytesByPath.get(repoPath));
+      const bytes=objectish===candidateSha?bytesByPath.get(repoPath):undefined;
       if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
       return execFileSync('git',args,options);
     }else return execFileSync('git',args,options);
@@ -458,13 +459,15 @@ test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta
   const fixture=pre00fGitFixture(),result=verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha);
-  assert.equal(result.candidateSha,PRE00F_PLAN_DELIVERY_EXPECTATION.deliverySha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
   assert.equal(result.currentCandidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,7);
-  assert.equal(result.changedPathDenominator,7);
+  assert.equal(result.admittedPathDenominator,13);
+  assert.equal(result.changedPathDenominator,13);
   assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
   assert.equal(result.sourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.sourceDigest);
   assert.equal(result.ownerAmendedSourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.ownerAmendedSourceDigest);
+  assert.equal(result.localApprovalDenominator,10);
+  assert.equal(result.globalApprovalDenominator,11);
   assert.equal(result.portabilityGapRecorded,true);
   assert.equal(result.nextStep,'R24-RCV-00A');
 });
@@ -484,6 +487,20 @@ test('PRE00F plan delivery rejects stale CI approval registry binding',()=>{
   const approvalsBytes=Buffer.from(`${JSON.stringify(approvalRegistry,null,2)}\n`);
   const fixture=pre00fGitFixture({approvalsBytes});
   assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
+});
+test('PRE00F plan delivery rejects stale governance detector local approval binding',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,approvalRegistry=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  approvalRegistry.approvals.find((entry)=>entry.filePath===e.governanceDetectorPath).sha256='0'.repeat(64);
+  const approvalsBytes=Buffer.from(`${JSON.stringify(approvalRegistry,null,2)}\n`);
+  const fixture=pre00fGitFixture({approvalsBytes});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
+});
+test('PRE00F plan delivery rejects stale global governance approval binding',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,globalRegistry=JSON.parse(fs.readFileSync(e.globalApprovalsPath,'utf8'));
+  globalRegistry.approvals.find((entry)=>entry.filePath===e.evidencePath).sha256='0'.repeat(64);
+  const globalApprovalsBytes=Buffer.from(`${JSON.stringify(globalRegistry,null,2)}\n`);
+  const fixture=pre00fGitFixture({globalApprovalsBytes});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_GLOBAL_APPROVAL_DIGEST/);
 });
 function rcv00aGitFixture({changedPaths}={}){
   const e=R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,deliverySha=e.deliverySha,candidateSha='4'.repeat(40),deliveryTree=e.deliveryTree,candidateTree='6'.repeat(40);

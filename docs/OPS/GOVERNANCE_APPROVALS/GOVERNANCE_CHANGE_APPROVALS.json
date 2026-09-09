@@ -5259,13 +5259,6 @@
       "rationale": "Approve OPS automation autofix script for workflow-scope push remediation and handoff boundary."
     },
     {
-      "filePath": "scripts/ops/governance-approval-state.mjs",
-      "sha256": "713e9266b99c0438e73b310c5a2b1c8efa194f3720c60b01383692e5cedd802f",
-      "approvedBy": "ticket:GOVERNANCE_APPROVAL_HARNESS_REPAIR_001",
-      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
-      "rationale": "GOVERNANCE_APPROVAL_HARNESS_REPAIR_001 approves the bounded stdout flush repair so governance approval state emits complete JSON without truncation while preserving the existing approval semantics."
-    },
-    {
       "filePath": "scripts/ops/governance-state-valid-state.mjs",
       "sha256": "81fa2710dd0e64069effd3e157664c1927b0796971f505132474b8b62c7b8d83",
       "approvedBy": "owner:TASK_ID:YALKEN_ATLAS_V5_INDEPENDENT_FINAL_AUDIT_REPAIR_QUEUE:P0_05_MANUAL_MAP_PORTABILITY+FINAL_FULL_RUNNER_REBIND",
@@ -6276,15 +6269,6 @@
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
     },
     {
-      "filePath": "scripts/run-tests.js",
-      "sha256": "266973d8dfc2c2b86a9d1799ae1cdb17cbc9d4211c03324212bd30723d51139c",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-E0-RUNNER-SAFETY-QUARANTINE-001",
-      "approvedAtUtc": "2026-08-20T07:15:09.000Z",
-      "rationale": "Approve R2.4 E0 run-tests.js change: self-materializing /tmp synthetic test path removed in favor of committed scripts/ops/ops-synth-negative.test.cjs, fast-lane forbidden segment renamed to match, unit lane captures TAP and fails closed on zero executed denominator with visible skip inventory tokens; no product runtime change.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
       "filePath": "scripts/sector-m-run.mjs",
       "sha256": "9d631b8e759cc7340485bd8026f25df3a9a05c1b4cb662d584bba1789abdbd1f",
       "approvedBy": "ticket:YALKEN_WORD_A03_SAFE_PORTABILITY_RUNTIME_CONTOUR_A03_C01_SECTOR_M_GUARD_BOUNDARY_FIX",
@@ -6327,13 +6311,6 @@
       "approvedBy": "ticket:YALKEN_ATLAS_V5_ER_C05_REAL_WORKER_AND_MEASURED_10K_BUDGET",
       "approvedAtUtc": "2026-07-31T08:37:30.000Z",
       "rationale": "Approve ER C05 worker payload and acceptance core: creates compact transferable typed-array payloads, excludes Core state and full graph clones, computes LOD and spatial index, discards stale results before publication, and adds no storage, network, dependency, UI mutation, or persistent truth."
-    },
-    {
-      "filePath": "src/derived/atlas/deriveAtlasContinuityLedgerSurface.mjs",
-      "sha256": "618d14aed9dc6a55f2d59e8af23dbde48af9e489dde43d860f8aedc18aae6051",
-      "approvedBy": "owner:TASK_ID:YALKEN_ATLAS_GOVERNANCE_DIGEST_REBIND_20260819",
-      "approvedAtUtc": "2026-08-19T10:19:10Z",
-      "rationale": "Rebind the approval to the byte-identical blob reviewed and merged by PR 1602 at head 0a91469636c8d9899995c5e7ccab26ea9eb75891: authoritative Product scene order replaces lexical order in the read-only Atlas continuity ledger while preserving typed fail-closed validation and zero new write authority. Exact PR required CI and current-main blob identity were revalidated before this metadata-only correction."
     },
     {
       "filePath": "src/derived/atlas/deriveAtlasDiagnosticsStageAcceptance.mjs",
@@ -6629,15 +6606,6 @@
       "rationale": "Approve bounded W1/W2 V6 canon repair: stable RTK contracts, platform-neutral Review IR core, no regex normative XML parser, canonical durable review storage, comment-lane/source-mode fixes, no UI, writer, DOCX Minimal, network, dependency, apply, or W3 scope."
     },
     {
-      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "e565c8f1bca462b26121216e720e58a28ace5ab5cccacacf5538012447201557",
-      "approvedBy": "owner-standing-grant:TASK_ID:C1_WORD_RETURN_AUTHORITY_AND_PROFILE_BINDING_REPAIR_V1",
-      "approvedAtUtc": "2026-08-15T13:48:00.000Z",
-      "rationale": "Approve bounded parser hardening: expectedAuthority.profileId is an exact signed-locator binding key when present, profile transplants fail closed with RTK_BLOCKED_PROFILE_MISMATCH in worker and main-side secret verification paths, and existing stale revision/bytes semantics are preserved.",
-      "approved": true,
-      "authority": "MASTER_PROGRAM_STANDING_OWNER_GRANT_WITHIN_SCOPE_INTEROP_CHAIN_C1_REPAIR"
-    },
-    {
       "filePath": "src/io/revisionBridge/reviewTransportRoundStore.mjs",
       "sha256": "79560b97da9231f5c3e3fc257f07adc644fd7bb69b81ff92661688aa66194871",
       "approvedBy": "ticket:YALKEN_RTK_W1_W2_CANON_REPAIR",
@@ -6687,40 +6655,6 @@
       "approvedAtUtc": "2026-08-20T17:53:00.000Z",
       "rationale": "Approve R2.4 S1 preload bridge framing: all six sends to the three payload bridges are wrapped in the versioned envelope (v, correlationId, issuedAt) via createEnvelope, awaited bridges run under timeout budgets with late-result discard, signal bridge stays fire-and-forget; no new channel or authority.",
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "src/renderer/commands/localCapabilityProvider.mjs",
-      "sha256": "0a7a67505e920c8ed149a8fc3446e292f0650108f79d0a8431c658df032e1208",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-A0-ATLAS-INCREMENTAL-EQUIVALENCE-001",
-      "approvedAtUtc": "2026-08-22T13:44:05.000Z",
-      "rationale": "Approve registry-hygiene rebind for inherited current-main local capability provider bytes discovered while closing the R2.4 A0 governance gate; no product runtime, UI, capability, storage, dependency, network, release or Program PASS change.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "src/renderer/design-os/atlasFeatureIntegrationManifest.mjs",
-      "sha256": "765b3488ad42f486c5a8ed47fb49ffb86d89b40df2f1270dd502de07391392e2",
-      "approvedBy": "owner-controller:TASK_ID:YALKEN_ATLAS_V6_AUDIT_HOLD_REPAIR",
-      "approvedAtUtc": "2026-08-02T16:13:13.000Z",
-      "rationale": "Approve exact Atlas integration manifest bytes with declarative feature bindings only; runtime certification now comes from independent live command, provider and slot catalogs and missing bindings fail closed.",
-      "approved": true,
-      "authority": "AUTONOMOUS_WRITE_DELIVERY_WITHIN_OWNER_ATLAS_V6_AUDIT_HOLD_REPAIR"
-    },
-    {
-      "filePath": "src/renderer/design-os/index.mjs",
-      "sha256": "0f278dd59ff59d25b1250d32d9cf8968ec76d4a3f129f8ff810b416f74f3ecae",
-      "approvedBy": "owner-controller:TASK_ID:YALKEN_ATLAS_V6_AUDIT_HOLD_REPAIR",
-      "approvedAtUtc": "2026-08-02T16:13:13.000Z",
-      "rationale": "Approve exact Design OS resolver bytes that fail closed without the live product command catalog, exact provider catalog and independent slot catalog; behavioral binding only, with no visual redesign or manifest self-certification.",
-      "approved": true,
-      "authority": "AUTONOMOUS_WRITE_DELIVERY_WITHIN_OWNER_ATLAS_V6_AUDIT_HOLD_REPAIR"
-    },
-    {
-      "filePath": "src/renderer/styles.css",
-      "sha256": "73cf334a65d7c9c197913c44d3329aa8546f860bd3db306b2b3c481ebd06b3f3",
-      "approvedBy": "owner-controller:TASK_ID:YALKEN_ATLAS_V5_POST_3BF49983_IRONCLAD_REPAIR:R1_C",
-      "approvedAtUtc": "2026-08-02T12:31:00.000Z",
-      "rationale": "Approve exact R1-C stylesheet bytes adding a bounded Stage-10 lifecycle review button class that reuses existing Design OS tokens while preserving existing review apply authority, local-only runtime, no dependency, no network and no release-ready overclaim."
     },
     {
       "filePath": "src/shared/commandBridgeResponse.cjs",
@@ -6991,13 +6925,6 @@
       "approvedBy": "ticket:TZ-24E-P1-AUTOPUSH-WORKFLOW-SCOPE-CREDENTIAL-AUTOFIX-011",
       "approvedAtUtc": "2026-02-18T14:59:18.000Z",
       "rationale": "Approve new contract coverage for workflow-scope push autofix detect/remediation/handoff behavior."
-    },
-    {
-      "filePath": "test/contracts/governance-approval-state.contract.test.js",
-      "sha256": "3509f8c6f58a52a70b83c7ae4ea6c8047a1644f57117f953fff3c03b0d0c8c5b",
-      "approvedBy": "ticket:GOVERNANCE_APPROVAL_HARNESS_REPAIR_001",
-      "approvedAtUtc": "2026-04-28T00:00:00.000Z",
-      "rationale": "GOVERNANCE_APPROVAL_HARNESS_REPAIR_001 approves the bounded contract harness repair so the positive path parses complete governance JSON and the negative path uses a guaranteed mismatched SHA fixture."
     },
     {
       "filePath": "test/contracts/hotpath-acceptance-guard.contract.test.js",
@@ -7405,22 +7332,6 @@
       "rationale": "DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_001 approves the bounded main-only DOCX content preview command-surface contract for requestId plus base64 bufferSource validation, helper availability and throw fail-closed behavior, wrapped command ok semantics, blocked or malformed DOCX as inner preview report failure, forbidden review import apply storage export field guards, and no renderer, preload, UI, storage write, import mutation, review packet, apply operation, export rewrite, network, dependency, or release claim."
     },
     {
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "635825982bb56c175fec41bc649bd141413d707a652c5be04c5922b1abd1138b",
-      "approvedBy": "owner-direct:TASK_ID:GENERIC-01_CREATE_ONLY_IMPORT",
-      "approvedAtUtc": "2026-08-09T06:25:17.945Z",
-      "rationale": "Approve GENERIC-01 content preview identity pins (legacy 8-hex text hash preserved plus full SHA-256 artifact identity and carrier classification); tests only.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_GENERIC01_CREATE_ONLY_IMPORT"
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "sha256": "6d71ee9f4d41fb93c0f0d0dce1ac2909c347de634b50e8fe23b95e6903dbd675",
-      "approvedBy": "owner:TASK_ID:YALKEN_WORD_ROUNDTRIP_RELEASE_AUDIT_NIGHT_01",
-      "approvedAtUtc": "2026-08-01T02:59:28.553Z",
-      "rationale": "Approve bounded P0 product-originated Word smoke LaunchServices physical PASS repair: synthetic Review DOCX physical open-edit-save-close-reopen 12/12, latest Word comment extension parts admitted to existing semantic parser, packageInvalid false, no exporter or carrier rewrite for macOS prompt, automatic apply false, Word saturated false, Google Docs closed."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
       "sha256": "0e679441f394358ea448f695839a7d9967243fddc96ea2845393efbe38b8e695",
       "approvedBy": "owner-direct:TASK_ID:GENERIC-01_CREATE_ONLY_IMPORT",
@@ -7474,13 +7385,6 @@
       "approvedBy": "ticket:DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002",
       "approvedAtUtc": "2026-06-30T11:24:50.000Z",
       "rationale": "DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002 approves the bounded DOCX intake preflight command-surface contract update for hostile gate plus package and part-policy classification; no UI, storage write, import mutation, semantic parser execution, export rewrite, network, dependency, or release claim is introduced."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "6b57af4bea60d0c6d040946db684e60972fd57a1c04c6065edaeb353664197a0",
-      "approvedBy": "owner:TASK_ID:YALKEN_WORD_MAXIMUM_SAFE_ROUNDTRIP_SATURATION",
-      "approvedAtUtc": "2026-08-01T00:31:32.031Z",
-      "rationale": "Approve bounded release-audit Night 01 P0 return intake V2 scope: product Review DOCX returned package is parsed through the Review Transport parser gate with local authority binding before session import or storage authority; preserves Word SATURATED false, automatic apply false, Google Docs closed, no product network dependency, no user document use, and no broad corpus or release-ready claim."
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
@@ -7828,24 +7732,6 @@
       "approvedBy": "ticket:YALKEN_RTK_WORD_LATEST_SEMANTIC_ROUNDTRIP_V2",
       "approvedAtUtc": "2026-07-30T16:35:00.000Z",
       "rationale": "Approve focused B06 contract coverage: proves the committed physical Word receipt has 30-plus native round trips, comment PASS requires package inventory, semantic readback and Word reopen visibility, high-comment and scale rows are physical, hostile package stays BLOCKED, unsupported modern semantics are typed limitations, D1 is not rebound, no fixture-only PASS is allowed, and exact/apply/UI/network claims are not widened."
-    },
-    {
-      "filePath": "test/contracts/rtk-word-n3-formatting-return.contract.test.js",
-      "sha256": "5b71c9564ecb710e9d258121d214bac905d96aeb4440682913b823fd9bf8816e",
-      "approvedBy": "owner-direct:TASK_ID:MATCH-01_PLACEMENT_PROOF",
-      "approvedAtUtc": "2026-08-09T01:33:42.348Z",
-      "rationale": "Approve MATCH-01 unresolved outcome pin updates to typed unclassified-blocks in the formatting return contract; locator diagnostics preserved; tests only.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_MATCH01_PLACEMENT_PROOF"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-n4-structural-return.contract.test.js",
-      "sha256": "4229100a840f96581b787278e16ee54505872bffb031ffc9e4656dfb5141b95b",
-      "approvedBy": "owner-direct:TASK_ID:EVID-01_RETURN_EVIDENCE_PACKET",
-      "approvedAtUtc": "2026-08-08T23:55:04.384Z",
-      "rationale": "Approve EVID-01 packet-based production call pin updates in the structural return contract; negative blocks preserved; tests only.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_EVID01_RETURN_EVIDENCE_PACKET"
     },
     {
       "filePath": "test/contracts/rtk-word-normalized-capability-matrix.contract.test.js",
@@ -8830,13 +8716,6 @@
       "rationale": "Approve bounded E11 C00 active platform certification compilation: records macOS packaged Electron as the only active Stage 11 certification scope, keeps inactive Windows Linux web iOS Android as NOT_ACTIVATED without false HOLD or PASS, compiles C01-C04 queue, binds ER C07 handoff, and makes no physical package, signing, SAST, release readiness, or Program DoD claim."
     },
     {
-      "filePath": "test/contracts/yalken-atlas-v5-e11-c01-macos-package-artifact-security.contract.test.js",
-      "sha256": "14d745ebf89cf5472193e5e38f9f1355d742943e9480718f3548412149dbacd5",
-      "approvedBy": "ticket:YALKEN_ATLAS_V5_E11_C01_MACOS_PACKAGE_ARTIFACT_ENTRYPOINT_AND_OFFLINE_SECURITY",
-      "approvedAtUtc": "2026-07-31T11:47:00.000Z",
-      "rationale": "Approve bounded Stage 11 C01 final macOS packaged Electron physical artifact entrypoint and offline security evidence with sanitized build transcript, unsigned local artifact classification, explicit no signing or notarization PASS, no inactive platform certification, no runtime network activation, no raw keychain detail in committed evidence, and no final Program DoD claim."
-    },
-    {
       "filePath": "test/contracts/yalken-atlas-v5-e11-c02-packaged-critical-journey.contract.test.js",
       "sha256": "e2079d7e93cb4a85fb89829127fca4971ae706525dbfbe47ffe0686493f600b2",
       "approvedBy": "ticket:YALKEN_ATLAS_V5_E11_C02_PACKAGED_CRITICAL_JOURNEY_CREATE_SAVE_REOPEN_RECOVERY_EXPORT_IMPORT",
@@ -8904,13 +8783,6 @@
       "rationale": "Approve ER C05 focused contract: proves compact transferable payload, real worker-thread execution, LOD and spatial index result, coalescing, cancellation, stale discard, typed fallback, measured 10k budget, old false worker label removal, and no storage, network, Electron, direct UI, or product truth bypass."
     },
     {
-      "filePath": "test/contracts/yalken-atlas-v5-er-c06-atlas-rail-responsive-accessibility.contract.test.js",
-      "sha256": "9b190a013c06691f53884d30e72d9c4146102303ecb889e40e5c0e669042fa87",
-      "approvedBy": "ticket:YALKEN_ATLAS_V5_POST_FINAL_PRODUCT_OUTCOME_REPAIR_001_R2_C03",
-      "approvedAtUtc": "2026-07-31T18:42:00.000Z",
-      "rationale": "Approve current-state R2 C03 responsive accessible reachability governed files: external Atlas opener outside right rail, supported desktop viewport matrix 1440 1024 900 768, honest 390 advisory fallback, overlay focus trap and Escape focus return, no horizontal overflow, no toolbar collision, clean governed renderer evidence, updated E11 proof requirements, no dependency, no network, no new product truth, and Program DoD remains NOT_READY."
-    },
-    {
       "filePath": "test/contracts/yalken-atlas-v5-er-c07-stage-revalidation-handoff.contract.test.js",
       "sha256": "f77df5c35769632042901baf293a763adde8a3243853855a613f4f8a8a116271",
       "approvedBy": "ticket:YALKEN_ATLAS_V5_ER_C07_STAGE_REVALIDATION_AND_HANDOFF",
@@ -8918,29 +8790,11 @@
       "rationale": "Approve bounded ER C07 delivery artifacts: binds live Electron renderer journey, full-runner PASS log, stage revalidation report, receipt evidence hashes, sandbox-safe preload bridge repair, Command Kernel journey recovery, invalidated E05/E06 evidence rejection, Stage 01/02/03/05 user outcome revalidation, and explicit SAST NOT_READY classification without release or Program DoD claim."
     },
     {
-      "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",
-      "sha256": "ceef86ba72c9aa15eab473eb00277bc1762118f5cb96e5c8a5f1a4be88e66ffc",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:58:31.117Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve P0-01 Atlas disposable harness realpath binding so SEC0 no-follow capability law is exercised with canonical temp-root spelling on macOS.",
-      "approved": true
-    },
-    {
       "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-03-packaged-visible-journey.contract.test.js",
       "sha256": "88f2cc7dac2457c29d8246b15e205cc7ff3a372771e1351190f7011433ab25e9",
       "approvedBy": "owner-controller:TASK_ID:YALKEN_ATLAS_V6_AUDIT_HOLD_REPAIR",
       "approvedAtUtc": "2026-08-02T00:00:00.000Z",
       "rationale": "Approve the packaged journey contract binding bounded visible pointer and keyboard activation retries with fail-closed rejection and not-applied diagnostics."
-    },
-    {
-      "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-04-design-os-binding.contract.test.js",
-      "sha256": "494d14540e4668e824909d0df7e45251218da8a4ebc4f72802a3b58569d09a55",
-      "approvedBy": "owner-controller:TASK_ID:YALKEN_ATLAS_V6_AUDIT_HOLD_REPAIR",
-      "approvedAtUtc": "2026-08-02T16:13:13.000Z",
-      "rationale": "Approve exact Design OS negative contract bytes proving absent live command, provider or exact slot catalogs cannot be self-certified by the feature manifest and arbitrary provider substitution is rejected.",
-      "approved": true,
-      "authority": "AUTONOMOUS_WRITE_DELIVERY_WITHIN_OWNER_ATLAS_V6_AUDIT_HOLD_REPAIR"
     },
     {
       "filePath": "test/contracts/yalken-atlas-v5-final-audit-p0-05-manual-map-portability.contract.test.js",
@@ -9213,22 +9067,6 @@
       "rationale": "Approve final P0_05 Manual Map portability delivery bytes after origin/main 22e02f2a merge: visible product command export/import evidence PASS, ops PR-head mode repair PASS, full runner PASS 799 total 735 pass 0 fail 64 skipped, test:ops PASS, Design OS doctrine PASS, OSS policy PASS, no network, no dependency, no Program DONE claim."
     },
     {
-      "filePath": "test/unit/sector-m-no-scope-leak.test.js",
-      "sha256": "83cb915be3d3847e09edeac24ae5bf967f59cfe8170eb3a26a7c28ada9f660d7",
-      "approvedBy": "owner:TASK_ID:YALKEN_WORD_A03_C01_TRUTH_REPAIR_AND_C02_CONTINUE",
-      "approvedAtUtc": "2026-07-31T18:23:22.246Z",
-      "rationale": "A03_C01_TRUTH_REPAIR_AND_A03_C02_NON_OVERLAP_TRACKED_REPLACEMENT_RUNTIME_DELIVERY"
-    },
-    {
-      "filePath": "test/unit/sector-m-s37-capability-provider-free-pro.test.js",
-      "sha256": "03a481c853018a30f7d288a183c962ee94c238c519283574829f06722af5d98e",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-A0-ATLAS-INCREMENTAL-EQUIVALENCE-001",
-      "approvedAtUtc": "2026-08-22T13:44:05.000Z",
-      "rationale": "Approve registry-hygiene rebind for inherited current-main Sector M capability-provider test bytes discovered while closing the R2.4 A0 governance gate; metadata only, no product capability, UI, network, dependency, release or Program PASS change.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
       "filePath": "test/unit/yalken-design-os-sidebar-control-truth.test.js",
       "sha256": "70e4fc18f3739ebb7490852fc33eece1445aee2fb77fd29cf67e98e9b8599d33",
       "approvedBy": "ticket:YALKEN_WORD_SAFE_SEMANTIC_ROUNDTRIP_V4_E12_PHYSICAL_WAVE300",
@@ -9261,15 +9099,6 @@
       "rationale": "Approve exact Phase C native lifecycle bytes after focused lifecycle, ledger, portfolio, PR1414, checkpoint and terminal contracts passed; reply/state lifecycle rows are native SAFE_APPLY rather than typed-limit. No physical Word run, no Google work, no long campaign, and no PRE_LONG_RUN_READY or Word terminal PASS claim.",
       "approved": true,
       "authority": "STANDING_OWNER_AUTHORIZATION_EXACT_BYTES_PHASE_C_NATIVE_LIFECYCLE"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-c5v2-comment-lifecycle-return-runtime.contract.test.js",
-      "sha256": "8f25c23a01ac4f9dff4e16bbe70ab54841258377ffedb9608e5e55b25c8fd70f",
-      "approvedBy": "owner-direct:TASK_ID:C1_WORD_AX_DIRECT_CAPABILITY_PREFLIGHT_REPAIR_V1_CORRECTION",
-      "approvedAtUtc": "2026-08-19T09:37:15.000Z",
-      "rationale": "Approve focused fail-closed coverage proving standalone preflight cannot report ready without direct Word AX capability while legacy UI-elements false remains advisory only when frontmost, window, menu and window-subtree capability are directly proven.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_CONSOLIDATE_AUDITS_CORRECT_REPO_AND_PROVE_EACH_CONTRACT"
     },
     {
       "filePath": "test/contracts/rtk-word-c5v2-ledger-distribution.contract.test.js",
@@ -9740,29 +9569,11 @@
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_THREE_FEATURES_SEQUENTIAL_AUTONOMOUS_PROGRAM_V1_F2"
     },
     {
-      "filePath": "test/contracts/rtk-lab01-build-bound-profiles.contract.test.js",
-      "sha256": "7d8d769f85bd8843f4d580c7431052b334af381266268849c827d28691731237",
-      "approvedBy": "owner-direct:TASK_ID:F2_WORD_16_112_TYPED_ADVERSE_SCHEDULES_V1",
-      "approvedAtUtc": "2026-08-13T20:14:00Z",
-      "rationale": "Approve LAB01 contract requiring Word 16.112 TYPED_ADVERSE_SCHEDULES to bind as adverseEvidenceHeads only, with 16/16 typed schedules, no executable ladder-denominator inflation and no saturation/terminal promotion.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_THREE_FEATURES_SEQUENTIAL_AUTONOMOUS_PROGRAM_V1_F2"
-    },
-    {
       "filePath": "test/contracts/rtk-phys01-ladder-runner.contract.test.js",
       "sha256": "820124f423db6c6869d2a6a1f30afff5d996f85f2b50764b652f676813e90885",
       "approvedBy": "owner-direct:TASK_ID:F2_WORD_16_112_TYPED_ADVERSE_SCHEDULES_V1",
       "approvedAtUtc": "2026-08-13T20:14:00Z",
       "rationale": "Approve PHYS01 contract requiring the typed adverse schedule rung/spec/manifest/oracle laws and the real Word 16.112 TYPED_ADVERSE_SCHEDULES receipt to validate 16/16 fail-closed adverse schedules with explicit non-claims.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_THREE_FEATURES_SEQUENTIAL_AUTONOMOUS_PROGRAM_V1_F2"
-    },
-    {
-      "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "sha256": "d7e8b20b789fd1db2c88caefde50e602c07ca3e6784501459ec5703f382282bb",
-      "approvedBy": "owner-direct:TASK_ID:F2_WORD_16_112_TYPED_ADVERSE_SCHEDULES_V1",
-      "approvedAtUtc": "2026-08-13T20:14:00Z",
-      "rationale": "Approve RELEASE01 terminal rollup contract recognizing Word 16.112 TYPED_ADVERSE_SCHEDULES as adverse-only evidence while preserving NOT_CLAIMED_BLOCKED current compatibility/saturation claims and WORD_PROFILE_NOT_SATURATED terminal blocker.",
       "approved": true,
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_THREE_FEATURES_SEQUENTIAL_AUTONOMOUS_PROGRAM_V1_F2"
     },
@@ -10334,33 +10145,6 @@
       "authority": "MASTER_PROGRAM_STANDING_OWNER_GRANT_WITHIN_SCOPE_F3_BLACK_BOX_PRODUCTIZATION_UI_DEFAULT_FLAG_PATH"
     },
     {
-      "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "67c409250ead1f7370023f7b707f2563e9444e0b5dc499d3e116783a359ba5a6",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-ENT0-ENTITLEMENT-CONFORMANCE-001",
-      "approvedAtUtc": "2026-08-21T11:50:49.000Z",
-      "rationale": "Approve R2.4 ENT0 regenerated committed renderer bundle built via scripts/build-renderer.mjs after localCapabilityProvider.mjs was re-derived from the single product-plane entitlement table.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "src/renderer/editor.js",
-      "sha256": "85c375150aeed782194fca8b696b0eabd137ad2855f190c363fb5b0ecc1ad03d",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-T0-TEXT-COORDINATE-ALGEBRA-001",
-      "approvedAtUtc": "2026-08-21T08:09:07.000Z",
-      "rationale": "Approve R2.4 T0 manual-map search adoption: the three match sites and the query fold now use foldIncludes from the deterministic fold tape instead of naive toLowerCase; UI contract unchanged.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "src/renderer/index.html",
-      "sha256": "177172a705d2ba95077a93da2b2428e0054737c55f07aa310200298b0e8d04b8",
-      "approvedBy": "owner-standing-grant:TASK_ID:F3_BLACK_BOX_PRODUCT_UI_DEFAULT_FLAG_PATH_V1",
-      "approvedAtUtc": "2026-08-14T19:56:00.000Z",
-      "rationale": "Approve F3 Black Box UI/default path export modal markup: adds a default-off protected Black Box CORE Capsule option bound to existing cmd.project.blackBox.exportManualCoreCapsuleKitV1 and safe-target copy; no user document or full product readiness claim.",
-      "approved": true,
-      "authority": "MASTER_PROGRAM_STANDING_OWNER_GRANT_WITHIN_SCOPE_F3_BLACK_BOX_PRODUCTIZATION_UI_DEFAULT_FLAG_PATH"
-    },
-    {
       "filePath": "scripts/ops/rtk-google-docs-local-export-packet-quarantine-model.mjs",
       "sha256": "bd8a49c64eedc5b4278232d71a33b2fc260d1df160ecb1508650613b4cb54dc7",
       "approvedBy": "owner:GOOGLE_DOCS_LOCAL_EXPORT_PACKET_QUARANTINE_V1",
@@ -10883,15 +10667,6 @@
       "authority": "MASTER_PROGRAM_STANDING_OWNER_GRANT_WITHIN_SCOPE_C1_RETURN_INTAKE_AUTHORITY_REPAIR"
     },
     {
-      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "61c4f6418f298983f07f109dd9912220569f7746dee71f18c7944398d483e769",
-      "rationale": "Approve R2.4 EXH0 catalog change: adds rtk-evidence-stale-green-guard.contract.test.js to contractBasenames and declares extraMaintainedContractBasenames for the two repaired live-claim contracts; discovery rule text amended to match.",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-EXH0-EVIDENCE-INTEGRITY-REPAIR-001",
-      "approvedAtUtc": "2026-08-21T21:46:39.000Z",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
       "filePath": "docs/OPS/RTK/YALKEN_R4_POSTMERGE_VERIFICATION_RECEIPT_V1.json",
       "sha256": "ab2c38b27edaf74962ba1d54374defe42ec641d5ad9ea3a7c300e70d4096e69c",
       "rationale": "Approve exact R4 postmerge receipt import for RTK process-capability repair scope; no product runtime, UI, provider, release, Desktop V1.1, or program-verdict change.",
@@ -11009,33 +10784,6 @@
       "authority": "OWNER_DELEGATED_AUTONOMOUS_DELIVERY_WITHIN_C1_WORD_ROUND01_ORACLE_OUTCOME_MISMATCH_REPAIR_V1"
     },
     {
-      "filePath": "scripts/ops/rtk-word-c5v2-terminal-orchestrator.mjs",
-      "sha256": "87f367f397ae0e554e9a0faf3b53cbbd71e1e4f2f954efa2778f8d6f5638062a",
-      "approvedBy": "owner-delegated:TASK_ID:C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1",
-      "approvedAtUtc": "2026-08-17T19:23:26.000Z",
-      "rationale": "Approve terminal-orchestrator candidate-authority tuple digest expansion to include operationId while preserving exact-head, clean-tree, survivor, and process-visibility gates.",
-      "approved": true,
-      "authority": "OWNER_DELEGATED_AUTONOMOUS_DELIVERY_WITHIN_C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1"
-    },
-    {
-      "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "4aee4031e16220accced2f157bc8eb5c2a35ba54794b6211c92bd89b13119fcb",
-      "approvedBy": "owner-delegated:TASK_ID:C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1",
-      "approvedAtUtc": "2026-08-17T19:23:26.000Z",
-      "rationale": "Approve DOCX review preview evidence extraction of bounded operationId from synthetic Word revision author markers only, without creating storage, path, apply, or command authority.",
-      "approved": true,
-      "authority": "OWNER_DELEGATED_AUTONOMOUS_DELIVERY_WITHIN_C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1"
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
-      "sha256": "27e56575e71ec895d9d86a5a08de0849d05304889d6d3a868a29fcc6870b2ccc",
-      "approvedBy": "owner-delegated:TASK_ID:C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1",
-      "approvedAtUtc": "2026-08-17T19:23:26.000Z",
-      "rationale": "Approve DOCX review preview operation-author marker contract coverage for valid, mismatched, invalid, and direct-field-only operation identity evidence.",
-      "approved": true,
-      "authority": "OWNER_DELEGATED_AUTONOMOUS_DELIVERY_WITHIN_C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1"
-    },
-    {
       "filePath": "test/contracts/rtk-word-c5v2-noop-baseline.contract.test.js",
       "sha256": "95f0990d48e3ccffd7a62c7a74884379cc08c26e93bc483cf4bd04e6bc9763fa",
       "approvedBy": "owner-delegated:TASK_ID:C1_WORD_ROUND01_POST_FAILCLOSED_ROUTE_REPLAY_V1",
@@ -11050,15 +10798,6 @@
       "approvedBy": "owner-delegated:TASK_ID:C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1",
       "approvedAtUtc": "2026-08-17T19:23:26.000Z",
       "rationale": "Approve audit-hold and reuse-binding contract updates proving same-count operation identity mutations fail candidate-authority reconstruction before stale completed-round reuse can become green.",
-      "approved": true,
-      "authority": "OWNER_DELEGATED_AUTONOMOUS_DELIVERY_WITHIN_C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1"
-    },
-    {
-      "filePath": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
-      "sha256": "2d84961f3f2974fe76cbf2f604eace7b1defecb5142a19fdd2d11377442d7289",
-      "approvedBy": "owner-delegated:TASK_ID:C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1",
-      "approvedAtUtc": "2026-08-17T19:23:26.000Z",
-      "rationale": "Approve terminal-orchestrator contract fixture updates binding candidate-authority tuple digests to operationId while preserving process visibility, timeout, survivor, hidden-PID, and fail-closed behaviors.",
       "approved": true,
       "authority": "OWNER_DELEGATED_AUTONOMOUS_DELIVERY_WITHIN_C1_WORD_ROUND01_EXACT_LEDGER_BINDING_REPAIR_V1"
     },
@@ -11099,15 +10838,6 @@
       "authority": "OWNER_EXPLICIT_ALL_AUDITS_SCIENTIFIC_CONSOLIDATION_WITHIN_ACTIVE_CANON"
     },
     {
-      "filePath": "docs/OPS/EVIDENCE/YALKEN_SCIENTIFIC_ASSURANCE_PROGRAM_R1/SCIENTIFIC_CONTRACTS.json",
-      "sha256": "daf839e6a7de5719de951e73ddfee3459af2e2a8bd5bde10f6e2a8cca8e14417",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-P1-DIRTY-ADMISSION-ACK-001",
-      "approvedAtUtc": "2026-08-20T16:41:45.000Z",
-      "rationale": "Approve R2.4 P1 reality-probe rebind: PROBE_AUTOSAVE_IN_PROGRESS_RETURNS_TRUE renamed to PROBE_AUTOSAVE_IN_PROGRESS_RETURNS_NOOP_RESULT with the needle bound to the typed no-op result shape in autoSave.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
       "filePath": "scripts/ops/yalken-scientific-assurance-r1.mjs",
       "sha256": "24e78e746349600dd0a29fd19c0e0085960b1dcdfa7e38b5f692a408d78123f9",
       "approvedBy": "owner-direct:TASK_ID:YALKEN_SCIENTIFIC_ASSURANCE_PROGRAM_R1",
@@ -11124,69 +10854,6 @@
       "rationale": "Approve maintained positive and decisive negative coverage for source drift, finding completeness, DAG/profile law, bounded claims, revision/save/denominator/storage algebra and model-evidence ceilings.",
       "approved": true,
       "authority": "OWNER_EXPLICIT_ALL_AUDITS_SCIENTIFIC_CONSOLIDATION_WITHIN_ACTIVE_CANON"
-    },
-    {
-      "filePath": "test/unit/r24-f0-writer-refinement-conformance.test.js",
-      "sha256": "085f9a6498a825aad0a6dcd4750a922f17edf4be2966c247d788c0399e6ffa1d",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-F0-WRITER-REFINEMENT-CONFORMANCE-001",
-      "approvedAtUtc": "2026-08-22T11:43:09.000Z",
-      "rationale": "Approve R2.4 F0 executable refinement conformance matrix: binds F0 DAG evidence and issue coverage to exact implementation probes across dirty admission, durable save, project commit, IPC, command protocol, authority seams, revision algebra, inbox/outbox, lifecycle, migration, path capability, text coordinate and entitlement boundaries.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "test/unit/r24-f0-refinement-physics.test.js",
-      "sha256": "a51e929ee418f2df3e3406814ea029751a31f9347b99dd4774e9a861fc57ac26",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-F0-WRITER-REFINEMENT-CONFORMANCE-001",
-      "approvedAtUtc": "2026-08-22T11:43:09.000Z",
-      "rationale": "Approve R2.4 F0 physical/adversarial refinement tests: stitch failed durable save to AT_RISK lifecycle blocking, pending outbox effect to crash-recovery blocking, denied path capability to no write, and checkpoint tamper to restore refusal without project byte mutation.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "test/unit/r24-f0-refinement-mutants.test.js",
-      "sha256": "19e00264b051a39d4b265c1a9560da877282b619c07487c216f7e7138f9a8ac7",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-F0-WRITER-REFINEMENT-CONFORMANCE-001",
-      "approvedAtUtc": "2026-08-22T11:43:09.000Z",
-      "rationale": "Approve R2.4 F0 mutation suite: inverts representative dirty admission, path escape, inbox corruption, lifecycle dirty barrier and migration project-id guards in isolated module copies and requires every mutant to be killed.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "scripts/ops/r24/package-content-trust-pk0.mjs",
-      "sha256": "38fd6d5db5675c4b73b2a64e0a40c5dbb397fe5c00779c41658856bc80881e13",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-PK0-PACKAGE-CONTENT-TRUST-001",
-      "approvedAtUtc": "2026-08-22T16:25:34.000Z",
-      "rationale": "Approve R2.4 PK0 package content trust verifier: validates package build.files manifest, runtime/staged/admitted set inclusion, program/scientific contract binding, lockfile/dependency mutation refusal, and release/signing/notarization/network/product-runtime promotion refusal.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "test/unit/r24-pk0-package-content-trust.test.js",
-      "sha256": "0c5f2238d505f1480fbbca1332cf434a6472cbcc2f1295a502734e9e2adfa1af",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-PK0-PACKAGE-CONTENT-TRUST-001",
-      "approvedAtUtc": "2026-08-22T16:25:34.000Z",
-      "rationale": "Approve R2.4 PK0 package-content contract tests: prove normal content-profile verdict and boundary/adversarial rejection for broad manifests, forbidden staged files, missing runtime files, release promotion, dependency/lockfile drift and program contract mismatch.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "test/unit/r24-pk0-package-content-physics.test.js",
-      "sha256": "f475056bd0dc8941d855394179666af3bc4f6527d9049230dc9e99281e1d735f",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-PK0-PACKAGE-CONTENT-TRUST-001",
-      "approvedAtUtc": "2026-08-22T16:25:34.000Z",
-      "rationale": "Approve R2.4 PK0 physical repository package-content proof: evaluates the live package manifest and git-index file set while asserting no build, signing, notarization, release publication, runtime network or product runtime mutation is performed.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "test/unit/r24-pk0-package-content-mutants.test.js",
-      "sha256": "18ebecbce60f9832f72a9ca5687e296ad9d554ae86fc1a8ffcc95f01c6e404ae",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-PK0-PACKAGE-CONTENT-TRUST-001",
-      "approvedAtUtc": "2026-08-22T16:25:34.000Z",
-      "rationale": "Approve R2.4 PK0 mutation suite: inverts release-ready, signing/notarization, dependency mutation, runtime subset, build manifest, broad glob and forbidden staged-file guards in isolated verifier copies and requires every mutant to be killed.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
     },
     {
       "filePath": "scripts/ops/r24/atlas-claim-compiler-v1.mjs",
@@ -11216,29 +10883,11 @@
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
     },
     {
-      "filePath": "test/unit/r24-v0-writer-claim-compiler.test.js",
-      "sha256": "2f0a2b5b7355feb1692ee6a383360cb5e2ed5e7dbc174504f775f71b9afd9577",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-V0-WRITER-CLAIM-COMPILER-001",
-      "approvedAtUtc": "2026-08-22T12:39:32.000Z",
-      "rationale": "Approve R2.4 V0 compiler contract tests: prove normal Writer-profile verdict compilation and boundary/adversarial rejection for missing F0 workflow prefix, stale head, dirty state, stale evidence, optional profiles, overclaim, global PASS and zero evidence denominator.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
       "filePath": "test/unit/r24-v0-writer-claim-mutants.test.js",
       "sha256": "89482b88ede1ff1a1651bb430d970e424b68d8d4fafd3e9921b390e3767ac1d1",
       "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-V0-WRITER-CLAIM-COMPILER-001",
       "approvedAtUtc": "2026-08-22T12:39:32.000Z",
       "rationale": "Approve R2.4 V0 mutation suite: inverts optional-profile, exact-head, global-pass, V0 workflow-step and missing-stage-evidence guards in isolated compiler copies and requires every mutant to be killed.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
-      "sha256": "ddbe949d8f52e9a013de91d77157cdcf750242933a171132ed48182ba5e23cfe",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-PK1-RELEASE-SECURITY-PHYSICAL-001",
-      "approvedAtUtc": "2026-08-22T17:39:36.000Z",
-      "rationale": "Approve R2.4 PK1 release-security physical verifier: validates package-security DAG/scientific contract binding, C01-C04 ASAR/status/performance/SAST/runtime-network evidence, explicit target matrix and stale receipt blockers while refusing release-ready, signing, notarization, fuse, inactive-platform, product-runtime, dependency, publication and Program PASS promotion.",
       "approved": true,
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
     },
@@ -11297,24 +10946,6 @@
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
     },
     {
-      "filePath": "package.json",
-      "sha256": "0921e969bb9c7ea33b79bb709678c75f3d153b6430fbe3e04d8560da324b9b95",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-WP200-DURABLE-SAVE-001",
-      "approvedAtUtc": "2026-08-24T12:20:03.000Z",
-      "rationale": "Approve R2.4 WP-200 package.json change: adds test:r24-wp200 binding the durable receipt ACK gate into the required CI lane; no dependency change.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
-      "filePath": ".github/workflows/rtk-required.yml",
-      "sha256": "feadf17c22e986ec29ea783d5478edba3caec4fb6a84feb3c83a598b29ad9055",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-WP200-DURABLE-SAVE-001",
-      "approvedAtUtc": "2026-08-24T12:20:03.000Z",
-      "rationale": "Approve R2.4 WP-200 rtk-required.yml change: adds one step running npm run -s test:r24-wp200 after V0; no trigger, permission or environment change.",
-      "approved": true,
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80"
-    },
-    {
       "filePath": "test/unit/r24-w0-word-physical-recertification.test.js",
       "sha256": "b61c21e58ca083ea7e7f5926ac9e3f81c01144bfc6dc594301fffb80dfb6fb4d",
       "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
@@ -11360,15 +10991,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_TERMINAL_CLAIM_REGISTRY_V1.json",
-      "sha256": "32013784448645452249e63de81bebb7552d0c00d75dc0ea809adbd393e09deb",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-WP200-DURABLE-SAVE-001",
-      "approvedAtUtc": "2026-08-24T12:20:03.000Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve terminal claim registry wording-surface rebind for R2.4 WP-200: package.json digest updated to the exact bytes gained by test:r24-wp200; no wording or claim change.",
-      "approved": true
-    },
-    {
       "filePath": "docs/OPS/RTK/YALKEN_R24_W0_WORD_PHYSICAL_RECERTIFICATION_RECEIPT_V1.json",
       "sha256": "ebf5b193e3e87e68fe4e68ede95318eba8fb8486de301cb560df9efc44a015cf",
       "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
@@ -11405,75 +11027,12 @@
       "approved": true
     },
     {
-      "filePath": "scripts/ops/rtk-word-c5v2-physical-canary.mjs",
-      "sha256": "bdd7c2644682fa4f94c6d23f722bc4914628649a6ce60b008646d54915abeb99",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:54:47.875Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve physical canary Hammerspoon accessibility preflight runner and advisory-only legacy zsh UI-elements probe classification for disposable Word artifacts.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/rtk-evidence-stale-green-guard.contract.test.js",
-      "sha256": "8318a5904a3b6ca2a378858a010c05bd2b478b4645b1436ffcd70097ae046502",
-      "approvedBy": "owner-directive:RESUME_AFTER_REBOOT_R24_A0_ATLAS_INCREMENTAL_EQUIVALENCE",
-      "approvedAtUtc": "2026-08-23T12:12:18Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 A0 stale-green guard repair: b3c10 is darwin-green/linux-red and b3c09 accepts the exact darwin green outcome while keeping bounded finite failure shapes; no PROGRAM DONE, product runtime, Word/Drive, SAFE_APPLY, dependency, package, or release authority.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
-      "sha256": "93cec00d575e333d76d9a234355734c430c390b8ee6205d7d953433b5341df4c",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:59:04.923Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve W0 exact changed-file allowlist extension for physical recertification artifacts, stale-green guard rebind, lease-worker execArgv repair, and P0-01 canonical temp-root harness repair.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/rtk-interop-c1-word-fullbook-route.contract.test.js",
-      "sha256": "6591838af123a531129948231e48811af967d073e28cb4b45aa65f3c3163d868",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:54:47.875Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve C1 contract assertions for W0 caller-identity probe-routing reclassification and Hammerspoon route evidence.",
-      "approved": true
-    },
-    {
       "filePath": "test/contracts/rtk-interop-chain-matrix.contract.test.js",
       "sha256": "4623436ea473a1811616d7ef6f2e8cf790a8e8a63f7efc09b3c2ba9f1e467a2b",
       "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
       "approvedAtUtc": "2026-08-22T20:54:47.875Z",
       "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
       "rationale": "Approve chain matrix contract assertions that bind W0 evidence while keeping route verdict blocked.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js",
-      "sha256": "a27975448214c029a158b25af71e7250a63d0e04a5987fc53c28691a397b1815",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:59:04.923Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve W0 exact changed-file allowlist extension in W1 frozen-scope guard for physical recertification artifacts, stale-green guard rebind, lease-worker execArgv repair, and P0-01 canonical temp-root harness repair.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js",
-      "sha256": "4b1adcef80bce0f398b53ae749ab3f18c01e7cb7caa73081725e601756503bbf",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:59:04.923Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve W0 exact changed-file allowlist extension in W2 frozen-scope guard for physical recertification artifacts, stale-green guard rebind, lease-worker execArgv repair, and P0-01 canonical temp-root harness repair.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-      "sha256": "322d5690b67610d040a09673fb73b9bcd5cd255cf5c5d7a0a5432fe593366ab4",
-      "approvedBy": "owner-standing-grant:TASK_ID:YALKEN-R24-W0-WORD-PHYSICAL-RECERTIFICATION-001",
-      "approvedAtUtc": "2026-08-22T20:59:04.923Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve W0 exact changed-file allowlist extension in ZIP01 frozen-scope guard for workflow, physical recertification artifacts, stale-green guard rebind, lease-worker execArgv repair, and P0-01 canonical temp-root harness repair.",
       "approved": true
     },
     {
@@ -11800,87 +11359,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-A0-ATLAS-INCREMENTAL-EQUIVALENCE-CLAIM-BINDINGS.json",
-      "sha256": "5e98e805e0e5b171cb879c39f0365c0436681e4ca64a4fad09f72560829ce581",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-ENT0-ENTITLEMENT-CONFORMANCE-CLAIM-BINDINGS.json",
-      "sha256": "cb08df341111607a6fc03f139ae7d0a710d8b53fd1f5f54ab38b391057977b31",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-K1-AUTHORITY-DECOMPOSITION-CLAIM-BINDINGS.json",
-      "sha256": "fdd893469c1c2a295c18eaea0d7a14167c9e6f78ffcb934e9316cca09941f9d9",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PK0-PACKAGE-CONTENT-TRUST-CLAIM-BINDINGS.json",
-      "sha256": "d42a9803b35b373b286beaeb32940032f70aee02de25339afc4f2caf9acdb79c",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-SEC0-PATH-CAPABILITY-CLAIM-BINDINGS.json",
-      "sha256": "5cd67591d9c92b2dd33b7cdc448e4a3a9053c0d90a317b2f739821df08fd7492",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-T1-ANCHOR-LINEAGE-CLAIM-BINDINGS.json",
-      "sha256": "44e41b097150a281dbfce03a25ca93c4339a9f9242de3712646d7b55713de5ea",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-100-GENERATION-ADMISSION-CLAIM-BINDINGS.json",
-      "sha256": "c561ada2e6f434dd8bb645e9bc50e50df280b4d298071017aed32a0200e49131",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-101-IPC-ADMISSION-CLAIM-BINDINGS.json",
-      "sha256": "6b858a5ba4394f99967daaa450895678cec26579dab0eb79b3041c70b587bcbc",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-102-OPERATION-PROTOCOL-CLAIM-BINDINGS.json",
-      "sha256": "b6762e8e86f9d1f961a9b51621e546b58563f45530a9be23e58c66500b55c0c3",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
-      "approved": true
-    },
-    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-WP-102-OPERATION-PROTOCOL-CONTRACT.json",
       "sha256": "3896ddde3ad779babc8b612e3274beae83f77744b81d15d78e9cf05d7c43092b",
       "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
@@ -11944,39 +11422,102 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/PLAN_STATE_R24.json",
-      "sha256": "d116f0f4a306ae0f587b383cefb0f6c2d6c7c7711a31af5f6f69c47673eb207d",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "1993fb876a38b5f7867d7847496acf48134853ad1386baf96420b4e0f6ef8b6c",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/PLAN_STATE_SOURCE_RECEIPT_R24.json",
-      "sha256": "08f6103b3790c4b656090d2cbafdcf0b5dfacc5854e3ec7160a1b30f737d34a9",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "c267456cbd37603d7515ae168938a7b191a7046d207a7a6210a9b320f7165135",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/SELECTION_RECEIPT_R2_4.json",
-      "sha256": "1398801c311bb86c011bd280fb7ede35cc6386f0f629450642aca38bea9963c7",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "c6f620068a37dad2208410fc2a74639354fc6e10e3216c8638769b05db23b126",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
       "approved": true
     },
     {
-      "filePath": "scripts/ops/r24/tests/executable-program.test.mjs",
-      "sha256": "35a435489377aab9f2f8e21c4dbd83f11d29de04188b0d28324ce9bc5016c722",
-      "approvedBy": "owner-directive:GPT_5_6_SOL_ULTRA_MAX_RESOURCE_CONTINUATION",
-      "approvedAtUtc": "2026-08-23T17:07:35Z",
-      "authority": "OWNER_AUTHORITY_GRANT_YALKEN_R24_MISSION_DIGEST_2D188140211C4E2A65F0F1BF1BEF5BAC53E396E3C3887CB3563FA253A10B0C80",
-      "rationale": "Approve R2.4 WP-102 closure receipt delivery: records node-only typed command/query/event/effect/background-job/projection and result/error contract evidence, refreshes mutable claim bindings, and selects WP-103 without PROGRAM DONE, runtime mutation, release readiness, Word/Drive, SAFE_APPLY, dependency, lockfile, cloud, AI, or parked V2 authority.",
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "eb730fb095b8747d6b41553e87790b290ee445e9a8abd45e784d658c8c68e768",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "89b96200779dc65e0b504a441a1cb734ea31a5fb135ea18a46e0e16894878826",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/governance-change-detection.mjs",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "7998a7f098ad29b3c905909f63bc91335c8c4e4dd968cde4ec1fc76bb25bd3cd",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/governance-change-detection.contract.test.js",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "6dcbbff4b4f01d587548ddc0dbe0071933c17aef9068d08681d79500f24e2f41",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "e825407694af79403ee82377c656ee60f29426a2138320cce208a966985c7a28",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "dcfbc825157fc0d78c55b3d17d135d85d71ee0d712f58977f043c6dd9671a4fc",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "11ac5dd1b568738b79958d0b29b451d8b5a5db50f602300da7e71cc1262fc580",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
+      "sha256": "84ee1861b2e5e733354ba798e4f52459ee5ca5234edef6f14c4933d2219790bc",
+      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
       "approved": true
     }
   ]
