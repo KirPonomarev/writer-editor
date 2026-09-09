@@ -386,14 +386,6 @@
       "sha256": "d31cec001293953249c43643e29292b88ba784aa426475fba5dc37513b3a70c2"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2c37d3cb43026a718bf37cc3a3382d20fa7cd802c2b2f8fa764fd025c7297acc",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
       "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
@@ -434,30 +426,6 @@
       "approved": true
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "7c521039c61443878a0fccd70fbb72eaf5f1cdb2ea1c145f8c7dec370fbae161",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "0a0fd45e9f51b712566948eb011669e010492d37460d63c47689956b714dc51d",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "11ac5dd1b568738b79958d0b29b451d8b5a5db50f602300da7e71cc1262fc580",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
       "filePath": "test/contracts/governance-change-detection.contract.test.js",
       "sha256": "1c04984f3790ecd744653a2f0a55aed7ccb765de0d81a507803075d603aa8782",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
@@ -466,11 +434,51 @@
       "approved": true
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "eee0a75fecd72c4a4b6104d7d76ea9c5c788ca23022105b01cba3d16520d05ad",
+      "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json",
+      "sha256": "11b65e3c7bab1cb4108219c8b5f10893605283521d320b33a5641a0c846a5ce6",
+      "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "0afd51abf8af8f2725c52e76ca5784595612d7652191c2f593c7a5454aadc086",
+      "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "f63ba9a57d0eb00306aa97c7edc0ee5520e8a26365a6ddf39cc41424b99add5d",
+      "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "bdfd6fa4c670058398ac0e8c020a4686feaffa75e340ee1f47e587661fcdca33",
+      "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approved": true
+    },
+    {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "11dcfccd2f98cda1a5ab2f70a4d54e5182e6f39a3ac6842a5cd8e6fff86eaad4",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "sha256": "18ca713a41bddc08c5b21668c8946845dc9b9f06db4941cd77a041cd30c39b1a",
+      "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     }
   ],
@@ -480,6 +488,7 @@
     "ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION",
     "ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS",
     "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS",
+    "ES-R24-RCV00B-SUCCESSOR-ADMISSIONS",
     "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS"
   ],
   "sourcePlanRoles": {
