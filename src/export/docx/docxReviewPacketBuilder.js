@@ -1,6 +1,11 @@
 'use strict';
 
-const { buildStoredZip, escapeXml } = require('./docxMinBuilder');
+const { buildStoredZip } = require('./docxMinBuilder');
+const {
+  buildDocxRunContentXml,
+  escapeXml,
+  normalizeDocxTextForSerialization,
+} = require('./docxTextXml.js');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -89,10 +94,7 @@ function normalizeString(value) {
 }
 
 function normalizeDocxXmlText(value) {
-  return normalizeString(value)
-    .replace(/\r\n/g, '\n')
-    .replace(/\r/g, '\n')
-    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+  return normalizeDocxTextForSerialization(normalizeString(value));
 }
 
 function normalizeReviewPacketBlocks(input = {}) {
@@ -177,17 +179,14 @@ function buildRunPropertiesXml(inline = {}, preservedMarks = []) {
 }
 
 function buildRunContentXml(text) {
-  const pieces = normalizeDocxXmlText(text).split('\n');
-  return pieces.map((piece, index) => {
-    const content = piece ? `<w:t xml:space="preserve">${escapeXml(piece)}</w:t>` : '';
-    return index < pieces.length - 1 ? `${content}<w:br/>` : content;
-  }).join('');
+  return buildDocxRunContentXml(normalizeDocxXmlText(text), { allowFormFeedPageBreak: true });
 }
 
 function buildFormatIrRunsXml(block, hyperlinkByHref) {
   const runs = Array.isArray(block.formatIr?.runs) ? block.formatIr.runs : [];
   if (runs.length === 0) {
-    return block.text ? `<w:r><w:t xml:space="preserve">${escapeXml(block.text)}</w:t></w:r>` : '';
+    const content = buildRunContentXml(block.text);
+    return content ? `<w:r>${content}</w:r>` : '';
   }
   const text = runs.map((run) => normalizeString(run?.text)).join('');
   if (text !== block.text) throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_TEXT_MISMATCH');

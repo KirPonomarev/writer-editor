@@ -10,6 +10,14 @@ const ZIP_CRC32_TABLE = (() => {
   return table;
 })();
 
+const {
+  buildDocxRunContentXml,
+  escapeXml,
+  normalizeDocxTextForSerialization,
+} = require('./docxTextXml.js');
+
+const ZIP_UTF8_NAME_FLAG = 0x0800;
+
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
 }
@@ -38,15 +46,6 @@ function normalizeEditorSnapshotPayload(payload) {
   };
 }
 
-function escapeXml(value) {
-  return String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
-}
-
 function crc32(buffer) {
   let crc = 0xffffffff;
   for (let i = 0; i < buffer.length; i += 1) {
@@ -68,7 +67,7 @@ function buildStoredZip(entries) {
     const localHeader = Buffer.alloc(30);
     localHeader.writeUInt32LE(0x04034b50, 0);
     localHeader.writeUInt16LE(20, 4);
-    localHeader.writeUInt16LE(0, 6);
+    localHeader.writeUInt16LE(ZIP_UTF8_NAME_FLAG, 6);
     localHeader.writeUInt16LE(0, 8);
     localHeader.writeUInt16LE(0, 10);
     localHeader.writeUInt16LE(0, 12);
@@ -83,7 +82,7 @@ function buildStoredZip(entries) {
     centralHeader.writeUInt32LE(0x02014b50, 0);
     centralHeader.writeUInt16LE(20, 4);
     centralHeader.writeUInt16LE(20, 6);
-    centralHeader.writeUInt16LE(0, 8);
+    centralHeader.writeUInt16LE(ZIP_UTF8_NAME_FLAG, 8);
     centralHeader.writeUInt16LE(0, 10);
     centralHeader.writeUInt16LE(0, 12);
     centralHeader.writeUInt16LE(0, 14);
@@ -186,7 +185,7 @@ function assertDocxBuilderDependencies(dependencies) {
 function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
-  const plainText = String(snapshot.plainText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
   const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
@@ -211,7 +210,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (!text) {
         return `<w:p>${styleXml}</w:p>`;
       }
-      return `<w:p>${styleXml}<w:r><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+      const textXml = buildDocxRunContentXml(text, { allowFormFeedPageBreak: true });
+      return `<w:p>${styleXml}<w:r>${textXml}</w:r></w:p>`;
     }).join('')
     : '<w:p/>';
 
