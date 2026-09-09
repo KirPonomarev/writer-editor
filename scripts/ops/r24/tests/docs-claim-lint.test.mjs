@@ -14,6 +14,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V28,
   HISTORICAL_INVENTORY_CLAIM_PINS_V29,
   HISTORICAL_INVENTORY_CLAIM_PINS_V30,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V31,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -374,6 +375,31 @@ test('RCV00B effective-state compiler inventory binding is retained only at exac
   assert.equal(pin.evaluationSha, '0e3864e6b40b635d3b13cc038d7c23d47276150f');
   assert.equal(pin.evaluationTree, '2834fe691d6ccbc8ce9721cf7eb2b2e925b548f1');
   assert.equal(pin.targetSha256, 'bf962ad122a1cf071fac226ff9d671b5a3aaa7a3d7195bef9e17918dd40320cf');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
+test('RCV00C corrective-register inventory binding is retained only at exact delivery bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V31.find(
+    (item) => item.stampId === 'ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationSha, 'd2366bcc6dfce13a92f2136dae1a80b364c8a0ef');
+  assert.equal(pin.evaluationTree, 'b09080d7161a4489ba3388d9480a88166e2adc0f');
+  assert.equal(pin.targetSha256, 'a11728d9c31e3d3019db8874443f1e2c2c9591e6545f79e5dfbd8f916ebf9fb3');
   const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
   const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
     cwd: REPO_ROOT,

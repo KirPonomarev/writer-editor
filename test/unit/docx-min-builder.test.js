@@ -59,6 +59,28 @@ async function loadDocxPageSetupBindModule() {
   return import(pathToFileURL(path.join(process.cwd(), 'src', 'docxPageSetupBind.mjs')).href);
 }
 
+async function createRealBuilderDependencies() {
+  const [docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await Promise.all([
+    loadDocxPageSetupBindModule(),
+    import(pathToFileURL(path.join(process.cwd(), 'src', 'derived', 'semanticMapping.mjs')).href),
+    import(pathToFileURL(path.join(process.cwd(), 'src', 'derived', 'styleMap.mjs')).href),
+  ]);
+  return {
+    docxPageSetupBindModule,
+    semanticMappingModule,
+    styleMapModule,
+  };
+}
+
+function textRunValues(documentXml) {
+  return Array.from(String(documentXml).matchAll(/<w:t\b[^>]*>([\s\S]*?)<\/w:t>/gu))
+    .map((match) => match[1]);
+}
+
+function countOccurrences(text, pattern) {
+  return (String(text).match(pattern) || []).length;
+}
+
 test('docx min builder: horizontal sheet text produces in-memory docx buffer', () => {
   const horizontalText = 'Центральная лента листов: горизонтальный лист готовит plain text для минимального DOCX.';
   const buffer = buildDocxMinBuffer({ plainText: horizontalText }, createBuilderDependencies());
@@ -107,4 +129,75 @@ test('docx min builder: bookProfile landscape option reaches DOCX page XML', asy
   const landscapePgSz = landscapeXml.match(/<w:pgSz w:w="(\d+)" w:h="(\d+)" w:orient="landscape"\/>/u);
   assert.ok(landscapePgSz);
   assert.ok(Number(landscapePgSz[1]) > Number(landscapePgSz[2]));
+});
+
+test('docx min builder: consecutive plain text lines use Word line breaks instead of literal LF in text runs', async () => {
+  const dependencies = await createRealBuilderDependencies();
+  const buffer = buildDocxMinBuffer({
+    content: 'Alpha line\nBeta line',
+    plainText: 'Alpha line\nBeta line',
+    bookProfile: { formatId: 'A4' },
+  }, dependencies);
+  const documentXml = readStoredZipEntry(buffer, 'word/document.xml');
+  const runs = textRunValues(documentXml);
+
+  assert.equal(countOccurrences(documentXml, /<w:br\/>/gu), 1);
+  assert.deepEqual(runs, ['Alpha line', 'Beta line']);
+  assert.equal(runs.some((value) => value.includes('\n')), false);
+});
+
+test('docx min builder: Tiptap hardBreak uses Word line break markup', async () => {
+  const dependencies = await createRealBuilderDependencies();
+  const buffer = buildDocxMinBuffer({
+    content: 'Doc alpha\nDoc beta',
+    plainText: 'Doc alpha\nDoc beta',
+    bookProfile: { formatId: 'A4' },
+    doc: {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [
+            { type: 'text', text: 'Doc alpha' },
+            { type: 'hardBreak' },
+            { type: 'text', text: 'Doc beta' },
+          ],
+        },
+      ],
+    },
+  }, dependencies);
+  const documentXml = readStoredZipEntry(buffer, 'word/document.xml');
+  const runs = textRunValues(documentXml);
+
+  assert.equal(countOccurrences(documentXml, /<w:br\/>/gu), 1);
+  assert.deepEqual(runs, ['Doc alpha', 'Doc beta']);
+  assert.equal(runs.some((value) => value.includes('\n')), false);
+});
+
+test('docx min builder: separate doc paragraphs stay separate paragraphs without synthetic line breaks', async () => {
+  const dependencies = await createRealBuilderDependencies();
+  const buffer = buildDocxMinBuffer({
+    content: 'Paragraph alpha\nParagraph beta',
+    plainText: 'Paragraph alpha\nParagraph beta',
+    bookProfile: { formatId: 'A4' },
+    doc: {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Paragraph alpha' }],
+        },
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Paragraph beta' }],
+        },
+      ],
+    },
+  }, dependencies);
+  const documentXml = readStoredZipEntry(buffer, 'word/document.xml');
+  const runs = textRunValues(documentXml);
+
+  assert.equal(countOccurrences(documentXml, /<w:br\/>/gu), 0);
+  assert.deepEqual(runs, ['Paragraph alpha', 'Paragraph beta']);
+  assert.equal(countOccurrences(documentXml, /<w:p(?:>| )/gu), 2);
 });
