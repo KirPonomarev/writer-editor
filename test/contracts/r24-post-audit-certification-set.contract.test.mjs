@@ -666,18 +666,21 @@ test('RCV00B effective-state compiler exception rejects a wrong immutable delive
   const fixture=rcv00bGitFixture({deliveryTree:'0'.repeat(40)});
   assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_DELIVERY_TREE_DRIFT/);
 });
-function rcv00bSuccessorGitFixture({changedPaths,registryBytes,baseTree,candidateSha='a'.repeat(40),candidateTree='b'.repeat(40),missingRegistry=false}={}){
+function rcv00bSuccessorGitFixture({changedPaths,registryBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='a'.repeat(40),candidateTree='b'.repeat(40),missingRegistry=false}={}){
   const e=R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION;
+  const currentBytes=(repoPath)=>artifactBytesByPath.get(repoPath)??fs.readFileSync(repoPath);
   const bytesByPath=new Map([
-    [e.registryPath,registryBytes??fs.readFileSync(e.registryPath)],
-    [e.approvalsPath,fs.readFileSync(e.approvalsPath)],
-    ['docs/ARCH_DIFF_LOG.md',fs.readFileSync('docs/ARCH_DIFF_LOG.md')],
-    ['docs/HANDOFF.md',fs.readFileSync('docs/HANDOFF.md')],
-    ['docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',fs.readFileSync('docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json')],
-    ['scripts/ops/r24/corrective/post-audit-certification-set.mjs',fs.readFileSync('scripts/ops/r24/corrective/post-audit-certification-set.mjs')],
-    ['scripts/ops/r24/docs-claim-lint.mjs',fs.readFileSync('scripts/ops/r24/docs-claim-lint.mjs')],
-    ['scripts/ops/r24/tests/docs-claim-lint.test.mjs',fs.readFileSync('scripts/ops/r24/tests/docs-claim-lint.test.mjs')],
-    ['test/contracts/r24-post-audit-certification-set.contract.test.mjs',fs.readFileSync('test/contracts/r24-post-audit-certification-set.contract.test.mjs')],
+    [e.registryPath,registryBytes??currentBytes(e.registryPath)],
+    [e.approvalsPath,currentBytes(e.approvalsPath)],
+    ['docs/ARCH_DIFF_LOG.md',currentBytes('docs/ARCH_DIFF_LOG.md')],
+    ['docs/HANDOFF.md',currentBytes('docs/HANDOFF.md')],
+    ['docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',currentBytes('docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json')],
+    ['scripts/ops/r24/corrective/post-audit-certification-set.mjs',currentBytes('scripts/ops/r24/corrective/post-audit-certification-set.mjs')],
+    ['scripts/ops/r24/docs-claim-lint.mjs',currentBytes('scripts/ops/r24/docs-claim-lint.mjs')],
+    ['scripts/ops/r24/tests/docs-claim-lint.test.mjs',currentBytes('scripts/ops/r24/tests/docs-claim-lint.test.mjs')],
+    ['src/io/revisionBridge/reviewTransportPackageParserV2.mjs',currentBytes('src/io/revisionBridge/reviewTransportPackageParserV2.mjs')],
+    ['test/contracts/r24-post-audit-certification-set.contract.test.mjs',currentBytes('test/contracts/r24-post-audit-certification-set.contract.test.mjs')],
+    ['test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',currentBytes('test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js')],
   ]);
   const registry=missingRegistry?null:JSON.parse((registryBytes??bytesByPath.get(e.registryPath)).toString('utf8'));
   const admittedPaths=registry?registry.entries.flatMap((entry)=>entry.admittedPaths):[];
@@ -698,15 +701,18 @@ function rcv00bSuccessorGitFixture({changedPaths,registryBytes,baseTree,candidat
     return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
   }};
 }
-test('RCV00B successor admission registry accepts the PR1862 repair delta',()=>{
+test('RCV00B successor admission registry accepts the PR1862 repair delta and PR1861 ReviewIR boundary delta',()=>{
   const result=verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException(rcv00bSuccessorGitFixture());
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION.baseSha);
-  assert.equal(result.entryDenominator,1);
+  assert.equal(result.entryDenominator,2);
   assert.equal(result.predecessorAdmittedPathDenominator,19);
+  assert.equal(result.admittedPathDenominator,11);
   assert(result.admittedPaths.includes('docs/ARCH_DIFF_LOG.md'));
   assert(result.admittedPaths.includes('scripts/ops/r24/corrective/post-audit-certification-set.mjs'));
   assert(result.admittedPaths.includes('scripts/ops/r24/docs-claim-lint.mjs'));
+  assert(result.admittedPaths.includes('src/io/revisionBridge/reviewTransportPackageParserV2.mjs'));
+  assert(result.admittedPaths.includes('test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js'));
 });
 test('RCV00B successor admission registry rejects missing successor evidence',()=>{
   const fixture=rcv00bSuccessorGitFixture({missingRegistry:true});
@@ -725,6 +731,12 @@ test('RCV00B successor admission registry rejects a same-count forged successor 
   const changed=registry.entries[0].admittedPaths.map((repoPath)=>repoPath==='docs/HANDOFF.md'?'package.json':repoPath).sort();
   const fixture=rcv00bSuccessorGitFixture({changedPaths:changed});
   assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_UNADMITTED_PATH/);
+});
+test('RCV00B successor admission registry rejects PR1861 parser source without boundary-index evidence',()=>{
+  const parserPath='src/io/revisionBridge/reviewTransportPackageParserV2.mjs';
+  const source=fs.readFileSync(parserPath,'utf8').replaceAll('createRevisionReplacementGroupBoundaryIndex','createRevisionReplacementGroupIndex');
+  const fixture=rcv00bSuccessorGitFixture({artifactBytesByPath:new Map([[parserPath,Buffer.from(source)]])});
+  assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_TOKEN/);
 });
 test('R24 interop 100 Google DOCX import route exception accepts exact denominator delivery delta',()=>{
   const fixture=interop100GitFixture(),result=verifyR24Interop100GoogleDocxImportRoutePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});

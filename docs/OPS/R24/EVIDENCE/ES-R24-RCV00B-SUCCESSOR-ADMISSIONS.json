@@ -54,6 +54,61 @@
           "RCV00B successor admission registry rejects a same-count forged successor path"
         ]
       }
+    },
+    {
+      "admittedPaths": [
+        "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+        "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+        "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json",
+        "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+        "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+        "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+        "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js"
+      ],
+      "authority": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
+      "baseSha": "0e3864e6b40b635d3b13cc038d7c23d47276150f",
+      "baseTree": "2834fe691d6ccbc8ce9721cf7eb2b2e925b548f1",
+      "entryId": "R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_20260909",
+      "nonClaims": [
+        "NO_PRE00E_REDILIVERY",
+        "NO_PRE00F_REDILIVERY",
+        "NO_PR1845_REOPEN",
+        "NO_PRODUCT_WRITE_OR_APPLY_CAPABILITY",
+        "NO_RCV00B_PREDECESSOR_ALLOWLIST_WIDENING",
+        "NO_RUNTIME_NETWORK_OR_DEPENDENCY_CHANGE"
+      ],
+      "requiredTokensByPath": {
+        "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json": [
+          "rtk-word-latest-semantic-b02-package-parser.contract.test.js"
+        ],
+        "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json": [
+          "R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09"
+        ],
+        "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json": [
+          "R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_20260909",
+          "src/io/revisionBridge/reviewTransportPackageParserV2.mjs"
+        ],
+        "scripts/ops/r24/corrective/post-audit-certification-set.mjs": [
+          "approvedAuthorities",
+          "R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
+          "admittedPathAuthorities"
+        ],
+        "src/io/revisionBridge/reviewTransportPackageParserV2.mjs": [
+          "createRevisionReplacementGroupBoundaryIndex",
+          "REVISION_GROUP_VISIBLE_NON_TEXT_BOUNDARY_TOKENS",
+          "replacementBoundaryIndex.hasBoundaryBetween(left, right)",
+          "'sym'"
+        ],
+        "test/contracts/r24-post-audit-certification-set.contract.test.mjs": [
+          "RCV00B successor admission registry accepts the PR1862 repair delta and PR1861 ReviewIR boundary delta",
+          "RCV00B successor admission registry rejects PR1861 parser source without boundary-index evidence"
+        ],
+        "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js": [
+          "B02 parser does not form replacement groups across visible run boundaries",
+          "B02 parser replacement grouping uses a boundary index and stays count-stable on dense revisions",
+          "symbol-wingdings"
+        ]
+      }
     }
   ],
   "predecessor": {
