@@ -80,8 +80,16 @@ test('PRE00E focused negative probes reject missing jobs false-green role leaks 
   ]);
 });
 
-test('PRE00E repo check verifies the recovered main tree and ancestor binding', () => {
+test('PRE00E repo check accepts merged-main descendant while preserving recovered base binding', () => {
   const status = buildPre00eRecoveryCiStatus();
-  const result = verifyPre00eRecoveryCiStatus(status, { repoRoot: process.cwd(), requireOriginMainAtRecovered: true });
+  const result = verifyPre00eRecoveryCiStatus(status, { repoRoot: process.cwd() });
   assert.equal(result.status, 'PASS');
+});
+
+test('PRE00E strict recovered-origin guard rejects postmerge advanced origin main', () => {
+  const status = buildPre00eRecoveryCiStatus();
+  assert.throws(
+    () => verifyPre00eRecoveryCiStatus(status, { repoRoot: process.cwd(), requireOriginMainAtRecovered: true }),
+    (error) => error.code === 'E_PRE00E_ORIGIN_MAIN_CURRENT',
+  );
 });
