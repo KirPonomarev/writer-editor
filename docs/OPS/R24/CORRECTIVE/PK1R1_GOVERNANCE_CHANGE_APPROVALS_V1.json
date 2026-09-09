@@ -16,10 +16,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "ed258625171bf60c852e90aafb9da4e49beab4bb90fa7697e5762ab06beb30a2",
+      "sha256": "7436254caa1287c50725fdaf48492b7ae8ed0f5c68a9514c05c8aa718c471a45",
       "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
       "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact regenerated inventory bytes after the WP708 current-head carrier shim correction while preserving the R24-RCV-00A historical delivery SHA, tree, and admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
