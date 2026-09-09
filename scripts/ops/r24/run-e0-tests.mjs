@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { runTruthful } from './runner-truth.mjs';
 import { checkEnvFlagRegistry } from './env-flag-registry.mjs';
 import { lintDocsClaims } from './docs-claim-lint.mjs';
+import { evaluateExactRuntime } from './toolchain.mjs';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(MODULE_DIR, '..', '..', '..');
@@ -20,6 +21,25 @@ const listTestFiles = () => fs.readdirSync(path.join(MODULE_DIR, 'tests'))
 
 export function main() {
   const failures = [];
+  const exactToolchain = evaluateExactRuntime(REPO_ROOT, { checkRuntime: true });
+  process.stdout.write(`R24_EXACT_TOOLCHAIN=${JSON.stringify({
+    status: exactToolchain.status,
+    required: exactToolchain.required,
+    actual: exactToolchain.actual,
+    failures: exactToolchain.failures,
+  })}\n`);
+  if (!exactToolchain.ok) {
+    process.exitCode = 1;
+    return {
+      schemaVersion: 'yalken.r24-e0-lane-receipt.v1',
+      suite: 'NOT_RUN',
+      mutants: 'NOT_RUN',
+      envRegistry: 'NOT_RUN',
+      docsClaimLint: 'NOT_RUN',
+      failures: exactToolchain.failures,
+      verdict: 'FAIL',
+    };
+  }
   const files = listTestFiles();
   if (files.length === 0) {
     process.stderr.write('E_ZERO_DENOMINATOR: no E0 test files found\n');

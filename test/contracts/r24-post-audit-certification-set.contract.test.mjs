@@ -36,6 +36,7 @@ import {
   PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,
   PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,
   PRE00F_PLAN_DELIVERY_EXPECTATION,
+  R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
@@ -65,6 +66,7 @@ import {
   verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException,
   verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException,
   verifyPre00fPlanDeliveryPostEvaluationException,
+  verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
@@ -360,25 +362,31 @@ test('PRE00E recovery CI external confirmation rejects an unadmitted future path
 });
 function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,evidenceBytes,approvalsBytes,baseTree}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);
+  const deliveryBytes=(repoPath)=>execFileSync('git',['show',`${e.deliverySha}:${repoPath}`]);
   const bytesByPath=new Map([
-    [e.planPath,planBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.planPath)],
-    [e.inventoryPath,inventoryBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.inventoryPath)],
-    [e.postAuditTestPath,testBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.postAuditTestPath)],
-    [e.postAuditVerifierPath,verifierBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.postAuditVerifierPath)],
-    [e.claimLintPath,claimLintBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.claimLintPath)],
-    [e.evidencePath,evidenceBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.evidencePath)],
-    [e.approvalsPath,approvalsBytes??objectFromCommit(R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,e.approvalsPath)],
+    [e.planPath,planBytes??deliveryBytes(e.planPath)],
+    [e.inventoryPath,inventoryBytes??deliveryBytes(e.inventoryPath)],
+    [e.postAuditTestPath,testBytes??deliveryBytes(e.postAuditTestPath)],
+    [e.postAuditVerifierPath,verifierBytes??deliveryBytes(e.postAuditVerifierPath)],
+    [e.claimLintPath,claimLintBytes??deliveryBytes(e.claimLintPath)],
+    [e.evidencePath,evidenceBytes??deliveryBytes(e.evidencePath)],
+    [e.approvalsPath,approvalsBytes??deliveryBytes(e.approvalsPath)],
+  ]);
+  const currentBytesByPath=new Map([
+    [e.postAuditTestPath,Buffer.from(`${deliveryBytes(e.postAuditTestPath).toString('utf8')}\n// current candidate drift must not rebind historical PRE00F delivery bytes\n`)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.deliverySha)value=e.deliverySha;
     else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.deliverySha}^{tree}`)value=e.deliveryTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
     else if(args[0]==='diff')value=`${(changedPaths??e.admittedPaths).join('\n')}\n`;
     else if(args[0]==='show'){
-      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      const bytes=bytesByPath.get(repoPath);
+      const spec=String(args[1]),separator=spec.indexOf(':'),objectish=spec.slice(0,separator),repoPath=spec.slice(separator+1);
+      const bytes=objectish===e.deliverySha?bytesByPath.get(repoPath):(currentBytesByPath.get(repoPath)??bytesByPath.get(repoPath));
       if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
       return execFileSync('git',args,options);
     }else return execFileSync('git',args,options);
@@ -389,6 +397,8 @@ test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta
   const fixture=pre00fGitFixture(),result=verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,PRE00F_PLAN_DELIVERY_EXPECTATION.deliverySha);
+  assert.equal(result.currentCandidateSha,fixture.candidateSha);
   assert.equal(result.admittedPathDenominator,7);
   assert.equal(result.changedPathDenominator,7);
   assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
@@ -414,44 +424,82 @@ test('PRE00F plan delivery rejects stale CI approval registry binding',()=>{
   const fixture=pre00fGitFixture({approvalsBytes});
   assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
 });
-function interop100GitFixture({changedPaths,denominatorBytes,ledgerBytes,catalogBytes,inventoryBytes,claimBindingBytes,approvalsBytes,claimLintBytes,claimLintTestBytes,governanceDetectorBytes,governanceDetectorTestBytes,validatorBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree}={}){
-  const e=R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,candidateSha='3'.repeat(40),candidateTree='4'.repeat(40);
-  const bytesByPath=new Map([
-    [e.denominatorPath,denominatorBytes??fs.readFileSync(e.denominatorPath)],
-    [e.ledgerPath,ledgerBytes??fs.readFileSync(e.ledgerPath)],
-    [e.catalogPath,catalogBytes??fs.readFileSync(e.catalogPath)],
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.claimBindingPath,claimBindingBytes??fs.readFileSync(e.claimBindingPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
-    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
-    [e.governanceDetectorPath,governanceDetectorBytes??fs.readFileSync(e.governanceDetectorPath)],
-    [e.governanceDetectorTestPath,governanceDetectorTestBytes??fs.readFileSync(e.governanceDetectorTestPath)],
-    [e.validatorPath,validatorBytes??fs.readFileSync(e.validatorPath)],
-    [e.contractTestPath,contractTestBytes??fs.readFileSync(e.contractTestPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-  ]);
-  return{candidateSha,git:(args,options={})=>{
+function rcv00aGitFixture({changedPaths}={}){
+  const e=R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,deliverySha=e.deliverySha,candidateSha='4'.repeat(40),deliveryTree=e.deliveryTree,candidateTree='6'.repeat(40);
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,objectFromCommit(deliverySha,repoPath)]));
+  return{candidateSha,deliverySha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
-    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
-    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='rev-parse'&&args[1]===deliverySha)value=deliverySha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===deliverySha+'^{tree}')value=deliveryTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
     else if(args[0]==='merge-base')value='';
-    else if(args[0]==='diff')value=`${(changedPaths??e.admittedPaths).join('\n')}\n`;
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
       const bytes=bytesByPath.get(repoPath);
       if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
       return execFileSync('git',args,options);
     }else return execFileSync('git',args,options);
-    return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
   }};
 }
+function interop100GitFixture({changedPaths,denominatorBytes,ledgerBytes,catalogBytes,inventoryBytes,claimBindingBytes,approvalsBytes,claimLintBytes,claimLintTestBytes,governanceDetectorBytes,governanceDetectorTestBytes,validatorBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree}={}){
+  const e=R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,deliverySha=e.deliverySha,candidateSha='3'.repeat(40),deliveryTree=e.deliveryTree,candidateTree='4'.repeat(40);
+  const bytesByPath=new Map([
+    [e.denominatorPath,denominatorBytes??objectFromCommit(deliverySha,e.denominatorPath)],
+    [e.ledgerPath,ledgerBytes??objectFromCommit(deliverySha,e.ledgerPath)],
+    [e.catalogPath,catalogBytes??objectFromCommit(deliverySha,e.catalogPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliverySha,e.inventoryPath)],
+    [e.claimBindingPath,claimBindingBytes??objectFromCommit(deliverySha,e.claimBindingPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(deliverySha,e.approvalsPath)],
+    [e.claimLintPath,claimLintBytes??objectFromCommit(deliverySha,e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??objectFromCommit(deliverySha,e.claimLintTestPath)],
+    [e.governanceDetectorPath,governanceDetectorBytes??objectFromCommit(deliverySha,e.governanceDetectorPath)],
+    [e.governanceDetectorTestPath,governanceDetectorTestBytes??objectFromCommit(deliverySha,e.governanceDetectorTestPath)],
+    [e.validatorPath,validatorBytes??objectFromCommit(deliverySha,e.validatorPath)],
+    [e.contractTestPath,contractTestBytes??objectFromCommit(deliverySha,e.contractTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliverySha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliverySha,e.postAuditTestPath)],
+  ]);
+  return{candidateSha,deliverySha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===deliverySha)value=deliverySha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===deliverySha+'^{tree}')value=deliveryTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('RCV00A exact-toolchain post-evaluation exception accepts the bounded delivery delta',()=>{
+  const fixture=rcv00aGitFixture(),result=verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.deliverySha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION.admittedPaths.length);
+  assert.equal(result.inventoryDenominator,1458);
+});
+test('RCV00A exact-toolchain post-evaluation exception rejects an unadmitted delivery path',()=>{
+  const e=R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,fixture=rcv00aGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
+  assert.throws(()=>verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00A_EXACT_ADMITTED_DELTA/);
+});
 test('R24 interop 100 Google DOCX import route exception accepts exact denominator delivery delta',()=>{
   const fixture=interop100GitFixture(),result=verifyR24Interop100GoogleDocxImportRoutePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,fixture.candidateSha);
   assert.equal(result.admittedPathDenominator,R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.admittedPaths.length);
   assert.equal(result.changedPathDenominator,R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.admittedPaths.length);
   assert.equal(result.requiredCellDenominator,1120);

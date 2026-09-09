@@ -6,7 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runTruthful } from './runner-truth.mjs';
-import { checkToolchain } from './toolchain.mjs';
+import { checkToolchain, evaluateExactRuntime } from './toolchain.mjs';
 import { checkTempPathRegistry, assertReadOnlyRun } from './test-readonly-guard.mjs';
 import { checkEnvFlagRegistry } from './env-flag-registry.mjs';
 import { lintDocsClaims } from './docs-claim-lint.mjs';
@@ -21,6 +21,28 @@ const listQ0TestFiles = () => fs.readdirSync(path.join(MODULE_DIR, 'tests', 'q0'
 
 export function main() {
   const failures = [];
+  const exactToolchain = evaluateExactRuntime(REPO_ROOT, { checkRuntime: true });
+  process.stdout.write(`R24_EXACT_TOOLCHAIN=${JSON.stringify({
+    status: exactToolchain.status,
+    required: exactToolchain.required,
+    actual: exactToolchain.actual,
+    failures: exactToolchain.failures,
+  })}\n`);
+  if (!exactToolchain.ok) {
+    process.exitCode = 1;
+    return {
+      schemaVersion: 'yalken.r24-q0-lane-receipt.v1',
+      suite: 'NOT_RUN',
+      toolchain: 'NOT_RUN',
+      tempPaths: 'NOT_RUN',
+      envRegistry: 'NOT_RUN',
+      docsClaimLint: 'NOT_RUN',
+      readonlyProof: 'NOT_RUN',
+      mutants: 'NOT_RUN',
+      failures: exactToolchain.failures,
+      verdict: 'FAIL',
+    };
+  }
   const files = listQ0TestFiles();
   if (files.length === 0) {
     process.stderr.write('E_ZERO_DENOMINATOR: no Q0 test files found\n');
