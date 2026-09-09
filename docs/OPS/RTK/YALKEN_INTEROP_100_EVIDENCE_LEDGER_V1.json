@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "yalken.interop100.evidenceLedger.v1",
+  "contractId": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
+  "createdAtUtc": "2026-09-09T00:00:00.000Z",
+  "bindingBaseSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+  "status": "OPEN_ROUTE_QUALIFIED_ZERO_EXACT_HEAD_PASS_CELLS",
+  "entries": [],
+  "routeQualificationEvidence": [
+    {
+      "id": "GOOGLE_LOCAL_DOCX_TO_NATIVE_IMPORT_ROUTEU2_20260909",
+      "status": "PASS_NON_CELL_ROUTE_QUALIFICATION",
+      "countedAsRequiredCellPass": false,
+      "route": "LOCAL_DOCX_TO_GOOGLE_NATIVE_TO_DOCX",
+      "exactHeadSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+      "seed": "routeu2",
+      "fixture": {
+        "synthetic": true,
+        "disposable": true,
+        "userDocumentOpened": false,
+        "existingDriveDocumentUsed": false,
+        "wordRunSubdirectoryName": "interop-route-qualification-routeu2-31d27ce0-20260909",
+        "wordRootPolicyObserved": true
+      },
+      "localArtifacts": {
+        "sourceDocxSha256": "03cc9ef76508afcee89c945b1b523bdd7760b3349b74744b9dffa51186b005f1",
+        "sanitizedDocxSha256": "03cc9ef76508afcee89c945b1b523bdd7760b3349b74744b9dffa51186b005f1",
+        "sourceUnderWordSandboxRoot": true,
+        "sanitizedUnderWordSandboxRoot": true
+      },
+      "directLocalPathImportNegative": {
+        "attempted": true,
+        "status": "BLOCKED",
+        "errorCode": "INVALID_ARGUMENT",
+        "reason": "INVALID_PARAMETERS",
+        "parameterPath": "source_file.mime_type",
+        "typedBlocker": "GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED",
+        "countsAsPass": false
+      },
+      "supportedRoute": {
+        "requiredSteps": [
+          "DIRECT_LOCAL_PATH_IMPORT_NEGATIVE",
+          "UPLOAD_LOCAL_DOCX_AS_RAW_DRIVE_FILE",
+          "FETCH_UPLOADED_DOCX_AS_INTERNAL_FILE_URI",
+          "IMPORT_INTERNAL_FILE_URI_AS_NATIVE_GOOGLE_DOC",
+          "VERIFY_NATIVE_READBACK",
+          "EXPORT_NATIVE_DOCX",
+          "DELETE_EXACT_CREATED_GOOGLE_FILES"
+        ],
+        "rawUploadedFileId": "1UwqIzXASNTp8GVihcs77wxY11dZhKVDO",
+        "internalUploadedFileReferenceObserved": true,
+        "internalReferenceMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "internalReferenceSizeBytes": 1932,
+        "nativeImportedDocumentId": "1gR8Cp6YFTMgYCsduUSKG-J5HbOPevCHOa0uIAhu0u38",
+        "nativeImportConverted": true,
+        "nativeReadbackMarkerObserved": true,
+        "nativeExportDocxSizeBytes": 6654
+      },
+      "cleanup": {
+        "createdGoogleFilesDeleted": true,
+        "createdGoogleFileIds": [
+          "1UwqIzXASNTp8GVihcs77wxY11dZhKVDO",
+          "1gR8Cp6YFTMgYCsduUSKG-J5HbOPevCHOa0uIAhu0u38"
+        ],
+        "localRunSubdirectoryRemoved": true,
+        "persistentWordRootPreserved": true
+      }
+    }
+  ],
+  "declaredRollup": {
+    "requiredCells": 1120,
+    "passedRequiredCells": 0,
+    "notExecutedCells": 1120,
+    "percentage": 0,
+    "broadPassClaim": false
+  },
+  "nonClaims": [
+    "NO_WORD_PLATFORM_PASS",
+    "NO_GOOGLE_PLATFORM_PASS",
+    "NO_C1_C8_ROUTE_PASS",
+    "NO_PACKAGED_BUILD_PASS",
+    "NO_SUPPORTED_FIELD_PASS",
+    "NO_AUTOMATIC_APPLY_OR_USER_DOCUMENT_AUTHORITY"
+  ]
+}

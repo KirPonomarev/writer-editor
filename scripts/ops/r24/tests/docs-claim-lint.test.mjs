@@ -9,6 +9,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V4,
   HISTORICAL_INVENTORY_CLAIM_PINS_V24,
   HISTORICAL_INVENTORY_CLAIM_PINS_V25,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V27,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -260,6 +261,25 @@ test('PRE00D successor admission inventory binding is accepted only at its exact
   );
 });
 
+test('PRE00F plan delivery inventory binding is accepted only as historical bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V27.find(
+    (item) => item.stampId === 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS',
+  );
+  assert.ok(pin);
+  const stampPath = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'EVIDENCE', `${pin.stampId}.json`);
+  const stampBytes = fs.readFileSync(stampPath);
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
@@ -271,5 +291,8 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS',
   ));
 });
