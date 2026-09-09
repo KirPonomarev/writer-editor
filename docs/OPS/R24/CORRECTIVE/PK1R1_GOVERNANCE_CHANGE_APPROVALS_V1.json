@@ -113,6 +113,20 @@
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP708_CARRIER_REGISTRY_V1.json",
+      "sha256": "3431ab88b7f5c42804d24d153007e25f0940331251b5ddb3abce3771c3b5b4fa",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 carrier registry rebind to current WP806 compatibility and terminal carrier test bytes introduced by PR1851 while preserving candidate boundaries; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP708_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f9b77c17d3b1f80513ec97c6dea85605c97955fafd3b985d9748d4fc425f6818",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 local governance approval rebind to current carrier registry plus WP806 compatibility and terminal carrier test bytes introduced by PR1851; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
+    },
+    {
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "65725e3cbd32d8e1e607361e3ebdc027cab82025e70f38337883f3f11d35691e",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
