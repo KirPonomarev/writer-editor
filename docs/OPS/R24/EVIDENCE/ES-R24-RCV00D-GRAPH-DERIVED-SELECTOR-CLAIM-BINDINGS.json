@@ -1,0 +1,157 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+  "contourId": "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "d2366bcc6dfce13a92f2136dae1a80b364c8a0ef",
+  "originMainSha": "d2366bcc6dfce13a92f2136dae1a80b364c8a0ef",
+  "generatedAtUtc": "2026-09-09T00:00:00.000Z",
+  "oracle": "R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_OBSERVATION_PRIORITY",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c57a8e473f25f9ccbd46013097249fb346c9869fa7b0496570ef2b26aa8f4833",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
+      "sha256": "fbfd6cedecaddd138b70eeb5d2c4d37f2def64a984efd2b35f9094335c203862",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/PLAN_STATE_R24.json",
+      "sha256": "f037355e4f1d87107f1593927463d94fa3f7128038790616c4d5611cf42f12f9",
+      "claimTerms": [
+        "PASS"
+      ]
+    }
+  ],
+  "implementationArtifactDigests": [
+    {
+      "path": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
+      "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "CURRENT_OBSERVATION_SELECTOR"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
+      "sha256": "c44831a8936410b85e3424d3c3807028727bdd34687f5413fb2cb762fc23e7b3",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "FOCUSED_POSITIVE_NEGATIVE_MUTANT_PROOF"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "645610d279558787904dc4f546206f4febd59efe8adcd0b9e69a8ae307ca2013",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "POST_AUDIT_CANDIDATE_VERIFIER"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "dd5bf5659a558c092fe65d6aca82af199d4f5a60df97ac7fe3f86e091f6960e2",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "POST_AUDIT_NEGATIVE_PROOF"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "c0d9f00cd7bac6f0cb1c140758a8fec556d0fdd258cce24a50769f92947161af",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "HISTORICAL_INVENTORY_PIN_CHAIN"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "33680a8737fbf1fdfdd086ac13eb0278fd7cc868b7fa172923bdab400435d9dd",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "HISTORICAL_INVENTORY_PIN_NEGATIVE_PROOF"
+      ]
+    },
+    {
+      "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
+      "sha256": "ce098f4df16b871dd466ad75422b7cca747754582420a99560940621d05c473e",
+      "terms": [
+        "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+        "TERMINAL_SELECTOR_RECEIPT"
+      ]
+    },
+    {
+      "path": "docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md",
+      "sha256": "c7e6311c0e3a331cb795bf2f8f6c9151b47763a1ca5706ebb452131e98ba9f06",
+      "terms": [
+        "NARRATIVE_NEXT_STEP_NON_AUTHORITY"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node -v",
+      "verdict": "PASS",
+      "requiredDisposition": "v22.12.0 observed inside direct package-isolated envelope"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm -v",
+      "verdict": "PASS",
+      "requiredDisposition": "10.9.0 observed inside direct package-isolated envelope"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs --now 2026-09-09T00:00:00.000Z",
+      "verdict": "PASS",
+      "requiredDisposition": "selected OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 over graph-only W0_WORD_PHYSICAL_RECERTIFICATION"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 12,
+        "fail": 0
+      },
+      "mutants": {
+        "killed": 10,
+        "survived": 0
+      },
+      "requiredDisposition": "focused positive, negative, and implementation-mutant contract proof passed"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 106,
+        "fail": 0
+      },
+      "requiredDisposition": "selector and post-audit exact-delta verifier contracts passed"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run --silent r24:test-inventory",
+      "verdict": "PASS",
+      "requiredDisposition": "C1B inventory validates all 1462 entries with requiredSkips 0 and unexplainedSkips 0"
+    }
+  ],
+  "nonClaims": [
+    "NO_GRAPH_NODE_CREATION",
+    "NO_GRAPH_STATE_TRANSITION",
+    "NO_PRODUCT_RUNTIME_FEATURE",
+    "NO_DOCX_EXPORT_SOURCE_FIX",
+    "NO_PROGRAM_DONE",
+    "NO_RELEASE_READINESS",
+    "NO_NEW_DEPENDENCY",
+    "NO_RUNTIME_NETWORK_OR_CLOUD_TRUTH",
+    "NO_UI_OR_DESIGN_CONTRACT_CHANGE",
+    "NARRATIVE_NEXT_STEP_NON_AUTHORITY",
+    "EFFECTIVE_STATE_INPUT_BOUND",
+    "SELECTOR_RECEIPT_BOUND_AS_STANDALONE_TERMINAL_ARTIFACT"
+  ]
+}

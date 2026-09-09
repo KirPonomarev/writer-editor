@@ -202,6 +202,11 @@ const ALLOWLIST = [
   DOCX_PREFLIGHT_RUNTIME_REPAIR_PATH,
   'scripts/ops/sector-m-scope-map.json',
   'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  // R24 RCV00D current-main verifier repair shared carriers.
+  'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  'test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js',
   ...C4_ALLOWLIST,
   ...N4_STRUCTURAL_RETURN_ALLOWLIST,
   ...R24_A0_AUTHORITY_SOT_ALLOWLIST,

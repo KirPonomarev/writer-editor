@@ -11424,15 +11424,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "10510333789a313253f5fbf76d94513392e3ad8866123f9efbe26f6e4d580da2",
-      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
       "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
@@ -11496,15 +11487,6 @@
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
     {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "f63ba9a57d0eb00306aa97c7edc0ee5520e8a26365a6ddf39cc41424b99add5d",
-      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
-    },
-    {
       "filePath": "scripts/ops/r24/effective-state-compiler.mjs",
       "sha256": "ae27da29dda18ce296e53912a7012a020ea750493d8784e4f2d27b7b7c9bb091",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
@@ -11539,15 +11521,6 @@
       "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
-    },
-    {
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "bdfd6fa4c670058398ac0e8c020a4686feaffa75e340ee1f47e587661fcdca33",
-      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
     },
     {
       "filePath": "scripts/ops/r24/tests/effective-state-compiler.test.mjs",
@@ -11587,48 +11560,35 @@
     },
     {
       "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
-      "sha256": "37acdf6eb3919df87f58959e9b10f7ac49c2a80ce28edeb480f54a2158f37eac",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+      "sha256": "b9d2782b1b1ebe79738a6a36da017f344773bb8a7940b11706a5f158103cac56",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
     },
     {
       "filePath": "test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js",
-      "sha256": "bc4f92f620600d60305f0a2ce2960dca999cd9e7be0bb8d8e5c26a89be81cc78",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+      "sha256": "b4e96391213f694ce2e48af5b71e1ee4e3ac88b462ee1c298e6f731302a6ffa1",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
     },
     {
       "filePath": "test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js",
-      "sha256": "e3a68c36027f2522fdab32cad2d9f594cd5ca212d8952dc176f1c02423723a9d",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+      "sha256": "25caeca7651da205b3ec3185885e1e0b95fae4ac8fbc070f88fe9e29b9ff63c8",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
     },
     {
       "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-      "sha256": "0524dc1a2438484e2c12fd4d5d981cebf20a6f989216a83e28627fe4f1b8c277",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "a11728d9c31e3d3019db8874443f1e2c2c9591e6545f79e5dfbd8f916ebf9fb3",
-      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+      "sha256": "227273b8b1477133ae1f212e6d67d023e3915ca09d03f6c6c598d5b58caa9aff",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
@@ -11649,26 +11609,8 @@
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3675552e4db5ecf259b95b58ca297da02b1ecf7ec2217640a924d729ce281315",
-      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
-    },
-    {
       "filePath": "scripts/ops/r24/corrective/rcv00c-corrective-register.mjs",
       "sha256": "19b018f933b2b49ae2d962cb6c179128c3d991a1b0c700ae2a933f0965269bd6",
-      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "f631bcc9e19641f784d8b8734663328948ed4dbe6b10d05f40aab0e1acfd14af",
       "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:00:00.000Z",
       "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
@@ -11683,9 +11625,118 @@
       "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
       "approved": true,
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c57a8e473f25f9ccbd46013097249fb346c9869fa7b0496570ef2b26aa8f4833",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "eb71b349011483d0ec5fba1f0032f9a1d74413cbe2371f22ee7309829d98eb8e",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
+      "sha256": "ce098f4df16b871dd466ad75422b7cca747754582420a99560940621d05c473e",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "645610d279558787904dc4f546206f4febd59efe8adcd0b9e69a8ae307ca2013",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
+      "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "c0d9f00cd7bac6f0cb1c140758a8fec556d0fdd258cce24a50769f92947161af",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "d7dad18c5b0efd47e7bd3f872918fc10d9543db735df60e9c8dae9d88ad28bf1",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "dd5bf5659a558c092fe65d6aca82af199d4f5a60df97ac7fe3f86e091f6960e2",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
+      "sha256": "c44831a8936410b85e3424d3c3807028727bdd34687f5413fb2cb762fc23e7b3",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAtUtc": "2026-09-09T22:18:14Z",
+      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [
-    "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS"
+    "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
+    "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
   ]
 }

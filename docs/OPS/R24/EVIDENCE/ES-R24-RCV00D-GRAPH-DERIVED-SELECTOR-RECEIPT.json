@@ -1,0 +1,860 @@
+{
+  "schemaVersion": "R24_RCV00D_GRAPH_DERIVED_SELECTOR_V1",
+  "selectorId": "R24-RCV-00D-GRAPH-DERIVED-SELECTOR",
+  "contourId": "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
+  "status": "PASS",
+  "generatedAtUtc": "2026-09-09T00:00:00.000Z",
+  "identity": {
+    "headSha": "d2366bcc6dfce13a92f2136dae1a80b364c8a0ef",
+    "originMainSha": "d2366bcc6dfce13a92f2136dae1a80b364c8a0ef",
+    "treeSha": "b09080d7161a4489ba3388d9480a88166e2adc0f"
+  },
+  "inputDigests": {
+    "correctiveRegister": "84dac77cc7a1a58884d3674bd72687ea9c5f44fd9a443ccd2225f7f825012db2",
+    "correctiveRegisterFile": "fbfd6cedecaddd138b70eeb5d2c4d37f2def64a984efd2b35f9094335c203862",
+    "planTextFile": "c7e6311c0e3a331cb795bf2f8f6c9151b47763a1ca5706ebb452131e98ba9f06",
+    "planStateFile": "f037355e4f1d87107f1593927463d94fa3f7128038790616c4d5611cf42f12f9",
+    "effectiveStateProjection": "8d4b57bb1ebdb8fe402a703135dd02cfc00cac441b0edc49f900ca820e70fc44",
+    "graphSelectionReceipt": "cbfd70229e376d665627adb21c3c997e3f5cc866c531d67b31e7881475d57526"
+  },
+  "narrativeNextStep": "R24-RCV-00A",
+  "narrativeNextStepAuthoritative": false,
+  "graphSchedulerCandidate": {
+    "selectedKind": "NODE",
+    "selectedId": "W0_WORD_PHYSICAL_RECERTIFICATION",
+    "verdict": "SELECTED",
+    "readySet": [
+      "W0_WORD_PHYSICAL_RECERTIFICATION"
+    ],
+    "stateRevision": 283,
+    "fencingCounter": 47,
+    "stateDigest": "c067116d0ee1a321ee48f25c875e0f22f8aa670cbb26814fcedeac5953532040",
+    "contourStatesDigest": "76a2d0f113a6151875bbf4cbbcd5325cba7e73e6f99224771d9d4c6b79b12041"
+  },
+  "correctiveSelectionPolicy": {
+    "source": "R24_CORRECTIVE_REGISTER_V1_PLUS_EFFECTIVE_GRAPH_STATE",
+    "severityOrder": [
+      "BLOCKER",
+      "REQUIRED",
+      "P1",
+      "P2",
+      "P3"
+    ],
+    "statusOrder": [
+      "ACTIVE_CONFIRMED",
+      "RECORDED_GRAPH_OPEN",
+      "REVALIDATE_CURRENT",
+      "DEFERRED_DEBT"
+    ],
+    "deterministicOrder": [
+      "SEVERITY",
+      "CONTOUR_ORDER",
+      "STATUS",
+      "CANDIDATE_KIND",
+      "STABLE_ID"
+    ],
+    "deliveredContourIds": [
+      "R24-PRE-00C",
+      "R24-PRE-00D",
+      "R24-PRE-00E",
+      "R24-PRE-00F",
+      "R24-RCV-00A",
+      "R24-RCV-00B",
+      "R24-RCV-00C"
+    ],
+    "graphPromotionAllowedForNoGraphNode": false,
+    "graphNodeCandidateRequiresGraphReadySet": true
+  },
+  "selected": {
+    "kind": "CURRENT_OBSERVATION",
+    "id": "OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909",
+    "severity": "P1",
+    "status": "ACTIVE_CONFIRMED",
+    "contourId": "R24-RCV-00D",
+    "mappedExistingGraphNode": "NO_GRAPH_NODE",
+    "graphPromotionAllowed": false,
+    "sourceAuditId": "EV-EXPORT-HONESTY-AUDIT-20260909T1927",
+    "requiredProof": "SCOPED_CONTRACT_FIX_WITH_FAILURE_AFTER_SIDE_EFFECT_AND_RETRY_COVERAGE",
+    "requiredCoverage": [
+      "FAILURE_AFTER_SIDE_EFFECT",
+      "RETRY_AFTER_OUTER_COMMAND_FAILURE"
+    ],
+    "forbiddenFixes": [
+      "GLOBAL_TRUTHY_OK_WEAKENING",
+      "VISIBLE_USER_ROUTE_CLAIM_WITHOUT_EVIDENCE"
+    ],
+    "eligible": true,
+    "ineligibilityReasons": []
+  },
+  "selectedCount": 1,
+  "eligibleCandidateCount": 4,
+  "candidateCount": 46,
+  "candidateSetDigest": "8e64afc040803fe34640f5a343658f69bb8003aa9309bdb48c2968b8c1601a8b",
+  "eligibleCandidateSetDigest": "9a0e199941514db905c8bc6c0a02ea7183263467d9748f9570cfa555b03d0dc9",
+  "candidates": [
+    {
+      "kind": "CURRENT_OBSERVATION",
+      "id": "OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909",
+      "severity": "P1",
+      "status": "ACTIVE_CONFIRMED",
+      "contourId": "R24-RCV-00D",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "EV-EXPORT-HONESTY-AUDIT-20260909T1927",
+      "requiredProof": "SCOPED_CONTRACT_FIX_WITH_FAILURE_AFTER_SIDE_EFFECT_AND_RETRY_COVERAGE",
+      "requiredCoverage": [
+        "FAILURE_AFTER_SIDE_EFFECT",
+        "RETRY_AFTER_OUTER_COMMAND_FAILURE"
+      ],
+      "forbiddenFixes": [
+        "GLOBAL_TRUTHY_OK_WEAKENING",
+        "VISIBLE_USER_ROUTE_CLAIM_WITHOUT_EVIDENCE"
+      ],
+      "eligible": true,
+      "ineligibilityReasons": []
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-01",
+      "severity": "P1",
+      "status": "ACTIVE_CONFIRMED",
+      "contourId": "R24-RCV-00B",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "EV-GOV-01-AF74",
+      "requiredProof": "FULL_EVIDENCE_SHAPE_AND_CONTOUR_CLOSURE_REQUIRED",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "PRIMARY_CONTOUR_ALREADY_DELIVERED_ON_CURRENT_MAIN"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-02",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-00B",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/state",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "PRIMARY_CONTOUR_ALREADY_DELIVERED_ON_CURRENT_MAIN"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-03",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-00B",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/generated drift",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "PRIMARY_CONTOUR_ALREADY_DELIVERED_ON_CURRENT_MAIN"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-04",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-01A",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/CI",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-05",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-01D",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/current replay",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-06",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-01E",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/skip policy",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "GOV-07",
+      "severity": "P1",
+      "status": "ACTIVE_CONFIRMED",
+      "contourId": "R24-PRE-00C",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "EV-GOV-07-PR1843",
+      "requiredProof": "FULL_EVIDENCE_SHAPE_AND_CONTOUR_CLOSURE_REQUIRED",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "PRIMARY_CONTOUR_ALREADY_DELIVERED_ON_CURRENT_MAIN"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-01",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-13",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit counterexample",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-02",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-11",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit counterexample",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-03",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-12",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit counterexample",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-04",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-14",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit counterexample",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-05",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-10A",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/source path",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-06",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-15",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/lifecycle",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-07",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-10B",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit counterexample",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-08",
+      "severity": "P3",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-10B",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit cleanup semantics",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "DATA-09",
+      "severity": "P3",
+      "status": "DEFERRED_DEBT",
+      "contourId": "R24-RCV-16",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/performance",
+      "requiredProof": "MEASURE_SEVERITY_BEFORE_RELEASE_CUTOFF",
+      "graphNodeState": null,
+      "eligible": true,
+      "ineligibilityReasons": [
+        "DEFERRED_DEBT_LOW_PRIORITY_FALLBACK"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "AUTH-01",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-25",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/bypass",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "AUTH-02",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-20B",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit mutation probe",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "AUTH-03",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-21",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit denominator",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "AUTH-04",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-20C",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit operation taxonomy",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "AUTH-05",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-22",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit replay probe",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "AUTH-06",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-23",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit path race",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "EVID-01",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-30",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "Astra Ultra F02",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "EVID-02",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-31",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "Astra Ultra F03 evaluator identity",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "EVID-03",
+      "severity": "P1",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-32",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "claim-boundary hypothesis",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "EVID-04",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-33",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "Astra Ultra F04",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "EVID-05",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-01C",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "Astra Ultra F05",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "EVID-06",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-34",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/source-only smoke",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "PORT-01",
+      "severity": "BLOCKER",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-01F",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "owner portability gap + W7 route matrix",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "PROD-01",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-40A",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/Pulse",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "PROD-02",
+      "severity": "P3",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-41",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/Unicode",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "OPS-01",
+      "severity": "P2",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-00A",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "host/runtime observation",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "PRIMARY_CONTOUR_ALREADY_DELIVERED_ON_CURRENT_MAIN"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "OPS-02",
+      "severity": "P3",
+      "status": "REVALIDATE_CURRENT",
+      "contourId": "R24-RCV-01E",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "audit/exception lifecycle",
+      "requiredProof": "REPRODUCE_ON_FRESH_BASE_BEFORE_MUTATION",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "REVALIDATION_REQUIRED_BEFORE_SELECTION"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "OPS-03",
+      "severity": "P1",
+      "status": "ACTIVE_CONFIRMED",
+      "contourId": "R24-RCV-00G",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "EV-OPS-03-C9BC",
+      "requiredProof": "FULL_EVIDENCE_SHAPE_AND_CONTOUR_CLOSURE_REQUIRED",
+      "graphNodeState": null,
+      "eligible": true,
+      "ineligibilityReasons": []
+    },
+    {
+      "kind": "FINDING",
+      "id": "MAINT-01",
+      "severity": "P3",
+      "status": "DEFERRED_DEBT",
+      "contourId": "R24-RCV-50",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "maintainability observation",
+      "requiredProof": "MEASURE_SEVERITY_BEFORE_RELEASE_CUTOFF",
+      "graphNodeState": null,
+      "eligible": true,
+      "ineligibilityReasons": [
+        "DEFERRED_DEBT_LOW_PRIORITY_FALLBACK"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "MAINT-02",
+      "severity": "P3",
+      "status": "DEFERRED_DEBT",
+      "contourId": "R24-RCV-00C",
+      "mappedExistingGraphNode": "NO_GRAPH_NODE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "artifact-volume observation",
+      "requiredProof": "MEASURE_SEVERITY_BEFORE_RELEASE_CUTOFF",
+      "graphNodeState": null,
+      "eligible": false,
+      "ineligibilityReasons": [
+        "PRIMARY_CONTOUR_ALREADY_DELIVERED_ON_CURRENT_MAIN"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-01",
+      "severity": "BLOCKER",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-61",
+      "mappedExistingGraphNode": "PK1_RELEASE_SECURITY_PHYSICAL",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "PK1 effective state",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "BLOCKED_TYPED",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-02",
+      "severity": "BLOCKER",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-62",
+      "mappedExistingGraphNode": "V3_PACKAGE_CLAIM_COMPILER",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "V3 dependency state",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "BLOCKED_TYPED",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-03",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-63",
+      "mappedExistingGraphNode": "WP-900_BBR_POLICY",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-900",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-04",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-64",
+      "mappedExistingGraphNode": "WP-901_BBR_RESTORE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-901",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-05",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-65",
+      "mappedExistingGraphNode": "WP-902_ENTITLEMENT_PRODUCT",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-902",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-06",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-66",
+      "mappedExistingGraphNode": "WP-903_BRAND_RELEASE",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-903",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-07",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-67",
+      "mappedExistingGraphNode": "WP-904_PACKAGE_CONTENT",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-904",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-08",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-69",
+      "mappedExistingGraphNode": "WP-905_PACKAGE_PHYSICAL",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-905",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    },
+    {
+      "kind": "FINDING",
+      "id": "REL-09",
+      "severity": "REQUIRED",
+      "status": "RECORDED_GRAPH_OPEN",
+      "contourId": "R24-RCV-70A",
+      "mappedExistingGraphNode": "WP-906_RELEASE_VERDICT",
+      "graphPromotionAllowed": false,
+      "sourceAuditId": "WP-906",
+      "requiredProof": "EXISTING_GRAPH_NODE_TERMINAL_DELIVERY_REQUIRED",
+      "graphNodeState": "PENDING",
+      "eligible": false,
+      "ineligibilityReasons": [
+        "GRAPH_NODE_NOT_READY_OR_BLOCKED"
+      ]
+    }
+  ],
+  "registerSummary": {
+    "findingCount": 45,
+    "currentObservationCount": 1,
+    "activeConfirmed": 3,
+    "activeConfirmedCurrentObservations": 1,
+    "recordedGraphOpen": 9
+  },
+  "nonClaims": [
+    "NO_GRAPH_NODE_CREATION",
+    "NO_GRAPH_STATE_TRANSITION",
+    "NO_PRODUCT_RUNTIME_FEATURE",
+    "NO_DOCX_EXPORT_SOURCE_FIX",
+    "NO_PROGRAM_DONE",
+    "NO_RELEASE_READINESS",
+    "NO_NEW_DEPENDENCY",
+    "NO_RUNTIME_NETWORK_OR_CLOUD_TRUTH",
+    "NO_UI_OR_DESIGN_CONTRACT_CHANGE"
+  ],
+  "reasons": [
+    "CORRECTIVE_SEVERITY_POLICY_OUTRANKS_GRAPH_ONLY_SCHEDULER_CANDIDATE",
+    "NARRATIVE_NEXT_STEP_RECORDED_AS_NON_AUTHORITY",
+    "ACTIVE_P1_CURRENT_OBSERVATION_SELECTED_BEFORE_P3_DEBT",
+    "RECORDED_GRAPH_OPEN_NODE_REQUIRES_GRAPH_READY_SET",
+    "NO_GRAPH_PROMOTION_FROM_CURRENT_OBSERVATION"
+  ]
+}
