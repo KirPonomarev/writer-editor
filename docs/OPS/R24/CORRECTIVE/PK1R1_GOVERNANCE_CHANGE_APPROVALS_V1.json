@@ -451,10 +451,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f227d47608b037d12ed8f2020aad00dbcc48db463470f0a28d8644f216ad592e",
+      "sha256": "7e3232efa61d31309c9d580a17a9783431c6a32e5e5171c116e4035ff10d55b5",
       "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T21:39:31Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory and post-audit verifier bindings, and PK1R1 approval metadata; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T22:03:01Z",
+      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory, export hardening allowlist, post-audit verifier bindings, and PK1R1 approval metadata as admitted governance carriers; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
       "approved": true
     },
     {
@@ -491,10 +491,10 @@
     },
     {
       "filePath": "test/contracts/export-contour-01-docx-simple-hardening.contract.test.js",
-      "sha256": "d50072ef204fa9a283ef0d2386ad39c2502bc752a9b85926c910c2ffaed43531",
+      "sha256": "42ab6fe37556f27e97748fa8de6238d5e4879c6f4b505344d8810389d5ebcd66",
       "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T21:39:31Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory and post-audit verifier bindings, and PK1R1 approval metadata; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T22:03:01Z",
+      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory, export hardening allowlist, post-audit verifier bindings, and PK1R1 approval metadata as admitted governance carriers; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
       "approved": true
     }
   ],

@@ -12,6 +12,7 @@ const UNIT_TEST_PATH = 'test/unit/docx-min-export-handler.test.js';
 const BUILDER_UNIT_TEST_PATH = 'test/unit/docx-min-builder.test.js';
 const CONTRACT_TEST_PATH = 'test/contracts/export-contour-01-docx-simple-hardening.contract.test.js';
 const TEST_INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
+const APPROVAL_REGISTRY_PATH = 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 const POST_AUDIT_VERIFIER_PATH = 'scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 const POST_AUDIT_CONTRACT_TEST_PATH = 'test/contracts/r24-post-audit-certification-set.contract.test.mjs';
 const DOCS_CLAIM_LINT_PATH = 'scripts/ops/r24/docs-claim-lint.mjs';
@@ -23,6 +24,7 @@ const ALLOWLIST = [
   BUILDER_UNIT_TEST_PATH,
   CONTRACT_TEST_PATH,
   TEST_INVENTORY_PATH,
+  APPROVAL_REGISTRY_PATH,
   POST_AUDIT_VERIFIER_PATH,
   POST_AUDIT_CONTRACT_TEST_PATH,
   DOCS_CLAIM_LINT_PATH,
