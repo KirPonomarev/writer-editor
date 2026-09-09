@@ -16,10 +16,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "e7ce3321d3b71fad41ad8abf4ba1f33d745267a336339b382086865b4e618c70",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "ed258625171bf60c852e90aafb9da4e49beab4bb90fa7697e5762ab06beb30a2",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -183,11 +183,18 @@
       "rationale": "Bounded PRE00F plan delivery, owner portability gap boundary, and CI verifier repair; PR1843 and owner thread 019fdbc4-6eb0-7632-bfd5-75f05dceaba7 remain historical evidence only, WP707-WP709 remain bounded evidence only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, broad W7/C1-C8 portability PASS, or publication authority is added."
     },
     {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
+      "sha256": "3dadc3c8da34e22ae171dcd816bc33448ef028e700a7a514eb8647e658b7173b",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves the interop current-claim binding bytes produced by the semantic conflict resolution while preserving PR1851 closed delivery SHA, tree, and 14-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+    },
+    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "2918a47297a6f6c11130a0f587f27de24940a96c6193bb15383d832e0c471166",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "2d04cf9c174a7a937104fb86069a071dcfe31e486db8de7ce4833f0eb92c8a49",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/TOOLCHAIN_CONTRACT_V1.json",
@@ -226,10 +233,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "73dbf8f21a86210211b34ed5dda6c68339a3fdb65a64782b1265ed66d2214bc5",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "12e2cd2f0594dcb19e3e6d377eac498593821c373722fa43baaf8c470cb8f1f8",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
@@ -261,10 +268,10 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "68c59d848e3efb30ca47f1edd1ff0c843350515c3e0cbb97fc47f5e30fc8fe4d",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "4f188556b092e8ab344f683e9032d46917237e16ae8ba094a5e8a3ec4769a0fd",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/exact-toolchain-entrypoint.mjs",
@@ -296,10 +303,10 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "83d9de164e3fb7fd78947bc24533ed044ad72015c322fe1df38a3a1751eb9511",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
+      "sha256": "f08ca2572999086dede82729bf10b8f3cbebb5a4420ca410916880b51273c240",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact current docs-claim-lint test bytes while preserving the closed PRE and RCV delivery boundaries; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/tests/q0/toolchain.test.mjs",
@@ -317,10 +324,10 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "2f76e8f3bca9402e3e2542f9a74012a7482bb253e8ab111a280de1faf2be4b81",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "3cdab9e5b78b71ce7fb1b18ea815b391da2f95151ac03188f9d1752c70e2f86a",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
