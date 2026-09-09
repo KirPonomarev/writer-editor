@@ -261,7 +261,7 @@ test('Stage02 hostile file gate allows bounded ignored parts and quarantines unk
   }
 });
 
-test('Stage02 hostile file gate distinguishes internal and external relationship targets', async () => {
+test('Stage02 hostile file gate distinguishes internal, safe hyperlink, and hostile external relationship targets', async () => {
   const bridge = await loadBridge();
   const internal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
@@ -276,6 +276,13 @@ test('Stage02 hostile file gate distinguishes internal and external relationship
       body: '<Relationships><Relationship Target="itemProps1.xml"/></Relationships>',
     },
   ]));
+  const safeExternalHyperlink = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
+    },
+  ]));
   const external = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
     {
@@ -287,7 +294,21 @@ test('Stage02 hostile file gate distinguishes internal and external relationship
     { name: 'word/document.xml', body: '<root/>' },
     {
       name: 'word/_rels/document.xml.rels',
-      body: '<Relationships><Relationship Target="https://example.invalid" TargetMode="&#69;xternal"/></Relationships>',
+      body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="&#69;xternal"/></Relationships>',
+    },
+  ]));
+  const attachedTemplateExternal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rIdTpl" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/attachedTemplate" Target="https://evil.invalid/template.dotx" TargetMode="External"/></Relationships>',
+    },
+  ]));
+  const unsafeSchemeExternal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="file:///etc/passwd" TargetMode="External"/></Relationships>',
     },
   ]));
   const customXmlExternal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
@@ -295,7 +316,7 @@ test('Stage02 hostile file gate distinguishes internal and external relationship
     { name: 'customXml/item1.xml', body: '<root/>' },
     {
       name: 'customXml/_rels/item1.xml.rels',
-      body: '<Relationships><Relationship Target="https://example.invalid" TargetMode="External"/></Relationships>',
+      body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
     },
   ]));
   const malformedTargetMode = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
@@ -308,11 +329,14 @@ test('Stage02 hostile file gate distinguishes internal and external relationship
 
   assert.equal(internal.ok, true);
   assert.equal(internal.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS);
+  assert.equal(safeExternalHyperlink.ok, true);
+  assert.equal(safeExternalHyperlink.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS);
+  assert.equal(safeExternalHyperlink.parse.semanticAllowed, true);
   assert.equal(external.ok, false);
   assert.equal(external.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT);
   assert.equal(external.parse.attempted, false);
   assert.equal(external.parse.semanticAllowed, false);
-  for (const result of [encodedExternal, customXmlExternal, malformedTargetMode]) {
+  for (const result of [encodedExternal, attachedTemplateExternal, unsafeSchemeExternal, customXmlExternal, malformedTargetMode]) {
     assert.equal(result.ok, false);
     assert.equal(result.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT);
     assert.equal(result.parse.attempted, false);

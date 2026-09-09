@@ -64,6 +64,32 @@ test('Google local DOCX native import is route-qualified only through an interna
   assert.equal(evidence.cleanup.localRunSubdirectoryRemoved, true);
 });
 
+test('safe external hyperlink preview contour evidence is non-cell and leaves rich losses open', async () => {
+  const validator = await loadValidator();
+  const ledger = validator.readInterop100EvidenceLedger();
+  const evidence = ledger.implementationContourEvidence.find((item) => (
+    item.id === 'SAFE_EXTERNAL_HYPERLINK_CONTENT_PREVIEW_CONTOUR_20260909'
+  ));
+
+  assert.ok(evidence);
+  assert.equal(evidence.countedAsRequiredCellPass, false);
+  assert.equal(evidence.denominatorImpact.passedRequiredCellsAdded, 0);
+  assert.equal(evidence.physicalBeforeFix.yalkenPreviewCode, 'DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED');
+  assert.equal(evidence.physicalBeforeFix.yalkenPreviewReason, 'STAGE02_EXTERNAL_RELATIONSHIP_PRESENT');
+  assert.equal(evidence.physicalAfterFix.yalkenContentPreviewCode, 'DOCX_CONTENT_PREVIEW_READY');
+  assert.equal(evidence.physicalAfterFix.yalkenImportPreviewCode, 'DOCX_IMPORT_PREVIEW_READY');
+  assert.equal(evidence.physicalAfterFix.writeEffects, false);
+  assert.equal(evidence.physicalAfterFix.markerPreserved, true);
+  assert.equal(evidence.providerRoute.structuredUploadedFileObjectRequired, true);
+  assert.equal(evidence.cleanup.createdGoogleFilesDeleted, true);
+  assert.equal(evidence.cleanup.localRunSubdirectoriesRemoved, true);
+  assert.equal(evidence.residualLossLedger.some((item) => (
+    item.field === 'IDENTIFIERS_ANCHORS'
+    && item.code === 'GOOGLE_NATIVE_EXPORT_BOOKMARKS_DROPPED'
+    && item.status === 'OPEN_NOT_COUNTED'
+  )), true);
+});
+
 test('validator rejects attempts to count route qualification, direct local path import, or unsafe Word roots as denominator PASS', async () => {
   const validator = await loadValidator();
   const baseSpec = validator.readInterop100Denominator();

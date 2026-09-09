@@ -318,6 +318,51 @@ test('DOCX content preview: unsupported structures are diagnostics and do not be
   )), true);
 });
 
+test('DOCX content preview: safe external hyperlinks remain inert preview candidates', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
+    '<w:p>',
+    '<w:r><w:t>Before </w:t></w:r>',
+    '<w:hyperlink r:id="rIdLink"><w:r><w:t>Link text</w:t></w:r></w:hyperlink>',
+    '<w:r><w:t> After</w:t></w:r>',
+    '</w:p>',
+  ].join(''), [
+    {
+      name: 'word/_rels/document.xml.rels',
+      method: 8,
+      body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
+    },
+  ]));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+  assert.equal(result.contentPreview.paragraphs[0].text, 'Before  After');
+  assert.equal(result.preflightSummary.status, 'degraded');
+  assert.equal(result.preflightSummary.parserCandidateOnly, true);
+  assert.equal(result.preflightSummary.gatePass, true);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+    && item.tagName === 'w:hyperlink'
+  )), true);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
+    && item.entryId === 'word/_rels/document.xml.rels'
+  )), true);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
+    && item.category === 'link'
+    && item.tagName === 'w:hyperlink'
+  )), true);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
+    && item.category === 'relationship'
+  )), true);
+});
+
 test('DOCX content preview: accepted containers still fail closed on malformed XML and budget overflow', async () => {
   const bridge = await loadBridge();
   const malformed = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(

@@ -66,6 +66,85 @@
       }
     }
   ],
+  "implementationContourEvidence": [
+    {
+      "id": "SAFE_EXTERNAL_HYPERLINK_CONTENT_PREVIEW_CONTOUR_20260909",
+      "status": "PASS_FIX_VALIDATED_NON_CELL_PHYSICAL_RERUN",
+      "countedAsRequiredCellPass": false,
+      "contour": "DOCX_SAFE_EXTERNAL_HYPERLINK_RELATIONSHIP_PREVIEW_V1",
+      "bindingBaseSha": "8be9938b424c9593a5117c25d215821e102ae139",
+      "sourceTreeDirtyAtPhysicalRerun": true,
+      "physicalBeforeFix": {
+        "runId": "r24-c5-google-native-20260909011841-8be9938b",
+        "sourceDocxSha256": "87f8297e66037771262d8c343958b5b8154e6d0d3e51ae0ffa241ccdb6edb14c",
+        "googleExportDocxSha256": "b04a828c7db7b87a5e4a5a492160e9e04fd63a737d5869d22ca65818fa6d9cb5",
+        "yalkenPreviewStatus": "BLOCKED",
+        "yalkenPreviewCode": "DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED",
+        "yalkenPreviewReason": "STAGE02_EXTERNAL_RELATIONSHIP_PRESENT",
+        "relationshipOracleSha256": "a64121482287b72bcdc325174495ac653f85b6753bb2692a684ea3441ffe6106",
+        "safeExternalHyperlinkCount": 1,
+        "unsafeExternalRelationshipCount": 0
+      },
+      "physicalAfterFix": {
+        "runId": "r24-c5-rerun-20260909012848-8be9938b",
+        "sourceDocxSha256": "5b5eec9a13d1bb4910f1fcf4bd6c038e749c4a5d4b564e0984a87ff3e596db61",
+        "googleExportDocxSha256": "42a6386ec2c1c31cf08fec61c0f0711be4e9391ccc2e6f296ce00bb6a9d1e71f",
+        "yalkenPreviewArtifactSha256": "4e5df2c8997cda20a6d6e4735af8fc32f24bf3af3fb78270d1d10e762deeab4a",
+        "yalkenContentPreviewStatus": "preview",
+        "yalkenContentPreviewCode": "DOCX_CONTENT_PREVIEW_READY",
+        "yalkenImportPreviewStatus": "preview",
+        "yalkenImportPreviewCode": "DOCX_IMPORT_PREVIEW_READY",
+        "writeEffects": false,
+        "paragraphCount": 5,
+        "markerPreserved": true,
+        "explicitLossCodes": [
+          "DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED",
+          "DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY",
+          "DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED"
+        ]
+      },
+      "providerRoute": {
+        "rawUpload": "PASS",
+        "internalUploadedFileObjectImport": "PASS",
+        "nativeReadback": "PASS",
+        "nativeExportDocx": "PASS",
+        "directSedimentStringImport": "FAIL_TYPED_SOURCE_FILE_PATH",
+        "structuredUploadedFileObjectRequired": true
+      },
+      "residualLossLedger": [
+        {
+          "field": "STYLES",
+          "code": "GOOGLE_NATIVE_EXPORT_HEADING_STYLE_NOT_CANONICAL",
+          "status": "OPEN_NOT_COUNTED"
+        },
+        {
+          "field": "METADATA",
+          "code": "GOOGLE_NATIVE_EXPORT_CUSTOM_XML_DROPPED",
+          "status": "OPEN_NOT_COUNTED"
+        },
+        {
+          "field": "IDENTIFIERS_ANCHORS",
+          "code": "GOOGLE_NATIVE_EXPORT_BOOKMARKS_DROPPED",
+          "status": "OPEN_NOT_COUNTED"
+        }
+      ],
+      "cleanup": {
+        "createdGoogleFilesDeleted": true,
+        "createdGoogleFileIds": [
+          "1asuDcv9vkV4cXqLpR5R7WrCGP2kbdVsE",
+          "1S-_VPOOXTiEZJAXMCijz8pzDbgnlCCF0uknSR_ektiM",
+          "1RQNeIPVAfFTS4q0lxckxMEgn52NSdrQa",
+          "1GXVCFHNMkmEziDf43HflxgROgCY_L97R5nlAyTNbb8s"
+        ],
+        "localRunSubdirectoriesRemoved": true,
+        "persistentWordRootPreserved": true
+      },
+      "denominatorImpact": {
+        "passedRequiredCellsAdded": 0,
+        "reason": "Physical rerun was pre-commit dirty-tree evidence and residual rich-field losses remain open; this contour removes a route blocker but does not promote any required cell."
+      }
+    }
+  ],
   "declaredRollup": {
     "requiredCells": 1120,
     "passedRequiredCells": 0,
