@@ -612,8 +612,8 @@ test('R24 interop 100 safe external hyperlink preview exception accepts exact PR
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,17);
-  assert.equal(result.changedPathDenominator,17);
+  assert.equal(result.admittedPathDenominator,18);
+  assert.equal(result.changedPathDenominator,18);
   assert.equal(result.requiredCellDenominator,1120);
   assert.equal(result.passedRequiredCells,0);
   assert.equal(result.safeExternalHyperlinkPreview,'PASS_NON_CELL_WITH_EXPLICIT_LINK_RELATIONSHIP_LOSS');
