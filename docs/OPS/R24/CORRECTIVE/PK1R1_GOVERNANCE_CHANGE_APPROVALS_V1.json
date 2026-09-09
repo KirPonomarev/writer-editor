@@ -16,10 +16,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "7436254caa1287c50725fdaf48492b7ae8ed0f5c68a9514c05c8aa718c471a45",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact regenerated inventory bytes after the WP708 current-head carrier shim correction while preserving the R24-RCV-00A historical delivery SHA, tree, and admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "16649e5dc28c25b9d44fdc6d80a7c259672b64119fe27c975cb6c652469983be",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:23:42Z",
+      "rationale": "Bounded R24-PRE-00C restart from current origin/main; updates strict governance approval binding to exact regenerated inventory bytes after focused closed-stage PK1R1 candidate verifier repair tests while preserving the historical 19-path PK1R1 admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -198,17 +198,17 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "7d83555ac164eec53f5687122133a36600ad020db8c5441c7ac7177ef18e6b59",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves the interop current-claim binding rebind to the regenerated C1B inventory hash while preserving PR1851 closed delivery SHA, tree, and 14-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "9baaee1669aa5169231ff877f71443b8aa2eb992a18849fc5e76386dc043d88a",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:23:42Z",
+      "rationale": "Bounded R24-PRE-00C restart from current origin/main; updates the interop current-claim binding to the regenerated C1B inventory hash after the closed-stage PK1R1 verifier repair while preserving historical delivery boundaries; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "ee7cba4f5cdef59fe47656832b0e8ca68c68bd01e6b62cfa0c9f8ffd251cdce0",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact current claim-binding bytes after the regenerated C1B inventory hash while preserving the R24-RCV-00A historical delivery SHA, tree, and admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "c9d0e46c4c9323040b52f6e05f0256dee12fccacd3a2e2a3de71155eaa88fb6e",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:23:42Z",
+      "rationale": "Bounded R24-PRE-00C restart from current origin/main; updates the R24-RCV-00A current claim-binding bytes to the regenerated C1B inventory hash after the closed-stage PK1R1 verifier repair while preserving historical delivery boundaries; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/TOOLCHAIN_CONTRACT_V1.json",
@@ -247,10 +247,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "12e2cd2f0594dcb19e3e6d377eac498593821c373722fa43baaf8c470cb8f1f8",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "02d832d73c0d300303d7f0ace9130954e2ab9ae5a4fa5dea609a033e6ab243b4",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:23:42Z",
+      "rationale": "Bounded R24-PRE-00C restart from current origin/main; binds PK1R1 verification reads and exact delta checks to the immutable issued candidate SHA/tree while keeping successor current-head evidence separate and preserving the historical 19-path PK1R1 admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
@@ -338,10 +338,10 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "3cdab9e5b78b71ce7fb1b18ea815b391da2f95151ac03188f9d1752c70e2f86a",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "2a92f7ecd236ea39648551db593365d08cc22e152c125c0959964ee1b37f12b6",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:23:42Z",
+      "rationale": "Bounded R24-PRE-00C restart from current origin/main; adds focused positive, negative, and implementation-mutant coverage for immutable PK1R1 candidate identity, historical 19-path delta, terminal receipt integrity, and non-descendant evidence heads; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
     },
     {
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
