@@ -16,10 +16,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "ba6024c916943d390153af74879cc9a0a387770e9cbca38e3391b72ec7f2d559",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "7240bf5e93f1fc7856ce49b482a3addcdcea787e41c19475bb4c9485870e049c",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -163,10 +163,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "e079bac6350b3ad19f667f510b925942b7ffa0ef40113081c6a48004b45ae331",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "7d2823d12ad5fc31264afad009aff5735550eb6aef7e3bf409fc0643651bc4ad",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
@@ -205,10 +205,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "d69d66929f4af1d6d666861bdaaaf4d50016eca3cb9667e515c8bbef76310216",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "70829f0cb88dcbaa034434e13caa633656c9b25904d9a6d46636cfbb7b60a0c9",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "docs/OPS/R24/TOOLCHAIN_CONTRACT_V1.json",
@@ -247,10 +247,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "c09c1e0383d1f735ecafc385e4bb3ad688e2e3f1f3a43fd749dbc5c9be60dc29",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "7e2f7f1c54d254119003daae5cd336ed4c249976e1c9a6e9a7df6add1bad6978",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
@@ -282,10 +282,10 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "4f188556b092e8ab344f683e9032d46917237e16ae8ba094a5e8a3ec4769a0fd",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact post-conflict bytes while preserving the R24-RCV-00A historical delivery SHA, tree, and 19-path admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "62bd2e253f9137044c9e357df9c5eec2f36ee99da7db50940881eefca3860ec0",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/exact-toolchain-entrypoint.mjs",
@@ -317,10 +317,10 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "0ac18c832d5ffb06fdc452792494673c8df6084d7a8791cc84f661a0aab1738c",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "5b9ef84b97825af49561e4cf5d7249bd1f8ac5cf2e8c34f34e38583a8c2c187e",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "scripts/ops/r24/tests/q0/toolchain.test.mjs",
@@ -338,10 +338,73 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "f915ec4217d2244a9759e7482cdcf953aed45e4d93773075bcf9c445b274215a",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "62a4672c2b0f870debb4eb36579080739ec00561932586fa23a789190b3a8da6",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
+      "sha256": "94f611c5d431595ebf654316ffdfd993cf08616309d34df0e00acdcf29c3e43c",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs",
+      "sha256": "d7ffbe8560d6b68c8592666acd37c4989e8951fe0e0f4f289ad215e87a47e0a7",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/r24-wp707-terminal-carriers.contract.test.mjs",
+      "sha256": "88401c62330889d7f9b3d70d1f0343388431bced68403a72f6f1eabc0efc7a90",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
+      "sha256": "af18957a49a5244957b10bfa428b5d4a0983c8c6c7986d9d6ec304c9a944fcb2",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/r24-wp709-terminal-carriers.contract.test.mjs",
+      "sha256": "9f819f7daac55763e531cfbea3db083bbe3c2c0e23616d85e07922396efd73cf",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "3df9e4f05cec250c44ccf5c7ecaa1710d767168264ccc90bb14e4a7bf3696a52",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "680997581c99eb93f8e42b8cb6b25b332e352ce294ecc5d7a9bbfe964ea4a26f",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
+      "sha256": "a06bf1d687e3553e97cd1becd02c8160476fb37f5009075f839fd2a8abe94d44",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "sha256": "d31cec001293953249c43643e29292b88ba784aa426475fba5dc37513b3a70c2",
+      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
+      "approvedAtUtc": "2026-09-09T05:41:16Z",
+      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added."
     },
     {
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
