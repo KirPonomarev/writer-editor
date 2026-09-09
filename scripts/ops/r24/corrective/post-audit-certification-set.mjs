@@ -208,6 +208,9 @@ export const R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION=Object.freeze(
   inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   denominatorPath:INTEROP100_DENOMINATOR_PATH,
   ledgerPath:INTEROP100_LEDGER_PATH,
+  claimBindingPath:'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json',
+  claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
+  claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
   validatorPath:'scripts/ops/rtk-interop-100-denominator-v1.mjs',
   contractTestPath:`test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
@@ -220,10 +223,13 @@ export const R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION=Object.freeze(
   approvedBy:'owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09',
   admittedPaths:[
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json',
     'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
     'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json',
     'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json',
     'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/docs-claim-lint.mjs',
+    'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'scripts/ops/rtk-interop-100-denominator-v1.mjs',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
@@ -3521,7 +3527,7 @@ export function verifyR24Interop100GoogleDocxImportRoutePostEvaluationException(
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_INTEROP100_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_INTEROP100_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const denominator=readJson(e.denominatorPath),ledger=readJson(e.ledgerPath),catalog=readJson(e.catalogPath),inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),validator=readText(e.validatorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  const denominator=readJson(e.denominatorPath),ledger=readJson(e.ledgerPath),catalog=readJson(e.catalogPath),inventory=readJson(e.inventoryPath),claimBinding=readJson(e.claimBindingPath),approvals=readJson(e.approvalsPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),validator=readText(e.validatorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
   const validation=validateInterop100({spec:denominator.value,ledger:ledger.value,currentHead:resolvedCandidate});
   assert(validation.ok,'E_R24_INTEROP100_VALIDATION',(validation.errors??[]).join(',').slice(0,200));
   assert(validation.requiredCells===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.recordedCells===0&&validation.passedRequiredCells===0&&validation.percentage===0&&validation.statusCounts?.NOT_EXECUTED===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.claimVerdict==='NEEDS_MORE_EVIDENCE','E_R24_INTEROP100_ZERO_PASS_ROLLUP');
@@ -3539,6 +3545,8 @@ export function verifyR24Interop100GoogleDocxImportRoutePostEvaluationException(
   assert(routeEvidence.cleanup?.createdGoogleFilesDeleted===true&&routeEvidence.cleanup?.createdGoogleFileIds?.length===2&&routeEvidence.cleanup?.localRunSubdirectoryRemoved===true&&routeEvidence.cleanup?.persistentWordRootPreserved===true,'E_R24_INTEROP100_CLEANUP');
   assert(catalog.value.schemaVersion==='yalken.rtk.test-graph-catalog.v1'&&Array.isArray(catalog.value.contractBasenames)&&catalog.value.contractBasenames.includes(INTEROP100_CONTRACT_BASENAME)&&new Set(catalog.value.contractBasenames).size===catalog.value.contractBasenames.length,'E_R24_INTEROP100_RTK_CATALOG');
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_INTEROP100_INVENTORY_SHAPE');
+  assert(claimBinding.value.schemaVersion==='ClaimBindingV1'&&claimBinding.value.stampId==='ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS'&&claimBinding.value.contourId==='R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE'&&claimBinding.value.verdict==='PASS'&&claimBinding.value.nonClaims?.includes('NO_SUPPORTED_DENOMINATOR_CELL_PASS')&&claimBinding.value.nonClaims?.includes('NO_ROUTE_QUALIFICATION_PROMOTION_TO_DENOMINATOR_PASS'),'E_R24_INTEROP100_CLAIM_BINDING_SHAPE');
+  assert(claimBinding.value.claimBindings?.length===1&&claimBinding.value.claimBindings[0]?.filePath===e.inventoryPath&&claimBinding.value.claimBindings[0]?.sha256===inventory.digest&&claimBinding.value.claimBindings[0]?.claimTerms?.includes('PASS'),'E_R24_INTEROP100_CLAIM_BINDING_DIGEST');
   for(const relative of [e.contractTestPath,e.postAuditTestPath]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===h(objectBytes(git,resolvedCandidate,relative)),'E_R24_INTEROP100_INVENTORY_TEST_DIGEST',relative);}
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_R24_INTEROP100_APPROVALS_SHAPE');
   const approvalMap=new Map();
@@ -3546,10 +3554,12 @@ export function verifyR24Interop100GoogleDocxImportRoutePostEvaluationException(
   const expectedApprovalPaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath);
   for(const relative of expectedApprovalPaths){const sha=h(objectBytes(git,resolvedCandidate,relative));const approval=approvalMap.get(`${relative}\0${sha}`);assert(approval?.approvedBy===e.approvedBy&&approval.approved===true,'E_R24_INTEROP100_APPROVAL_DIGEST',relative);}
   for(const token of ['validateInterop100','GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED','ROUTE_QUALIFIED_NOT_CELL_PASS','WORD_PHYSICAL_RUNTIME_ROOT'])assert(validator.text.includes(token),'E_R24_INTEROP100_VALIDATOR_TOKEN',token);
+  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V27','ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS','NO_SUPPORTED_DENOMINATOR_CELL_PASS'])assert(claimLint.text.includes(token),'E_R24_INTEROP100_CLAIM_LINT_TOKEN',token);
+  for(const token of ['PRE00F plan delivery inventory binding is accepted only as historical bytes','ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS'])assert(claimLintTest.text.includes(token),'E_R24_INTEROP100_CLAIM_LINT_TEST_TOKEN',token);
   for(const token of ['Google local DOCX native import is route-qualified only through an internal uploaded-file reference','validator rejects attempts to count route qualification, direct local path import, or unsafe Word roots as denominator PASS','WORD_PHYSICAL_RUNTIME_ROOT'])assert(contractTest.text.includes(token),'E_R24_INTEROP100_CONTRACT_TEST_TOKEN',token);
   for(const token of ['R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION','verifyR24Interop100GoogleDocxImportRoutePostEvaluationException','E_R24_INTEROP100_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_INTEROP100_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['R24 interop 100 Google DOCX import route exception accepts exact denominator delivery delta','R24 interop 100 Google DOCX import route exception rejects an unadmitted future path'])assert(postAuditTest.text.includes(token),'E_R24_INTEROP100_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,denominatorDigest:denominator.digest,ledgerDigest:ledger.digest,catalogDigest:catalog.digest,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,validatorDigest:validator.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,requiredCellDenominator:validation.requiredCells,passedRequiredCells:validation.passedRequiredCells,percentage:validation.percentage,claimVerdict:validation.claimVerdict,googleLocalDocxImportRoute:'INTERNAL_UPLOADED_FILE_REFERENCE_PASS_NON_CELL',directLocalPathImportTypedBlocker:INTEROP100_GOOGLE_DOCX_IMPORT_TYPED_BLOCKER,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  return{schemaVersion:'R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,denominatorDigest:denominator.digest,ledgerDigest:ledger.digest,catalogDigest:catalog.digest,inventoryDigest:inventory.digest,claimBindingDigest:claimBinding.digest,approvalsDigest:approvals.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,validatorDigest:validator.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,requiredCellDenominator:validation.requiredCells,passedRequiredCells:validation.passedRequiredCells,percentage:validation.percentage,claimVerdict:validation.claimVerdict,googleLocalDocxImportRoute:'INTERNAL_UPLOADED_FILE_REFERENCE_PASS_NON_CELL',directLocalPathImportTypedBlocker:INTEROP100_GOOGLE_DOCX_IMPORT_TYPED_BLOCKER,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){

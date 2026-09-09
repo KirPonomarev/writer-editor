@@ -48,29 +48,56 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "679c03565ac2f7b21bbb5cd42a3f14eb9d8ed9f81131282ca91339c278076c88",
+      "sha256": "2003f0c7ce41a63ec34a4e6aa966cd6def1ef7d344297e1d10f0a21b997d8e08",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:18:29Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve generated C1B inventory refresh caused by the new interop denominator contract test and its post-audit verifier coverage: total test file denominator remains 1459 with zero required or unexplained skips. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "rationale": "Approve generated C1B inventory refresh caused by the new interop denominator contract test, docs-claim-lint PRE00F historical regression, and post-audit verifier coverage: total test file denominator remains 1459 with zero required or unexplained skips. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "77ccc0a6b363d176abc187958503648764d77a56e374225b184bf9853305a74d",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:40:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve append-only historical inventory pin V27 for PRE00F after the interop denominator inventory refresh: preserves the PRE00F claim-binding bytes as historical evidence while requiring a separate current C1B binding carrier, with no denominator-cell PASS or product runtime behavior change.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "f08ca2572999086dede82729bf10b8f3cbebb5a4420ca410916880b51273c240",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:40:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve regression coverage proving the PRE00F C1B inventory binding is accepted only as exact historical bytes after the interop denominator refresh, without broad portability PASS, dependency, UI, release, or program-done authority.",
       "approved": true
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "a021d10d63960916e163fa41a29572da987935f6894c44a8ee12e2013c0034a1",
+      "sha256": "1e9c0573fd93193d4daa14c51c290db0a34f795be26dae7b6d4922742701b3d5",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:18:29Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded post-audit verifier support for the interop denominator contour: preserves PRE00F as historical evidence, admits the new exact-base interop Google DOCX import route delta, and enforces typed-blocker/non-cell accounting without product runtime, dependency, UI, release, or portability PASS authority.",
+      "rationale": "Approve bounded post-audit verifier support for the interop denominator contour: preserves PRE00F as historical evidence, admits the new exact-base interop Google DOCX import route delta, enforces the current C1B claim-binding carrier, and enforces typed-blocker/non-cell accounting without product runtime, dependency, UI, release, or portability PASS authority.",
       "approved": true
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "1091b97d372f742a3d2e52340cc4a3b7f1c4d5f2cbc8b12ad0501bd688c9040c",
+      "sha256": "2045a6a3ea03744bc26d641f116f1ffafbe9d4f7d628998d8233043cf91d5634",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:18:29Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded post-audit regression tests for the interop denominator contour: proves exact admitted delta, rejects unadmitted future paths, and rejects route-qualification promotion into required-cell PASS. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "rationale": "Approve bounded post-audit regression tests for the interop denominator contour: proves exact admitted delta including the current C1B claim-binding carrier, rejects unadmitted future paths, and rejects route-qualification promotion into required-cell PASS. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
+      "sha256": "5bd6ccf3773b44aa08768f105bfc98161c32463f21ebec765c56812c9c529d18",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:40:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded current C1B claim-binding carrier required by docs-claim-lint after the interop denominator inventory refresh: binds only the current C1B_TEST_INVENTORY_V1.json digest and explicitly denies denominator-cell PASS, broad C1-C8 portability PASS, product runtime network, dependency, UI, release, and program-done authority.",
       "approved": true
     }
   ]

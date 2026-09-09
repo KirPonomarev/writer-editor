@@ -191,10 +191,18 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V26 = Object.freeze([
   Object.freeze({ stampId: 'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION', stampSha256: 'f534b84f0d2e657c9f9b71115899e5e36ad61c90f8e36894ba869afac982fcfe',
     evaluationSha: 'aecdebbc176de8b1068214032db12d3b97ed3d7f', evaluationTree: '9c8a063181cb1765047b993e0052844a0ac27250', targetSha256: '296768b66b7c59a4c2a852c612ec042360be5ec86c24079f49a51cf088840c3f' }),
 ]);
+// R24 interop-100 route qualification retains the exact PRE00F inventory
+// binding as historical bytes while publishing a separate current C1B claim
+// binding carrier. This is NO_SUPPORTED_DENOMINATOR_CELL_PASS evidence.
+export const HISTORICAL_INVENTORY_CLAIM_PINS_V27 = Object.freeze([
+  ...HISTORICAL_INVENTORY_CLAIM_PINS_V26,
+  Object.freeze({ stampId: 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS', stampSha256: '19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d',
+    evaluationSha: '31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18', evaluationTree: '4e3947455f98d19bed8aaf1687bfdcaf9a21e83b', targetSha256: '174e2fac313d77f54d222bb763ca5477104ce72d4ac965301039080a86f02e2e' }),
+]);
 const INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 const historicalGit = (rootDir, args) => execFileSync('git', args, { cwd: rootDir, encoding: null, maxBuffer: 4 * 1024 * 1024, timeout: 15000, stdio: ['ignore','pipe','pipe'] });
 export function verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes, binding, git = historicalGit }) {
-  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V26.find(item => item.stampId === stamp.stampId);
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V27.find(item => item.stampId === stamp.stampId);
   if (!pin || binding.filePath !== INVENTORY_PATH) return null;
   const fail = () => { const error = new Error('E_HISTORICAL_INVENTORY_BINDING'); error.code = error.message; throw error; };
   if (sha256hex(stampBytes) !== pin.stampSha256 || binding.sha256 !== pin.targetSha256) fail();
@@ -263,7 +271,7 @@ function addBinding({ rootDir, evidenceDir, stamp, file, bindingsByFile, histori
     }
     const actual = sha256hex(fs.readFileSync(normalizedTarget));
     if (actual !== binding.sha256 && relativePath === INVENTORY_PATH
-      && HISTORICAL_INVENTORY_CLAIM_PINS_V26.some(pin => pin.stampId === stamp.stampId)) {
+      && HISTORICAL_INVENTORY_CLAIM_PINS_V27.some(pin => pin.stampId === stamp.stampId)) {
       try {
         const historical = verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes: fs.readFileSync(file), binding });
         if (historical) { historicalBindings.push(historical); continue; }
