@@ -385,6 +385,8 @@ export const R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION=Object.freeze({
   contractTestPath:'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  approvalCarrierPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  approvalCarrierApprovedBy:'owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09',
   claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
   claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
   planPath:'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
@@ -399,6 +401,7 @@ export const R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION=Object.freeze({
   admittedPaths:[
     'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
@@ -4026,7 +4029,7 @@ export function verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({cand
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_RCV00D_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_RCV00D_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_RCV00D_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),register=readJson(e.registerPath),evidence=readJson(e.evidencePath),selectorReceipt=readJson(e.selectorReceiptPath),selector=readText(e.selectorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),plan=readText(e.planPath),planState=readText(e.planStatePath);
+  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),register=readJson(e.registerPath),evidence=readJson(e.evidencePath),selectorReceipt=readJson(e.selectorReceiptPath),selector=readText(e.selectorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),approvalCarrier=readText(e.approvalCarrierPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),plan=readText(e.planPath),planState=readText(e.planStatePath);
   const registerResult=validateCorrectiveRegister(register.value);
   assert(registerResult.status==='PASS'&&registerResult.findingCount===45&&registerResult.currentObservationCount===1&&registerResult.activeConfirmedCurrentObservations===1,'E_RCV00D_REGISTER_VALIDATION');
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_RCV00D_INVENTORY_SHAPE');
@@ -4051,7 +4054,8 @@ export function verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({cand
   assert(implementationDigestMap.get(e.planPath)?.sha256===plan.digest&&implementationDigestMap.get(e.planPath)?.terms?.includes('NARRATIVE_NEXT_STEP_NON_AUTHORITY'),'E_RCV00D_PLAN_INPUT_BINDING');
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_RCV00D_APPROVALS_SHAPE');
   const approvalMap=new Map(approvals.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
-  const governancePaths=e.admittedPaths.filter((item)=>item!==e.approvalsPath&&(item.startsWith('docs/OPS/')||item.startsWith('scripts/ops/')||item.startsWith('test/contracts/')));
+  assert(approvalCarrier.text.includes(e.approvalCarrierApprovedBy)&&approvalCarrier.text.includes(e.selectorPath),'E_RCV00D_APPROVAL_CARRIER_BINDING');
+  const governancePaths=e.admittedPaths.filter((item)=>item!==e.approvalsPath&&item!==e.approvalCarrierPath&&(item.startsWith('docs/OPS/')||item.startsWith('scripts/ops/')||item.startsWith('test/contracts/')));
   for(const relative of governancePaths){
     const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);
     assert(approval?.approved===true&&approval.approvedBy===e.approvedBy,'E_RCV00D_APPROVAL_DIGEST',relative);

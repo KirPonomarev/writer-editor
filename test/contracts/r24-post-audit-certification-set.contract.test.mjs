@@ -840,6 +840,8 @@ test('RCV00D graph-derived selector exception accepts the exact selector delta',
   assert.equal(result.candidateSha,fixture.candidateSha);
   assert.equal(result.admittedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
   assert.equal(result.changedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,11);
+  assert.ok(result.changedPaths.includes(R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.approvalCarrierPath));
   assert.equal(result.inventoryDenominator,1462);
   assert.equal(result.selectedId,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.selectedObservationId);
   assert.equal(result.selectedContour,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.selectedContour);
