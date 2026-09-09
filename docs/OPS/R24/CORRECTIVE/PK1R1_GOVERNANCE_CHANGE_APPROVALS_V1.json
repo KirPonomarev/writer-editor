@@ -373,10 +373,10 @@
     },
     {
       "filePath": "test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs",
-      "sha256": "2c0c6aff8fd9abb4aeaec7a24c707deb61c16f1285b2b84390f444e11cb818f8",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "31cd36bcc537f1d5e02c9110b08fa61716bd6445ac50602d5c231f9bb7a1b757",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves final WP708 compatibility shim bytes after removing the intermediate WP806 historical-byte simulation so current-head WP806 carriers bind consistently; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
     },
     {
       "filePath": "test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs",
