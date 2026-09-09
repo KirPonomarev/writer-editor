@@ -75,6 +75,23 @@ function baseParts(document) {
   };
 }
 
+function trackedReplacementParagraph(gap = '', ids = ['d1', 'i1'], author = 'Ada') {
+  return `<w:p><w:del w:id="${ids[0]}" w:author="${author}"><w:r><w:delText>old</w:delText></w:r></w:del>${gap}<w:ins w:id="${ids[1]}" w:author="${author}"><w:r><w:t>new</w:t></w:r></w:ins></w:p>`;
+}
+
+function replacementGroupIds(result) {
+  return [...new Set((result.reviewIr?.textRevisions || [])
+    .map((item) => item.replacementGroupId)
+    .filter(Boolean))];
+}
+
+function assertReviewAnalysisOnly(result) {
+  assert.equal(result.ok, true);
+  assert.equal(result.code, 'RTK_NO_WRITE_ANALYSIS_READY');
+  assert.equal(result.canApply, false);
+  assert.equal(result.canWriteManuscript, false);
+}
+
 test('B02 parser is namespace and attribute-order stable without regex XML authority', async () => {
   const parser = await loadParser();
   const first = parser.parseReviewTransportPackageV2({
@@ -189,6 +206,87 @@ test('B02 parser treats Word-normalized insert-delete replacements as tracked-on
     && item.writerAuthorityImpact === 'inventory-only'
   )), true);
   assert.equal(result.reasons.some((reason) => reason.code === 'RTK_MANUAL_MIXED_RETURN'), false);
+});
+
+test('B02 parser does not form replacement groups across visible run boundaries', async () => {
+  const parser = await loadParser();
+  const adjacent = parser.parseReviewTransportPackageV2({
+    parts: baseParts(documentXml(trackedReplacementParagraph())),
+  }, { cryptoPort });
+  assertReviewAnalysisOnly(adjacent);
+  assert.equal(adjacent.reviewIr.textRevisions.length, 2);
+  assert.equal(replacementGroupIds(adjacent).length, 1);
+
+  const emptyText = parser.parseReviewTransportPackageV2({
+    parts: baseParts(documentXml(trackedReplacementParagraph('<w:r><w:t></w:t></w:r>'))),
+  }, { cryptoPort });
+  assertReviewAnalysisOnly(emptyText);
+  assert.equal(replacementGroupIds(emptyText).length, 1);
+
+  const boundaryCases = [
+    ['visible-text', '<w:r><w:t> keep visible boundary </w:t></w:r>'],
+    ['preserved-space-text', '<w:r><w:t xml:space="preserve"> </w:t></w:r>'],
+    ['tab', '<w:r><w:tab/></w:r>'],
+    ['line-break', '<w:r><w:br/></w:r>'],
+    ['page-break', '<w:r><w:br w:type="page"/></w:r>'],
+    ['column-break', '<w:r><w:br w:type="column"/></w:r>'],
+    ['carriage-return', '<w:r><w:cr/></w:r>'],
+    ['soft-hyphen', '<w:r><w:softHyphen/></w:r>'],
+    ['no-break-hyphen', '<w:r><w:noBreakHyphen/></w:r>'],
+    ['symbol-wingdings', '<w:r><w:sym w:font="Wingdings" w:char="F04A"/></w:r>'],
+    ['symbol-missing-char-conservative', '<w:r><w:sym w:font="Wingdings"/></w:r>'],
+    ['positional-tab', '<w:r><w:ptab w:alignment="center" w:relativeTo="margin" w:leader="none"/></w:r>'],
+    ['separator', '<w:r><w:separator/></w:r>'],
+    ['continuation-separator', '<w:r><w:continuationSeparator/></w:r>'],
+    ['footnote-ref', '<w:r><w:footnoteRef/></w:r>'],
+    ['endnote-ref', '<w:r><w:endnoteRef/></w:r>'],
+    ['annotation-ref', '<w:r><w:annotationRef/></w:r>'],
+    ['comment-reference', '<w:r><w:commentReference w:id="7"/></w:r>'],
+    ['footnote-reference', '<w:r><w:footnoteReference w:id="2"/></w:r>'],
+    ['endnote-reference', '<w:r><w:endnoteReference w:id="3"/></w:r>'],
+    ['drawing', '<w:r><w:drawing/></w:r>'],
+    ['pict', '<w:r><w:pict/></w:r>'],
+    ['object', '<w:r><w:object/></w:r>'],
+    ['field-simple', '<w:fldSimple w:instr="DATE"><w:r><w:t>1 January 2026</w:t></w:r></w:fldSimple>'],
+    ['instruction-text', '<w:r><w:instrText> HYPERLINK "https://example.invalid" </w:instrText></w:r>'],
+  ];
+
+  for (const [caseId, gap] of boundaryCases) {
+    const result = parser.parseReviewTransportPackageV2({
+      parts: baseParts(documentXml(trackedReplacementParagraph(gap))),
+    }, { cryptoPort });
+    assertReviewAnalysisOnly(result);
+    assert.equal(result.reviewIr.textRevisions.length, 2, caseId);
+    assert.equal(replacementGroupIds(result).length, 0, caseId);
+  }
+});
+
+test('B02 parser replacement grouping uses a boundary index and stays count-stable on dense revisions', async () => {
+  const parser = await loadParser();
+  const source = fs.readFileSync(path.join(process.cwd(), PARSER_PATH), 'utf8');
+  const groupLoopSection = source.slice(
+    source.indexOf('const replacementBoundaryIndex = createRevisionReplacementGroupBoundaryIndex'),
+    source.indexOf('return ordered;', source.indexOf('const replacementBoundaryIndex = createRevisionReplacementGroupBoundaryIndex')),
+  );
+
+  assert.equal(source.includes('function createRevisionReplacementGroupBoundaryIndex'), true);
+  assert.equal(source.includes("'sym'"), true);
+  assert.match(source, /const replacementBoundaryIndex = createRevisionReplacementGroupBoundaryIndex\(documentXml, documentScan\);\s*for \(let index = 0; index < ordered\.length - 1/u);
+  assert.equal(groupLoopSection.includes('documentScan.tokens'), false);
+  assert.equal(groupLoopSection.includes('replacementBoundaryIndex.hasBoundaryBetween(left, right)'), true);
+
+  for (const pairCount of [32, 64, 128, 256]) {
+    let body = '';
+    for (let index = 0; index < pairCount; index += 1) {
+      body += trackedReplacementParagraph('', [`d${index}`, `i${index}`], 'Ada');
+    }
+    const result = parser.parseReviewTransportPackageV2({
+      parts: baseParts(documentXml(body)),
+    }, { cryptoPort });
+    assertReviewAnalysisOnly(result);
+    assert.equal(result.reviewIr.textRevisions.length, pairCount * 2, `text revisions ${pairCount}`);
+    assert.equal(replacementGroupIds(result).length, pairCount, `replacement groups ${pairCount}`);
+  }
 });
 
 test('B02 parser blocks hostile package inventory external rel active content CRC mismatch and fake EOCD', async () => {

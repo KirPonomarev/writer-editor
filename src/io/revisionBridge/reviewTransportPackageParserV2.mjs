@@ -1146,6 +1146,81 @@ function placementForFormattingDelta(documentScan, delta) {
   };
 }
 
+const REVISION_GROUP_TEXT_BOUNDARY_TOKENS = Object.freeze([
+  't',
+  'delText',
+]);
+const REVISION_GROUP_VISIBLE_NON_TEXT_BOUNDARY_TOKENS = Object.freeze([
+  'tab',
+  'br',
+  'cr',
+  'softHyphen',
+  'noBreakHyphen',
+  'sym',
+  'ptab',
+  'separator',
+  'continuationSeparator',
+  'footnoteRef',
+  'endnoteRef',
+  'annotationRef',
+  'commentReference',
+]);
+const REVISION_GROUP_STRUCTURAL_BOUNDARY_TOKENS = Object.freeze([
+  'p',
+  'tbl',
+  'tr',
+  'tc',
+  'drawing',
+  'pict',
+  'object',
+  'altChunk',
+  'footnoteReference',
+  'endnoteReference',
+  'fldSimple',
+  'instrText',
+]);
+
+function isRevisionReplacementGroupBoundaryToken(documentXml, token) {
+  if (token.namespaceUri !== W_NS) return false;
+  if (REVISION_GROUP_TEXT_BOUNDARY_TOKENS.includes(token.localName)) {
+    return decodeEntities(elementBody(documentXml, token)).length > 0;
+  }
+  if (REVISION_GROUP_VISIBLE_NON_TEXT_BOUNDARY_TOKENS.includes(token.localName)) return true;
+  return REVISION_GROUP_STRUCTURAL_BOUNDARY_TOKENS.includes(token.localName);
+}
+
+function createRevisionReplacementGroupBoundaryIndex(documentXml, documentScan) {
+  const boundaries = (Array.isArray(documentScan?.tokens) ? documentScan.tokens : [])
+    .filter((token) => isRevisionReplacementGroupBoundaryToken(documentXml, token))
+    .map((token) => ({
+      openStart: token.openStart,
+      closeEnd: token.closeEnd,
+      localName: token.localName,
+    }))
+    .sort((left, right) => left.openStart - right.openStart || left.closeEnd - right.closeEnd);
+  return {
+    boundaries,
+    hasBoundaryBetween(left, right) {
+      const gapStart = left?.sourceXmlProvenance?.closeEnd;
+      const gapEnd = right?.sourceXmlProvenance?.openStart;
+      if (!Number.isFinite(gapStart) || !Number.isFinite(gapEnd) || gapEnd <= gapStart) return false;
+      let low = 0;
+      let high = boundaries.length;
+      while (low < high) {
+        const middle = Math.floor((low + high) / 2);
+        if (boundaries[middle].openStart < gapStart) low = middle + 1;
+        else high = middle;
+      }
+      for (let index = low; index < boundaries.length; index += 1) {
+        const boundary = boundaries[index];
+        if (boundary.openStart >= gapEnd) return false;
+        if (boundary.closeEnd <= gapEnd) return true;
+      }
+      return false;
+    },
+  };
+}
+
 // PARSER-01 (P4): only the EXACT WordprocessingML namespace (Transitional profile
 // URI) is Word revision evidence. An empty namespace ('') or a foreign namespace
 // is NOT Word — a no-namespace <ins> can never become a Word TextRevision.
@@ -1460,6 +1535,7 @@ function parseTextRevisions(documentXml, documentScan, cryptoPort, budgets, budg
   // no intermediate visible/structural atom between them, compatible metadata
   // (same author OR missing metadata — conservative), and exactly one deleting
   // + one inserting footprint. The raw XML byte distance is NOT authority.
+  const replacementBoundaryIndex = createRevisionReplacementGroupBoundaryIndex(documentXml, documentScan);
   for (let index = 0; index < ordered.length - 1; index += 1) {
     const left = ordered[index];
     const right = ordered[index + 1];
@@ -1468,6 +1544,7 @@ function parseTextRevisions(documentXml, documentScan, cryptoPort, budgets, budg
     const deleteFirst = left.operation === 'delete' && right.operation === 'insert';
     const insertFirst = left.operation === 'insert' && right.operation === 'delete';
     if (!deleteFirst && !insertFirst) continue;
+    if (replacementBoundaryIndex.hasBoundaryBetween(left, right)) continue;
     // Conservative metadata policy: same author OR both missing author.
     const sameAuthor = left.author && right.author && left.author === right.author;
     const bothMissingAuthor = !left.author && !right.author;
