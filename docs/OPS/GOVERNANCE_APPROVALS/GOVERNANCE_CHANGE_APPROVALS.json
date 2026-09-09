@@ -7707,10 +7707,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "sha256": "6d2a670e3f138caeb9796f190947281971be277b705be2d0d93085cce4ece43c",
-      "approvedBy": "owner:TASK_ID:WORD_RTK_NEXT_PRODUCT_VERTICAL_CONTOUR",
-      "approvedAtUtc": "2026-08-01T03:35:00.000Z",
-      "rationale": "Approve bounded P0 product vertical tracked-edit contour: one synthetic Product Review DOCX physically edited by Word, authenticated V2 return intake, visible preview, explicit command apply, project reopen, replay idempotence, veto metrics zero, automatic apply false, Word saturated false, later editor stages closed."
+      "sha256": "13ce852b13db4134c9cf81795a809f76781bdf0a6f41f162eae7818ec7511a20",
+      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
@@ -11423,12 +11425,12 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e30fb28be97293e2ac2f59c335359a7938e7243388128d5239d21dcd306f1200",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "sha256": "10510333789a313253f5fbf76d94513392e3ad8866123f9efbe26f6e4d580da2",
+      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
       "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
@@ -11485,15 +11487,6 @@
       "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "bf962ad122a1cf071fac226ff9d671b5a3aaa7a3d7195bef9e17918dd40320cf",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
-    },
-    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-EFFECTIVE-STATE-COMPILER-CLAIM-BINDINGS.json",
       "sha256": "b6df9777d931cc4949d2fbe50d5d0bddf27be0d3174ac090676a6476e3b55c19",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
@@ -11503,22 +11496,13 @@
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "0de30b02f3db629a4085067d5177447a89a930a049091c1044f47f3f4258db3c",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
-    },
-    {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "4dad0b52b8defc482464791eb5f49f2b837359ad4ae88eb18c8dc7cb0d24ac22",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
+      "sha256": "f63ba9a57d0eb00306aa97c7edc0ee5520e8a26365a6ddf39cc41424b99add5d",
+      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
       "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
     },
     {
       "filePath": "scripts/ops/r24/effective-state-compiler.mjs",
@@ -11558,12 +11542,12 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "43455bf700f1ad4083e87d0baed773f17f48c2db607f412f54e8cd1c72e43743",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
+      "sha256": "bdfd6fa4c670058398ac0e8c020a4686feaffa75e340ee1f47e587661fcdca33",
+      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
       "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
     },
     {
       "filePath": "scripts/ops/r24/tests/effective-state-compiler.test.mjs",
@@ -11586,15 +11570,6 @@
     {
       "filePath": "scripts/ops/r24/tests/scheduler.test.mjs",
       "sha256": "6028d746b813bd5a591af318120def450698ad2a287465a281e3a9c2c055f56a",
-      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
-      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
-      "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "c1738bdfc0a6d4efe617f24f7f4a00b8e9f74e563dbb67ca3b5b1e67f5d2fc3a",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
       "approvedAtUtc": "2026-09-09T15:32:11.069Z",
       "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
@@ -11645,6 +11620,72 @@
       "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a11728d9c31e3d3019db8874443f1e2c2c9591e6545f79e5dfbd8f916ebf9fb3",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
+      "sha256": "fbfd6cedecaddd138b70eeb5d2c4d37f2def64a984efd2b35f9094335c203862",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS.json",
+      "sha256": "8906c688a76e7417f0fa599126ff34944fbe364036d56bb7eef5c76889ab968f",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3675552e4db5ecf259b95b58ca297da02b1ecf7ec2217640a924d729ce281315",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00c-corrective-register.mjs",
+      "sha256": "19b018f933b2b49ae2d962cb6c179128c3d991a1b0c700ae2a933f0965269bd6",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "f631bcc9e19641f784d8b8734663328948ed4dbe6b10d05f40aab0e1acfd14af",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00c-corrective-register.contract.test.mjs",
+      "sha256": "4d57be01c18964cde1ffe8a1653f6e943bede6e52ca81001d4ed858f6b5b0c16",
+      "approvedBy": "owner-directive:R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Approve R24-RCV-00C corrective register and crosswalk governance artifacts: exact 45-finding register, current export-defect observation lane, focused validator/test, claim bindings and post-audit candidate verifier; no graph node creation, product runtime change, UI change, dependency change, network truth, program DONE or release readiness claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
     }
+  ],
+  "evidenceStampIds": [
+    "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS"
   ]
 }

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
+  "contourId": "R24_RCV_00C_CORRECTIVE_REGISTER_CROSSWALK",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "ce5ea0f1a9e91d25b91dc361209c32b13b528640",
+  "originMainSha": "ce5ea0f1a9e91d25b91dc361209c32b13b528640",
+  "generatedAtUtc": "2026-09-09T00:00:00.000Z",
+  "oracle": "R24_CORRECTIVE_REGISTER_PLAN_CROSSWALK_AND_GRAPH_BOUNDARY_VALIDATOR",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a11728d9c31e3d3019db8874443f1e2c2c9591e6545f79e5dfbd8f916ebf9fb3",
+      "claimTerms": [
+        "PASS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
+      "sha256": "fbfd6cedecaddd138b70eeb5d2c4d37f2def64a984efd2b35f9094335c203862",
+      "claimTerms": [
+        "PASS"
+      ]
+    }
+  ],
+  "implementationArtifactDigests": [
+    {
+      "path": "scripts/ops/r24/corrective/rcv00c-corrective-register.mjs",
+      "sha256": "19b018f933b2b49ae2d962cb6c179128c3d991a1b0c700ae2a933f0965269bd6",
+      "terms": [
+        "R24_RCV_00C_CORRECTIVE_REGISTER_CROSSWALK",
+        "EXACT_DELTA_BOUND",
+        "MUTANT_NEGATIVE_PROOF"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-rcv00c-corrective-register.contract.test.mjs",
+      "sha256": "4d57be01c18964cde1ffe8a1653f6e943bede6e52ca81001d4ed858f6b5b0c16",
+      "terms": [
+        "R24_RCV_00C_CORRECTIVE_REGISTER_CROSSWALK",
+        "EXACT_DELTA_BOUND",
+        "MUTANT_NEGATIVE_PROOF"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3675552e4db5ecf259b95b58ca297da02b1ecf7ec2217640a924d729ce281315",
+      "terms": [
+        "R24_RCV_00C_CORRECTIVE_REGISTER_CROSSWALK",
+        "EXACT_DELTA_BOUND",
+        "MUTANT_NEGATIVE_PROOF"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "f631bcc9e19641f784d8b8734663328948ed4dbe6b10d05f40aab0e1acfd14af",
+      "terms": [
+        "R24_RCV_00C_CORRECTIVE_REGISTER_CROSSWALK",
+        "EXACT_DELTA_BOUND",
+        "MUTANT_NEGATIVE_PROOF"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --version; npm --version",
+      "verdict": "PASS",
+      "requiredDisposition": "node v22.12.0 and npm 10.9.0 observed inside package-isolated envelope"
+    },
+    {
+      "command": "node scripts/ops/r24/corrective/rcv00c-corrective-register.mjs --check docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
+      "verdict": "PASS",
+      "requiredDisposition": "findingCount 45, currentObservationCount 1, activeConfirmed 3, recordedGraphOpen 9, graphNodeCount 109"
+    },
+    {
+      "command": "node --test test/contracts/r24-rcv00c-corrective-register.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 12,
+        "fail": 0
+      },
+      "mutants": {
+        "killed": 9,
+        "survived": 0
+      },
+      "requiredDisposition": "duplicate, disagreement, graph promotion, forged evidence, forged closure/history, status policy, export observation and evidence-smuggling mutants rejected"
+    }
+  ],
+  "nonClaims": [
+    "NO_GRAPH_NODE_CREATION",
+    "NO_GRAPH_STATE_TRANSITION",
+    "NO_PRODUCT_RUNTIME_FEATURE",
+    "NO_PROGRAM_DONE",
+    "NO_RELEASE_READINESS",
+    "NO_NEW_DEPENDENCY",
+    "NO_RUNTIME_NETWORK_OR_CLOUD_TRUTH",
+    "NO_UI_OR_DESIGN_CONTRACT_CHANGE",
+    "NO_VISIBLE_USER_EXPORT_ROUTE_CLAIM",
+    "NO_SOURCE_EXPORT_FIX_IN_RCV00C"
+  ]
+}
