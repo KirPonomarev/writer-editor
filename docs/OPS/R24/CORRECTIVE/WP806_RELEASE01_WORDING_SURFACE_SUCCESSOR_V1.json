@@ -27,7 +27,7 @@
     {
       "surfaceId": "surface-package-json",
       "path": "package.json",
-      "sha256": "sha256:e1eb71358e8cdd8d114814f6ad6286ced35bf21229210b385a939b1e4c149e57"
+      "sha256": "sha256:f4ccb9cb2c6f7c0753ead9730caf009b16c9b06fd9bbb8083e937d51f9f913e1"
     },
     {
       "surfaceId": "surface-editor-js",

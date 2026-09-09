@@ -48,7 +48,13 @@ export function verifyToolchain({ verifyRuntime = true, verifyBundles = true } =
   assert(fs.readFileSync('.node-version', 'utf8') === `${EXPECTED.node}\n`, 'E_NODE_PIN', '.node-version');
   assert(pkg.packageManager === EXPECTED.packageManager, 'E_PACKAGE_MANAGER_PIN', pkg.packageManager);
   assert(pkg.engines?.node === EXPECTED.nodeEngine && pkg.engines?.npm === EXPECTED.npmEngine, 'E_ENGINE_CONTRACT', JSON.stringify(pkg.engines));
-  assert(pkg.scripts?.['r24:test-inventory'] === 'node scripts/ops/r24/test-inventory.mjs --check docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json', 'E_INVENTORY_SCRIPT', pkg.scripts?.['r24:test-inventory']);
+  assert(pkg.scripts?.['r24:toolchain'] === 'node scripts/ops/r24/exact-toolchain-entrypoint.mjs --check', 'E_EXACT_TOOLCHAIN_SCRIPT', pkg.scripts?.['r24:toolchain']);
+  assert(pkg.scripts?.['r24:test-inventory'] === 'npm run -s r24:toolchain && node scripts/ops/r24/test-inventory.mjs --check docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json', 'E_INVENTORY_SCRIPT', pkg.scripts?.['r24:test-inventory']);
+  for (const [name, command] of Object.entries(pkg.scripts || {})) {
+    if (name === 'r24:test-inventory' || name.startsWith('test:r24')) {
+      assert(String(command).startsWith('npm run -s r24:toolchain && '), 'E_R24_ENTRYPOINT_PRECHECK', name);
+    }
+  }
   assert(lock.lockfileVersion === 3, 'E_LOCKFILE_VERSION', lock.lockfileVersion);
   assert(lock.packages?.['']?.engines?.node === EXPECTED.nodeEngine && lock.packages?.['']?.engines?.npm === EXPECTED.npmEngine, 'E_LOCK_ROOT_ENGINES', JSON.stringify(lock.packages?.['']?.engines));
   assert(lock.packages?.['']?.devDependencies?.electron === EXPECTED.electron, 'E_LOCK_ELECTRON_ROOT', lock.packages?.['']?.devDependencies?.electron);

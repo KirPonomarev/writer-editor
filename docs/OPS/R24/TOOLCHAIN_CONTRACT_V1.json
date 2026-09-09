@@ -3,10 +3,13 @@
   "contour": "Q0_TOOLCHAIN_HYGIENE",
   "boundBaseSha": "5ab261fa7dc4a1ae4693f78d5e5ee0c270bfc111",
   "node": {
+    "exact": "22.12.0",
     "enginesRange": ">=22.12.0 <23.0.0",
-    "law": "supported product and CI runtime is Node 22 at or above 22.12.0 and below 23; CI pins the exact 22.12.x line; local runners must resolve a satisfying binary without relying on PATH shims"
+    "law": "supported product and CI runtime remains the Node 22 engines range, but every R2.4 verification entrypoint must check or select the exact .node-version runtime before expensive work"
   },
   "npm": {
+    "exact": "10.9.0",
+    "packageManager": "npm@10.9.0",
     "enginesRange": ">=10.9.0 <11.0.0",
     "lockfileVersion": 3,
     "onlyLockfile": "package-lock.json",
@@ -15,6 +18,9 @@
   },
   "workflows": {
     "singleNodeVersion": "22.12.x",
+    "nodeVersionFile": ".node-version",
+    "exactNodeVersion": "22.12.0",
+    "exactNpmVersion": "10.9.0",
     "allowedActionPins": {
       "actions/checkout": "v4",
       "actions/setup-node": "v4",
