@@ -586,12 +586,12 @@ test('R24 interop 100 Google DOCX import route exception rejects route qualifica
   assert.throws(()=>verifyR24Interop100GoogleDocxImportRoutePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_VALIDATION/);
 });
 function safeHyperlinkGitFixture({changedPaths,ledgerBytes}={}){
-  const e=R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40);
+  const e=R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,candidateSha=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha,candidateTree=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseTree;
   const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[
     repoPath,
-    repoPath===e.ledgerPath&&ledgerBytes?Buffer.from(ledgerBytes):fs.readFileSync(repoPath),
+    repoPath===e.ledgerPath&&ledgerBytes?Buffer.from(ledgerBytes):objectFromCommit(candidateSha,repoPath),
   ]));
-  bytesByPath.set(e.denominatorPath,fs.readFileSync(e.denominatorPath));
+  bytesByPath.set(e.denominatorPath,objectFromCommit(candidateSha,e.denominatorPath));
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
