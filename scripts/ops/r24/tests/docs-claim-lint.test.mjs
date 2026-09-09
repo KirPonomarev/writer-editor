@@ -11,6 +11,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V24,
   HISTORICAL_INVENTORY_CLAIM_PINS_V25,
   HISTORICAL_INVENTORY_CLAIM_PINS_V27,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V28,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -286,6 +287,32 @@ test('PRE00F plan delivery inventory binding is accepted only as historical byte
   );
 });
 
+test('PRE00E refreshed current inventory bindings are accepted only as historical bytes', () => {
+  const expectedPins = [
+    'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION',
+    'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
+    'ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS',
+  ];
+  for (const stampId of expectedPins) {
+    const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V28.find(
+      (item) => item.stampId === stampId
+        && item.evaluationSha === '6e9be072a12ff3bd5cc1608da153caf13c5e94c2',
+    );
+    assert.ok(pin, stampId);
+    assert.equal(pin.targetSha256, '3004a23485401be83ac0693b5fec3ce0e9e955bc470dc460db646a0f8078a403');
+    const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:docs/OPS/R24/EVIDENCE/${pin.stampId}.json`], {
+      cwd: REPO_ROOT,
+      encoding: null,
+    });
+    const stamp = JSON.parse(stampBytes);
+    const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+    const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+    assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+    assert.equal(result.currentFileCoverage, false);
+    assert.equal(result.evaluationSha, pin.evaluationSha);
+  }
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
@@ -297,5 +324,8 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
   ));
 });

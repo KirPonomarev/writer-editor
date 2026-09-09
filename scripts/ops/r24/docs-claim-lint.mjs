@@ -199,13 +199,29 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V27 = Object.freeze([
   Object.freeze({ stampId: 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS', stampSha256: '19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d',
     evaluationSha: '31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18', evaluationTree: '4e3947455f98d19bed8aaf1687bfdcaf9a21e83b', targetSha256: '174e2fac313d77f54d222bb763ca5477104ce72d4ac965301039080a86f02e2e' }),
 ]);
+// PRE00E's postmerge repair refreshed the current C1B inventory binding bytes
+// at 6e9be072 while preserving older PRE00E/interop stamps as historical
+// evidence. U+000C page-break repair refreshes the live inventory again, so
+// these exact 6e9be072 inventory bindings remain historical-only.
+export const HISTORICAL_INVENTORY_CLAIM_PINS_V28 = Object.freeze([
+  ...HISTORICAL_INVENTORY_CLAIM_PINS_V27,
+  Object.freeze({ stampId: 'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION', stampSha256: '18936f02792c04bada8d9a2bcb7b804ee7d01eec56c105038fd3a6fd0e9f2210',
+    evaluationSha: '6e9be072a12ff3bd5cc1608da153caf13c5e94c2', evaluationTree: 'e442f006f5c5b8229d51df9b8f1fff5c68803aab', targetSha256: '3004a23485401be83ac0693b5fec3ce0e9e955bc470dc460db646a0f8078a403' }),
+  Object.freeze({ stampId: 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS', stampSha256: '5cd26051c86ee0a9a72bc70fb25a84bf561c9d8851c832c01136d58bea27edbe',
+    evaluationSha: '6e9be072a12ff3bd5cc1608da153caf13c5e94c2', evaluationTree: 'e442f006f5c5b8229d51df9b8f1fff5c68803aab', targetSha256: '3004a23485401be83ac0693b5fec3ce0e9e955bc470dc460db646a0f8078a403' }),
+  Object.freeze({ stampId: 'ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS', stampSha256: '1e66b7d9804872cf450e3689bd7c35405834d6cf9a4e1afa076f10b2407c6288',
+    evaluationSha: '6e9be072a12ff3bd5cc1608da153caf13c5e94c2', evaluationTree: 'e442f006f5c5b8229d51df9b8f1fff5c68803aab', targetSha256: '3004a23485401be83ac0693b5fec3ce0e9e955bc470dc460db646a0f8078a403' }),
+]);
 const INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 const historicalGit = (rootDir, args) => execFileSync('git', args, { cwd: rootDir, encoding: null, maxBuffer: 4 * 1024 * 1024, timeout: 15000, stdio: ['ignore','pipe','pipe'] });
 export function verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes, binding, git = historicalGit }) {
-  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V27.find(item => item.stampId === stamp.stampId);
+  const stampSha256 = sha256hex(stampBytes);
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V28.find(item => item.stampId === stamp.stampId
+    && item.stampSha256 === stampSha256 && item.targetSha256 === binding.sha256)
+    || HISTORICAL_INVENTORY_CLAIM_PINS_V28.find(item => item.stampId === stamp.stampId);
   if (!pin || binding.filePath !== INVENTORY_PATH) return null;
   const fail = () => { const error = new Error('E_HISTORICAL_INVENTORY_BINDING'); error.code = error.message; throw error; };
-  if (sha256hex(stampBytes) !== pin.stampSha256 || binding.sha256 !== pin.targetSha256) fail();
+  if (stampSha256 !== pin.stampSha256 || binding.sha256 !== pin.targetSha256) fail();
   const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
   try {
     const head = git(rootDir, ['rev-parse','HEAD']).toString().trim();
@@ -271,7 +287,7 @@ function addBinding({ rootDir, evidenceDir, stamp, file, bindingsByFile, histori
     }
     const actual = sha256hex(fs.readFileSync(normalizedTarget));
     if (actual !== binding.sha256 && relativePath === INVENTORY_PATH
-      && HISTORICAL_INVENTORY_CLAIM_PINS_V27.some(pin => pin.stampId === stamp.stampId)) {
+      && HISTORICAL_INVENTORY_CLAIM_PINS_V28.some(pin => pin.stampId === stamp.stampId)) {
       try {
         const historical = verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes: fs.readFileSync(file), binding });
         if (historical) { historicalBindings.push(historical); continue; }

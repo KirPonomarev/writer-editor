@@ -39,6 +39,7 @@ import {
   R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
+  R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   verifyAuditCycle2DurableCarrier,
@@ -71,6 +72,7 @@ import {
   verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
+  verifyR24Interop100U000cPagebreakReexportPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -625,6 +627,40 @@ test('R24 interop 100 safe external hyperlink preview exception rejects denomina
   evidence.denominatorImpact.passedRequiredCellsAdded=1;
   const fixture=safeHyperlinkGitFixture({ledgerBytes:canonicalBytes(ledger)});
   assert.throws(()=>verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_SAFE_LINK_EVIDENCE_IDENTITY/);
+});
+function u000cPagebreakGitFixture({changedPaths}={}){
+  const e=R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,candidateSha='7'.repeat(40),candidateTree='8'.repeat(40);
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,fs.readFileSync(repoPath)]));
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 interop 100 U+000C page-break re-export exception accepts exact PR1857 delta',()=>{
+  const fixture=u000cPagebreakGitFixture(),result=verifyR24Interop100U000cPagebreakReexportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,10);
+  assert.equal(result.changedPathDenominator,10);
+  assert.equal(result.pageBreakReexport,'STRUCTURAL_W_BR_PAGE_BOUNDARY_ONLY');
+  assert.equal(result.supportedDenominatorPromotion,false);
+  assert.equal(result.programDone,false);
+});
+test('R24 interop 100 U+000C page-break re-export exception rejects an unadmitted future path',()=>{
+  const e=R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,fixture=u000cPagebreakGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24Interop100U000cPagebreakReexportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_U000C_EXACT_ADMITTED_DELTA/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});
