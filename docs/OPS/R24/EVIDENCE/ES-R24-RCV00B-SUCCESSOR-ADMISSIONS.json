@@ -8,6 +8,8 @@
         "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
         "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json",
         "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+        "scripts/ops/r24/docs-claim-lint.mjs",
+        "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
         "test/contracts/r24-post-audit-certification-set.contract.test.mjs"
       ],
       "authority": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
@@ -37,6 +39,14 @@
           "R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION",
           "verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException",
           "E_RCV00B_SUCCESSOR_UNADMITTED_PATH"
+        ],
+        "scripts/ops/r24/docs-claim-lint.mjs": [
+          "HISTORICAL_INVENTORY_CLAIM_PINS_V30",
+          "ES-R24-RCV00B-EFFECTIVE-STATE-COMPILER-CLAIM-BINDINGS"
+        ],
+        "scripts/ops/r24/tests/docs-claim-lint.test.mjs": [
+          "HISTORICAL_INVENTORY_CLAIM_PINS_V30",
+          "RCV00B effective-state compiler inventory binding is retained only at exact delivery bytes"
         ],
         "test/contracts/r24-post-audit-certification-set.contract.test.mjs": [
           "RCV00B successor admission registry accepts the PR1862 repair delta",

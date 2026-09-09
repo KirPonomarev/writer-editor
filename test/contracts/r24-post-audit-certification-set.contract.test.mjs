@@ -675,6 +675,8 @@ function rcv00bSuccessorGitFixture({changedPaths,registryBytes,baseTree,candidat
     ['docs/HANDOFF.md',fs.readFileSync('docs/HANDOFF.md')],
     ['docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',fs.readFileSync('docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json')],
     ['scripts/ops/r24/corrective/post-audit-certification-set.mjs',fs.readFileSync('scripts/ops/r24/corrective/post-audit-certification-set.mjs')],
+    ['scripts/ops/r24/docs-claim-lint.mjs',fs.readFileSync('scripts/ops/r24/docs-claim-lint.mjs')],
+    ['scripts/ops/r24/tests/docs-claim-lint.test.mjs',fs.readFileSync('scripts/ops/r24/tests/docs-claim-lint.test.mjs')],
     ['test/contracts/r24-post-audit-certification-set.contract.test.mjs',fs.readFileSync('test/contracts/r24-post-audit-certification-set.contract.test.mjs')],
   ]);
   const registry=missingRegistry?null:JSON.parse((registryBytes??bytesByPath.get(e.registryPath)).toString('utf8'));
@@ -704,6 +706,7 @@ test('RCV00B successor admission registry accepts the PR1862 repair delta',()=>{
   assert.equal(result.predecessorAdmittedPathDenominator,19);
   assert(result.admittedPaths.includes('docs/ARCH_DIFF_LOG.md'));
   assert(result.admittedPaths.includes('scripts/ops/r24/corrective/post-audit-certification-set.mjs'));
+  assert(result.admittedPaths.includes('scripts/ops/r24/docs-claim-lint.mjs'));
 });
 test('RCV00B successor admission registry rejects missing successor evidence',()=>{
   const fixture=rcv00bSuccessorGitFixture({missingRegistry:true});

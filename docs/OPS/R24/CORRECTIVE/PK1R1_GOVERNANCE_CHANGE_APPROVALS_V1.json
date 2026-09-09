@@ -435,50 +435,50 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "1d2351071407f34a326f89cfc929864bbce3ff8301f5ce87bfb580a49f550226",
+      "sha256": "eee0a75fecd72c4a4b6104d7d76ea9c5c788ca23022105b01cba3d16520d05ad",
       "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T17:06:59.097Z",
-      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery remains pinned to the historical 19-path delta while post-RCV00B successor verifier, registry, inventory, focused tests, and current claim-lint approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json",
-      "sha256": "26b2d5e8e874f0ed4046062919aedb32b19c77fcd70305116b8863d26557a1ab",
+      "sha256": "11b65e3c7bab1cb4108219c8b5f10893605283521d320b33a5641a0c846a5ce6",
       "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T17:06:59.097Z",
-      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery remains pinned to the historical 19-path delta while post-RCV00B successor verifier, registry, inventory, focused tests, and current claim-lint approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "sha256": "0afd51abf8af8f2725c52e76ca5784595612d7652191c2f593c7a5454aadc086",
       "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T17:06:59.097Z",
-      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery remains pinned to the historical 19-path delta while post-RCV00B successor verifier, registry, inventory, focused tests, and current claim-lint approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "4dad0b52b8defc482464791eb5f49f2b837359ad4ae88eb18c8dc7cb0d24ac22",
+      "sha256": "f63ba9a57d0eb00306aa97c7edc0ee5520e8a26365a6ddf39cc41424b99add5d",
       "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T17:06:59.097Z",
-      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery remains pinned to the historical 19-path delta while post-RCV00B successor verifier, registry, inventory, focused tests, and current claim-lint approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "43455bf700f1ad4083e87d0baed773f17f48c2db607f412f54e8cd1c72e43743",
+      "sha256": "bdfd6fa4c670058398ac0e8c020a4686feaffa75e340ee1f47e587661fcdca33",
       "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T17:06:59.097Z",
-      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery remains pinned to the historical 19-path delta while post-RCV00B successor verifier, registry, inventory, focused tests, and current claim-lint approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "0b503b433f29564034dff095342777af40d9d41b0ce1501db21c117a4132a9e0",
+      "sha256": "18ca713a41bddc08c5b21668c8946845dc9b9f06db4941cd77a041cd30c39b1a",
       "approvedBy": "owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T17:06:59.097Z",
-      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery remains pinned to the historical 19-path delta while post-RCV00B successor verifier, registry, inventory, focused tests, and current claim-lint approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
+      "approvedAtUtc": "2026-09-09T17:26:00.000Z",
+      "rationale": "Approve exact current bytes for PR1862 R24 RCV00B successor admission repair and PK1R1 approval-registry validity: immutable RCV00B delivery and claim-binding carriers remain pinned to historical bytes while post-RCV00B successor verifier, registry, inventory, docs-claim-lint historical pin, focused tests, and current approval records admit only bounded governance evidence; no product runtime, dependency, network truth, user document, release readiness, PRE00E/PRE00F redelivery, PR1845 reopen, PR1861 product repair, or PROGRAM DONE claim.",
       "approved": true
     }
   ],
