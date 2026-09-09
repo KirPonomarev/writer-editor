@@ -191,8 +191,9 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V26 = Object.freeze([
   Object.freeze({ stampId: 'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION', stampSha256: 'f534b84f0d2e657c9f9b71115899e5e36ad61c90f8e36894ba869afac982fcfe',
     evaluationSha: 'aecdebbc176de8b1068214032db12d3b97ed3d7f', evaluationTree: '9c8a063181cb1765047b993e0052844a0ac27250', targetSha256: '296768b66b7c59a4c2a852c612ec042360be5ec86c24079f49a51cf088840c3f' }),
 ]);
-// RCV00A retains the exact PRE00F inventory binding at the PRE00F terminal
-// merge while publishing the exact-toolchain entrypoint inventory refresh.
+// RCV00A and R24 interop-100 retain the exact PRE00F inventory binding as
+// historical bytes while publishing separate current C1B claim carriers.
+// Interop route qualification remains NO_SUPPORTED_DENOMINATOR_CELL_PASS evidence.
 export const HISTORICAL_INVENTORY_CLAIM_PINS_V27 = Object.freeze([
   ...HISTORICAL_INVENTORY_CLAIM_PINS_V26,
   Object.freeze({ stampId: 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS', stampSha256: '19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d',

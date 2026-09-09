@@ -11,7 +11,7 @@
   "claimBindings": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "e7ce3321d3b71fad41ad8abf4ba1f33d745267a336339b382086865b4e618c70",
+      "sha256": "ed258625171bf60c852e90aafb9da4e49beab4bb90fa7697e5762ab06beb30a2",
       "claimTerms": [
         "PASS"
       ]
