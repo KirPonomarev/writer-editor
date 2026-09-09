@@ -434,14 +434,6 @@
       "approved": true
     },
     {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "859974d24e25d7661ba42ac1609b9dd9752db379ddf0322a0ad1dad22a095be3",
-      "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T21:39:31Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory and post-audit verifier bindings, and PK1R1 approval metadata; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
       "sha256": "33680a8737fbf1fdfdd086ac13eb0278fd7cc868b7fa172923bdab400435d9dd",
       "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
@@ -450,35 +442,11 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "7e3232efa61d31309c9d580a17a9783431c6a32e5e5171c116e4035ff10d55b5",
-      "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:03:01Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory, export hardening allowlist, post-audit verifier bindings, and PK1R1 approval metadata as admitted governance carriers; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json",
       "sha256": "45dee45b2f2880bbaf58374b3b92af2d4dcb608cebd34452f56890aeaca4cd87",
       "approvedBy": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T18:24:11.359Z",
       "rationale": "Approve exact current governance bytes for PR1861 ReviewIR replacement grouping boundary successor reconciliation and CI privacy-negative watchdog repair after merging origin/main f4c59873: admit only parser boundary logic, focused tests, successor carriers, inventory, and the timing-only privacy smoke repair over immutable RCV00B delivery; no PRE00E/PRE00F redelivery, PR1845 reopen, product write/apply capability, dependency, runtime network truth, release readiness, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "a370fc9e9ea11e5fd40cdb9ae705bb4daa06aa3214cde2dfc6d6bd46afd0926b",
-      "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T21:52:03Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory, post-audit verifier bindings, and PK1R1 approval metadata as an admitted governance carrier; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "c21694bd531456cf7dbd5c38a1e8a57f1182126115223bb2ad5f1985ae8331fe",
-      "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T21:52:03Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory, post-audit verifier bindings, and PK1R1 approval metadata as an admitted governance carrier; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
       "approved": true
     },
     {
@@ -506,14 +474,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "deef74c303711b63b27bd31f36b499b6be9ca93d91c13a5d3e0ed8b9c5199544",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
       "sha256": "27c7df8e2adf41d8b88a6dd4a1780eb9bb0ca478aa41adb7f7847c9896d2d4fc",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
@@ -530,40 +490,8 @@
       "approved": true
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "4617019e403b9c0dba117170ab6878aba3960dc6d636166f37983d17deb81abb",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
       "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
       "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "1cd2b10a825fe4bc7a8fb1c06f3cd68c3b40f826d06b503839b04572d05eb956",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "d7dad18c5b0efd47e7bd3f872918fc10d9543db735df60e9c8dae9d88ad28bf1",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "69db585d3c96b2dbfdeae8f884788a398ade92cfae6bd9c75736d31bba2e17fa",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
@@ -575,6 +503,38 @@
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "ab8fae46bfa2783923b468145eaf6a695e179877c6564d89110e984e5a2535aa",
+      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T22:39:36Z",
+      "rationale": "Approve exact current bytes for R24 RCV00D current-main reconciliation after merging origin/main c2dda410: preserve delivered DOCX line-break history and immutable RCV00D selector delivery while admitting only the bounded verifier, inventory, approval, evidence, selector, and contract-test reconciliation surface; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b42403089c06a164b231a64192bea3ea116db06b44c6966b3fb5092ccbfe882d",
+      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T22:39:36Z",
+      "rationale": "Approve exact current bytes for R24 RCV00D current-main reconciliation after merging origin/main c2dda410: preserve delivered DOCX line-break history and immutable RCV00D selector delivery while admitting only the bounded verifier, inventory, approval, evidence, selector, and contract-test reconciliation surface; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "c0d9f00cd7bac6f0cb1c140758a8fec556d0fdd258cce24a50769f92947161af",
+      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T22:39:36Z",
+      "rationale": "Approve exact current bytes for R24 RCV00D current-main reconciliation after merging origin/main c2dda410: preserve delivered DOCX line-break history and immutable RCV00D selector delivery while admitting only the bounded verifier, inventory, approval, evidence, selector, and contract-test reconciliation surface; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "743ec007d08930c4dd947e0388fbbcd37ce3464ce330c2f304848983e9a0e321",
+      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T22:39:36Z",
+      "rationale": "Approve exact current bytes for R24 RCV00D current-main reconciliation after merging origin/main c2dda410: preserve delivered DOCX line-break history and immutable RCV00D selector delivery while admitting only the bounded verifier, inventory, approval, evidence, selector, and contract-test reconciliation surface; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
       "approved": true
     }
   ],
