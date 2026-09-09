@@ -11423,102 +11423,111 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "1993fb876a38b5f7867d7847496acf48134853ad1386baf96420b4e0f6ef8b6c",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "2c37d3cb43026a718bf37cc3a3382d20fa7cd802c2b2f8fa764fd025c7297acc",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "c267456cbd37603d7515ae168938a7b191a7046d207a7a6210a9b320f7165135",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "e30fb28be97293e2ac2f59c335359a7938e7243388128d5239d21dcd306f1200",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "c6f620068a37dad2208410fc2a74639354fc6e10e3216c8638769b05db23b126",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
+      "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "eb730fb095b8747d6b41553e87790b290ee445e9a8abd45e784d658c8c68e768",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "0321fdd0466196a874f02dbb75fb3de99a70d90c316e3fa71eb51764dd663caf",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
+      "sha256": "19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "89b96200779dc65e0b504a441a1cb734ea31a5fb135ea18a46e0e16894878826",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "f870119504b559b8965e0c68bfd87fd69621a6bda67ff7497e4a0d6a1c54ef33",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "scripts/ops/governance-change-detection.mjs",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "7998a7f098ad29b3c905909f63bc91335c8c4e4dd968cde4ec1fc76bb25bd3cd",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/governance-change-detection.contract.test.js",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "6dcbbff4b4f01d587548ddc0dbe0071933c17aef9068d08681d79500f24e2f41",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "bb08e2bb7fc1a4a582864a2b7d650b7b5c8ab7f21515aa365ea8064b92de5f71",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "e825407694af79403ee82377c656ee60f29426a2138320cce208a966985c7a28",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "7c521039c61443878a0fccd70fbb72eaf5f1cdb2ea1c145f8c7dec370fbae161",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "dcfbc825157fc0d78c55b3d17d135d85d71ee0d712f58977f043c6dd9671a4fc",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "0a0fd45e9f51b712566948eb011669e010492d37460d63c47689956b714dc51d",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
       "sha256": "11ac5dd1b568738b79958d0b29b451d8b5a5db50f602300da7e71cc1262fc580",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
+    },
+    {
+      "filePath": "test/contracts/governance-change-detection.contract.test.js",
+      "sha256": "1c04984f3790ecd744653a2f0a55aed7ccb765de0d81a507803075d603aa8782",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "approvedBy": "owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09",
-      "approvedAtUtc": "2026-09-09T10:12:26Z",
-      "rationale": "Approve fresh PRE00F plan-delivery strict governance reconciliation after PRE00E closure: admits only the current plan-delivery verifier, evidence carriers, inventory, and focused tests, and grants no release, runtime mutation, dependency, cloud, Word/Drive, or next-contour authority.",
-      "sha256": "84ee1861b2e5e733354ba798e4f52459ee5ca5234edef6f14c4933d2219790bc",
-      "authority": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_STRICT_GOVERNANCE_APPROVAL_2026_09_09",
-      "approved": true
+      "sha256": "11dcfccd2f98cda1a5ab2f70a4d54e5182e6f39a3ac6842a5cd8e6fff86eaad4",
+      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
+      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true,
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     }
   ]
 }

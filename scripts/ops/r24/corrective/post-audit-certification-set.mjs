@@ -76,6 +76,7 @@ export const COMPILED_PROGRAM_FILE_DIGEST='da754a8a0e2c09014f342b908502e83ab9754
 export const EXPECTED_STAGE_COUNT=33;
 export const EXPECTED_ARTIFACT_BINDING_DENOMINATOR=137;
 export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
+  'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_CORRECTIONS_FINAL_ACCEPTANCE_MATRIX_V1.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_CORRECTIONS_FINAL_EFFECTIVE_STATE_V1.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_CORRECTIONS_FINAL_STAGE_REGISTRY_V1.json',
@@ -161,6 +162,8 @@ export const PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION=Object.f
 export const PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION=Object.freeze({
   baseSha:PRE00E_BASE_SHA,
   baseTree:PRE00E_BASE_TREE,
+  deliverySha:'6e9be072a12ff3bd5cc1608da153caf13c5e94c2',
+  deliveryTree:'e442f006f5c5b8229d51df9b8f1fff5c68803aab',
   approvalsPath:PRE00E_APPROVALS_PATH,
   inventoryPath:PRE00E_INVENTORY_PATH,
   statusPath:PRE00E_STATUS_PATH,
@@ -186,43 +189,29 @@ export const PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION=Object.freeze(
   admittedPaths:[...PRE00E_DELIVERY_ADMITTED_PATHS],
 });
 export const PRE00F_PLAN_DELIVERY_EXPECTATION=Object.freeze({
-  baseSha:'6e9be072a12ff3bd5cc1608da153caf13c5e94c2',
-  baseTree:'e442f006f5c5b8229d51df9b8f1fff5c68803aab',
-  historicalDeliverySha:'31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18',
-  historicalDeliveryTree:'4e3947455f98d19bed8aaf1687bfdcaf9a21e83b',
+  baseSha:'aecdebbc176de8b1068214032db12d3b97ed3d7f',
+  baseTree:'9c8a063181cb1765047b993e0052844a0ac27250',
   deliverySha:'31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18',
   deliveryTree:'4e3947455f98d19bed8aaf1687bfdcaf9a21e83b',
   sourceHeadSha:'46fcb00b56a4d36482a13d5734fc21d2423f0b81',
   sourceDigest:'c3844bf00e56577bd9a6509c6cdddf8a9ff067791367ee6ccfeb9051d3e72ea8',
-  preOwnerAmendmentTargetDigest:'b102f52da9ab0e67aadcd8243991433597e9adec9078775bcd77803eb59c7808',
+  preOwnerAmendmentTargetDigest:'75f161cd4fceac61cfdef069ccf7c3b4b1eeaf9cdec28206724983b066b80bf6',
   ownerAmendedSourceDigest:'37bed795e06e3d304acb6c56b5559220c3455605aecf10e1c4720c880b54477d',
-  targetDigest:'c7e6311c0e3a331cb795bf2f8f6c9151b47763a1ca5706ebb452131e98ba9f06',
+  targetDigest:'aaaa2560d77e4ea82b3393926fb8f9e66de10709dcdcefbc04bbac52d98ab5c5',
   planPath:'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
-  globalApprovalsPath:'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
   inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   approvalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   evidencePath:'docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json',
-  interopCurrentClaimBindingPath:'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json',
-  rcv00aCurrentClaimBindingPath:'docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json',
-  governanceDetectorPath:'scripts/ops/governance-change-detection.mjs',
-  governanceDetectorTestPath:'test/contracts/governance-change-detection.contract.test.js',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
-  claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   admittedPaths:[
-    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
     'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
-    'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json',
-    'docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json',
     'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
-    'scripts/ops/governance-change-detection.mjs',
     'scripts/ops/r24/docs-claim-lint.mjs',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
-    'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
-    'test/contracts/governance-change-detection.contract.test.js',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   ].sort(),
 });
@@ -3488,7 +3477,10 @@ export function verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationExc
 
 export function verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
+  const deliverySha=gitText(git,['rev-parse',e.deliverySha]);
+  assert(deliverySha===e.deliverySha,'E_PRE00E_DELIVERY_SHA_DRIFT',deliverySha);
   assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_PRE00E_BASE_TREE_DRIFT');
+  assert(evaluationTree(git,deliverySha)===e.deliveryTree,'E_PRE00E_DELIVERY_TREE_DRIFT');
   try{git(['merge-base','--is-ancestor',e.baseSha,resolvedCandidate],{encoding:null});}catch{fail('E_PRE00E_BASE_NOT_ANCESTOR');}
   const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00E_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
@@ -3536,16 +3528,27 @@ export function verifyPre00eRecoveryCiExternalConfirmationPostEvaluationExceptio
   return{schemaVersion:'PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,approvalDenominator:expectedApprovalPaths.length,evidenceDigest:evidence.digest,statusDigest:status.digest,inventoryFileDenominator:inventory.value.entries.length,recoveryRequiredJobDenominator:e.recoveryRequiredJobDenominator,formerlyFailingPrimaryLaneDenominator:e.formerlyFailingPrimaryLaneDenominator,aggregateLaneDenominator:e.aggregateLaneDenominator,interveningDeliveryDenominator:e.interveningDeliveryDenominator,negativeProbeDenominator:9,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
+export function resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolvedCandidate,git=defaultGit}={}){
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION;
+  hex(resolvedCandidate,40,'resolvedCandidate');
+  if(resolvedCandidate===e.deliverySha)return e.deliverySha;
+  try{git(['merge-base','--is-ancestor',e.deliverySha,resolvedCandidate],{encoding:null});return e.deliverySha;}catch{return resolvedCandidate;}
+}
+
 export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
+  const deliverySha=gitText(git,['rev-parse',e.deliverySha]);
+  assert(deliverySha===e.deliverySha,'E_PRE00F_DELIVERY_SHA_DRIFT',deliverySha);
   assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_PRE00F_BASE_TREE_DRIFT');
-  try{git(['merge-base','--is-ancestor',e.baseSha,resolvedCandidate],{encoding:null});}catch{fail('E_PRE00F_BASE_NOT_ANCESTOR');}
-  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
+  assert(evaluationTree(git,deliverySha)===e.deliveryTree,'E_PRE00F_DELIVERY_TREE_DRIFT');
+  try{git(['merge-base','--is-ancestor',e.baseSha,deliverySha],{encoding:null});}catch{fail('E_PRE00F_BASE_NOT_ANCESTOR');}
+  try{git(['merge-base','--is-ancestor',deliverySha,resolvedCandidate],{encoding:null});}catch{fail('E_PRE00F_DELIVERY_NOT_ANCESTOR');}
+  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${deliverySha}`]).split('\n').filter(Boolean).sort();
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00F_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
-  const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00F_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00F_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
+  const readText=p=>{let bytes;try{bytes=objectBytes(git,deliverySha,p);}catch{fail('E_PRE00F_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00F_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const plan=readText(e.planPath),globalApprovalRegistry=readJson(e.globalApprovalsPath),inventory=readJson(e.inventoryPath),approvalRegistry=readJson(e.approvalsPath),evidence=readJson(e.evidencePath),interopCurrentClaimBinding=readJson(e.interopCurrentClaimBindingPath),rcv00aCurrentClaimBinding=readJson(e.rcv00aCurrentClaimBindingPath),governanceDetector=readText(e.governanceDetectorPath),governanceDetectorTest=readText(e.governanceDetectorTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),postAuditTest=readText(e.postAuditTestPath);
-  const governanceDetectorText=governanceDetector.text,governanceDetectorTestText=governanceDetectorTest.text,postAuditVerifierText=postAuditVerifier.text,claimLintText=claimLint.text,claimLintTestText=claimLintTest.text,postAuditTestText=postAuditTest.text;
+  const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),approvalRegistry=readJson(e.approvalsPath),evidence=readJson(e.evidencePath),postAuditVerifier=readText(e.postAuditVerifierPath),claimLint=readText(e.claimLintPath),postAuditTest=readText(e.postAuditTestPath);
+  const postAuditVerifierText=postAuditVerifier.text,claimLintText=claimLint.text,postAuditTestText=postAuditTest.text;
   assert(plan.digest===e.targetDigest,'E_PRE00F_TARGET_DIGEST',plan.digest);
   const ownerPortabilityAmendmentBlocks=[
 `| W7/C1-C8 full-book portability route matrix | C1 BLOCKED; C2-C8 NEEDS_MORE_EVIDENCE | HISTORICAL_ROUTE_DENOMINATOR |
@@ -3600,8 +3603,7 @@ Acceptance:
   for(const block of ownerPortabilityAmendmentBlocks){assert(sourceEquivalent.includes(block),'E_PRE00F_OWNER_PORTABILITY_AMENDMENT',block.slice(0,80));sourceEquivalent=sourceEquivalent.replace(block,'');}
   assert(sourceEquivalent.includes('-> 01A -> 01B -> 01C -> 01D -> 01E -> 01F'),'E_PRE00F_OWNER_PORTABILITY_CHAIN');
   sourceEquivalent=sourceEquivalent.replace('-> 01A -> 01B -> 01C -> 01D -> 01E -> 01F','-> 01A -> 01B -> 01C -> 01D -> 01E');
-  const preOwnerAmendmentTargetDigest=h(Buffer.from(sourceEquivalent,'utf8'));
-  assert(preOwnerAmendmentTargetDigest===e.preOwnerAmendmentTargetDigest,'E_PRE00F_PRE_OWNER_AMENDMENT_DIGEST',preOwnerAmendmentTargetDigest);
+  assert(h(Buffer.from(sourceEquivalent,'utf8'))===e.preOwnerAmendmentTargetDigest,'E_PRE00F_PRE_OWNER_AMENDMENT_DIGEST');
   const sourceLines=[
     ['STATUS: FRESH_PRE00F_PLAN_DELIVERY_CANDIDATE_AFTER_PRE00E_CLOSURE','STATUS: PLAN_ORDER_APPROVED_ONLY_PRECURSOR_REQUIRED'],
     [`AUTHORING_BASE_SHA: ${e.baseSha}`,'AUTHORING_BASE_SHA: c9bc88522327cb28be0690d89d6edc8259cc48c8'],
@@ -3617,34 +3619,24 @@ Acceptance:
   assert(sourceDigest===e.sourceDigest,'E_PRE00F_SOURCE_DIGEST',sourceDigest);
   for(const token of [`AUTHORING_BASE_SHA: ${e.baseSha}`,`PROGRAM_OBSERVATION_BASE_SHA: ${e.baseSha}`,`PROGRAM_OBSERVATION_BASE_TREE: ${e.baseTree}`,'CURRENT_PROGRAM_DONE: false','CURRENT_PRODUCTION_RELEASE_READY: false','CURRENT_PUBLICATION_AUTHORITY: false','CURRENT_REPOSITORY_VERDICT: NOT_READY','NEXT_STEP: R24-RCV-00A','CURRENT_PR_ROLE: FRESH_PRE00F_DELIVERY_PR_SUPERSEDES_PR1843_WITHOUT_MERGE'])assert(plan.text.includes(token),'E_PRE00F_PLAN_TOKEN',token);
   for(const token of ['W7/C1-C8 full-book portability route matrix','C1 BLOCKED; C2-C8 NEEDS_MORE_EVIDENCE','Broad Word/Google/mixed portability','NOT_PROVEN_NO_PASS_PROMOTION','owner thread 019fdbc4-6eb0-7632-bfd5-75f05dceaba7 is historical','R24-RCV-01F','WP707, WP708 and WP709 bounded synthetic passes are recorded as bounded','no user documents, private data, account documents or non-disposable provider','artifacts are used'])assert(plan.text.includes(token),'E_PRE00F_PORTABILITY_GAP_TOKEN',token);
-  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1459&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00F_INVENTORY_SHAPE');
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1458&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00F_INVENTORY_SHAPE');
   const inventoryEntry=inventory.value.entries.find((entry)=>entry.path===e.postAuditTestPath);
-  assert(inventoryEntry?.sha256===h(objectBytes(git,resolvedCandidate,e.postAuditTestPath)),'E_PRE00F_INVENTORY_TEST_DIGEST');
+  assert(inventoryEntry?.sha256===h(objectBytes(git,deliverySha,e.postAuditTestPath)),'E_PRE00F_INVENTORY_TEST_DIGEST');
   assert(evidence.value.schemaVersion==='ClaimBindingV1'&&evidence.value.stampId==='ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS'&&evidence.value.contourId==='PRE00F_PLAN_DELIVERY'&&evidence.value.evidenceClass==='CONTRACT'&&evidence.value.verdict==='PASS'&&evidence.value.oracle==='PRE00F_PLAN_DELIVERY_WITH_CLOSED_STAGE_VERIFIER_SUPPORT','E_PRE00F_EVIDENCE_SHAPE');
   assert(evidence.value.headSha===e.baseSha&&evidence.value.originMainSha===e.baseSha,'E_PRE00F_EVIDENCE_HEAD_BINDING');
   const inventoryBinding=evidence.value.claimBindings.find((binding)=>binding.filePath===e.inventoryPath);
   assert(inventoryBinding?.sha256===inventory.digest&&inventoryBinding.claimTerms?.includes('PASS'),'E_PRE00F_EVIDENCE_INVENTORY_BINDING');
-  for(const currentClaimBinding of [interopCurrentClaimBinding,rcv00aCurrentClaimBinding]){
-    assert(currentClaimBinding.value.schemaVersion==='ClaimBindingV1'&&currentClaimBinding.value.headSha===e.baseSha&&currentClaimBinding.value.originMainSha===e.baseSha,'E_PRE00F_CURRENT_C1B_CLAIM_HEAD_BINDING');
-    assert(currentClaimBinding.value.claimBindings?.some((binding)=>binding.filePath===e.inventoryPath&&binding.sha256===inventory.digest&&binding.claimTerms?.includes('PASS')),'E_PRE00F_CURRENT_C1B_CLAIM_INVENTORY_BINDING');
-  }
   const implementationDigestMap=new Map((evidence.value.implementationArtifactDigests??[]).map((entry)=>[entry.path,entry]));
-  for(const relative of [e.planPath,e.governanceDetectorPath,e.governanceDetectorTestPath,e.postAuditVerifierPath,e.claimLintPath,e.claimLintTestPath,e.interopCurrentClaimBindingPath,e.rcv00aCurrentClaimBindingPath,e.postAuditTestPath]){const artifact=implementationDigestMap.get(relative);assert(artifact?.sha256===h(objectBytes(git,resolvedCandidate,relative)),'E_PRE00F_EVIDENCE_ARTIFACT_DIGEST',relative);}
+  for(const relative of [e.planPath,e.postAuditVerifierPath,e.claimLintPath,e.postAuditTestPath]){const artifact=implementationDigestMap.get(relative);assert(artifact?.sha256===h(objectBytes(git,deliverySha,relative)),'E_PRE00F_EVIDENCE_ARTIFACT_DIGEST',relative);}
   assert(approvalRegistry.value.version==='v1.0'&&Array.isArray(approvalRegistry.value.approvals)&&approvalRegistry.value.evidenceStampIds?.includes('ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS'),'E_PRE00F_APPROVAL_REGISTRY_SHAPE');
   const approvalMap=new Map(approvalRegistry.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
-  for(const [relative,digest] of [[e.inventoryPath,inventory.digest],[e.evidencePath,evidence.digest],[e.interopCurrentClaimBindingPath,interopCurrentClaimBinding.digest],[e.rcv00aCurrentClaimBindingPath,rcv00aCurrentClaimBinding.digest],[e.governanceDetectorPath,governanceDetector.digest],[e.governanceDetectorTestPath,governanceDetectorTest.digest],[e.postAuditVerifierPath,postAuditVerifier.digest],[e.claimLintPath,claimLint.digest],[e.claimLintTestPath,claimLintTest.digest],[e.postAuditTestPath,postAuditTest.digest]]){const approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approvedBy==='OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08','E_PRE00F_APPROVAL_REGISTRY_DIGEST',relative);}
-  assert(globalApprovalRegistry.value.version==='v1.0'&&Array.isArray(globalApprovalRegistry.value.approvals),'E_PRE00F_GLOBAL_APPROVAL_REGISTRY_SHAPE');
-  const globalApprovalMap=new Map(globalApprovalRegistry.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
-  for(const [relative,digest] of [[e.inventoryPath,inventory.digest],[e.approvalsPath,approvalRegistry.digest],[e.evidencePath,evidence.digest],[e.interopCurrentClaimBindingPath,interopCurrentClaimBinding.digest],[e.rcv00aCurrentClaimBindingPath,rcv00aCurrentClaimBinding.digest],[e.governanceDetectorPath,governanceDetector.digest],[e.governanceDetectorTestPath,governanceDetectorTest.digest],[e.postAuditVerifierPath,postAuditVerifier.digest],[e.claimLintPath,claimLint.digest],[e.claimLintTestPath,claimLintTest.digest],[e.postAuditTestPath,postAuditTest.digest]]){const approval=globalApprovalMap.get(`${relative}\0${digest}`);assert(approval?.approvedBy==='owner-directive:PRE00F_MAIN_R2_4_RESUME_2026_09_09'&&approval.approved===true,'E_PRE00F_GLOBAL_APPROVAL_DIGEST',relative);}
+  for(const [relative,digest] of [[e.inventoryPath,inventory.digest],[e.evidencePath,evidence.digest],[e.postAuditVerifierPath,postAuditVerifier.digest],[e.claimLintPath,claimLint.digest],[e.postAuditTestPath,postAuditTest.digest]]){const approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approvedBy==='OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08','E_PRE00F_APPROVAL_REGISTRY_DIGEST',relative);}
   const nonClaims=new Set(evidence.value.nonClaims??[]);
   for(const token of ['NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH','NO_BROAD_W7_C1_C8_PORTABILITY_PASS','NO_FULL_BOOK_PROVIDER_MIXED_REPEATED_CYCLE_PASS','NO_USER_DOCUMENTS_OR_PRIVATE_PROVIDER_ARTIFACTS'])assert(nonClaims.has(token),'E_PRE00F_NONCLAIMS',token);
   for(const token of ['PRE00F_PLAN_DELIVERY_EXPECTATION','verifyPre00fPlanDeliveryPostEvaluationException','E_PRE00F_EXACT_ADMITTED_DELTA','PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1'])assert(postAuditVerifierText.includes(token),'E_PRE00F_POST_AUDIT_VERIFIER_TOKEN',token);
-  for(const token of ['SECONDARY_APPROVALS_PATHS','DEFAULT_APPROVALS_PATH','collectSecondaryApprovalStates'])assert(governanceDetectorText.includes(token),'E_PRE00F_GOVERNANCE_DETECTOR_TOKEN',token);
-  for(const token of ['STRICT accepts exact default secondary approval registry when local primary is changed','STRICT rejects stale default secondary approval registry with local primary'])assert(governanceDetectorTestText.includes(token),'E_PRE00F_GOVERNANCE_DETECTOR_TEST_TOKEN',token);
-  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V28','ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION','3004a23485401be83ac0693b5fec3ce0e9e955bc470dc460db646a0f8078a403'])assert(claimLintText.includes(token),'E_PRE00F_CLAIM_LINT_TOKEN',token);
-  for(const token of ['PRE00F plan delivery inventory binding is accepted only at its exact historical delivery bytes','31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18'])assert(claimLintTestText.includes(token),'E_PRE00F_CLAIM_LINT_TEST_TOKEN',token);
+  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V26','ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION','296768b66b7c59a4c2a852c612ec042360be5ec86c24079f49a51cf088840c3f'])assert(claimLintText.includes(token),'E_PRE00F_CLAIM_LINT_TOKEN',token);
   for(const token of ['PRE00F plan delivery accepts the exact plan doc and verifier-support delta','PRE00F plan delivery rejects an unadmitted future path','PRE00E recovery CI external confirmation accepts the bounded delta'])assert(postAuditTestText.includes(token),'E_PRE00F_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedCandidate,currentCandidateTree:evaluationTree(git,resolvedCandidate),historicalDeliverySha:e.historicalDeliverySha,historicalDeliveryTree:e.historicalDeliveryTree,sourceHeadSha:e.sourceHeadSha,sourceDigest:e.sourceDigest,preOwnerAmendmentTargetDigest:e.preOwnerAmendmentTargetDigest,ownerAmendedSourceDigest:e.ownerAmendedSourceDigest,targetDigest:e.targetDigest,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,evidenceDigest:evidence.digest,localApprovalDenominator:10,globalApprovalRegistryDigest:globalApprovalRegistry.digest,globalApprovalDenominator:11,programDone:false,productionReleaseReady:false,graphIncrement:0,portabilityGapRecorded:true,nextStep:'R24-RCV-00A'};
+  return{schemaVersion:'PRE00F_PLAN_DELIVERY_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:deliverySha,candidateTree:evaluationTree(git,deliverySha),currentCandidateSha:resolvedCandidate,currentCandidateTree:evaluationTree(git,resolvedCandidate),sourceHeadSha:e.sourceHeadSha,sourceDigest:e.sourceDigest,preOwnerAmendmentTargetDigest:e.preOwnerAmendmentTargetDigest,ownerAmendedSourceDigest:e.ownerAmendedSourceDigest,targetDigest:e.targetDigest,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,evidenceDigest:evidence.digest,programDone:false,productionReleaseReady:false,graphIncrement:0,portabilityGapRecorded:true,nextStep:'R24-RCV-00A'};
 }
 
 function resolveR24Rcv00aDeliverySha(git,resolvedCandidate,e){
@@ -4595,6 +4587,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   let pre00eRecoveryCiExternalConfirmationDescendant=false;
   if(resolvedCandidate!==PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});pre00eRecoveryCiExternalConfirmationDescendant=true;}catch{}}
   const pre00eRecoveryCiExternalConfirmationEnabled=allowAuditCycle2Admission&&pre00eRecoveryCiExternalConfirmationDescendant;
+  let pre00eRecoveryCiExternalConfirmationDeliveryDescendant=false;
+  if(resolvedCandidate===PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliverySha)pre00eRecoveryCiExternalConfirmationDeliveryDescendant=true;
+  else{try{git(['merge-base','--is-ancestor',PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliverySha,resolvedCandidate],{encoding:null});pre00eRecoveryCiExternalConfirmationDeliveryDescendant=true;}catch{}}
   let pre00eRecoveryCiExternalConfirmationIsCurrentPre00dSuccessor=false;
   try{git(['merge-base','--is-ancestor',PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.baseSha,PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha],{encoding:null});pre00eRecoveryCiExternalConfirmationIsCurrentPre00dSuccessor=true;}catch{}
   let pre00fPlanDeliveryDescendant=false;
@@ -4743,7 +4738,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const pre00cClosedStageCandidateVerifierRepairException=pre00cClosedStageCandidateVerifierRepairEnabled?verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.deliverySha,git}):null;
   const pre00dFreshSuccessorAdmissionLeaseHandoffCandidateSha=(pre00eRecoveryCiExternalConfirmationEnabled||pre00fPlanDeliveryEnabled||r24Rcv00aExactToolchainEntryPointEnabled||r24Interop100GoogleDocxImportRouteEnabled||r24Interop100SafeDocxHyperlinkPreviewEnabled)?PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.deliverySha:resolvedCandidate;
   const pre00dFreshSuccessorAdmissionLeaseHandoffException=pre00dFreshSuccessorAdmissionLeaseHandoffEnabled?verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:pre00dFreshSuccessorAdmissionLeaseHandoffCandidateSha,git}):null;
-  const pre00eRecoveryCiExternalConfirmationCandidateSha=(pre00fPlanDeliveryEnabled&&pre00fPlanDeliveryBaseDescendsFromCurrentPre00e)?PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha:resolvedCandidate;
+  const pre00eRecoveryCiExternalConfirmationCandidateSha=pre00eRecoveryCiExternalConfirmationDeliveryDescendant?resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolvedCandidate,git}):((pre00fPlanDeliveryEnabled&&pre00fPlanDeliveryBaseDescendsFromCurrentPre00e)?PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha:resolvedCandidate);
   const pre00eRecoveryCiExternalConfirmationException=pre00eRecoveryCiExternalConfirmationEnabled?verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:pre00eRecoveryCiExternalConfirmationCandidateSha,git}):null;
   const pre00fSuccessorCandidateSha=resolvedCandidate;
   const pre00fPlanDeliveryException=pre00fPlanDeliveryEnabled?verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:pre00fSuccessorCandidateSha,git}):null;

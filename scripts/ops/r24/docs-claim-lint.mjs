@@ -199,9 +199,9 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V27 = Object.freeze([
   Object.freeze({ stampId: 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS', stampSha256: '19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d',
     evaluationSha: '31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18', evaluationTree: '4e3947455f98d19bed8aaf1687bfdcaf9a21e83b', targetSha256: '174e2fac313d77f54d222bb763ca5477104ce72d4ac965301039080a86f02e2e' }),
 ]);
-// PRE00F fresh successor retains the exact PRE00E repair inventory binding
-// from the terminal main after PR1856 while publishing today's plan delivery
-// inventory refresh.
+// PRE00E successor-gate recovery retains the exact PRE00E claim carrier bytes
+// present at origin/main 6e9be072 while publishing a refreshed current C1B
+// inventory binding for post-PRE00E successor PRs.
 export const HISTORICAL_INVENTORY_CLAIM_PINS_V28 = Object.freeze([
   ...HISTORICAL_INVENTORY_CLAIM_PINS_V27,
   Object.freeze({ stampId: 'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION', stampSha256: '18936f02792c04bada8d9a2bcb7b804ee7d01eec56c105038fd3a6fd0e9f2210',
@@ -210,12 +210,12 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V28 = Object.freeze([
 const INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 const historicalGit = (rootDir, args) => execFileSync('git', args, { cwd: rootDir, encoding: null, maxBuffer: 4 * 1024 * 1024, timeout: 15000, stdio: ['ignore','pipe','pipe'] });
 export function verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes, binding, git = historicalGit }) {
-  const stampDigest = sha256hex(stampBytes);
   const pins = HISTORICAL_INVENTORY_CLAIM_PINS_V28.filter(item => item.stampId === stamp.stampId);
-  const pin = pins.find(item => item.stampSha256 === stampDigest && item.targetSha256 === binding.sha256) || pins[0];
-  if (!pin || binding.filePath !== INVENTORY_PATH) return null;
+  if (pins.length === 0 || binding.filePath !== INVENTORY_PATH) return null;
   const fail = () => { const error = new Error('E_HISTORICAL_INVENTORY_BINDING'); error.code = error.message; throw error; };
-  if (stampDigest !== pin.stampSha256 || binding.sha256 !== pin.targetSha256) fail();
+  const stampDigest = sha256hex(stampBytes);
+  const pin = pins.find(item => stampDigest === item.stampSha256 && binding.sha256 === item.targetSha256);
+  if (!pin) fail();
   const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
   try {
     const head = git(rootDir, ['rev-parse','HEAD']).toString().trim();
