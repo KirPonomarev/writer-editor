@@ -8,6 +8,7 @@ const { spawnSync } = require('node:child_process');
 
 const SCRIPT_PATH = path.join(process.cwd(), 'scripts/ops/governance-change-detection.mjs');
 const APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const LOCAL_APPROVALS_PATH = 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 const C1B_APPROVALS_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 const INTEROP100_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 
@@ -241,6 +242,49 @@ test('governance change detection: STRICT accepts exact interop secondary approv
   ]);
 });
 
+test('governance change detection: STRICT accepts exact default secondary approval registry when local primary is changed', () => {
+  const repoRoot = setupTempRepo();
+
+  const opsScript = path.join(repoRoot, 'scripts/ops/custom-state.mjs');
+  fs.mkdirSync(path.dirname(opsScript), { recursive: true });
+  fs.writeFileSync(opsScript, 'export const v = 1;\n', 'utf8');
+  writeApprovalRegistryAt(repoRoot, LOCAL_APPROVALS_PATH, [
+    {
+      filePath: 'scripts/ops/custom-state.mjs',
+      sha256: sha256File(opsScript),
+      approvedBy: 'contract-test',
+      approvedAtUtc: '2026-02-13T00:00:00.000Z',
+      rationale: 'exact local primary registry fixture',
+    },
+  ]);
+  writeApprovalRegistry(repoRoot, [
+    {
+      filePath: 'scripts/ops/custom-state.mjs',
+      sha256: sha256File(opsScript),
+      approvedBy: 'contract-test',
+      approvedAtUtc: '2026-02-13T00:00:00.000Z',
+      rationale: 'exact default secondary registry fixture for changed governed artifact',
+    },
+  ]);
+  runGit(repoRoot, ['add', 'docs/OPS', 'scripts/ops/custom-state.mjs']);
+  runGit(repoRoot, ['commit', '-m', 'default-secondary-local-primary']);
+
+  const { result, payload } = runState(repoRoot, {
+    EFFECTIVE_MODE: 'STRICT',
+    GOVERNANCE_CHANGE_APPROVALS_PATH: LOCAL_APPROVALS_PATH,
+  });
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+
+  assert.equal(result.status, 0, `expected strict default secondary approved pass:\n${result.stdout}\n${result.stderr}`);
+  assert.equal(payload.tokens.GOVERNANCE_CHANGE_OK, 1);
+  assert.deepEqual(payload.missing_approvals, []);
+  assert.deepEqual(payload.changed_governance_files, [
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/custom-state.mjs',
+  ]);
+});
+
 test('governance change detection: STRICT accepts interop secondary registry when primary registry is stale', () => {
   const repoRoot = setupTempRepo();
 
@@ -358,6 +402,45 @@ test('governance change detection: STRICT accepts global secondary exact current
   assert.deepEqual(payload.missing_approvals, []);
 });
 
+test('governance change detection: STRICT rejects stale default secondary approval registry with local primary', () => {
+  const repoRoot = setupTempRepo();
+
+  const opsScript = path.join(repoRoot, 'scripts/ops/custom-state.mjs');
+  fs.mkdirSync(path.dirname(opsScript), { recursive: true });
+  fs.writeFileSync(opsScript, 'export const v = 1;\n', 'utf8');
+  writeApprovalRegistryAt(repoRoot, LOCAL_APPROVALS_PATH, [
+    {
+      filePath: 'scripts/ops/custom-state.mjs',
+      sha256: sha256File(opsScript),
+      approvedBy: 'contract-test',
+      approvedAtUtc: '2026-02-13T00:00:00.000Z',
+      rationale: 'exact local primary registry fixture',
+    },
+  ]);
+  writeApprovalRegistry(repoRoot, [
+    {
+      filePath: LOCAL_APPROVALS_PATH,
+      sha256: '0'.repeat(64),
+      approvedBy: 'contract-test',
+      approvedAtUtc: '2026-02-13T00:00:00.000Z',
+      rationale: 'stale default secondary registry fixture',
+    },
+  ]);
+  runGit(repoRoot, ['add', 'docs/OPS', 'scripts/ops/custom-state.mjs']);
+  runGit(repoRoot, ['commit', '-m', 'default-secondary-stale']);
+
+  const { result, payload } = runState(repoRoot, {
+    EFFECTIVE_MODE: 'STRICT',
+    GOVERNANCE_CHANGE_APPROVALS_PATH: LOCAL_APPROVALS_PATH,
+  });
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+
+  assert.notEqual(result.status, 0, 'expected strict failure on stale default secondary registry');
+  assert.equal(payload.tokens.GOVERNANCE_CHANGE_OK, 0);
+  assert.equal(payload.failReason, 'GOVERNANCE_CHANGE_APPROVAL_REQUIRED');
+  assert(payload.missing_approvals.some((entry) => entry.filePath === APPROVALS_PATH));
+});
+
 test('governance change detection: STRICT rejects interop secondary approval registry with stale bytes', () => {
   const repoRoot = setupTempRepo();
 
@@ -385,38 +468,6 @@ test('governance change detection: STRICT rejects interop secondary approval reg
   assert.equal(payload.failReason, 'GOVERNANCE_CHANGE_APPROVAL_REQUIRED');
   assert(payload.missing_approvals.some((entry) => entry.filePath === 'scripts/ops/custom-state.mjs'));
   assert(payload.missing_approvals.some((entry) => entry.filePath === INTEROP100_APPROVALS_PATH));
-});
-
-test('governance change detection: STRICT rejects global secondary approval registry with stale bytes', () => {
-  const repoRoot = setupTempRepo();
-
-  const opsScript = path.join(repoRoot, 'scripts/ops/custom-state.mjs');
-  fs.mkdirSync(path.dirname(opsScript), { recursive: true });
-  fs.writeFileSync(opsScript, 'export const v = 1;\n', 'utf8');
-  writeApprovalRegistryAt(repoRoot, C1B_APPROVALS_PATH, []);
-  writeApprovalRegistry(repoRoot, [
-    {
-      filePath: 'scripts/ops/custom-state.mjs',
-      sha256: sha256File(opsScript).replace(/.$/u, '0'),
-      approvedBy: 'contract-test',
-      approvedAtUtc: '2026-02-13T00:00:00.000Z',
-      rationale: 'stale global secondary registry fixture',
-    },
-  ]);
-  runGit(repoRoot, ['add', 'docs/OPS', 'scripts/ops/custom-state.mjs']);
-  runGit(repoRoot, ['commit', '-m', 'global-secondary-approval-stale']);
-
-  const { result, payload } = runState(repoRoot, {
-    EFFECTIVE_MODE: 'STRICT',
-    GOVERNANCE_CHANGE_APPROVALS_PATH: C1B_APPROVALS_PATH,
-  });
-  fs.rmSync(repoRoot, { recursive: true, force: true });
-
-  assert.notEqual(result.status, 0, 'expected strict failure on stale global secondary registry');
-  assert.equal(payload.tokens.GOVERNANCE_CHANGE_OK, 0);
-  assert.equal(payload.failReason, 'GOVERNANCE_CHANGE_APPROVAL_REQUIRED');
-  assert(payload.missing_approvals.some((entry) => entry.filePath === 'scripts/ops/custom-state.mjs'));
-  assert(payload.missing_approvals.some((entry) => entry.filePath === APPROVALS_PATH));
 });
 
 test('governance change detection: STRICT rejects exact bytes with future approval UTC', () => {
