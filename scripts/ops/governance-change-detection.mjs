@@ -16,6 +16,11 @@ const BASELINE_APPROVAL_KEY = 'governance_change_approval_registry';
 const DEFAULT_FAIL_REASON = 'GOVERNANCE_CHANGE_APPROVAL_REQUIRED';
 const STRICT_EFFECTIVE_MODE = 'STRICT';
 const INTEROP100_SECONDARY_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
+const SHA256_HEX_RE = /^[0-9a-f]{64}$/u;
+const SECONDARY_APPROVALS_PATHS = Object.freeze([
+  DEFAULT_APPROVALS_PATH,
+  INTEROP100_SECONDARY_APPROVALS_PATH,
+]);
 
 function normalizeRepoRelativePath(value) {
   const normalized = String(value || '').trim().replaceAll('\\', '/');
@@ -42,14 +47,174 @@ function makeApprovalKey(filePath, sha256) {
   return `${filePath}\u0000${sha256}`;
 }
 
-function collectSecondaryApprovalStates({ repoRoot, changedGovernanceFiles, primaryApprovalsPath }) {
+function toIsoUtc(value) {
+  const normalized = String(value || '').trim();
+  if (!normalized) return '';
+  const parsed = Date.parse(normalized);
+  if (!Number.isFinite(parsed)) return '';
+  return new Date(parsed).toISOString();
+}
+
+function parseSecondaryApprovalWitnessEntry(rawEntry, index, evaluationTimeMs) {
+  if (!rawEntry || typeof rawEntry !== 'object' || Array.isArray(rawEntry)) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_ITEM_${index}_INVALID`,
+      entry: null,
+    };
+  }
+
+  const filePath = normalizeRepoRelativePath(rawEntry.filePath);
+  const sha256 = String(rawEntry.sha256 || '').trim().toLowerCase();
+  const approvedBy = String(rawEntry.approvedBy || '').trim();
+  const approvedAtUtc = toIsoUtc(rawEntry.approvedAtUtc);
+  const rationale = String(rawEntry.rationale || '').trim();
+
+  if (!filePath) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_FILE_PATH_INVALID_${index}`,
+      entry: null,
+    };
+  }
+  if (!SHA256_HEX_RE.test(sha256)) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_SHA256_INVALID_${index}`,
+      entry: null,
+    };
+  }
+  if (!approvedBy) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_APPROVED_BY_INVALID_${index}`,
+      entry: null,
+    };
+  }
+  if (!approvedAtUtc) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_APPROVED_AT_INVALID_${index}`,
+      entry: null,
+    };
+  }
+  if (Date.parse(approvedAtUtc) > evaluationTimeMs) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_APPROVED_AT_FUTURE_${index}`,
+      entry: null,
+    };
+  }
+  if (!rationale) {
+    return {
+      ok: false,
+      failDetail: `SECONDARY_APPROVAL_RATIONALE_INVALID_${index}`,
+      entry: null,
+    };
+  }
+
+  return {
+    ok: true,
+    failDetail: '',
+    entry: {
+      filePath,
+      sha256,
+      approvedBy,
+      approvedAtUtc,
+      rationale,
+    },
+  };
+}
+
+function evaluateDefaultSecondaryApprovalWitness({ repoRoot, approvalsPath, changedApprovalsWithHash }) {
+  const approvalsAbsPath = ensureInsideRoot(repoRoot, approvalsPath);
+  if (!approvalsAbsPath || !fs.existsSync(approvalsAbsPath)) {
+    return {
+      ok: false,
+      approvals: [],
+      failReason: 'SECONDARY_APPROVALS_FILE_MISSING',
+    };
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(fs.readFileSync(approvalsAbsPath, 'utf8'));
+  } catch {
+    return {
+      ok: false,
+      approvals: [],
+      failReason: 'SECONDARY_APPROVALS_FILE_INVALID_JSON',
+    };
+  }
+
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || String(parsed.version || '').trim() !== 'v1.0' || !Array.isArray(parsed.approvals)) {
+    return {
+      ok: false,
+      approvals: [],
+      failReason: 'SECONDARY_APPROVALS_SCHEMA_INVALID',
+    };
+  }
+
+  const evaluationTimeMs = Date.now();
+  const requiredKeys = new Set(changedApprovalsWithHash.map((entry) => makeApprovalKey(entry.filePath, entry.sha256)));
+  const matched = new Map();
+  const seenMatchedKeys = new Set();
+
+  for (let index = 0; index < parsed.approvals.length; index += 1) {
+    const parsedEntry = parseSecondaryApprovalWitnessEntry(parsed.approvals[index], index, evaluationTimeMs);
+    if (!parsedEntry.ok || !parsedEntry.entry) {
+      return {
+        ok: false,
+        approvals: [],
+        failReason: parsedEntry.failDetail,
+      };
+    }
+
+    const key = makeApprovalKey(parsedEntry.entry.filePath, parsedEntry.entry.sha256);
+    if (!requiredKeys.has(key)) continue;
+    if (seenMatchedKeys.has(key)) {
+      return {
+        ok: false,
+        approvals: [],
+        failReason: `SECONDARY_APPROVAL_DUPLICATE_${index}`,
+      };
+    }
+    seenMatchedKeys.add(key);
+    matched.set(key, parsedEntry.entry);
+  }
+
+  if ([...requiredKeys].some((key) => !matched.has(key))) {
+    return {
+      ok: false,
+      approvals: [...matched.values()],
+      failReason: 'SECONDARY_APPROVALS_REQUIRED_BYTES_MISSING',
+    };
+  }
+
+  return {
+    ok: true,
+    approvals: [...matched.values()],
+    failReason: '',
+  };
+}
+
+function collectSecondaryApprovalStates({ repoRoot, changedGovernanceFiles, changedApprovalsWithHash, primaryApprovalsPath }) {
   const states = [];
+  const secondaryApprovalPaths = new Set(SECONDARY_APPROVALS_PATHS);
   for (const filePath of changedGovernanceFiles) {
-    if (filePath !== INTEROP100_SECONDARY_APPROVALS_PATH || filePath === primaryApprovalsPath) continue;
-    const state = evaluateGovernanceApprovalState({
-      repoRoot,
-      approvalsPath: filePath,
-    });
+    if (!secondaryApprovalPaths.has(filePath) || filePath === primaryApprovalsPath) continue;
+    const targetApprovals = changedApprovalsWithHash
+      .filter((entry) => entry.filePath !== filePath && entry.filePath !== primaryApprovalsPath);
+    const state = filePath === DEFAULT_APPROVALS_PATH
+      ? evaluateDefaultSecondaryApprovalWitness({
+        repoRoot,
+        approvalsPath: filePath,
+        changedApprovalsWithHash: targetApprovals,
+      })
+      : evaluateGovernanceApprovalState({
+        repoRoot,
+        approvalsPath: filePath,
+      });
     states.push({ filePath, state });
   }
   return states;
@@ -287,18 +452,10 @@ export function evaluateGovernanceChangeDetection(input = {}) {
   }
 
   const changedGovernanceFiles = changedState.files.filter((relativePath) => isGovernancePath(relativePath));
-  const secondaryApprovalStates = collectSecondaryApprovalStates({
-    repoRoot,
-    changedGovernanceFiles,
-    primaryApprovalsPath: approvalsPath,
-  });
-  for (const secondary of secondaryApprovalStates) {
-    if (secondary.state?.ok === true) approvalExemptPaths.add(secondary.filePath);
-  }
-  const changedFilesRequiringApproval = changedGovernanceFiles
-    .filter((filePath) => !approvalExemptPaths.has(filePath));
+  const changedFilesForHash = changedGovernanceFiles
+    .filter((filePath) => filePath !== approvalsPath);
 
-  if (changedFilesRequiringApproval.length === 0) {
+  if (changedFilesForHash.length === 0) {
     return buildState({
       ok: true,
       changedGovernanceFiles,
@@ -314,7 +471,7 @@ export function evaluateGovernanceChangeDetection(input = {}) {
     });
   }
 
-  const hashState = collectGovernanceFileHashes(repoRoot, changedFilesRequiringApproval);
+  const hashState = collectGovernanceFileHashes(repoRoot, changedFilesForHash);
   if (!hashState.ok) {
     return buildState({
       ok: false,
@@ -331,10 +488,23 @@ export function evaluateGovernanceChangeDetection(input = {}) {
     });
   }
 
-  const changedApprovalsWithHash = changedFilesRequiringApproval.map((filePath) => ({
+  const allChangedApprovalsWithHash = changedFilesForHash.map((filePath) => ({
     filePath,
     sha256: hashState.fileHashes[filePath],
   }));
+  const secondaryApprovalStates = collectSecondaryApprovalStates({
+    repoRoot,
+    changedGovernanceFiles,
+    changedApprovalsWithHash: allChangedApprovalsWithHash,
+    primaryApprovalsPath: approvalsPath,
+  });
+  for (const secondary of secondaryApprovalStates) {
+    if (secondary.state?.ok === true) approvalExemptPaths.add(secondary.filePath);
+  }
+  const changedFilesRequiringApproval = changedGovernanceFiles
+    .filter((filePath) => !approvalExemptPaths.has(filePath));
+  const changedApprovalsWithHash = allChangedApprovalsWithHash
+    .filter((entry) => changedFilesRequiringApproval.includes(entry.filePath));
 
   const approvalRegistryState = evaluateGovernanceApprovalState({
     repoRoot,
