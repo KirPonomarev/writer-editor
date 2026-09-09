@@ -7,12 +7,18 @@ const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { normalizedDocxDeterministicHash } = require('../../src/export/docx/deterministic-export-hash.js');
 
 const HANDLER_PATH = 'src/export/docx/docxMinExportHandler.js';
+const BUILDER_PATH = 'src/export/docx/docxMinBuilder.js';
 const UNIT_TEST_PATH = 'test/unit/docx-min-export-handler.test.js';
+const BUILDER_UNIT_TEST_PATH = 'test/unit/docx-min-builder.test.js';
 const CONTRACT_TEST_PATH = 'test/contracts/export-contour-01-docx-simple-hardening.contract.test.js';
+const TEST_INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 const ALLOWLIST = [
   HANDLER_PATH,
+  BUILDER_PATH,
   UNIT_TEST_PATH,
+  BUILDER_UNIT_TEST_PATH,
   CONTRACT_TEST_PATH,
+  TEST_INVENTORY_PATH,
 ];
 
 function makeTypedExportError(code, reason, details = {}) {

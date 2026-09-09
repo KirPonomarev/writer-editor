@@ -168,6 +168,20 @@ function resolveDocxParagraphStyleId(styleDescriptor, semanticKind) {
   return '';
 }
 
+function buildDocxTextRunsXml(text) {
+  const segments = String(text || '').split('\n');
+  const runs = [];
+
+  for (let index = 0; index < segments.length; index += 1) {
+    if (index > 0) runs.push('<w:r><w:br/></w:r>');
+    if (segments[index]) {
+      runs.push(`<w:r><w:t xml:space="preserve">${escapeXml(segments[index])}</w:t></w:r>`);
+    }
+  }
+
+  return runs.join('');
+}
+
 function assertDocxBuilderDependencies(dependencies) {
   const deps = isPlainObjectValue(dependencies) ? dependencies : {};
   if (
@@ -211,7 +225,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (!text) {
         return `<w:p>${styleXml}</w:p>`;
       }
-      return `<w:p>${styleXml}<w:r><w:t xml:space="preserve">${escapeXml(text)}</w:t></w:r></w:p>`;
+      return `<w:p>${styleXml}${buildDocxTextRunsXml(text)}</w:p>`;
     }).join('')
     : '<w:p/>';
 
@@ -242,6 +256,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
 
 module.exports = {
   buildDocxMinBuffer,
+  buildDocxTextRunsXml,
   buildStoredZip,
   escapeXml,
   normalizeEditorSnapshotPayload,
