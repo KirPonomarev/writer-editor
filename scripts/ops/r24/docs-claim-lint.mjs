@@ -181,8 +181,8 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V24 = Object.freeze([
 // merge while publishing a recovery-CI confirmation inventory refresh.
 export const HISTORICAL_INVENTORY_CLAIM_PINS_V25 = Object.freeze([
   ...HISTORICAL_INVENTORY_CLAIM_PINS_V24,
-  Object.freeze({ stampId: 'ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF', stampSha256: '56abe80967b6604035f07ebc1b4f4a4ed9ad441693cf75897f03df6a20a94f98',
-    evaluationSha: 'a8a7781a0c4dbf35de42c30df40988d968839c3e', evaluationTree: 'a57c353a403974fc7245c5ad58afd3204632dac3', targetSha256: '5acef82da77c7a5f7db107c080c4d7f2d908f68ec2489bed2923fadbffaeaf32' }),
+  Object.freeze({ stampId: 'ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF', stampSha256: 'b66b968d2ce1bb7eb86df5b8097e5d419771497ee24634455e0f15bf6a2104f6',
+    evaluationSha: '199efa8fa71648671e02e695993462ccb6758be2', evaluationTree: '05795800b438d0c4584520bb2b400c2a465ae27c', targetSha256: 'ba6024c916943d390153af74879cc9a0a387770e9cbca38e3391b72ec7f2d559' }),
 ]);
 // PRE00F retains the exact PRE00E inventory binding at the PRE00E terminal
 // merge while publishing a plan-delivery inventory refresh.

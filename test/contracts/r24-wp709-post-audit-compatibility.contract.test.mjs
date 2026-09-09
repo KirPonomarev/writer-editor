@@ -3,12 +3,14 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import {
+  PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION,
   WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION as E,
   verifyWp709MainProductPostEvaluationException,
 } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 
 const FINAL_SHA = 'f709f709f709f709f709f709f709f709f709f709';
 const FINAL_TREE = 'a709a709a709a709a709a709a709a709a709a709';
+const HISTORICAL_CANDIDATE_SHA = PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha;
 const instance = JSON.parse(fs.readFileSync(E.instancePath));
 const ADMITTED = [...instance.operations.modifyPaths, ...instance.operations.createPaths].sort();
 const response = (value, encoding) => encoding === 'utf8' ? `${value}\n` : Buffer.from(`${value}\n`);
@@ -31,9 +33,8 @@ function fakeGit({ changedPaths = ADMITTED, baseTreeDrift = false, missingArtifa
       const sha = args[1].slice(0, split);
       const file = args[1].slice(split + 1);
       if (file === missingArtifact) throw new Error('MISSING');
-      let bytes = sha === E.baseSha
-        ? execFileSync('git', ['show', `${E.baseSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 })
-        : fs.readFileSync(file);
+      const objectSha = sha === E.baseSha ? E.baseSha : HISTORICAL_CANDIDATE_SHA;
+      let bytes = execFileSync('git', ['show', `${objectSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 });
       if (mutateJson?.path === file) {
         const value = JSON.parse(bytes);
         mutateJson.apply(value);
@@ -92,6 +93,6 @@ test('WP709 routing pins the WP707 oracle to the immutable WP709 base', () => {
   const source = fs.readFileSync('scripts/ops/r24/corrective/post-audit-certification-set.mjs', 'utf8');
   assert.match(source, /const wp709Enabled=allowMainProductWp709Admission/u);
   assert.match(source, /verifyWp707MainProductPostEvaluationException\(\{candidateSha:wp709Enabled\?WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION\.baseSha:resolvedCandidate,git\}\)/u);
-  assert.match(source, /verifyWp709MainProductPostEvaluationException\(\{candidateSha:resolvedCandidate,git\}\)/u);
+  assert.match(source, /verifyWp709MainProductPostEvaluationException\(\{candidateSha:pk1r1Enabled\?PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION\.baseSha:resolvedCandidate,git\}\)/u);
   assert.match(source, /allowAuditCycle2Admission:options\['audit-cycle2-admission'\]===true,allowMainProductWp709Admission:true/u);
 });
