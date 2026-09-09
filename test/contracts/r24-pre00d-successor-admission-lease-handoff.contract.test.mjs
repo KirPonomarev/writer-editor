@@ -13,7 +13,7 @@ import {
 
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
-test('PRE00D admits the fresh successor as one exact plan-doc create against current base', () => {
+test('PRE00D admits the fresh successor as one exact plan-doc modify against current base', () => {
   const packet = buildPre00dSuccessorAdmissionPacket();
   const result = verifyPre00dSuccessorAdmission(packet);
   assert.equal(result.status, 'PASS');
@@ -31,11 +31,11 @@ test('PRE00D focused negative probes reject stale, broad, drifted and rebinding 
   assert.equal(result.negativeProbeDenominator, 9);
   assert.deepEqual(result.negativeErrors, [
     'E_PRE00D_BASE_SHA',
-    'E_PRE00D_CREATE_SET',
+    'E_PRE00D_MODIFY_SET',
     'E_PRE00D_CREATE_SET',
     'E_PRE00D_LEASE_COUNTER',
     'E_PRE00D_SIMULTANEOUS_WRITER',
-    'E_PRE00D_CREATE_SET',
+    'E_PRE00D_MODIFY_SET',
     'E_PRE00D_PRE00C_REBIND',
     'E_PRE00D_REVIEW_CARRIER_MERGE',
     'E_PRE00D_NON_CLAIM_LEAK',
@@ -44,24 +44,24 @@ test('PRE00D focused negative probes reject stale, broad, drifted and rebinding 
 
 test('PRE00D separately rejects digest self-repair, omitted path and operation-class mismatch', () => {
   const packet = buildPre00dSuccessorAdmissionPacket();
-  packet.operations.createPaths.push('docs/tasks/unadmitted.md');
+  packet.operations.modifyPaths.push('docs/tasks/unadmitted.md');
   packet.digests.writeSetDigest = packet.digests.commandScopeDigest;
   assert.throws(
     () => verifyPre00dSuccessorAdmission(packet),
-    (error) => error.code === 'E_PRE00D_CREATE_SET',
+    (error) => error.code === 'E_PRE00D_MODIFY_SET',
   );
 
   const omitted = buildPre00dSuccessorAdmissionPacket();
-  omitted.operations.createPaths = [];
+  omitted.operations.modifyPaths = [];
   omitted.digests.writeSetDigest = omitted.digests.commandScopeDigest;
   assert.throws(
     () => verifyPre00dSuccessorAdmission(omitted),
-    (error) => error.code === 'E_PRE00D_CREATE_SET',
+    (error) => error.code === 'E_PRE00D_MODIFY_SET',
   );
 
   const mismatch = buildPre00dSuccessorAdmissionPacket();
-  mismatch.operations.createPaths = [];
-  mismatch.operations.modifyPaths = [SUCCESSOR_PLAN_PATH];
+  mismatch.operations.createPaths = [SUCCESSOR_PLAN_PATH];
+  mismatch.operations.modifyPaths = [];
   assert.throws(
     () => verifyPre00dSuccessorAdmission(mismatch),
     (error) => error.code === 'E_PRE00D_CREATE_SET',
@@ -77,16 +77,16 @@ test('PRE00D rejects broad path admission before digest interpretation can grant
     'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md.bak',
   ]) {
     const packet = buildPre00dSuccessorAdmissionPacket();
-    packet.operations.createPaths = [badPath];
+    packet.operations.modifyPaths = [badPath];
     assert.throws(
       () => verifyPre00dSuccessorAdmission(packet),
-      (error) => ['E_PRE00D_CREATE_SET', 'E_PRE00D_PATH_ABSOLUTE', 'E_PRE00D_PATH_ESCAPE', 'E_PRE00D_PATH_WILDCARD', 'E_PRE00D_PATH_NOT_ADMITTED'].includes(error.code),
+      (error) => ['E_PRE00D_MODIFY_SET', 'E_PRE00D_PATH_ABSOLUTE', 'E_PRE00D_PATH_ESCAPE', 'E_PRE00D_PATH_WILDCARD', 'E_PRE00D_PATH_NOT_ADMITTED'].includes(error.code),
       badPath,
     );
   }
 });
 
-test('PRE00D repo check verifies exact base tree and that successor plan is still absent at base', () => {
+test('PRE00D repo check verifies exact base tree and that successor plan is present for modify at base', () => {
   const packet = buildPre00dSuccessorAdmissionPacket();
   const result = verifyPre00dSuccessorAdmission(packet, { repoRoot: process.cwd() });
   assert.equal(result.status, 'PASS');

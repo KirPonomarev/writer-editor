@@ -16,10 +16,10 @@
   "approvals": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "16649e5dc28c25b9d44fdc6d80a7c259672b64119fe27c975cb6c652469983be",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:23:42Z",
-      "rationale": "Bounded R24-PRE-00C restart from current origin/main; updates strict governance approval binding to exact regenerated inventory bytes after focused closed-stage PK1R1 candidate verifier repair tests while preserving the historical 19-path PK1R1 admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "ba6024c916943d390153af74879cc9a0a387770e9cbca38e3391b72ec7f2d559",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -113,20 +113,6 @@
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added."
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/WP708_CARRIER_REGISTRY_V1.json",
-      "sha256": "3431ab88b7f5c42804d24d153007e25f0940331251b5ddb3abce3771c3b5b4fa",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 carrier registry rebind to current WP806 compatibility and terminal carrier test bytes introduced by PR1851 while preserving candidate boundaries; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/WP708_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f9b77c17d3b1f80513ec97c6dea85605c97955fafd3b985d9748d4fc425f6818",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 local governance approval rebind to current carrier registry plus WP806 compatibility and terminal carrier test bytes introduced by PR1851; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "65725e3cbd32d8e1e607361e3ebdc027cab82025e70f38337883f3f11d35691e",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
@@ -142,10 +128,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00D_SUCCESSOR_ADMISSION_PACKET_V1.json",
-      "sha256": "cb698c56267ff2a372c6169d5906ee23fcd4999b606dc4cdde9b6b92331cac89",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "b1db763b5fd161bae20a43fcb83b2b2c95e2b2a79e9636372220fccbbd12cf39",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_STATUS_V1.json",
@@ -155,11 +141,32 @@
       "rationale": "Bounded PRE00E recovery CI and external confirmation verifier; PR1847 recovery evidence is checked, PR1843 remains historical only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added."
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP708_CARRIER_REGISTRY_V1.json",
+      "sha256": "3431ab88b7f5c42804d24d153007e25f0940331251b5ddb3abce3771c3b5b4fa",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 carrier registry rebind to current WP806 compatibility and terminal carrier test bytes introduced by PR1851 while preserving candidate boundaries; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/WP708_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f9b77c17d3b1f80513ec97c6dea85605c97955fafd3b985d9748d4fc425f6818",
+      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
+      "approvedAtUtc": "2026-09-09T02:06:17Z",
+      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 local governance approval rebind to current carrier registry plus WP806 compatibility and terminal carrier test bytes introduced by PR1851; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added."
+    },
+    {
       "filePath": "docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json",
       "sha256": "4ade89239fd394817167f5e1a9a5db853fb5f68a358ab11901a27e2d0c5181d6",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "approvedAtUtc": "2026-09-09T01:06:37.093Z",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
+      "sha256": "e079bac6350b3ad19f667f510b925942b7ffa0ef40113081c6a48004b45ae331",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
@@ -177,10 +184,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF.json",
-      "sha256": "56abe80967b6604035f07ebc1b4f4a4ed9ad441693cf75897f03df6a20a94f98",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "b66b968d2ce1bb7eb86df5b8097e5d419771497ee24634455e0f15bf6a2104f6",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION.json",
@@ -197,18 +204,11 @@
       "rationale": "Bounded PRE00F plan delivery, owner portability gap boundary, and CI verifier repair; PR1843 and owner thread 019fdbc4-6eb0-7632-bfd5-75f05dceaba7 remain historical evidence only, WP707-WP709 remain bounded evidence only, and no runtime, dependency, process, credential, product graph, PK1, V3, WP900, program-done, production-release, broad W7/C1-C8 portability PASS, or publication authority is added."
     },
     {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "9baaee1669aa5169231ff877f71443b8aa2eb992a18849fc5e76386dc043d88a",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:23:42Z",
-      "rationale": "Bounded R24-PRE-00C restart from current origin/main; updates the interop current-claim binding to the regenerated C1B inventory hash after the closed-stage PK1R1 verifier repair while preserving historical delivery boundaries; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
-    },
-    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "c9d0e46c4c9323040b52f6e05f0256dee12fccacd3a2e2a3de71155eaa88fb6e",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:23:42Z",
-      "rationale": "Bounded R24-PRE-00C restart from current origin/main; updates the R24-RCV-00A current claim-binding bytes to the regenerated C1B inventory hash after the closed-stage PK1R1 verifier repair while preserving historical delivery boundaries; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "d69d66929f4af1d6d666861bdaaaf4d50016eca3cb9667e515c8bbef76310216",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/OPS/R24/TOOLCHAIN_CONTRACT_V1.json",
@@ -226,10 +226,10 @@
     },
     {
       "filePath": "docs/tasks/R24_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_001.md",
-      "sha256": "2efbbaaf609675dd8f04c98023d7473e44364e8908af664e4f3b73f82d94ae19",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "e4b4da30d905c8665979928458728e03f0619d5b0ab0c988828d9fc5992fba74",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "docs/tasks/R24_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_001.md",
@@ -247,10 +247,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "02d832d73c0d300303d7f0ace9130954e2ab9ae5a4fa5dea609a033e6ab243b4",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:23:42Z",
-      "rationale": "Bounded R24-PRE-00C restart from current origin/main; binds PK1R1 verification reads and exact delta checks to the immutable issued candidate SHA/tree while keeping successor current-head evidence separate and preserving the historical 19-path PK1R1 admission boundary; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "c09c1e0383d1f735ecafc385e4bb3ad688e2e3f1f3a43fd749dbc5c9be60dc29",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
@@ -268,10 +268,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00d-successor-admission-lease-handoff.mjs",
-      "sha256": "a654535e15d01dd5200470723a5c9c3f8e7d363c27cdeb45af43d9e9f65b3e63",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "d7e582c124b610b61887b2374e14e8f506b4ccc77ae3fe2eb0427f6bc2a8d8b7",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/corrective/pre00e-recovery-ci-external-confirmation.mjs",
@@ -317,10 +317,10 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "f08ca2572999086dede82729bf10b8f3cbebb5a4420ca410916880b51273c240",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; updates strict governance approval binding to exact current docs-claim-lint test bytes while preserving the closed PRE and RCV delivery boundaries; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "0ac18c832d5ffb06fdc452792494673c8df6084d7a8791cc84f661a0aab1738c",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "scripts/ops/r24/tests/q0/toolchain.test.mjs",
@@ -338,10 +338,10 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "2a92f7ecd236ea39648551db593365d08cc22e152c125c0959964ee1b37f12b6",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_RESTART_2026_09_09_UTC",
-      "approvedAtUtc": "2026-09-09T02:23:42Z",
-      "rationale": "Bounded R24-PRE-00C restart from current origin/main; adds focused positive, negative, and implementation-mutant coverage for immutable PK1R1 candidate identity, historical 19-path delta, terminal receipt integrity, and non-descendant evidence heads; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added."
+      "sha256": "f915ec4217d2244a9759e7482cdcf953aed45e4d93773075bcf9c445b274215a",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
@@ -359,10 +359,10 @@
     },
     {
       "filePath": "test/contracts/r24-pre00d-successor-admission-lease-handoff.contract.test.mjs",
-      "sha256": "e54e15a0376dc734bb94fa8c45e484b7bf0dad30e510f35e4f6b3572beecf41d",
-      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08",
-      "approvedAtUtc": "2026-09-08T00:00:00.000Z",
-      "rationale": "Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
+      "sha256": "602220901aa6e6f7ebe7e0b2060add2451198508c5b58048b7d5cdca320b967f",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
+      "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added."
     },
     {
       "filePath": "test/contracts/r24-pre00e-recovery-ci-external-confirmation.contract.test.mjs",
