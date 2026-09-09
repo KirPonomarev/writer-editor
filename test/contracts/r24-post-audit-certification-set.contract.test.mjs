@@ -41,6 +41,7 @@ import {
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
+  resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
   verifyAuditCycle2DurableCarrier,
   verifyAuditCycle2PostEvaluationException,
   verifyAuditCycle2TerminalArtifact,
@@ -388,18 +389,23 @@ test('PRE00D fresh successor admission lease handoff rejects an unadmitted futur
   const e=PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,fixture=pre00dGitFixture([...e.admittedPaths,'package.json'].sort());
   assert.throws(()=>verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00D_EXACT_ADMITTED_DELTA/);
 });
-function pre00eGitFixture(changedPaths){
-  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,candidateSha='e'.repeat(40),candidateTree='f'.repeat(40);
+function pre00eGitFixture(changedPaths,{baseTree,bytesByPath=new Map(),candidateSha='e'.repeat(40),candidateTree='f'.repeat(40)}={}){
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,historicalSha=e.deliverySha;
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
-    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===e.deliverySha)value=e.deliverySha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.deliverySha}^{tree}`)value=e.deliveryTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      return fs.readFileSync(repoPath);
+      const replacement=bytesByPath.get(repoPath);
+      if(replacement)return options.encoding==='utf8'?replacement.toString('utf8'):Buffer.from(replacement);
+      const bytes=objectFromCommit(historicalSha,repoPath);
+      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -416,10 +422,54 @@ test('PRE00E recovery CI external confirmation accepts the bounded delta',()=>{
   assert.equal(result.aggregateLaneDenominator,2);
   assert.equal(result.interveningDeliveryDenominator,1);
   assert.equal(result.negativeProbeDenominator,9);
+  assert.equal(PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliverySha,'6e9be072a12ff3bd5cc1608da153caf13c5e94c2');
+  assert.equal(PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliveryTree,'e442f006f5c5b8229d51df9b8f1fff5c68803aab');
 });
 test('PRE00E recovery CI external confirmation rejects an unadmitted future path',()=>{
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());
   assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00E recovery CI external confirmation rejects a forged same-count bootstrap set',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION;
+  const forged=e.admittedPaths.filter((repoPath)=>repoPath!==e.taskPath).concat('package.json').sort();
+  const fixture=pre00eGitFixture(forged);
+  assert.equal(forged.length,e.admittedPaths.length);
+  assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00E recovery CI external confirmation rejects a stale base tree',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture(e.admittedPaths,{baseTree:'0'.repeat(40)});
+  assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_BASE_TREE_DRIFT/);
+});
+test('PRE00E recovery CI external confirmation rejects mutated historical bytes',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION;
+  const taskBytes=objectFromCommit(e.deliverySha,e.taskPath);
+  const bytesByPath=new Map([[e.taskPath,Buffer.from(`${taskBytes.toString('utf8')}\nMUTATED_HISTORICAL_PRE00E_BYTES\n`)]]);
+  const fixture=pre00eGitFixture(e.admittedPaths,{bytesByPath});
+  assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EVIDENCE_ARTIFACT_DIGEST/);
+});
+test('PRE00E successor interop delta is routed to the pinned historical bootstrap candidate',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,futureCandidateSha='9'.repeat(40);
+  const ordinaryInteropSuccessorPaths=[
+    'src/core/docx-profile-v1.mjs',
+    'src/export/docx/docxMinBuilder.js',
+    'src/export/docx/docxReviewPacketBuilder.js',
+    'src/export/docx/docxTextXml.js',
+    'test/unit/r24-docx-text-xml-control-boundary.test.mjs',
+  ].sort();
+  const git=(args,options={})=>{
+    let value='';
+    if(args[0]==='merge-base'&&args[1]==='--is-ancestor'&&args[3]===futureCandidateSha){
+      if(args[2]===e.deliverySha)value='';
+      else throw new Error(`NOT_ANCESTOR:${args[2]}:${args[3]}`);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
+  };
+  assert.equal(ordinaryInteropSuccessorPaths.length,5);
+  const historicalCandidate=resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolvedCandidate:futureCandidateSha,git});
+  assert.equal(historicalCandidate,e.deliverySha);
+  const result=verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:historicalCandidate});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.changedPathDenominator,11);
 });
 function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,evidenceBytes,approvalsBytes,baseTree}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);

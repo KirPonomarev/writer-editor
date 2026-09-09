@@ -161,6 +161,8 @@ export const PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION=Object.f
 export const PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION=Object.freeze({
   baseSha:PRE00E_BASE_SHA,
   baseTree:PRE00E_BASE_TREE,
+  deliverySha:'6e9be072a12ff3bd5cc1608da153caf13c5e94c2',
+  deliveryTree:'e442f006f5c5b8229d51df9b8f1fff5c68803aab',
   approvalsPath:PRE00E_APPROVALS_PATH,
   inventoryPath:PRE00E_INVENTORY_PATH,
   statusPath:PRE00E_STATUS_PATH,
@@ -3474,7 +3476,10 @@ export function verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationExc
 
 export function verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
+  const deliverySha=gitText(git,['rev-parse',e.deliverySha]);
+  assert(deliverySha===e.deliverySha,'E_PRE00E_DELIVERY_SHA_DRIFT',deliverySha);
   assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_PRE00E_BASE_TREE_DRIFT');
+  assert(evaluationTree(git,deliverySha)===e.deliveryTree,'E_PRE00E_DELIVERY_TREE_DRIFT');
   try{git(['merge-base','--is-ancestor',e.baseSha,resolvedCandidate],{encoding:null});}catch{fail('E_PRE00E_BASE_NOT_ANCESTOR');}
   const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00E_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
@@ -3520,6 +3525,13 @@ export function verifyPre00eRecoveryCiExternalConfirmationPostEvaluationExceptio
   const expectedApprovalPaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath);
   for(const relative of expectedApprovalPaths){const sha=h(objectBytes(git,resolvedCandidate,relative));const approval=approvalMap.get(`${relative}\0${sha}`);assert(approval&&approval.approvedBy==='OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09','E_PRE00E_APPROVAL_DIGEST',relative);}
   return{schemaVersion:'PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,approvalDenominator:expectedApprovalPaths.length,evidenceDigest:evidence.digest,statusDigest:status.digest,inventoryFileDenominator:inventory.value.entries.length,recoveryRequiredJobDenominator:e.recoveryRequiredJobDenominator,formerlyFailingPrimaryLaneDenominator:e.formerlyFailingPrimaryLaneDenominator,aggregateLaneDenominator:e.aggregateLaneDenominator,interveningDeliveryDenominator:e.interveningDeliveryDenominator,negativeProbeDenominator:9,programDone:false,productionReleaseReady:false,graphIncrement:0};
+}
+
+export function resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolvedCandidate,git=defaultGit}={}){
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION;
+  hex(resolvedCandidate,40,'resolvedCandidate');
+  if(resolvedCandidate===e.deliverySha)return e.deliverySha;
+  try{git(['merge-base','--is-ancestor',e.deliverySha,resolvedCandidate],{encoding:null});return e.deliverySha;}catch{return resolvedCandidate;}
 }
 
 export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
@@ -4574,6 +4586,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   let pre00eRecoveryCiExternalConfirmationDescendant=false;
   if(resolvedCandidate!==PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});pre00eRecoveryCiExternalConfirmationDescendant=true;}catch{}}
   const pre00eRecoveryCiExternalConfirmationEnabled=allowAuditCycle2Admission&&pre00eRecoveryCiExternalConfirmationDescendant;
+  let pre00eRecoveryCiExternalConfirmationDeliveryDescendant=false;
+  if(resolvedCandidate===PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliverySha)pre00eRecoveryCiExternalConfirmationDeliveryDescendant=true;
+  else{try{git(['merge-base','--is-ancestor',PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliverySha,resolvedCandidate],{encoding:null});pre00eRecoveryCiExternalConfirmationDeliveryDescendant=true;}catch{}}
   let pre00eRecoveryCiExternalConfirmationIsCurrentPre00dSuccessor=false;
   try{git(['merge-base','--is-ancestor',PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.baseSha,PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha],{encoding:null});pre00eRecoveryCiExternalConfirmationIsCurrentPre00dSuccessor=true;}catch{}
   let pre00fPlanDeliveryDescendant=false;
@@ -4722,7 +4737,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const pre00cClosedStageCandidateVerifierRepairException=pre00cClosedStageCandidateVerifierRepairEnabled?verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.deliverySha,git}):null;
   const pre00dFreshSuccessorAdmissionLeaseHandoffCandidateSha=(pre00eRecoveryCiExternalConfirmationEnabled||pre00fPlanDeliveryEnabled||r24Rcv00aExactToolchainEntryPointEnabled||r24Interop100GoogleDocxImportRouteEnabled||r24Interop100SafeDocxHyperlinkPreviewEnabled)?PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.deliverySha:resolvedCandidate;
   const pre00dFreshSuccessorAdmissionLeaseHandoffException=pre00dFreshSuccessorAdmissionLeaseHandoffEnabled?verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:pre00dFreshSuccessorAdmissionLeaseHandoffCandidateSha,git}):null;
-  const pre00eRecoveryCiExternalConfirmationCandidateSha=(pre00fPlanDeliveryEnabled&&pre00fPlanDeliveryBaseDescendsFromCurrentPre00e)?PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha:resolvedCandidate;
+  const pre00eRecoveryCiExternalConfirmationCandidateSha=pre00eRecoveryCiExternalConfirmationDeliveryDescendant?resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolvedCandidate,git}):((pre00fPlanDeliveryEnabled&&pre00fPlanDeliveryBaseDescendsFromCurrentPre00e)?PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha:resolvedCandidate);
   const pre00eRecoveryCiExternalConfirmationException=pre00eRecoveryCiExternalConfirmationEnabled?verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:pre00eRecoveryCiExternalConfirmationCandidateSha,git}):null;
   const pre00fSuccessorCandidateSha=(r24Rcv00aExactToolchainEntryPointEnabled||r24Interop100GoogleDocxImportRouteEnabled||r24Interop100SafeDocxHyperlinkPreviewEnabled)?PRE00F_PLAN_DELIVERY_EXPECTATION.deliverySha:resolvedCandidate;
   const pre00fPlanDeliveryException=pre00fPlanDeliveryEnabled?verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:pre00fSuccessorCandidateSha,git}):null;
