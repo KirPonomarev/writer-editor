@@ -38,6 +38,7 @@ import {
   PRE00F_PLAN_DELIVERY_EXPECTATION,
   R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
+  R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   verifyAuditCycle2DurableCarrier,
@@ -69,6 +70,7 @@ import {
   verifyPre00fPlanDeliveryPostEvaluationException,
   verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
+  verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -365,7 +367,8 @@ function pre00dGitFixture(changedPaths){
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      const bytes=fs.readFileSync(repoPath);
+      const objectSha=String(args[1]).startsWith(`${e.baseSha}:`)?e.baseSha:e.deliverySha;
+      const bytes=execFileSync('git',['show',`${objectSha}:${repoPath}`]);
       return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
@@ -376,6 +379,7 @@ test('PRE00D fresh successor admission lease handoff accepts the bounded delta',
   const result=verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,e.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
   assert.equal(result.admittedPathDenominator,12);
   assert.equal(result.approvalDenominator,11);
   assert.equal(result.negativeProbeDenominator,9);
@@ -579,6 +583,47 @@ test('R24 interop 100 Google DOCX import route exception rejects route qualifica
   ledger.routeQualificationEvidence[0].countedAsRequiredCellPass=true;
   const fixture=interop100GitFixture({ledgerBytes:canonicalBytes(ledger)});
   assert.throws(()=>verifyR24Interop100GoogleDocxImportRoutePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_VALIDATION/);
+});
+function safeHyperlinkGitFixture({changedPaths,ledgerBytes}={}){
+  const e=R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40);
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[
+    repoPath,
+    repoPath===e.ledgerPath&&ledgerBytes?Buffer.from(ledgerBytes):fs.readFileSync(repoPath),
+  ]));
+  bytesByPath.set(e.denominatorPath,fs.readFileSync(e.denominatorPath));
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 interop 100 safe external hyperlink preview exception accepts exact PR1852 delta',()=>{
+  const fixture=safeHyperlinkGitFixture(),result=verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,18);
+  assert.equal(result.changedPathDenominator,18);
+  assert.equal(result.requiredCellDenominator,1120);
+  assert.equal(result.passedRequiredCells,0);
+  assert.equal(result.safeExternalHyperlinkPreview,'PASS_NON_CELL_WITH_EXPLICIT_LINK_RELATIONSHIP_LOSS');
+});
+test('R24 interop 100 safe external hyperlink preview exception rejects denominator promotion',()=>{
+  const e=R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,ledger=JSON.parse(fs.readFileSync(e.ledgerPath,'utf8'));
+  const evidence=ledger.implementationContourEvidence.find((item)=>item.id===e.evidenceId);
+  evidence.denominatorImpact.passedRequiredCellsAdded=1;
+  const fixture=safeHyperlinkGitFixture({ledgerBytes:canonicalBytes(ledger)});
+  assert.throws(()=>verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_SAFE_LINK_EVIDENCE_IDENTITY/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

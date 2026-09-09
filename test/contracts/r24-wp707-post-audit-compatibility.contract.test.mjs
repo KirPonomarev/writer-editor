@@ -4,11 +4,13 @@ import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import {
   WP707_MAIN_PRODUCT_ADMISSION_EXPECTATION as E,
+  WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION,
   verifyWp707MainProductPostEvaluationException,
 } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 
 const FINAL_SHA = 'f4'.repeat(20);
 const FINAL_TREE = 'a4'.repeat(20);
+const HISTORICAL_CANDIDATE_SHA = WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha;
 const instance = JSON.parse(fs.readFileSync(E.instancePath));
 const ADMITTED = [...instance.operations.modifyPaths, ...instance.operations.createPaths].sort();
 const response = (value, encoding) => encoding === 'utf8' ? `${value}\n` : Buffer.from(`${value}\n`);
@@ -31,9 +33,8 @@ function fakeGit({ changedPaths = ADMITTED, baseTreeDrift = false, missingArtifa
       const sha = args[1].slice(0, split);
       const file = args[1].slice(split + 1);
       if (file === missingArtifact) throw new Error('MISSING');
-      let bytes = sha === E.baseSha
-        ? execFileSync('git', ['show', `${E.baseSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 })
-        : fs.readFileSync(file);
+      const objectSha = sha === E.baseSha ? E.baseSha : HISTORICAL_CANDIDATE_SHA;
+      let bytes = execFileSync('git', ['show', `${objectSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 });
       if (mutateJson?.path === file) {
         const value = JSON.parse(bytes);
         mutateJson.apply(value);
@@ -83,6 +84,6 @@ test('WP707 candidate oracle rejects forged authority, owner decision and Word e
 test('WP707 routing pins WP706 to the immutable WP707 base and admits only the WP707 candidate delta', () => {
   const source = fs.readFileSync('scripts/ops/r24/corrective/post-audit-certification-set.mjs', 'utf8');
   assert.match(source, /const wp706Exception=wp706Enabled\?verifyWp706MainProductPostEvaluationException\(\{candidateSha:wp707Enabled\?WP707_MAIN_PRODUCT_ADMISSION_EXPECTATION\.baseSha:resolvedCandidate,git\}\):null/u);
-  assert.match(source, /const wp707Exception=wp707Enabled\?verifyWp707MainProductPostEvaluationException\(\{candidateSha:resolvedCandidate,git\}\):null/u);
+  assert.match(source, /const wp707Exception=wp707Enabled\?verifyWp707MainProductPostEvaluationException\(\{candidateSha:wp709Enabled\?WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION\.baseSha:resolvedCandidate,git\}\):null/u);
   assert.match(source, /\.\.\.\(wp707Exception\?\.admittedPaths\?\?\[\]\)/u);
 });

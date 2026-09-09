@@ -1,15 +1,20 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { buildClaimBinding } from '../../scripts/ops/r24/claim-binding.mjs';
 import { canonicalDigest } from '../../scripts/ops/r24/canonical-json.mjs';
-import { HISTORICAL_INVENTORY_CLAIM_PINS_V20 } from '../../scripts/ops/r24/docs-claim-lint.mjs';
-import { WP707_MAIN_PRODUCT_ADMISSION_EXPECTATION as E } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
+import { HISTORICAL_INVENTORY_CLAIM_PINS_V20, verifyHistoricalInventoryClaim } from '../../scripts/ops/r24/docs-claim-lint.mjs';
+import {
+  WP707_MAIN_PRODUCT_ADMISSION_EXPECTATION as E,
+  WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION,
+} from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 
 const C = 'docs/OPS/R24/CORRECTIVE/';
 const h = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file));
+const historicalCandidateBytes = file => execFileSync('git', ['show', `${WP709_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha}:${file}`]);
 const names = [
   'MAIN_PRODUCT_OWNER_AUTHORITY', 'MAIN_PRODUCT_STAGE_INSTANCE', 'MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION',
   'PROTECTED_WIP_BEFORE', 'WP706_TERMINAL_PREDECESSOR', 'EXACT_BOUND_OWNER_DECISION', 'MAIN_PRODUCT_SELECTION_RECEIPT',
@@ -78,7 +83,7 @@ function verify(value) {
   assert.equal(registry.carrierDenominator, 29);
   assert.equal(registry.currentTreeFallbackAllowed, false);
   for (const binding of registry.carriers) {
-    const bytes = fs.readFileSync(binding.path);
+    const bytes = historicalCandidateBytes(binding.path);
     assert.equal(h(bytes), binding.sha256, binding.path);
     assert.equal(bytes.length, binding.byteLength);
   }
@@ -98,8 +103,16 @@ function verify(value) {
 
 test('WP707 carriers bind exact admission, explicit single-scene Word apply, physical proof and conditional release', () => {
   verify(load());
-  const claim = buildClaimBinding(read('docs/OPS/R24/EVIDENCE/ES-R24-WP-707-WORD-APPLY-CLAIM-BINDINGS.json'));
-  for (const binding of claim.claimBindings) assert.equal(h(fs.readFileSync(binding.filePath)), binding.sha256);
+  const claimPath = 'docs/OPS/R24/EVIDENCE/ES-R24-WP-707-WORD-APPLY-CLAIM-BINDINGS.json';
+  const claimBytes = fs.readFileSync(claimPath);
+  const stamp = JSON.parse(claimBytes);
+  const claim = buildClaimBinding(stamp);
+  for (const binding of claim.claimBindings) {
+    if (binding.filePath === 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json') continue;
+    assert.equal(h(fs.readFileSync(binding.filePath)), binding.sha256);
+  }
+  const inventoryBinding = claim.claimBindings.find(binding => binding.filePath === 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json');
+  assert.equal(verifyHistoricalInventoryClaim({ rootDir: process.cwd(), stamp, stampBytes: claimBytes, binding: inventoryBinding }).status, 'VERIFIED_HISTORICAL_BYTES');
   assert.deepEqual(HISTORICAL_INVENTORY_CLAIM_PINS_V20.at(-1), {
     stampId: 'ES-R24-WP-706-WORD-REPORT-CLAIM-BINDINGS',
     stampSha256: 'e6091bc4e9b86eb96d9e10ca6c1bddaa3e74aaaf448439ea45ebb976896216fb',

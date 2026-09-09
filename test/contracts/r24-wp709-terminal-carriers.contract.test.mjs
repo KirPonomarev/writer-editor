@@ -1,13 +1,16 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { buildClaimBinding } from '../../scripts/ops/r24/claim-binding.mjs';
-import { HISTORICAL_INVENTORY_CLAIM_PINS_V21 } from '../../scripts/ops/r24/docs-claim-lint.mjs';
+import { HISTORICAL_INVENTORY_CLAIM_PINS_V21, HISTORICAL_INVENTORY_CLAIM_PINS_V22, verifyHistoricalInventoryClaim } from '../../scripts/ops/r24/docs-claim-lint.mjs';
+import { PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 
 const C = 'docs/OPS/R24/CORRECTIVE/';
 const h = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file));
+const historicalCandidateBytes = file => execFileSync('git', ['show', `${PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 });
 const names = [
   'ACCEPTANCE_MATRIX', 'CARRIER_REGISTRY', 'EFFECTIVE_GRAPH_BASELINE', 'EFFECTIVE_STATE',
   'FEATURE_INTEGRATION_MANIFEST', 'FIXTURE_MANIFEST', 'GOVERNANCE_CHANGE_APPROVALS', 'LEASE_RELEASE',
@@ -135,21 +138,36 @@ test('WP709 registry covers every non-dependent admitted candidate byte without 
   assert.equal(registry.currentTreeFallbackAllowed, false);
   assert.deepEqual([...registry.carriers.map(binding => binding.path), ...registry.excludedDependentCarriers].sort(), admitted);
   for (const binding of registry.carriers) {
-    const bytes = fs.readFileSync(binding.path);
+    const bytes = historicalCandidateBytes(binding.path);
     assert.equal(h(bytes), binding.sha256, binding.path);
     assert.equal(bytes.length, binding.byteLength, binding.path);
   }
 });
 
 test('WP709 claim binding is schema-valid and WP707 inventory bytes remain historically pinned', () => {
-  const claim = buildClaimBinding(read('docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS.json'));
-  for (const binding of claim.claimBindings) assert.equal(h(fs.readFileSync(binding.filePath)), binding.sha256, binding.filePath);
+  const claimPath = 'docs/OPS/R24/EVIDENCE/ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS.json';
+  const claimBytes = fs.readFileSync(claimPath);
+  const stamp = JSON.parse(claimBytes);
+  const claim = buildClaimBinding(stamp);
+  for (const binding of claim.claimBindings) {
+    if (binding.filePath === 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json') continue;
+    assert.equal(h(fs.readFileSync(binding.filePath)), binding.sha256, binding.filePath);
+  }
+  const inventoryBinding = claim.claimBindings.find(binding => binding.filePath === 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json');
+  assert.equal(verifyHistoricalInventoryClaim({ rootDir: process.cwd(), stamp, stampBytes: claimBytes, binding: inventoryBinding }).status, 'VERIFIED_HISTORICAL_BYTES');
   assert.deepEqual(HISTORICAL_INVENTORY_CLAIM_PINS_V21.at(-1), {
     stampId: 'ES-R24-WP-707-WORD-APPLY-CLAIM-BINDINGS',
     stampSha256: '445f8cc6f3f94f1566979c4d33c406d83da535573f6be9235bd98ee68faaf802',
     evaluationSha: '098c1d1ed7aa47277807f1719f6720e27f9b31eb',
     evaluationTree: '1a10ed79200f29c9bc6a9615b7d5a2827c426f33',
     targetSha256: 'f25bfb8ed27967794bded880cbdc569ff03dad9ae2b38d80353c9e9f9fd6c88b',
+  });
+  assert.deepEqual(HISTORICAL_INVENTORY_CLAIM_PINS_V22.at(-1), {
+    stampId: 'ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS',
+    stampSha256: '89948f28238b890fc1634c7ab23ef8b6130d06e90e3738a829a5defc834e99e5',
+    evaluationSha: '3698061c4a00ecee649629a06ac233d125f87e22',
+    evaluationTree: 'ad0cb42cbe2c5b78e886e24fde950ca798e7c7b5',
+    targetSha256: 'e3da18b004558902961b683e697e43d556f7661235e97503695977086e24ec5b',
   });
 });
 

@@ -248,6 +248,8 @@ test('PRE00D successor admission inventory binding is accepted only at its exact
     (item) => item.stampId === 'ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF',
   );
   assert.ok(pin);
+  assert.equal(pin.evaluationSha, '199efa8fa71648671e02e695993462ccb6758be2');
+  assert.equal(pin.targetSha256, 'ba6024c916943d390153af74879cc9a0a387770e9cbca38e3391b72ec7f2d559');
   const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
   const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
     cwd: REPO_ROOT,

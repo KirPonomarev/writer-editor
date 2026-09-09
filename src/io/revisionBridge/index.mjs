@@ -1973,12 +1973,40 @@ function docxHostileFileGateXmlCandidate(entryId) {
   return /\.xml$/iu.test(entryId) || /\.rels$/iu.test(entryId);
 }
 
-function docxHostileFileGateRelationshipTargetModeBlocked(xmlText) {
+function docxHostileFileGateRelationshipAttributeValue(attributeText, name) {
+  const pattern = new RegExp(`\\b${name}\\s*=\\s*(["'])([^"']*)\\1`, 'iu');
+  const match = pattern.exec(attributeText);
+  return match ? match[2].trim() : null;
+}
+
+function docxHostileFileGateSafeExternalHyperlinkRelationship(entryId, attributeText) {
+  const normalizedEntryId = docxHostileFileGateNormalizedEntryId(entryId);
+  if (normalizedEntryId !== 'word/_rels/document.xml.rels') return false;
+  const type = docxHostileFileGateRelationshipAttributeValue(attributeText, 'Type');
+  if (type !== 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink') {
+    return false;
+  }
+  const target = docxHostileFileGateRelationshipAttributeValue(attributeText, 'Target');
+  if (!target) return false;
+  return /^https?:\/\/[^\s"'<>]+$/iu.test(target);
+}
+
+function docxHostileFileGateRelationshipTargetModeBlocked(xmlText, entryId = '') {
   const assignments = xmlText.match(/\bTargetMode\s*=/giu) || [];
   if (assignments.length === 0) return false;
   const values = Array.from(xmlText.matchAll(/\bTargetMode\s*=\s*(["'])([^"']*)\1/giu));
   if (values.length !== assignments.length) return true;
-  return values.some((match) => match[2].trim().toLowerCase() !== 'internal');
+  const relationshipTags = Array.from(xmlText.matchAll(/<Relationship\b([^>]*)\/?>/giu));
+  return values.some((match) => {
+    const targetMode = match[2].trim().toLowerCase();
+    if (targetMode === 'internal') return false;
+    if (targetMode !== 'external') return true;
+    const relationshipTag = relationshipTags.find((tagMatch) => (
+      tagMatch.index <= match.index && match.index < tagMatch.index + tagMatch[0].length
+    ));
+    if (!relationshipTag) return true;
+    return !docxHostileFileGateSafeExternalHyperlinkRelationship(entryId, relationshipTag[1]);
+  });
 }
 
 function docxHostileFileGateCompressionRatioExceeded(entry) {
@@ -2150,7 +2178,7 @@ export function inspectDocxHostileFileGateFromZipBytes(input) {
     if (scanResult.failure) return scanResult.failure;
     if (
       /\.rels$/iu.test(entry.entryId)
-      && docxHostileFileGateRelationshipTargetModeBlocked(Buffer.from(scanResult.contentBytes).toString('utf8'))
+      && docxHostileFileGateRelationshipTargetModeBlocked(Buffer.from(scanResult.contentBytes).toString('utf8'), entry.entryId)
     ) {
       return docxHostileFileGateBlockedResult(
         DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT,
