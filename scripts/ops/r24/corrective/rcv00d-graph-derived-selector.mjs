@@ -279,10 +279,16 @@ export function buildRcv00dSelectorContext({
   const actualPlanState = planState || readJsonBounded(repoPath(root, RCV00D_PLAN_STATE_PATH));
   const { effectiveStateProjection } = buildEffectiveStateProjectionOnFullGraph({ now, planState: actualPlanState });
   const graphSelectionReceipt = buildSelectionReceiptOnFullGraph({ now, planState: actualPlanState });
-  const headSha = gitText(root, ['rev-parse', 'HEAD']);
-  const originMainSha = gitText(root, ['rev-parse', 'origin/main']);
-  const treeSha = gitText(root, ['rev-parse', 'HEAD^{tree}']);
+  const headSha = RCV00D_BASE_SHA;
+  const originMainSha = RCV00D_BASE_SHA;
+  const treeSha = gitText(root, ['rev-parse', `${RCV00D_BASE_SHA}^{tree}`]);
   if (!HEX40_RE.test(headSha) || !HEX40_RE.test(originMainSha) || !HEX40_RE.test(treeSha)) throw new R24Error('E_RCV00D_GIT_IDENTITY');
+  if (treeSha !== RCV00D_BASE_TREE) throw new R24Error('E_RCV00D_BASE_TREE_DRIFT');
+  try {
+    execFileSync('git', ['-C', root, 'merge-base', '--is-ancestor', RCV00D_BASE_SHA, 'HEAD'], { stdio: 'ignore' });
+  } catch {
+    throw new R24Error('E_RCV00D_BASE_NOT_ANCESTOR');
+  }
   return {
     repoRoot: root,
     now,
