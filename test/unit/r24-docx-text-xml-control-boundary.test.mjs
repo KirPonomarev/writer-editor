@@ -41,31 +41,6 @@ function documentXmlFromDocx(buffer) {
   return extractStoredZipEntries(buffer).get('word/document.xml')?.toString('utf8') || '';
 }
 
-function zipEntryFlags(buffer) {
-  const entries = [];
-  let offset = 0;
-  const localFlags = new Map();
-  while (offset + 30 <= buffer.length && buffer.readUInt32LE(offset) === 0x04034b50) {
-    const flags = buffer.readUInt16LE(offset + 6);
-    const compressedSize = buffer.readUInt32LE(offset + 18);
-    const fileNameLength = buffer.readUInt16LE(offset + 26);
-    const extraLength = buffer.readUInt16LE(offset + 28);
-    const name = buffer.subarray(offset + 30, offset + 30 + fileNameLength).toString('utf8');
-    localFlags.set(name, flags);
-    offset += 30 + fileNameLength + extraLength + compressedSize;
-  }
-  while (offset + 46 <= buffer.length && buffer.readUInt32LE(offset) === 0x02014b50) {
-    const flags = buffer.readUInt16LE(offset + 8);
-    const fileNameLength = buffer.readUInt16LE(offset + 28);
-    const extraLength = buffer.readUInt16LE(offset + 30);
-    const commentLength = buffer.readUInt16LE(offset + 32);
-    const name = buffer.subarray(offset + 46, offset + 46 + fileNameLength).toString('utf8');
-    entries.push({ name, localFlags: localFlags.get(name), centralFlags: flags });
-    offset += 46 + fileNameLength + extraLength + commentLength;
-  }
-  return entries;
-}
-
 function assertNoRawFormFeed(xml) {
   assert.equal(String(xml).includes('\f'), false, 'raw U+000C must not appear in serialized XML');
 }
@@ -178,22 +153,6 @@ test('R24 review packet builder preserves page-break controls and rejects hostil
     () => buildDocxReviewPacketBuffer(reviewPacketInput('Alpha\u0001Beta')),
     /E_DOCX_TEXT_XML_UNSUPPORTED_CONTROL/u,
   );
-});
-
-test('R24 generated DOCX archives carry UTF-8 filename flags in local and central records', () => {
-  const cases = [
-    ['min', buildDocxMinBuffer({ plainText: 'A\fB' }, createBuilderDependencies())],
-    ['review', buildDocxReviewPacketBuffer(reviewPacketInput('A\fB'))],
-  ];
-
-  for (const [name, bytes] of cases) {
-    const flags = zipEntryFlags(bytes);
-    assert.equal(flags.length > 0, true, `${name}: entries must be readable`);
-    for (const entry of flags) {
-      assert.equal((entry.localFlags & 0x0800) !== 0, true, `${name}:${entry.name}: local UTF-8 flag`);
-      assert.equal((entry.centralFlags & 0x0800) !== 0, true, `${name}:${entry.name}: central UTF-8 flag`);
-    }
-  }
 });
 
 test('R24 core DOCX profile parses and re-exports page breaks without collapsing them into line breaks', async () => {
