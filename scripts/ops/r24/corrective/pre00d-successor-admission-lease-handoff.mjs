@@ -7,12 +7,12 @@ import { canonicalBytes, sha256 } from './canonical-json.mjs';
 
 export const PRE00D_TASK_ID = 'R24_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_001';
 export const PRE00D_SCHEMA_VERSION = 'R24_PRE00D_SUCCESSOR_ADMISSION_PACKET_V1';
-export const PRE00D_BASE_SHA = 'ff92699f3439a6e058a8a8a7f00ef69b63f89971';
-export const PRE00D_BASE_TREE = '044086053219a61453364163803ce03775136226';
-export const PRE00C_DELIVERY_SHA = 'ff92699f3439a6e058a8a8a7f00ef69b63f89971';
-export const PRE00C_DELIVERY_TREE = '044086053219a61453364163803ce03775136226';
+export const PRE00D_BASE_SHA = '624a62e3ac3359ff563972d7d5a804fb6f5be44e';
+export const PRE00D_BASE_TREE = '1697ff82a35254de728d5db821a28b62f2bdf0c7';
+export const PRE00C_DELIVERY_SHA = '624a62e3ac3359ff563972d7d5a804fb6f5be44e';
+export const PRE00C_DELIVERY_TREE = '1697ff82a35254de728d5db821a28b62f2bdf0c7';
 export const PRE00C_EVIDENCE_DIGEST = '7c221f0df6e05fca1f95435a05e24fc7ee52eb044677e372c1742744a7a8542a';
-export const PRE00C_INVENTORY_DIGEST = 'b3b32f776da3195440aedad348d2300c714a0775b7ce7f74887a28a632b1f816';
+export const PRE00C_INVENTORY_DIGEST = '16649e5dc28c25b9d44fdc6d80a7c259672b64119fe27c975cb6c652469983be';
 export const PRE00D_LEASE_COUNTER = 105;
 export const PK1R1_RELEASED_LEASE_COUNTER = 104;
 export const SUCCESSOR_STAGE_ID = 'R24_PRE00F_PLAN_DELIVERY';
@@ -29,6 +29,8 @@ export const CLAIM_LINT_PATH = 'scripts/ops/r24/docs-claim-lint.mjs';
 export const CLAIM_LINT_TEST_PATH = 'scripts/ops/r24/tests/docs-claim-lint.test.mjs';
 export const POST_AUDIT_TEST_PATH = 'test/contracts/r24-post-audit-certification-set.contract.test.mjs';
 export const SUCCESSOR_TEST_PATH = 'test/contracts/r24-pre00d-successor-admission-lease-handoff.contract.test.mjs';
+export const INTEROP_CURRENT_CLAIM_BINDING_PATH = 'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json';
+export const RCV00A_CURRENT_CLAIM_BINDING_PATH = 'docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json';
 export const PRE00D_DELIVERY_ADMITTED_PATHS = Object.freeze([
   APPROVALS_PATH,
   INVENTORY_PATH,
@@ -37,10 +39,11 @@ export const PRE00D_DELIVERY_ADMITTED_PATHS = Object.freeze([
   TASK_DOC_PATH,
   POST_AUDIT_VERIFIER_PATH,
   SUCCESSOR_VERIFIER_PATH,
-  CLAIM_LINT_PATH,
   CLAIM_LINT_TEST_PATH,
   POST_AUDIT_TEST_PATH,
   SUCCESSOR_TEST_PATH,
+  INTEROP_CURRENT_CLAIM_BINDING_PATH,
+  RCV00A_CURRENT_CLAIM_BINDING_PATH,
 ].sort((a, b) => a.localeCompare(b, 'en-US')));
 export const PRE00D_EVIDENCE_FILE_DIGEST_PATHS = Object.freeze(
   PRE00D_DELIVERY_ADMITTED_PATHS.filter((repoPath) => repoPath !== EVIDENCE_PATH && repoPath !== APPROVALS_PATH),
@@ -82,8 +85,8 @@ export const PRE00D_ACCEPTANCE_SIGNALS = Object.freeze([
 ]);
 
 export const PRE00D_WRITE_SET = Object.freeze({
-  createPaths: Object.freeze([SUCCESSOR_PLAN_PATH]),
-  modifyPaths: Object.freeze([]),
+  createPaths: Object.freeze([]),
+  modifyPaths: Object.freeze([SUCCESSOR_PLAN_PATH]),
   deletePaths: Object.freeze([]),
   renamePairs: Object.freeze([]),
 });
@@ -297,8 +300,8 @@ export function verifyPre00dSuccessorAdmission(packet, options = {}) {
   if (packet.gitIdentity.targetRemote !== 'origin') fail('E_PRE00D_REMOTE');
 
   expectExactKeys(packet.operations, ['createPaths', 'deletePaths', 'modifyPaths', 'renamePairs'], 'E_PRE00D_OPERATION_KEYS');
-  expectArrayExact(packet.operations.createPaths, [SUCCESSOR_PLAN_PATH], 'E_PRE00D_CREATE_SET');
-  expectEmptyArray(packet.operations.modifyPaths, 'E_PRE00D_MODIFY_SET');
+  expectEmptyArray(packet.operations.createPaths, 'E_PRE00D_CREATE_SET');
+  expectArrayExact(packet.operations.modifyPaths, [SUCCESSOR_PLAN_PATH], 'E_PRE00D_MODIFY_SET');
   expectEmptyArray(packet.operations.deletePaths, 'E_PRE00D_DELETE_SET');
   expectEmptyArray(packet.operations.renamePairs, 'E_PRE00D_RENAME_SET');
   for (const repoPath of [
@@ -365,8 +368,8 @@ export function verifyPre00dSuccessorAdmission(packet, options = {}) {
       const originMain = runGit(repoRoot, ['rev-parse', 'origin/main']);
       expectSha(originMain, PRE00D_BASE_SHA, 'E_PRE00D_ORIGIN_MAIN_CURRENT');
     }
-    if (gitObjectExists(repoRoot, PRE00D_BASE_SHA, SUCCESSOR_PLAN_PATH)) {
-      fail('E_PRE00D_PLAN_ALREADY_EXISTS_AT_BASE');
+    if (!gitObjectExists(repoRoot, PRE00D_BASE_SHA, SUCCESSOR_PLAN_PATH)) {
+      fail('E_PRE00D_PLAN_MISSING_AT_BASE_FOR_MODIFY');
     }
   }
 
@@ -378,7 +381,7 @@ export function verifyPre00dSuccessorAdmission(packet, options = {}) {
     successorStageId: SUCCESSOR_STAGE_ID,
     successorBranch: SUCCESSOR_BRANCH,
     admittedPathDenominator: 1,
-    admittedPaths: [...packet.operations.createPaths],
+    admittedPaths: [...packet.operations.modifyPaths],
     leaseCounter: packet.lease.fencingCounter,
     predecessorDeliverySha: packet.closedEvidence.pre00c.deliverySha,
     writeSetDigest: packet.digests.writeSetDigest,
@@ -391,14 +394,14 @@ export function runPre00dNegativeProbes() {
   const base = buildPre00dSuccessorAdmissionPacket();
   const mutations = [
     ['base-drift', 'E_PRE00D_BASE_SHA', (packet) => { packet.gitIdentity.baseSha = '0'.repeat(40); }],
-    ['extra-path', 'E_PRE00D_CREATE_SET', (packet) => { packet.operations.createPaths.push('docs/tasks/unadmitted.md'); }],
+    ['extra-path', 'E_PRE00D_MODIFY_SET', (packet) => { packet.operations.modifyPaths.push('docs/tasks/unadmitted.md'); }],
     ['operation-class-mismatch', 'E_PRE00D_CREATE_SET', (packet) => {
-      packet.operations.createPaths = [];
-      packet.operations.modifyPaths = [SUCCESSOR_PLAN_PATH];
+      packet.operations.createPaths = [SUCCESSOR_PLAN_PATH];
+      packet.operations.modifyPaths = [];
     }],
     ['stale-lease', 'E_PRE00D_LEASE_COUNTER', (packet) => { packet.lease.fencingCounter = PK1R1_RELEASED_LEASE_COUNTER; }],
     ['simultaneous-writer', 'E_PRE00D_SIMULTANEOUS_WRITER', (packet) => { packet.lease.simultaneousWriter = true; }],
-    ['wildcard-path', 'E_PRE00D_CREATE_SET', (packet) => { packet.operations.createPaths = ['docs/tasks/*.md']; }],
+    ['wildcard-path', 'E_PRE00D_MODIFY_SET', (packet) => { packet.operations.modifyPaths = ['docs/tasks/*.md']; }],
     ['closed-evidence-rewrite', 'E_PRE00D_PRE00C_REBIND', (packet) => { packet.closedEvidence.pre00c.deliverySha = '1'.repeat(40); }],
     ['review-carrier-merge', 'E_PRE00D_REVIEW_CARRIER_MERGE', (packet) => { packet.sourcePlan.mustNotMergeCarrier = false; }],
     ['future-claim-leak', 'E_PRE00D_NON_CLAIM_LEAK', (packet) => { packet.nonClaims.pre00fCompleted = true; }],
@@ -534,9 +537,9 @@ export function writePre00dGovernanceApprovals(repoRoot = process.cwd()) {
   const filename = path.join(repoRoot, APPROVALS_PATH);
   const approvals = JSON.parse(fs.readFileSync(filename, 'utf8'));
   if (approvals.version !== 'v1.0' || !Array.isArray(approvals.approvals)) fail('E_PRE00D_APPROVAL_REGISTRY_SHAPE');
-  const approvedBy = 'OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_2026_09_08';
-  const approvedAtUtc = '2026-09-08T00:00:00.000Z';
-  const rationale = 'Bounded PRE00D fresh successor admission and lease handoff verifier repair; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.';
+  const approvedBy = 'OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09';
+  const approvedAtUtc = '2026-09-09T00:00:00.000Z';
+  const rationale = 'Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.';
   const existing = approvals.approvals.filter((entry) => !PRE00D_APPROVAL_REQUIRED_PATHS.includes(entry.filePath));
   for (const repoPath of PRE00D_APPROVAL_REQUIRED_PATHS) {
     existing.push({

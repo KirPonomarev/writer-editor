@@ -60,6 +60,7 @@ import {
   verifyWp501TerminalExceptionPostEvaluationException,
   verifyWp502MainProductPostEvaluationException,
   verifyWp503MainProductPostEvaluationException,
+  verifyPk1r1MainProductPostEvaluationException,
   verifyPre00bLifecycleReconciliationPostEvaluationException,
   verifyPre00cNextContourSelectionPostEvaluationException,
   verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException,
@@ -247,6 +248,59 @@ test('post-evaluation bytes require the exact chained audit-cycle-two WP401 WP40
   assert.equal(result.wp503MainProductPostEvaluationException.status,'PASS');
   assert.equal(result.wp503MainProductPostEvaluationException.changedPaths.every((entry)=>wp503.admittedPaths.includes(entry)),true);
 });
+test('PK1R1 closed-stage verifier accepts the immutable 19-path candidate from successor HEAD',()=>{
+  const result=verifyPk1r1MainProductPostEvaluationException({candidateSha:'HEAD'});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha);
+  assert.equal(result.baseTree,PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseTree);
+  assert.equal(result.candidateSha,PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.issuedCandidateSha);
+  assert.equal(result.candidateTree,PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.issuedCandidateTree);
+  assert.equal(result.successorCandidateSha,result.requestedCandidateSha);
+  assert.equal(result.successorCandidateIsClosedCandidate,result.requestedCandidateSha===PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION.issuedCandidateSha);
+  assert.equal(result.changedPathDenominator,19);
+  assert.equal(result.admittedPathDenominator,19);
+  assert.deepEqual(result.changedPaths,result.admittedPaths);
+  assert.equal(result.graphIncrement,0);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
+});
+test('PK1R1 closed-stage verifier rejects a mutated immutable candidate tree',()=>{
+  const e=PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION;
+  const hostileGit=(args,options={})=>{
+    if(args[0]==='rev-parse'&&args[1]===`${e.issuedCandidateSha}^{tree}`)return options.encoding==='utf8'?`${'0'.repeat(40)}\n`:Buffer.from(`${'0'.repeat(40)}\n`);
+    return execFileSync('git',args,options);
+  };
+  assert.throws(()=>verifyPk1r1MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_PK1R1_ISSUED_CANDIDATE_IDENTITY/);
+});
+test('PK1R1 closed-stage verifier rejects a wrong historical delta',()=>{
+  const e=PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION;
+  const hostileGit=(args,options={})=>{
+    if(args[0]==='diff'&&args[2]===`${e.baseSha}..${e.issuedCandidateSha}`){
+      const admitted=execFileSync('git',['diff','--name-only',`${e.baseSha}..${e.issuedCandidateSha}`],{encoding:'utf8'}).split('\n').filter(Boolean);
+      const mutantChanged=[...admitted,'README.md'].sort().join('\n')+'\n';
+      return options.encoding==='utf8'?mutantChanged:Buffer.from(mutantChanged);
+    }
+    return execFileSync('git',args,options);
+  };
+  assert.throws(()=>verifyPk1r1MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_PK1R1_EXACT_ADMITTED_DELTA/);
+});
+test('PK1R1 closed-stage verifier rejects a wrong terminal receipt',()=>{
+  const e=PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION,terminalPath='docs/OPS/R24/CORRECTIVE/PK1R1_TERMINAL_RECEIPT_V1.json';
+  const hostileGit=(args,options={})=>{
+    if(args[0]==='show'&&args[1]===`${e.issuedCandidateSha}:${terminalPath}`){
+      const terminal=JSON.parse(execFileSync('git',['show',`${e.issuedCandidateSha}:${terminalPath}`]));
+      terminal.graphIncrement=1;
+      const bytes=Buffer.from(JSON.stringify(terminal)+'\n');
+      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
+    }
+    return execFileSync('git',args,options);
+  };
+  assert.throws(()=>verifyPk1r1MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_PK1R1_STATE_CARRIER_DIGEST/);
+});
+test('PK1R1 closed-stage verifier rejects a non-descendant evidence head',()=>{
+  const e=PK1R1_MAIN_PRODUCT_ADMISSION_EXPECTATION;
+  assert.throws(()=>verifyPk1r1MainProductPostEvaluationException({candidateSha:e.baseSha}),/E_PK1R1_SUCCESSOR_NOT_DESCENDANT/);
+});
 test('PRE00B lifecycle reconciliation verifier is pinned to the delivered merge',()=>{
   const result=verifyPre00bLifecycleReconciliationPostEvaluationException({candidateSha:'HEAD'});
   assert.equal(result.status,'PASS');
@@ -276,10 +330,11 @@ test('PRE00C next-contour selection verifier is pinned to its delivered merge',(
   assert.equal(result.productionReleaseReady,false);
 });
 test('PRE00C closed-stage candidate verifier accepts the bounded repair delta',()=>{
-  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.baseSha});
+  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.deliverySha});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha);
   assert.equal(result.baseTree,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree);
+  assert.equal(result.candidateSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.deliverySha);
   assert.deepEqual(result.changedPaths,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.admittedPaths);
   assert.equal(result.graphIncrement,0);
   assert.equal(result.programDone,false);
@@ -310,7 +365,8 @@ function pre00dGitFixture(changedPaths){
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      return execFileSync('git',['show',`${PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha}:${repoPath}`],options);
+      const bytes=fs.readFileSync(repoPath);
+      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -320,8 +376,8 @@ test('PRE00D fresh successor admission lease handoff accepts the bounded delta',
   const result=verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,e.baseSha);
-  assert.equal(result.admittedPathDenominator,11);
-  assert.equal(result.approvalDenominator,10);
+  assert.equal(result.admittedPathDenominator,12);
+  assert.equal(result.approvalDenominator,11);
   assert.equal(result.negativeProbeDenominator,9);
 });
 test('PRE00D fresh successor admission lease handoff rejects an unadmitted future path',()=>{

@@ -4,14 +4,14 @@
   "contourId": "R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT",
   "evidenceClass": "CONTRACT",
   "verdict": "PASS",
-  "headSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
-  "originMainSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+  "headSha": "199efa8fa71648671e02e695993462ccb6758be2",
+  "originMainSha": "199efa8fa71648671e02e695993462ccb6758be2",
   "generatedAtUtc": "2026-09-09T01:06:37.090Z",
   "oracle": "R24_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_INVENTORY_BINDING",
   "claimBindings": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "3a1251dc32601856736e2a45f3c42abc89108ef62fe5f4c19bc24f485611fbb2",
+      "sha256": "02915c33d1a6da8eb0f6a29d775e78bf9784c2a05b2d27f1886e4c9134a4c6e0",
       "claimTerms": [
         "PASS"
       ]
