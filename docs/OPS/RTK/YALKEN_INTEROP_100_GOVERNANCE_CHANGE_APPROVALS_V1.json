@@ -48,11 +48,29 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2003f0c7ce41a63ec34a4e6aa966cd6def1ef7d344297e1d10f0a21b997d8e08",
+      "sha256": "28ec4f7298a8b8eba6605eebb04421899c83733c33143ced9268edea1d9b3da6",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:18:29Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve generated C1B inventory refresh caused by the new interop denominator contract test, docs-claim-lint PRE00F historical regression, and post-audit verifier coverage: total test file denominator remains 1459 with zero required or unexplained skips. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "rationale": "Approve generated C1B inventory refresh caused by the new interop denominator contract test, docs-claim-lint PRE00F historical regression, governance secondary-registry regression tests, and post-audit verifier coverage: total test file denominator remains 1459 with zero required or unexplained skips. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/governance-change-detection.mjs",
+      "sha256": "1a096a125f9c71e58b4a68179afbf6e555afff95bd4d5c5384c5c63cca375b5a",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:40:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve bounded governance detector support for the interop-100 secondary approval registry: only the exact docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json path is recognized, only when it is changed and validates against current file bytes, and it does not grant denominator-cell PASS, product runtime, dependency, UI, release, or program-done authority.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/governance-change-detection.contract.test.js",
+      "sha256": "91364f70d45d9e368508b4666f885aa1376e439a7a17316ac55f2e9e6a18728e",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
+      "approvedAtUtc": "2026-09-09T00:40:00Z",
+      "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
+      "rationale": "Approve governance detector regression tests for the interop-100 secondary approval registry: proves exact changed registry approval passes in STRICT mode and stale secondary bytes fail closed, with no portability PASS or product runtime authority.",
       "approved": true
     },
     {
@@ -75,25 +93,25 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "1e9c0573fd93193d4daa14c51c290db0a34f795be26dae7b6d4922742701b3d5",
+      "sha256": "eef8d35c4463c743a5cd080dfc7b79f930a6a4e8f4deb9060583d2c4ea434135",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:18:29Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded post-audit verifier support for the interop denominator contour: preserves PRE00F as historical evidence, admits the new exact-base interop Google DOCX import route delta, enforces the current C1B claim-binding carrier, and enforces typed-blocker/non-cell accounting without product runtime, dependency, UI, release, or portability PASS authority.",
+      "rationale": "Approve bounded post-audit verifier support for the interop denominator contour: preserves PRE00F as historical evidence, admits the new exact-base interop Google DOCX import route delta, enforces the current C1B claim-binding carrier, verifies governance secondary-registry support, and enforces typed-blocker/non-cell accounting without product runtime, dependency, UI, release, or portability PASS authority.",
       "approved": true
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "2045a6a3ea03744bc26d641f116f1ffafbe9d4f7d628998d8233043cf91d5634",
+      "sha256": "7b7b560c3188bf9c6ecbd6e9974b46787b9e3616ed7c496cb05db24e7dfeb30b",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:18:29Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve bounded post-audit regression tests for the interop denominator contour: proves exact admitted delta including the current C1B claim-binding carrier, rejects unadmitted future paths, and rejects route-qualification promotion into required-cell PASS. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
+      "rationale": "Approve bounded post-audit regression tests for the interop denominator contour: proves exact admitted delta including the current C1B claim-binding carrier and governance secondary-registry support, rejects unadmitted future paths, and rejects route-qualification promotion into required-cell PASS. No product runtime behavior, dependency, UI, release, or portability PASS claim is added.",
       "approved": true
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "5bd6ccf3773b44aa08768f105bfc98161c32463f21ebec765c56812c9c529d18",
+      "sha256": "e792459c82561a4aa2959116d82505e0c19ba32c2246c4b609d69b9ab0fd9ed1",
       "approvedBy": "owner-directive:YALKEN_INTEROP_100_FINAL_COMMAND_2026_09_09",
       "approvedAtUtc": "2026-09-09T00:40:00Z",
       "authority": "OWNER_FINAL_COMMAND_SINGLE_INTEROP_THREAD_FULL_ACCESS_APPROVAL_NEVER",

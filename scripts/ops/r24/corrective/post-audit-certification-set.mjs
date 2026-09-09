@@ -211,6 +211,8 @@ export const R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION=Object.freeze(
   claimBindingPath:'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json',
   claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
   claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
+  governanceDetectorPath:'scripts/ops/governance-change-detection.mjs',
+  governanceDetectorTestPath:'test/contracts/governance-change-detection.contract.test.js',
   validatorPath:'scripts/ops/rtk-interop-100-denominator-v1.mjs',
   contractTestPath:`test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
@@ -231,7 +233,9 @@ export const R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION=Object.freeze(
     'scripts/ops/r24/docs-claim-lint.mjs',
     'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/governance-change-detection.mjs',
     'scripts/ops/rtk-interop-100-denominator-v1.mjs',
+    'test/contracts/governance-change-detection.contract.test.js',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     `test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
   ].sort(),
@@ -3527,7 +3531,7 @@ export function verifyR24Interop100GoogleDocxImportRoutePostEvaluationException(
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_INTEROP100_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_INTEROP100_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const denominator=readJson(e.denominatorPath),ledger=readJson(e.ledgerPath),catalog=readJson(e.catalogPath),inventory=readJson(e.inventoryPath),claimBinding=readJson(e.claimBindingPath),approvals=readJson(e.approvalsPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),validator=readText(e.validatorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  const denominator=readJson(e.denominatorPath),ledger=readJson(e.ledgerPath),catalog=readJson(e.catalogPath),inventory=readJson(e.inventoryPath),claimBinding=readJson(e.claimBindingPath),approvals=readJson(e.approvalsPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),governanceDetector=readText(e.governanceDetectorPath),governanceDetectorTest=readText(e.governanceDetectorTestPath),validator=readText(e.validatorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
   const validation=validateInterop100({spec:denominator.value,ledger:ledger.value,currentHead:resolvedCandidate});
   assert(validation.ok,'E_R24_INTEROP100_VALIDATION',(validation.errors??[]).join(',').slice(0,200));
   assert(validation.requiredCells===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.recordedCells===0&&validation.passedRequiredCells===0&&validation.percentage===0&&validation.statusCounts?.NOT_EXECUTED===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.claimVerdict==='NEEDS_MORE_EVIDENCE','E_R24_INTEROP100_ZERO_PASS_ROLLUP');
@@ -3556,10 +3560,12 @@ export function verifyR24Interop100GoogleDocxImportRoutePostEvaluationException(
   for(const token of ['validateInterop100','GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED','ROUTE_QUALIFIED_NOT_CELL_PASS','WORD_PHYSICAL_RUNTIME_ROOT'])assert(validator.text.includes(token),'E_R24_INTEROP100_VALIDATOR_TOKEN',token);
   for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V27','ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS','NO_SUPPORTED_DENOMINATOR_CELL_PASS'])assert(claimLint.text.includes(token),'E_R24_INTEROP100_CLAIM_LINT_TOKEN',token);
   for(const token of ['PRE00F plan delivery inventory binding is accepted only as historical bytes','ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS'])assert(claimLintTest.text.includes(token),'E_R24_INTEROP100_CLAIM_LINT_TEST_TOKEN',token);
+  for(const token of ['INTEROP100_SECONDARY_APPROVALS_PATH','collectSecondaryApprovalStates'])assert(governanceDetector.text.includes(token),'E_R24_INTEROP100_GOVERNANCE_DETECTOR_TOKEN',token);
+  for(const token of ['STRICT accepts exact interop secondary approval registry when it is changed','STRICT rejects interop secondary approval registry with stale bytes'])assert(governanceDetectorTest.text.includes(token),'E_R24_INTEROP100_GOVERNANCE_DETECTOR_TEST_TOKEN',token);
   for(const token of ['Google local DOCX native import is route-qualified only through an internal uploaded-file reference','validator rejects attempts to count route qualification, direct local path import, or unsafe Word roots as denominator PASS','WORD_PHYSICAL_RUNTIME_ROOT'])assert(contractTest.text.includes(token),'E_R24_INTEROP100_CONTRACT_TEST_TOKEN',token);
   for(const token of ['R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION','verifyR24Interop100GoogleDocxImportRoutePostEvaluationException','E_R24_INTEROP100_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_INTEROP100_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['R24 interop 100 Google DOCX import route exception accepts exact denominator delivery delta','R24 interop 100 Google DOCX import route exception rejects an unadmitted future path'])assert(postAuditTest.text.includes(token),'E_R24_INTEROP100_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,denominatorDigest:denominator.digest,ledgerDigest:ledger.digest,catalogDigest:catalog.digest,inventoryDigest:inventory.digest,claimBindingDigest:claimBinding.digest,approvalsDigest:approvals.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,validatorDigest:validator.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,requiredCellDenominator:validation.requiredCells,passedRequiredCells:validation.passedRequiredCells,percentage:validation.percentage,claimVerdict:validation.claimVerdict,googleLocalDocxImportRoute:'INTERNAL_UPLOADED_FILE_REFERENCE_PASS_NON_CELL',directLocalPathImportTypedBlocker:INTEROP100_GOOGLE_DOCX_IMPORT_TYPED_BLOCKER,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  return{schemaVersion:'R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,denominatorDigest:denominator.digest,ledgerDigest:ledger.digest,catalogDigest:catalog.digest,inventoryDigest:inventory.digest,claimBindingDigest:claimBinding.digest,approvalsDigest:approvals.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,governanceDetectorDigest:governanceDetector.digest,governanceDetectorTestDigest:governanceDetectorTest.digest,validatorDigest:validator.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,requiredCellDenominator:validation.requiredCells,passedRequiredCells:validation.passedRequiredCells,percentage:validation.percentage,claimVerdict:validation.claimVerdict,googleLocalDocxImportRoute:'INTERNAL_UPLOADED_FILE_REFERENCE_PASS_NON_CELL',directLocalPathImportTypedBlocker:INTEROP100_GOOGLE_DOCX_IMPORT_TYPED_BLOCKER,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){

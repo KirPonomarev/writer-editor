@@ -15,6 +15,7 @@ const DEFAULT_BASELINE_PATH = 'docs/OPS/BASELINE/OPS_GOVERNANCE_BASELINE_v1.0.js
 const BASELINE_APPROVAL_KEY = 'governance_change_approval_registry';
 const DEFAULT_FAIL_REASON = 'GOVERNANCE_CHANGE_APPROVAL_REQUIRED';
 const STRICT_EFFECTIVE_MODE = 'STRICT';
+const INTEROP100_SECONDARY_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 
 function normalizeRepoRelativePath(value) {
   const normalized = String(value || '').trim().replaceAll('\\', '/');
@@ -39,6 +40,19 @@ function sha256File(filePath) {
 
 function makeApprovalKey(filePath, sha256) {
   return `${filePath}\u0000${sha256}`;
+}
+
+function collectSecondaryApprovalStates({ repoRoot, changedGovernanceFiles, primaryApprovalsPath }) {
+  const states = [];
+  for (const filePath of changedGovernanceFiles) {
+    if (filePath !== INTEROP100_SECONDARY_APPROVALS_PATH || filePath === primaryApprovalsPath) continue;
+    const state = evaluateGovernanceApprovalState({
+      repoRoot,
+      approvalsPath: filePath,
+    });
+    states.push({ filePath, state });
+  }
+  return states;
 }
 
 function isGovernancePath(relativePath) {
@@ -273,6 +287,14 @@ export function evaluateGovernanceChangeDetection(input = {}) {
   }
 
   const changedGovernanceFiles = changedState.files.filter((relativePath) => isGovernancePath(relativePath));
+  const secondaryApprovalStates = collectSecondaryApprovalStates({
+    repoRoot,
+    changedGovernanceFiles,
+    primaryApprovalsPath: approvalsPath,
+  });
+  for (const secondary of secondaryApprovalStates) {
+    if (secondary.state?.ok === true) approvalExemptPaths.add(secondary.filePath);
+  }
   const changedFilesRequiringApproval = changedGovernanceFiles
     .filter((filePath) => !approvalExemptPaths.has(filePath));
 
@@ -319,6 +341,8 @@ export function evaluateGovernanceChangeDetection(input = {}) {
     approvalsPath,
   });
   const approvalRegistryValid = approvalRegistryState && approvalRegistryState.ok === true;
+  const secondaryApprovalRegistryValid = secondaryApprovalStates.some((secondary) => secondary.state?.ok === true);
+  const aggregateApprovalRegistryValid = approvalRegistryValid || secondaryApprovalRegistryValid;
   const approvalRegistryFailReason = approvalRegistryValid
     ? ''
     : String(approvalRegistryState && approvalRegistryState.failReason
@@ -330,10 +354,16 @@ export function evaluateGovernanceChangeDetection(input = {}) {
       ? (approvalRegistryState.approvals || []).map((entry) => makeApprovalKey(entry.filePath, entry.sha256))
       : [],
   );
+  for (const secondary of secondaryApprovalStates) {
+    if (secondary.state?.ok !== true) continue;
+    for (const entry of secondary.state.approvals || []) {
+      approvedKeys.add(makeApprovalKey(entry.filePath, entry.sha256));
+    }
+  }
 
   const missingApprovals = changedApprovalsWithHash
     .filter((entry) => !approvedKeys.has(makeApprovalKey(entry.filePath, entry.sha256)));
-  const approvalsSatisfied = approvalRegistryValid && missingApprovals.length === 0;
+  const approvalsSatisfied = aggregateApprovalRegistryValid && missingApprovals.length === 0;
 
   // In strict mode, only artifact approvals are authoritative.
   if (strictMode) {
@@ -344,8 +374,8 @@ export function evaluateGovernanceChangeDetection(input = {}) {
       baseRef,
       repoRoot,
       approvedByEnv,
-      approvalRegistryValid,
-      approvalRegistryFailReason,
+      approvalRegistryValid: aggregateApprovalRegistryValid,
+      approvalRegistryFailReason: aggregateApprovalRegistryValid ? '' : approvalRegistryFailReason,
       approvalsPath,
       failReason: approvalsSatisfied ? '' : DEFAULT_FAIL_REASON,
       gitError: '',
@@ -362,8 +392,8 @@ export function evaluateGovernanceChangeDetection(input = {}) {
       baseRef,
       repoRoot,
       approvedByEnv,
-      approvalRegistryValid,
-      approvalRegistryFailReason,
+      approvalRegistryValid: aggregateApprovalRegistryValid,
+      approvalRegistryFailReason: aggregateApprovalRegistryValid ? '' : approvalRegistryFailReason,
       approvalsPath,
       failReason: approvalsSatisfied ? '' : DEFAULT_FAIL_REASON,
       gitError: '',
@@ -378,8 +408,8 @@ export function evaluateGovernanceChangeDetection(input = {}) {
       baseRef,
       repoRoot,
       approvedByEnv,
-      approvalRegistryValid,
-      approvalRegistryFailReason,
+      approvalRegistryValid: aggregateApprovalRegistryValid,
+      approvalRegistryFailReason: aggregateApprovalRegistryValid ? '' : approvalRegistryFailReason,
       approvalsPath,
       failReason: '',
       gitError: '',
@@ -393,8 +423,8 @@ export function evaluateGovernanceChangeDetection(input = {}) {
     baseRef,
     repoRoot,
     approvedByEnv,
-    approvalRegistryValid,
-    approvalRegistryFailReason,
+    approvalRegistryValid: aggregateApprovalRegistryValid,
+    approvalRegistryFailReason: aggregateApprovalRegistryValid ? '' : approvalRegistryFailReason,
     approvalsPath,
     failReason: approvalsSatisfied ? '' : DEFAULT_FAIL_REASON,
     gitError: '',

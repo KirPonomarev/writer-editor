@@ -414,7 +414,7 @@ test('PRE00F plan delivery rejects stale CI approval registry binding',()=>{
   const fixture=pre00fGitFixture({approvalsBytes});
   assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
 });
-function interop100GitFixture({changedPaths,denominatorBytes,ledgerBytes,catalogBytes,inventoryBytes,claimBindingBytes,approvalsBytes,claimLintBytes,claimLintTestBytes,validatorBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree}={}){
+function interop100GitFixture({changedPaths,denominatorBytes,ledgerBytes,catalogBytes,inventoryBytes,claimBindingBytes,approvalsBytes,claimLintBytes,claimLintTestBytes,governanceDetectorBytes,governanceDetectorTestBytes,validatorBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree}={}){
   const e=R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,candidateSha='3'.repeat(40),candidateTree='4'.repeat(40);
   const bytesByPath=new Map([
     [e.denominatorPath,denominatorBytes??fs.readFileSync(e.denominatorPath)],
@@ -425,6 +425,8 @@ function interop100GitFixture({changedPaths,denominatorBytes,ledgerBytes,catalog
     [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
     [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
     [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
+    [e.governanceDetectorPath,governanceDetectorBytes??fs.readFileSync(e.governanceDetectorPath)],
+    [e.governanceDetectorTestPath,governanceDetectorTestBytes??fs.readFileSync(e.governanceDetectorTestPath)],
     [e.validatorPath,validatorBytes??fs.readFileSync(e.validatorPath)],
     [e.contractTestPath,contractTestBytes??fs.readFileSync(e.contractTestPath)],
     [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
@@ -459,6 +461,8 @@ test('R24 interop 100 Google DOCX import route exception accepts exact denominat
   assert.match(result.claimBindingDigest,/^[0-9a-f]{64}$/);
   assert.match(result.claimLintDigest,/^[0-9a-f]{64}$/);
   assert.match(result.claimLintTestDigest,/^[0-9a-f]{64}$/);
+  assert.match(result.governanceDetectorDigest,/^[0-9a-f]{64}$/);
+  assert.match(result.governanceDetectorTestDigest,/^[0-9a-f]{64}$/);
   assert.equal(result.googleLocalDocxImportRoute,'INTERNAL_UPLOADED_FILE_REFERENCE_PASS_NON_CELL');
   assert.equal(result.directLocalPathImportTypedBlocker,'GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED');
 });
