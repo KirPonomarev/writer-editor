@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V4,
   HISTORICAL_INVENTORY_CLAIM_PINS_V24,
@@ -247,8 +248,11 @@ test('PRE00D successor admission inventory binding is accepted only at its exact
     (item) => item.stampId === 'ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF',
   );
   assert.ok(pin);
-  const stampPath = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'EVIDENCE', `${pin.stampId}.json`);
-  const stampBytes = fs.readFileSync(stampPath);
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
   const stamp = JSON.parse(stampBytes);
   const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
   const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
@@ -288,9 +292,6 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR',
-  ));
-  assert.ok(result.historicalBindings.some(
-    (binding) => binding.stampId === 'ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF',
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS',

@@ -330,10 +330,11 @@ test('PRE00C next-contour selection verifier is pinned to its delivered merge',(
   assert.equal(result.productionReleaseReady,false);
 });
 test('PRE00C closed-stage candidate verifier accepts the bounded repair delta',()=>{
-  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION.baseSha});
+  const result=verifyPre00cClosedStageCandidateVerifierRepairPostEvaluationException({candidateSha:PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.deliverySha});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseSha);
   assert.equal(result.baseTree,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.baseTree);
+  assert.equal(result.candidateSha,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.deliverySha);
   assert.deepEqual(result.changedPaths,PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_EXPECTATION.admittedPaths);
   assert.equal(result.graphIncrement,0);
   assert.equal(result.programDone,false);
@@ -364,7 +365,8 @@ function pre00dGitFixture(changedPaths){
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      return execFileSync('git',['show',`${PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha}:${repoPath}`],options);
+      const bytes=fs.readFileSync(repoPath);
+      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -374,8 +376,8 @@ test('PRE00D fresh successor admission lease handoff accepts the bounded delta',
   const result=verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,e.baseSha);
-  assert.equal(result.admittedPathDenominator,11);
-  assert.equal(result.approvalDenominator,10);
+  assert.equal(result.admittedPathDenominator,12);
+  assert.equal(result.approvalDenominator,11);
   assert.equal(result.negativeProbeDenominator,9);
 });
 test('PRE00D fresh successor admission lease handoff rejects an unadmitted future path',()=>{

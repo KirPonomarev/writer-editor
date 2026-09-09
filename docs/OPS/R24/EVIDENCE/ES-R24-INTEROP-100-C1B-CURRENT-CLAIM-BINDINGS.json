@@ -5,13 +5,13 @@
         "PASS"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "16649e5dc28c25b9d44fdc6d80a7c259672b64119fe27c975cb6c652469983be"
+      "sha256": "ba6024c916943d390153af74879cc9a0a387770e9cbca38e3391b72ec7f2d559"
     }
   ],
   "contourId": "R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE",
   "evidenceClass": "CONTRACT",
   "generatedAtUtc": "2026-09-09T00:40:00Z",
-  "headSha": "712c400fcf7044e8d9d62647628a6b6bd1f3a864",
+  "headSha": "624a62e3ac3359ff563972d7d5a804fb6f5be44e",
   "nonClaims": [
     "NO_PROGRAM_DONE",
     "NO_PRODUCTION_RELEASE_READY",
@@ -25,7 +25,7 @@
     "NO_ROUTE_QUALIFICATION_PROMOTION_TO_DENOMINATOR_PASS"
   ],
   "oracle": "R24_INTEROP_100_C1B_CURRENT_DIGEST_BINDING_FOR_DOCS_CLAIM_LINT_ONLY",
-  "originMainSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+  "originMainSha": "624a62e3ac3359ff563972d7d5a804fb6f5be44e",
   "schemaVersion": "ClaimBindingV1",
   "stampId": "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
   "verdict": "PASS"
