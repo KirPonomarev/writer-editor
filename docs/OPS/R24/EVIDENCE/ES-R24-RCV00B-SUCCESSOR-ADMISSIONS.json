@@ -63,7 +63,8 @@
         "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
         "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
         "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-        "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js"
+        "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+        "test/unit/security-privacy-writing-path-smoke.mjs"
       ],
       "authority": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
       "baseSha": "0e3864e6b40b635d3b13cc038d7c23d47276150f",
@@ -107,6 +108,11 @@
           "B02 parser does not form replacement groups across visible run boundaries",
           "B02 parser replacement grouping uses a boundary index and stays count-stable on dense revisions",
           "symbol-wingdings"
+        ],
+        "test/unit/security-privacy-writing-path-smoke.mjs": [
+          "const TIMEOUT_MS = 60000",
+          "SECURITY_PRIVACY_WRITING_PATH_SMOKE_EVENT",
+          "SECURITY_PRIVACY_WRITING_PATH_SMOKE_RESULT"
         ]
       }
     }

@@ -681,6 +681,7 @@ function rcv00bSuccessorGitFixture({changedPaths,registryBytes,artifactBytesByPa
     ['src/io/revisionBridge/reviewTransportPackageParserV2.mjs',currentBytes('src/io/revisionBridge/reviewTransportPackageParserV2.mjs')],
     ['test/contracts/r24-post-audit-certification-set.contract.test.mjs',currentBytes('test/contracts/r24-post-audit-certification-set.contract.test.mjs')],
     ['test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',currentBytes('test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js')],
+    ['test/unit/security-privacy-writing-path-smoke.mjs',currentBytes('test/unit/security-privacy-writing-path-smoke.mjs')],
   ]);
   const registry=missingRegistry?null:JSON.parse((registryBytes??bytesByPath.get(e.registryPath)).toString('utf8'));
   const admittedPaths=registry?registry.entries.flatMap((entry)=>entry.admittedPaths):[];
@@ -707,12 +708,13 @@ test('RCV00B successor admission registry accepts the PR1862 repair delta and PR
   assert.equal(result.baseSha,R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION.baseSha);
   assert.equal(result.entryDenominator,2);
   assert.equal(result.predecessorAdmittedPathDenominator,19);
-  assert.equal(result.admittedPathDenominator,11);
+  assert.equal(result.admittedPathDenominator,12);
   assert(result.admittedPaths.includes('docs/ARCH_DIFF_LOG.md'));
   assert(result.admittedPaths.includes('scripts/ops/r24/corrective/post-audit-certification-set.mjs'));
   assert(result.admittedPaths.includes('scripts/ops/r24/docs-claim-lint.mjs'));
   assert(result.admittedPaths.includes('src/io/revisionBridge/reviewTransportPackageParserV2.mjs'));
   assert(result.admittedPaths.includes('test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js'));
+  assert(result.admittedPaths.includes('test/unit/security-privacy-writing-path-smoke.mjs'));
 });
 test('RCV00B successor admission registry rejects missing successor evidence',()=>{
   const fixture=rcv00bSuccessorGitFixture({missingRegistry:true});

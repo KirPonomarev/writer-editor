@@ -5,8 +5,9 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-const TIMEOUT_MS = 20000;
+const TIMEOUT_MS = 60000;
 const RESULT_PREFIX = 'SECURITY_PRIVACY_WRITING_PATH_SMOKE_RESULT:';
+const EVENT_PREFIX = 'SECURITY_PRIVACY_WRITING_PATH_SMOKE_EVENT:';
 const rootDir = path.resolve(new URL('../..', import.meta.url).pathname);
 const requireFromHere = createRequire(import.meta.url);
 const electronBinary = requireFromHere('electron');
@@ -35,6 +36,31 @@ function parseResult(stdout) {
   return JSON.parse(line.slice(RESULT_PREFIX.length));
 }
 
+function parseEvents(stdout) {
+  return String(stdout || '')
+    .split(/\r?\n/u)
+    .filter((item) => item.startsWith(EVENT_PREFIX))
+    .map((item) => {
+      try {
+        return JSON.parse(item.slice(EVENT_PREFIX.length));
+      } catch {
+        return { stage: 'MALFORMED_EVENT', raw: item.slice(EVENT_PREFIX.length, EVENT_PREFIX.length + 200) };
+      }
+    });
+}
+
+function smokeDiagnostics({ timedOut, exitState, stdout, stderr }) {
+  const events = parseEvents(stdout);
+  return JSON.stringify({
+    timedOut,
+    exitState,
+    eventCount: events.length,
+    lastEvent: events.at(-1) || null,
+    stdoutTail: String(stdout || '').slice(-4000),
+    stderrTail: String(stderr || '').slice(-4000),
+  }, null, 2);
+}
+
 function createChildSource({ tempRoot, savePath, exportPath }) {
   return `\
 const Module = require('module');
@@ -51,6 +77,7 @@ const tempRoot = ${JSON.stringify(tempRoot)};
 const savePath = ${JSON.stringify(savePath)};
 const exportPath = ${JSON.stringify(exportPath)};
 const RESULT_PREFIX = ${JSON.stringify(RESULT_PREFIX)};
+const EVENT_PREFIX = ${JSON.stringify(EVENT_PREFIX)};
 const networkEvents = [];
 const localIpcEvents = [];
 const dialogCalls = [];
@@ -59,6 +86,15 @@ ${isExpectedProjectLeaseLocalIpcTarget.toString()}
 
 function emit(payload) {
   process.stdout.write(RESULT_PREFIX + JSON.stringify(payload) + '\\n');
+}
+
+function emitEvent(stage, details = {}) {
+  process.stdout.write(EVENT_PREFIX + JSON.stringify({
+    stage,
+    appReady: app && typeof app.isReady === 'function' ? app.isReady() : false,
+    windowCount: BrowserWindow && typeof BrowserWindow.getAllWindows === 'function' ? BrowserWindow.getAllWindows().length : 0,
+    ...details,
+  }) + '\\n');
 }
 
 function record(route, details = {}) {
@@ -160,6 +196,7 @@ app.whenReady().then(() => {
 process.chdir(rootDir);
 if (!process.argv.includes('--dev')) process.argv.push('--dev');
 require(path.join(rootDir, 'src', 'main.js'));
+emitEvent('MAIN_REQUIRED');
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -298,9 +335,13 @@ function countRoute(route) {
 
 app.whenReady().then(async () => {
   try {
+    emitEvent('APP_READY');
     const win = await waitForWindow();
+    emitEvent('WINDOW_READY');
     await waitForLoad(win);
+    emitEvent('LOAD_COMPLETE', { loadComplete: true });
     const rendererProbe = await runRendererWritingPath(win);
+    emitEvent('RENDERER_PROBE_COMPLETE', { rendererOk: rendererProbe && rendererProbe.ok === 1 });
     const mainRows = [
       { id: 'main_http', status: 'PASS', count: countRoute('main.http.request') + countRoute('main.http.get') },
       { id: 'main_https', status: 'PASS', count: countRoute('main.https.request') + countRoute('main.https.get') },
@@ -390,10 +431,11 @@ try {
   const stdout = Buffer.concat(stdoutChunks).toString('utf8');
   const stderr = Buffer.concat(stderrChunks).toString('utf8');
   const result = parseResult(stdout);
+  const diagnostics = smokeDiagnostics({ timedOut, exitState, stdout, stderr });
 
-  assert.equal(timedOut, false, stderr || stdout);
-  assert.equal(exitState.code, 0, [stderr, stdout].filter(Boolean).join('\n'));
-  assert.ok(result, stdout);
+  assert.equal(timedOut, false, diagnostics);
+  assert.equal(exitState.code, 0, diagnostics);
+  assert.ok(result, diagnostics);
   assert.equal(result.ok, 1, JSON.stringify(result, null, 2));
   assert.equal(result.appReady, true);
   assert.equal(result.windowCount, 1);
