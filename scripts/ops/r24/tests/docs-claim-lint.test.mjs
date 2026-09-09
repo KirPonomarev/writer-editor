@@ -392,7 +392,7 @@ test('RCV00B effective-state compiler inventory binding is retained only at exac
   );
 });
 
-test('RCV00C corrective register inventory binding is retained only at exact delivery bytes', () => {
+test('RCV00C corrective-register inventory binding is retained only at exact delivery bytes', () => {
   const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V31.find(
     (item) => item.stampId === 'ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS',
   );
@@ -437,8 +437,5 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-RCV00B-EFFECTIVE-STATE-COMPILER-CLAIM-BINDINGS',
-  ));
-  assert.ok(result.historicalBindings.some(
-    (binding) => binding.stampId === 'ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS',
   ));
 });

@@ -224,8 +224,9 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V30 = Object.freeze([
   Object.freeze({ stampId: 'ES-R24-RCV00B-EFFECTIVE-STATE-COMPILER-CLAIM-BINDINGS', stampSha256: 'b6df9777d931cc4949d2fbe50d5d0bddf27be0d3174ac090676a6476e3b55c19',
     evaluationSha: '0e3864e6b40b635d3b13cc038d7c23d47276150f', evaluationTree: '2834fe691d6ccbc8ce9721cf7eb2b2e925b548f1', targetSha256: 'bf962ad122a1cf071fac226ff9d671b5a3aaa7a3d7195bef9e17918dd40320cf' }),
 ]);
-// RCV00D retains the exact RCV00C corrective-register inventory binding as
-// historical delivery bytes while publishing the graph-derived selector refresh.
+// Successor work retains the exact RCV00C corrective-register inventory binding
+// as historical delivery bytes while refreshing current inventory for later
+// source-export and graph-derived selector slices.
 export const HISTORICAL_INVENTORY_CLAIM_PINS_V31 = Object.freeze([
   ...HISTORICAL_INVENTORY_CLAIM_PINS_V30,
   Object.freeze({ stampId: 'ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS', stampSha256: '8906c688a76e7417f0fa599126ff34944fbe364036d56bb7eef5c76889ab968f',
