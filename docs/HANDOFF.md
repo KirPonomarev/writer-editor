@@ -361,3 +361,9 @@ machine_readable_meta_artifact_set_exists
 selected_base_inventory_rebind_is_active_truth_guard
 current_mode_allows_only_one_explicit_nonblocked_contour_at_a_time
 next_step_is_selection_only_if_a_new_live_nonblocked_contradiction_is_reproved
+
+## Active R24 RCV00B Successor Admission Repair Checkpoint 2026-09-09
+- CURRENT_CONTOUR: `R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_20260909` on PR1862 branch `codex/r24-rcv00b-preflight-deviation-log-v1-20260909`; base `0e3864e6b40b635d3b13cc038d7c23d47276150f`, previous pushed head `921408efe93e11566cb6dc4fca193f4044b0141f`.
+- ACTUAL_BLOCKER: PR1862 run `34375249360` fails `E_RCV00B_EXACT_ADMITTED_DELTA:20:19` because the immutable RCV00B predecessor verifier diffs `4761f805..current successor head` instead of the pinned RCV00B delivery `0e3864e6`.
+- NEXT_BLOCKER: PR1861 merge ref `c0500386aad593a15b9c641133dd84f9521e24b9` separately fails `E_RCV00B_EXACT_ADMITTED_DELTA:21:19` plus `E_INVENTORY_DIGEST_MISMATCH:test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js`; do not repair PR1861 product parser scope inside PR1862.
+- DELIVERY_RULE: preserve the exact RCV00B 19-path predecessor admission, add only bounded successor admission evidence for post-RCV00B paths, do not reopen PR1845, and do not redeliver historical PRE00E or PRE00F.
