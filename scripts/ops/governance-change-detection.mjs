@@ -16,6 +16,10 @@ const BASELINE_APPROVAL_KEY = 'governance_change_approval_registry';
 const DEFAULT_FAIL_REASON = 'GOVERNANCE_CHANGE_APPROVAL_REQUIRED';
 const STRICT_EFFECTIVE_MODE = 'STRICT';
 const INTEROP100_SECONDARY_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
+const SECONDARY_APPROVALS_PATHS = Object.freeze([
+  DEFAULT_APPROVALS_PATH,
+  INTEROP100_SECONDARY_APPROVALS_PATH,
+]);
 
 function normalizeRepoRelativePath(value) {
   const normalized = String(value || '').trim().replaceAll('\\', '/');
@@ -45,7 +49,7 @@ function makeApprovalKey(filePath, sha256) {
 function collectSecondaryApprovalStates({ repoRoot, changedGovernanceFiles, primaryApprovalsPath }) {
   const states = [];
   for (const filePath of changedGovernanceFiles) {
-    if (filePath !== INTEROP100_SECONDARY_APPROVALS_PATH || filePath === primaryApprovalsPath) continue;
+    if (!SECONDARY_APPROVALS_PATHS.includes(filePath) || filePath === primaryApprovalsPath) continue;
     const state = evaluateGovernanceApprovalState({
       repoRoot,
       approvalsPath: filePath,

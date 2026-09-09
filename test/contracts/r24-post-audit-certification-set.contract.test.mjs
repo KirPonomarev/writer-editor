@@ -434,6 +434,8 @@ function pre00fGitFixture({changedPaths,planBytes,globalApprovalsBytes,inventory
     [e.claimLintTestPath,claimLintTestBytes??candidateBytes(e.claimLintTestPath)],
     [e.interopCurrentClaimBindingPath,interopCurrentClaimBindingBytes??candidateBytes(e.interopCurrentClaimBindingPath)],
     [e.rcv00aCurrentClaimBindingPath,rcv00aCurrentClaimBindingBytes??candidateBytes(e.rcv00aCurrentClaimBindingPath)],
+    [e.governanceDetectorPath,candidateBytes(e.governanceDetectorPath)],
+    [e.governanceDetectorTestPath,candidateBytes(e.governanceDetectorTestPath)],
     [e.evidencePath,evidenceBytes??candidateBytes(e.evidencePath)],
     [e.approvalsPath,approvalsBytes??candidateBytes(e.approvalsPath)],
   ]);
@@ -459,12 +461,13 @@ test('PRE00F plan delivery accepts the exact plan doc and verifier-support delta
   assert.equal(result.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
   assert.equal(result.currentCandidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,11);
-  assert.equal(result.changedPathDenominator,11);
+  assert.equal(result.admittedPathDenominator,13);
+  assert.equal(result.changedPathDenominator,13);
   assert.equal(result.targetDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.targetDigest);
   assert.equal(result.sourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.sourceDigest);
   assert.equal(result.ownerAmendedSourceDigest,PRE00F_PLAN_DELIVERY_EXPECTATION.ownerAmendedSourceDigest);
-  assert.equal(result.globalApprovalDenominator,9);
+  assert.equal(result.localApprovalDenominator,10);
+  assert.equal(result.globalApprovalDenominator,11);
   assert.equal(result.portabilityGapRecorded,true);
   assert.equal(result.nextStep,'R24-RCV-00A');
 });
@@ -481,6 +484,13 @@ test('PRE00F plan delivery rejects semantic content drift',()=>{
 test('PRE00F plan delivery rejects stale CI approval registry binding',()=>{
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,approvalRegistry=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
   approvalRegistry.approvals.find((entry)=>entry.filePath===e.evidencePath).sha256='0'.repeat(64);
+  const approvalsBytes=Buffer.from(`${JSON.stringify(approvalRegistry,null,2)}\n`);
+  const fixture=pre00fGitFixture({approvalsBytes});
+  assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);
+});
+test('PRE00F plan delivery rejects stale governance detector local approval binding',()=>{
+  const e=PRE00F_PLAN_DELIVERY_EXPECTATION,approvalRegistry=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  approvalRegistry.approvals.find((entry)=>entry.filePath===e.governanceDetectorPath).sha256='0'.repeat(64);
   const approvalsBytes=Buffer.from(`${JSON.stringify(approvalRegistry,null,2)}\n`);
   const fixture=pre00fGitFixture({approvalsBytes});
   assert.throws(()=>verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_APPROVAL_REGISTRY_DIGEST/);

@@ -390,7 +390,7 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-09T10:12:26Z",
       "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
-      "sha256": "e9727fbf07b79188823ed798d82eb0155d84ecf5b4eec4f17cdea9391927d29e",
+      "sha256": "1993fb876a38b5f7867d7847496acf48134853ad1386baf96420b4e0f6ef8b6c",
       "approved": true
     },
     {
@@ -398,7 +398,7 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-09T10:12:26Z",
       "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
-      "sha256": "91cba41864232988082abb0c0c9008586a4f815e8e719032d475adfc02cdc96e",
+      "sha256": "c6f620068a37dad2208410fc2a74639354fc6e10e3216c8638769b05db23b126",
       "approved": true
     },
     {
@@ -406,7 +406,7 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-09T10:12:26Z",
       "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
-      "sha256": "e4d36e6dbb3c7b4b461b94a6b079341672ffe5388043a52311924c83387f2012",
+      "sha256": "eb730fb095b8747d6b41553e87790b290ee445e9a8abd45e784d658c8c68e768",
       "approved": true
     },
     {
@@ -414,7 +414,23 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-09T10:12:26Z",
       "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
-      "sha256": "d20a52df868099478b5c09d66c972be3557fbff2c466205398e74d9da84443b8",
+      "sha256": "89b96200779dc65e0b504a441a1cb734ea31a5fb135ea18a46e0e16894878826",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/governance-change-detection.mjs",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
+      "sha256": "7998a7f098ad29b3c905909f63bc91335c8c4e4dd968cde4ec1fc76bb25bd3cd",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/governance-change-detection.contract.test.js",
+      "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
+      "approvedAtUtc": "2026-09-09T10:12:26Z",
+      "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
+      "sha256": "6dcbbff4b4f01d587548ddc0dbe0071933c17aef9068d08681d79500f24e2f41",
       "approved": true
     },
     {
@@ -422,7 +438,7 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-09T10:12:26Z",
       "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
-      "sha256": "b3bfb2580eed781d81a5273d72dd27039116e425a2db5ef87ba08446c6bd0a26",
+      "sha256": "e825407694af79403ee82377c656ee60f29426a2138320cce208a966985c7a28",
       "approved": true
     },
     {
@@ -446,7 +462,7 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00F_PLAN_DELIVERY_CI_VERIFIER_REPAIR_2026_09_08",
       "approvedAtUtc": "2026-09-09T10:12:26Z",
       "rationale": "Fresh PRE00F plan delivery rebinding after PRE00E closure at exact origin main 6e9be072; approves only the plan delivery evidence, current C1B carrier refresh, inventory refresh, verifier support and focused contract bytes, with no product runtime, dependency, release, PK1, V3, WP900, program done, publication, broad portability, user document or provider artifact authority.",
-      "sha256": "e7d1f60bf0f815396715229ba56deda13c025b542c7ff93ad272aa58a071fabf",
+      "sha256": "84ee1861b2e5e733354ba798e4f52459ee5ca5234edef6f14c4933d2219790bc",
       "approved": true
     }
   ],
