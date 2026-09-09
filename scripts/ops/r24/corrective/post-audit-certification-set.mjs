@@ -368,11 +368,13 @@ export const R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION=Object.freeze({
   unitTestPath:'test/unit/docx-min-builder.test.js',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  approvalRegistryPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
   claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
   inventoryFileDenominator:1461,
   admittedPaths:[
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'scripts/ops/r24/docs-claim-lint.mjs',
     'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
@@ -3972,7 +3974,7 @@ export function verifyR24DocxLinebreakSourceExportPostEvaluationException({candi
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_DOCX_LINEBREAK_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_DOCX_LINEBREAK_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_DOCX_LINEBREAK_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const inventory=readJson(e.inventoryPath),source=readText(e.sourcePath),contractTest=readText(e.contractTestPath),unitTest=readText(e.unitTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath);
+  const inventory=readJson(e.inventoryPath),source=readText(e.sourcePath),contractTest=readText(e.contractTestPath),unitTest=readText(e.unitTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),approvalRegistry=readText(e.approvalRegistryPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath);
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_DOCX_LINEBREAK_INVENTORY_SHAPE');
   for(const relative of [e.contractTestPath,e.unitTestPath,e.postAuditTestPath]){
     const entry=inventory.value.entries.find((item)=>item.path===relative);
@@ -3985,7 +3987,8 @@ export function verifyR24DocxLinebreakSourceExportPostEvaluationException({candi
   for(const token of ['R24 DOCX line-break source export exception accepts the exact branch delta','R24 DOCX line-break source export exception rejects an unadmitted future path','R24 DOCX line-break source export exception rejects a missing Word break serializer'])assert(postAuditTest.text.includes(token),'E_R24_DOCX_LINEBREAK_POST_AUDIT_TEST_TOKEN',token);
   for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V31','ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS'])assert(claimLint.text.includes(token),'E_R24_DOCX_LINEBREAK_CLAIM_LINT_TOKEN',token);
   assert(claimLintTest.text.includes('RCV00C corrective-register inventory binding is retained only at exact delivery bytes'),'E_R24_DOCX_LINEBREAK_CLAIM_LINT_TEST_TOKEN');
-  return{schemaVersion:'R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDenominator:inventory.value.totals.all,inventoryDigest:inventory.digest,sourceDigest:source.digest,contractTestDigest:contractTest.digest,unitTestDigest:unitTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  assert(approvalRegistry.text.includes('R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09'),'E_R24_DOCX_LINEBREAK_APPROVAL_REGISTRY_TOKEN');
+  return{schemaVersion:'R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDenominator:inventory.value.totals.all,inventoryDigest:inventory.digest,sourceDigest:source.digest,contractTestDigest:contractTest.digest,unitTestDigest:unitTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,approvalRegistryDigest:approvalRegistry.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 function resolveR24Interop100GoogleDocxImportRouteDeliverySha(git,resolvedCandidate,e){
