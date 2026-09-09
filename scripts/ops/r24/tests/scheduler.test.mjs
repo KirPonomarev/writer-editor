@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { computeReadySet, selectNext, DETERMINISTIC_ORDER } from '../scheduler.mjs';
+import { computeReadySet, selectNext, selectNextFromEffectiveState, DETERMINISTIC_ORDER } from '../scheduler.mjs';
 import { canonicalDigest } from '../canonical-json.mjs';
 
 const NOW = '2026-08-20T00:00:00Z';
@@ -52,6 +52,21 @@ function boundMission(program, contourStates = {}, overrides = {}) {
       postmergeSha: null,
     },
     ...overrides,
+  };
+}
+
+function effectiveProjection(contourStates) {
+  const stateDigest = canonicalDigest({
+    schemaVersion: 'R24_EFFECTIVE_SCHEDULER_STATE_V1',
+    contourStates,
+  });
+  return {
+    schemaVersion: 'R24_EFFECTIVE_STATE_PROJECTION_V1',
+    schedulerProjection: {
+      contourStates,
+      contourStatesDigest: canonicalDigest(contourStates),
+      stateDigest,
+    },
   };
 }
 
@@ -133,6 +148,28 @@ test('stale state, graph, and identity bindings fail before selection', () => {
       now: NOW,
     }),
     (e) => e.code === 'E_SCHEDULER_IDENTITY_SHAPE',
+  );
+});
+
+test('effective-state scheduler wrapper requires the compiled projection binding', () => {
+  const program = miniProgram();
+  const projection = effectiveProjection({});
+  const bound = boundMission(program, {}, { stateDigest: projection.schedulerProjection.stateDigest });
+  const receipt = selectNextFromEffectiveState({
+    program,
+    effectiveStateProjection: projection,
+    mission: bound,
+    now: NOW,
+  });
+  assert.equal(receipt.selectedId, 'A_LEAF');
+  assert.throws(
+    () => selectNextFromEffectiveState({
+      program,
+      effectiveStateProjection: projection,
+      mission: { ...bound, stateDigest: '0'.repeat(64) },
+      now: NOW,
+    }),
+    (e) => e.code === 'E_SCHEDULER_EFFECTIVE_STATE_BINDING_STALE',
   );
 });
 

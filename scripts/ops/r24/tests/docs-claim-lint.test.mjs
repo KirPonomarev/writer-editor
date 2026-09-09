@@ -12,6 +12,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V25,
   HISTORICAL_INVENTORY_CLAIM_PINS_V27,
   HISTORICAL_INVENTORY_CLAIM_PINS_V28,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V29,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -316,6 +317,54 @@ test('PRE00F plan delivery inventory binding is accepted only at its exact histo
   );
 });
 
+test('RCV00A inventory binding is retained only at the RCV00B base bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V29.find(
+    (item) => item.stampId === 'ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationSha, '4761f80544808396bd287a44a640104d400bbf55');
+  assert.equal(pin.targetSha256, '2c37d3cb43026a718bf37cc3a3382d20fa7cd802c2b2f8fa764fd025c7297acc');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
+test('interop-100 inventory binding is retained only at the RCV00B base bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V29.find(
+    (item) => item.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationSha, '4761f80544808396bd287a44a640104d400bbf55');
+  assert.equal(pin.targetSha256, '2c37d3cb43026a718bf37cc3a3382d20fa7cd802c2b2f8fa764fd025c7297acc');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
@@ -327,5 +376,11 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
   ));
 });

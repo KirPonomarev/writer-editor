@@ -37,6 +37,7 @@ import {
   PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,
   PRE00F_PLAN_DELIVERY_EXPECTATION,
   R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,
+  R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   createAuditCycle2DurableCarrier,
@@ -70,6 +71,7 @@ import {
   verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException,
   verifyPre00fPlanDeliveryPostEvaluationException,
   verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException,
+  verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
@@ -604,6 +606,50 @@ test('RCV00A exact-toolchain post-evaluation exception accepts the bounded deliv
 test('RCV00A exact-toolchain post-evaluation exception rejects an unadmitted delivery path',()=>{
   const e=R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,fixture=rcv00aGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
   assert.throws(()=>verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00A_EXACT_ADMITTED_DELTA/);
+});
+function rcv00bGitFixture({changedPaths,evidenceBytes}={}){
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,candidateSha='8'.repeat(40),candidateTree='9'.repeat(40);
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[
+    repoPath,
+    repoPath===e.evidencePath&&evidenceBytes?Buffer.from(evidenceBytes):fs.readFileSync(repoPath),
+  ]));
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('RCV00B effective-state compiler exception accepts the exact compiler delta',()=>{
+  const fixture=rcv00bGitFixture(),result=verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.admittedPaths.length);
+  assert.equal(result.inventoryDenominator,1460);
+  assert.equal(result.effectiveStateDigest,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.effectiveStateDigest);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
+});
+test('RCV00B effective-state compiler exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,fixture=rcv00bGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_EXACT_ADMITTED_DELTA/);
+});
+test('RCV00B effective-state compiler exception rejects stale inventory claim binding',()=>{
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,evidence=JSON.parse(fs.readFileSync(e.evidencePath,'utf8'));
+  evidence.claimBindings.find((binding)=>binding.filePath===e.inventoryPath).sha256='0'.repeat(64);
+  const fixture=rcv00bGitFixture({evidenceBytes:canonicalBytes(evidence)});
+  assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_EVIDENCE_INVENTORY_BINDING/);
 });
 test('R24 interop 100 Google DOCX import route exception accepts exact denominator delivery delta',()=>{
   const fixture=interop100GitFixture(),result=verifyR24Interop100GoogleDocxImportRoutePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});

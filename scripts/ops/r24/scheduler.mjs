@@ -176,6 +176,31 @@ export function selectNext({ program, contourStates, mission, now }) {
   return buildReceipt({ program, mission, now, selectedKind: 'NODE', selectedId: ordered[0], verdict: 'SELECTED', reasons, readySet: readyIds.slice().sort() });
 }
 
+export function selectNextFromEffectiveState({ program, effectiveStateProjection, mission, now }) {
+  if (!effectiveStateProjection || typeof effectiveStateProjection !== 'object') {
+    throw new R24Error('E_SCHEDULER_EFFECTIVE_STATE_REQUIRED');
+  }
+  if (effectiveStateProjection.schemaVersion !== 'R24_EFFECTIVE_STATE_PROJECTION_V1') {
+    throw new R24Error('E_SCHEDULER_EFFECTIVE_STATE_SCHEMA');
+  }
+  const schedulerProjection = effectiveStateProjection.schedulerProjection;
+  if (!schedulerProjection || typeof schedulerProjection !== 'object') {
+    throw new R24Error('E_SCHEDULER_EFFECTIVE_STATE_REQUIRED');
+  }
+  if (mission.stateDigest !== schedulerProjection.stateDigest) {
+    throw new R24Error('E_SCHEDULER_EFFECTIVE_STATE_BINDING_STALE');
+  }
+  if (mission.contourStatesDigest !== schedulerProjection.contourStatesDigest) {
+    throw new R24Error('E_SCHEDULER_EFFECTIVE_CONTOUR_BINDING_STALE');
+  }
+  return selectNext({
+    program,
+    contourStates: schedulerProjection.contourStates,
+    mission,
+    now,
+  });
+}
+
 function buildReceipt({ program, mission, now, selectedKind, selectedId, verdict, reasons, readySet = [] }) {
   const receipt = {
     schemaVersion: 'SelectionReceiptR2_4',
