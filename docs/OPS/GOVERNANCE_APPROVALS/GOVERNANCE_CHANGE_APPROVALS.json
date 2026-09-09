@@ -11476,15 +11476,6 @@
       "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "7c521039c61443878a0fccd70fbb72eaf5f1cdb2ea1c145f8c7dec370fbae161",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
-    },
-    {
       "filePath": "test/contracts/governance-change-detection.contract.test.js",
       "sha256": "1c04984f3790ecd744653a2f0a55aed7ccb765de0d81a507803075d603aa8782",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
@@ -11494,29 +11485,29 @@
       "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "11dcfccd2f98cda1a5ab2f70a4d54e5182e6f39a3ac6842a5cd8e6fff86eaad4",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "6a83e6884381e209d644484ddcc926780d4663e8c26487eaf7051d4109ac2414",
+      "sha256": "bf962ad122a1cf071fac226ff9d671b5a3aaa7a3d7195bef9e17918dd40320cf",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-EFFECTIVE-STATE-COMPILER-CLAIM-BINDINGS.json",
-      "sha256": "652c46e9c32ecf13cfbae303adde6d0330d72be0ce96bffd15721b849065d267",
+      "sha256": "b6df9777d931cc4949d2fbe50d5d0bddf27be0d3174ac090676a6476e3b55c19",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
+      "approved": true,
+      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "0de30b02f3db629a4085067d5177447a89a930a049091c1044f47f3f4258db3c",
+      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11524,8 +11515,8 @@
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
       "sha256": "4dad0b52b8defc482464791eb5f49f2b837359ad4ae88eb18c8dc7cb0d24ac22",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11533,8 +11524,8 @@
       "filePath": "scripts/ops/r24/effective-state-compiler.mjs",
       "sha256": "ae27da29dda18ce296e53912a7012a020ea750493d8784e4f2d27b7b7c9bb091",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11542,8 +11533,8 @@
       "filePath": "scripts/ops/r24/executable-program.mjs",
       "sha256": "88a6e5f0dcd9c48b2434c2bb4714476d5a00384e0bb777c1423f1d406e694f71",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11551,8 +11542,8 @@
       "filePath": "scripts/ops/r24/scheduler.mjs",
       "sha256": "98957fe44d4d2a7e36b88da22a6be90529f539004eed4d5ddccf99e4ad1ae107",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11560,8 +11551,8 @@
       "filePath": "scripts/ops/r24/test-mutants.mjs",
       "sha256": "a82b0fa575b599c9611331a55611051ae902ec8b2fff25842450b2baff8f0df1",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11569,8 +11560,8 @@
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
       "sha256": "43455bf700f1ad4083e87d0baed773f17f48c2db607f412f54e8cd1c72e43743",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11578,8 +11569,8 @@
       "filePath": "scripts/ops/r24/tests/effective-state-compiler.test.mjs",
       "sha256": "ad9e29bc74d38202460e7e857f8a4ca298ab269d8d6c0b5a71af02d1a8ede6bc",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11587,8 +11578,8 @@
       "filePath": "scripts/ops/r24/tests/executable-program.test.mjs",
       "sha256": "58008d1dff5ce08e5e8e1a98ed6fcdde860bbb1ba5f07b02046eac6f03df496b",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11596,8 +11587,17 @@
       "filePath": "scripts/ops/r24/tests/scheduler.test.mjs",
       "sha256": "6028d746b813bd5a591af318120def450698ad2a287465a281e3a9c2c055f56a",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
+      "approved": true,
+      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "c1738bdfc0a6d4efe617f24f7f4a00b8e9f74e563dbb67ca3b5b1e67f5d2fc3a",
+      "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11605,8 +11605,8 @@
       "filePath": "test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
       "sha256": "97c1b7dd854f8858472169222f4002d473fd23123afc58e491b58752d9b34d6f",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11614,8 +11614,8 @@
       "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
       "sha256": "37acdf6eb3919df87f58959e9b10f7ac49c2a80ce28edeb480f54a2158f37eac",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11623,8 +11623,8 @@
       "filePath": "test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js",
       "sha256": "bc4f92f620600d60305f0a2ce2960dca999cd9e7be0bb8d8e5c26a89be81cc78",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11632,8 +11632,8 @@
       "filePath": "test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js",
       "sha256": "e3a68c36027f2522fdab32cad2d9f594cd5ca212d8952dc176f1c02423723a9d",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     },
@@ -11641,8 +11641,8 @@
       "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
       "sha256": "0524dc1a2438484e2c12fd4d5d981cebf20a6f989216a83e28627fe4f1b8c277",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
-      "approvedAtUtc": "2026-09-09T14:48:54.022Z",
-      "rationale": "Approve R24-RCV-00B effective-state compiler, scheduler binding, focused negative/mutant tests, C1B inventory refresh, claim-binding evidence refresh, docs-claim historical inventory pin repair, and RTK guard compatibility; no product runtime feature, UI, dependency, runtime network/cloud truth, executable program mutation, automatic graph transition, or Program DONE claim.",
+      "approvedAtUtc": "2026-09-09T15:32:11.069Z",
+      "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
       "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
     }
