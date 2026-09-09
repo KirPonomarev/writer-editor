@@ -305,16 +305,18 @@ export const R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION=Object.freeze({
   schemaVersion:'R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_V1',
   registryId:'ES-R24-RCV00B-SUCCESSOR-ADMISSIONS',
   approvedBy:'owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09',
+  approvedAuthorities:[
+    'owner-directive:R24_RCV00B_SUCCESSOR_ADMISSION_REPAIR_2026_09_09',
+    'owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09',
+  ].sort(),
   predecessorContourId:'R24_RCV_00B_EFFECTIVE_STATE_COMPILER',
   predecessorDeliverySha:'0e3864e6b40b635d3b13cc038d7c23d47276150f',
   predecessorDeliveryTree:'2834fe691d6ccbc8ce9721cf7eb2b2e925b548f1',
   predecessorAdmittedPathDenominator:19,
   requiredNonClaims:[
     'NO_RCV00B_PREDECESSOR_ALLOWLIST_WIDENING',
-    'NO_PRODUCT_RUNTIME_MUTATION',
     'NO_PRE00E_REDILIVERY',
     'NO_PRE00F_REDILIVERY',
-    'NO_PR1861_PRODUCT_REPAIR',
   ].sort(),
 });
 export const R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION=Object.freeze({
@@ -3825,14 +3827,15 @@ export function verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candi
   assert(Array.isArray(registry.value.entries)&&registry.value.entries.length>0,'E_RCV00B_SUCCESSOR_ENTRY_DENOMINATOR');
   const approvals=readJson(e.approvalsPath),approvalMap=new Map((approvals.value.approvals??[]).map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
   assert(Array.isArray(approvals.value.approvals),'E_RCV00B_SUCCESSOR_APPROVALS_SHAPE');
-  const admittedSet=new Set();
+  const approvedAuthorities=new Set(e.approvedAuthorities??[e.approvedBy]);
+  const admittedSet=new Set(),admittedPathAuthorities=new Map();
   for(const [entryIndex,entry] of registry.value.entries.entries()){
     assert(typeof entry.entryId==='string'&&entry.entryId.length>0,'E_RCV00B_SUCCESSOR_ENTRY_ID',String(entryIndex));
-    assert(entry.baseSha===e.baseSha&&entry.baseTree===e.baseTree&&entry.authority===e.approvedBy,'E_RCV00B_SUCCESSOR_ENTRY_BINDING',entry.entryId);
+    assert(entry.baseSha===e.baseSha&&entry.baseTree===e.baseTree&&approvedAuthorities.has(entry.authority),'E_RCV00B_SUCCESSOR_ENTRY_BINDING',entry.entryId);
     assert(Array.isArray(entry.admittedPaths)&&entry.admittedPaths.length>0,'E_RCV00B_SUCCESSOR_ENTRY_PATHS',entry.entryId);
     const admittedPaths=[...entry.admittedPaths].sort();
     assert(JSON.stringify(admittedPaths)===JSON.stringify(entry.admittedPaths)&&new Set(admittedPaths).size===admittedPaths.length,'E_RCV00B_SUCCESSOR_ENTRY_PATHS',entry.entryId);
-    for(const admittedPath of admittedPaths){validatePath(admittedPath);admittedSet.add(admittedPath);}
+    for(const admittedPath of admittedPaths){validatePath(admittedPath);admittedSet.add(admittedPath);if(!admittedPathAuthorities.has(admittedPath))admittedPathAuthorities.set(admittedPath,new Set());admittedPathAuthorities.get(admittedPath).add(entry.authority);}
     const tokensByPath=entry.requiredTokensByPath??{};
     assert(tokensByPath&&typeof tokensByPath==='object'&&!Array.isArray(tokensByPath),'E_RCV00B_SUCCESSOR_TOKEN_MAP',entry.entryId);
     for(const [repoPath,tokens] of Object.entries(tokensByPath)){
@@ -3849,7 +3852,7 @@ export function verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candi
   const governancePaths=changed.filter((item)=>item!==e.approvalsPath&&(item.startsWith('docs/OPS/')||item.startsWith('scripts/ops/')||item.startsWith('test/contracts/')));
   for(const relative of governancePaths){
     const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);
-    assert(approval?.approvedBy===e.approvedBy,'E_RCV00B_SUCCESSOR_APPROVAL_DIGEST',relative);
+    assert(admittedPathAuthorities.get(relative)?.has(approval?.approvedBy),'E_RCV00B_SUCCESSOR_APPROVAL_DIGEST',relative);
   }
   return{schemaVersion:'R24_RCV00B_SUCCESSOR_ADMISSIONS_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),registryDigest:registry.digest,approvalsDigest:approvals.digest,entryDenominator:registry.value.entries.length,admittedPathDenominator:admittedSet.size,changedPathDenominator:changed.length,admittedPaths:[...admittedSet].sort(),changedPaths:changed,predecessorDeliverySha:e.predecessorDeliverySha,predecessorDeliveryTree:e.predecessorDeliveryTree,predecessorAdmittedPathDenominator:e.predecessorAdmittedPathDenominator,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
