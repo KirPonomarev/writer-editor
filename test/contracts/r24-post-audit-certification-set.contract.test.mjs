@@ -399,7 +399,7 @@ function pre00eGitFixture(changedPaths){
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      return execFileSync('git',['show',`${PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha}:${repoPath}`],options);
+      return fs.readFileSync(repoPath);
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -414,7 +414,8 @@ test('PRE00E recovery CI external confirmation accepts the bounded delta',()=>{
   assert.equal(result.recoveryRequiredJobDenominator,17);
   assert.equal(result.formerlyFailingPrimaryLaneDenominator,5);
   assert.equal(result.aggregateLaneDenominator,2);
-  assert.equal(result.negativeProbeDenominator,8);
+  assert.equal(result.interveningDeliveryDenominator,1);
+  assert.equal(result.negativeProbeDenominator,9);
 });
 test('PRE00E recovery CI external confirmation rejects an unadmitted future path',()=>{
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());

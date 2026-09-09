@@ -37,8 +37,11 @@ import {
   CLAIM_LINT_TEST_PATH as PRE00E_CLAIM_LINT_TEST_PATH,
   EVIDENCE_PATH as PRE00E_EVIDENCE_PATH,
   FORMERLY_FAILING_PRIMARY_LANES,
+  INTEROP_CURRENT_CLAIM_BINDING_PATH as PRE00E_INTEROP_CURRENT_CLAIM_BINDING_PATH,
   INVENTORY_PATH as PRE00E_INVENTORY_PATH,
+  RCV00A_CURRENT_CLAIM_BINDING_PATH as PRE00E_RCV00A_CURRENT_CLAIM_BINDING_PATH,
   PRE00D_RECOVERY_HEAD_SHA,
+  PRE00D_RECOVERY_MERGE_SHA,
   PRE00D_RECOVERY_OPS_VECTOR_CLOSE_RUN_ID,
   PRE00D_RECOVERY_OSS_POLICY_RUN_ID,
   PRE00E_BASE_SHA,
@@ -162,6 +165,8 @@ export const PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION=Object.freeze(
   inventoryPath:PRE00E_INVENTORY_PATH,
   statusPath:PRE00E_STATUS_PATH,
   evidencePath:PRE00E_EVIDENCE_PATH,
+  interopCurrentClaimBindingPath:PRE00E_INTEROP_CURRENT_CLAIM_BINDING_PATH,
+  rcv00aCurrentClaimBindingPath:PRE00E_RCV00A_CURRENT_CLAIM_BINDING_PATH,
   taskPath:PRE00E_TASK_DOC_PATH,
   verifierPath:PRE00E_VERIFIER_PATH,
   postAuditVerifierPath:PRE00E_POST_AUDIT_VERIFIER_PATH,
@@ -177,6 +182,7 @@ export const PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION=Object.freeze(
   recoveryRequiredJobDenominator:RECOVERY_REQUIRED_CHECKS.length,
   formerlyFailingPrimaryLaneDenominator:FORMERLY_FAILING_PRIMARY_LANES.length,
   aggregateLaneDenominator:2,
+  interveningDeliveryDenominator:1,
   admittedPaths:[...PRE00E_DELIVERY_ADMITTED_PATHS],
 });
 export const PRE00F_PLAN_DELIVERY_EXPECTATION=Object.freeze({
@@ -3474,13 +3480,19 @@ export function verifyPre00eRecoveryCiExternalConfirmationPostEvaluationExceptio
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00E_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readJson=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00E_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00E_CANONICAL_LF',p);return{value:JSON.parse(bytes),digest:h(bytes),bytes};};
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_PRE00E_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_PRE00E_CANONICAL_LF',p);return bytes.toString('utf8');};
-  const approvals=readJson(e.approvalsPath),inventory=readJson(e.inventoryPath),status=readJson(e.statusPath),evidence=readJson(e.evidencePath),taskText=readText(e.taskPath),verifierText=readText(e.verifierPath),postAuditVerifierText=readText(e.postAuditVerifierPath),claimLintText=readText(e.claimLintPath),claimLintTestText=readText(e.claimLintTestPath),testText=readText(e.testPath),postAuditTestText=readText(e.postAuditTestPath);
+  const approvals=readJson(e.approvalsPath),inventory=readJson(e.inventoryPath),status=readJson(e.statusPath),evidence=readJson(e.evidencePath),interopCurrentClaimBinding=readJson(e.interopCurrentClaimBindingPath),rcv00aCurrentClaimBinding=readJson(e.rcv00aCurrentClaimBindingPath),taskText=readText(e.taskPath),verifierText=readText(e.verifierPath),postAuditVerifierText=readText(e.postAuditVerifierPath),claimLintText=readText(e.claimLintPath),claimLintTestText=readText(e.claimLintTestPath),testText=readText(e.testPath),postAuditTestText=readText(e.postAuditTestPath);
   const statusVerification=verifyPre00eRecoveryCiStatus(status.value);
   assert(statusVerification.status==='PASS'&&statusVerification.recoveredOriginMainSha===e.baseSha&&statusVerification.recoveredOriginMainTree===e.baseTree,'E_PRE00E_STATUS_VERIFICATION');
-  assert(statusVerification.recoveryHeadSha===e.recoveryHeadSha&&statusVerification.recoveryRequiredJobDenominator===e.recoveryRequiredJobDenominator&&statusVerification.formerlyFailingPrimaryLaneDenominator===e.formerlyFailingPrimaryLaneDenominator&&statusVerification.aggregateLaneDenominator===e.aggregateLaneDenominator,'E_PRE00E_STATUS_DENOMINATOR');
+  assert(statusVerification.recoveryHeadSha===e.recoveryHeadSha&&statusVerification.recoveryRequiredJobDenominator===e.recoveryRequiredJobDenominator&&statusVerification.formerlyFailingPrimaryLaneDenominator===e.formerlyFailingPrimaryLaneDenominator&&statusVerification.aggregateLaneDenominator===e.aggregateLaneDenominator&&statusVerification.interveningDeliveryDenominator===e.interveningDeliveryDenominator,'E_PRE00E_STATUS_DENOMINATOR');
   assert(statusVerification.historicalReviewCarrierPr===e.reviewCarrierPr&&statusVerification.reviewCarrierRole==='HISTORICAL_EVIDENCE_ONLY'&&statusVerification.postMergeCloseRunId===e.postMergeOpsVectorCloseRunId,'E_PRE00E_STATUS_EXTERNAL_BINDING');
+  assert(status.value.recoveryCandidate.mergeSha===PRE00D_RECOVERY_MERGE_SHA&&status.value.interveningDeliveries?.[0]?.mergeSha===e.baseSha,'E_PRE00E_STATUS_CHAIN_BINDING');
   assert(evidence.value.schemaVersion==='ClaimBindingV1'&&evidence.value.stampId==='ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION'&&evidence.value.contourId==='PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION'&&evidence.value.evidenceClass==='CONTRACT'&&evidence.value.verdict==='PASS'&&evidence.value.oracle==='PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_ONLY','E_PRE00E_EVIDENCE_SHAPE');
   assert(evidence.value.headSha===e.baseSha&&evidence.value.originMainSha===e.baseSha,'E_PRE00E_EVIDENCE_HEAD_BINDING');
+  for(const currentBinding of [interopCurrentClaimBinding,rcv00aCurrentClaimBinding]){
+    assert(currentBinding.value.schemaVersion==='ClaimBindingV1'&&currentBinding.value.verdict==='PASS'&&currentBinding.value.headSha===e.baseSha&&currentBinding.value.originMainSha===e.baseSha,'E_PRE00E_CURRENT_CLAIM_BINDING_HEAD');
+    const c1bBinding=(currentBinding.value.claimBindings??[]).find((binding)=>binding.filePath===e.inventoryPath);
+    assert(c1bBinding?.sha256===inventory.digest&&c1bBinding.claimTerms?.includes('PASS'),'E_PRE00E_CURRENT_CLAIM_BINDING_INVENTORY');
+  }
   const claimBindingMap=new Map(evidence.value.claimBindings.map((binding)=>[binding.filePath,binding]));
   const inventoryBinding=claimBindingMap.get(e.inventoryPath),statusBinding=claimBindingMap.get(e.statusPath);
   assert(inventoryBinding?.sha256===inventory.digest&&inventoryBinding.claimTerms?.includes('PASS'),'E_PRE00E_EVIDENCE_INVENTORY_BINDING');
@@ -3489,25 +3501,25 @@ export function verifyPre00eRecoveryCiExternalConfirmationPostEvaluationExceptio
   for(const relative of [e.taskPath,e.verifierPath,e.postAuditVerifierPath,e.claimLintPath,e.claimLintTestPath,e.testPath,e.postAuditTestPath]){const artifact=implementationDigestMap.get(relative);assert(artifact?.sha256===h(objectBytes(git,resolvedCandidate,relative)),'E_PRE00E_EVIDENCE_ARTIFACT_DIGEST',relative);}
   const evidenceCommands=new Set((evidence.value.executedEvidence??[]).map((entry)=>entry.command));
   for(const command of ['node --test test/contracts/r24-pre00e-recovery-ci-external-confirmation.contract.test.mjs','node scripts/ops/r24/corrective/pre00e-recovery-ci-external-confirmation.mjs --probe','node scripts/ops/r24/corrective/pre00e-recovery-ci-external-confirmation.mjs --file docs/OPS/R24/CORRECTIVE/PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_STATUS_V1.json --repo-check'])assert(evidenceCommands.has(command),'E_PRE00E_EVIDENCE_ORACLE',command);
-  for(const entry of evidence.value.executedEvidence){assert(entry.verdict==='PASS','E_PRE00E_EVIDENCE_EXECUTED_VERDICT');if(entry.mutants)assert(entry.mutants.killed===8&&entry.mutants.survived===0,'E_PRE00E_EVIDENCE_MUTANTS');}
+  for(const entry of evidence.value.executedEvidence){assert(entry.verdict==='PASS','E_PRE00E_EVIDENCE_EXECUTED_VERDICT');if(entry.mutants)assert(entry.mutants.killed===9&&entry.mutants.survived===0,'E_PRE00E_EVIDENCE_MUTANTS');}
   const nonClaims=new Set(evidence.value.nonClaims??[]);
-  for(const token of ['NO_PRE00F_PLAN_DELIVERY','NO_PR1843_MERGE','NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_PROCESS_INSPECTION_OR_TERMINATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH'])assert(nonClaims.has(token),'E_PRE00E_NONCLAIMS',token);
-  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1458&&inventory.value.totals?.byKind?.CONTRACT===988&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00E_INVENTORY_SHAPE');
+  for(const token of ['NO_PRE00F_PLAN_DELIVERY','NO_PR1843_MERGE','NO_PR1843_REOPEN','NO_PR1845_REOPEN_OR_MERGE','NO_PR1852_REBOUND_AS_PRE00E_AUTHORITY','NO_PROGRAM_DONE','NO_PRODUCTION_RELEASE_READY','NO_PK1_RELEASE_SECURITY_PHYSICAL','NO_V3_PACKAGE_CLAIM_COMPILER','NO_WP900_PLAN_DELIVERY','NO_RUNTIME_UI_CORE_MUTATION','NO_PROCESS_INSPECTION_OR_TERMINATION','NO_DEPENDENCY_CHANGE','NO_NETWORK_OR_CLOUD_TRUTH'])assert(nonClaims.has(token),'E_PRE00E_NONCLAIMS',token);
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===1459&&inventory.value.totals?.byKind?.CONTRACT===989&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_PRE00E_INVENTORY_SHAPE');
   const inventoryEntry=inventory.value.entries.find((entry)=>entry.path===e.testPath);
   assert(inventoryEntry?.sha256===h(objectBytes(git,resolvedCandidate,e.testPath)),'E_PRE00E_INVENTORY_TEST_DIGEST');
-  for(const token of ['TASK_ID: R24_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_001','TASK_STATUS: PREPARED_FOR_DELIVERY','BASE_SHA: a8a7781a0c4dbf35de42c30df40988d968839c3e','RECOVERY_PR: 1847','RECOVERY_REQUIRED_JOB_DENOMINATOR: 17','FORMERLY_FAILING_PRIMARY_LANE_DENOMINATOR: 5','REVIEW_CARRIER_PR: 1843','PRE00F_PLAN_DELIVERY: OUT_OF_SCOPE','PK1_RELEASE_SECURITY_PHYSICAL: OUT_OF_SCOPE','V3_PACKAGE_CLAIM_COMPILER: OUT_OF_SCOPE','WP900_PLAN_DELIVERY: OUT_OF_SCOPE'])assert(taskText.includes(token),'E_PRE00E_TASK_TOKEN',token);
-  for(const token of ['PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_STATUS_V1','verifyPre00eRecoveryCiStatus','runPre00eNegativeProbes','E_PRE00E_MERGE_GATE_DEPENDENCIES','E_PRE00E_REVIEW_CARRIER_AUTHORITY'])assert(verifierText.includes(token),'E_PRE00E_VERIFIER_TOKEN',token);
-  for(const token of ['PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION','verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException','E_PRE00E_EXACT_ADMITTED_DELTA'])assert(postAuditVerifierText.includes(token),'E_PRE00E_POST_AUDIT_VERIFIER_TOKEN',token);
+  for(const token of ['TASK_ID: R24_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_001','TASK_STATUS: PREPARED_FOR_DELIVERY','BASE_SHA: b39e3200d3f10c67d4e7ed06d9e51e6201425c03','RECOVERY_PR: 1854','INTERVENING_PR: 1852','RECOVERY_REQUIRED_JOB_DENOMINATOR: 17','FORMERLY_FAILING_PRIMARY_LANE_DENOMINATOR: 5','REVIEW_CARRIER_PR: 1843','REVIEW_CARRIER_STATE: CLOSED','PRE00F_PLAN_DELIVERY: OUT_OF_SCOPE','PK1_RELEASE_SECURITY_PHYSICAL: OUT_OF_SCOPE','V3_PACKAGE_CLAIM_COMPILER: OUT_OF_SCOPE','WP900_PLAN_DELIVERY: OUT_OF_SCOPE'])assert(taskText.includes(token),'E_PRE00E_TASK_TOKEN',token);
+  for(const token of ['PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_STATUS_V1','verifyPre00eRecoveryCiStatus','runPre00eNegativeProbes','E_PRE00E_MERGE_GATE_DEPENDENCIES','E_PRE00E_INTERVENING_DELIVERY_MERGE','E_PRE00E_REVIEW_CARRIER_AUTHORITY'])assert(verifierText.includes(token),'E_PRE00E_VERIFIER_TOKEN',token);
+  for(const token of ['PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION','verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException','E_PRE00E_EXACT_ADMITTED_DELTA','E_PRE00E_CURRENT_CLAIM_BINDING_HEAD'])assert(postAuditVerifierText.includes(token),'E_PRE00E_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V25','ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF'])assert(claimLintText.includes(token),'E_PRE00E_CLAIM_LINT_TOKEN',token);
   for(const token of ['PRE00D successor admission inventory binding is accepted only at its exact merged bytes','repository claim surface keeps current and historical C1B inventory bindings'])assert(claimLintTestText.includes(token),'E_PRE00E_CLAIM_LINT_TEST_TOKEN',token);
-  for(const token of ['PRE00E proves all seventeen recovery candidate jobs passed on the exact PR1847 head','PRE00E focused negative probes reject missing jobs false-green role leaks and plan-rebind leaks'])assert(testText.includes(token),'E_PRE00E_TEST_TOKEN',token);
+  for(const token of ['PRE00E proves all seventeen recovery candidate jobs passed on the exact PR1854 head','PRE00E preserves intervening PR1852 without converting it into PRE00E authority','PRE00E focused negative probes reject missing jobs false-green role leaks and plan-rebind leaks'])assert(testText.includes(token),'E_PRE00E_TEST_TOKEN',token);
   for(const token of ['PRE00E recovery CI external confirmation accepts the bounded delta','PRE00E recovery CI external confirmation rejects an unadmitted future path'])assert(postAuditTestText.includes(token),'E_PRE00E_POST_AUDIT_TEST_TOKEN',token);
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_PRE00E_APPROVALS_SHAPE');
   const approvalMap=new Map();
   for(const approval of approvals.value.approvals){const key=`${approval.filePath}\0${approval.sha256}`;assert(!approvalMap.has(key),'E_PRE00E_APPROVAL_DUPLICATE',approval.filePath);approvalMap.set(key,approval);}
   const expectedApprovalPaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath);
-  for(const relative of expectedApprovalPaths){const sha=h(objectBytes(git,resolvedCandidate,relative));const approval=approvalMap.get(`${relative}\0${sha}`);assert(approval&&approval.approvedBy==='OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_2026_09_08','E_PRE00E_APPROVAL_DIGEST',relative);}
-  return{schemaVersion:'PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,approvalDenominator:expectedApprovalPaths.length,evidenceDigest:evidence.digest,statusDigest:status.digest,inventoryFileDenominator:inventory.value.entries.length,recoveryRequiredJobDenominator:e.recoveryRequiredJobDenominator,formerlyFailingPrimaryLaneDenominator:e.formerlyFailingPrimaryLaneDenominator,aggregateLaneDenominator:e.aggregateLaneDenominator,negativeProbeDenominator:8,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  for(const relative of expectedApprovalPaths){const sha=h(objectBytes(git,resolvedCandidate,relative));const approval=approvalMap.get(`${relative}\0${sha}`);assert(approval&&approval.approvedBy==='OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09','E_PRE00E_APPROVAL_DIGEST',relative);}
+  return{schemaVersion:'PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_POST_EVALUATION_EXCEPTION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,approvalDenominator:expectedApprovalPaths.length,evidenceDigest:evidence.digest,statusDigest:status.digest,inventoryFileDenominator:inventory.value.entries.length,recoveryRequiredJobDenominator:e.recoveryRequiredJobDenominator,formerlyFailingPrimaryLaneDenominator:e.formerlyFailingPrimaryLaneDenominator,aggregateLaneDenominator:e.aggregateLaneDenominator,interveningDeliveryDenominator:e.interveningDeliveryDenominator,negativeProbeDenominator:9,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
