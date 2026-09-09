@@ -11,6 +11,7 @@ import {
   R24_DIR,
   assertExecutableProgramShape,
   assertMissionApproval,
+  buildEffectiveStateProjectionOnFullGraph,
   buildSelectionReceiptOnFullGraph,
   loadExecutableProgram,
   readR24Json,
@@ -378,6 +379,10 @@ test('PlanState persists the full 109-node denominator without unreconciled DONE
 
 test('scheduler selection receipt is bound to the real full graph rather than a fixture', () => {
   const planState = readJsonBounded(PLAN_STATE_PATH);
+  const { effectiveStateProjection } = buildEffectiveStateProjectionOnFullGraph({
+    now: '2026-08-25T18:24:00Z',
+    planState,
+  });
   const receipt = buildSelectionReceiptOnFullGraph({
     now: '2026-08-25T18:24:00Z',
     planState,
@@ -389,7 +394,8 @@ test('scheduler selection receipt is bound to the real full graph rather than a 
   assert.equal(receipt.graphDigest, EXPECTED_PROGRAM_DIGEST);
   assert.equal(receipt.stateRevision, planState.revision);
   assert.equal(receipt.fencingCounter, planState.fencingCounter);
-  assert.equal(receipt.stateDigest, canonicalDigest(planState));
+  assert.equal(receipt.stateDigest, effectiveStateProjection.schedulerProjection.stateDigest);
+  assert.equal(receipt.contourStatesDigest, effectiveStateProjection.effectiveState.digest);
   assert.equal(receipt.policyEpoch, 0);
   assert.match(receipt.policyDigest, /^[0-9a-f]{64}$/);
   assert.match(receipt.schedulerGraphDigest, /^[0-9a-f]{64}$/);
@@ -430,5 +436,14 @@ test('CLI validation receipt reports PASS on the committed SOT only', () => {
   assert.equal(receipt.nodeCount, EXPECTED_NODE_COUNT);
   assert.equal(receipt.legacyStageCount, 32);
   assert.equal(receipt.namedDependencyMismatchCount, 6);
+  assert.equal(receipt.effectiveStateDigest, '76a2d0f113a6151875bbf4cbbcd5325cba7e73e6f99224771d9d4c6b79b12041');
+  assert.deepEqual(receipt.effectiveStateCounts, {
+    BLOCKED_TYPED: 4,
+    DONE: 49,
+    INELIGIBLE_OPTIONAL: 10,
+    PENDING: 46,
+  });
+  assert.equal(receipt.effectiveCompletionProgramDone, false);
+  assert.equal(receipt.effectiveCompletionRequiredPendingCount, 50);
   assert.equal(fs.existsSync(path.join(R24_DIR, 'A0_AUTHORITY_SOT_RECONCILIATION_RECEIPT_V1.json')), true);
 });
