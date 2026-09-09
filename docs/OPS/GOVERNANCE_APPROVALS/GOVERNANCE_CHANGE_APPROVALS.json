@@ -11686,7 +11686,7 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "eaaf7fdac48a650e6284f05ba9776df5ade5503a340d2e477dd0b4b855fb46d3",
+      "sha256": "deef74c303711b63b27bd31f36b499b6be9ca93d91c13a5d3e0ed8b9c5199544",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:00:00.000Z",
       "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
@@ -11698,7 +11698,7 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "deee6d467d10ac558ac3c1e8bdcd6d9fe10d47bde9910a45cd3369c870b93618",
+      "sha256": "b51493e6f9b79172e8281c43505a7270f7ee726724a9cbb5cf99940a312d0ce4",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:00:00.000Z",
       "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
@@ -11722,7 +11722,7 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "4e6cfca9f9898dae9294f93e399d1adfbe60e2aeab0a8a6d5c6dbda478c73cbc",
+      "sha256": "4617019e403b9c0dba117170ab6878aba3960dc6d636166f37983d17deb81abb",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:00:00.000Z",
       "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
@@ -11770,7 +11770,7 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "d370e210e5e44340ced07309f48fbdd039fe857950d2f61f8d439c34a8f8e8b5",
+      "sha256": "69db585d3c96b2dbfdeae8f884788a398ade92cfae6bd9c75736d31bba2e17fa",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:00:00.000Z",
       "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",

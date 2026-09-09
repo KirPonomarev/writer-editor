@@ -846,6 +846,14 @@ test('RCV00D graph-derived selector exception accepts the exact selector delta',
   assert.equal(result.narrativeNextStep,'R24-RCV-00A');
   assert.equal(result.graphIncrement,0);
 });
+test('RCV00D successor routing keeps the RCV00C exact delta historical while admitting the selector delta',()=>{
+  const file=load(),head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),result=verifyCertificationSet({value:file.value,fileDigest:file.fileDigest,candidateSha:'HEAD',allowAuditCycle2Admission:true});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException.candidateSha,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.baseSha);
+  assert.equal(result.r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException.changedPathDenominator,R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION.admittedPaths.length);
+  assert.equal(result.r24Rcv00dGraphDerivedSelectorPostEvaluationException.candidateSha,head);
+  assert.equal(result.r24Rcv00dGraphDerivedSelectorPostEvaluationException.changedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
+});
 test('RCV00D graph-derived selector exception rejects an unadmitted future path',()=>{
   const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,fixture=rcv00dGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
   assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_EXACT_ADMITTED_DELTA/);
