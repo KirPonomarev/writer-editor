@@ -11773,17 +11773,22 @@
       "sha256": "e6a9409a1fd754125b5df15a8b706f4ba04efe29489cb7bbf03a9cc4f41a3145"
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "0a292da2926b0f177d86add2f404f6c21005006466f8e19f538cd271ffbf2ee3",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "rationale": "Approve exact current governance mirror registry bytes after PR1871 relationship-graph validation and R24 RCV00H merge reconciliation updated shared post-audit carrier hashes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
       "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ]
+      "approvedAtUtc": "2026-09-10T22:01:47.812Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "b725ade28809bbc97829aa700a99881a021bfd45388dc3c7f818af686eb45c6f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:01:04.016Z",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "ad65dee9e3847fc0c25f1cb1d277fe48aa6f20df1e6dc1a6930d97052e895e00"
     },
     {
       "approved": true,
@@ -11795,7 +11800,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "f3ca21dc920067e175ab7f92ff599c904353fda139fd96d385ce06af84cbafd5"
+      "sha256": "bb770cf249012885bb47fe5a3344049c22d82c06393bb7f483a44fb5cbc71a3b"
     },
     {
       "approved": true,
@@ -11807,7 +11812,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "e6d359088c7ac476668bacfbdd5e24bbfe0199f9735940627da8102b61affaca"
+      "sha256": "611df88590941fb26de648cc8eadc966da46f3d297244abe271acdf8aba87ae9"
     },
     {
       "approved": true,
@@ -11937,7 +11942,6 @@
     "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION",
     "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-    "ES-R24-W0-CURRENT-STATE-CLOSURE"
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
   ]
 }
