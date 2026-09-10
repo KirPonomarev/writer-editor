@@ -1609,6 +1609,9 @@ function docxHostileFileGateDiagnostic(code, options = {}) {
   if (options.entryId !== undefined) diagnostic.entryId = options.entryId;
   if (options.sourceCode !== undefined) diagnostic.sourceCode = options.sourceCode;
   if (options.actual !== undefined) diagnostic.actual = options.actual;
+  if (options.expected !== undefined) diagnostic.expected = options.expected;
+  if (options.centralCrc32 !== undefined) diagnostic.centralCrc32 = options.centralCrc32;
+  if (options.localCrc32 !== undefined) diagnostic.localCrc32 = options.localCrc32;
   if (options.limit !== undefined) diagnostic.limit = options.limit;
   return diagnostic;
 }
@@ -2212,6 +2215,7 @@ function docxHostileFileGateBlockedResult(code, entryId, options = {}) {
       entryId,
       sourceCode: options.sourceCode,
       actual: options.actual,
+      expected: options.expected,
       limit: options.limit,
     })],
   );
@@ -2324,6 +2328,21 @@ export function inspectDocxHostileFileGateFromZipBytes(input) {
     if (!docxHostileFileGateXmlCandidate(entry.entryId)) continue;
     const scanResult = docxHostileFileGateInflatedDeclarationText(bytes, entry);
     if (scanResult.failure) return scanResult.failure;
+    if (Number.isSafeInteger(entry.centralCrc32) && entry.centralCrc32 !== 0) {
+      const actualCrc32 = zipEvidenceCrc32(scanResult.contentBytes);
+      if (actualCrc32 !== entry.centralCrc32) {
+        return docxHostileFileGateBlockedResult(
+          'RTK_ZIP_CRC_MISMATCH',
+          entry.entryId,
+          {
+            kind: 'crcEvidence',
+            sourceCode: 'RTK_ZIP_CRC_MISMATCH',
+            expected: entry.centralCrc32,
+            actual: actualCrc32,
+          },
+        );
+      }
+    }
     if (
       /\.rels$/iu.test(entry.entryId)
       && docxHostileFileGateRelationshipTargetModeBlocked(Buffer.from(scanResult.contentBytes).toString('utf8'), entry.entryId)

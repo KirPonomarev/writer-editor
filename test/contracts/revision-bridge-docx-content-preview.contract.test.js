@@ -35,19 +35,38 @@ function utf8Bytes(value) {
   return Buffer.from(value, 'utf8');
 }
 
+const CRC32_TABLE = Array.from({ length: 256 }, (_, index) => {
+  let value = index;
+  for (let bit = 0; bit < 8; bit += 1) {
+    value = (value & 1) ? (0xedb88320 ^ (value >>> 1)) : (value >>> 1);
+  }
+  return value >>> 0;
+});
+
+function crc32Bytes(input) {
+  const bytes = Buffer.isBuffer(input) ? input : Buffer.from(input);
+  let crc = 0xffffffff;
+  for (const byte of bytes) crc = CRC32_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
 function normalizeEntry(entry) {
   const body = Buffer.isBuffer(entry.body)
     ? entry.body
     : utf8Bytes(typeof entry.body === 'string' ? entry.body : '');
   const method = entry.method ?? 0;
   const compressedBody = method === 8 ? deflateRawSync(body) : body;
+  const crc32 = entry.useRealCrc === true ? crc32Bytes(body) : 0;
   return {
     name: entry.name,
+    flags: entry.flags ?? 0,
     method,
     body,
     compressedBody,
     byteSize: entry.byteSize ?? body.length,
     compressedSize: entry.compressedSize ?? compressedBody.length,
+    localCrc32: entry.localCrc32 ?? entry.crc32 ?? crc32,
+    centralCrc32: entry.centralCrc32 ?? entry.crc32 ?? crc32,
   };
 }
 
@@ -57,9 +76,9 @@ function localRecord(entry, offset) {
   const header = Buffer.alloc(30 + name.length);
   header.writeUInt32LE(0x04034b50, 0);
   header.writeUInt16LE(20, 4);
-  header.writeUInt16LE(entry.flags ?? 0, 6);
+  header.writeUInt16LE(normalized.flags, 6);
   header.writeUInt16LE(normalized.method, 8);
-  header.writeUInt32LE(0, 14);
+  header.writeUInt32LE(normalized.localCrc32, 14);
   header.writeUInt32LE(normalized.compressedSize, 18);
   header.writeUInt32LE(normalized.byteSize, 22);
   header.writeUInt16LE(name.length, 26);
@@ -79,7 +98,7 @@ function centralRecord(entry) {
   header.writeUInt16LE(20, 6);
   header.writeUInt16LE(entry.flags ?? 0, 8);
   header.writeUInt16LE(entry.method, 10);
-  header.writeUInt32LE(0, 16);
+  header.writeUInt32LE(entry.centralCrc32, 16);
   header.writeUInt32LE(entry.compressedSize, 20);
   header.writeUInt32LE(entry.byteSize, 24);
   header.writeUInt16LE(name.length, 28);
@@ -114,6 +133,10 @@ function zipFixture(entries) {
 
 function documentXml(body) {
   return `<w:document><w:body>${body}</w:body></w:document>`;
+}
+
+function contentTypesXml() {
+  return '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
 }
 
 function paragraphXml(text) {
@@ -296,6 +319,65 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
   assert.equal(degraded.diagnostics.some((item) => (
     item.code === 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY'
   )), true);
+});
+
+test('DOCX content preview: actual CRC mismatch fails closed before preview ready', async () => {
+  const bridge = await loadBridge();
+  const documentBody = documentXml(paragraphXml('CRC guarded text'));
+  const contentTypes = contentTypesXml();
+  const documentCrc = crc32Bytes(utf8Bytes(documentBody));
+  const contentTypesCrc = crc32Bytes(utf8Bytes(contentTypes));
+  const forgedDocumentCrc = (documentCrc ^ 0xffffffff) >>> 0;
+  const forgedContentTypesCrc = (contentTypesCrc ^ 0xffffffff) >>> 0;
+  const valid = zipFixture([
+    { name: '[Content_Types].xml', method: 0, body: contentTypes, useRealCrc: true },
+    { name: 'word/document.xml', method: 8, body: documentBody, useRealCrc: true },
+  ]);
+  const staleDocumentCrc = zipFixture([
+    { name: '[Content_Types].xml', method: 0, body: contentTypes, useRealCrc: true },
+    {
+      name: 'word/document.xml',
+      method: 8,
+      body: documentBody,
+      localCrc32: forgedDocumentCrc,
+      centralCrc32: forgedDocumentCrc,
+    },
+  ]);
+  const staleContentTypesCrc = zipFixture([
+    {
+      name: '[Content_Types].xml',
+      method: 0,
+      body: contentTypes,
+      localCrc32: forgedContentTypesCrc,
+      centralCrc32: forgedContentTypesCrc,
+    },
+    { name: 'word/document.xml', method: 8, body: documentBody, useRealCrc: true },
+  ]);
+
+  const positive = bridge.buildDocxContentPreviewFromZipBytes(valid);
+  assertContentPreviewShell(positive);
+  assert.equal(positive.ok, true);
+  assert.equal(positive.code, 'DOCX_CONTENT_PREVIEW_READY');
+  assert.deepEqual(positive.contentPreview.paragraphs.map((paragraph) => paragraph.text), ['CRC guarded text']);
+
+  for (const bytes of [staleDocumentCrc, staleContentTypesCrc]) {
+    const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    const transport = bridge.extractDocxReviewTransportPackagePartsFromZipBytes(bytes);
+
+    assertContentPreviewShell(preview);
+    assert.equal(preview.ok, false);
+    assert.equal(preview.code, 'DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED');
+    assert.equal(preview.reason, 'RTK_ZIP_CRC_MISMATCH');
+    assert.equal(preview.parse.attempted, false);
+    assert.equal(preview.contentPreview, null);
+    assert.equal(preview.preflightSummary.gatePass, false);
+    assert.equal(preview.diagnostics.some((item) => (
+      item.code === 'DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED'
+      && item.sourceCode === 'RTK_ZIP_CRC_MISMATCH'
+    )), true);
+    assert.equal(transport.ok, false);
+    assert.equal(transport.code, 'RTK_ZIP_CRC_MISMATCH');
+  }
 });
 
 test('DOCX content preview: unsupported structures are diagnostics and do not become review or import data', async () => {
