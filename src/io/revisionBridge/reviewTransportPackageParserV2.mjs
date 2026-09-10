@@ -27,6 +27,7 @@ export const RTK_REVIEW_TRANSPORT_AUTHORITY_CUSTOM_PROPERTY_NAMES = Object.freez
 const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
 const CONTENT_TYPES_NS = 'http://schemas.openxmlformats.org/package/2006/content-types';
+const W14_NS = 'http://schemas.microsoft.com/office/word/2010/wordml';
 const W15_NS = 'http://schemas.microsoft.com/office/word/2012/wordml';
 const W16CID_NS = 'http://schemas.microsoft.com/office/word/2016/wordml/cid';
 const SIGNED_SHA256_RE = /^sha256:[a-f0-9]{64}$/u;
@@ -2338,6 +2339,26 @@ function collectModernCommentMetadata(scans) {
   return { metadataByParaId, metadataById, people };
 }
 
+function isValidModernCommentParaId(value) {
+  const text = rawString(value);
+  if (!/^[0-9A-Fa-f]{8}$/u.test(text)) return false;
+  const numeric = Number.parseInt(text, 16);
+  return numeric > 0 && numeric < 0x80000000;
+}
+
+function lastCommentParagraphParaId(scans, commentToken) {
+  const candidates = scans.comments.tokens
+    .filter((token) => isWordToken(token, 'p'))
+    .filter((token) => token.openStart > commentToken.openStart && token.closeEnd <= commentToken.closeStart)
+    .sort((left, right) => left.openStart - right.openStart || left.closeEnd - right.closeEnd);
+  let lastParaId = '';
+  for (const token of candidates) {
+    const paraId = attr(token, 'paraId', W14_NS);
+    if (isValidModernCommentParaId(paraId)) lastParaId = paraId;
+  }
+  return lastParaId;
+}
+
 function expectedCommentRecords(input) {
   const list = Array.isArray(input.expectedCommentThreads)
     ? input.expectedCommentThreads
@@ -2365,7 +2386,12 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
   let ordinal = 0;
   for (const token of scans.comments.tokens.filter((item) => item.localName === 'comment')) {
     const rawId = attr(token, 'id') || String(ordinal);
-    const paraId = attr(token, 'paraId') || rawId;
+    const explicitParaId = attr(token, 'paraId', W_NS) || attr(token, 'paraId');
+    const fallbackParaId = explicitParaId ? '' : lastCommentParagraphParaId(scans, token);
+    const paraId = explicitParaId || fallbackParaId || rawId;
+    const paraIdSource = explicitParaId
+      ? 'comment-attribute'
+      : (fallbackParaId ? 'last-comment-paragraph-w14-paraId' : 'raw-comment-id');
     const meta = metadata.metadataByParaId.get(paraId) || metadata.metadataByParaId.get(rawId) || {};
     const expectedRecord = expectedByKey.get(rawId) || expectedByKey.get(rawString(meta.durableId)) || {};
     const duplicate = seenIds.has(rawId);
@@ -2377,8 +2403,10 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
     const record = {
       rawId,
       paraId,
+      paraIdSource,
       parentKey,
       duplicate,
+      relationshipDiagnostic: '',
       ordinal,
       body,
       author,
@@ -2398,22 +2426,93 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
     records.push(record);
     ordinal += 1;
   }
+  const paraIdCounts = new Map();
+  for (const record of records) {
+    if (record.paraIdSource === 'raw-comment-id') continue;
+    paraIdCounts.set(record.paraId, (paraIdCounts.get(record.paraId) || 0) + 1);
+  }
+  const ambiguousParaIds = new Set([...paraIdCounts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([key]) => key));
+  for (const record of records) {
+    if (ambiguousParaIds.has(record.paraId)) {
+      record.relationshipDiagnostic = 'RTK_COMMENT_PARENT_AMBIGUOUS';
+      reasons.push(reason('RTK_COMMENT_PARENT_AMBIGUOUS', `comments.${record.rawId}`, 'Comment paragraph identity is ambiguous and cannot be used to infer a reply graph.', {
+        commentId: record.rawId,
+        paraId: record.paraId,
+      }));
+    }
+  }
   const byKey = new Map();
   for (const record of records) {
     byKey.set(record.rawId, record);
-    byKey.set(record.paraId, record);
+    if (!ambiguousParaIds.has(record.paraId)) byKey.set(record.paraId, record);
     if (record.durableId) byKey.set(record.durableId, record);
+  }
+  const proposedParentByRawId = new Map();
+  for (const record of records) {
+    if (!record.parentKey || record.relationshipDiagnostic) continue;
+    if (ambiguousParaIds.has(record.parentKey)) {
+      record.relationshipDiagnostic = 'RTK_COMMENT_PARENT_AMBIGUOUS';
+      reasons.push(reason('RTK_COMMENT_PARENT_AMBIGUOUS', `comments.${record.rawId}`, 'Comment parent paragraph identity is ambiguous and cannot be used to infer a reply graph.', {
+        commentId: record.rawId,
+        parentKey: record.parentKey,
+      }));
+      continue;
+    }
+    const parent = byKey.get(record.parentKey);
+    if (!parent) continue;
+    if (parent.rawId === record.rawId) {
+      record.relationshipDiagnostic = 'RTK_COMMENT_PARENT_SELF_REFERENCE';
+      reasons.push(reason('RTK_COMMENT_PARENT_SELF_REFERENCE', `comments.${record.rawId}`, 'Comment parent relationship points at itself and is preserved as unsupported.', {
+        commentId: record.rawId,
+        parentKey: record.parentKey,
+      }));
+      continue;
+    }
+    proposedParentByRawId.set(record.rawId, parent.rawId);
+  }
+  const recordsByRawId = new Map(records.map((record) => [record.rawId, record]));
+  const cycleReasonedRawIds = new Set();
+  const parentVisitState = new Map();
+  function markCommentParentCycle(rawId) {
+    const item = recordsByRawId.get(rawId);
+    if (!item || cycleReasonedRawIds.has(rawId)) return;
+    item.relationshipDiagnostic = item.relationshipDiagnostic || 'RTK_COMMENT_PARENT_CYCLE';
+    cycleReasonedRawIds.add(rawId);
+    reasons.push(reason('RTK_COMMENT_PARENT_CYCLE', `comments.${item.rawId}`, 'Comment parent graph contains a cycle and is preserved as unsupported.', {
+      commentId: item.rawId,
+    }));
+  }
+  for (const record of records) {
+    if (parentVisitState.get(record.rawId) === 'done') continue;
+    const path = [];
+    const pathIndexByRawId = new Map();
+    let cursor = record.rawId;
+    while (proposedParentByRawId.has(cursor)) {
+      if (parentVisitState.get(cursor) === 'done') break;
+      if (pathIndexByRawId.has(cursor)) {
+        for (const rawId of path.slice(pathIndexByRawId.get(cursor))) markCommentParentCycle(rawId);
+        break;
+      }
+      pathIndexByRawId.set(cursor, path.length);
+      path.push(cursor);
+      cursor = proposedParentByRawId.get(cursor);
+    }
+    for (const rawId of path) parentVisitState.set(rawId, 'done');
+    parentVisitState.set(record.rawId, 'done');
   }
   const childrenByParent = new Map();
   for (const record of records) {
-    if (!record.parentKey) continue;
-    const list = childrenByParent.get(record.parentKey) || [];
+    const parentRawId = proposedParentByRawId.get(record.rawId);
+    if (!parentRawId || record.relationshipDiagnostic) continue;
+    const list = childrenByParent.get(parentRawId) || [];
     list.push(record);
-    childrenByParent.set(record.parentKey, list);
+    childrenByParent.set(parentRawId, list);
   }
   function directChildren(record) {
     const keyed = new Map();
-    for (const key of [record.rawId, record.paraId, record.durableId].filter(Boolean)) {
+    for (const key of [record.rawId].filter(Boolean)) {
       for (const child of childrenByParent.get(key) || []) keyed.set(child.rawId, child);
     }
     return [...keyed.values()].sort((left, right) => left.ordinal - right.ordinal);
@@ -2440,11 +2539,11 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
   }
   const threads = [];
   for (const record of records) {
-    if (record.parentKey && byKey.has(record.parentKey)) continue;
+    if (proposedParentByRawId.has(record.rawId) && !record.relationshipDiagnostic) continue;
     const replies = buildReplies(record);
     const status = record.duplicate
       ? 'UNSUPPORTED_BLOCKED'
-      : (record.anchor.anchorDiagnostic ? 'UNSUPPORTED_BLOCKED' : (record.done ? 'RESOLVED' : (record.anchor.anchored ? 'ANCHORED' : 'ORPHAN')));
+      : (record.relationshipDiagnostic ? 'UNSUPPORTED_BLOCKED' : (record.anchor.anchorDiagnostic ? 'UNSUPPORTED_BLOCKED' : (record.done ? 'RESOLVED' : (record.anchor.anchored ? 'ANCHORED' : 'ORPHAN'))));
     const doneResolvedReopenedState = record.done
       ? 'resolved'
       : (record.reopened ? 'reopened' : 'active');
@@ -2454,7 +2553,7 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
         ? 'RTK_COMMENT_ANCHORED'
         : (status === 'ORPHAN'
           ? 'RTK_COMMENT_ORPHAN'
-          : (record.anchor.anchorDiagnostic || 'RTK_COMMENT_UNSUPPORTED')));
+          : (record.relationshipDiagnostic || record.anchor.anchorDiagnostic || 'RTK_COMMENT_UNSUPPORTED')));
     const thread = {
       kind: 'CommentThread',
       threadId: `rtk-comment-${record.rawId}`,
@@ -2505,9 +2604,11 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
       // ADMIT-01 (B1): success-shaped per-comment reason is published ONLY for
       // admitted threads. A dropped thread must never carry ANCHORED/ORPHAN/...
       // success reasons while it is absent from reviewIr.commentThreads.
-      reasons.push(reason(code, `comments.${record.rawId}`, 'Comment lane was parsed before text classification and kept independent.', {
-        threadId: thread.threadId,
-      }));
+      if (!String(code).startsWith('RTK_COMMENT_PARENT_')) {
+        reasons.push(reason(code, `comments.${record.rawId}`, 'Comment lane was parsed before text classification and kept independent.', {
+          threadId: thread.threadId,
+        }));
+      }
     } else {
       // ADMIT-01 (B1): dropped threads get a typed budget reason instead of a
       // success-shaped outcome, so the comment lane is marked BLOCKED_RESOURCE.
