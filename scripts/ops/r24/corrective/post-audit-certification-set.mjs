@@ -742,6 +742,29 @@ export const R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION=Object.freeze({
     'test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js',
   ].sort(),
 });
+export const R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION=Object.freeze({
+  baseSha:'116f7d4efe75dbf94199f85ce85901eb866c3310',
+  baseTree:'d8ba4a1c82f267042417b1093f3c22c7dfd36646',
+  inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  defaultApprovalsPath:'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  pk1r1ApprovalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  interopApprovalsPath:'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  generic01TestPath:'test/contracts/rtk-generic01-create-only-import.contract.test.js',
+  inventoryFileDenominator:1464,
+  inventoryContractDenominator:993,
+  approvedBy:'owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910',
+  admittedPaths:[
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/rtk-generic01-create-only-import.contract.test.js',
+  ].sort(),
+});
 export const R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION=Object.freeze({
   baseSha:'7ea8f61dc45bdb3105f15be73d1c14424e20c4ca',
   baseTree:'97684c849dbd3e8ee2d244bc2087905f25452e49',
@@ -1416,6 +1439,13 @@ export const WP700_CI_REPAIR_TEMPORAL_ADMISSION_EXPECTATION=Object.freeze({
 const h=(bytes)=>crypto.createHash('sha256').update(bytes).digest('hex');
 const fail=(code,detail='')=>{const error=new Error(`${code}${detail?`:${detail}`:''}`);error.code=code;throw error;};
 const assert=(condition,code,detail)=>{if(!condition)fail(code,detail);};
+const approvalMatchesApprovedBy=(entry,approvedBy)=>{
+  const actual=String(entry?.approvedBy||'').trim();
+  const expected=String(approvedBy||'').trim();
+  if(!actual||!expected)return false;
+  if(actual===expected)return true;
+  return actual.split('|').map((part)=>part.trim()).includes(expected);
+};
 const hex=(value,size,label)=>assert(typeof value==='string'&&new RegExp(`^[0-9a-f]{${size}}$`).test(value),'E_HEX',label);
 const validatePath=(value)=>{assert(typeof value==='string'&&value.length>0&&value===value.normalize('NFC')&&!value.includes('\\')&&!value.startsWith('/')&&!value.split('/').some((part)=>!part||part==='.'||part==='..'),'E_ARTIFACT_PATH',String(value));return value;};
 const readJsonFile=(file)=>{const bytes=fs.readFileSync(file);assert(bytes.at(-1)===0x0a,'E_CANONICAL_LF',file);return{bytes,digest:h(bytes),value:JSON.parse(bytes)}};
@@ -4624,10 +4654,50 @@ export function verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({ca
   for(const token of ['R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION','verifyR24Rcv00fDeliveryReconciliationPostEvaluationException','E_R24_RCV00F_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_RCV00F_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['R24 RCV00F delivery reconciliation exception accepts the exact current delta','R24 RCV00F delivery reconciliation exception accepts successor heads by selecting the immutable exact candidate','R24 RCV00F delivery reconciliation exception rejects fake typed verification proof'])assert(postAuditTest.text.includes(token),'E_R24_RCV00F_POST_AUDIT_TEST_TOKEN',token);
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_R24_RCV00F_APPROVALS_SHAPE');
-  const approvalMap=new Map(approvals.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
   const governancePaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath&&(relative.startsWith('docs/OPS/')||relative.startsWith('scripts/ops/')||relative.startsWith('test/contracts/')));
-  for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approved===true&&approval.approvedBy===e.approvedBy,'E_R24_RCV00F_APPROVAL_DIGEST',relative);}
+  for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvals.value.approvals.some((entry)=>entry.filePath===relative&&entry.sha256===digest&&entry.approved===true&&approvalMatchesApprovedBy(entry,e.approvedBy));assert(approval,'E_R24_RCV00F_APPROVAL_DIGEST',relative);}
   return{schemaVersion:'R24_RCV00F_DELIVERY_RECONCILIATION_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,packageLockDigest:packageLock.digest,planStateDigest:planState.digest,planStateTestDigest:planStateTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,rtkG0bDigest:rtkG0b.digest,rtkW1Digest:rtkW1.digest,rtkW2Digest:rtkW2.digest,rtkZip01Digest:rtkZip01.digest,typedDeliveryReconciliation:'UNCERTAIN_DELIVERY_WAIT_RESUME_REVOKE_DURABLE_EVIDENCE',fakeVerificationRejected:true,lockfileAuditRemediation:'js-yaml@4.3.2',programDone:false,productionReleaseReady:false,graphIncrement:0};
+}
+
+function resolveR24P03RelationshipGraphValidationCandidateSha(git,resolvedCandidate,e){
+  const isExact=(sha)=>{
+    try{
+      const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+      return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+    }catch{return false;}
+  };
+  if(isExact(resolvedCandidate))return resolvedCandidate;
+  let candidates=[];
+  try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_P03_RELATIONSHIP_CANDIDATE_SEARCH');}
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
+  fail('E_R24_P03_RELATIONSHIP_CANDIDATE_NOT_FOUND');
+}
+
+export function verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,resolvedRequestedCandidate=gitText(git,['rev-parse',candidateSha]);
+  assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_R24_P03_RELATIONSHIP_BASE_TREE_DRIFT');
+  try{git(['merge-base','--is-ancestor',e.baseSha,resolvedRequestedCandidate],{encoding:null});}catch{fail('E_R24_P03_RELATIONSHIP_BASE_NOT_ANCESTOR');}
+  const resolvedCandidate=resolveR24P03RelationshipGraphValidationCandidateSha(git,resolvedRequestedCandidate,e);
+  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
+  const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_P03_RELATIONSHIP_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_P03_RELATIONSHIP_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
+  const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
+  const inventory=readJson(e.inventoryPath),defaultApprovals=readJson(e.defaultApprovalsPath),pk1r1Approvals=readJson(e.pk1r1ApprovalsPath),interopApprovals=readJson(e.interopApprovalsPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),generic01Test=readText(e.generic01TestPath);
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.byKind?.CONTRACT===e.inventoryContractDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_P03_RELATIONSHIP_INVENTORY_SHAPE');
+  for(const relative of [e.postAuditTestPath,e.generic01TestPath]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===h(objectBytes(git,resolvedCandidate,relative))&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_P03_RELATIONSHIP_INVENTORY_DIGEST',relative);}
+  assert(defaultApprovals.value.version==='v1.0'&&Array.isArray(defaultApprovals.value.approvals),'E_R24_P03_RELATIONSHIP_APPROVALS_SHAPE');
+  const approvalRegistries=[pk1r1Approvals,interopApprovals];
+  for(const registry of approvalRegistries)assert(registry.value.version==='v1.0'&&Array.isArray(registry.value.approvals),'E_R24_P03_RELATIONSHIP_APPROVALS_SHAPE');
+  for(const registry of approvalRegistries){
+    for(const relative of [e.inventoryPath,e.postAuditVerifierPath,e.postAuditTestPath,e.generic01TestPath]){
+      const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=registry.value.approvals.some((entry)=>entry.filePath===relative&&entry.sha256===digest&&entry.approved===true&&approvalMatchesApprovedBy(entry,e.approvedBy));
+      assert(approval,'E_R24_P03_RELATIONSHIP_APPROVAL_DIGEST',relative);
+    }
+  }
+  for(const token of ['R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION','verifyR24P03RelationshipGraphValidationPostEvaluationException','E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_P03_RELATIONSHIP_POST_AUDIT_VERIFIER_TOKEN',token);
+  for(const token of ['R24 P03 relationship graph validation exception accepts the exact Generic01 repair delta','R24 P03 relationship graph validation exception rejects an unadmitted future path','R24 P03 relationship graph validation exception rejects stale Generic01 inventory digest'])assert(postAuditTest.text.includes(token),'E_R24_P03_RELATIONSHIP_POST_AUDIT_TEST_TOKEN',token);
+  for(const token of ['word/_rels/document.xml.rels','lossyDocxZip','TargetMode="External"'])assert(generic01Test.text.includes(token),'E_R24_P03_RELATIONSHIP_GENERIC01_TOKEN',token);
+  return{schemaVersion:'R24_P03_RELATIONSHIP_GRAPH_VALIDATION_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,defaultApprovalsDigest:defaultApprovals.digest,pk1r1ApprovalsDigest:pk1r1Approvals.digest,interopApprovalsDigest:interopApprovals.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,generic01TestDigest:generic01Test.digest,generic01RelationshipGraph:'VALID_INTERNAL_HYPERLINK_RELATIONSHIP_FOR_LOSS_FIXTURE',programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 function resolveR24Ops03SemanticE0ClassifierCandidateSha(git,resolvedCandidate,e){
@@ -4642,6 +4712,10 @@ function resolveR24Ops03SemanticE0ClassifierCandidateSha(git,resolvedCandidate,e
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_OPS03_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
   fail('E_R24_OPS03_CANDIDATE_NOT_FOUND');
+}
+
+function canResolveR24Ops03SemanticE0ClassifierCandidateSha(git,resolvedCandidate,e){
+  try{return Boolean(resolveR24Ops03SemanticE0ClassifierCandidateSha(git,resolvedCandidate,e));}catch{return false;}
 }
 
 export function verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
@@ -4659,9 +4733,8 @@ export function verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candi
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.byKind?.CONTRACT===e.inventoryContractDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_OPS03_INVENTORY_SHAPE');
   for(const relative of [e.scannerTestPath,e.postAuditTestPath]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===h(objectBytes(git,resolvedCandidate,relative))&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_OPS03_INVENTORY_DIGEST',relative);}
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals)&&approvals.value.evidenceStampIds?.includes('ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS'),'E_R24_OPS03_APPROVALS_SHAPE');
-  const approvalMap=new Map(approvals.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
   const governancePaths=[e.inventoryPath,e.scannerTestPath,e.postAuditVerifierPath,e.postAuditTestPath];
-  for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approved===true&&approval.approvedBy===e.approvedBy,'E_R24_OPS03_APPROVAL_DIGEST',relative);}
+  for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvals.value.approvals.some((entry)=>entry.filePath===relative&&entry.sha256===digest&&entry.approved===true&&approvalMatchesApprovedBy(entry,e.approvedBy));assert(approval,'E_R24_OPS03_APPROVAL_DIGEST',relative);}
   for(const token of ['R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION','verifyR24Ops03SemanticE0ClassifierPostEvaluationException','E_R24_OPS03_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_OPS03_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['R24 OPS03 semantic E0 classifier exception accepts the exact current delta','R24 OPS03 semantic E0 classifier exception accepts successor heads by selecting the immutable exact candidate','R24 OPS03 semantic E0 classifier exception rejects a weakened scanner token'])assert(postAuditTest.text.includes(token),'E_R24_OPS03_POST_AUDIT_TEST_TOKEN',token);
   return{schemaVersion:'R24_OPS03_SEMANTIC_E0_CLASSIFIER_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,scannerDigest:scanner.digest,scannerTestDigest:scannerTest.digest,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,semanticScannerRepair:true,programDone:false,productionReleaseReady:false,graphIncrement:0};
@@ -5537,9 +5610,12 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   let r24Rcv00fDeliveryReconciliationDescendant=false;
   if(resolvedCandidate!==R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24Rcv00fDeliveryReconciliationDescendant=true;}catch{}}
   const r24Rcv00fDeliveryReconciliationEnabled=allowAuditCycle2Admission&&r24Rcv00fDeliveryReconciliationDescendant;
+  let r24P03RelationshipGraphValidationDescendant=false;
+  if(resolvedCandidate!==R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24P03RelationshipGraphValidationDescendant=true;}catch{}}
+  const r24P03RelationshipGraphValidationEnabled=allowAuditCycle2Admission&&r24P03RelationshipGraphValidationDescendant;
   let r24Ops03SemanticE0ClassifierDescendant=false;
   if(resolvedCandidate!==R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24Ops03SemanticE0ClassifierDescendant=true;}catch{}}
-  const r24Ops03SemanticE0ClassifierEnabled=allowAuditCycle2Admission&&r24Ops03SemanticE0ClassifierDescendant;
+  const r24Ops03SemanticE0ClassifierEnabled=allowAuditCycle2Admission&&r24Ops03SemanticE0ClassifierDescendant&&canResolveR24Ops03SemanticE0ClassifierCandidateSha(git,resolvedCandidate,R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION);
   const wp709Enabled=allowMainProductWp709Admission||pk1r1Enabled||(allowAuditCycle2Admission&&wp709Descendant);
   const wp707Enabled=allowMainProductWp707Admission||wp709Enabled||(allowAuditCycle2Admission&&wp707Descendant);
   const wp706Enabled=allowMainProductWp706Admission||wp707Enabled||(allowAuditCycle2Admission&&wp706Descendant);
@@ -5697,8 +5773,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const r24Rcv00eLeaseFencingCasException=r24Rcv00eLeaseFencingCasEnabled?verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:r24Rcv00eLeaseFencingCasCandidateSha,git}):null;
   const r24ReviewPreviewCommentTopologyException=r24ReviewPreviewCommentTopologyEnabled?verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Rcv00fDeliveryReconciliationException=r24Rcv00fDeliveryReconciliationEnabled?verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
+  const r24P03RelationshipGraphValidationException=r24P03RelationshipGraphValidationEnabled?verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Ops03SemanticE0ClassifierException=r24Ops03SemanticE0ClassifierEnabled?verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
-  const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[])]);
+  const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[])]);
   for(const admittedPath of (r24Interop100U000cPagebreakReexportException?.admittedPaths??[]))allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
@@ -5711,6 +5788,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24Rcv00eLeaseFencingCasPostEvaluationException=r24Rcv00eLeaseFencingCasException;
   verificationResult.r24ReviewPreviewCommentTopologyPostEvaluationException=r24ReviewPreviewCommentTopologyException;
   verificationResult.r24Rcv00fDeliveryReconciliationPostEvaluationException=r24Rcv00fDeliveryReconciliationException;
+  verificationResult.r24P03RelationshipGraphValidationPostEvaluationException=r24P03RelationshipGraphValidationException;
   verificationResult.r24Ops03SemanticE0ClassifierPostEvaluationException=r24Ops03SemanticE0ClassifierException;
   return verificationResult;
 }
