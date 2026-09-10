@@ -1367,23 +1367,25 @@ test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=
   const fixture=rcv00eLeaseFencingCasGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_INVENTORY_DIGEST/);
 });
+const R24_RCV00F_DELIVERY_RECONCILIATION_FIXTURE_DELIVERY_SHA='7ea8f61dc45bdb3105f15be73d1c14424e20c4ca';
 function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,approvalsBytes,packageLockBytes,planStateBytes,planStateTestBytes,postAuditVerifierBytes,postAuditTestBytes,rtkG0bBytes,rtkW1Bytes,rtkW2Bytes,rtkZip01Bytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorAncestryShas,successorTree='3'.repeat(40)}={}){
   const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION;
   const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
+  const deliveryBytes=(repoPath)=>objectFromCommit(R24_RCV00F_DELIVERY_RECONCILIATION_FIXTURE_DELIVERY_SHA,repoPath);
   const bytesByPath=new Map([
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.packageLockPath,packageLockBytes??fs.readFileSync(e.packageLockPath)],
-    [e.planStatePath,planStateBytes??fs.readFileSync(e.planStatePath)],
-    [e.planStateTestPath,planStateTestBytes??fs.readFileSync(e.planStateTestPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.rtkG0bPath,rtkG0bBytes??fs.readFileSync(e.rtkG0bPath)],
-    [e.rtkW1Path,rtkW1Bytes??fs.readFileSync(e.rtkW1Path)],
-    [e.rtkW2Path,rtkW2Bytes??fs.readFileSync(e.rtkW2Path)],
-    [e.rtkZip01Path,rtkZip01Bytes??fs.readFileSync(e.rtkZip01Path)],
+    [e.inventoryPath,inventoryBytes??deliveryBytes(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??deliveryBytes(e.approvalsPath)],
+    [e.packageLockPath,packageLockBytes??deliveryBytes(e.packageLockPath)],
+    [e.planStatePath,planStateBytes??deliveryBytes(e.planStatePath)],
+    [e.planStateTestPath,planStateTestBytes??deliveryBytes(e.planStateTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??deliveryBytes(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??deliveryBytes(e.postAuditTestPath)],
+    [e.rtkG0bPath,rtkG0bBytes??deliveryBytes(e.rtkG0bPath)],
+    [e.rtkW1Path,rtkW1Bytes??deliveryBytes(e.rtkW1Path)],
+    [e.rtkW2Path,rtkW2Bytes??deliveryBytes(e.rtkW2Path)],
+    [e.rtkZip01Path,rtkZip01Bytes??deliveryBytes(e.rtkZip01Path)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';

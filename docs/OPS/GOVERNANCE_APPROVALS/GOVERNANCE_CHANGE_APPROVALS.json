@@ -11813,19 +11813,19 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "77ee34c943ea9345fe18eaa0149cc5d453101bffaebc479bf7fb43762c0fc82a",
+      "sha256": "c1ea7469613059c95f958e62577eeb078376ade02e8c0807552167188d8a4fd5",
       "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T17:59:13Z",
-      "rationale": "Approve exact OPS03/RCV00G focused post-audit contract mutant-strengthening hash and dependent test inventory rebinding; no product runtime, dependency, UI, network, or release-readiness claim change.",
+      "approvedAtUtc": "2026-09-10T18:21:43Z",
+      "rationale": "Approve exact OPS03/RCV00G inventory hash after RCV00F synthetic fixture repair rebinding; no product runtime, dependency, UI, network, release-readiness, or historical RCV00F admission change.",
       "approved": true,
       "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "a77ab62e7c4d22dd51d15727bda08cb4cda8e7ae8c0fc119fd8989aba1a21972",
+      "sha256": "52c1a1ea6abb4ece1a60642b1688cfde2b5e204dec490281237fbdab0513d3ea",
       "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T17:59:13Z",
-      "rationale": "Approve exact OPS03/RCV00G focused post-audit contract mutant-strengthening hash and dependent test inventory rebinding; no product runtime, dependency, UI, network, or release-readiness claim change.",
+      "approvedAtUtc": "2026-09-10T18:21:43Z",
+      "rationale": "Approve exact OPS03/RCV00G post-audit contract hash after RCV00F synthetic fixture repair binding candidate bytes to immutable delivery; no product runtime, dependency, UI, network, release-readiness, or historical RCV00F admission change.",
       "approved": true,
       "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
     }
