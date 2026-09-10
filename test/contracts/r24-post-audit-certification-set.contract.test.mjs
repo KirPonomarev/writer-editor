@@ -1507,7 +1507,7 @@ test('R24 OPS03 semantic E0 classifier exception rejects an unadmitted future pa
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_CANDIDATE_NOT_FOUND|E_R24_OPS03_EXACT_ADMITTED_DELTA/);
 });
 test('R24 OPS03 semantic E0 classifier exception rejects a weakened scanner token',()=>{
-  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,scannerText=fs.readFileSync(e.scannerPath,'utf8').replace('tokenizeJavaScriptLike','tokenizeLineLike');
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,scannerText=fs.readFileSync(e.scannerPath,'utf8').replaceAll('tokenizeJavaScriptLike','tokenizeLineLike');
   const fixture=ops03SemanticE0ClassifierGitFixture({scannerBytes:Buffer.from(scannerText)});
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_SCANNER_TOKEN/);
 });
