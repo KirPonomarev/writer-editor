@@ -174,6 +174,54 @@ test('docx min builder: Tiptap hardBreak uses Word line break markup', async () 
   assert.equal(runs.some((value) => value.includes('\n')), false);
 });
 
+test('docx min builder: source doc text node CR uses Word line break markup', async () => {
+  const dependencies = await createRealBuilderDependencies();
+  const buffer = buildDocxMinBuffer({
+    content: 'Doc alpha\rDoc beta',
+    plainText: 'Doc alpha\rDoc beta',
+    bookProfile: { formatId: 'A4' },
+    doc: {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Doc alpha\rDoc beta' }],
+        },
+      ],
+    },
+  }, dependencies);
+  const documentXml = readStoredZipEntry(buffer, 'word/document.xml');
+  const runs = textRunValues(documentXml);
+
+  assert.equal(countOccurrences(documentXml, /<w:br\/>/gu), 1);
+  assert.deepEqual(runs, ['Doc alpha', 'Doc beta']);
+  assert.equal(runs.some((value) => value.includes('\r') || value.includes('\n')), false);
+});
+
+test('docx min builder: source doc text node CRLF uses one Word line break without CR in text runs', async () => {
+  const dependencies = await createRealBuilderDependencies();
+  const buffer = buildDocxMinBuffer({
+    content: 'Doc alpha\r\nDoc beta',
+    plainText: 'Doc alpha\r\nDoc beta',
+    bookProfile: { formatId: 'A4' },
+    doc: {
+      type: 'doc',
+      content: [
+        {
+          type: 'paragraph',
+          content: [{ type: 'text', text: 'Doc alpha\r\nDoc beta' }],
+        },
+      ],
+    },
+  }, dependencies);
+  const documentXml = readStoredZipEntry(buffer, 'word/document.xml');
+  const runs = textRunValues(documentXml);
+
+  assert.equal(countOccurrences(documentXml, /<w:br\/>/gu), 1);
+  assert.deepEqual(runs, ['Doc alpha', 'Doc beta']);
+  assert.equal(runs.some((value) => value.includes('\r') || value.includes('\n')), false);
+});
+
 test('docx min builder: separate doc paragraphs stay separate paragraphs without synthetic line breaks', async () => {
   const dependencies = await createRealBuilderDependencies();
   const buffer = buildDocxMinBuffer({

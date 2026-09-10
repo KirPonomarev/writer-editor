@@ -3,6 +3,7 @@ import { types as nodeTypes } from 'node:util';
 import { createInterchangeIrEnvelope, validateInterchangeIrEnvelope } from './interchange-ir-v1.mjs';
 import { inspectParserQuarantine } from './parser-quarantine-v1.mjs';
 import zipBuilder from '../export/docx/docxMinBuilder.js';
+import docxTextXml from '../export/docx/docxTextXml.js';
 
 export const DOCX_PROFILE_ID = 'DOCX_SEMANTIC_BOUNDED_V1';
 export const DOCX_PROFILE_SCHEMA_VERSION = 'yalken.docx-semantic-profile.v1';
@@ -15,6 +16,7 @@ const MAIN = 'application/vnd.openxmlformats-officedocument.wordprocessingml.doc
 const PARTS = ['[Content_Types].xml', '_rels/.rels', 'word/document.xml'];
 const ID_KEYS = ['entityId', 'generation', 'projectId', 'sourceRevision'];
 const LEXICAL_LOSS = Object.freeze({ disposition: 'TRANSFORMED_LOSSY', code: 'PACKAGE_LEXICAL_BYTES_NOT_PRESERVED', scope: 'ZIP_AND_XML_LEXICAL_ONLY' });
+const { buildDocxRunContentXml, segmentDocxTextForSerialization } = docxTextXml;
 const typedArrayPrototype = Object.getPrototypeOf(Uint8Array.prototype);
 const typedArrayGetters = Object.fromEntries(['buffer', 'byteOffset', 'byteLength'].map(k => [k, Object.getOwnPropertyDescriptor(typedArrayPrototype, k).get]));
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
@@ -75,6 +77,16 @@ function xmlText(value) {
   }
   return value;
 }
+function docxRunSemanticText(value) {
+  if (typeof value !== 'string' || value !== value.normalize('NFC') || value.includes('\r')) reject('E_DOCX_TEXT_NORMALIZATION');
+  try {
+    segmentDocxTextForSerialization(value, { allowFormFeedPageBreak: true });
+  } catch (error) {
+    if (error?.code === 'E_DOCX_TEXT_XML_UNPAIRED_SURROGATE') reject('E_DOCX_TEXT_NORMALIZATION');
+    reject('E_DOCX_XML_CHARACTER');
+  }
+  return value;
+}
 function identity(value) {
   exact(value, ID_KEYS);
   const result = Object.fromEntries(ID_KEYS.map(k => [k, value[k]]));
@@ -96,7 +108,7 @@ function documentModel(value) {
       if (typeof r.text !== 'string') reject('E_DOCX_TEXT_NORMALIZATION');
       textBytes += Buffer.byteLength(r.text);
       if (textBytes > DOCX_PROFILE_LIMITS.maxTextBytes) reject('E_DOCX_TEXT_BUDGET');
-      xmlText(r.text);
+      docxRunSemanticText(r.text);
       return { text: r.text, bold: r.bold, italic: r.italic, underline: r.underline };
     });
     return { alignment: p.alignment, outlineLevel: p.outlineLevel, runs: result };
@@ -242,8 +254,16 @@ function readDocument(xml, partSha256) {
           if (!Object.hasOwn(atom.attrs, 'xml:space') && text.trim() !== text) reject('E_DOCX_SPACE_POLICY');
           from = atom.openEnd; to = atom.closeStart;
         } else {
-          if (!['w:tab', 'w:br'].includes(atom.name)) reject('E_DOCX_RUN_ATOM'); element(atom, atom.name, {}); empty(atom);
-          text = atom.name === 'w:tab' ? '\t' : '\n'; from = atom.start; to = atom.end;
+          if (!['w:tab', 'w:br'].includes(atom.name)) reject('E_DOCX_RUN_ATOM');
+          if (atom.name === 'w:br') {
+            const hasType = Object.hasOwn(atom.attrs, 'w:type');
+            element(atom, atom.name, hasType ? { 'w:type': 'page' } : {});
+            text = hasType ? '\f' : '\n';
+          } else {
+            element(atom, atom.name, {});
+            text = '\t';
+          }
+          empty(atom); from = atom.start; to = atom.end;
         }
         if (rows.length >= DOCX_PROFILE_LIMITS.maxTapeRows) reject('E_DOCX_TAPE_BUDGET');
         rows.push({ paragraphIndex: paragraphs.length, runIndex: p.runs.length, sourcePartSha256: partSha256, sourceFrom: from, sourceTo: to, targetFrom: r.text.length, targetTo: r.text.length + text.length, decodedSha256: hash(Buffer.from(text)), atom: atom.name });
@@ -316,7 +336,7 @@ function checkedEnvelope(value, expectedIdentity) {
       if (row.sourcePartSha256 !== payload.source.documentPartSha256 || row.sourceFrom < previousSourceEnd || row.sourceTo < row.sourceFrom || row.sourceTo > 8_388_608) reject('E_DOCX_TAPE_SOURCE');
       if (row.targetFrom !== coverage[row.paragraphIndex][row.runIndex] || row.targetTo < row.targetFrom || row.targetTo > run.text.length) reject('E_DOCX_TAPE_TARGET');
       const decoded = run.text.slice(row.targetFrom, row.targetTo);
-      if (row.decodedSha256 !== hash(Buffer.from(decoded)) || !['w:t', 'w:tab', 'w:br'].includes(row.atom) || (row.atom === 'w:tab' && decoded !== '\t') || (row.atom === 'w:br' && decoded !== '\n')) reject('E_DOCX_TAPE_ATOM');
+      if (row.decodedSha256 !== hash(Buffer.from(decoded)) || !['w:t', 'w:tab', 'w:br'].includes(row.atom) || (row.atom === 'w:tab' && decoded !== '\t') || (row.atom === 'w:br' && !['\n', '\f'].includes(decoded))) reject('E_DOCX_TAPE_ATOM');
       coverage[row.paragraphIndex][row.runIndex] = row.targetTo;
       previousSourceEnd = row.sourceTo; previousParagraph = row.paragraphIndex; previousRun = row.runIndex;
     }
@@ -324,7 +344,6 @@ function checkedEnvelope(value, expectedIdentity) {
   }
   return { document, payload };
 }
-const escape = text => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&apos;');
 function utf8StoredZip(entries) {
   const bytes = zipBuilder.buildStoredZip(entries); let cursor = 0;
   while (bytes.readUInt32LE(cursor) === 0x04034b50) {
@@ -348,7 +367,7 @@ export function serializeDocxProfile(input = {}) {
       const properties = `<w:pPr><w:jc w:val="${p.alignment}"/>${p.outlineLevel === null ? '' : `<w:outlineLvl w:val="${p.outlineLevel}"/>`}</w:pPr>`;
       const runs = p.runs.map(r => {
         const marks = `<w:rPr>${r.bold ? '<w:b/>' : ''}${r.italic ? '<w:i/>' : ''}${r.underline ? '<w:u w:val="single"/>' : ''}</w:rPr>`;
-        const atoms = r.text.split(/([\t\n])/u).map(t => t === '\t' ? '<w:tab/>' : t === '\n' ? '<w:br/>' : `<w:t xml:space="preserve">${escape(t)}</w:t>`).join('');
+        const atoms = buildDocxRunContentXml(r.text, { allowFormFeedPageBreak: true });
         return `<w:r>${marks}${atoms}</w:r>`;
       }).join(''); return `<w:p>${properties}${runs}</w:p>`;
     }).join('');

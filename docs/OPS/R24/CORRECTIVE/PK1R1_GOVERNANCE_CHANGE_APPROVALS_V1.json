@@ -10,10 +10,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c57a8e473f25f9ccbd46013097249fb346c9869fa7b0496570ef2b26aa8f4833",
-      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "e3c729263d8eea6c253f3152750ef956a7b49296eb5cc97ebf53c866d843a103",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -186,10 +186,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "0321fdd0466196a874f02dbb75fb3de99a70d90c316e3fa71eb51764dd663caf",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "sha256": "fe087ec0d3205c1ec2cbf1cad6511a7f2c203dbac2b131048a1eb0acfa709466",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -234,10 +234,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "f870119504b559b8965e0c68bfd87fd69621a6bda67ff7497e4a0d6a1c54ef33",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "sha256": "fbc0639235d7ee102789e293c4b1a7601b64ec4740542903430ace9414d05e8c",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -322,10 +322,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "645610d279558787904dc4f546206f4febd59efe8adcd0b9e69a8ae307ca2013",
-      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "9f30a568069c8eafbbf92f89c19b79bed231a0c1f62f28bc9443e7f98da5cfcf",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -370,10 +370,10 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "c0d9f00cd7bac6f0cb1c140758a8fec556d0fdd258cce24a50769f92947161af",
-      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "2b87b9bfc1f220f1d53e4126054d745711e335181ac148a5a22b30612536f177",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -410,10 +410,10 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "33680a8737fbf1fdfdd086ac13eb0278fd7cc868b7fa172923bdab400435d9dd",
-      "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
-      "approvedAtUtc": "2026-09-09T21:39:31Z",
-      "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory and post-audit verifier bindings, and PK1R1 approval metadata; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
+      "sha256": "eb9dd6d89accdb89547b04444b4749f91a879d76320b26d05097272374da3e73",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -450,10 +450,10 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "dd5bf5659a558c092fe65d6aca82af199d4f5a60df97ac7fe3f86e091f6960e2",
-      "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "1794b0df86a5843bf74c8be313848fd2465e47c4aca1f388e90b2ad9d90b7678",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     },
     {
@@ -622,6 +622,14 @@
       "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "75256c7b05d7e917797d3d11423ad88918004997c2881cb728d89498b328ee27",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     }
   ],
