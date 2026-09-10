@@ -51,6 +51,7 @@ import {
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
+  R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -96,6 +97,7 @@ import {
   verifyR24Rcv00eLeaseFencingCasPostEvaluationException,
   verifyR24Rcv00fDeliveryReconciliationPostEvaluationException,
   verifyR24P03RelationshipGraphValidationPostEvaluationException,
+  verifyR24Ops03SemanticE0ClassifierPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1442,8 +1444,11 @@ test('R24 RCV00F delivery reconciliation exception rejects fake typed verificati
   const fixture=rcv00fDeliveryReconciliationGitFixture({planStateBytes:Buffer.from(planStateText)});
   assert.throws(()=>verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00F_PLAN_STATE_TOKEN/);
 });
-function p03RelationshipGraphValidationGitFixture({changedPaths,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,postAuditVerifierBytes,postAuditTestBytes,generic01TestBytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40)}={}){
+function p03RelationshipGraphValidationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,postAuditVerifierBytes,postAuditTestBytes,generic01TestBytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorTree='3'.repeat(40)}={}){
   const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION;
+  const successorChain=successorSha?[successorSha]:[];
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
     [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
     [e.defaultApprovalsPath,defaultApprovalsBytes??fs.readFileSync(e.defaultApprovalsPath)],
@@ -1453,13 +1458,20 @@ function p03RelationshipGraphValidationGitFixture({changedPaths,inventoryBytes,d
     [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
     [e.generic01TestPath,generic01TestBytes??fs.readFileSync(e.generic01TestPath)],
   ]);
-  return{candidateSha,git:(args,options={})=>{
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
-    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
     else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
-    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1)),endSha=range.slice(range.indexOf('..')+2);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
       const bytes=bytesByPath.get(repoPath);
@@ -1479,15 +1491,94 @@ test('R24 P03 relationship graph validation exception accepts the exact Generic0
   assert.equal(result.generic01RelationshipGraph,'VALID_INTERNAL_HYPERLINK_RELATIONSHIP_FOR_LOSS_FIXTURE');
   assert.equal(result.programDone,false);
 });
+test('R24 P03 relationship graph validation exception accepts successor heads by selecting the immutable exact candidate',()=>{
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,successorSha='4'.repeat(40);
+  const fixture=p03RelationshipGraphValidationGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'scripts/ops-gate.mjs'].sort()});
+  const result=verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+  assert.equal(result.changedPathDenominator,7);
+});
 test('R24 P03 relationship graph validation exception rejects an unadmitted future path',()=>{
   const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,fixture=p03RelationshipGraphValidationGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
-  assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA/);
+  assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_CANDIDATE_NOT_FOUND|E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA/);
 });
 test('R24 P03 relationship graph validation exception rejects stale Generic01 inventory digest',()=>{
   const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
   inventory.entries.find((entry)=>entry.path===e.generic01TestPath).sha256='0'.repeat(64);
   const fixture=p03RelationshipGraphValidationGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_INVENTORY_DIGEST/);
+});
+function ops03SemanticE0ClassifierGitFixture({changedPaths,successorChangedPaths,scannerBytes,scannerTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40),successorSha,successorTree='7'.repeat(40)}={}){
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION;
+  const successorChain=successorSha?[successorSha]:[];
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
+  const bytesByPath=new Map([
+    [e.scannerPath,scannerBytes??fs.readFileSync(e.scannerPath)],
+    [e.scannerTestPath,scannerTestBytes??fs.readFileSync(e.scannerTestPath)],
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+  ]);
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1)),endSha=range.slice(range.indexOf('..')+2);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 OPS03 semantic E0 classifier exception accepts the exact current delta',()=>{
+  const fixture=ops03SemanticE0ClassifierGitFixture(),result=verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.admittedPathDenominator,6);
+  assert.equal(result.changedPathDenominator,6);
+  assert.equal(result.semanticScannerRepair,true);
+  assert.equal(result.programDone,false);
+});
+test('R24 OPS03 semantic E0 classifier exception accepts successor heads by selecting the immutable exact candidate',()=>{
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,successorSha='8'.repeat(40);
+  const fixture=ops03SemanticE0ClassifierGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'README.md'].sort()});
+  const result=verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+  assert.equal(result.changedPathDenominator,6);
+});
+test('R24 OPS03 semantic E0 classifier exception rejects an unadmitted future path',()=>{
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,fixture=ops03SemanticE0ClassifierGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
+  assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_CANDIDATE_NOT_FOUND|E_R24_OPS03_EXACT_ADMITTED_DELTA/);
+});
+test('R24 OPS03 semantic E0 classifier exception rejects a weakened scanner token',()=>{
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,scannerText=fs.readFileSync(e.scannerPath,'utf8').replaceAll('tokenizeJavaScriptLike','tokenizeLineLike');
+  const fixture=ops03SemanticE0ClassifierGitFixture({scannerBytes:Buffer.from(scannerText)});
+  assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_SCANNER_TOKEN/);
+});
+test('R24 OPS03 semantic E0 classifier exception rejects stale inventory binding',()=>{
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
+  const fixture=ops03SemanticE0ClassifierGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_INVENTORY_DIGEST/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});
