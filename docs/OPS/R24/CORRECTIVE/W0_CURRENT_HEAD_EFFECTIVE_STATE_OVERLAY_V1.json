@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "R24_W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1",
+  "overlayId": "W0_WORD_PHYSICAL_RECERTIFICATION_CURRENT_HEAD_OVERLAY_V1",
+  "stageId": "W0_WORD_PHYSICAL_RECERTIFICATION",
+  "targetNodeId": "W0_WORD_PHYSICAL_RECERTIFICATION",
+  "from": "BLOCKED_TYPED",
+  "to": "DONE",
+  "immutableCandidateHeadSha": "e0661ea3da5f99d6d001ee76d86ed45d3620b132",
+  "immutableCandidateTreeSha": "f249afac1b5f9b3b0e7118e219f41f927499703d",
+  "basePlanStateDigest": "8015e9fe16c18bcc4fb9e3b371f400ee3454e5eba7a5c5d24fadb0420e48398c",
+  "baseProgramDigest": "8686b5dff19f2dbda6af7ea45793bdf9b36fb4c6c49424960350632b248cdffb",
+  "physicalReceiptId": "YALKEN_R24_W0_WORD_PHYSICAL_RECERTIFICATION_RECEIPT_V1",
+  "physicalReceiptSha256": "ebf5b193e3e87e68fe4e68ede95318eba8fb8486de301cb560df9efc44a015cf",
+  "proofAuthority": "OWNER_APPROVED_WORD_PHYSICAL_SESSION_AUTHORITY",
+  "source": "W0_PHYSICAL_RECERTIFICATION_VERIFIER_PASS",
+  "successorHeadPolicy": "ALLOW_DESCENDANT_HEADS_WITH_IDENTICAL_PROGRAM_AND_PLAN_DIGESTS",
+  "rawPlanStateMutation": false,
+  "programMutation": false,
+  "nonClaims": [
+    "NO_RAW_PLAN_STATE_MUTATION",
+    "NO_PROGRAM_DONE",
+    "NO_WORD_TERMINAL_PASS",
+    "NO_C1_ROUTE_PASS",
+    "NO_PRODUCT_APPLY_AUTHORITY",
+    "NO_SAFE_APPLY_EXPANSION",
+    "NO_USER_WORD_DOCUMENT_ACCESS",
+    "NO_GOOGLE_DOCS_TRANSFER",
+    "NO_RELEASE_READINESS",
+    "NO_RUNTIME_NETWORK"
+  ]
+}

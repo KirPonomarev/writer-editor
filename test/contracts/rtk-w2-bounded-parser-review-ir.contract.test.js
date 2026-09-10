@@ -172,6 +172,10 @@ const R24_A0_AUTHORITY_SOT_ALLOWLIST = [
   'test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs',
   'test/contracts/rtk-evidence-stale-green-guard.contract.test.js',
 ];
+const R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST = [
+  'docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json',
+  'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
+];
 const ALLOWLIST = [
   'src/io/revisionBridge/reviewTransportContracts.mjs',
   CORE_PATH,
@@ -204,6 +208,7 @@ const ALLOWLIST = [
   ...C4_ALLOWLIST,
   ...N4_STRUCTURAL_RETURN_ALLOWLIST,
   ...R24_A0_AUTHORITY_SOT_ALLOWLIST,
+  ...R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST,
 ];
 
 function isR24TerminalEvidenceArtifact(filePath) {

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS",
+  "contourId": "R24_W0_CURRENT_STATE_CLOSURE",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "e0661ea3da5f99d6d001ee76d86ed45d3620b132",
+  "originMainSha": "e0661ea3da5f99d6d001ee76d86ed45d3620b132",
+  "generatedAtUtc": "2026-09-10T22:45:18Z",
+  "oracle": "W0_CURRENT_HEAD_EFFECTIVE_STATE_CLOSURE_OVERLAY_AND_NEGATIVE_MATRIX",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json",
+      "sha256": "7656c03da876f9ec70c320ace7b1742cc9fa4d6dbe4d6ee339ff46735766884f",
+      "claimTerms": [
+        "DONE",
+        "PASS",
+        "READY",
+        "SAFE"
+      ]
+    }
+  ],
+  "implementationArtifactDigests": [
+    {
+      "path": "scripts/ops/r24/executable-program.mjs",
+      "sha256": "47613ef9c13c34d023b2fe45c8262f9877db5d626875c4a8eb549b9ddaca712b",
+      "terms": [
+        "R24_W0_CURRENT_STATE_CLOSURE"
+      ]
+    },
+    {
+      "path": "scripts/ops/r24/tests/executable-program.test.mjs",
+      "sha256": "b03d15f4be75b38a26bf35adfee82c6f21027626b11e9c167e1ca3a395ff7d58",
+      "terms": [
+        "R24_W0_CURRENT_STATE_CLOSURE"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
+      "sha256": "d4e817c24fd0e0e0c3e89875b8d635ba7cbeebaec06c2744db8fa384ecd9ab7b",
+      "terms": [
+        "R24_W0_CURRENT_STATE_CLOSURE"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-w0-current-state-closure.contract.test.mjs",
+      "sha256": "93d77128623d6e85ed8ea67897182f4d3a4311df8fb9ee99333bcd5cc6a64543",
+      "terms": [
+        "R24_W0_CURRENT_STATE_CLOSURE"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-w0-current-state-closure.contract.test.mjs scripts/ops/r24/tests/executable-program.test.mjs test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 30,
+        "fail": 0
+      }
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run test:r24-w0",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 8,
+        "fail": 0
+      },
+      "mutants": {
+        "killed": 8,
+        "survived": 0
+      }
+    }
+  ],
+  "nonClaims": [
+    "NO_RAW_PLAN_STATE_MUTATION",
+    "NO_PROGRAM_DONE",
+    "NO_WORD_TERMINAL_PASS",
+    "NO_C1_ROUTE_PASS",
+    "NO_PRODUCT_APPLY_AUTHORITY",
+    "NO_SAFE_APPLY_EXPANSION",
+    "NO_USER_WORD_DOCUMENT_ACCESS",
+    "NO_GOOGLE_DOCS_TRANSFER",
+    "NO_RELEASE_READINESS",
+    "NO_RUNTIME_NETWORK",
+    "NO_UI_OR_DESIGN_CHANGE",
+    "NO_NEW_DEPENDENCY"
+  ]
+}
