@@ -12038,6 +12038,42 @@
       "evidenceStampIds": [
         "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "cc0c77cec84944655c0fc8d73c026d6aeda6479100c62d786eb1fc6aff4d784c",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T18:58:00.000Z",
+      "rationale": "Approve exact current bytes required for the historical RCV00F delivery-reconciliation verifier after the P03 post-evaluation repair refreshed C1B and post-audit verifier/test hashes. No product runtime, UI, dependency, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "32fea2488e7dd1b61ee4e1e473e9913240959495ff1d9a072331ab185ad11e14",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T18:58:00.000Z",
+      "rationale": "Approve exact current bytes required for the historical RCV00F delivery-reconciliation verifier after the P03 post-evaluation repair refreshed C1B and post-audit verifier/test hashes. No product runtime, UI, dependency, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "4b110ae2b236329459aebfb202a3fecb7c58ce4b6bb682f2e1d1d91be2656161",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T18:58:00.000Z",
+      "rationale": "Approve exact current bytes required for the historical RCV00F delivery-reconciliation verifier after the P03 post-evaluation repair refreshed C1B and post-audit verifier/test hashes. No product runtime, UI, dependency, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [

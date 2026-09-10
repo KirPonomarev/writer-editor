@@ -50,6 +50,7 @@ import {
   R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
+  R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -94,6 +95,7 @@ import {
   verifyR24ReviewPreviewCommentTopologyPostEvaluationException,
   verifyR24Rcv00eLeaseFencingCasPostEvaluationException,
   verifyR24Rcv00fDeliveryReconciliationPostEvaluationException,
+  verifyR24P03RelationshipGraphValidationPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1439,6 +1441,53 @@ test('R24 RCV00F delivery reconciliation exception rejects fake typed verificati
   const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,planStateText=fs.readFileSync(e.planStatePath,'utf8').replace('E_TYPED_DELIVERY_FAKE_VERIFICATION','E_TYPED_DELIVERY_ADVISORY_VERIFICATION');
   const fixture=rcv00fDeliveryReconciliationGitFixture({planStateBytes:Buffer.from(planStateText)});
   assert.throws(()=>verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00F_PLAN_STATE_TOKEN/);
+});
+function p03RelationshipGraphValidationGitFixture({changedPaths,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,postAuditVerifierBytes,postAuditTestBytes,generic01TestBytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40)}={}){
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION;
+  const bytesByPath=new Map([
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.defaultApprovalsPath,defaultApprovalsBytes??fs.readFileSync(e.defaultApprovalsPath)],
+    [e.pk1r1ApprovalsPath,pk1r1ApprovalsBytes??fs.readFileSync(e.pk1r1ApprovalsPath)],
+    [e.interopApprovalsPath,interopApprovalsBytes??fs.readFileSync(e.interopApprovalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.generic01TestPath,generic01TestBytes??fs.readFileSync(e.generic01TestPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 P03 relationship graph validation exception accepts the exact Generic01 repair delta',()=>{
+  const fixture=p03RelationshipGraphValidationGitFixture(),result=verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,7);
+  assert.equal(result.changedPathDenominator,7);
+  assert.equal(result.generic01RelationshipGraph,'VALID_INTERNAL_HYPERLINK_RELATIONSHIP_FOR_LOSS_FIXTURE');
+  assert.equal(result.programDone,false);
+});
+test('R24 P03 relationship graph validation exception rejects an unadmitted future path',()=>{
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,fixture=p03RelationshipGraphValidationGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
+  assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA/);
+});
+test('R24 P03 relationship graph validation exception rejects stale Generic01 inventory digest',()=>{
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.generic01TestPath).sha256='0'.repeat(64);
+  const fixture=p03RelationshipGraphValidationGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_INVENTORY_DIGEST/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});
