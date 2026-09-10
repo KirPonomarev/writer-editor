@@ -14,12 +14,93 @@ import {
   validateTransitionReplay,
   DEFAULT_TRANSITION_LAW,
   PLAN_STATE_SCHEMA_VERSION,
+  buildTypedDeliveryWaitEvidence,
+  buildTypedDeliveryResumeEvidence,
+  buildTypedDeliveryRevokeEvidence,
 } from '../plan-state.mjs';
 import { writeJsonAtomic } from '../canonical-json.mjs';
 import { acquireLease, buildLeaseReleaseVerification, releaseLease } from '../lease.mjs';
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'r24-plan-'));
 const NOW = '2026-08-20T00:00:00Z';
+const HEAD_SHA = 'a'.repeat(40);
+
+function driveContourTo(file, { contourId, writerId, fencingToken, revision, targetState }) {
+  let nextRevision = revision;
+  for (const to of ['ELIGIBLE', 'RUNNING', 'DELIVERED', 'POSTMERGE_VERIFIED', 'DONE']) {
+    nextRevision = transitionContour(file, {
+      contourId,
+      to,
+      expectedRevision: nextRevision,
+      attemptId: 'A1',
+      writerId,
+      fencingToken,
+      idempotencyKey: `${contourId}-${to}`,
+      now: NOW,
+      headSha: HEAD_SHA,
+    }).revision;
+    if (to === targetState) break;
+  }
+  return nextRevision;
+}
+
+function publishLabEffect(file, expectedRevision) {
+  return casUpdate(file, {
+    expectedRevision,
+    idempotencyKey: 'delivery-effect-1',
+    idempotencyPayload: { operation: 'LAB_DELIVERY_EFFECT', effectId: 'effect-1' },
+    mutate: (draft) => {
+      draft.labEffects = draft.labEffects || [];
+      draft.labEffects.push({ effectId: 'effect-1' });
+      return { receipt: { effectId: 'effect-1', effectCount: draft.labEffects.length } };
+    },
+  });
+}
+
+function typedDeliveryWaitEvidence({ contourId, writerId, fencingToken, idempotencyKey, waitEvidenceDigest = null }) {
+  return buildTypedDeliveryWaitEvidence({
+    contourId,
+    writerId,
+    fencingToken,
+    idempotencyKey,
+    headSha: HEAD_SHA,
+    externalOperationId: 'external-delivery-1',
+    effectIdempotencyKey: 'delivery-effect-1',
+    observedAt: NOW,
+    reasonCode: 'EXTERNAL_DELIVERY_UNCERTAIN',
+    waitEvidenceDigest,
+  });
+}
+
+function typedDeliveryResumeEvidence({ contourId, writerId, fencingToken, idempotencyKey, waitEvidenceDigest }) {
+  return buildTypedDeliveryResumeEvidence({
+    contourId,
+    writerId,
+    fencingToken,
+    idempotencyKey,
+    headSha: HEAD_SHA,
+    externalOperationId: 'external-delivery-1',
+    effectIdempotencyKey: 'delivery-effect-1',
+    observedAt: NOW,
+    reasonCode: 'RECONCILED_FOR_RETRY_WITH_SAME_IDEMPOTENCY',
+    waitEvidenceDigest,
+  });
+}
+
+function typedDeliveryRevokeEvidence({ contourId, writerId, fencingToken, idempotencyKey, waitEvidenceDigest }) {
+  return buildTypedDeliveryRevokeEvidence({
+    contourId,
+    writerId,
+    fencingToken,
+    idempotencyKey,
+    headSha: HEAD_SHA,
+    externalOperationId: 'external-delivery-1',
+    effectIdempotencyKey: 'delivery-effect-1',
+    observedAt: NOW,
+    reasonCode: 'REVOKED_WITH_WORK_PRESERVED',
+    waitEvidenceDigest,
+  });
+}
 
 test('init creates revision 0 durable state and reloads', () => {
   const dir = tmp();
@@ -278,6 +359,261 @@ test('transition fails closed after the current lease is released', () => {
       fencingToken: lease.result.lease.fencingToken,
       idempotencyKey: 'transition-after-release',
       now: NOW,
+    }),
+    (e) => e.code === 'E_TERMINAL_STATE_HAS_NO_OUTGOING',
+  );
+});
+
+test('delivered uncertainty enters durable typed wait and resumes without repeating the confirmed effect', () => {
+  const dir = tmp();
+  const file = path.join(dir, 'plan.json');
+  const contourId = 'C-RCV00F';
+  const writerId = 'WRITER-1';
+  initPlanState(file);
+  const lease = acquireLease(file, {
+    contourId,
+    writerId,
+    missionId: 'MISSION-1',
+    ttlMs: 3600000,
+    now: NOW,
+    expectedRevision: 0,
+  });
+  const fencingToken = lease.result.lease.fencingToken;
+  let revision = driveContourTo(file, {
+    contourId,
+    writerId,
+    fencingToken,
+    revision: lease.revision,
+    targetState: 'RUNNING',
+  });
+  const effect = publishLabEffect(file, revision);
+  revision = transitionContour(file, {
+    contourId,
+    to: 'DELIVERED',
+    expectedRevision: effect.revision,
+    attemptId: 'A1',
+    writerId,
+    fencingToken,
+    idempotencyKey: 'rcv00f-delivered',
+    now: NOW,
+    headSha: HEAD_SHA,
+  }).revision;
+  const wait = transitionContour(file, {
+    contourId,
+    to: 'BLOCKED_TYPED',
+    expectedRevision: revision,
+    attemptId: 'A1',
+    writerId,
+    fencingToken,
+    idempotencyKey: 'rcv00f-wait',
+    now: NOW,
+    headSha: HEAD_SHA,
+    typedDeliveryWaitEvidence: typedDeliveryWaitEvidence({
+      contourId,
+      writerId,
+      fencingToken,
+      idempotencyKey: 'rcv00f-wait',
+    }),
+  });
+  let state = readPlanState(file);
+  assert.equal(state.contours[contourId].state, 'BLOCKED_TYPED');
+  assert.equal(state.contours[contourId].previousState, 'DELIVERED');
+  assert.equal(
+    state.contours[contourId].typedWait.evidenceDigest,
+    wait.result.receipt.typedDeliveryReconciliation.evidenceDigest,
+  );
+  assert.equal(validateTransitionReplay(state).verdict, 'PASS');
+  const duplicateEffect = publishLabEffect(file, effect.revision - 1);
+  assert.equal(duplicateEffect.duplicate, true);
+  assert.equal(readPlanState(file).labEffects.length, 1);
+  const resume = transitionContour(file, {
+    contourId,
+    to: 'ELIGIBLE',
+    expectedRevision: wait.revision,
+    attemptId: 'A1',
+    writerId,
+    fencingToken,
+    idempotencyKey: 'rcv00f-resume',
+    now: NOW,
+    headSha: HEAD_SHA,
+    typedDeliveryResumeEvidence: typedDeliveryResumeEvidence({
+      contourId,
+      writerId,
+      fencingToken,
+      idempotencyKey: 'rcv00f-resume',
+      waitEvidenceDigest: state.contours[contourId].typedWait.evidenceDigest,
+    }),
+  });
+  state = readPlanState(file);
+  assert.equal(resume.result.receipt.typedDeliveryReconciliation.status, 'RECONCILED_FOR_RETRY');
+  assert.equal(state.contours[contourId].state, 'ELIGIBLE');
+  assert.equal(state.contours[contourId].typedWait, undefined);
+  assert.equal(state.contours[contourId].typedWaitResolution.action, 'RESUME_FROM_TYPED_WAIT');
+  assert.equal(state.labEffects.length, 1);
+  assert.equal(validateTransitionReplay(state).verdict, 'PASS');
+});
+
+test('delivered typed wait rejects missing or fake evidence and can revoke to a terminal state', () => {
+  const dir = tmp();
+  const file = path.join(dir, 'plan.json');
+  const contourId = 'C-RCV00F-NEGATIVE';
+  const writerId = 'WRITER-1';
+  initPlanState(file);
+  const lease = acquireLease(file, {
+    contourId,
+    writerId,
+    missionId: 'MISSION-1',
+    ttlMs: 3600000,
+    now: NOW,
+    expectedRevision: 0,
+  });
+  const fencingToken = lease.result.lease.fencingToken;
+  const deliveredRevision = driveContourTo(file, {
+    contourId,
+    writerId,
+    fencingToken,
+    revision: lease.revision,
+    targetState: 'DELIVERED',
+  });
+  assert.throws(
+    () => transitionContour(file, {
+      contourId,
+      to: 'BLOCKED_TYPED',
+      expectedRevision: deliveredRevision,
+      attemptId: 'A1',
+      writerId,
+      fencingToken,
+      idempotencyKey: 'missing-wait-evidence',
+      now: NOW,
+      headSha: HEAD_SHA,
+    }),
+    (e) => e.code === 'E_TYPED_DELIVERY_WAIT_EVIDENCE_REQUIRED',
+  );
+  assert.throws(
+    () => transitionContour(file, {
+      contourId,
+      to: 'BLOCKED_TYPED',
+      expectedRevision: deliveredRevision,
+      attemptId: 'A1',
+      writerId,
+      fencingToken,
+      idempotencyKey: 'fake-wait-evidence',
+      now: NOW,
+      headSha: HEAD_SHA,
+      typedDeliveryWaitEvidence: {
+        ...typedDeliveryWaitEvidence({ contourId, writerId, fencingToken, idempotencyKey: 'fake-wait-evidence' }),
+        verifiedState: 'DONE',
+      },
+    }),
+    (e) => e.code === 'E_TYPED_DELIVERY_FAKE_VERIFICATION',
+  );
+  assert.throws(
+    () => transitionContour(file, {
+      contourId,
+      to: 'BLOCKED_TYPED',
+      expectedRevision: deliveredRevision,
+      attemptId: 'A1',
+      writerId,
+      fencingToken,
+      idempotencyKey: 'inherited-wait-evidence',
+      now: NOW,
+      headSha: HEAD_SHA,
+      typedDeliveryWaitEvidence: Object.create(typedDeliveryWaitEvidence({
+        contourId,
+        writerId,
+        fencingToken,
+        idempotencyKey: 'inherited-wait-evidence',
+      })),
+    }),
+    (e) => e.code === 'E_TYPED_DELIVERY_EVIDENCE_REQUIRED',
+  );
+  const wait = transitionContour(file, {
+    contourId,
+    to: 'BLOCKED_TYPED',
+    expectedRevision: deliveredRevision,
+    attemptId: 'A1',
+    writerId,
+    fencingToken,
+    idempotencyKey: 'valid-wait-evidence',
+    now: NOW,
+    headSha: HEAD_SHA,
+    typedDeliveryWaitEvidence: typedDeliveryWaitEvidence({
+      contourId,
+      writerId,
+      fencingToken,
+      idempotencyKey: 'valid-wait-evidence',
+    }),
+  });
+  const waitDigest = readPlanState(file).contours[contourId].typedWait.evidenceDigest;
+  assert.throws(
+    () => transitionContour(file, {
+      contourId,
+      to: 'ELIGIBLE',
+      expectedRevision: wait.revision,
+      attemptId: 'A1',
+      writerId,
+      fencingToken,
+      idempotencyKey: 'missing-resume-evidence',
+      now: NOW,
+      headSha: HEAD_SHA,
+    }),
+    (e) => e.code === 'E_TYPED_DELIVERY_RESUME_EVIDENCE_REQUIRED',
+  );
+  assert.throws(
+    () => transitionContour(file, {
+      contourId,
+      to: 'ELIGIBLE',
+      expectedRevision: wait.revision,
+      attemptId: 'A1',
+      writerId,
+      fencingToken,
+      idempotencyKey: 'wrong-resume-evidence',
+      now: NOW,
+      headSha: HEAD_SHA,
+      typedDeliveryResumeEvidence: typedDeliveryResumeEvidence({
+        contourId,
+        writerId,
+        fencingToken,
+        idempotencyKey: 'wrong-resume-evidence',
+        waitEvidenceDigest: '0'.repeat(64),
+      }),
+    }),
+    (e) => e.code === 'E_TYPED_DELIVERY_WAIT_DIGEST_MISMATCH',
+  );
+  const revoked = transitionContour(file, {
+    contourId,
+    to: 'CANCELLED',
+    expectedRevision: wait.revision,
+    attemptId: 'A1',
+    writerId,
+    fencingToken,
+    idempotencyKey: 'revoke-wait-evidence',
+    now: NOW,
+    headSha: HEAD_SHA,
+    typedDeliveryRevokeEvidence: typedDeliveryRevokeEvidence({
+      contourId,
+      writerId,
+      fencingToken,
+      idempotencyKey: 'revoke-wait-evidence',
+      waitEvidenceDigest: waitDigest,
+    }),
+  });
+  const state = readPlanState(file);
+  assert.equal(state.contours[contourId].state, 'CANCELLED');
+  assert.equal(state.contours[contourId].typedWait, undefined);
+  assert.equal(state.contours[contourId].typedWaitResolution.action, 'REVOKE_TYPED_WAIT');
+  assert.equal(validateTransitionReplay(state).verdict, 'PASS');
+  assert.throws(
+    () => transitionContour(file, {
+      contourId,
+      to: 'ELIGIBLE',
+      expectedRevision: revoked.revision,
+      attemptId: 'A2',
+      writerId,
+      fencingToken,
+      idempotencyKey: 'reopen-revoked',
+      now: NOW,
+      headSha: HEAD_SHA,
     }),
     (e) => e.code === 'E_TERMINAL_STATE_HAS_NO_OUTGOING',
   );
