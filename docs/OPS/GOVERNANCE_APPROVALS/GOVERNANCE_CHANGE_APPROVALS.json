@@ -6416,12 +6416,19 @@
     },
     {
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
-      "sha256": "6160ae0862cad646a9e8d5b9bf80435c8566658138d05977f19c831a23a083bb",
+      "sha256": "f69c7381c0acf11d6dc14312c49baa8689ae82c43a62543567fb81be64df3611",
       "approvedBy": "owner-direct:TASK_ID:PARSER-01_NAMESPACE_ATOMS",
       "approvedAtUtc": "2026-08-08T20:18:43.395Z",
       "rationale": "Approve PARSER-01 hyperlink emission documentation keeping bounded http(s) External relationships admitted as inert evidence by the parser while hostile forms stay blocked.",
       "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_PARSER01_NAMESPACE_ATOMS"
+      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_PARSER01_NAMESPACE_ATOMS",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
@@ -6879,10 +6886,17 @@
     },
     {
       "filePath": "test/contracts/export-contour-01-docx-simple-hardening.contract.test.js",
-      "sha256": "a6b63643a2129c1c1d85b3c2549155ec4dced6aa6943fc2b5fde755359da1bcd",
+      "sha256": "42ab6fe37556f27e97748fa8de6238d5e4879c6f4b505344d8810389d5ebcd66",
       "approvedBy": "ticket:REVIEW_BRIDGE_FILE_AUTHORITY_HARDENING_001",
       "approvedAtUtc": "2026-07-12T20:06:32.000Z",
-      "rationale": "Approve the existing deterministic DOCX export contour harness update for the mandatory external-target validation port; no DOCX content, fidelity, dependency, renderer authority, or release claim is widened."
+      "rationale": "Approve the existing deterministic DOCX export contour harness update for the mandatory external-target validation port; no DOCX content, fidelity, dependency, renderer authority, or release claim is widened.",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "test/contracts/export-contour-02-markdown-text-hardening.contract.test.js",
@@ -7363,12 +7377,19 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
-      "sha256": "13716d003a9daca1c543cc69a14aecbe624e91c08f025093c5b4c985a3386151",
+      "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999",
       "approvedBy": "owner-direct:TASK_ID:GENERIC-01_CREATE_ONLY_IMPORT",
       "approvedAtUtc": "2026-08-09T06:25:17.945Z",
       "rationale": "Approve GENERIC-01 preview plan full-SHA identity pins with distinct-artifact distinct-sceneId and carrier-ignored classification; determinism and create-only pins preserved; tests only.",
       "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_GENERIC01_CREATE_ONLY_IMPORT"
+      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_GENERIC01_CREATE_ONLY_IMPORT",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
@@ -7716,10 +7737,17 @@
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
-      "sha256": "e499f8893f2a26265b73e964b6857908ed9e61ada061013e95769f4b803664ee",
+      "sha256": "5174cb10902cd35da6e9240a4e48cc6db8422c99a1f237c65f1840f5e56fbe29",
       "approvedBy": "ticket:YALKEN_RTK_WORD_LATEST_SEMANTIC_ROUNDTRIP_V2",
       "approvedAtUtc": "2026-07-30T15:33:00.000Z",
-      "rationale": "Approve focused B03 modern comments contract coverage: proves reopened state, durable identity, recursive replies, comment-on-deleted-text related revision, orphan body preservation, missing expected comment deleted-or-missing diagnostics, duplicate ID non-pass, no-op empty comment non-pass, and receipt non-certification without runtime, UI, dependency, network, apply, or Word certification expansion."
+      "rationale": "Approve focused B03 modern comments contract coverage: proves reopened state, durable identity, recursive replies, comment-on-deleted-text related revision, orphan body preservation, missing expected comment deleted-or-missing diagnostics, duplicate ID non-pass, no-op empty comment non-pass, and receipt non-certification without runtime, UI, dependency, network, apply, or Word certification expansion.",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b04-classifier.contract.test.js",
@@ -11434,12 +11462,19 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "0321fdd0466196a874f02dbb75fb3de99a70d90c316e3fa71eb51764dd663caf",
+      "sha256": "fe087ec0d3205c1ec2cbf1cad6511a7f2c203dbac2b131048a1eb0acfa709466",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T12:26:17.194Z",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
       "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
@@ -11452,12 +11487,19 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "f870119504b559b8965e0c68bfd87fd69621a6bda67ff7497e4a0d6a1c54ef33",
+      "sha256": "fbc0639235d7ee102789e293c4b1a7601b64ec4740542903430ace9414d05e8c",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T12:26:17.194Z",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
       "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
+      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "scripts/ops/governance-change-detection.mjs",
@@ -11515,12 +11557,19 @@
     },
     {
       "filePath": "scripts/ops/r24/test-mutants.mjs",
-      "sha256": "a82b0fa575b599c9611331a55611051ae902ec8b2fff25842450b2baff8f0df1",
+      "sha256": "b4b68c4cf073514d69ab8b85980608897e2c3ff3b2d391479138758e192c27a7",
       "approvedBy": "owner-directive:R24_RCV00B_EFFECTIVE_STATE_COMPILER_2026_09_09",
       "approvedAtUtc": "2026-09-09T15:32:11.069Z",
       "rationale": "Owner-directed R24 RCV00B effective-state compiler delivery: exact current-head effective-state projection, scheduler binding, negative verifier/mutant proof, post-audit exception repair, and governed evidence refresh without product runtime, dependency, network, UI, raw plan-state, or automatic graph-transition mutation.",
       "approved": true,
-      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY"
+      "authority": "SUPERVISOR_APPROVED_R24_RCV00B_EFFECTIVE_STATE_COMPILER_AUTONOMOUS_DELIVERY",
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ]
     },
     {
       "filePath": "scripts/ops/r24/tests/effective-state-compiler.test.mjs",
@@ -11560,35 +11609,51 @@
     },
     {
       "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
-      "sha256": "b9d2782b1b1ebe79738a6a36da017f344773bb8a7940b11706a5f158103cac56",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
+      "sha256": "7b6d8b870ab86ed63d8fd444826db166417e2da9b216cdfe4640045f1d4109fb",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F RTK G0B scope-guard allowlist bytes admitting durable delivery reconciliation control-plane files and package-lock audit remediation without changing G0B behavioral oracle semantics.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js",
-      "sha256": "b4e96391213f694ce2e48af5b71e1ee4e3ac88b462ee1c298e6f731302a6ffa1",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
+      "sha256": "5c46290d681ef6d9054257403ff7dac6a3df10447b76b707c0507fda18c9efc4",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F RTK W1 scope-guard allowlist bytes admitting durable delivery reconciliation control-plane files and package-lock audit remediation without changing W1 no-write behavioral oracle semantics.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js",
-      "sha256": "25caeca7651da205b3ec3185885e1e0b95fae4ac8fbc070f88fe9e29b9ff63c8",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
+      "sha256": "2ff4e530ed09ae636404058c72d83133a08af089c1ceb52a63e5d0a373d05d53",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F RTK W2 scope-guard allowlist bytes admitting durable delivery reconciliation control-plane files and package-lock audit remediation without changing W2 parser/review IR behavioral oracle semantics.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-      "sha256": "227273b8b1477133ae1f212e6d67d023e3915ca09d03f6c6c598d5b58caa9aff",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
+      "sha256": "db9fedead51f1dcadfa600b977192df447ff834efd53287fddbeecf07856dd60",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F RTK ZIP01 scope-guard allowlist bytes admitting durable delivery reconciliation control-plane files and package-lock audit remediation without changing ZIP/CRC behavioral oracle semantics.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
@@ -11628,15 +11693,19 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c57a8e473f25f9ccbd46013097249fb346c9869fa7b0496570ef2b26aa8f4833",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "d21653eea8446316b5809892acb371da1d9256e7eef6fe37cf85e644f057dac3",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F test inventory carrier bytes rebinding the RTK scope-guard contract hashes after delivery reconciliation allowlist repair and lockfile audit remediation; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ],
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
@@ -11664,15 +11733,20 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "645610d279558787904dc4f546206f4febd59efe8adcd0b9e69a8ae307ca2013",
+      "sha256": "477341c0df3f9beb8e5444627dc8a0c7363717962d928f5d49276f4c2eac6fd4",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ],
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
     },
     {
       "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
@@ -11688,39 +11762,54 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "c0d9f00cd7bac6f0cb1c140758a8fec556d0fdd258cce24a50769f92947161af",
+      "sha256": "3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ],
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "d7dad18c5b0efd47e7bd3f872918fc10d9543db735df60e9c8dae9d88ad28bf1",
+      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ],
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "dd5bf5659a558c092fe65d6aca82af199d4f5a60df97ac7fe3f86e091f6960e2",
+      "sha256": "927511693f137b735fc8eb028db6c91c6b552e881da2f28d237d305059d465ac",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
+      ],
+      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
+      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
     },
     {
       "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
@@ -11733,10 +11822,216 @@
       "evidenceStampIds": [
         "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "scripts/ops/r24/plan-state.mjs",
+      "sha256": "b07b5f4ad4a480d69fe5b152b6607035d9c1fb38c4ca2d93a7f92e2bfaa03ff5",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F delivery reconciliation control-plane bytes for typed uncertain delivery wait, durable resume, and revoke repair; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/plan-state.test.mjs",
+      "sha256": "aaf994238d87b1efacedd770f61344a17e16623a4d234fd0d7c6154153aab015",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T10:35:06.414Z",
+      "rationale": "Approve exact R24 RCV00F delivery reconciliation proof bytes for focused positive, negative, and mutant-style coverage of typed uncertain delivery wait, resume, revocation, fake verification rejection, and duplicate effect suppression; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b2d8e01bac0725b2499c38708a695ade7e28f15eee28e00f3bd87421894aec43",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:40:00Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after adding the post-audit verifier repair regression for immutable delivery-candidate selection; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3d0cbd13edfa20b076d321afd20d5fbb4485e80232a2a583a76954fbf64fe0f6",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:40:00Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier repair bytes that bind the delivery reconciliation contour as an immutable 11-path post-evaluation exception and select historical delivery candidates when later successor heads add unrelated paths; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "bc807cf3d49138bfa72292691e21c2bd287d3f881408cb5c9e8ea6f80c3bfc13",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:40:00Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression tests for exact 11-path admission, successor-head delivery-candidate selection, unadmitted future-path rejection, and fake typed verification rejection; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f4236edb3c401f8b3327cd40887ba10932d49118a637be13717509b452965de0",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:45:28Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after binding the review-preview predecessor fixture to immutable PR1869 object bytes and retaining the delivery-reconciliation verifier repair regressions; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "53819e2d4b1265348008c7bd0d1d637e337fd27d8fe59da10e693f8ff8c8a830",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:45:28Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes that preserve immutable PR1869 review-preview fixture evidence while proving exact 11-path delivery reconciliation admission, successor-head candidate selection, unadmitted future-path rejection, and fake typed verification rejection; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "445587f9521a813e74e3a7edfbd0b6b402270adeb4bd8f73c549170d62fdcab1",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:46:41Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after correcting the review-preview predecessor fixture to bind PR1869 merge object bytes while preserving delivery-reconciliation verifier repair coverage; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "88d01f7d0bb81c4083135bb81023a47cf433b979acbadc2951ed9a2b2f845248",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:46:41Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes with PR1869 immutable review-preview fixture binding, exact 11-path delivery reconciliation admission, successor-head candidate selection, unadmitted future-path rejection, and fake typed verification rejection; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "5b71e9034b15c522281864ab9e5ace92a5b5ecd72aedd64dcd1a0e4152c5c0fc",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:47:56Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes after correcting the review-preview immutable fixture delivery pointer to PR1869 current-base object bytes; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "4269ae385259a7b4648d08d93220b827d5a1dd6fd053c17a10c1b83b2ec4e263",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:48:47Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after the final review-preview predecessor fixture correction and post-audit contract digest binding; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "31f81ae6a1d0204eb184146809ee6290d816fb7a7f605cd3acd17fe71af9271c",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:49:56Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes after preserving the PR1867 import-preview fixture delivery pointer and binding only the review-preview predecessor fixture to PR1869 object bytes; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9d55bc984590245a1395a84547887be35d88e17448ef48fa2e002f7609d45d28",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:49:56Z",
+      "rationale": "Approve exact stable R24 RCV00F refreshed test inventory bytes after serializing the inventory refresh and digest read for the final post-audit contract binding; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "6d523a4c95f21668b422e810fc081752af2acc143c9eec17c2dffbe2dceb7b4e",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:56:14Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after adding 65-successor immutable delivery-candidate selector regressions; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f5bdadaf0704c66e664dc49619e9ac8bdeb2be702d05617566e63e73cbecbc91",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:56:14Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier bytes after removing the 64-successor candidate-search truncation while preserving exact ancestry, delta, digest, and fake-verification guards; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "e1b12a010da64b4f17b81648cd2f8cc7eb839f9e3d34e9af06a94f4b2d31ad78",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:56:14Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes for immutable predecessor preservation, exact delivery reconciliation admission, fake verification rejection, and 65-successor candidate selector coverage; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3e17776b841f830cd765e2ccd09b8a4ad1f6b1763f413b59566677fc142af154",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:57:21Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier bytes after applying the complete-ancestry delivery-candidate selector fix to both new selectors; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [
     "ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS",
-    "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
+    "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+    "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+    "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
   ]
 }

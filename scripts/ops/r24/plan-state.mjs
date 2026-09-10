@@ -17,10 +17,15 @@ import fs from 'node:fs';
 export const PLAN_STATE_SCHEMA_VERSION = 'yalken.plan-state.r24.v2';
 export const PLAN_STATE_REPLAY_BASELINE_VERSION = 'PlanStateReplayBaselineV1';
 export const PLAN_STATE_TRANSITION_RECEIPT_VERSION = 'PlanStateTransitionReceiptV1';
+export const PLAN_STATE_TYPED_DELIVERY_WAIT_EVIDENCE_VERSION = 'PlanStateTypedDeliveryWaitEvidenceV1';
+export const PLAN_STATE_TYPED_DELIVERY_RESUME_EVIDENCE_VERSION = 'PlanStateTypedDeliveryResumeEvidenceV1';
+export const PLAN_STATE_TYPED_DELIVERY_REVOKE_EVIDENCE_VERSION = 'PlanStateTypedDeliveryRevokeEvidenceV1';
 const CONTOUR_MUTATION_TOKEN = Symbol('R24_CONTOUR_TRANSITION_ENGINE');
+const UNCERTAIN_DELIVERY_KIND = 'UNCERTAIN_DELIVERY';
 
-// Ported one-to-one from sealed machine/EXECUTABLE_PROGRAM_R2_4.json
-// lifecycleStates + stateTransitions (graph SOT outranks delivery-law prose).
+// Ported from sealed machine/EXECUTABLE_PROGRAM_R2_4.json lifecycle states
+// and transition law, with the RCV00F guarded DELIVERED->BLOCKED_TYPED
+// corrective edge enforced by typed delivery evidence below.
 export const DEFAULT_TRANSITION_LAW = Object.freeze({
   lifecycleStates: Object.freeze([
     'PENDING', 'ELIGIBLE', 'RUNNING', 'WAIT_OWNER', 'BLOCKED_TYPED', 'FAILED',
@@ -31,7 +36,7 @@ export const DEFAULT_TRANSITION_LAW = Object.freeze({
     ELIGIBLE: Object.freeze(['RUNNING', 'WAIT_OWNER', 'BLOCKED_TYPED', 'CANCELLED']),
     RUNNING: Object.freeze(['FAILED', 'DELIVERED', 'WAIT_OWNER', 'BLOCKED_TYPED', 'CANCELLED']),
     FAILED: Object.freeze(['ELIGIBLE', 'WAIT_OWNER', 'CANCELLED']),
-    DELIVERED: Object.freeze(['POSTMERGE_VERIFIED', 'FAILED']),
+    DELIVERED: Object.freeze(['POSTMERGE_VERIFIED', 'FAILED', 'BLOCKED_TYPED']),
     POSTMERGE_VERIFIED: Object.freeze(['DONE', 'FAILED']),
     WAIT_OWNER: Object.freeze(['ELIGIBLE', 'CANCELLED']),
     BLOCKED_TYPED: Object.freeze(['ELIGIBLE', 'CANCELLED']),
@@ -58,6 +63,311 @@ export function createTransitionValidator(law = DEFAULT_TRANSITION_LAW) {
 const contourStates = (contours) => Object.fromEntries(
   Object.entries(contours).map(([id, row]) => [id, row?.state]),
 );
+
+const isPlainObject = (value) => {
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+};
+
+function requireEvidenceString(value, code, field) {
+  if (typeof value !== 'string' || value.length === 0) throw new R24Error(code, field);
+  return value;
+}
+
+function assertEvidenceClock(value, now, code) {
+  requireEvidenceString(value, code, 'observedAt');
+  const observedMs = Date.parse(value);
+  const nowMs = Date.parse(now);
+  if (!Number.isFinite(observedMs) || !Number.isFinite(nowMs) || observedMs > nowMs) throw new R24Error(code, value);
+}
+
+function assertNoDeliveryVerificationClaim(evidence) {
+  if (
+    evidence.status === 'VERIFIED'
+    || evidence.verifiedDelivery !== undefined
+    || evidence.verifiedState !== undefined
+    || evidence.transitionReceiptDigest !== undefined
+  ) {
+    throw new R24Error('E_TYPED_DELIVERY_FAKE_VERIFICATION');
+  }
+}
+
+function buildTypedDeliveryEvidence({
+  schemaVersion,
+  action,
+  status,
+  contourId,
+  writerId,
+  fencingToken,
+  fromState,
+  toState,
+  idempotencyKey,
+  headSha,
+  externalOperationId,
+  effectIdempotencyKey,
+  observedAt,
+  reasonCode,
+  waitEvidenceDigest = null,
+}) {
+  return {
+    schemaVersion,
+    kind: UNCERTAIN_DELIVERY_KIND,
+    action,
+    status,
+    contourId,
+    writerId,
+    fencingToken,
+    fromState,
+    toState,
+    idempotencyKey,
+    headSha,
+    externalOperationId,
+    effectIdempotencyKey,
+    observedAt,
+    reasonCode,
+    waitEvidenceDigest,
+  };
+}
+
+export function buildTypedDeliveryWaitEvidence(input = {}) {
+  return buildTypedDeliveryEvidence({
+    ...input,
+    schemaVersion: PLAN_STATE_TYPED_DELIVERY_WAIT_EVIDENCE_VERSION,
+    action: 'ENTER_TYPED_WAIT',
+    status: 'UNCERTAIN',
+    fromState: 'DELIVERED',
+    toState: 'BLOCKED_TYPED',
+  });
+}
+
+export function buildTypedDeliveryResumeEvidence(input = {}) {
+  return buildTypedDeliveryEvidence({
+    ...input,
+    schemaVersion: PLAN_STATE_TYPED_DELIVERY_RESUME_EVIDENCE_VERSION,
+    action: 'RESUME_FROM_TYPED_WAIT',
+    status: 'RECONCILED_FOR_RETRY',
+    fromState: 'BLOCKED_TYPED',
+    toState: 'ELIGIBLE',
+  });
+}
+
+export function buildTypedDeliveryRevokeEvidence(input = {}) {
+  return buildTypedDeliveryEvidence({
+    ...input,
+    schemaVersion: PLAN_STATE_TYPED_DELIVERY_REVOKE_EVIDENCE_VERSION,
+    action: 'REVOKE_TYPED_WAIT',
+    status: 'REVOKED',
+    fromState: 'BLOCKED_TYPED',
+    toState: 'CANCELLED',
+  });
+}
+
+function normalizeTypedDeliveryEvidence(evidence, {
+  schemaVersion,
+  action,
+  status,
+  contourId,
+  writerId,
+  fencingToken,
+  from,
+  to,
+  idempotencyKey,
+  headSha,
+  now,
+  currentTypedWait = null,
+}) {
+  if (!isPlainObject(evidence)) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_REQUIRED', `${from} -> ${to}`);
+  if (evidence.schemaVersion !== schemaVersion) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_SCHEMA', `${from} -> ${to}`);
+  if (evidence.kind !== UNCERTAIN_DELIVERY_KIND) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_KIND', `${from} -> ${to}`);
+  if (evidence.action !== action) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_ACTION', `${from} -> ${to}`);
+  if (evidence.status !== status) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_STATUS', `${from} -> ${to}`);
+  assertNoDeliveryVerificationClaim(evidence);
+  for (const [field, expected] of [
+    ['contourId', contourId],
+    ['writerId', writerId],
+    ['fromState', from],
+    ['toState', to],
+    ['idempotencyKey', idempotencyKey],
+  ]) {
+    if (evidence[field] !== expected) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_BINDING', field);
+  }
+  if (evidence.fencingToken !== fencingToken) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_FENCE');
+  if (evidence.headSha !== headSha) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_HEAD');
+  requireEvidenceString(evidence.externalOperationId, 'E_TYPED_DELIVERY_EXTERNAL_ID', 'externalOperationId');
+  requireEvidenceString(evidence.effectIdempotencyKey, 'E_TYPED_DELIVERY_EFFECT_IDEMPOTENCY_KEY', 'effectIdempotencyKey');
+  requireEvidenceString(evidence.reasonCode, 'E_TYPED_DELIVERY_REASON', 'reasonCode');
+  assertEvidenceClock(evidence.observedAt, now, 'E_TYPED_DELIVERY_EVIDENCE_CLOCK');
+  if (currentTypedWait !== null) {
+    if (evidence.waitEvidenceDigest !== currentTypedWait.evidenceDigest) throw new R24Error('E_TYPED_DELIVERY_WAIT_DIGEST_MISMATCH');
+    if (evidence.externalOperationId !== currentTypedWait.externalOperationId) throw new R24Error('E_TYPED_DELIVERY_EXTERNAL_ID_MISMATCH');
+    if (evidence.effectIdempotencyKey !== currentTypedWait.effectIdempotencyKey) throw new R24Error('E_TYPED_DELIVERY_EFFECT_IDEMPOTENCY_MISMATCH');
+  } else if (evidence.waitEvidenceDigest !== null) {
+    throw new R24Error('E_TYPED_DELIVERY_WAIT_DIGEST_UNEXPECTED');
+  }
+  return {
+    schemaVersion: evidence.schemaVersion,
+    kind: evidence.kind,
+    action: evidence.action,
+    status: evidence.status,
+    contourId: evidence.contourId,
+    writerId: evidence.writerId,
+    fencingToken: evidence.fencingToken,
+    fromState: evidence.fromState,
+    toState: evidence.toState,
+    idempotencyKey: evidence.idempotencyKey,
+    headSha: evidence.headSha,
+    externalOperationId: evidence.externalOperationId,
+    effectIdempotencyKey: evidence.effectIdempotencyKey,
+    observedAt: evidence.observedAt,
+    reasonCode: evidence.reasonCode,
+    waitEvidenceDigest: evidence.waitEvidenceDigest,
+  };
+}
+
+function assertTypedDeliveryTransitionRecord(record, filePath) {
+  if (record.typedDeliveryReconciliation === undefined) return;
+  const typed = record.typedDeliveryReconciliation;
+  if (!isPlainObject(typed)) throw new R24Error('E_TYPED_DELIVERY_RECORD_SHAPE', filePath);
+  if (typed.kind !== UNCERTAIN_DELIVERY_KIND) throw new R24Error('E_TYPED_DELIVERY_RECORD_KIND', filePath);
+  if (!['ENTER_TYPED_WAIT', 'RESUME_FROM_TYPED_WAIT', 'REVOKE_TYPED_WAIT'].includes(typed.action)) {
+    throw new R24Error('E_TYPED_DELIVERY_RECORD_ACTION', filePath);
+  }
+  if (!['UNCERTAIN', 'RECONCILED_FOR_RETRY', 'REVOKED'].includes(typed.status)) {
+    throw new R24Error('E_TYPED_DELIVERY_RECORD_STATUS', filePath);
+  }
+  for (const field of ['action', 'status', 'evidenceDigest', 'externalOperationId', 'effectIdempotencyKey']) {
+    if (typeof typed[field] !== 'string' || typed[field].length === 0) throw new R24Error('E_TYPED_DELIVERY_RECORD_FIELD', `${filePath}:${field}`);
+  }
+  if (!/^[0-9a-f]{64}$/.test(typed.evidenceDigest)) throw new R24Error('E_TYPED_DELIVERY_RECORD_DIGEST', filePath);
+  if (typed.waitEvidenceDigest !== null && !/^[0-9a-f]{64}$/.test(String(typed.waitEvidenceDigest))) {
+    throw new R24Error('E_TYPED_DELIVERY_RECORD_WAIT_DIGEST', filePath);
+  }
+}
+
+function resolveTypedDeliveryTransition({
+  current,
+  from,
+  to,
+  contourId,
+  writerId,
+  fencingToken,
+  idempotencyKey,
+  headSha,
+  now,
+  typedDeliveryWaitEvidence,
+  typedDeliveryResumeEvidence,
+  typedDeliveryRevokeEvidence,
+}) {
+  const provided = [typedDeliveryWaitEvidence, typedDeliveryResumeEvidence, typedDeliveryRevokeEvidence]
+    .filter((item) => item !== null && item !== undefined);
+  const currentTypedWait = current?.typedWait?.kind === UNCERTAIN_DELIVERY_KIND ? current.typedWait : null;
+  const context = { contourId, writerId, fencingToken, idempotencyKey, headSha, now };
+  if (from === 'DELIVERED' && to === 'BLOCKED_TYPED') {
+    if (provided.length !== 1 || typedDeliveryWaitEvidence === null || typedDeliveryWaitEvidence === undefined) {
+      throw new R24Error('E_TYPED_DELIVERY_WAIT_EVIDENCE_REQUIRED');
+    }
+    const evidence = normalizeTypedDeliveryEvidence(typedDeliveryWaitEvidence, {
+      ...context,
+      schemaVersion: PLAN_STATE_TYPED_DELIVERY_WAIT_EVIDENCE_VERSION,
+      action: 'ENTER_TYPED_WAIT',
+      status: 'UNCERTAIN',
+      from,
+      to,
+    });
+    const evidenceDigest = canonicalDigest(evidence);
+    return {
+      record: {
+        kind: evidence.kind,
+        action: evidence.action,
+        status: evidence.status,
+        evidenceDigest,
+        externalOperationId: evidence.externalOperationId,
+        effectIdempotencyKey: evidence.effectIdempotencyKey,
+        waitEvidenceDigest: null,
+      },
+      rowTypedWait: {
+        kind: evidence.kind,
+        evidenceDigest,
+        externalOperationId: evidence.externalOperationId,
+        effectIdempotencyKey: evidence.effectIdempotencyKey,
+        reasonCode: evidence.reasonCode,
+        enteredAt: now,
+        fromState: from,
+      },
+    };
+  }
+  if (currentTypedWait !== null && from === 'BLOCKED_TYPED' && to === 'ELIGIBLE') {
+    if (provided.length !== 1 || typedDeliveryResumeEvidence === null || typedDeliveryResumeEvidence === undefined) {
+      throw new R24Error('E_TYPED_DELIVERY_RESUME_EVIDENCE_REQUIRED');
+    }
+    const evidence = normalizeTypedDeliveryEvidence(typedDeliveryResumeEvidence, {
+      ...context,
+      schemaVersion: PLAN_STATE_TYPED_DELIVERY_RESUME_EVIDENCE_VERSION,
+      action: 'RESUME_FROM_TYPED_WAIT',
+      status: 'RECONCILED_FOR_RETRY',
+      from,
+      to,
+      currentTypedWait,
+    });
+    const evidenceDigest = canonicalDigest(evidence);
+    return {
+      record: {
+        kind: evidence.kind,
+        action: evidence.action,
+        status: evidence.status,
+        evidenceDigest,
+        externalOperationId: evidence.externalOperationId,
+        effectIdempotencyKey: evidence.effectIdempotencyKey,
+        waitEvidenceDigest: evidence.waitEvidenceDigest,
+      },
+      rowTypedWaitResolution: {
+        kind: evidence.kind,
+        action: evidence.action,
+        evidenceDigest,
+        waitEvidenceDigest: evidence.waitEvidenceDigest,
+        resolvedAt: now,
+        toState: to,
+      },
+    };
+  }
+  if (currentTypedWait !== null && from === 'BLOCKED_TYPED' && to === 'CANCELLED') {
+    if (provided.length !== 1 || typedDeliveryRevokeEvidence === null || typedDeliveryRevokeEvidence === undefined) {
+      throw new R24Error('E_TYPED_DELIVERY_REVOKE_EVIDENCE_REQUIRED');
+    }
+    const evidence = normalizeTypedDeliveryEvidence(typedDeliveryRevokeEvidence, {
+      ...context,
+      schemaVersion: PLAN_STATE_TYPED_DELIVERY_REVOKE_EVIDENCE_VERSION,
+      action: 'REVOKE_TYPED_WAIT',
+      status: 'REVOKED',
+      from,
+      to,
+      currentTypedWait,
+    });
+    const evidenceDigest = canonicalDigest(evidence);
+    return {
+      record: {
+        kind: evidence.kind,
+        action: evidence.action,
+        status: evidence.status,
+        evidenceDigest,
+        externalOperationId: evidence.externalOperationId,
+        effectIdempotencyKey: evidence.effectIdempotencyKey,
+        waitEvidenceDigest: evidence.waitEvidenceDigest,
+      },
+      rowTypedWaitResolution: {
+        kind: evidence.kind,
+        action: evidence.action,
+        evidenceDigest,
+        waitEvidenceDigest: evidence.waitEvidenceDigest,
+        resolvedAt: now,
+        toState: to,
+      },
+    };
+  }
+  if (provided.length > 0) throw new R24Error('E_TYPED_DELIVERY_EVIDENCE_NOT_APPLICABLE', `${from} -> ${to}`);
+  return { record: null, rowTypedWait: null, rowTypedWaitResolution: null };
+}
 
 function assertLegacyPlanStateShape(state, filePath) {
   if (!state || typeof state !== 'object' || Array.isArray(state)) throw new R24Error('E_PLAN_STATE_SHAPE', filePath);
@@ -108,6 +418,7 @@ function assertTransitionRecord(record, filePath) {
   if (typeof record.baselinePresent !== 'boolean') throw new R24Error('E_TRANSITION_RECORD_BASELINE_PRESENCE', filePath);
   if (record.headSha !== null && !HEX40_RE.test(String(record.headSha))) throw new R24Error('E_TRANSITION_RECORD_HEAD', filePath);
   if (!Number.isFinite(Date.parse(record.appliedAt))) throw new R24Error('E_TRANSITION_RECORD_CLOCK', filePath);
+  assertTypedDeliveryTransitionRecord(record, filePath);
 }
 
 export function validateTransitionReplay(state, filePath = '<memory>') {
@@ -154,6 +465,12 @@ export function validateTransitionReplay(state, filePath = '<memory>') {
     const row = state.contours[id];
     if (!row || row.state !== record.to || row.previousState !== record.from || row.attemptId !== record.attemptId || row.headSha !== record.headSha) {
       throw new R24Error('E_TRANSITION_REPLAY_ROW_MISMATCH', id);
+    }
+    if (row.typedWait && row.typedWait.evidenceDigest !== record.typedDeliveryReconciliation?.evidenceDigest) {
+      throw new R24Error('E_TYPED_DELIVERY_WAIT_ROW_MISMATCH', id);
+    }
+    if (row.typedWaitResolution && row.typedWaitResolution.evidenceDigest !== record.typedDeliveryReconciliation?.evidenceDigest) {
+      throw new R24Error('E_TYPED_DELIVERY_RESOLUTION_ROW_MISMATCH', id);
     }
   }
   if (state.transitionHistory.length > 0 && priorRevision > state.revision) throw new R24Error('E_TRANSITION_HISTORY_FUTURE_REVISION', filePath);
@@ -311,6 +628,9 @@ export function transitionContour(filePath, {
   now,
   headSha = null,
   law = DEFAULT_TRANSITION_LAW,
+  typedDeliveryWaitEvidence = null,
+  typedDeliveryResumeEvidence = null,
+  typedDeliveryRevokeEvidence = null,
 }) {
   if (typeof contourId !== 'string' || contourId.length === 0) throw new R24Error('E_CONTOUR_ID_REQUIRED');
   if (typeof attemptId !== 'string' || attemptId.length === 0) throw new R24Error('E_ATTEMPT_ID_REQUIRED');
@@ -333,6 +653,9 @@ export function transitionContour(filePath, {
     now,
     headSha,
   };
+  if (typedDeliveryWaitEvidence != null) idempotencyPayload.typedDeliveryWaitEvidence = typedDeliveryWaitEvidence;
+  if (typedDeliveryResumeEvidence != null) idempotencyPayload.typedDeliveryResumeEvidence = typedDeliveryResumeEvidence;
+  if (typedDeliveryRevokeEvidence != null) idempotencyPayload.typedDeliveryRevokeEvidence = typedDeliveryRevokeEvidence;
   const requestDigest = canonicalDigest(idempotencyPayload);
   const transitionId = canonicalDigest({ idempotencyKey, requestDigest });
   return casUpdate(filePath, {
@@ -350,6 +673,20 @@ export function transitionContour(filePath, {
       if (lease.writerId !== writerId) throw new R24Error('E_LEASE_WRITER_MISMATCH', contourId);
       if (lease.fencingToken !== fencingToken) throw new R24Error('E_FENCE_STALE', contourId);
       if (nowMs >= Date.parse(lease.expiresAt)) throw new R24Error('E_LEASE_EXPIRED', contourId);
+      const typedDelivery = resolveTypedDeliveryTransition({
+        current,
+        from,
+        to,
+        contourId,
+        writerId,
+        fencingToken,
+        idempotencyKey,
+        headSha,
+        now,
+        typedDeliveryWaitEvidence,
+        typedDeliveryResumeEvidence,
+        typedDeliveryRevokeEvidence,
+      });
       const receipt = {
         schemaVersion: PLAN_STATE_TRANSITION_RECEIPT_VERSION,
         transitionId,
@@ -366,13 +703,17 @@ export function transitionContour(filePath, {
         headSha,
         appliedAt: now,
       };
-      draft.contours[contourId] = {
+      if (typedDelivery.record) receipt.typedDeliveryReconciliation = typedDelivery.record;
+      const nextRow = {
         state: to,
         previousState: from,
         attemptId,
         updatedAt: now,
         headSha,
       };
+      if (typedDelivery.rowTypedWait) nextRow.typedWait = typedDelivery.rowTypedWait;
+      if (typedDelivery.rowTypedWaitResolution) nextRow.typedWaitResolution = typedDelivery.rowTypedWaitResolution;
+      draft.contours[contourId] = nextRow;
       draft.transitionHistory.push({ ...receipt, baselinePresent: current !== null });
       return { transition: { contourId, from, to }, receipt };
     },
