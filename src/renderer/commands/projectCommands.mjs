@@ -2858,7 +2858,28 @@ export function registerProjectCommands(registry, options = {}) {
         { message: error && typeof error.message === 'string' ? error.message : 'UNKNOWN' },
       );
     }
-    const bridged = unwrapBridgeResponseValue(response);
+    let bridged;
+    if (response && typeof response === 'object' && !Array.isArray(response) && response.ok === false) {
+      const nestedValue = response.value && typeof response.value === 'object' && !Array.isArray(response.value)
+        ? response.value
+        : null;
+      if (nestedValue && nestedValue.ok === 0 && nestedValue.error && typeof nestedValue.error === 'object') {
+        bridged = nestedValue;
+      } else {
+        return fail(
+          'E_COMMAND_FAILED',
+          COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
+          'EXPORT_DOCXMIN_COMMAND_BRIDGE_FAILED',
+          {
+            bridgeReason: typeof response.reason === 'string' && response.reason.length > 0
+              ? response.reason
+              : 'COMMAND_BRIDGE_FAILED',
+          },
+        );
+      }
+    } else {
+      bridged = unwrapBridgeResponseValue(response);
+    }
 
     if (bridged && (bridged.ok === 1 || bridged.ok === true)) {
       if (bridged.preview === true) {

@@ -11,17 +11,14 @@ const C = 'docs/OPS/R24/CORRECTIVE/';
 const h = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file));
 const WP708_MERGE_SHA = '2cc2d22d9427261f6eefe66394791083af049ca9';
-const V2_SUCCESSOR_PATHS = new Set([
-  '.github/workflows/oss-policy.yml',
-  'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
-  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
-  'scripts/ops/r24/docs-claim-lint.mjs',
-  'test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs',
-  'test/contracts/r24-wp708-terminal-carriers.contract.test.mjs',
+const SUCCESSOR_DEPENDENT_CARRIER_SHA_BY_PATH = new Map([
+  ['test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs', '66dcf5bf0e096be91631fc48564afe29ef045e41'],
+  ['test/contracts/r24-wp806-terminal-carriers.contract.test.mjs', '66dcf5bf0e096be91631fc48564afe29ef045e41'],
 ]);
-const carrierBytes = file => V2_SUCCESSOR_PATHS.has(file)
-  ? execFileSync('git', ['show', `${WP708_MERGE_SHA}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 })
-  : fs.readFileSync(file);
+const carrierBytes = file => {
+  const sourceSha = SUCCESSOR_DEPENDENT_CARRIER_SHA_BY_PATH.get(file) ?? WP708_MERGE_SHA;
+  return execFileSync('git', ['show', `${sourceSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 });
+};
 const names = [
   'MAIN_PRODUCT_OWNER_AUTHORITY', 'MAIN_PRODUCT_STAGE_INSTANCE', 'MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION',
   'PROTECTED_WIP_BEFORE', 'GOOGLE_EGRESS_APPLY_OWNER_DECISION', 'GOOGLE_PROVIDER_PHYSICAL_RECEIPT',
@@ -117,7 +114,7 @@ test('WP708 evidence carries 14 focused tests, 19 real source mutants and exact 
   assert.deepEqual(model.test, { denominator: 14, passed: 14, failed: 0, skipped: 0, todo: 0 });
   assert.equal(model.artifact.rawEvidence.processExitCode, 0);
   assert.equal(model.artifact.rawEvidence.sha256, '4e734a89981f2cc1fdf6694c83805beeddf42a6178d13d7631e98696e3ef032c');
-  for (const artifact of model.artifact.implementationArtifacts) assert.equal(h(fs.readFileSync(artifact.path)), artifact.sha256);
+  for (const artifact of model.artifact.implementationArtifacts) assert.equal(h(carrierBytes(artifact.path)), artifact.sha256);
   const mutants = read('docs/OPS/R24/EVIDENCE/ES-R24-WP-708-GOOGLE-PROVIDER-MUTANTS.json');
   assert.deepEqual(mutants.claim, { ceiling: 'WP708_ACTUAL_SOURCE_MUTATION_SCORE_ONLY', actualSourceMutations: true, killed: 19, survived: 0, syntaxOrImportFailuresCountedAsKills: false });
   const integration = read('docs/OPS/R24/EVIDENCE/ES-R24-WP-708-GOOGLE-PROVIDER-INTEGRATION.json');
@@ -141,5 +138,18 @@ test('WP708 carriers reject evidence inheritance, authority overclaim, graph ove
     const value = structuredClone(load());
     mutate(value);
     assert.throws(() => verify(value), undefined, `carrier mutation ${index + 1} must be rejected`);
+  }
+});
+
+test('WP708 carriers reject mutable current-tree fallback for dependent compatibility artifacts', () => {
+  const dependentCarriers = new Map([
+    ['test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs', '4a6ef568bdc33fe4798e60e90c4aadeaf21274e580826373311b69afa75b6450'],
+    ['test/contracts/r24-wp806-terminal-carriers.contract.test.mjs', '05abd8b3927a07c57180440fc79ac6e6cdfafbadcf6ee67e490afa357b902f12'],
+  ]);
+  for (const [dependentPath, expectedDigest] of dependentCarriers) {
+    const currentDigest = h(fs.readFileSync(dependentPath));
+    const historicalDigest = h(carrierBytes(dependentPath));
+    assert.equal(historicalDigest, expectedDigest);
+    assert.notEqual(currentDigest, historicalDigest);
   }
 });

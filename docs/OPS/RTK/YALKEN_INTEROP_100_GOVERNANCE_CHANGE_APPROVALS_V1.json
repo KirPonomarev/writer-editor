@@ -47,26 +47,8 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "9ef9d9b2c44d349406809393127c249c4c30cd5cfbf93a782dc642ee54952458",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
-      "approvedAtUtc": "2026-09-10T01:55:26Z",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
-      "rationale": "Approve mechanical C1B test-inventory digest rebinding for the exact DOCX import-preview bookmark/metadata explicit-loss regression tests while preserving prior PR1857 U+000C inventory coverage; no product runtime mutation, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "9f30a568069c8eafbbf92f89c19b79bed231a0c1f62f28bc9443e7f98da5cfcf",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "approved": true
-    },
-    {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "2b87b9bfc1f220f1d53e4126054d745711e335181ac148a5a22b30612536f177",
+      "sha256": "b311fc3092c8ded5ea0b4af68a15fd35ae41d71715be498e29dcc7affcd52af1",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
@@ -75,16 +57,7 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "eb9dd6d89accdb89547b04444b4749f91a879d76320b26d05097272374da3e73",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
-      "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "1794b0df86a5843bf74c8be313848fd2465e47c4aca1f388e90b2ad9d90b7678",
+      "sha256": "a2e5182b18a5099c28633784fbe85f512db9acc664bf4d76bf840e077fe19cbc",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
@@ -110,21 +83,57 @@
       "approved": true
     },
     {
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "d241f0a2f73b3c814ce491185b7c9f4abe3f48caa138c7ed4760b7c835370639",
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "756a341f4d344a4b0232c935b6ca0657de42b310e248084ea7d0e5b277f2fe91",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "approvedAtUtc": "2026-09-10T01:55:26Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
-      "rationale": "Approve exact bounded DOCX content-preview regression bytes for explicit bookmark/custom metadata loss diagnostics after owner NONSTOP SUPERVISOR RESUME; no product runtime mutation, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, and post-audit certification binding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c3a19fec7b96a17829d8886fa85bd4e585f10663fe1b357be86320e3dc3ba4f6",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "db7bb2fb161367c1934b90e05ef486c708227310def89fb194faebfdb5f7a362",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "7f700f5e181a18db6174b25a5c186406c01c11eaece971eb9534f34e9ad26ad7",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "d241f0a2f73b3c814ce491185b7c9f4abe3f48caa138c7ed4760b7c835370639",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
       "approved": true
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
       "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
-      "approvedAtUtc": "2026-09-10T01:55:26Z",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
-      "rationale": "Approve exact bounded DOCX import-preview loss-report regression bytes for explicit bookmark/custom metadata loss items after owner NONSTOP SUPERVISOR RESUME; no product runtime mutation, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
       "approved": true
     }
   ]
