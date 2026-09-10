@@ -1178,7 +1178,7 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
   const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
 });
-function reviewPreviewCommentTopologyGitFixture({changedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40)}={}){
+function reviewPreviewCommentTopologyGitFixture({changedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40)}={}){
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION;
   const bytesByPath=new Map([
     [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
@@ -1189,6 +1189,8 @@ function reviewPreviewCommentTopologyGitFixture({changedPaths,sourceBytes,parser
     [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
     [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
     [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
@@ -1211,14 +1213,16 @@ test('R24 review preview comment topology exception accepts exact PR1869 delta',
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,8);
-  assert.equal(result.changedPathDenominator,8);
+  assert.equal(result.admittedPathDenominator,10);
+  assert.equal(result.changedPathDenominator,10);
   assert.equal(result.commentParentGraph,'PRESERVE_UNAMBIGUOUS_MODERN_PARENT_EDGES_OR_TYPED_UNSUPPORTED');
   assert.equal(result.reviewPreviewTopology,'EXPLICIT_FLAT_PREVIEW_LOSS_DIAGNOSTIC_ONLY');
   assert.equal(result.sourceDigest,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.sourceDigest);
   assert.equal(result.parserDigest,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.parserDigest);
   assert.equal(result.reviewPreviewTestDigest,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.reviewPreviewTestDigest);
   assert.equal(result.modernCommentsTestDigest,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.modernCommentsTestDigest);
+  assert.equal(result.claimLintDigest,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.claimLintDigest);
+  assert.equal(result.claimLintTestDigest,R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.claimLintTestDigest);
   assert.equal(result.supportedDenominatorPromotion,false);
   assert.equal(result.programDone,false);
 });
@@ -1229,6 +1233,11 @@ test('R24 review preview comment topology exception rejects an unadmitted future
 test('R24 review preview comment topology exception rejects missing explicit topology-loss token',()=>{
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replace('DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED','DOCX_REVIEW_PREVIEW_SESSION_COMMENT_TOPOLOGY_ADVISORY');
   const fixture=reviewPreviewCommentTopologyGitFixture({sourceBytes:Buffer.from(source)});
+  assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_DIGEST/);
+});
+test('R24 review preview comment topology exception rejects missing RCV00E claim-lint historical pin',()=>{
+  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,claimLint=fs.readFileSync(e.claimLintPath,'utf8').replace('HISTORICAL_INVENTORY_CLAIM_PINS_V34','HISTORICAL_INVENTORY_CLAIM_PINS_V33');
+  const fixture=reviewPreviewCommentTopologyGitFixture({claimLintBytes:Buffer.from(claimLint)});
   assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_DIGEST/);
 });
 test('R24 review preview comment topology exception rejects stale inventory digest',()=>{

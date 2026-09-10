@@ -649,16 +649,23 @@ export const R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION=Object.freeze({
   modernCommentsTestPath:'test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
+  claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
   sourceDigest:'bc89163864d2b9857dac277b3b3322818448bc8b333858870993e4410c0bbc75',
   parserDigest:'234da3798ddf602008e860359c6bd7dea49832f70b27f27bf9924b4f0c668b47',
   reviewPreviewTestDigest:'93f6cb05717d7d3b1b756c74429b44a3e1a15425f32a79d2e90452c1712a1538',
   modernCommentsTestDigest:'5174cb10902cd35da6e9240a4e48cc6db8422c99a1f237c65f1840f5e56fbe29',
+  claimLintDigest:'3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c',
+  claimLintTestDigest:'f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f',
   inventoryFileDenominator:1464,
   approvedBy:'owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_2026_09_10',
+  claimLintApprovedBy:'owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CLAIM_LINT_HISTORY_2026_09_10',
   admittedPaths:[
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
     'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/docs-claim-lint.mjs',
+    'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
     'src/io/revisionBridge/index.mjs',
     'src/io/revisionBridge/reviewTransportPackageParserV2.mjs',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
@@ -4462,21 +4469,23 @@ export function verifyR24ReviewPreviewCommentTopologyPostEvaluationException({ca
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),source=readText(e.sourcePath),parser=readText(e.parserPath),reviewPreviewTest=readText(e.reviewPreviewTestPath),modernCommentsTest=readText(e.modernCommentsTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
-  assert(source.digest===e.sourceDigest&&parser.digest===e.parserDigest&&reviewPreviewTest.digest===e.reviewPreviewTestDigest&&modernCommentsTest.digest===e.modernCommentsTestDigest,'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_DIGEST');
+  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),source=readText(e.sourcePath),parser=readText(e.parserPath),reviewPreviewTest=readText(e.reviewPreviewTestPath),modernCommentsTest=readText(e.modernCommentsTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath);
+  assert(source.digest===e.sourceDigest&&parser.digest===e.parserDigest&&reviewPreviewTest.digest===e.reviewPreviewTestDigest&&modernCommentsTest.digest===e.modernCommentsTestDigest&&claimLint.digest===e.claimLintDigest&&claimLintTest.digest===e.claimLintTestDigest,'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_DIGEST');
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_INVENTORY_SHAPE');
   for(const relative of [e.reviewPreviewTestPath,e.modernCommentsTestPath,e.postAuditTestPath]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===h(objectBytes(git,resolvedCandidate,relative))&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_INVENTORY_DIGEST',relative);}
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_APPROVALS_SHAPE');
   const approvalMap=new Map(approvals.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
   const governancePaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath&&(relative.startsWith('docs/OPS/')||relative.startsWith('scripts/ops/')||relative.startsWith('test/contracts/')));
-  for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approved===true&&approval.approvedBy===e.approvedBy,'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_APPROVAL_DIGEST',relative);}
+  for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`),approvedBy=relative===e.claimLintPath||relative===e.claimLintTestPath?e.claimLintApprovedBy:e.approvedBy;assert(approval?.approved===true&&approval.approvedBy===approvedBy,'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_APPROVAL_DIGEST',relative);}
   for(const token of ['DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED','nestedReplies','parentRawId'])assert(source.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_SOURCE_TOKEN',token);
   for(const token of ['last-comment-paragraph-w14-paraId','RTK_COMMENT_PARENT_SELF_REFERENCE','RTK_COMMENT_PARENT_CYCLE','cycleReasonedRawIds','parentVisitState'])assert(parser.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_PARSER_TOKEN',token);
   for(const token of ['nested comment reply topology is explicit loss','DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED'])assert(reviewPreviewTest.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_REVIEW_TEST_TOKEN',token);
   for(const token of ['modern comments infer reply graph from last paragraph w14 paraId only','malformed modern comment parent identities preserve comments with typed relation loss','long modern comment parent cycle is bounded and preserves every comment'])assert(modernCommentsTest.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_MODERN_TEST_TOKEN',token);
+  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V34','ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS'])assert(claimLint.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CLAIM_LINT_TOKEN',token);
+  for(const token of ['RCV00E lease-fencing CAS inventory binding is historical after successor refresh','HISTORICAL_INVENTORY_CLAIM_PINS_V34'])assert(claimLintTest.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CLAIM_LINT_TEST_TOKEN',token);
   for(const token of ['R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION','verifyR24ReviewPreviewCommentTopologyPostEvaluationException','E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_VERIFIER_TOKEN',token);
   for(const token of ['R24 review preview comment topology exception accepts exact PR1869 delta','R24 review preview comment topology exception rejects an unadmitted future path','R24 review preview comment topology exception rejects missing explicit topology-loss token'])assert(postAuditTest.text.includes(token),'E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,sourceDigest:source.digest,parserDigest:parser.digest,reviewPreviewTestDigest:reviewPreviewTest.digest,modernCommentsTestDigest:modernCommentsTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,commentParentGraph:'PRESERVE_UNAMBIGUOUS_MODERN_PARENT_EDGES_OR_TYPED_UNSUPPORTED',reviewPreviewTopology:'EXPLICIT_FLAT_PREVIEW_LOSS_DIAGNOSTIC_ONLY',supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  return{schemaVersion:'R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,sourceDigest:source.digest,parserDigest:parser.digest,reviewPreviewTestDigest:reviewPreviewTest.digest,modernCommentsTestDigest:modernCommentsTest.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,commentParentGraph:'PRESERVE_UNAMBIGUOUS_MODERN_PARENT_EDGES_OR_TYPED_UNSUPPORTED',reviewPreviewTopology:'EXPLICIT_FLAT_PREVIEW_LOSS_DIAGNOSTIC_ONLY',supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
