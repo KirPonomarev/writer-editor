@@ -48,7 +48,7 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "b311fc3092c8ded5ea0b4af68a15fd35ae41d71715be498e29dcc7affcd52af1",
+      "sha256": "3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
@@ -57,7 +57,7 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "a2e5182b18a5099c28633784fbe85f512db9acc664bf4d76bf840e077fe19cbc",
+      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
@@ -84,7 +84,7 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "756a341f4d344a4b0232c935b6ca0657de42b310e248084ea7d0e5b277f2fe91",
+      "sha256": "23c8ef1991954898a0321c04a943e780b69299ebd3ccca376d15ad336aae6212",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "approvedAtUtc": "2026-09-10T01:55:26Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
@@ -93,7 +93,7 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c3a19fec7b96a17829d8886fa85bd4e585f10663fe1b357be86320e3dc3ba4f6",
+      "sha256": "c7958bdc8d93937389b6988abaa80a7280e56ce09d388a41f26f9744d46b757d",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "approvedAtUtc": "2026-09-10T04:37:34.949Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
@@ -102,7 +102,7 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "db7bb2fb161367c1934b90e05ef486c708227310def89fb194faebfdb5f7a362",
+      "sha256": "3e17776b841f830cd765e2ccd09b8a4ad1f6b1763f413b59566677fc142af154",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "approvedAtUtc": "2026-09-10T04:37:34.949Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
@@ -111,7 +111,7 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "7f700f5e181a18db6174b25a5c186406c01c11eaece971eb9534f34e9ad26ad7",
+      "sha256": "e1b12a010da64b4f17b81648cd2f8cc7eb839f9e3d34e9af06a94f4b2d31ad78",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "approvedAtUtc": "2026-09-10T04:37:34.949Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
@@ -134,6 +134,24 @@
       "approvedAtUtc": "2026-09-10T04:37:34.949Z",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
       "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "ce4a48315f2a23023626ffa52d10270e7122d64ebca7b7b96e32bf2656e27081",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T17:28:59Z",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact bounded P03 relationship graph hostile DOCX regression coverage: admits missing internal relationship target, unsafe escaping target, unbound document relationship id, and equivalent reordered relationship positive coverage. No dependency, runtime network, UI, user-document access, broad C1-C8 portability PASS, Google native claim, release-readiness, or PROGRAM_DONE authority is added.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
+      "sha256": "c39b266a2c96becf1698a1f31c4f07ebee83abb4df21ab7329f024a69be4926a",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T17:28:59Z",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact bounded P03 relationship graph intake preflight/report regression coverage: binds the new relationship graph failure codes into zero-write preflight reporting and preserves existing import-preview behavior. No dependency, runtime network, UI, user-document access, broad C1-C8 portability PASS, Google native claim, release-readiness, or PROGRAM_DONE authority is added.",
       "approved": true
     }
   ]
