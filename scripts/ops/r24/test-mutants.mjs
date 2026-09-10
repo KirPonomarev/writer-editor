@@ -111,6 +111,30 @@ export const MUTANTS = Object.freeze([
     replace: "if (false) throw new R24Error('E_SCHEDULER_STATE_BINDING_STALE');",
   },
   {
+    id: 'effective-overlay-conflict-ignored',
+    file: 'effective-state-compiler.mjs',
+    find: "if (currentStates[targetNodeId] !== from) {",
+    replace: 'if (false) {',
+  },
+  {
+    id: 'effective-stale-sha-ignored',
+    file: 'effective-state-compiler.mjs',
+    find: "if (overlay.baseHeadSha !== exactIdentity.evaluationHeadSha) throw new R24Error('E_R24_EFFECTIVE_OVERLAY_STALE_SHA', overlay.overlayId);",
+    replace: "if (false) throw new R24Error('E_R24_EFFECTIVE_OVERLAY_STALE_SHA', overlay.overlayId);",
+  },
+  {
+    id: 'effective-self-promotion-ignored',
+    file: 'effective-state-compiler.mjs',
+    find: "if (overlay.selfPromotion === true || overlay.proofAuthority === 'SELF' || overlay.source === 'SELF_PROMOTION') {",
+    replace: 'if (false) {',
+  },
+  {
+    id: 'effective-completion-overclaimed',
+    file: 'effective-state-compiler.mjs',
+    find: 'programDone: requiredPendingNodeIds.length === 0,',
+    replace: 'programDone: true,',
+  },
+  {
     id: 'tr-skip-law-removed',
     file: 'terminal-receipt.mjs',
     find: "if (skipped > 0 && REQUIRED_WHEN_PASS.includes(stamp.test.evidenceClass)) throw new R24Error('E_SKIPPED_REQUIRED_EVIDENCE', `${skipped} skipped in ${stamp.test.evidenceClass}`);",

@@ -37,11 +37,17 @@ import {
   PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,
   PRE00F_PLAN_DELIVERY_EXPECTATION,
   R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,
+  R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,
+  R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION,
+  R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION,
+  R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,
+  R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
+  resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
   verifyAuditCycle2DurableCarrier,
   verifyAuditCycle2PostEvaluationException,
   verifyAuditCycle2TerminalArtifact,
@@ -70,6 +76,11 @@ import {
   verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException,
   verifyPre00fPlanDeliveryPostEvaluationException,
   verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException,
+  verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException,
+  verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException,
+  verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException,
+  verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException,
+  verifyR24DocxLinebreakSourceExportPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
   verifyR24Interop100U000cPagebreakReexportPostEvaluationException,
@@ -390,18 +401,23 @@ test('PRE00D fresh successor admission lease handoff rejects an unadmitted futur
   const e=PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_EXPECTATION,fixture=pre00dGitFixture([...e.admittedPaths,'package.json'].sort());
   assert.throws(()=>verifyPre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00D_EXACT_ADMITTED_DELTA/);
 });
-function pre00eGitFixture(changedPaths){
-  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,candidateSha='e'.repeat(40),candidateTree='f'.repeat(40);
+function pre00eGitFixture(changedPaths,{baseTree,bytesByPath=new Map(),candidateSha='e'.repeat(40),candidateTree='f'.repeat(40)}={}){
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,historicalSha=e.deliverySha;
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
-    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===e.deliverySha)value=e.deliverySha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.deliverySha}^{tree}`)value=e.deliveryTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
     else if(args[0]==='diff')value=`${changedPaths.join('\n')}\n`;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
-      return fs.readFileSync(repoPath);
+      const replacement=bytesByPath.get(repoPath);
+      if(replacement)return options.encoding==='utf8'?replacement.toString('utf8'):Buffer.from(replacement);
+      const bytes=objectFromCommit(historicalSha,repoPath);
+      return options.encoding==='utf8'?bytes.toString('utf8'):bytes;
     }else return execFileSync('git',args,options);
     return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
   }};
@@ -418,10 +434,54 @@ test('PRE00E recovery CI external confirmation accepts the bounded delta',()=>{
   assert.equal(result.aggregateLaneDenominator,2);
   assert.equal(result.interveningDeliveryDenominator,1);
   assert.equal(result.negativeProbeDenominator,9);
+  assert.equal(PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliverySha,'6e9be072a12ff3bd5cc1608da153caf13c5e94c2');
+  assert.equal(PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.deliveryTree,'e442f006f5c5b8229d51df9b8f1fff5c68803aab');
 });
 test('PRE00E recovery CI external confirmation rejects an unadmitted future path',()=>{
   const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture([...e.admittedPaths,'README.md'].sort());
   assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00E recovery CI external confirmation rejects a forged same-count bootstrap set',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION;
+  const forged=e.admittedPaths.filter((repoPath)=>repoPath!==e.taskPath).concat('package.json').sort();
+  const fixture=pre00eGitFixture(forged);
+  assert.equal(forged.length,e.admittedPaths.length);
+  assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EXACT_ADMITTED_DELTA/);
+});
+test('PRE00E recovery CI external confirmation rejects a stale base tree',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,fixture=pre00eGitFixture(e.admittedPaths,{baseTree:'0'.repeat(40)});
+  assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_BASE_TREE_DRIFT/);
+});
+test('PRE00E recovery CI external confirmation rejects mutated historical bytes',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION;
+  const taskBytes=objectFromCommit(e.deliverySha,e.taskPath);
+  const bytesByPath=new Map([[e.taskPath,Buffer.from(`${taskBytes.toString('utf8')}\nMUTATED_HISTORICAL_PRE00E_BYTES\n`)]]);
+  const fixture=pre00eGitFixture(e.admittedPaths,{bytesByPath});
+  assert.throws(()=>verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00E_EVIDENCE_ARTIFACT_DIGEST/);
+});
+test('PRE00E successor interop delta is routed to the pinned historical bootstrap candidate',()=>{
+  const e=PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION,futureCandidateSha='9'.repeat(40);
+  const ordinaryInteropSuccessorPaths=[
+    'src/core/docx-profile-v1.mjs',
+    'src/export/docx/docxMinBuilder.js',
+    'src/export/docx/docxReviewPacketBuilder.js',
+    'src/export/docx/docxTextXml.js',
+    'test/unit/r24-docx-text-xml-control-boundary.test.mjs',
+  ].sort();
+  const git=(args,options={})=>{
+    let value='';
+    if(args[0]==='merge-base'&&args[1]==='--is-ancestor'&&args[3]===futureCandidateSha){
+      if(args[2]===e.deliverySha)value='';
+      else throw new Error(`NOT_ANCESTOR:${args[2]}:${args[3]}`);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?`${value}\n`:Buffer.from(`${value}\n`);
+  };
+  assert.equal(ordinaryInteropSuccessorPaths.length,5);
+  const historicalCandidate=resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolvedCandidate:futureCandidateSha,git});
+  assert.equal(historicalCandidate,e.deliverySha);
+  const result=verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:historicalCandidate});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.changedPathDenominator,11);
 });
 function pre00fGitFixture({changedPaths,planBytes,inventoryBytes,testBytes,verifierBytes,claimLintBytes,evidenceBytes,approvalsBytes,baseTree}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40);
@@ -556,6 +616,308 @@ test('RCV00A exact-toolchain post-evaluation exception accepts the bounded deliv
 test('RCV00A exact-toolchain post-evaluation exception rejects an unadmitted delivery path',()=>{
   const e=R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION,fixture=rcv00aGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
   assert.throws(()=>verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00A_EXACT_ADMITTED_DELTA/);
+});
+function rcv00bGitFixture({changedPaths,evidenceBytes,artifactBytesByPath=new Map(),deliveryTree,candidateSha='8'.repeat(40),candidateTree='9'.repeat(40)}={}){
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION;
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[
+    repoPath,
+    artifactBytesByPath.get(repoPath)??(repoPath===e.evidencePath&&evidenceBytes?Buffer.from(evidenceBytes):objectFromCommit(e.deliverySha,repoPath)),
+  ]));
+  return{candidateSha,deliverySha:e.deliverySha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.deliverySha)value=e.deliverySha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===e.deliverySha+'^{tree}')value=deliveryTree??e.deliveryTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('RCV00B effective-state compiler exception accepts the exact compiler delta',()=>{
+  const fixture=rcv00bGitFixture(),result=verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.baseSha);
+  assert.equal(result.deliverySha,fixture.deliverySha);
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.admittedPaths.length);
+  assert.equal(result.inventoryDenominator,1460);
+  assert.equal(result.effectiveStateDigest,R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION.effectiveStateDigest);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
+});
+test('RCV00B effective-state compiler exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,fixture=rcv00bGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_EXACT_ADMITTED_DELTA/);
+});
+test('RCV00B effective-state compiler exception rejects stale inventory claim binding',()=>{
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,evidence=JSON.parse(fs.readFileSync(e.evidencePath,'utf8'));
+  evidence.claimBindings.find((binding)=>binding.filePath===e.inventoryPath).sha256='0'.repeat(64);
+  const fixture=rcv00bGitFixture({evidenceBytes:canonicalBytes(evidence)});
+  assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_EVIDENCE_INVENTORY_BINDING/);
+});
+test('RCV00B effective-state compiler exception rejects a mutated immutable delivery artifact',()=>{
+  const e=R24_RCV00B_EFFECTIVE_STATE_COMPILER_EXPECTATION,mutated=new Map([[e.postAuditVerifierPath,Buffer.from(`${objectFromCommit(e.deliverySha,e.postAuditVerifierPath).toString('utf8')}\n// mutated immutable delivery artifact\n`)]]);
+  const fixture=rcv00bGitFixture({artifactBytesByPath:mutated});
+  assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_EVIDENCE_ARTIFACT_DIGEST/);
+});
+test('RCV00B effective-state compiler exception rejects a wrong immutable delivery tree',()=>{
+  const fixture=rcv00bGitFixture({deliveryTree:'0'.repeat(40)});
+  assert.throws(()=>verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_DELIVERY_TREE_DRIFT/);
+});
+function rcv00bSuccessorGitFixture({changedPaths,registryBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='a'.repeat(40),candidateTree='b'.repeat(40),missingRegistry=false}={}){
+  const e=R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION;
+  const historicalCandidateSha=R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION.baseSha;
+  const currentBytes=(repoPath)=>artifactBytesByPath.get(repoPath)??objectFromCommit(historicalCandidateSha,repoPath);
+  const bytesByPath=new Map([
+    [e.registryPath,registryBytes??currentBytes(e.registryPath)],
+    [e.approvalsPath,currentBytes(e.approvalsPath)],
+    ['docs/ARCH_DIFF_LOG.md',currentBytes('docs/ARCH_DIFF_LOG.md')],
+    ['docs/HANDOFF.md',currentBytes('docs/HANDOFF.md')],
+    ['docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',currentBytes('docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json')],
+    ['scripts/ops/r24/corrective/post-audit-certification-set.mjs',currentBytes('scripts/ops/r24/corrective/post-audit-certification-set.mjs')],
+    ['scripts/ops/r24/docs-claim-lint.mjs',currentBytes('scripts/ops/r24/docs-claim-lint.mjs')],
+    ['scripts/ops/r24/tests/docs-claim-lint.test.mjs',currentBytes('scripts/ops/r24/tests/docs-claim-lint.test.mjs')],
+    ['src/io/revisionBridge/reviewTransportPackageParserV2.mjs',currentBytes('src/io/revisionBridge/reviewTransportPackageParserV2.mjs')],
+    ['test/contracts/r24-post-audit-certification-set.contract.test.mjs',currentBytes('test/contracts/r24-post-audit-certification-set.contract.test.mjs')],
+    ['test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',currentBytes('test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js')],
+    ['test/unit/security-privacy-writing-path-smoke.mjs',currentBytes('test/unit/security-privacy-writing-path-smoke.mjs')],
+  ]);
+  const registry=missingRegistry?null:JSON.parse((registryBytes??bytesByPath.get(e.registryPath)).toString('utf8'));
+  const admittedPaths=registry?registry.entries.flatMap((entry)=>entry.admittedPaths):[];
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??[...new Set(admittedPaths)].sort()).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      if(missingRegistry&&repoPath===e.registryPath)throw Object.assign(new Error('missing registry'),{code:'ENOENT'});
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('RCV00B successor admission registry accepts the PR1862 repair delta and PR1861 ReviewIR boundary delta',()=>{
+  const result=verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException(rcv00bSuccessorGitFixture());
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION.baseSha);
+  assert.equal(result.entryDenominator,2);
+  assert.equal(result.predecessorAdmittedPathDenominator,19);
+  assert.equal(result.admittedPathDenominator,12);
+  assert(result.admittedPaths.includes('docs/ARCH_DIFF_LOG.md'));
+  assert(result.admittedPaths.includes('scripts/ops/r24/corrective/post-audit-certification-set.mjs'));
+  assert(result.admittedPaths.includes('scripts/ops/r24/docs-claim-lint.mjs'));
+  assert(result.admittedPaths.includes('src/io/revisionBridge/reviewTransportPackageParserV2.mjs'));
+  assert(result.admittedPaths.includes('test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js'));
+  assert(result.admittedPaths.includes('test/unit/security-privacy-writing-path-smoke.mjs'));
+});
+test('RCV00B successor admission registry rejects missing successor evidence',()=>{
+  const fixture=rcv00bSuccessorGitFixture({missingRegistry:true});
+  assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_REGISTRY_MISSING/);
+});
+test('RCV00B successor admission registry rejects stale successor base tree',()=>{
+  const fixture=rcv00bSuccessorGitFixture({baseTree:'0'.repeat(40)});
+  assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_BASE_TREE_DRIFT/);
+});
+test('RCV00B successor admission registry rejects an unadmitted future path',()=>{
+  const fixture=rcv00bSuccessorGitFixture({changedPaths:['README.md']});
+  assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_UNADMITTED_PATH/);
+});
+test('RCV00B successor admission registry rejects a same-count forged successor path',()=>{
+  const e=R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION,registry=JSON.parse(fs.readFileSync(e.registryPath,'utf8'));
+  const changed=registry.entries[0].admittedPaths.map((repoPath)=>repoPath==='docs/HANDOFF.md'?'package.json':repoPath).sort();
+  const fixture=rcv00bSuccessorGitFixture({changedPaths:changed});
+  assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_UNADMITTED_PATH/);
+});
+test('RCV00B successor admission registry rejects PR1861 parser source without boundary-index evidence',()=>{
+  const parserPath='src/io/revisionBridge/reviewTransportPackageParserV2.mjs';
+  const source=fs.readFileSync(parserPath,'utf8').replaceAll('createRevisionReplacementGroupBoundaryIndex','createRevisionReplacementGroupIndex');
+  const fixture=rcv00bSuccessorGitFixture({artifactBytesByPath:new Map([[parserPath,Buffer.from(source)]])});
+  assert.throws(()=>verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00B_SUCCESSOR_TOKEN/);
+});
+function rcv00cGitFixture({changedPaths,registerBytes,evidenceBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='c'.repeat(40),candidateTree='d'.repeat(40),missingRegister=false}={}){
+  const e=R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION;
+  const currentBytes=(repoPath)=>{
+    if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
+    if(repoPath===e.registerPath&&registerBytes)return Buffer.from(registerBytes);
+    if(repoPath===e.evidencePath&&evidenceBytes)return Buffer.from(evidenceBytes);
+    return objectFromCommit(e.deliverySha,repoPath);
+  };
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,currentBytes(repoPath)]));
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      if(missingRegister&&repoPath===e.registerPath)throw Object.assign(new Error('missing register'),{code:'ENOENT'});
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('RCV00C corrective register exception accepts the exact register delta',()=>{
+  const fixture=rcv00cGitFixture(),result=verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION.admittedPaths.length);
+  assert.equal(result.inventoryDenominator,1461);
+  assert.equal(result.findingDenominator,45);
+  assert.equal(result.currentObservationDenominator,1);
+  assert.equal(result.activeConfirmed,3);
+  assert.equal(result.activeConfirmedCurrentObservations,1);
+  assert.equal(result.recordedGraphOpen,9);
+  assert.equal(result.graphIncrement,0);
+});
+test('RCV00C corrective register exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION,fixture=rcv00cGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00C_EXACT_ADMITTED_DELTA/);
+});
+test('RCV00C corrective register exception rejects a mutated graph-promotion register',()=>{
+  const e=R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION,register=JSON.parse(fs.readFileSync(e.registerPath,'utf8'));
+  register.graphBinding.createsGraphNode=true;
+  const fixture=rcv00cGitFixture({registerBytes:canonicalBytes(register)});
+  assert.throws(()=>verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00C_GRAPH_BINDING/);
+});
+test('RCV00C corrective register exception rejects stale register claim binding',()=>{
+  const e=R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION,evidence=JSON.parse(fs.readFileSync(e.evidencePath,'utf8'));
+  evidence.claimBindings.find((binding)=>binding.filePath===e.registerPath).sha256='0'.repeat(64);
+  const fixture=rcv00cGitFixture({evidenceBytes:canonicalBytes(evidence)});
+  assert.throws(()=>verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00C_EVIDENCE_REGISTER_BINDING/);
+});
+test('RCV00C corrective register exception rejects missing register artifact',()=>{
+  const fixture=rcv00cGitFixture({missingRegister:true});
+  assert.throws(()=>verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00C_ARTIFACT_MISSING/);
+});
+function rcv00dGitFixture({changedPaths,evidenceBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='4'.repeat(40),candidateTree='5'.repeat(40),missingEvidence=false}={}){
+  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION;
+  const currentBytes=(repoPath)=>{
+    if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
+    if(repoPath===e.evidencePath&&evidenceBytes)return Buffer.from(evidenceBytes);
+    return objectFromCommit(e.deliverySha,repoPath);
+  };
+  const bytesByPath=new Map(e.admittedPaths.concat([e.registerPath,e.planPath,e.planStatePath]).map((repoPath)=>[repoPath,currentBytes(repoPath)]));
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      if(missingEvidence&&repoPath===e.evidencePath)throw Object.assign(new Error('missing evidence'),{code:'ENOENT'});
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('RCV00D graph-derived selector exception accepts the exact selector delta',()=>{
+  const fixture=rcv00dGitFixture(),result=verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,11);
+  assert.ok(result.changedPaths.includes(R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.approvalCarrierPath));
+  assert.equal(result.inventoryDenominator,1462);
+  assert.equal(result.selectedId,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.selectedObservationId);
+  assert.equal(result.selectedContour,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.selectedContour);
+  assert.equal(result.graphSchedulerSelectedId,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.graphSchedulerCandidate);
+  assert.equal(result.narrativeNextStep,'R24-RCV-00A');
+  assert.equal(result.graphIncrement,0);
+});
+test('RCV00D successor routing keeps the RCV00C exact delta historical while admitting the selector delta',()=>{
+  const file=load(),result=verifyCertificationSet({value:file.value,fileDigest:file.fileDigest,candidateSha:'HEAD',allowAuditCycle2Admission:true});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException.candidateSha,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.baseSha);
+  assert.equal(result.r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException.changedPathDenominator,R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION.admittedPaths.length);
+  assert.equal(result.r24Rcv00dGraphDerivedSelectorPostEvaluationException.candidateSha,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.deliverySha);
+  assert.equal(result.r24DocxLinebreakSourceExportPostEvaluationException.candidateSha,R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION.deliverySha);
+  assert.equal(result.r24Rcv00dGraphDerivedSelectorPostEvaluationException.changedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
+});
+test('RCV00D graph-derived selector exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,fixture=rcv00dGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_EXACT_ADMITTED_DELTA/);
+});
+test('RCV00D graph-derived selector exception rejects a mutated selected observation',()=>{
+  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,receipt=JSON.parse(fs.readFileSync(e.selectorReceiptPath,'utf8'));
+  receipt.selected.id='PK1_RELEASE_SECURITY_PHYSICAL';
+  const fixture=rcv00dGitFixture({artifactBytesByPath:new Map([[e.selectorReceiptPath,canonicalBytes(receipt)]])});
+  assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_SELECTED_ITEM_BINDING|E_RCV00D_SELECTOR_RECEIPT/);
+});
+test('RCV00D graph-derived selector exception rejects a mutated selector artifact',()=>{
+  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,mutated=new Map([[e.selectorPath,Buffer.from(`${fs.readFileSync(e.selectorPath,'utf8')}\n// mutated immutable selector artifact\n`)]]);
+  const fixture=rcv00dGitFixture({artifactBytesByPath:mutated});
+  assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_EVIDENCE_ARTIFACT_DIGEST/);
+});
+test('RCV00D graph-derived selector exception rejects missing evidence artifact',()=>{
+  const fixture=rcv00dGitFixture({missingEvidence:true});
+  assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_ARTIFACT_MISSING/);
+});
+function docxLinebreakGitFixture({changedPaths,artifactBytesByPath=new Map(),baseTree,candidateSha='e'.repeat(40),candidateTree='f'.repeat(40)}={}){
+  const e=R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION;
+  const currentBytes=(repoPath)=>artifactBytesByPath.get(repoPath)??objectFromCommit(e.deliverySha,repoPath);
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,currentBytes(repoPath)]));
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===e.baseSha+'^{tree}')value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha+'^{tree}')value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 DOCX line-break source export exception accepts the exact branch delta',()=>{
+  const fixture=docxLinebreakGitFixture(),result=verifyR24DocxLinebreakSourceExportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION.admittedPaths.length);
+  assert.equal(result.inventoryDenominator,1461);
+  assert.equal(result.programDone,false);
+  assert.equal(result.productionReleaseReady,false);
+});
+test('R24 DOCX line-break source export exception rejects an unadmitted future path',()=>{
+  const e=R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION,fixture=docxLinebreakGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24DocxLinebreakSourceExportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_DOCX_LINEBREAK_EXACT_ADMITTED_DELTA/);
+});
+test('R24 DOCX line-break source export exception rejects a missing Word break serializer',()=>{
+  const e=R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replaceAll('buildDocxTextRunsXml','buildDocxTextXml').replaceAll('<w:br/>','');
+  const fixture=docxLinebreakGitFixture({artifactBytesByPath:new Map([[e.sourcePath,Buffer.from(source)]])});
+  assert.throws(()=>verifyR24DocxLinebreakSourceExportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_DOCX_LINEBREAK_SOURCE_TOKEN/);
 });
 test('R24 interop 100 Google DOCX import route exception accepts exact denominator delivery delta',()=>{
   const fixture=interop100GitFixture(),result=verifyR24Interop100GoogleDocxImportRoutePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});

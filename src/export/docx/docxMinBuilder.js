@@ -165,6 +165,11 @@ function resolveDocxParagraphStyleId(styleDescriptor, semanticKind) {
   return '';
 }
 
+function buildDocxTextRunsXml(text) {
+  const runContentXml = buildDocxRunContentXml(text, { allowFormFeedPageBreak: true });
+  return runContentXml ? `<w:r>${runContentXml}</w:r>` : '';
+}
+
 function assertDocxBuilderDependencies(dependencies) {
   const deps = isPlainObjectValue(dependencies) ? dependencies : {};
   if (
@@ -208,8 +213,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (!text) {
         return `<w:p>${styleXml}</w:p>`;
       }
-      const textXml = buildDocxRunContentXml(text, { allowFormFeedPageBreak: true });
-      return `<w:p>${styleXml}<w:r>${textXml}</w:r></w:p>`;
+      return `<w:p>${styleXml}${buildDocxTextRunsXml(text)}</w:p>`;
     }).join('')
     : '<w:p/>';
 
@@ -240,6 +244,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
 
 module.exports = {
   buildDocxMinBuffer,
+  buildDocxTextRunsXml,
   buildStoredZip,
   escapeXml,
   normalizeEditorSnapshotPayload,

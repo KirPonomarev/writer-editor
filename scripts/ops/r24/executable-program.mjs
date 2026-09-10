@@ -9,7 +9,8 @@ import { spawnSync } from 'node:child_process';
 import { readJsonBounded, sha256hex, canonicalDigest, R24Error, HEX40_RE, HEX64_RE } from './canonical-json.mjs';
 import { verifyApprovalReceipt } from './mission-contract.mjs';
 import { loadValidatedOwnerGateApprovals } from './owner-gate-decisions.mjs';
-import { selectNext } from './scheduler.mjs';
+import { selectNextFromEffectiveState } from './scheduler.mjs';
+import { compileEffectiveState } from './effective-state-compiler.mjs';
 
 const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(MODULE_DIR, '..', '..', '..');
@@ -279,6 +280,7 @@ export function buildSchedulerMission({
   missionApproval,
   planState,
   contourStates,
+  effectiveStateProjection = null,
   policyEpoch,
   policyDigest,
   graphDigest,
@@ -306,8 +308,8 @@ export function buildSchedulerMission({
     autonomyEnabled: false,
     stateRevision: planState.revision,
     fencingCounter: planState.fencingCounter,
-    stateDigest: canonicalDigest(planState),
-    contourStatesDigest: canonicalDigest(contourStates),
+    stateDigest: effectiveStateProjection?.schedulerProjection?.stateDigest || canonicalDigest(planState),
+    contourStatesDigest: effectiveStateProjection?.schedulerProjection?.contourStatesDigest || canonicalDigest(contourStates),
     policyEpoch,
     policyDigest,
     graphNodeCount: Object.keys(contourStates).length,
@@ -318,22 +320,44 @@ export function buildSchedulerMission({
   };
 }
 
-export function buildSelectionReceiptOnFullGraph({ now, planState, implementationSourceSha = null }) {
+export function buildEffectiveStateProjectionOnFullGraph({ now, planState, implementationSourceSha = null }) {
   const { program, digest } = loadExecutableProgram();
+  const evaluationHeadSha = git(['rev-parse', 'HEAD']);
+  const evaluationTreeSha = git(['rev-parse', 'HEAD^{tree}']);
+  const originMainSha = git(['rev-parse', 'origin/main']);
+  if (!HEX40_RE.test(evaluationHeadSha) || !HEX40_RE.test(evaluationTreeSha)) throw new R24Error('E_R24_EVALUATION_IDENTITY_SHAPE');
+  const sourceSha = implementationSourceSha || evaluationHeadSha;
+  if (!HEX40_RE.test(sourceSha)) throw new R24Error('E_R24_IMPLEMENTATION_SOURCE_SHAPE');
+  const committedPlanState = JSON.parse(git(['show', evaluationHeadSha + ':docs/OPS/R24/PLAN_STATE_R24.json']));
+  if (canonicalDigest(committedPlanState) !== canonicalDigest(planState)) throw new R24Error('E_R24_SELECTION_STATE_NOT_AT_EVALUATION_HEAD');
+  const effectiveStateProjection = compileEffectiveState({
+    program,
+    planState,
+    generatedAt: now,
+    exactIdentity: {
+      implementationSourceSha: sourceSha,
+      evaluationHeadSha,
+      evaluationTreeSha,
+      originMainSha,
+    },
+  });
+  effectiveStateProjection.sourceDigests.programFileDigest = digest;
+  return { program, digest, effectiveStateProjection, evaluationHeadSha, evaluationTreeSha, sourceSha };
+}
+
+export function buildSelectionReceiptOnFullGraph({ now, planState, implementationSourceSha = null }) {
+  const { program, digest, effectiveStateProjection, evaluationHeadSha, evaluationTreeSha, sourceSha } = buildEffectiveStateProjectionOnFullGraph({
+    now,
+    planState,
+    implementationSourceSha,
+  });
   const missionContract = readR24Json('MISSION_CONTRACT_R2_4.json');
   const missionApproval = assertMissionApproval();
   const ownerGateApprovals = loadValidatedOwnerGateApprovals({ program, missionContract });
   const policy = readR24Json('AUTONOMY_CONTROL_PLANE_R2_4.json');
   const policyEpoch = policy?.policyEpoch?.epoch;
   if (!Number.isInteger(policyEpoch) || policyEpoch < 0) throw new R24Error('E_R24_POLICY_EPOCH_SHAPE');
-  const evaluationHeadSha = git(['rev-parse', 'HEAD']);
-  const evaluationTreeSha = git(['rev-parse', 'HEAD^{tree}']);
-  if (!HEX40_RE.test(evaluationHeadSha) || !HEX40_RE.test(evaluationTreeSha)) throw new R24Error('E_R24_EVALUATION_IDENTITY_SHAPE');
-  const sourceSha = implementationSourceSha || evaluationHeadSha;
-  if (!HEX40_RE.test(sourceSha)) throw new R24Error('E_R24_IMPLEMENTATION_SOURCE_SHAPE');
-  const committedPlanState = JSON.parse(git(['show', evaluationHeadSha + ':docs/OPS/R24/PLAN_STATE_R24.json']));
-  if (canonicalDigest(committedPlanState) !== canonicalDigest(planState)) throw new R24Error('E_R24_SELECTION_STATE_NOT_AT_EVALUATION_HEAD');
-  const contourStates = buildFullGraphContourStates({ program, planState });
+  const contourStates = effectiveStateProjection.schedulerProjection.contourStates;
   const identityRoles = {
     implementationSourceSha: sourceSha,
     evaluationHeadSha,
@@ -342,14 +366,15 @@ export function buildSelectionReceiptOnFullGraph({ now, planState, implementatio
     mergeSha: null,
     postmergeSha: null,
   };
-  const receipt = selectNext({
+  const receipt = selectNextFromEffectiveState({
     program: buildCurrentG0Program(program),
-    contourStates,
+    effectiveStateProjection,
     mission: buildSchedulerMission({
       missionContract,
       missionApproval,
       planState,
       contourStates,
+      effectiveStateProjection,
       policyEpoch,
       policyDigest: sha256File(path.join(R24_DIR, 'AUTONOMY_CONTROL_PLANE_R2_4.json')),
       graphDigest: digest,
@@ -379,6 +404,7 @@ export function validateCommittedR24Sot({ now = new Date().toISOString() } = {})
   if (divergence.executableHasG0Node) throw new R24Error('E_R24_G0_NODE_FORBIDDEN');
   const planStatePath = path.join(R24_DIR, 'PLAN_STATE_R24.json');
   const planState = readJsonBounded(planStatePath);
+  const { effectiveStateProjection } = buildEffectiveStateProjectionOnFullGraph({ now, planState });
   const selectionReceipt = buildSelectionReceiptOnFullGraph({ now, planState });
   const headSha = git(['rev-parse', 'HEAD']);
   const originMainSha = git(['rev-parse', 'origin/main']);
@@ -404,6 +430,11 @@ export function validateCommittedR24Sot({ now = new Date().toISOString() } = {})
     selectionFencingCounter: selectionReceipt.fencingCounter,
     selectionPolicyEpoch: selectionReceipt.policyEpoch,
     selectionStateDigest: selectionReceipt.stateDigest,
+    effectiveStateDigest: effectiveStateProjection.effectiveState.digest,
+    effectiveStateCounts: effectiveStateProjection.effectiveState.counts,
+    effectiveSchedulerStateDigest: effectiveStateProjection.schedulerProjection.stateDigest,
+    effectiveCompletionProgramDone: effectiveStateProjection.completion.programDone,
+    effectiveCompletionRequiredPendingCount: effectiveStateProjection.completion.requiredPendingCount,
     selectionGraphDigest: selectionReceipt.graphDigest,
     selectionEvaluationHeadSha: selectionReceipt.identityRoles.evaluationHeadSha,
     selectionEvaluationTreeSha: selectionReceipt.identityRoles.evaluationTreeSha,

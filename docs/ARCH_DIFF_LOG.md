@@ -85,3 +85,12 @@
 - Риск: значение сохранённого scale больше не является буквальным CSS multiplier; регрессия возможна, если будущий код обойдёт orientation-aware projection или начнёт масштабировать popup и transform layers.
 - Rollback: откатить optical-projection contour; сохранённые scale и widthScale state keys останутся совместимыми.
 - План удаления исключения: запись фиксирует закрытие visual sharpness gate как постоянный контракт — state range остаётся 0.5x–2.0x, body metrics проецируются в 0.8x–1.15x горизонтально и 0.75x–1.35x вертикально, optical rhythm растёт по square-root projection, popup и transform layers остаются native-scale.
+
+## 2026-09-09 — R24-RCV-00B Post-audit Preflight Order Deviation
+
+- Контекст: в R24-RCV-00B initial declaration и preflight прошли до первого edit для effective-state compiler scope. После push PR CI показал фактический failure в post-audit verifier admission, поэтому контур был расширен до verifier-support files и исправлен в том же delivery chain. Расширенная declaration была записана для evidence, но clean preflight для расширенного scope уже нельзя было выполнить на dirty worktree.
+- Что нарушаем: правило `TASK_ARCHITECTURE_DECLARATION_V1` и `agent:preflight` до первого edit для всего фактического write scope.
+- Причина: failure обнаружился только после remote CI на уже изменённой ветке; остановка без repair оставляла бы merged-head admission red, а задним числом заявлять pre-edit preflight для расширения нельзя.
+- Риск: если этот порядок считать нормой, future contours могут расширять scope после mutation и создавать false authority для admission, verifier или carrier edits.
+- Rollback: откатить только эту запись, если owner отдельно решит не фиксировать процесс-дефект; R24-RCV-00B commits, PR merge, admission logic и evidence carriers не изменяются этой записью.
+- План удаления исключения: исключение не переносится в future contours; после merge этой записи оно закрывает только исторический процесс-дефект R24-RCV-00B. Любое дальнейшее scope expansion требует fresh declaration и preflight на clean worktree перед первым edit расширенного scope.
