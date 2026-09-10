@@ -11846,6 +11846,138 @@
       "evidenceStampIds": [
         "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b2d8e01bac0725b2499c38708a695ade7e28f15eee28e00f3bd87421894aec43",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:40:00Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after adding the post-audit verifier repair regression for immutable delivery-candidate selection; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3d0cbd13edfa20b076d321afd20d5fbb4485e80232a2a583a76954fbf64fe0f6",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:40:00Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier repair bytes that bind the delivery reconciliation contour as an immutable 11-path post-evaluation exception and select historical delivery candidates when later successor heads add unrelated paths; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "bc807cf3d49138bfa72292691e21c2bd287d3f881408cb5c9e8ea6f80c3bfc13",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:40:00Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression tests for exact 11-path admission, successor-head delivery-candidate selection, unadmitted future-path rejection, and fake typed verification rejection; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f4236edb3c401f8b3327cd40887ba10932d49118a637be13717509b452965de0",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:45:28Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after binding the review-preview predecessor fixture to immutable PR1869 object bytes and retaining the delivery-reconciliation verifier repair regressions; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "53819e2d4b1265348008c7bd0d1d637e337fd27d8fe59da10e693f8ff8c8a830",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:45:28Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes that preserve immutable PR1869 review-preview fixture evidence while proving exact 11-path delivery reconciliation admission, successor-head candidate selection, unadmitted future-path rejection, and fake typed verification rejection; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "445587f9521a813e74e3a7edfbd0b6b402270adeb4bd8f73c549170d62fdcab1",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:46:41Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after correcting the review-preview predecessor fixture to bind PR1869 merge object bytes while preserving delivery-reconciliation verifier repair coverage; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "88d01f7d0bb81c4083135bb81023a47cf433b979acbadc2951ed9a2b2f845248",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:46:41Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes with PR1869 immutable review-preview fixture binding, exact 11-path delivery reconciliation admission, successor-head candidate selection, unadmitted future-path rejection, and fake typed verification rejection; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "5b71e9034b15c522281864ab9e5ace92a5b5ecd72aedd64dcd1a0e4152c5c0fc",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:47:56Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes after correcting the review-preview immutable fixture delivery pointer to PR1869 current-base object bytes; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "4269ae385259a7b4648d08d93220b827d5a1dd6fd053c17a10c1b83b2ec4e263",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:48:47Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after the final review-preview predecessor fixture correction and post-audit contract digest binding; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "31f81ae6a1d0204eb184146809ee6290d816fb7a7f605cd3acd17fe71af9271c",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:49:56Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes after preserving the PR1867 import-preview fixture delivery pointer and binding only the review-preview predecessor fixture to PR1869 object bytes; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9d55bc984590245a1395a84547887be35d88e17448ef48fa2e002f7609d45d28",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:49:56Z",
+      "rationale": "Approve exact stable R24 RCV00F refreshed test inventory bytes after serializing the inventory refresh and digest read for the final post-audit contract binding; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [

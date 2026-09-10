@@ -49,6 +49,7 @@ import {
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
   R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
+  R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -92,6 +93,7 @@ import {
   verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
   verifyR24ReviewPreviewCommentTopologyPostEvaluationException,
   verifyR24Rcv00eLeaseFencingCasPostEvaluationException,
+  verifyR24Rcv00fDeliveryReconciliationPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1178,27 +1180,37 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
   const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
 });
-function reviewPreviewCommentTopologyGitFixture({changedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40)}={}){
+function reviewPreviewCommentTopologyGitFixture({changedPaths,successorChangedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40),successorSha,successorTree='d'.repeat(40)}={}){
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION;
+  const deliverySha=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha;
+  const requestedSha=successorSha??candidateSha;
   const bytesByPath=new Map([
-    [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
-    [e.parserPath,parserBytes??fs.readFileSync(e.parserPath)],
-    [e.reviewPreviewTestPath,reviewPreviewTestBytes??fs.readFileSync(e.reviewPreviewTestPath)],
-    [e.modernCommentsTestPath,modernCommentsTestBytes??fs.readFileSync(e.modernCommentsTestPath)],
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
-    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
+    [e.sourcePath,sourceBytes??objectFromCommit(deliverySha,e.sourcePath)],
+    [e.parserPath,parserBytes??objectFromCommit(deliverySha,e.parserPath)],
+    [e.reviewPreviewTestPath,reviewPreviewTestBytes??objectFromCommit(deliverySha,e.reviewPreviewTestPath)],
+    [e.modernCommentsTestPath,modernCommentsTestBytes??objectFromCommit(deliverySha,e.modernCommentsTestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliverySha,e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(deliverySha,e.approvalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliverySha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliverySha,e.postAuditTestPath)],
+    [e.claimLintPath,claimLintBytes??objectFromCommit(deliverySha,e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??objectFromCommit(deliverySha,e.claimLintTestPath)],
   ]);
-  return{candidateSha,git:(args,options={})=>{
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
-    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
     else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${requestedSha}^{tree}`)value=successorSha?successorTree:candidateTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
-    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1));
+      const endSha=range.slice(range.indexOf('..')+2);
+      const paths=endSha===requestedSha&&successorSha?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorSha?[candidateSha,successorSha].join('\n'):candidateSha;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
       const bytes=bytesByPath.get(repoPath);
@@ -1226,22 +1238,32 @@ test('R24 review preview comment topology exception accepts exact PR1869 delta',
   assert.equal(result.supportedDenominatorPromotion,false);
   assert.equal(result.programDone,false);
 });
+test('R24 review preview comment topology exception accepts successor heads by selecting the immutable exact PR1869 candidate',()=>{
+  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,successorSha='e'.repeat(40);
+  const fixture=reviewPreviewCommentTopologyGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'package-lock.json','scripts/ops/r24/plan-state.mjs'].sort()});
+  const result=verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+  assert.equal(result.admittedPathDenominator,10);
+  assert.equal(result.changedPathDenominator,10);
+});
 test('R24 review preview comment topology exception rejects an unadmitted future path',()=>{
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,fixture=reviewPreviewCommentTopologyGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
-  assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXACT_ADMITTED_DELTA/);
+  assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_DELIVERY_CANDIDATE_NOT_FOUND|E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXACT_ADMITTED_DELTA/);
 });
 test('R24 review preview comment topology exception rejects missing explicit topology-loss token',()=>{
-  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replace('DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED','DOCX_REVIEW_PREVIEW_SESSION_COMMENT_TOPOLOGY_ADVISORY');
+  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,source=objectFromCommit(R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,e.sourcePath).toString('utf8').replace('DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED','DOCX_REVIEW_PREVIEW_SESSION_COMMENT_TOPOLOGY_ADVISORY');
   const fixture=reviewPreviewCommentTopologyGitFixture({sourceBytes:Buffer.from(source)});
   assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_DIGEST/);
 });
 test('R24 review preview comment topology exception rejects missing RCV00E claim-lint historical pin',()=>{
-  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,claimLint=fs.readFileSync(e.claimLintPath,'utf8').replace('HISTORICAL_INVENTORY_CLAIM_PINS_V34','HISTORICAL_INVENTORY_CLAIM_PINS_V33');
+  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,claimLint=objectFromCommit(R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,e.claimLintPath).toString('utf8').replace('HISTORICAL_INVENTORY_CLAIM_PINS_V34','HISTORICAL_INVENTORY_CLAIM_PINS_V33');
   const fixture=reviewPreviewCommentTopologyGitFixture({claimLintBytes:Buffer.from(claimLint)});
   assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_ARTIFACT_DIGEST/);
 });
 test('R24 review preview comment topology exception rejects stale inventory digest',()=>{
-  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,inventory=JSON.parse(objectFromCommit(R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.reviewPreviewTestPath).sha256='0'.repeat(64);
   const fixture=reviewPreviewCommentTopologyGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_INVENTORY_DIGEST/);
@@ -1326,6 +1348,74 @@ test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=
   inventory.entries.find((entry)=>entry.path===e.contractTestPath).sha256='0'.repeat(64);
   const fixture=rcv00eLeaseFencingCasGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_INVENTORY_DIGEST/);
+});
+function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,approvalsBytes,packageLockBytes,planStateBytes,planStateTestBytes,postAuditVerifierBytes,postAuditTestBytes,rtkG0bBytes,rtkW1Bytes,rtkW2Bytes,rtkZip01Bytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorTree='3'.repeat(40)}={}){
+  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,requestedSha=successorSha??candidateSha;
+  const bytesByPath=new Map([
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+    [e.packageLockPath,packageLockBytes??fs.readFileSync(e.packageLockPath)],
+    [e.planStatePath,planStateBytes??fs.readFileSync(e.planStatePath)],
+    [e.planStateTestPath,planStateTestBytes??fs.readFileSync(e.planStateTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.rtkG0bPath,rtkG0bBytes??fs.readFileSync(e.rtkG0bPath)],
+    [e.rtkW1Path,rtkW1Bytes??fs.readFileSync(e.rtkW1Path)],
+    [e.rtkW2Path,rtkW2Bytes??fs.readFileSync(e.rtkW2Path)],
+    [e.rtkZip01Path,rtkZip01Bytes??fs.readFileSync(e.rtkZip01Path)],
+  ]);
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${requestedSha}^{tree}`)value=successorSha?successorTree:candidateTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1)),endSha=range.slice(range.indexOf('..')+2);
+      const paths=endSha===requestedSha&&successorSha?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorSha?[candidateSha,successorSha].join('\n'):candidateSha;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 RCV00F delivery reconciliation exception accepts the exact current delta',()=>{
+  const fixture=rcv00fDeliveryReconciliationGitFixture(),result=verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,11);
+  assert.equal(result.changedPathDenominator,11);
+  assert.equal(result.typedDeliveryReconciliation,'UNCERTAIN_DELIVERY_WAIT_RESUME_REVOKE_DURABLE_EVIDENCE');
+  assert.equal(result.fakeVerificationRejected,true);
+  assert.equal(result.lockfileAuditRemediation,'js-yaml@4.3.2');
+  assert.equal(result.programDone,false);
+});
+test('R24 RCV00F delivery reconciliation exception accepts successor heads by selecting the immutable exact candidate',()=>{
+  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,successorSha='4'.repeat(40);
+  const fixture=rcv00fDeliveryReconciliationGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'README.md'].sort()});
+  const result=verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+  assert.equal(result.changedPathDenominator,11);
+});
+test('R24 RCV00F delivery reconciliation exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,fixture=rcv00fDeliveryReconciliationGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
+  assert.throws(()=>verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00F_DELIVERY_CANDIDATE_NOT_FOUND|E_R24_RCV00F_EXACT_ADMITTED_DELTA/);
+});
+test('R24 RCV00F delivery reconciliation exception rejects fake typed verification proof',()=>{
+  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,planStateText=fs.readFileSync(e.planStatePath,'utf8').replace('E_TYPED_DELIVERY_FAKE_VERIFICATION','E_TYPED_DELIVERY_ADVISORY_VERIFICATION');
+  const fixture=rcv00fDeliveryReconciliationGitFixture({planStateBytes:Buffer.from(planStateText)});
+  assert.throws(()=>verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00F_PLAN_STATE_TOKEN/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});
