@@ -5,7 +5,9 @@
 // new lease; takeover requires read-only reconciliation evidence first.
 import fs from 'node:fs';
 import { casUpdate, readPlanState, initPlanState } from './plan-state.mjs';
-import { R24Error } from './canonical-json.mjs';
+import { canonicalDigest, HEX40_RE, R24Error } from './canonical-json.mjs';
+
+export const PLAN_STATE_VERIFIED_DELIVERY_RECEIPT_VERSION = 'PlanStateVerifiedDeliveryReceiptV1';
 
 const requireString = (value, code) => {
   if (typeof value !== 'string' || value.length === 0) throw new R24Error(code);
@@ -17,6 +19,78 @@ const requireIsoNow = (now) => {
   if (!Number.isFinite(ms)) throw new R24Error('E_CLOCK_INVALID', String(now));
   return ms;
 };
+
+const isPlainObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
+
+function latestTransitionForContour(state, contourId) {
+  for (let index = state.transitionHistory.length - 1; index >= 0; index -= 1) {
+    const record = state.transitionHistory[index];
+    if (record.contourId === contourId) return record;
+  }
+  return null;
+}
+
+function assertVerifiedDeliveryForLeaseRelease(state, {
+  contourId,
+  writerId,
+  fencingToken,
+  now,
+  verifiedDelivery,
+}) {
+  if (!isPlainObject(verifiedDelivery)) throw new R24Error('E_DELIVERY_VERIFICATION_REQUIRED', contourId);
+  if (verifiedDelivery.schemaVersion !== PLAN_STATE_VERIFIED_DELIVERY_RECEIPT_VERSION || verifiedDelivery.status !== 'VERIFIED') {
+    throw new R24Error('E_DELIVERY_VERIFICATION_REQUIRED', contourId);
+  }
+  if (verifiedDelivery.contourId !== contourId) throw new R24Error('E_DELIVERY_VERIFICATION_CONTOUR_MISMATCH', contourId);
+  if (verifiedDelivery.writerId !== writerId) throw new R24Error('E_DELIVERY_VERIFICATION_WRITER_MISMATCH', contourId);
+  if (verifiedDelivery.fencingToken !== fencingToken) throw new R24Error('E_DELIVERY_VERIFICATION_FENCE_MISMATCH', contourId);
+  if (verifiedDelivery.verifiedState !== 'DONE') throw new R24Error('E_DELIVERY_NOT_VERIFIED', contourId);
+  if (!HEX40_RE.test(String(verifiedDelivery.headSha))) throw new R24Error('E_DELIVERY_VERIFICATION_HEAD', contourId);
+  if (!Number.isFinite(Date.parse(verifiedDelivery.verifiedAt)) || Date.parse(verifiedDelivery.verifiedAt) > requireIsoNow(now)) {
+    throw new R24Error('E_DELIVERY_VERIFICATION_CLOCK', contourId);
+  }
+  const row = state.contours[contourId] || null;
+  const transition = latestTransitionForContour(state, contourId);
+  if (!row || row.state !== 'DONE' || row.headSha !== verifiedDelivery.headSha || !transition || transition.to !== 'DONE') {
+    throw new R24Error('E_DELIVERY_NOT_VERIFIED', contourId);
+  }
+  if (
+    transition.writerId !== writerId
+    || transition.fencingToken !== fencingToken
+    || transition.headSha !== verifiedDelivery.headSha
+  ) {
+    throw new R24Error('E_DELIVERY_VERIFICATION_TRANSITION_MISMATCH', contourId);
+  }
+  if (canonicalDigest(transition) !== verifiedDelivery.transitionReceiptDigest) {
+    throw new R24Error('E_DELIVERY_VERIFICATION_DIGEST_MISMATCH', contourId);
+  }
+  return true;
+}
+
+export function buildLeaseReleaseVerification(state, { contourId, writerId, fencingToken, verifiedAt }) {
+  const row = state.contours[contourId] || null;
+  const transition = latestTransitionForContour(state, contourId);
+  if (!row || !transition) throw new R24Error('E_DELIVERY_NOT_VERIFIED', contourId);
+  const verifiedDelivery = {
+    schemaVersion: PLAN_STATE_VERIFIED_DELIVERY_RECEIPT_VERSION,
+    status: 'VERIFIED',
+    contourId,
+    writerId,
+    fencingToken,
+    verifiedState: row.state,
+    headSha: row.headSha,
+    transitionReceiptDigest: canonicalDigest(transition),
+    verifiedAt,
+  };
+  assertVerifiedDeliveryForLeaseRelease(state, {
+    contourId,
+    writerId,
+    fencingToken,
+    now: verifiedAt,
+    verifiedDelivery,
+  });
+  return verifiedDelivery;
+}
 
 export function reconcileLease(filePath, { contourId, now }) {
   requireString(contourId, 'E_CONTOUR_ID_REQUIRED');
@@ -96,6 +170,7 @@ export function heartbeatLease(filePath, { contourId, writerId, fencingToken, tt
   if (!Number.isInteger(ttlMs) || ttlMs <= 0) throw new R24Error('E_LEASE_TTL_INVALID');
   return casUpdate(filePath, {
     expectedRevision,
+    expectedFencingCounter: fencingToken,
     mutate: (draft) => {
       const lease = assertLeaseCurrent(draft, { contourId, writerId, fencingToken, now });
       lease.heartbeatAt = now;
@@ -105,12 +180,14 @@ export function heartbeatLease(filePath, { contourId, writerId, fencingToken, tt
   });
 }
 
-export function releaseLease(filePath, { contourId, writerId, fencingToken, now, expectedRevision }) {
+export function releaseLease(filePath, { contourId, writerId, fencingToken, now, expectedRevision, verifiedDelivery }) {
   requireString(contourId, 'E_CONTOUR_ID_REQUIRED');
   return casUpdate(filePath, {
     expectedRevision,
+    expectedFencingCounter: fencingToken,
     mutate: (draft) => {
       assertLeaseCurrent(draft, { contourId, writerId, fencingToken, now });
+      assertVerifiedDeliveryForLeaseRelease(draft, { contourId, writerId, fencingToken, now, verifiedDelivery });
       delete draft.leases[contourId];
       return { released: contourId };
     },
