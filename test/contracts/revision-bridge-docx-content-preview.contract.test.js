@@ -120,6 +120,16 @@ function paragraphXml(text) {
   return `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;
 }
 
+function customMetadataXml(mode = 'default') {
+  if (mode === 'prefixed') {
+    return '<cp:Properties xmlns:cp="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><cp:property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="YalkenInteropSentinel"><vt:lpwstr>YALKEN_CUSTOM_METADATA_SENTINEL_001</vt:lpwstr></cp:property></cp:Properties>';
+  }
+  if (mode === 'wrong-namespace') {
+    return '<Properties xmlns="urn:not-custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><property pid="2" name="YalkenInteropSentinel"><vt:lpwstr>YALKEN_CUSTOM_METADATA_SENTINEL_001</vt:lpwstr></property></Properties>';
+  }
+  return '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="YalkenInteropSentinel"><vt:lpwstr>YALKEN_CUSTOM_METADATA_SENTINEL_001</vt:lpwstr></property></Properties>';
+}
+
 function cleanDocxZip(body = '<w:p/>', extraEntries = []) {
   return zipFixture([
     {
@@ -361,6 +371,57 @@ test('DOCX content preview: safe external hyperlinks remain inert preview candid
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
   )), true);
+});
+
+test('DOCX content preview: bookmarks and custom metadata are explicit diagnostics without lexical false positives', async () => {
+  const bridge = await loadBridge();
+  const bookmark = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(
+    '<w:p><w:bookmarkStart w:id="7" w:name="YALKEN_NATIVE_BOOKMARK_001"/><w:r><w:t>Bookmark target</w:t></w:r><w:bookmarkEnd w:id="7"/></w:p>',
+  ));
+  const metadataDefault = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Metadata target'), [
+    { name: 'docProps/custom.xml', method: 0, body: customMetadataXml('default') },
+  ]));
+  const metadataPrefixed = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Metadata prefixed target'), [
+    { name: 'docProps/custom.xml', method: 0, body: customMetadataXml('prefixed') },
+  ]));
+  const falseLexical = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(
+    paragraphXml('Visible YALKEN_NATIVE_BOOKMARK_001 and YALKEN_CUSTOM_METADATA_SENTINEL_001 only'),
+  ));
+  const wrongNamespace = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Wrong namespace'), [
+    { name: 'docProps/custom.xml', method: 0, body: customMetadataXml('wrong-namespace') },
+  ]));
+
+  assertContentPreviewShell(bookmark);
+  assert.equal(bookmark.ok, true);
+  assert.deepEqual(bookmark.contentPreview.paragraphs.map((paragraph) => paragraph.text), ['Bookmark target']);
+  assert.equal(bookmark.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+    && item.tagName === 'w:bookmarkStart'
+  )), true);
+  assert.equal(bookmark.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+    && item.tagName === 'w:bookmarkEnd'
+  )), true);
+
+  for (const result of [metadataDefault, metadataPrefixed]) {
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.diagnostics.some((item) => (
+      item.code === 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC'
+      && item.sourcePart === 'docProps/custom.xml'
+    )), true);
+  }
+
+  assert.equal(falseLexical.ok, true);
+  assert.equal(falseLexical.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC'
+    || item.tagName === 'w:bookmarkStart'
+    || item.tagName === 'w:bookmarkEnd'
+  )), false);
+  assert.equal(wrongNamespace.ok, true);
+  assert.equal(wrongNamespace.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC'
+  )), false);
 });
 
 test('DOCX content preview: accepted containers still fail closed on malformed XML and budget overflow', async () => {

@@ -9,14 +9,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "433044bb25f9ef3fba4b0772c45f08fa1f3452c383c1d37233e96db7d4f15428",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
       "approvedAtUtc": "2026-09-08T01:50:00Z",
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -281,14 +273,6 @@
       "approved": true
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "75256c7b05d7e917797d3d11423ad88918004997c2881cb728d89498b328ee27",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "approved": true
-    },
-    {
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
@@ -326,14 +310,6 @@
       "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
       "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "f98ff4569e8791bc9601e50c53f24a467365cceed70709b65bd4e622e0f1dd34",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -457,14 +433,6 @@
       "approved": true
     },
     {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "fc40849d65372eebad78e40916378983403a96641ce762a3087ab8945bff3f7f",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
       "approvedAtUtc": "2026-09-09T01:06:37.093Z",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
@@ -571,14 +539,6 @@
     {
       "approvedAtUtc": "2026-09-09T05:41:16Z",
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "3df9e4f05cec250c44ccf5c7ecaa1710d767168264ccc90bb14e4a7bf3696a52",
-      "approved": true
-    },
-    {
-      "approvedAtUtc": "2026-09-09T05:41:16Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
       "sha256": "680997581c99eb93f8e42b8cb6b25b332e352ce294ecc5d7a9bbfe964ea4a26f",
@@ -638,6 +598,54 @@
       "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c3a19fec7b96a17829d8886fa85bd4e585f10663fe1b357be86320e3dc3ba4f6",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "297665f9c9cd8fe07258f06eb4e7efc90a77ab25b1da0036d7da1aec3e7492cf",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "db7bb2fb161367c1934b90e05ef486c708227310def89fb194faebfdb5f7a362",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "7f700f5e181a18db6174b25a5c186406c01c11eaece971eb9534f34e9ad26ad7",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "d241f0a2f73b3c814ce491185b7c9f4abe3f48caa138c7ed4760b7c835370639",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
+      "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
+      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
+      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
       "approved": true
     }
   ],

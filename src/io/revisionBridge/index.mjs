@@ -6058,6 +6058,20 @@ const DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS = new Set([
   'w:tbl',
 ]);
 
+const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
+  'w:bookmarkEnd',
+  'w:bookmarkStart',
+]);
+const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
+  ...DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS,
+  ...DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS,
+]);
+const DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC';
+const DOCX_CUSTOM_PROPERTIES_NAMESPACE = [
+  'h',
+  'ttp://schemas.openxmlformats.org/officeDocument/2006/custom-properties',
+].join('');
+
 function docxContentPreviewBudgetsCopy() {
   return { ...DOCX_CONTENT_PREVIEW_BOUNDS };
 }
@@ -6339,8 +6353,66 @@ function docxContentPreviewTagName(token) {
   return match ? match[1] : '';
 }
 
+function docxContentPreviewLocalName(name) {
+  const text = String(name || '');
+  return text.includes(':') ? text.slice(text.indexOf(':') + 1) : text;
+}
+
+function docxContentPreviewPrefixName(name) {
+  const text = String(name || '');
+  return text.includes(':') ? text.slice(0, text.indexOf(':')) : '';
+}
+
+function docxContentPreviewRootElement(xmlText) {
+  const pattern = /<\s*([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)\b([^>]*)>/gu;
+  let match;
+  while ((match = pattern.exec(String(xmlText || ''))) !== null) {
+    const name = match[1];
+    if (name.startsWith('?') || name.startsWith('!')) continue;
+    return { name, attributesText: match[2] || '' };
+  }
+  return null;
+}
+
+function docxContentPreviewXmlnsMap(attributesText) {
+  const namespaces = new Map();
+  const pattern = /\bxmlns(?::([A-Za-z_][\w.-]*))?\s*=\s*(["'])([\s\S]*?)\2/gu;
+  let match;
+  while ((match = pattern.exec(String(attributesText || ''))) !== null) {
+    namespaces.set(match[1] || '', docxContentPreviewDecodeText(match[3]));
+  }
+  return namespaces;
+}
+
+function docxContentPreviewHasCustomPropertiesRoot(xmlText) {
+  const root = docxContentPreviewRootElement(xmlText);
+  if (!root || docxContentPreviewLocalName(root.name) !== 'Properties') return false;
+  const namespaces = docxContentPreviewXmlnsMap(root.attributesText);
+  return namespaces.get(docxContentPreviewPrefixName(root.name)) === DOCX_CUSTOM_PROPERTIES_NAMESPACE;
+}
+
+function docxContentPreviewBuildCustomMetadataDiagnostics(bytes) {
+  const customXmlBytes = docxContentPreviewExtractAuxiliaryPartBytes(
+    bytes,
+    'docProps/custom.xml',
+    DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes,
+  );
+  if (!customXmlBytes) return [];
+  const customXmlText = Buffer.from(customXmlBytes).toString('utf8');
+  if (!docxContentPreviewHasCustomPropertiesRoot(customXmlText)) return [];
+  return [
+    docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC, {
+      severity: 'warning',
+      sourcePart: 'docProps/custom.xml',
+      actual: customXmlBytes.length,
+      limit: DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes,
+      message: 'DOCX custom document metadata is retained as preview diagnostic only',
+    }),
+  ];
+}
+
 function docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenTags, tagName) {
-  if (!DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS.has(tagName) || seenTags.has(tagName)) return;
+  if (!DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS.has(tagName) || seenTags.has(tagName)) return;
   seenTags.add(tagName);
   if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
   diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
@@ -6488,9 +6560,10 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       rootSeen = true;
       rootTagName = tagName;
     }
+    const diagnostic = DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS.has(tagName);
+    if (diagnostic) docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenUnsupportedTags, tagName);
     const unsupported = DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS.has(tagName);
     if (unsupported) {
-      docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenUnsupportedTags, tagName);
       if (closing) unsupportedDepth = Math.max(0, unsupportedDepth - 1);
       else if (!selfClosing) unsupportedDepth += 1;
       continue;
@@ -6747,6 +6820,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     parseCompleted: true,
     diagnostics: [
       ...parsed.diagnostics,
+      ...docxContentPreviewBuildCustomMetadataDiagnostics(bytes),
       ...preflight.diagnostics.map((diagnostic) => ({
         ...diagnostic,
         message: diagnostic.message || 'DOCX package part is ignored by plain text content preview',
@@ -7148,6 +7222,9 @@ function docxImportPreviewValidateParagraphs(contentPreview) {
 
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   const sourceCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
+  if (sourceCode === DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC) {
+    return { code: 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED', category: 'metadata' };
+  }
   if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
@@ -7173,6 +7250,9 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   }
   if (tagName === 'w:footnoteReference' || tagName === 'w:endnoteReference') {
     return { code: 'DOCX_IMPORT_PREVIEW_NOTES_NOT_IMPORTED', category: 'notes' };
+  }
+  if (tagName === 'w:bookmarkStart' || tagName === 'w:bookmarkEnd') {
+    return { code: 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED', category: 'bookmark' };
   }
   if (tagName === 'w:hyperlink') return { code: 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED', category: 'link' };
   return { code: 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED', category: 'structure' };
@@ -7201,7 +7281,11 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     ].includes(diagnostic.code);
-    if (diagnostic.code !== 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC' && !knownIgnoredPart) continue;
+    const knownContentDiagnostic = [
+      'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
+      DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC,
+    ].includes(diagnostic.code);
+    if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
     const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic);
     items.push(docxImportPreviewLossItem(mapped.code, {

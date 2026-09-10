@@ -45,6 +45,7 @@ import {
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
+  R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
@@ -85,6 +86,7 @@ import {
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
   verifyR24Interop100U000cPagebreakReexportPostEvaluationException,
+  verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException,
   verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
@@ -98,7 +100,7 @@ const load=()=>{const bytes=fs.readFileSync(FILE);return{value:JSON.parse(bytes)
 const clone=(value)=>structuredClone(value);
 const verify=(value,fileDigest=load().fileDigest)=>verifyCertificationSet({value,fileDigest,candidateSha:'HEAD',allowAuditCycle2Admission:true,allowMainProductWp401Admission:true});
 const raw=(file)=>{const bytes=fs.readFileSync(file);return{bytes,value:JSON.parse(bytes),digest:h(bytes)}};
-const objectFromCommit=(sha,repoPath)=>execFileSync('git',['show',`${sha}:${repoPath}`]);
+const objectFromCommit=(sha,repoPath)=>execFileSync('git',['show',`${sha}:${repoPath}`],{maxBuffer:64*1024*1024});
 const CRC_TABLE=new Uint32Array(256).map((_,i)=>{let v=i;for(let b=0;b<8;b+=1)v=(v&1)?(0xedb88320^(v>>>1)):(v>>>1);return v>>>0;});
 const crc32=(bytes)=>{let v=0xffffffff;for(const byte of bytes)v=CRC_TABLE[(v^byte)&0xff]^(v>>>8);return(v^0xffffffff)>>>0;};
 function zip(entries){const locals=[],centrals=[];let offset=0;for(const entry of entries){const name=Buffer.from(entry.name),bytes=Buffer.from(entry.bytes),crc=crc32(bytes);const local=Buffer.alloc(30);local.writeUInt32LE(0x04034b50,0);local.writeUInt16LE(20,4);local.writeUInt32LE(crc,14);local.writeUInt32LE(bytes.length,18);local.writeUInt32LE(bytes.length,22);local.writeUInt16LE(name.length,26);locals.push(local,name,bytes);const central=Buffer.alloc(46);central.writeUInt32LE(0x02014b50,0);central.writeUInt16LE((3<<8)|20,4);central.writeUInt16LE(20,6);central.writeUInt32LE(crc,16);central.writeUInt32LE(bytes.length,20);central.writeUInt32LE(bytes.length,24);central.writeUInt16LE(name.length,28);central.writeUInt32LE((0o100644<<16)>>>0,38);central.writeUInt32LE(offset,42);centrals.push(central,name);offset+=local.length+name.length+bytes.length;}const centralBytes=Buffer.concat(centrals),eocd=Buffer.alloc(22);eocd.writeUInt32LE(0x06054b50,0);eocd.writeUInt16LE(entries.length,8);eocd.writeUInt16LE(entries.length,10);eocd.writeUInt32LE(centralBytes.length,12);eocd.writeUInt32LE(offset,16);return Buffer.concat([...locals,centralBytes,eocd]);}
@@ -1028,20 +1030,21 @@ test('R24 interop 100 U+000C page-break re-export exception rejects an unadmitte
 });
 function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBytes,unitTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,wp708CompatibilityTestBytes,wp708TerminalCarrierTestBytes,wp806CompatibilityTestBytes,wp806TerminalCarrierTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40)}={}){
   const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION;
+  const deliverySha='3e3703511f0c87e49d7ff87315cae031a77737d6';
   const bytesByPath=new Map([
-    [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
-    [e.bundlePath,bundleBytes??fs.readFileSync(e.bundlePath)],
-    [e.unitTestPath,unitTestBytes??fs.readFileSync(e.unitTestPath)],
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.wp708CompatibilityTestPath,wp708CompatibilityTestBytes??fs.readFileSync(e.wp708CompatibilityTestPath)],
-    [e.wp708TerminalCarrierTestPath,wp708TerminalCarrierTestBytes??fs.readFileSync(e.wp708TerminalCarrierTestPath)],
-    [e.wp806CompatibilityTestPath,wp806CompatibilityTestBytes??fs.readFileSync(e.wp806CompatibilityTestPath)],
-    [e.wp806TerminalCarrierTestPath,wp806TerminalCarrierTestBytes??fs.readFileSync(e.wp806TerminalCarrierTestPath)],
-    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
-    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
+    [e.sourcePath,sourceBytes??objectFromCommit(deliverySha,e.sourcePath)],
+    [e.bundlePath,bundleBytes??objectFromCommit(deliverySha,e.bundlePath)],
+    [e.unitTestPath,unitTestBytes??objectFromCommit(deliverySha,e.unitTestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliverySha,e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(deliverySha,e.approvalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliverySha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliverySha,e.postAuditTestPath)],
+    [e.wp708CompatibilityTestPath,wp708CompatibilityTestBytes??objectFromCommit(deliverySha,e.wp708CompatibilityTestPath)],
+    [e.wp708TerminalCarrierTestPath,wp708TerminalCarrierTestBytes??objectFromCommit(deliverySha,e.wp708TerminalCarrierTestPath)],
+    [e.wp806CompatibilityTestPath,wp806CompatibilityTestBytes??objectFromCommit(deliverySha,e.wp806CompatibilityTestPath)],
+    [e.wp806TerminalCarrierTestPath,wp806TerminalCarrierTestBytes??objectFromCommit(deliverySha,e.wp806TerminalCarrierTestPath)],
+    [e.claimLintPath,claimLintBytes??objectFromCommit(deliverySha,e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??objectFromCommit(deliverySha,e.claimLintTestPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
@@ -1114,6 +1117,61 @@ test('R24 OBS export DOCX command bridge outer-failure exception rejects stale i
   inventory.entries.find((entry)=>entry.path===e.unitTestPath).sha256='0'.repeat(64);
   const fixture=obsExportDocxCommandBridgeGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_INVENTORY_DIGEST/);
+});
+function importPreviewBookmarkMetadataGitFixture({changedPaths,sourceBytes,contentPreviewTestBytes,importPreviewPlanTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='7'.repeat(40),candidateTree='8'.repeat(40)}={}){
+  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION;
+  const bytesByPath=new Map([
+    [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
+    [e.contentPreviewTestPath,contentPreviewTestBytes??fs.readFileSync(e.contentPreviewTestPath)],
+    [e.importPreviewPlanTestPath,importPreviewPlanTestBytes??fs.readFileSync(e.importPreviewPlanTestPath)],
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.governanceApprovalsPath,approvalsBytes??fs.readFileSync(e.governanceApprovalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 import preview bookmark/custom metadata explicit-loss exception accepts the exact PR1867 delta',()=>{
+  const fixture=importPreviewBookmarkMetadataGitFixture(),result=verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,8);
+  assert.equal(result.changedPathDenominator,8);
+  assert.equal(result.importPreviewBookmarkMetadataExplicitLoss,'LOSS_REPORT_ONLY_NO_SILENT_IMPORT');
+  assert.equal(result.sourceDigest,R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION.sourceDigest);
+  assert.equal(result.contentPreviewTestDigest,R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION.contentPreviewTestDigest);
+  assert.equal(result.importPreviewPlanTestDigest,R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION.importPreviewPlanTestDigest);
+  assert.equal(result.programDone,false);
+});
+test('R24 import preview bookmark/custom metadata explicit-loss exception rejects an unadmitted future path',()=>{
+  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,fixture=importPreviewBookmarkMetadataGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXACT_ADMITTED_DELTA/);
+});
+test('R24 import preview bookmark/custom metadata explicit-loss exception rejects missing loss-report token',()=>{
+  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,importPreviewTest=fs.readFileSync(e.importPreviewPlanTestPath,'utf8').replace('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_METADATA_ADVISORY');
+  const fixture=importPreviewBookmarkMetadataGitFixture({importPreviewPlanTestBytes:Buffer.from(importPreviewTest)});
+  assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_ARTIFACT_DIGEST/);
+});
+test('R24 import preview bookmark/custom metadata explicit-loss exception rejects stale inventory digest',()=>{
+  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.importPreviewPlanTestPath).sha256='0'.repeat(64);
+  const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

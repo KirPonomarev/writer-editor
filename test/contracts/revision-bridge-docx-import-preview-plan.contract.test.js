@@ -373,6 +373,59 @@ test('DOCX import preview plan: unsupported content preview diagnostics become e
   )), true);
 });
 
+test('DOCX import preview plan: bookmark identity and custom metadata diagnostics become explicit loss items', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport(['Feature target'], {
+    diagnostics: [
+      {
+        code: 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
+        severity: 'warning',
+        sourcePart: 'word/document.xml',
+        tagName: 'w:bookmarkStart',
+      },
+      {
+        code: 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
+        severity: 'warning',
+        sourcePart: 'word/document.xml',
+        tagName: 'w:bookmarkEnd',
+      },
+      {
+        code: 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC',
+        severity: 'warning',
+        sourcePart: 'docProps/custom.xml',
+      },
+    ],
+  }));
+  const falseLexical = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    'Visible YALKEN_NATIVE_BOOKMARK_001 and YALKEN_CUSTOM_METADATA_SENTINEL_001 only',
+  ]));
+
+  assertDocxImportPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
+    && item.category === 'bookmark'
+    && item.tagName === 'w:bookmarkStart'
+  )), true);
+  assert.equal(result.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
+    && item.category === 'bookmark'
+    && item.tagName === 'w:bookmarkEnd'
+  )), true);
+  assert.equal(result.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED'
+    && item.category === 'metadata'
+    && item.sourcePart === 'docProps/custom.xml'
+  )), true);
+
+  assertDocxImportPreviewShell(falseLexical);
+  assert.equal(falseLexical.ok, true);
+  assert.equal(falseLexical.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
+    || item.code === 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED'
+  )), false);
+});
+
 test('DOCX import preview plan: empty content stays preview-only and explicit', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([]));
