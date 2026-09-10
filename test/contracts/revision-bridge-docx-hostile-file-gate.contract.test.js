@@ -5,6 +5,10 @@ const { pathToFileURL } = require('node:url');
 const { deflateRawSync } = require('node:zlib');
 
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
+const ONE_PIXEL_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
+  'base64',
+);
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
@@ -265,6 +269,7 @@ test('Stage02 hostile file gate distinguishes internal, safe hyperlink, and host
   const bridge = await loadBridge();
   const internal = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
+    { name: 'word/styles.xml', body: '<root/>' },
     {
       name: 'word/_rels/document.xml.rels',
       body: '<Relationships><Relationship Target="styles.xml"/></Relationships>',
@@ -344,6 +349,57 @@ test('Stage02 hostile file gate distinguishes internal, safe hyperlink, and host
   }
 });
 
+test('Stage02 hostile file gate rejects invalid internal relationship graph references', async () => {
+  const bridge = await loadBridge();
+  const drawingDocument = (relationshipId) => (
+    `<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body><w:p><w:r><w:drawing><a:blip r:embed="${relationshipId}"/></w:drawing></w:r></w:p></w:body></w:document>`
+  );
+  const validEquivalent = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: drawingDocument('rImg9') },
+    { name: 'word/media/image1.png', body: ONE_PIXEL_PNG },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rStyles" Target="styles.xml"/><Relationship Id="rImg9" Target="./media/../media/image1.png"/></Relationships>',
+    },
+    { name: 'word/styles.xml', body: '<root/>' },
+  ]));
+  const missingTarget = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: drawingDocument('rImgMissing') },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rImgMissing" Target="media/missing.png"/></Relationships>',
+    },
+  ]));
+  const escapingTarget = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: drawingDocument('rImgEscape') },
+    { name: 'word/media/image1.png', body: ONE_PIXEL_PNG },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rImgEscape" Target="../../evil.png"/></Relationships>',
+    },
+  ]));
+  const unboundDocumentReference = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: drawingDocument('rImgUnbound') },
+    { name: 'word/media/image1.png', body: ONE_PIXEL_PNG },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rImgActual" Target="media/image1.png"/></Relationships>',
+    },
+  ]));
+
+  assert.equal(validEquivalent.ok, true);
+  assert.equal(validEquivalent.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS);
+  assert.equal(missingTarget.ok, false);
+  assert.equal(missingTarget.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_MISSING);
+  assert.equal(missingTarget.parse.semanticAllowed, false);
+  assert.equal(escapingTarget.ok, false);
+  assert.equal(escapingTarget.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_UNSAFE);
+  assert.equal(escapingTarget.parse.semanticAllowed, false);
+  assert.equal(unboundDocumentReference.ok, false);
+  assert.equal(unboundDocumentReference.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.UNBOUND_RELATIONSHIP_REFERENCE);
+  assert.equal(unboundDocumentReference.parse.semanticAllowed, false);
+});
+
 test('Stage02 hostile file gate fails closed when declaration region exceeds scan budget', async () => {
   const bridge = await loadBridge();
   const longComment = '<!--' + 'x'.repeat(5000) + '-->';
@@ -417,6 +473,12 @@ test('Stage02 hostile file gate allows latest Word deflate compression option fl
       method: 8,
       flags: 6,
       body: '<Relationships><Relationship Target="styles.xml"/></Relationships>',
+    },
+    {
+      name: 'word/styles.xml',
+      method: 8,
+      flags: 6,
+      body: '<root/>',
     },
   ]);
 
