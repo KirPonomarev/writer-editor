@@ -143,6 +143,27 @@ function paragraphXml(text) {
   return `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;
 }
 
+function numberedParagraphXml(text, { ilvl = '0', numId = '1' } = {}) {
+  return [
+    '<w:p><w:pPr><w:numPr>',
+    `<w:ilvl w:val="${ilvl}"/>`,
+    `<w:numId w:val="${numId}"/>`,
+    '</w:numPr></w:pPr>',
+    `<w:r><w:t>${text}</w:t></w:r></w:p>`,
+  ].join('');
+}
+
+function numberingXml() {
+  return [
+    '<w:numbering>',
+    '<w:abstractNum w:abstractNumId="0">',
+    '<w:lvl w:ilvl="0"><w:numFmt w:val="decimal"/><w:lvlText w:val="%1."/></w:lvl>',
+    '</w:abstractNum>',
+    '<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>',
+    '</w:numbering>',
+  ].join('');
+}
+
 function customMetadataXml(mode = 'default') {
   if (mode === 'prefixed') {
     return '<cp:Properties xmlns:cp="http://schemas.openxmlformats.org/officeDocument/2006/custom-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><cp:property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="2" name="YalkenInteropSentinel"><vt:lpwstr>YALKEN_CUSTOM_METADATA_SENTINEL_001</vt:lpwstr></cp:property></cp:Properties>';
@@ -453,6 +474,67 @@ test('DOCX content preview: safe external hyperlinks remain inert preview candid
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
   )), true);
+});
+
+test('DOCX content preview: paragraph numbering is explicit unsupported list loss', async () => {
+  const bridge = await loadBridge();
+  const input = cleanDocxZip([
+    numberedParagraphXml('alpha'),
+    numberedParagraphXml('beta'),
+    numberedParagraphXml('gamma'),
+  ].join(''), [
+    { name: 'word/numbering.xml', method: 8, body: numberingXml() },
+  ]);
+  const before = Buffer.from(input);
+  const result = bridge.buildDocxContentPreviewFromZipBytes(input);
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(input.equals(before), true);
+  assert.equal(result.ok, true);
+  assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'alpha',
+    'beta',
+    'gamma',
+  ]);
+  assert.equal(result.diagnostics.filter((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC'
+    && item.tagName === 'w:numPr'
+    && item.sourcePart === 'word/document.xml'
+  )).length, 1);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'alpha\n\nbeta\n\ngamma');
+  assert.equal(importPreview.lossReport.items.filter((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'
+    && item.category === 'listNumbering'
+    && item.tagName === 'w:numPr'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC'
+  )).length, 1);
+});
+
+test('DOCX content preview: numbering text and unused numbering part do not create list loss', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(
+    paragraphXml('Visible w:numPr and word/numbering.xml names only'),
+    [
+      { name: 'word/numbering.xml', method: 8, body: numberingXml() },
+    ],
+  ));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Visible w:numPr and word/numbering.xml names only',
+  ]);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC'
+  )), false);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'
+  )), false);
 });
 
 test('DOCX content preview: bookmarks and custom metadata are explicit diagnostics without lexical false positives', async () => {

@@ -6265,11 +6265,15 @@ const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
   'w:bookmarkEnd',
   'w:bookmarkStart',
 ]);
+const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_TAGS = new Set([
+  'w:numPr',
+]);
 const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS,
   ...DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS,
 ]);
 const DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC';
 const DOCX_CUSTOM_PROPERTIES_NAMESPACE = [
   'h',
   'ttp://schemas.openxmlformats.org/officeDocument/2006/custom-properties',
@@ -6626,6 +6630,18 @@ function docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenTags, tagNa
   }));
 }
 
+function docxContentPreviewAddListNumberingDiagnostic(diagnostics, seenTags, tagName) {
+  if (!DOCX_CONTENT_PREVIEW_LIST_NUMBERING_TAGS.has(tagName) || seenTags.has(tagName)) return;
+  seenTags.add(tagName);
+  if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
+  diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC, {
+    severity: 'warning',
+    sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    tagName,
+    message: 'DOCX paragraph list or numbering properties are retained as preview diagnostic only',
+  }));
+}
+
 function docxContentPreviewBuildParagraph(order, text) {
   return {
     order,
@@ -6682,6 +6698,7 @@ function docxContentPreviewUnsupportedPrefix(xmlText) {
 function docxContentPreviewParseMainDocumentXml(xmlText) {
   const diagnostics = [];
   const seenUnsupportedTags = new Set();
+  const seenListNumberingTags = new Set();
   const paragraphs = [];
   const elementStack = [];
   let rootSeen = false;
@@ -6763,6 +6780,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       rootSeen = true;
       rootTagName = tagName;
     }
+    docxContentPreviewAddListNumberingDiagnostic(diagnostics, seenListNumberingTags, tagName);
     const diagnostic = DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS.has(tagName);
     if (diagnostic) docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenUnsupportedTags, tagName);
     const unsupported = DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS.has(tagName);
@@ -7428,6 +7446,9 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   if (sourceCode === DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC) {
     return { code: 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED', category: 'metadata' };
   }
+  if (sourceCode === DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC) {
+    return { code: 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED', category: 'listNumbering' };
+  }
   if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
@@ -7487,6 +7508,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
     const knownContentDiagnostic = [
       'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
       DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC,
+      DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC,
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
