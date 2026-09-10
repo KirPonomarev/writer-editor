@@ -11795,12 +11795,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "25abace1b65e1ba66e4682ba867a7d3c7aaed468d7f17b3d222336a06e52f0c6",
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "89d836200bc907ff577fa786bb5a62dac94b18d045dd043bdf9e4ee1b64fdfcb",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
@@ -11864,30 +11864,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:47.812Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "1bf1e8d1f2b47c551abe3830ad0ca24e5051353e1b27d0d1c3e42cb202656d06"
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss governance registry rebind after origin/main 4aa9317c: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No list formatting import, product runtime widening, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "23048580fe99e4dda0f5fd0ba1ac6cb923bb4e0aa14b1f4dabe85f6032a575d8"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:47.812Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "b725ade28809bbc97829aa700a99881a021bfd45388dc3c7f818af686eb45c6f"
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss governance registry rebind after origin/main 4aa9317c: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No list formatting import, product runtime widening, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "5acdd767c3bacecef10cdbb109cce52bc5119a515a7c54b59f217e24acabec87"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ad65dee9e3847fc0c25f1cb1d277fe48aa6f20df1e6dc1a6930d97052e895e00"
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "4820e690303e4da4c6dd031ebcc5463a966d81fe775e5cdafdf17c9b6d1027e5"
     }
   ],
   "evidenceStampIds": [
