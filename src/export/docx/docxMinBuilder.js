@@ -10,6 +10,12 @@ const ZIP_CRC32_TABLE = (() => {
   return table;
 })();
 
+const {
+  buildDocxRunContentXml,
+  escapeXml,
+  normalizeDocxTextForSerialization,
+} = require('./docxTextXml.js');
+
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
 }
@@ -36,15 +42,6 @@ function normalizeEditorSnapshotPayload(payload) {
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
   };
-}
-
-function escapeXml(value) {
-  return String(value || '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;');
 }
 
 function crc32(buffer) {
@@ -169,17 +166,8 @@ function resolveDocxParagraphStyleId(styleDescriptor, semanticKind) {
 }
 
 function buildDocxTextRunsXml(text) {
-  const segments = String(text || '').split('\n');
-  const runs = [];
-
-  for (let index = 0; index < segments.length; index += 1) {
-    if (index > 0) runs.push('<w:r><w:br/></w:r>');
-    if (segments[index]) {
-      runs.push(`<w:r><w:t xml:space="preserve">${escapeXml(segments[index])}</w:t></w:r>`);
-    }
-  }
-
-  return runs.join('');
+  const runContentXml = buildDocxRunContentXml(text, { allowFormFeedPageBreak: true });
+  return runContentXml ? `<w:r>${runContentXml}</w:r>` : '';
 }
 
 function assertDocxBuilderDependencies(dependencies) {
@@ -200,7 +188,7 @@ function assertDocxBuilderDependencies(dependencies) {
 function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
-  const plainText = String(snapshot.plainText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
   const semanticMap = deps.semanticMappingModule.mapSemanticEntries(
