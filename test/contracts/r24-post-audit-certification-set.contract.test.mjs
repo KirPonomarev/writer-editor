@@ -52,6 +52,7 @@ import {
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
   R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,
+  R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -98,6 +99,7 @@ import {
   verifyR24Rcv00fDeliveryReconciliationPostEvaluationException,
   verifyR24P03RelationshipGraphValidationPostEvaluationException,
   verifyR24Ops03SemanticE0ClassifierPostEvaluationException,
+  verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1512,16 +1514,17 @@ test('R24 P03 relationship graph validation exception rejects stale Generic01 in
 });
 function ops03SemanticE0ClassifierGitFixture({changedPaths,successorChangedPaths,scannerBytes,scannerTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40),successorSha,successorTree='7'.repeat(40)}={}){
   const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION;
+  const deliverySha='872459208f6d8c7df8e9de1178a6c66a84f308cf';
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
-    [e.scannerPath,scannerBytes??fs.readFileSync(e.scannerPath)],
-    [e.scannerTestPath,scannerTestBytes??fs.readFileSync(e.scannerTestPath)],
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.scannerPath,scannerBytes??objectFromCommit(deliverySha,e.scannerPath)],
+    [e.scannerTestPath,scannerTestBytes??objectFromCommit(deliverySha,e.scannerTestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliverySha,e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(deliverySha,e.approvalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliverySha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliverySha,e.postAuditTestPath)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
@@ -1579,6 +1582,99 @@ test('R24 OPS03 semantic E0 classifier exception rejects stale inventory binding
   inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
   const fixture=ops03SemanticE0ClassifierGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_INVENTORY_DIGEST/);
+});
+function rcv00hMinimalE0ParserPurityGitFixture({changedPaths,successorChangedPaths,scannerBytes,scannerTestBytes,inventoryBytes,registerBytes,approvalsBytes,claimBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40),successorSha,successorTree='b'.repeat(40)}={}){
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION;
+  const successorChain=successorSha?[successorSha]:[];
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
+  const bytesByPath=new Map([
+    [e.scannerPath,scannerBytes??fs.readFileSync(e.scannerPath)],
+    [e.scannerTestPath,scannerTestBytes??fs.readFileSync(e.scannerTestPath)],
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.registerPath,registerBytes??fs.readFileSync(e.registerPath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+    [e.claimBindingPath,claimBytes??fs.readFileSync(e.claimBindingPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+  ]);
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.predecessorRuntimeCandidateSha}^{tree}`)value=e.predecessorRuntimeCandidateTree;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1)),endSha=range.slice(range.indexOf('..')+2);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 RCV00H minimal E0 parser purity exception accepts the bounded successor proof',()=>{
+  const fixture=rcv00hMinimalE0ParserPurityGitFixture(),result=verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.admittedPathDenominator,5);
+  assert.equal(result.changedPathDenominator,5);
+  assert.equal(result.completeInventoryDrivesGate,true);
+  assert.equal(result.taskParserReachesV2Plan,true);
+  assert.equal(result.realViolationsFailWithPathReason,true);
+  assert.equal(result.lexicalFalsePositivesDoNotBlock,true);
+  assert.equal(result.historicalCompatibilityExplicit,true);
+  assert.equal(result.noSpeculativeModuleExtraction,true);
+  assert.equal(result.programDone,false);
+});
+test('R24 RCV00H minimal E0 parser purity exception accepts successor heads by selecting the immutable exact candidate',()=>{
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,successorSha='c'.repeat(40);
+  const fixture=rcv00hMinimalE0ParserPurityGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'README.md'].sort()});
+  const result=verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+  assert.equal(result.changedPathDenominator,5);
+});
+test('R24 RCV00H minimal E0 parser purity exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,fixture=rcv00hMinimalE0ParserPurityGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
+  assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_CANDIDATE_NOT_FOUND|E_R24_RCV00H_EXACT_ADMITTED_DELTA/);
+});
+test('R24 RCV00H minimal E0 parser purity exception rejects missing acceptance evidence',()=>{
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,claim=JSON.parse(fs.readFileSync(e.claimBindingPath,'utf8'));
+  claim.acceptance=claim.acceptance.filter((entry)=>entry.id!=='TASK_PARSER_REACHES_V2_PLAN');
+  const fixture=rcv00hMinimalE0ParserPurityGitFixture({claimBytes:canonicalBytes(claim)});
+  assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_ACCEPTANCE_DENOMINATOR/);
+});
+test('R24 RCV00H minimal E0 parser purity exception rejects hidden historical register mutation',()=>{
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,register=JSON.parse(fs.readFileSync(e.registerPath,'utf8'));
+  const ops03=register.findings.find((finding)=>finding.findingId==='OPS-03');
+  ops03.status='REVALIDATE_CURRENT';
+  ops03.evidence=null;
+  const fixture=rcv00hMinimalE0ParserPurityGitFixture({registerBytes:canonicalBytes(register)});
+  assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_HISTORICAL_REGISTER_BINDING/);
+});
+test('R24 RCV00H minimal E0 parser purity exception rejects stale inventory digest',()=>{
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
+  const fixture=rcv00hMinimalE0ParserPurityGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_INVENTORY_DIGEST/);
+});
+test('R24 RCV00H minimal E0 parser purity exception rejects weakened local proof',()=>{
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,claim=JSON.parse(fs.readFileSync(e.claimBindingPath,'utf8'));
+  claim.localProofs.e0Lane.mutants.killed=39;
+  const fixture=rcv00hMinimalE0ParserPurityGitFixture({claimBytes:canonicalBytes(claim)});
+  assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_LOCAL_PROOF_SHAPE/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});
