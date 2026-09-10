@@ -1180,10 +1180,12 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
   const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
 });
-function reviewPreviewCommentTopologyGitFixture({changedPaths,successorChangedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40),successorSha,successorTree='d'.repeat(40)}={}){
+function reviewPreviewCommentTopologyGitFixture({changedPaths,successorChangedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40),successorSha,successorAncestryShas,successorTree='d'.repeat(40)}={}){
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION;
   const deliverySha=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha;
-  const requestedSha=successorSha??candidateSha;
+  const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
     [e.sourcePath,sourceBytes??objectFromCommit(deliverySha,e.sourcePath)],
     [e.parserPath,parserBytes??objectFromCommit(deliverySha,e.parserPath)],
@@ -1201,16 +1203,16 @@ function reviewPreviewCommentTopologyGitFixture({changedPaths,successorChangedPa
     if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
     else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
     else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
-    else if(args[0]==='rev-parse'&&args[1]===`${requestedSha}^{tree}`)value=successorSha?successorTree:candidateTree;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
     else if(args[0]==='diff'){
       const range=String(args.at(-1));
       const endSha=range.slice(range.indexOf('..')+2);
-      const paths=endSha===requestedSha&&successorSha?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
       value=paths.join('\n')+'\n';
     }
-    else if(args[0]==='rev-list')value=successorSha?[candidateSha,successorSha].join('\n'):candidateSha;
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
       const bytes=bytesByPath.get(repoPath);
@@ -1247,6 +1249,15 @@ test('R24 review preview comment topology exception accepts successor heads by s
   assert.equal(result.currentCandidateSha,successorSha);
   assert.equal(result.admittedPathDenominator,10);
   assert.equal(result.changedPathDenominator,10);
+});
+test('R24 review preview comment topology exception scans beyond 64 successor heads',()=>{
+  const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION;
+  const successorAncestryShas=Array.from({length:65},(_,index)=>(index+1).toString(16).padStart(40,'0'));
+  const fixture=reviewPreviewCommentTopologyGitFixture({successorAncestryShas,successorChangedPaths:[...e.admittedPaths,'package-lock.json','scripts/ops/r24/plan-state.mjs'].sort()});
+  const result=verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorAncestryShas.at(-1));
 });
 test('R24 review preview comment topology exception rejects an unadmitted future path',()=>{
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,fixture=reviewPreviewCommentTopologyGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
@@ -1349,8 +1360,11 @@ test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=
   const fixture=rcv00eLeaseFencingCasGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_INVENTORY_DIGEST/);
 });
-function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,approvalsBytes,packageLockBytes,planStateBytes,planStateTestBytes,postAuditVerifierBytes,postAuditTestBytes,rtkG0bBytes,rtkW1Bytes,rtkW2Bytes,rtkZip01Bytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorTree='3'.repeat(40)}={}){
-  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,requestedSha=successorSha??candidateSha;
+function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,approvalsBytes,packageLockBytes,planStateBytes,planStateTestBytes,postAuditVerifierBytes,postAuditTestBytes,rtkG0bBytes,rtkW1Bytes,rtkW2Bytes,rtkZip01Bytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorAncestryShas,successorTree='3'.repeat(40)}={}){
+  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION;
+  const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
     [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
     [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
@@ -1369,15 +1383,15 @@ function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPa
     if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
     else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
     else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
-    else if(args[0]==='rev-parse'&&args[1]===`${requestedSha}^{tree}`)value=successorSha?successorTree:candidateTree;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
     else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
     else if(args[0]==='merge-base')value='';
     else if(args[0]==='diff'){
       const range=String(args.at(-1)),endSha=range.slice(range.indexOf('..')+2);
-      const paths=endSha===requestedSha&&successorSha?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
       value=paths.join('\n')+'\n';
     }
-    else if(args[0]==='rev-list')value=successorSha?[candidateSha,successorSha].join('\n'):candidateSha;
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
     else if(args[0]==='show'){
       const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
       const bytes=bytesByPath.get(repoPath);
@@ -1407,6 +1421,15 @@ test('R24 RCV00F delivery reconciliation exception accepts successor heads by se
   assert.equal(result.candidateSha,fixture.deliverySha);
   assert.equal(result.currentCandidateSha,successorSha);
   assert.equal(result.changedPathDenominator,11);
+});
+test('R24 RCV00F delivery reconciliation exception scans beyond 64 successor heads',()=>{
+  const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION;
+  const successorAncestryShas=Array.from({length:65},(_,index)=>(index+101).toString(16).padStart(40,'0'));
+  const fixture=rcv00fDeliveryReconciliationGitFixture({successorAncestryShas,successorChangedPaths:[...e.admittedPaths,'README.md'].sort()});
+  const result=verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorAncestryShas.at(-1));
 });
 test('R24 RCV00F delivery reconciliation exception rejects an unadmitted future path',()=>{
   const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,fixture=rcv00fDeliveryReconciliationGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});

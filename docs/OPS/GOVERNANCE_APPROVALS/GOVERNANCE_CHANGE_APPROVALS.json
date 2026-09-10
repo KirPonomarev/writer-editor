@@ -11978,6 +11978,54 @@
       "evidenceStampIds": [
         "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "6d523a4c95f21668b422e810fc081752af2acc143c9eec17c2dffbe2dceb7b4e",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:56:14Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after adding 65-successor immutable delivery-candidate selector regressions; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f5bdadaf0704c66e664dc49619e9ac8bdeb2be702d05617566e63e73cbecbc91",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:56:14Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier bytes after removing the 64-successor candidate-search truncation while preserving exact ancestry, delta, digest, and fake-verification guards; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "e1b12a010da64b4f17b81648cd2f8cc7eb839f9e3d34e9af06a94f4b2d31ad78",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:56:14Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes for immutable predecessor preservation, exact delivery reconciliation admission, fake verification rejection, and 65-successor candidate selector coverage; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3e17776b841f830cd765e2ccd09b8a4ad1f6b1763f413b59566677fc142af154",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T11:57:21Z",
+      "rationale": "Approve exact R24 RCV00F post-audit verifier bytes after applying the complete-ancestry delivery-candidate selector fix to both new selectors; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [

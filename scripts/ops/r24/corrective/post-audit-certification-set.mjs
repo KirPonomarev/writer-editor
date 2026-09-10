@@ -4433,7 +4433,7 @@ function resolveR24ObsExportDocxCommandBridgeOuterFailCandidateSha(git,resolvedC
   if(isExact(resolvedCandidate))return resolvedCandidate;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_OBS_EXPORT_DOCX_BRIDGE_DELIVERY_CANDIDATE_SEARCH');}
-  for(const sha of candidates.slice(-64).reverse())if(isExact(sha))return sha;
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
   fail('E_R24_OBS_EXPORT_DOCX_BRIDGE_DELIVERY_CANDIDATE_NOT_FOUND');
 }
 
@@ -4498,7 +4498,7 @@ function resolveR24ReviewPreviewCommentTopologyCandidateSha(git,resolvedCandidat
   if(isExact(resolvedCandidate))return resolvedCandidate;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_DELIVERY_CANDIDATE_SEARCH');}
-  for(const sha of candidates.slice(-64).reverse())if(isExact(sha))return sha;
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
   fail('E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_DELIVERY_CANDIDATE_NOT_FOUND');
 }
 
@@ -4580,7 +4580,7 @@ function resolveR24Rcv00fDeliveryReconciliationCandidateSha(git,resolvedCandidat
   if(isExact(resolvedCandidate))return resolvedCandidate;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_RCV00F_DELIVERY_CANDIDATE_SEARCH');}
-  for(const sha of candidates.slice(-64).reverse())if(isExact(sha))return sha;
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
   fail('E_R24_RCV00F_DELIVERY_CANDIDATE_NOT_FOUND');
 }
 
