@@ -1026,7 +1026,7 @@ test('R24 interop 100 U+000C page-break re-export exception rejects an unadmitte
   const e=R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,fixture=u000cPagebreakGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
   assert.throws(()=>verifyR24Interop100U000cPagebreakReexportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_U000C_EXACT_ADMITTED_DELTA/);
 });
-function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBytes,unitTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40)}={}){
+function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBytes,unitTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40)}={}){
   const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION;
   const bytesByPath=new Map([
     [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
@@ -1036,6 +1036,8 @@ function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBy
     [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
     [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
     [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
@@ -1059,13 +1061,15 @@ test('R24 OBS export DOCX command bridge outer-failure exception accepts the exa
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,7);
-  assert.equal(result.changedPathDenominator,7);
+  assert.equal(result.admittedPathDenominator,9);
+  assert.equal(result.changedPathDenominator,9);
   assert.equal(result.selectedObservationId,'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909');
   assert.equal(result.commandBridgeOuterFailure,'FAIL_CLOSED_BEFORE_NESTED_SUCCESS_UNWRAP');
   assert.equal(result.sourceDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.sourceDigest);
   assert.equal(result.bundleDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.bundleDigest);
   assert.equal(result.unitTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.unitTestDigest);
+  assert.equal(result.claimLintDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.claimLintDigest);
+  assert.equal(result.claimLintTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.claimLintTestDigest);
   assert.equal(result.programDone,false);
 });
 test('R24 OBS export DOCX command bridge outer-failure exception rejects an unadmitted future path',()=>{
