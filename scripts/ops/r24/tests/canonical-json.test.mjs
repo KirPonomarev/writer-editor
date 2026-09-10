@@ -10,6 +10,7 @@ import {
   readJsonBounded,
   writeJsonAtomic,
   classifyWriteArtifacts,
+  isUnsupportedDirectoryFsync,
   R24Error,
 } from '../canonical-json.mjs';
 
@@ -52,6 +53,58 @@ test('atomic write round-trips with digest proof and cleans intent', () => {
   assert.equal(cls.classification, 'NEW_COMMITTED');
   const clsOther = classifyWriteArtifacts(file, { expectedNewDigest: sha256hex('different') });
   assert.equal(clsOther.classification, 'OLD_COMMITTED');
+});
+
+test('atomic write tolerates unsupported Windows directory fsync but preserves file fsync', () => {
+  const dir = tmp();
+  const file = path.join(dir, 'state.json');
+  const platformDescriptor = Object.getOwnPropertyDescriptor(process, 'platform');
+  const originalOpenSync = fs.openSync;
+  const originalCloseSync = fs.closeSync;
+  const originalFsyncSync = fs.fsyncSync;
+  const directoryHandles = new Set();
+  let directoryFsyncAttempts = 0;
+  let fileFsyncAttempts = 0;
+
+  Object.defineProperty(process, 'platform', { value: 'win32' });
+  fs.openSync = (targetPath, flags, ...args) => {
+    const handle = originalOpenSync(targetPath, flags, ...args);
+    if (path.resolve(targetPath) === path.resolve(dir)) directoryHandles.add(handle);
+    return handle;
+  };
+  fs.closeSync = (handle) => {
+    directoryHandles.delete(handle);
+    return originalCloseSync(handle);
+  };
+  fs.fsyncSync = (handle) => {
+    if (directoryHandles.has(handle)) {
+      directoryFsyncAttempts += 1;
+      const error = new Error('operation not permitted');
+      error.code = 'EPERM';
+      throw error;
+    }
+    fileFsyncAttempts += 1;
+    return originalFsyncSync(handle);
+  };
+
+  try {
+    const write = writeJsonAtomic(file, { platform: 'windows', durable: true });
+    assert.equal(write.sha256, sha256hex(fs.readFileSync(file)));
+    assert.deepEqual(JSON.parse(fs.readFileSync(file, 'utf8')), { platform: 'windows', durable: true });
+    assert.equal(fileFsyncAttempts, 1);
+    assert.equal(directoryFsyncAttempts, 3);
+  } finally {
+    fs.fsyncSync = originalFsyncSync;
+    fs.closeSync = originalCloseSync;
+    fs.openSync = originalOpenSync;
+    Object.defineProperty(process, 'platform', platformDescriptor);
+  }
+});
+
+test('unsupported directory fsync classifier is Windows EPERM only', () => {
+  assert.equal(isUnsupportedDirectoryFsync({ code: 'EPERM' }, 'win32'), true);
+  assert.equal(isUnsupportedDirectoryFsync({ code: 'EIO' }, 'win32'), false);
+  assert.equal(isUnsupportedDirectoryFsync({ code: 'EPERM' }, 'darwin'), false);
 });
 
 test('crash classification is total: intent without commit resumes or rolls back', () => {

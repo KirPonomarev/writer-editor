@@ -646,8 +646,10 @@ export const R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION=Object.freeze({
   approvalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   evidencePath:'docs/OPS/R24/EVIDENCE/ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS.json',
   verifierPath:'scripts/ops/r24/corrective/rcv00e-lease-fencing-cas.mjs',
+  canonicalJsonPath:'scripts/ops/r24/canonical-json.mjs',
   leasePath:'scripts/ops/r24/lease.mjs',
   mutantPath:'scripts/ops/r24/test-mutants.mjs',
+  canonicalJsonTestPath:'scripts/ops/r24/tests/canonical-json.test.mjs',
   leaseTestPath:'scripts/ops/r24/tests/lease.test.mjs',
   planStateTestPath:'scripts/ops/r24/tests/plan-state.test.mjs',
   contractTestPath:'test/contracts/r24-rcv00e-lease-fencing-cas.contract.test.mjs',
@@ -662,10 +664,12 @@ export const R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION=Object.freeze({
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
     'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS.json',
+    'scripts/ops/r24/canonical-json.mjs',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'scripts/ops/r24/corrective/rcv00e-lease-fencing-cas.mjs',
     'scripts/ops/r24/lease.mjs',
     'scripts/ops/r24/test-mutants.mjs',
+    'scripts/ops/r24/tests/canonical-json.test.mjs',
     'scripts/ops/r24/tests/lease.test.mjs',
     'scripts/ops/r24/tests/plan-state.test.mjs',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
@@ -4430,7 +4434,7 @@ export function verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidate
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_RCV00E_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_RCV00E_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_RCV00E_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),evidence=readJson(e.evidencePath),verifier=readText(e.verifierPath),lease=readText(e.leasePath),mutants=readText(e.mutantPath),leaseTest=readText(e.leaseTestPath),planStateTest=readText(e.planStateTestPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),evidence=readJson(e.evidencePath),verifier=readText(e.verifierPath),canonicalJson=readText(e.canonicalJsonPath),lease=readText(e.leasePath),mutants=readText(e.mutantPath),canonicalJsonTest=readText(e.canonicalJsonTestPath),leaseTest=readText(e.leaseTestPath),planStateTest=readText(e.planStateTestPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
   const receipt=buildRcv00eLeaseFencingCasReceipt({repoRoot:process.cwd()});
   assert(receipt.status==='PASS'&&receipt.schemaVersion===RCV00E_SCHEMA_VERSION&&receipt.contourId===RCV00E_CONTOUR_ID&&receipt.baseSha===e.baseSha&&receipt.negativeProbeDenominator===e.negativeProbeDenominator&&receipt.positive?.leasePresentAfterRelease===false,'E_R24_RCV00E_RECEIPT');
   assert(JSON.stringify(receipt.acceptance)===JSON.stringify([...RCV00E_ACCEPTANCE])&&JSON.stringify(receipt.negativeErrorCodes)===JSON.stringify(['E_DELIVERY_VERIFICATION_REQUIRED','E_DELIVERY_NOT_VERIFIED','E_DELIVERY_VERIFICATION_DIGEST_MISMATCH','E_DELIVERY_NOT_VERIFIED','E_CAS_FENCING_CONFLICT','E_LEASE_ACTIVE','E_TERMINAL_STATE_HAS_NO_OUTGOING','E_TERMINAL_STATE_HAS_NO_OUTGOING','E_TRANSITION_HISTORY_ORDER','E_LEASE_EXPIRED']),'E_R24_RCV00E_RECEIPT_PROBES');
@@ -4444,7 +4448,7 @@ export function verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidate
   const claimBindingMap=new Map((evidence.value.claimBindings??[]).map((binding)=>[binding.filePath,binding]));
   assert(claimBindingMap.get(e.inventoryPath)?.sha256===inventory.digest&&claimBindingMap.get(e.inventoryPath)?.claimTerms?.includes('PASS'),'E_R24_RCV00E_EVIDENCE_INVENTORY_BINDING');
   const implementationDigestMap=new Map((evidence.value.implementationArtifactDigests??[]).map((entry)=>[entry.path,entry]));
-  for(const relative of [e.verifierPath,e.leasePath,e.mutantPath,e.leaseTestPath,e.planStateTestPath,e.contractTestPath,e.postAuditVerifierPath,e.postAuditTestPath]){
+  for(const relative of [e.verifierPath,e.canonicalJsonPath,e.leasePath,e.mutantPath,e.canonicalJsonTestPath,e.leaseTestPath,e.planStateTestPath,e.contractTestPath,e.postAuditVerifierPath,e.postAuditTestPath]){
     const artifact=implementationDigestMap.get(relative);
     assert(artifact?.sha256===h(objectBytes(git,resolvedCandidate,relative))&&artifact.terms?.includes(e.contourId),'E_R24_RCV00E_EVIDENCE_ARTIFACT',relative);
   }
@@ -4453,15 +4457,17 @@ export function verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidate
   const governancePaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath&&(relative.startsWith('docs/OPS/')||relative.startsWith('scripts/ops/')||relative.startsWith('test/contracts/')));
   for(const relative of governancePaths){const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);assert(approval?.approved===true&&approval.approvedBy===e.approvedBy,'E_R24_RCV00E_APPROVAL_DIGEST',relative);}
   for(const token of ['PLAN_STATE_VERIFIED_DELIVERY_RECEIPT_VERSION','expectedFencingCounter: fencingToken','assertVerifiedDeliveryForLeaseRelease','E_DELIVERY_VERIFICATION_DIGEST_MISMATCH'])assert(lease.text.includes(token),'E_R24_RCV00E_LEASE_TOKEN',token);
+  for(const token of ['isUnsupportedDirectoryFsync',"platform === 'win32'",'fsyncDirectory'])assert(canonicalJson.text.includes(token),'E_R24_RCV00E_CANONICAL_JSON_TOKEN',token);
   for(const token of ['lease-heartbeat-cas-fence-ignored','lease-release-cas-fence-ignored','lease-release-verification-ignored','lease-delivered-state-accepted','lease-release-digest-ignored'])assert(mutants.text.includes(token),'E_R24_RCV00E_MUTANT_TOKEN',token);
   assert(MUTANTS.length===e.mutantDenominator,'E_R24_RCV00E_MUTANT_DENOMINATOR');
+  for(const token of ['atomic write tolerates unsupported Windows directory fsync but preserves file fsync','unsupported directory fsync classifier is Windows EPERM only'])assert(canonicalJsonTest.text.includes(token),'E_R24_RCV00E_CANONICAL_JSON_TEST_TOKEN',token);
   for(const token of ['release requires verified DONE delivery bound to the terminal transition','delivered-only proof remains uncertain and cannot release a lease','heartbeat requires the presented fence to match the global CAS fence'])assert(leaseTest.text.includes(token),'E_R24_RCV00E_LEASE_TEST_TOKEN',token);
   for(const token of ['transition fails closed after the current lease is released','E_TERMINAL_STATE_HAS_NO_OUTGOING'])assert(planStateTest.text.includes(token),'E_R24_RCV00E_PLAN_STATE_TEST_TOKEN',token);
   for(const token of ['RCV00E_SCHEMA_VERSION','R24_RCV_00E_LEASE_FENCING_CAS','MISSING_DELIVERY_VERIFICATION','STALE_FENCE_AFTER_NEWER_CAS','OUT_OF_ORDER_TRANSITION_HISTORY'])assert(verifier.text.includes(token),'E_R24_RCV00E_VERIFIER_TOKEN',token);
   for(const token of ['R24-RCV-00E refuses lease release without independently verified delivery','R24-RCV-00E rejects stale fence writes after a newer CAS fence exists','R24-RCV-00E rejects duplicate acquisition and out-of-order transition replay'])assert(contractTest.text.includes(token),'E_R24_RCV00E_CONTRACT_TEST_TOKEN',token);
   for(const token of ['R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION','verifyR24Rcv00eLeaseFencingCasPostEvaluationException','E_R24_RCV00E_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_RCV00E_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['R24 RCV00E lease fencing CAS exception accepts the exact repair delta','R24 RCV00E lease fencing CAS exception rejects an unadmitted future path','R24 RCV00E lease fencing CAS exception rejects missing release verification guard'])assert(postAuditTest.text.includes(token),'E_R24_RCV00E_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'R24_RCV00E_LEASE_FENCING_CAS_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,evidenceDigest:evidence.digest,verifierDigest:verifier.digest,leaseDigest:lease.digest,mutantDigest:mutants.digest,leaseTestDigest:leaseTest.digest,planStateTestDigest:planStateTest.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,negativeProbeDenominator:e.negativeProbeDenominator,mutantDenominator:e.mutantDenominator,leaseReleaseVerification:'DONE_TRANSITION_DIGEST_AND_HEAD_BOUND',casFencePolicy:'HEARTBEAT_AND_RELEASE_REQUIRE_GLOBAL_FENCE',programDone:false,productionReleaseReady:false,graphIncrement:0};
+  return{schemaVersion:'R24_RCV00E_LEASE_FENCING_CAS_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,evidenceDigest:evidence.digest,verifierDigest:verifier.digest,canonicalJsonDigest:canonicalJson.digest,leaseDigest:lease.digest,mutantDigest:mutants.digest,canonicalJsonTestDigest:canonicalJsonTest.digest,leaseTestDigest:leaseTest.digest,planStateTestDigest:planStateTest.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,negativeProbeDenominator:e.negativeProbeDenominator,mutantDenominator:e.mutantDenominator,leaseReleaseVerification:'DONE_TRANSITION_DIGEST_AND_HEAD_BOUND',casFencePolicy:'HEARTBEAT_AND_RELEASE_REQUIRE_GLOBAL_FENCE',windowsDirectoryFsyncPolicy:'UNSUPPORTED_EPERM_ONLY_FILE_FSYNC_REQUIRED',programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){

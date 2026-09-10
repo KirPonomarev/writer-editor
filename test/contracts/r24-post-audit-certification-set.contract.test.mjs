@@ -1176,15 +1176,17 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
   const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
 });
-function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,leaseBytes,mutantBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
+function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,canonicalJsonBytes,leaseBytes,mutantBytes,canonicalJsonTestBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION;
   const bytesByPath=new Map([
     [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
     [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
     [e.evidencePath,evidenceBytes??fs.readFileSync(e.evidencePath)],
     [e.verifierPath,verifierBytes??fs.readFileSync(e.verifierPath)],
+    [e.canonicalJsonPath,canonicalJsonBytes??fs.readFileSync(e.canonicalJsonPath)],
     [e.leasePath,leaseBytes??fs.readFileSync(e.leasePath)],
     [e.mutantPath,mutantBytes??fs.readFileSync(e.mutantPath)],
+    [e.canonicalJsonTestPath,canonicalJsonTestBytes??fs.readFileSync(e.canonicalJsonTestPath)],
     [e.leaseTestPath,leaseTestBytes??fs.readFileSync(e.leaseTestPath)],
     [e.planStateTestPath,planStateTestBytes??fs.readFileSync(e.planStateTestPath)],
     [e.contractTestPath,contractTestBytes??fs.readFileSync(e.contractTestPath)],
@@ -1212,13 +1214,14 @@ test('R24 RCV00E lease fencing CAS exception accepts the exact repair delta',()=
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,11);
-  assert.equal(result.changedPathDenominator,11);
+  assert.equal(result.admittedPathDenominator,13);
+  assert.equal(result.changedPathDenominator,13);
   assert.equal(result.inventoryDigest.length,64);
   assert.equal(result.negativeProbeDenominator,10);
   assert.equal(result.mutantDenominator,40);
   assert.equal(result.leaseReleaseVerification,'DONE_TRANSITION_DIGEST_AND_HEAD_BOUND');
   assert.equal(result.casFencePolicy,'HEARTBEAT_AND_RELEASE_REQUIRE_GLOBAL_FENCE');
+  assert.equal(result.windowsDirectoryFsyncPolicy,'UNSUPPORTED_EPERM_ONLY_FILE_FSYNC_REQUIRED');
   assert.equal(result.programDone,false);
 });
 test('R24 RCV00E lease fencing CAS exception rejects an unadmitted future path',()=>{
@@ -1235,6 +1238,17 @@ test('R24 RCV00E lease fencing CAS exception rejects missing release verificatio
   approvals.approvals.push({filePath:e.evidencePath,sha256:h(evidenceBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated evidence artifact.',approved:true});
   const fixture=rcv00eLeaseFencingCasGitFixture({leaseBytes,evidenceBytes,approvalsBytes:canonicalBytes(approvals)});
   assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_LEASE_TOKEN/);
+});
+test('R24 RCV00E lease fencing CAS exception rejects missing Windows directory fsync guard',()=>{
+  const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,canonicalJsonText=fs.readFileSync(e.canonicalJsonPath,'utf8').replace("platform === 'win32'","platform === 'darwin'"),canonicalJsonBytes=Buffer.from(canonicalJsonText);
+  const evidence=JSON.parse(fs.readFileSync(e.evidencePath,'utf8'));
+  evidence.implementationArtifactDigests.find((entry)=>entry.path===e.canonicalJsonPath).sha256=h(canonicalJsonBytes);
+  const evidenceBytes=canonicalBytes(evidence);
+  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  approvals.approvals.push({filePath:e.canonicalJsonPath,sha256:h(canonicalJsonBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated canonical JSON artifact.',approved:true});
+  approvals.approvals.push({filePath:e.evidencePath,sha256:h(evidenceBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated evidence artifact.',approved:true});
+  const fixture=rcv00eLeaseFencingCasGitFixture({canonicalJsonBytes,evidenceBytes,approvalsBytes:canonicalBytes(approvals)});
+  assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_CANONICAL_JSON_TOKEN/);
 });
 test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=>{
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
