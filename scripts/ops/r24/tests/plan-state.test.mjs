@@ -16,7 +16,7 @@ import {
   PLAN_STATE_SCHEMA_VERSION,
 } from '../plan-state.mjs';
 import { writeJsonAtomic } from '../canonical-json.mjs';
-import { acquireLease, releaseLease } from '../lease.mjs';
+import { acquireLease, buildLeaseReleaseVerification, releaseLease } from '../lease.mjs';
 
 const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), 'r24-plan-'));
 const NOW = '2026-08-20T00:00:00Z';
@@ -239,13 +239,35 @@ test('transition fails closed after the current lease is released', () => {
     now: NOW,
     expectedRevision: 0,
   });
+  let revision = lease.revision;
+  for (const to of ['ELIGIBLE', 'RUNNING', 'DELIVERED', 'POSTMERGE_VERIFIED', 'DONE']) {
+    revision = transitionContour(file, {
+      contourId: 'C',
+      to,
+      expectedRevision: revision,
+      attemptId: 'A1',
+      writerId: 'WRITER-1',
+      fencingToken: lease.result.lease.fencingToken,
+      idempotencyKey: `release-chain-${to}`,
+      now: NOW,
+      headSha: 'a'.repeat(40),
+    }).revision;
+  }
+  const verifiedDelivery = buildLeaseReleaseVerification(readPlanState(file), {
+    contourId: 'C',
+    writerId: 'WRITER-1',
+    fencingToken: lease.result.lease.fencingToken,
+    verifiedAt: NOW,
+  });
   const released = releaseLease(file, {
     contourId: 'C',
     writerId: 'WRITER-1',
     fencingToken: lease.result.lease.fencingToken,
     now: NOW,
-    expectedRevision: lease.revision,
+    expectedRevision: revision,
+    verifiedDelivery,
   });
+  assert.equal(readPlanState(file).leases.C, undefined);
   assert.throws(
     () => transitionContour(file, {
       contourId: 'C',
@@ -254,10 +276,10 @@ test('transition fails closed after the current lease is released', () => {
       attemptId: 'A1',
       writerId: 'WRITER-1',
       fencingToken: lease.result.lease.fencingToken,
-      idempotencyKey: 'transition-no-lease',
+      idempotencyKey: 'transition-after-release',
       now: NOW,
     }),
-    (e) => e.code === 'E_TRANSITION_LEASE_REQUIRED',
+    (e) => e.code === 'E_TERMINAL_STATE_HAS_NO_OUTGOING',
   );
 });
 

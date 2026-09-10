@@ -75,6 +75,36 @@ export const MUTANTS = Object.freeze([
     replace: 'if (false) {',
   },
   {
+    id: 'lease-heartbeat-cas-fence-ignored',
+    file: 'lease.mjs',
+    find: 'return casUpdate(filePath, {\n    expectedRevision,\n    expectedFencingCounter: fencingToken,\n    mutate: (draft) => {\n      const lease = assertLeaseCurrent(draft, { contourId, writerId, fencingToken, now });',
+    replace: 'return casUpdate(filePath, {\n    expectedRevision,\n    mutate: (draft) => {\n      const lease = assertLeaseCurrent(draft, { contourId, writerId, fencingToken, now });',
+  },
+  {
+    id: 'lease-release-cas-fence-ignored',
+    file: 'lease.mjs',
+    find: 'return casUpdate(filePath, {\n    expectedRevision,\n    expectedFencingCounter: fencingToken,\n    mutate: (draft) => {\n      assertLeaseCurrent(draft, { contourId, writerId, fencingToken, now });\n      assertVerifiedDeliveryForLeaseRelease(draft, { contourId, writerId, fencingToken, now, verifiedDelivery });',
+    replace: 'return casUpdate(filePath, {\n    expectedRevision,\n    mutate: (draft) => {\n      assertLeaseCurrent(draft, { contourId, writerId, fencingToken, now });\n      assertVerifiedDeliveryForLeaseRelease(draft, { contourId, writerId, fencingToken, now, verifiedDelivery });',
+  },
+  {
+    id: 'lease-release-verification-ignored',
+    file: 'lease.mjs',
+    find: 'assertVerifiedDeliveryForLeaseRelease(draft, { contourId, writerId, fencingToken, now, verifiedDelivery });',
+    replace: 'void verifiedDelivery;',
+  },
+  {
+    id: 'lease-delivered-state-accepted',
+    file: 'lease.mjs',
+    find: "if (verifiedDelivery.verifiedState !== 'DONE') throw new R24Error('E_DELIVERY_NOT_VERIFIED', contourId);",
+    replace: "if (false) throw new R24Error('E_DELIVERY_NOT_VERIFIED', contourId);",
+  },
+  {
+    id: 'lease-release-digest-ignored',
+    file: 'lease.mjs',
+    find: 'if (canonicalDigest(transition) !== verifiedDelivery.transitionReceiptDigest) {',
+    replace: 'if (false) {',
+  },
+  {
     id: 'lease-blind-takeover-allowed',
     file: 'lease.mjs',
     find: "if (!reconcile || reconcile.leaseState !== 'EXPIRED' || !reconcile.lease || reconcile.lease.contourId !== contourId) {",

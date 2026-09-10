@@ -47,6 +47,7 @@ import {
   R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
   R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
+  R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -88,6 +89,7 @@ import {
   verifyR24Interop100U000cPagebreakReexportPostEvaluationException,
   verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException,
   verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
+  verifyR24Rcv00eLeaseFencingCasPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1113,21 +1115,22 @@ test('R24 OBS export DOCX command bridge outer-failure exception rejects missing
   assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
 });
 test('R24 OBS export DOCX command bridge outer-failure exception rejects stale inventory digest',()=>{
-  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,inventory=JSON.parse(objectFromCommit('3e3703511f0c87e49d7ff87315cae031a77737d6',e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.unitTestPath).sha256='0'.repeat(64);
   const fixture=obsExportDocxCommandBridgeGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_INVENTORY_DIGEST/);
 });
 function importPreviewBookmarkMetadataGitFixture({changedPaths,sourceBytes,contentPreviewTestBytes,importPreviewPlanTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='7'.repeat(40),candidateTree='8'.repeat(40)}={}){
   const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION;
+  const deliverySha=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION.baseSha;
   const bytesByPath=new Map([
-    [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
-    [e.contentPreviewTestPath,contentPreviewTestBytes??fs.readFileSync(e.contentPreviewTestPath)],
-    [e.importPreviewPlanTestPath,importPreviewPlanTestBytes??fs.readFileSync(e.importPreviewPlanTestPath)],
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.governanceApprovalsPath,approvalsBytes??fs.readFileSync(e.governanceApprovalsPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.sourcePath,sourceBytes??objectFromCommit(deliverySha,e.sourcePath)],
+    [e.contentPreviewTestPath,contentPreviewTestBytes??objectFromCommit(deliverySha,e.contentPreviewTestPath)],
+    [e.importPreviewPlanTestPath,importPreviewPlanTestBytes??objectFromCommit(deliverySha,e.importPreviewPlanTestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliverySha,e.inventoryPath)],
+    [e.governanceApprovalsPath,approvalsBytes??objectFromCommit(deliverySha,e.governanceApprovalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliverySha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliverySha,e.postAuditTestPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
@@ -1163,15 +1166,95 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXACT_ADMITTED_DELTA/);
 });
 test('R24 import preview bookmark/custom metadata explicit-loss exception rejects missing loss-report token',()=>{
-  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,importPreviewTest=fs.readFileSync(e.importPreviewPlanTestPath,'utf8').replace('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_METADATA_ADVISORY');
+  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,importPreviewTest=objectFromCommit(R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION.baseSha,e.importPreviewPlanTestPath).toString('utf8').replace('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_METADATA_ADVISORY');
   const fixture=importPreviewBookmarkMetadataGitFixture({importPreviewPlanTestBytes:Buffer.from(importPreviewTest)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_ARTIFACT_DIGEST/);
 });
 test('R24 import preview bookmark/custom metadata explicit-loss exception rejects stale inventory digest',()=>{
-  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,inventory=JSON.parse(objectFromCommit(R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION.baseSha,e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.importPreviewPlanTestPath).sha256='0'.repeat(64);
   const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
+});
+function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,canonicalJsonBytes,leaseBytes,mutantBytes,canonicalJsonTestBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
+  const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION;
+  const bytesByPath=new Map([
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+    [e.evidencePath,evidenceBytes??fs.readFileSync(e.evidencePath)],
+    [e.verifierPath,verifierBytes??fs.readFileSync(e.verifierPath)],
+    [e.canonicalJsonPath,canonicalJsonBytes??fs.readFileSync(e.canonicalJsonPath)],
+    [e.leasePath,leaseBytes??fs.readFileSync(e.leasePath)],
+    [e.mutantPath,mutantBytes??fs.readFileSync(e.mutantPath)],
+    [e.canonicalJsonTestPath,canonicalJsonTestBytes??fs.readFileSync(e.canonicalJsonTestPath)],
+    [e.leaseTestPath,leaseTestBytes??fs.readFileSync(e.leaseTestPath)],
+    [e.planStateTestPath,planStateTestBytes??fs.readFileSync(e.planStateTestPath)],
+    [e.contractTestPath,contractTestBytes??fs.readFileSync(e.contractTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 RCV00E lease fencing CAS exception accepts the exact repair delta',()=>{
+  const fixture=rcv00eLeaseFencingCasGitFixture(),result=verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,13);
+  assert.equal(result.changedPathDenominator,13);
+  assert.equal(result.inventoryDigest.length,64);
+  assert.equal(result.negativeProbeDenominator,10);
+  assert.equal(result.mutantDenominator,40);
+  assert.equal(result.leaseReleaseVerification,'DONE_TRANSITION_DIGEST_AND_HEAD_BOUND');
+  assert.equal(result.casFencePolicy,'HEARTBEAT_AND_RELEASE_REQUIRE_GLOBAL_FENCE');
+  assert.equal(result.windowsDirectoryFsyncPolicy,'UNSUPPORTED_EPERM_ONLY_FILE_FSYNC_REQUIRED');
+  assert.equal(result.programDone,false);
+});
+test('R24 RCV00E lease fencing CAS exception rejects an unadmitted future path',()=>{
+  const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,fixture=rcv00eLeaseFencingCasGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_EXACT_ADMITTED_DELTA/);
+});
+test('R24 RCV00E lease fencing CAS exception rejects missing release verification guard',()=>{
+  const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,leaseText=fs.readFileSync(e.leasePath,'utf8').replace('E_DELIVERY_VERIFICATION_DIGEST_MISMATCH','E_DELIVERY_DIGEST_ADVISORY'),leaseBytes=Buffer.from(leaseText);
+  const evidence=JSON.parse(fs.readFileSync(e.evidencePath,'utf8'));
+  evidence.implementationArtifactDigests.find((entry)=>entry.path===e.leasePath).sha256=h(leaseBytes);
+  const evidenceBytes=canonicalBytes(evidence);
+  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  approvals.approvals.push({filePath:e.leasePath,sha256:h(leaseBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated lease artifact.',approved:true});
+  approvals.approvals.push({filePath:e.evidencePath,sha256:h(evidenceBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated evidence artifact.',approved:true});
+  const fixture=rcv00eLeaseFencingCasGitFixture({leaseBytes,evidenceBytes,approvalsBytes:canonicalBytes(approvals)});
+  assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_LEASE_TOKEN/);
+});
+test('R24 RCV00E lease fencing CAS exception rejects missing Windows directory fsync guard',()=>{
+  const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,canonicalJsonText=fs.readFileSync(e.canonicalJsonPath,'utf8').replace("platform === 'win32'","platform === 'darwin'"),canonicalJsonBytes=Buffer.from(canonicalJsonText);
+  const evidence=JSON.parse(fs.readFileSync(e.evidencePath,'utf8'));
+  evidence.implementationArtifactDigests.find((entry)=>entry.path===e.canonicalJsonPath).sha256=h(canonicalJsonBytes);
+  const evidenceBytes=canonicalBytes(evidence);
+  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  approvals.approvals.push({filePath:e.canonicalJsonPath,sha256:h(canonicalJsonBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated canonical JSON artifact.',approved:true});
+  approvals.approvals.push({filePath:e.evidencePath,sha256:h(evidenceBytes),approvedBy:e.approvedBy,approvedAtUtc:'2026-09-10T00:00:00.000Z',rationale:'Synthetic hostile approval lets this contract reach source-token validation for the mutated evidence artifact.',approved:true});
+  const fixture=rcv00eLeaseFencingCasGitFixture({canonicalJsonBytes,evidenceBytes,approvalsBytes:canonicalBytes(approvals)});
+  assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_CANONICAL_JSON_TOKEN/);
+});
+test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=>{
+  const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.contractTestPath).sha256='0'.repeat(64);
+  const fixture=rcv00eLeaseFencingCasGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00E_INVENTORY_DIGEST/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

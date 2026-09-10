@@ -27,6 +27,10 @@ export const canonicalDigest = (value) => sha256hex(canonicalize(value));
 export const HEX40_RE = /^[0-9a-f]{40}$/;
 export const HEX64_RE = /^[0-9a-f]{64}$/;
 
+export function isUnsupportedDirectoryFsync(error, platform = process.platform) {
+  return platform === 'win32' && error?.code === 'EPERM';
+}
+
 export function readJsonBounded(filePath, { maxBytes = 4 * 1024 * 1024 } = {}) {
   let stat;
   try {
@@ -47,7 +51,11 @@ export function readJsonBounded(filePath, { maxBytes = 4 * 1024 * 1024 } = {}) {
 const fsyncDirectory = (dir) => {
   const handle = fs.openSync(dir, 'r');
   try {
-    fs.fsyncSync(handle);
+    try {
+      fs.fsyncSync(handle);
+    } catch (error) {
+      if (!isUnsupportedDirectoryFsync(error)) throw error;
+    }
   } finally {
     fs.closeSync(handle);
   }
