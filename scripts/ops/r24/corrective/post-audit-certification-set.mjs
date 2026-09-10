@@ -567,11 +567,15 @@ export const R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION=Object.fr
   unitTestPath:'test/unit/sector-u-u3-export-wiring.test.js',
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  wp708CompatibilityTestPath:'test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs',
+  wp806CompatibilityTestPath:'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs',
   claimLintPath:'scripts/ops/r24/docs-claim-lint.mjs',
   claimLintTestPath:'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
   sourceDigest:'ebb6996ce60468c6a49132d4201eceba4228653efe145d65644d7bddc8884bdd',
   bundleDigest:'68c636a5ec56b650c3280ad71c23985e003d94392e6ab33f7fca72011fe6ba97',
   unitTestDigest:'251b0e30df04a4532c0806431ff32ec454d419b038fd0d195319ee12807d64cd',
+  wp708CompatibilityTestDigest:'8a991bcdc6128ec9e41f6dab746f0f4515c0d0a111996ae0405b3cb3bfb9fb3c',
+  wp806CompatibilityTestDigest:'a0541085f3f7b332c3e9433f3f3d43dfa971733984c407b32df1a642f9b72465',
   claimLintDigest:'b311fc3092c8ded5ea0b4af68a15fd35ae41d71715be498e29dcc7affcd52af1',
   claimLintTestDigest:'a2e5182b18a5099c28633784fbe85f512db9acc664bf4d76bf840e077fe19cbc',
   selectedObservationId:'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909',
@@ -586,6 +590,8 @@ export const R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION=Object.fr
     'src/renderer/commands/projectCommands.mjs',
     'src/renderer/editor.bundle.js',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs',
+    'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs',
     'test/unit/sector-u-u3-export-wiring.test.js',
   ].sort(),
 });
@@ -4293,10 +4299,10 @@ export function verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationExcept
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_OBS_EXPORT_DOCX_BRIDGE_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_OBS_EXPORT_DOCX_BRIDGE_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
-  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),source=readText(e.sourcePath),bundle=readText(e.bundlePath),unitTest=readText(e.unitTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath);
-  assert(source.digest===e.sourceDigest&&bundle.digest===e.bundleDigest&&unitTest.digest===e.unitTestDigest&&claimLint.digest===e.claimLintDigest&&claimLintTest.digest===e.claimLintTestDigest,'E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST');
+  const inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),source=readText(e.sourcePath),bundle=readText(e.bundlePath),unitTest=readText(e.unitTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath),wp708CompatibilityTest=readText(e.wp708CompatibilityTestPath),wp806CompatibilityTest=readText(e.wp806CompatibilityTestPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath);
+  assert(source.digest===e.sourceDigest&&bundle.digest===e.bundleDigest&&unitTest.digest===e.unitTestDigest&&wp708CompatibilityTest.digest===e.wp708CompatibilityTestDigest&&wp806CompatibilityTest.digest===e.wp806CompatibilityTestDigest&&claimLint.digest===e.claimLintDigest&&claimLintTest.digest===e.claimLintTestDigest,'E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST');
   assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_OBS_EXPORT_DOCX_BRIDGE_INVENTORY_SHAPE');
-  for(const relative of [e.unitTestPath,e.postAuditTestPath]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===h(objectBytes(git,resolvedCandidate,relative))&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_OBS_EXPORT_DOCX_BRIDGE_INVENTORY_DIGEST',relative);}
+  for(const relative of [e.unitTestPath,e.postAuditTestPath,e.wp708CompatibilityTestPath,e.wp806CompatibilityTestPath]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===h(objectBytes(git,resolvedCandidate,relative))&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_OBS_EXPORT_DOCX_BRIDGE_INVENTORY_DIGEST',relative);}
   assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_R24_OBS_EXPORT_DOCX_BRIDGE_APPROVALS_SHAPE');
   const approvalMap=new Map(approvals.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
   const governancePaths=e.admittedPaths.filter((relative)=>relative!==e.approvalsPath&&(relative.startsWith('docs/OPS/')||relative.startsWith('scripts/ops/')||relative.startsWith('test/contracts/')));
@@ -4308,7 +4314,9 @@ export function verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationExcept
   for(const token of ['PRE00E DOCX bridge inventory refresh retains interop current-claim bindings as historical bytes','ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS','ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS'])assert(claimLintTest.text.includes(token),'E_R24_OBS_EXPORT_DOCX_BRIDGE_CLAIM_LINT_TEST_TOKEN',token);
   for(const token of ['R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION','verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException','E_R24_OBS_EXPORT_DOCX_BRIDGE_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_OBS_EXPORT_DOCX_BRIDGE_VERIFIER_TOKEN',token);
   for(const token of ['R24 OBS export DOCX command bridge outer-failure exception accepts the exact repair delta','R24 OBS export DOCX command bridge outer-failure exception rejects an unadmitted future path','R24 OBS export DOCX command bridge outer-failure exception rejects a missing outer bridge guard'])assert(postAuditTest.text.includes(token),'E_R24_OBS_EXPORT_DOCX_BRIDGE_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),selectedObservationId:e.selectedObservationId,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,sourceDigest:source.digest,bundleDigest:bundle.digest,unitTestDigest:unitTest.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,commandBridgeOuterFailure:'FAIL_CLOSED_BEFORE_NESTED_SUCCESS_UNWRAP',programDone:false,productionReleaseReady:false,graphIncrement:0};
+  for(const token of ['WP708 candidate oracle rejects mutable current-tree fallback for WP806 compatibility bytes','current-tree-fallback'])assert(wp708CompatibilityTest.text.includes(token),'E_R24_OBS_EXPORT_DOCX_BRIDGE_WP708_COMPATIBILITY_TEST_TOKEN',token);
+  for(const token of ['WP806 candidate oracle rejects mutable current-tree fallback for carrier bytes','current-tree-fallback'])assert(wp806CompatibilityTest.text.includes(token),'E_R24_OBS_EXPORT_DOCX_BRIDGE_WP806_COMPATIBILITY_TEST_TOKEN',token);
+  return{schemaVersion:'R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),selectedObservationId:e.selectedObservationId,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,sourceDigest:source.digest,bundleDigest:bundle.digest,unitTestDigest:unitTest.digest,wp708CompatibilityTestDigest:wp708CompatibilityTest.digest,wp806CompatibilityTestDigest:wp806CompatibilityTest.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,commandBridgeOuterFailure:'FAIL_CLOSED_BEFORE_NESTED_SUCCESS_UNWRAP',programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){

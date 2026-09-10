@@ -13,17 +13,9 @@ const FINAL_TREE = 'a708a708a708a708a708a708a708a708a708a708';
 const WP708_MERGE_SHA = '2cc2d22d9427261f6eefe66394791083af049ca9';
 const instance = JSON.parse(fs.readFileSync(E.instancePath));
 const ADMITTED = [...instance.operations.modifyPaths, ...instance.operations.createPaths].sort();
-const V2_SUCCESSOR_PATHS = new Set([
-  '.github/workflows/oss-policy.yml',
-  'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
-  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
-  'scripts/ops/r24/docs-claim-lint.mjs',
-  'test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs',
-  'test/contracts/r24-wp708-terminal-carriers.contract.test.mjs',
-]);
 const response = (value, encoding) => encoding === 'utf8' ? `${value}\n` : Buffer.from(`${value}\n`);
 
-function fakeGit({ changedPaths = ADMITTED, baseTreeDrift = false, missingArtifact = null, byteDrift = null, ancestor = true, mutateJson = null } = {}) {
+function fakeGit({ changedPaths = ADMITTED, baseTreeDrift = false, missingArtifact = null, byteDrift = null, ancestor = true, mutateJson = null, currentTreeFallbackPath = null } = {}) {
   return (args, { encoding = null } = {}) => {
     if (args[0] === 'rev-parse') {
       if (args[1] === 'HEAD') return response(FINAL_SHA, encoding);
@@ -41,9 +33,12 @@ function fakeGit({ changedPaths = ADMITTED, baseTreeDrift = false, missingArtifa
       const sha = args[1].slice(0, split);
       const file = args[1].slice(split + 1);
       if (file === missingArtifact) throw new Error('MISSING');
-      let bytes = sha === E.baseSha || V2_SUCCESSOR_PATHS.has(file)
-        ? execFileSync('git', ['show', `${V2_SUCCESSOR_PATHS.has(file) ? WP708_MERGE_SHA : E.baseSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 })
-        : fs.readFileSync(file);
+      let bytes = sha === E.baseSha
+        ? execFileSync('git', ['show', `${E.baseSha}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 })
+        : execFileSync('git', ['show', `${WP708_MERGE_SHA}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 });
+      if (sha !== E.baseSha && file === currentTreeFallbackPath) {
+        bytes = Buffer.concat([fs.readFileSync(file), Buffer.from('\ncurrent-tree-fallback')]);
+      }
       if (mutateJson?.path === file) {
         const value = JSON.parse(bytes);
         mutateJson.apply(value);
@@ -82,6 +77,10 @@ test('WP708 candidate oracle rejects forged lease, owner binding and carrier fal
   assert.throws(() => verifyWp708MainProductPostEvaluationException({ git: fakeGit({ mutateJson: { path: E.instancePath, apply: value => { value.lease.wip = 0; } } }) }), /E_WP708_ADMISSION_CARRIER_DIGEST/u);
   assert.throws(() => verifyWp708MainProductPostEvaluationException({ git: fakeGit({ mutateJson: { path: E.authorityPath, apply: value => { value.ownerAuthorityBindingDigest = '0'.repeat(64); } } }) }), /E_WP708_ADMISSION_CARRIER_DIGEST/u);
   assert.throws(() => verifyWp708MainProductPostEvaluationException({ git: fakeGit({ mutateJson: { path: 'docs/OPS/R24/CORRECTIVE/WP708_CARRIER_REGISTRY_V1.json', apply: value => { value.currentTreeFallbackAllowed = true; } } }) }), /E_WP708_CARRIER_DENOMINATOR/u);
+});
+
+test('WP708 candidate oracle rejects mutable current-tree fallback for WP806 compatibility bytes', () => {
+  assert.throws(() => verifyWp708MainProductPostEvaluationException({ git: fakeGit({ currentTreeFallbackPath: 'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs' }) }), /E_WP708_CANDIDATE_MEMBER_BYTES:test\/contracts\/r24-wp806-post-audit-compatibility\.contract\.test\.mjs/u);
 });
 
 test('WP708 routing pins the WP806 oracle to the immutable WP708 base', () => {
