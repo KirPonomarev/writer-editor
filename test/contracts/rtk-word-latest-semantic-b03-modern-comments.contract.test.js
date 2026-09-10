@@ -8,6 +8,7 @@ const fs = require('node:fs');
 const PARSER_PATH = 'src/io/revisionBridge/reviewTransportPackageParserV2.mjs';
 const RECEIPT_PATH = 'docs/OPS/RTK/WORD_LATEST_SEMANTIC_ROUNDTRIP_V2_B03_MODERN_COMMENTS_RECEIPT.json';
 const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const W14_NS = 'http://schemas.microsoft.com/office/word/2010/wordml';
 const W15_NS = 'http://schemas.microsoft.com/office/word/2012/wordml';
 const W16CID_NS = 'http://schemas.microsoft.com/office/word/2016/wordml/cid';
 
@@ -46,6 +47,27 @@ function parts(document, comments = '') {
     'word/document.xml': document,
     ...(comments ? { 'word/comments.xml': comments } : {}),
   };
+}
+
+function modernCommentParts(document, comments, commentsEx = '', commentsIds = '') {
+  return {
+    ...parts(document, comments),
+    'word/commentsExtended.xml': commentsEx || `<w15:commentsEx xmlns:w15="${W15_NS}"/>`,
+    'word/commentsIds.xml': commentsIds || `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}"/>`,
+  };
+}
+
+function commentIdsXml(count) {
+  return `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}">${
+    Array.from({ length: count }, (_, index) => {
+      const id = index + 1;
+      return `<w16cid:commentId w16cid:paraId="${hexParaId(id)}" w16cid:durableId="${hexParaId(id)}"/>`;
+    }).join('')
+  }</w16cid:commentsIds>`;
+}
+
+function hexParaId(value) {
+  return value.toString(16).toUpperCase().padStart(8, '0');
 }
 
 test('B03 comment graph preserves reopened state durable identity ordering and recursive replies', async () => {
@@ -144,6 +166,157 @@ test('B03 duplicate IDs and no-op empty comments never produce a comment support
   assert.equal(noop.reviewIr.commentThreads.length, 0);
   assert.equal(noop.commentGraphCapability.commentPassAllowed, false);
   assert.equal(noop.commentGraphCapability.noOpSaveCountsAsPass, false);
+});
+
+test('B03 modern comments infer reply graph from last paragraph w14 paraId only', async () => {
+  const parser = await loadParser();
+  const result = parser.parseReviewTransportPackageV2({
+    parts: modernCommentParts(
+      documentXml('<w:p><w:r><w:t>Body</w:t></w:r></w:p>'),
+      `<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14_NS}">
+        <w:comment w:id="21" w:author="Alice"><w:p><w:r><w:t>lead</w:t></w:r></w:p><w:p w14:paraId="00AA0001"><w:r><w:t>root</w:t></w:r></w:p></w:comment>
+        <w:comment w:id="22" w:author="Bob"><w:p w14:paraId="00AA0002"><w:r><w:t>reply bob</w:t></w:r></w:p></w:comment>
+        <w:comment w:id="23" w:author="Carol"><w:p w14:paraId="00AA0003"><w:r><w:t>reply carol</w:t></w:r></w:p></w:comment>
+      </w:comments>`,
+      `<w15:commentsEx xmlns:w15="${W15_NS}">
+        <w15:commentEx w15:paraId="00AA0001"/>
+        <w15:commentEx w15:paraId="00AA0002" w15:paraIdParent="00AA0001"/>
+        <w15:commentEx w15:paraId="00AA0003" w15:paraIdParent="00AA0002"/>
+      </w15:commentsEx>`,
+      `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}">
+        <w16cid:commentId w16cid:paraId="00AA0001" w16cid:durableId="00AA0001"/>
+        <w16cid:commentId w16cid:paraId="00AA0002" w16cid:durableId="00AA0002"/>
+        <w16cid:commentId w16cid:paraId="00AA0003" w16cid:durableId="00AA0003"/>
+      </w16cid:commentsIds>`,
+    ),
+  }, { cryptoPort });
+
+  const thread = result.reviewIr.commentThreads[0];
+  assert.equal(result.ok, true);
+  assert.deepEqual(thread.replies.map((reply) => [reply.rawId, reply.parentRawId]), [['22', '21'], ['23', '22']]);
+  assert.deepEqual([thread.body, ...thread.replies.map((reply) => reply.body)], ['leadroot', 'reply bob', 'reply carol']);
+  assert.deepEqual([thread.authorPersonIdentity.author, ...thread.replies.map((reply) => reply.author)], ['Alice', 'Bob', 'Carol']);
+  assert.equal(result.reasons.some((reason) => reason.code.startsWith('RTK_COMMENT_PARENT_')), false);
+});
+
+test('B03 modern comment paraId fallback ignores ancestor namespace shadowing', async () => {
+  const parser = await loadParser();
+  const result = parser.parseReviewTransportPackageV2({
+    parts: modernCommentParts(
+      documentXml('<w:p><w:r><w:t>Body</w:t></w:r></w:p>'),
+      `<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14_NS}">
+        <w:comment w:id="21" w:author="Alice" xmlns:w14="urn:yalken:foreign"><w:p w14:paraId="00AA0001"><w:r><w:t>root</w:t></w:r></w:p></w:comment>
+        <w:comment w:id="22" w:author="Bob"><w:p w14:paraId="00AA0002"><w:r><w:t>reply bob</w:t></w:r></w:p></w:comment>
+        <w:comment w:id="23" w:author="Carol"><w:p w14:paraId="00AA0003"><w:r><w:t>reply carol</w:t></w:r></w:p></w:comment>
+      </w:comments>`,
+      `<w15:commentsEx xmlns:w15="${W15_NS}">
+        <w15:commentEx w15:paraId="00AA0001"/>
+        <w15:commentEx w15:paraId="00AA0002" w15:paraIdParent="00AA0001"/>
+        <w15:commentEx w15:paraId="00AA0003" w15:paraIdParent="00AA0002"/>
+      </w15:commentsEx>`,
+      `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}">
+        <w16cid:commentId w16cid:paraId="00AA0001" w16cid:durableId="00AA0001"/>
+        <w16cid:commentId w16cid:paraId="00AA0002" w16cid:durableId="00AA0002"/>
+        <w16cid:commentId w16cid:paraId="00AA0003" w16cid:durableId="00AA0003"/>
+      </w16cid:commentsIds>`,
+    ),
+  }, { cryptoPort });
+
+  const edges = result.reviewIr.commentThreads.flatMap((thread) => (
+    thread.replies.map((reply) => [reply.rawId, reply.parentRawId])
+  ));
+  const bodies = result.reviewIr.commentThreads.flatMap((thread) => [
+    thread.body,
+    ...thread.replies.map((reply) => reply.body),
+  ]);
+
+  assert.equal(result.ok, true);
+  assert.deepEqual(edges, [['23', '22']]);
+  assert.deepEqual(bodies, ['root', 'reply bob', 'reply carol']);
+});
+
+test('B03 malformed modern comment parent identities preserve comments with typed relation loss', async () => {
+  const parser = await loadParser();
+  const duplicate = parser.parseReviewTransportPackageV2({
+    parts: modernCommentParts(
+      documentXml('<w:p><w:r><w:t>Body</w:t></w:r></w:p>'),
+      `<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14_NS}">
+        <w:comment w:id="1" w:author="A"><w:p w14:paraId="00BB0001"><w:r><w:t>root</w:t></w:r></w:p></w:comment>
+        <w:comment w:id="2" w:author="B"><w:p w14:paraId="00BB0001"><w:r><w:t>reply</w:t></w:r></w:p></w:comment>
+      </w:comments>`,
+      `<w15:commentsEx xmlns:w15="${W15_NS}">
+        <w15:commentEx w15:paraId="00BB0001"/>
+        <w15:commentEx w15:paraId="00BB0001" w15:paraIdParent="00BB0001"/>
+      </w15:commentsEx>`,
+      `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}">
+        <w16cid:commentId w16cid:paraId="00BB0001" w16cid:durableId="00BB0001"/>
+      </w16cid:commentsIds>`,
+    ),
+  }, { cryptoPort });
+  const self = parser.parseReviewTransportPackageV2({
+    parts: modernCommentParts(
+      documentXml('<w:p><w:r><w:t>Body</w:t></w:r></w:p>'),
+      `<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14_NS}"><w:comment w:id="1" w:author="A"><w:p w14:paraId="00CC0001"><w:r><w:t>self</w:t></w:r></w:p></w:comment></w:comments>`,
+      `<w15:commentsEx xmlns:w15="${W15_NS}"><w15:commentEx w15:paraId="00CC0001" w15:paraIdParent="00CC0001"/></w15:commentsEx>`,
+      `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}"><w16cid:commentId w16cid:paraId="00CC0001" w16cid:durableId="00CC0001"/></w16cid:commentsIds>`,
+    ),
+  }, { cryptoPort });
+  const cycle = parser.parseReviewTransportPackageV2({
+    parts: modernCommentParts(
+      documentXml('<w:p><w:r><w:t>Body</w:t></w:r></w:p>'),
+      `<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14_NS}">
+        <w:comment w:id="1" w:author="A"><w:p w14:paraId="00DD0001"><w:r><w:t>one</w:t></w:r></w:p></w:comment>
+        <w:comment w:id="2" w:author="B"><w:p w14:paraId="00DD0002"><w:r><w:t>two</w:t></w:r></w:p></w:comment>
+      </w:comments>`,
+      `<w15:commentsEx xmlns:w15="${W15_NS}">
+        <w15:commentEx w15:paraId="00DD0001" w15:paraIdParent="00DD0002"/>
+        <w15:commentEx w15:paraId="00DD0002" w15:paraIdParent="00DD0001"/>
+      </w15:commentsEx>`,
+      `<w16cid:commentsIds xmlns:w16cid="${W16CID_NS}">
+        <w16cid:commentId w16cid:paraId="00DD0001" w16cid:durableId="00DD0001"/>
+        <w16cid:commentId w16cid:paraId="00DD0002" w16cid:durableId="00DD0002"/>
+      </w16cid:commentsIds>`,
+    ),
+  }, { cryptoPort });
+
+  assert.deepEqual(duplicate.reviewIr.commentThreads.map((thread) => thread.status), ['UNSUPPORTED_BLOCKED', 'UNSUPPORTED_BLOCKED']);
+  assert.deepEqual(duplicate.reviewIr.commentThreads.map((thread) => thread.body), ['root', 'reply']);
+  assert.equal(duplicate.reasons.some((reason) => reason.code === 'RTK_COMMENT_PARENT_AMBIGUOUS'), true);
+  assert.deepEqual(self.reviewIr.commentThreads.map((thread) => thread.status), ['UNSUPPORTED_BLOCKED']);
+  assert.deepEqual(self.reviewIr.commentThreads.map((thread) => thread.body), ['self']);
+  assert.equal(self.reasons.some((reason) => reason.code === 'RTK_COMMENT_PARENT_SELF_REFERENCE'), true);
+  assert.deepEqual(cycle.reviewIr.commentThreads.map((thread) => thread.status), ['UNSUPPORTED_BLOCKED', 'UNSUPPORTED_BLOCKED']);
+  assert.deepEqual(cycle.reviewIr.commentThreads.map((thread) => thread.body), ['one', 'two']);
+  assert.equal(cycle.reasons.filter((reason) => reason.code === 'RTK_COMMENT_PARENT_CYCLE').length, 2);
+});
+
+test('B03 long modern comment parent cycle is bounded and preserves every comment', async () => {
+  const parser = await loadParser();
+  const count = 64;
+  const comments = Array.from({ length: count }, (_, index) => {
+    const id = index + 1;
+    return `<w:comment w:id="${id}" w:author="author-${id}"><w:p w14:paraId="${hexParaId(id)}"><w:r><w:t>body-${id}</w:t></w:r></w:p></w:comment>`;
+  }).join('');
+  const commentsEx = Array.from({ length: count }, (_, index) => {
+    const id = index + 1;
+    const parent = id === 1 ? count : id - 1;
+    return `<w15:commentEx w15:paraId="${hexParaId(id)}" w15:paraIdParent="${hexParaId(parent)}"/>`;
+  }).join('');
+  const result = parser.parseReviewTransportPackageV2({
+    parts: modernCommentParts(
+      documentXml('<w:p><w:r><w:t>Body</w:t></w:r></w:p>'),
+      `<w:comments xmlns:w="${W_NS}" xmlns:w14="${W14_NS}">${comments}</w:comments>`,
+      `<w15:commentsEx xmlns:w15="${W15_NS}">${commentsEx}</w15:commentsEx>`,
+      commentIdsXml(count),
+    ),
+  }, { cryptoPort });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.reviewIr.commentThreads.length, count);
+  assert.equal(result.reviewIr.commentThreads.every((thread) => thread.status === 'UNSUPPORTED_BLOCKED'), true);
+  assert.equal(new Set(result.reviewIr.commentThreads.map((thread) => thread.body)).size, count);
+  assert.equal(result.reasons.filter((reason) => reason.code === 'RTK_COMMENT_PARENT_CYCLE').length, count);
+  assert.equal(result.reasons.filter((reason) => reason.code.startsWith('RTK_COMMENT_PARENT_')).length, count);
 });
 
 test('B03 receipt stays parser-only and does not certify latest Word comments', () => {

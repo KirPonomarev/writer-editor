@@ -954,6 +954,78 @@ test('DOCX review preview session candidate: comments plus complex revisions sta
   )));
 });
 
+test('DOCX review preview session candidate: nested comment reply topology is explicit loss', async () => {
+  const bridge = await loadBridge();
+  const candidate = bridge.buildDocxReviewPreviewSessionCandidateFromEvidence({
+    returnedProjection: {
+      schemaVersion: 'yalken.rtk.review-ir.v2',
+      sourceMode: 'CLEAN',
+      textRevisions: [],
+      commentThreads: [
+        {
+          kind: 'CommentThread',
+          threadId: 'rtk-comment-1',
+          commentId: '1',
+          authorPersonIdentity: { author: 'author-1' },
+          date: '2026-04-24T08:00:00.000Z',
+          body: 'body-1',
+          status: 'ORPHAN',
+          replies: [
+            {
+              rawId: '2',
+              parentRawId: '1',
+              author: 'author-2',
+              body: 'body-2',
+              date: '2026-04-24T08:00:00.000Z',
+            },
+            {
+              rawId: '3',
+              parentRawId: '2',
+              author: 'author-3',
+              body: 'body-3',
+              date: '2026-04-24T08:00:00.000Z',
+            },
+          ],
+        },
+      ],
+      commentPlacements: [],
+      structureChanges: [],
+      formattingDeltas: [],
+    },
+    diagnostics: [],
+  }, {
+    targetScope: TARGET_SCOPE,
+    createdAt: '2026-04-24T08:00:00.000Z',
+  });
+  const preview = bridge.buildRevisionPacketPreview({
+    projectId: 'project-1',
+    sessionId: 'nested-comment-topology-session',
+    baselineHash: 'baseline-1',
+    reviewPacket: candidate.reviewPacket,
+    createdAt: '2026-04-24T08:00:00.000Z',
+  });
+
+  assert.equal(candidate.ok, true);
+  assert.equal(candidate.canOpenReviewSession, true);
+  assert.deepEqual(candidate.reviewPacket.commentThreads[0].messages.map((message) => message.body), [
+    'body-1',
+    'body-2',
+    'body-3',
+  ]);
+  assert.ok(candidate.reviewPacket.diagnosticItems.some((item) => (
+    item.diagnosticId.includes('DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED')
+  )));
+  assert.equal(preview.ok, true);
+  assert.ok(preview.session.reviewGraph.diagnosticItems.some((item) => (
+    item.diagnosticId.includes('DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED')
+  )));
+  assert.equal(candidate.canAutoApply, false);
+  assert.equal(candidate.canImportMutate, false);
+  assert.equal(candidate.canWriteStorage, false);
+  assertNoStorageOrApplyAuthority(candidate);
+  assertNoStorageOrApplyAuthority(preview);
+});
+
 test('DOCX review preview session candidate: clean and malformed inputs do not create review packets', async () => {
   const bridge = await loadBridge();
   const clean = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip(paragraphXml('Clean')), {

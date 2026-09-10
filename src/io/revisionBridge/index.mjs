@@ -5617,6 +5617,35 @@ function returnEvidenceCommentThreadsFromProjection(projection) {
   });
 }
 
+function returnEvidenceCommentTopologyDiagnosticsFromProjection(projection, options = {}) {
+  const threads = Array.isArray(projection?.commentThreads) ? projection.commentThreads : [];
+  const diagnostics = [];
+  const targetScope = docxReviewPreviewSessionTargetScopeOrDefault(options.targetScope);
+  const createdAt = normalizeString(options.createdAt);
+  for (const thread of threads) {
+    if (!isPlainObject(thread) || !Array.isArray(thread.replies)) continue;
+    const rootRawId = normalizeString(thread.commentId || thread.rawId);
+    const nestedReplies = thread.replies.filter((reply) => {
+      const parentRawId = normalizeString(reply?.parentRawId);
+      return parentRawId && rootRawId && parentRawId !== rootRawId;
+    });
+    if (nestedReplies.length === 0) continue;
+    const threadId = normalizeString(thread.threadId) || `docx-comment-${rootRawId}`;
+    diagnostics.push(docxReviewPreviewSessionDiagnostic(
+      'DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED',
+      {
+        diagnosticId: `docx-review-diagnostic-DOCX_REVIEW_PREVIEW_SESSION_COMMENT_REPLY_TOPOLOGY_UNSUPPORTED-${threadId}`,
+        message: `DOCX nested comment reply topology contains ${nestedReplies.length} non-root parent links and is flattened in Review preview.`,
+        targetScope,
+        severity: 'warning',
+        relatedItemId: threadId,
+        createdAt,
+      },
+    ));
+  }
+  return diagnostics;
+}
+
 // Build a preview-session candidate from the verified packet projection.
 // Produces the same shape as buildDocxReviewPreviewSessionCandidateFromZipBytes
 // (status 'ready'/'diagnostics', reviewPacket, sourceViewState, summary) so the
@@ -5636,6 +5665,10 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
     fullManuscriptExportMap,
   });
   const commentThreads = returnEvidenceCommentThreadsFromProjection(projection);
+  const commentTopologyDiagnostics = returnEvidenceCommentTopologyDiagnosticsFromProjection(projection, {
+    targetScope,
+    createdAt,
+  });
   const structuralChanges = Array.isArray(projection?.structureChanges)
     ? projection.structureChanges.map((change) => {
       const structureKind = normalizeString(change?.structureKind || change?.kind);
@@ -5670,7 +5703,7 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
   // parser status, not review-evidence diagnostics. This keeps parity with the
   // legacy bytes-based candidate (which produced an empty reviewPacket for a
   // clean DOCX → NO_CANDIDATE, not a diagnosticOnly candidate).
-  const BLOCKING_DIAGNOSTIC_PREFIXES = ['RTK_BLOCKED_', 'RTK_XML_', 'RTK_ZIP_', 'RTK_HOSTILE_', 'DOCX_REVIEW_'];
+  const BLOCKING_DIAGNOSTIC_PREFIXES = ['RTK_BLOCKED_', 'RTK_XML_', 'RTK_ZIP_', 'RTK_HOSTILE_', 'RTK_COMMENT_PARENT_', 'DOCX_REVIEW_'];
   const packetDiagnostics = Array.isArray(packet?.diagnostics) ? packet.diagnostics : [];
   const diagnostics = packetDiagnostics
     .filter(isPlainObject)
@@ -5743,7 +5776,7 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       },
     ));
   });
-  diagnostics.push(...trackedDiagnostics);
+  diagnostics.push(...commentTopologyDiagnostics, ...trackedDiagnostics);
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;
