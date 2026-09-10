@@ -12026,6 +12026,18 @@
       "evidenceStampIds": [
         "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c7958bdc8d93937389b6988abaa80a7280e56ce09d388a41f26f9744d46b757d",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
+      "approvedAtUtc": "2026-09-10T17:48:00Z",
+      "rationale": "Approve exact R24 RCV00F refreshed test inventory bytes after P03 relationship-graph regression coverage and C1B inventory rebinding; no test removal, skip, dependency expansion, product runtime, UI, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [
