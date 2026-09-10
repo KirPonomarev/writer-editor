@@ -11,18 +11,7 @@ const C = 'docs/OPS/R24/CORRECTIVE/';
 const h = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const read = file => JSON.parse(fs.readFileSync(file));
 const WP806_MERGE_SHA = '7734cc48666f260c9554fbf46357c0a3b8b97c4d';
-const WP708_SUCCESSOR_PATHS = new Set([
-  '.github/workflows/oss-policy.yml',
-  'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
-  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
-  'scripts/ops/r24/docs-claim-lint.mjs',
-  'docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json',
-  'test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs',
-  'test/contracts/r24-wp806-terminal-carriers.contract.test.mjs',
-]);
-const carrierBytes = file => WP708_SUCCESSOR_PATHS.has(file)
-  ? execFileSync('git', ['show', `${WP806_MERGE_SHA}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 })
-  : fs.readFileSync(file);
+const carrierBytes = file => execFileSync('git', ['show', `${WP806_MERGE_SHA}:${file}`], { encoding: null, maxBuffer: 32 * 1024 * 1024 });
 const names = ['MAIN_PRODUCT_OWNER_AUTHORITY','MAIN_PRODUCT_STAGE_INSTANCE','MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION','PROTECTED_WIP_BEFORE',
   'PULSE_PRODUCT_ADMISSION_OWNER_DECISION','WP805_TERMINAL_PREDECESSOR','PULSE_CLAIM_CONTRACT','FEATURE_INTEGRATION_MANIFEST','SURFACE_MANIFEST',
   'EFFECTIVE_GRAPH_BASELINE','CARRIER_REGISTRY','ACCEPTANCE_MATRIX','EFFECTIVE_STATE','STAGE_REGISTRY','LEASE_RELEASE','TERMINAL_RECEIPT'];
@@ -110,13 +99,20 @@ test('WP806 evidence carries 22 executed tests and 10 actual source mutants', ()
     assert.equal(h(bytes), raw.sha256);
     assert.match(bytes.toString(), /\n1\.\.22\n# tests 22\n# suites 0\n# pass 22\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n/u);
     assert.equal(raw.processExitCode, 0);
-    for (const artifact of evidence.artifact.implementationArtifacts) assert.equal(h(fs.readFileSync(artifact.path)), artifact.sha256);
+    for (const artifact of evidence.artifact.implementationArtifacts) assert.equal(h(carrierBytes(artifact.path)), artifact.sha256);
     if (kind === 'MUTANTS') {
       assert.equal(evidence.test.denominator, 10);
       assert.equal(evidence.claim.actualSourceMutations, true);
       assert.equal((bytes.toString().match(/^ok \d+ - WP806 kills implementation mutant:/gmu) || []).length, 10);
     }
   }
+});
+
+test('WP806 carriers reject mutable current-tree fallback for implementation artifacts', () => {
+  const currentBundleDigest = h(fs.readFileSync('src/renderer/editor.bundle.js'));
+  const historicalBundleDigest = h(carrierBytes('src/renderer/editor.bundle.js'));
+  assert.equal(historicalBundleDigest, '7a14f15d5ccb792b2e2523aec32fb3e2d89b099cdcb0688326af2f84d71bcf60');
+  assert.notEqual(currentBundleDigest, historicalBundleDigest);
 });
 
 test('WP806 carriers reject privacy bypass, graph overclaim and false release', () => {

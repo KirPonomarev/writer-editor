@@ -76,6 +76,106 @@ test('u3 export wiring: command uses electronAPI.exportDocxMin and returns deter
   });
 });
 
+test('u3 export wiring: outer command bridge failure after DOCX side effect is not exported success', async () => {
+  const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
+  const fixtureRequest = readFixtureJson('export-request.json');
+  let capturedRequest = null;
+  const electronAPI = {
+    invokeUiCommandBridge: async (request) => {
+      capturedRequest = request;
+      return {
+        ok: false,
+        reason: 'COMMAND_EXECUTION_FAILED',
+        value: {
+          ok: 1,
+          outPath: fixtureRequest.outPath,
+          bytesWritten: 123,
+        },
+      };
+    },
+  };
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI });
+  const runCommand = createCommandRunner(registry);
+
+  const result = await runCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, fixtureRequest);
+  assert.equal(capturedRequest.route, 'command.bus');
+  assert.equal(capturedRequest.commandId, COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN);
+  assert.deepEqual(result, {
+    ok: false,
+    error: {
+      code: 'E_COMMAND_FAILED',
+      op: 'cmd.project.export.docxMin',
+      reason: 'EXPORT_DOCXMIN_COMMAND_BRIDGE_FAILED',
+      details: {
+        bridgeReason: 'COMMAND_EXECUTION_FAILED',
+      },
+    },
+  });
+});
+
+test('u3 export wiring: retry after outer command bridge failure can succeed on a fresh bridge call', async () => {
+  const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
+  const fixtureRequest = readFixtureJson('export-request.json');
+  const bridgeRequests = [];
+  const electronAPI = {
+    invokeUiCommandBridge: async (request) => {
+      bridgeRequests.push(request);
+      if (bridgeRequests.length === 1) {
+        return {
+          ok: false,
+          reason: 'COMMAND_EXECUTION_FAILED',
+          value: {
+            ok: 1,
+            outPath: fixtureRequest.outPath,
+            bytesWritten: 123,
+          },
+        };
+      }
+      return {
+        ok: true,
+        value: {
+          ok: 1,
+          outPath: fixtureRequest.outPath,
+          bytesWritten: 456,
+        },
+      };
+    },
+  };
+
+  const registry = createCommandRegistry();
+  registerProjectCommands(registry, { electronAPI });
+  const runCommand = createCommandRunner(registry);
+
+  const first = await runCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, fixtureRequest);
+  const second = await runCommand(COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN, fixtureRequest);
+  assert.equal(bridgeRequests.length, 2);
+  assert.deepEqual(bridgeRequests.map((request) => request.commandId), [
+    COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
+    COMMAND_IDS.PROJECT_EXPORT_DOCX_MIN,
+  ]);
+  assert.deepEqual(first, {
+    ok: false,
+    error: {
+      code: 'E_COMMAND_FAILED',
+      op: 'cmd.project.export.docxMin',
+      reason: 'EXPORT_DOCXMIN_COMMAND_BRIDGE_FAILED',
+      details: {
+        bridgeReason: 'COMMAND_EXECUTION_FAILED',
+      },
+    },
+  });
+  assert.deepEqual(second, {
+    ok: true,
+    value: {
+      exported: true,
+      outPath: fixtureRequest.outPath,
+      bytesWritten: 456,
+    },
+  });
+});
+
 test('u3 export wiring: horizontal sheet text flows into export bufferSource payload', async () => {
   const { createCommandRegistry, createCommandRunner, COMMAND_IDS, registerProjectCommands } = await loadModules();
   const horizontalSheetText = 'Центральная лента листов: активный горизонтальный лист сохраняет plain text для DOCX export.';

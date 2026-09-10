@@ -10,10 +10,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "e3c729263d8eea6c253f3152750ef956a7b49296eb5cc97ebf53c866d843a103",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "sha256": "433044bb25f9ef3fba4b0772c45f08fa1f3452c383c1d37233e96db7d4f15428",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -281,6 +281,14 @@
       "approved": true
     },
     {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "75256c7b05d7e917797d3d11423ad88918004997c2881cb728d89498b328ee27",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "approved": true
+    },
+    {
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
@@ -322,10 +330,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "9f30a568069c8eafbbf92f89c19b79bed231a0c1f62f28bc9443e7f98da5cfcf",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "sha256": "f98ff4569e8791bc9601e50c53f24a467365cceed70709b65bd4e622e0f1dd34",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -370,10 +378,10 @@
     },
     {
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "2b87b9bfc1f220f1d53e4126054d745711e335181ac148a5a22b30612536f177",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "sha256": "b311fc3092c8ded5ea0b4af68a15fd35ae41d71715be498e29dcc7affcd52af1",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -410,10 +418,10 @@
     },
     {
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "eb9dd6d89accdb89547b04444b4749f91a879d76320b26d05097272374da3e73",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "sha256": "a2e5182b18a5099c28633784fbe85f512db9acc664bf4d76bf840e077fe19cbc",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -450,10 +458,10 @@
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "1794b0df86a5843bf74c8be313848fd2465e47c4aca1f388e90b2ad9d90b7678",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "sha256": "fc40849d65372eebad78e40916378983403a96641ce762a3087ab8945bff3f7f",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -513,11 +521,19 @@
       "approved": true
     },
     {
-      "approvedAtUtc": "2026-09-09T02:06:17Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
       "filePath": "test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs",
-      "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves final WP708 compatibility shim bytes after removing the intermediate WP806 historical-byte simulation so current-head WP806 carriers bind consistently; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added.",
-      "sha256": "31cd36bcc537f1d5e02c9110b08fa61716bd6445ac50602d5c231f9bb7a1b757",
+      "sha256": "8a991bcdc6128ec9e41f6dab746f0f4515c0d0a111996ae0405b3cb3bfb9fb3c",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/r24-wp708-terminal-carriers.contract.test.mjs",
+      "sha256": "8e5a21cc6ca5477c369fe1b3cfdffb5b96eb1848f783ed7614a8a4080b926e05",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708 terminal-carrier fixture drift over successor-dependent WP806 carrier artifacts: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -537,19 +553,19 @@
       "approved": true
     },
     {
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "4a6ef568bdc33fe4798e60e90c4aadeaf21274e580826373311b69afa75b6450",
+      "sha256": "a0541085f3f7b332c3e9433f3f3d43dfa971733984c407b32df1a642f9b72465",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "test/contracts/r24-wp806-terminal-carriers.contract.test.mjs",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "05abd8b3927a07c57180440fc79ac6e6cdfafbadcf6ee67e490afa357b902f12",
+      "sha256": "1fa20738ff8c6f4c6f199547516e04d6698aac04f1260d68af5dc493cd52774d",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -622,14 +638,6 @@
       "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "75256c7b05d7e917797d3d11423ad88918004997c2881cb728d89498b328ee27",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "approved": true
     }
   ],

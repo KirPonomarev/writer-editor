@@ -45,6 +45,7 @@ import {
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
+  R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -84,6 +85,7 @@ import {
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
   verifyR24Interop100U000cPagebreakReexportPostEvaluationException,
+  verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1023,6 +1025,95 @@ test('R24 interop 100 U+000C page-break re-export exception accepts exact PR1857
 test('R24 interop 100 U+000C page-break re-export exception rejects an unadmitted future path',()=>{
   const e=R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,fixture=u000cPagebreakGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
   assert.throws(()=>verifyR24Interop100U000cPagebreakReexportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_U000C_EXACT_ADMITTED_DELTA/);
+});
+function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBytes,unitTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,wp708CompatibilityTestBytes,wp708TerminalCarrierTestBytes,wp806CompatibilityTestBytes,wp806TerminalCarrierTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40)}={}){
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION;
+  const bytesByPath=new Map([
+    [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
+    [e.bundlePath,bundleBytes??fs.readFileSync(e.bundlePath)],
+    [e.unitTestPath,unitTestBytes??fs.readFileSync(e.unitTestPath)],
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.wp708CompatibilityTestPath,wp708CompatibilityTestBytes??fs.readFileSync(e.wp708CompatibilityTestPath)],
+    [e.wp708TerminalCarrierTestPath,wp708TerminalCarrierTestBytes??fs.readFileSync(e.wp708TerminalCarrierTestPath)],
+    [e.wp806CompatibilityTestPath,wp806CompatibilityTestBytes??fs.readFileSync(e.wp806CompatibilityTestPath)],
+    [e.wp806TerminalCarrierTestPath,wp806TerminalCarrierTestBytes??fs.readFileSync(e.wp806TerminalCarrierTestPath)],
+    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='rev-list')value=candidateSha;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 OBS export DOCX command bridge outer-failure exception accepts the exact repair delta',()=>{
+  const fixture=obsExportDocxCommandBridgeGitFixture(),result=verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,13);
+  assert.equal(result.changedPathDenominator,13);
+  assert.equal(result.selectedObservationId,'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909');
+  assert.equal(result.commandBridgeOuterFailure,'FAIL_CLOSED_BEFORE_NESTED_SUCCESS_UNWRAP');
+  assert.equal(result.sourceDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.sourceDigest);
+  assert.equal(result.bundleDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.bundleDigest);
+  assert.equal(result.unitTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.unitTestDigest);
+  assert.equal(result.wp708CompatibilityTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp708CompatibilityTestDigest);
+  assert.equal(result.wp708TerminalCarrierTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp708TerminalCarrierTestDigest);
+  assert.equal(result.wp806CompatibilityTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp806CompatibilityTestDigest);
+  assert.equal(result.wp806TerminalCarrierTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp806TerminalCarrierTestDigest);
+  assert.equal(result.claimLintDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.claimLintDigest);
+  assert.equal(result.claimLintTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.claimLintTestDigest);
+  assert.equal(result.programDone,false);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects an unadmitted future path',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,fixture=obsExportDocxCommandBridgeGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_DELIVERY_CANDIDATE_NOT_FOUND|E_R24_OBS_EXPORT_DOCX_BRIDGE_EXACT_ADMITTED_DELTA/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects a missing outer bridge guard',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replace('response.ok === false','response.ok !== true').replace('EXPORT_DOCXMIN_COMMAND_BRIDGE_FAILED','EXPORT_DOCXMIN_BRIDGE_ADVISORY');
+  const fixture=obsExportDocxCommandBridgeGitFixture({sourceBytes:Buffer.from(source)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP806 fallback proof',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,wp806Test=fs.readFileSync(e.wp806CompatibilityTestPath,'utf8').replace('current-tree-fallback','current-tree-advisory');
+  const fixture=obsExportDocxCommandBridgeGitFixture({wp806CompatibilityTestBytes:Buffer.from(wp806Test)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP806 terminal carrier proof',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,wp806TerminalTest=fs.readFileSync(e.wp806TerminalCarrierTestPath,'utf8').replace('mutable current-tree fallback','mutable checkout fallback');
+  const fixture=obsExportDocxCommandBridgeGitFixture({wp806TerminalCarrierTestBytes:Buffer.from(wp806TerminalTest)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP708 fallback proof',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,wp708Test=fs.readFileSync(e.wp708CompatibilityTestPath,'utf8').replace('current-tree-fallback','current-tree-advisory');
+  const fixture=obsExportDocxCommandBridgeGitFixture({wp708CompatibilityTestBytes:Buffer.from(wp708Test)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP708 terminal carrier proof',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,wp708TerminalTest=fs.readFileSync(e.wp708TerminalCarrierTestPath,'utf8').replace('SUCCESSOR_DEPENDENT_CARRIER_SHA_BY_PATH','SUCCESSOR_CARRIER_HINT_BY_PATH');
+  const fixture=obsExportDocxCommandBridgeGitFixture({wp708TerminalCarrierTestBytes:Buffer.from(wp708TerminalTest)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects stale inventory digest',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.unitTestPath).sha256='0'.repeat(64);
+  const fixture=obsExportDocxCommandBridgeGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_INVENTORY_DIGEST/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

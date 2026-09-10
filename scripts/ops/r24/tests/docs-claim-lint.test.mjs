@@ -16,6 +16,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V30,
   HISTORICAL_INVENTORY_CLAIM_PINS_V31,
   HISTORICAL_INVENTORY_CLAIM_PINS_V32,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V33,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -457,6 +458,33 @@ test('PRE00E refreshed current inventory bindings are accepted only as historica
     assert.ok(pin, stampId);
     assert.equal(pin.targetSha256, '3004a23485401be83ac0693b5fec3ce0e9e955bc470dc460db646a0f8078a403');
     const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:docs/OPS/R24/EVIDENCE/${pin.stampId}.json`], {
+      cwd: REPO_ROOT,
+      encoding: null,
+    });
+    const stamp = JSON.parse(stampBytes);
+    const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+    const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+    assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+    assert.equal(result.currentFileCoverage, false);
+    assert.equal(result.evaluationSha, pin.evaluationSha);
+  }
+});
+
+test('PRE00E DOCX bridge inventory refresh retains interop current-claim bindings as historical bytes', () => {
+  const expectedPins = [
+    'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
+    'ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS',
+  ];
+  for (const stampId of expectedPins) {
+    const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V33.find(
+      (item) => item.stampId === stampId
+        && item.evaluationSha === '9f23ef25ed239da58001b1744ef575760d32aa1f',
+    );
+    assert.ok(pin, stampId);
+    assert.equal(pin.evaluationTree, '58ee86a9b491b91f6b1a046a9f3ab7e60d418f57');
+    assert.equal(pin.targetSha256, 'e3c729263d8eea6c253f3152750ef956a7b49296eb5cc97ebf53c866d843a103');
+    const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+    const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
       cwd: REPO_ROOT,
       encoding: null,
     });
