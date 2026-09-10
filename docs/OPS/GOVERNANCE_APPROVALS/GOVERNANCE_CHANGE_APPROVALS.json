@@ -11864,10 +11864,23 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "dfc824418bac2b5d07e1f26236cbdbd58dffd9ac814207dc49dfc2b8d04d7ad7",
+      "sha256": "990bf25a3ba1894e0be80fd24eaf86188f3304d2326a421c09794970d7a6d860",
       "approvedBy": "owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
       "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "rationale": "Approve exact current PK1R1 governance mirror registry bytes after PR1871 relationship-graph validation and R24 RCV00H merge reconciliation updated shared post-audit carrier hashes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
+      "rationale": "Approve exact current governance mirror registry bytes after PR1871 relationship-graph validation and R24 RCV00H merge reconciliation updated shared post-audit carrier hashes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
+      "approved": true,
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "0a292da2926b0f177d86add2f404f6c21005006466f8e19f538cd271ffbf2ee3",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "rationale": "Approve exact current governance mirror registry bytes after PR1871 relationship-graph validation and R24 RCV00H merge reconciliation updated shared post-audit carrier hashes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
       "approved": true,
       "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
