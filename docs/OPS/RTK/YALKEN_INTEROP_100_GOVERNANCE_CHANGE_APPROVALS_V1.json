@@ -93,7 +93,7 @@
     {
       "approved": true,
       "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
       "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
@@ -142,11 +142,15 @@
     {
       "approved": true,
       "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "25abace1b65e1ba66e4682ba867a7d3c7aaed468d7f17b3d222336a06e52f0c6"
+      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "25abace1b65e1ba66e4682ba867a7d3c7aaed468d7f17b3d222336a06e52f0c6",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ]
     },
     {
       "approved": true,
