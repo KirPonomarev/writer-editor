@@ -17,6 +17,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V31,
   HISTORICAL_INVENTORY_CLAIM_PINS_V32,
   HISTORICAL_INVENTORY_CLAIM_PINS_V33,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V34,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -497,6 +498,27 @@ test('PRE00E DOCX bridge inventory refresh retains interop current-claim binding
   }
 });
 
+test('RCV00E lease-fencing CAS inventory binding is historical after successor refresh', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V34.find(
+    (item) => item.stampId === 'ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS'
+      && item.evaluationSha === 'c36344ab3b5905759e699aec81c93efd5b71827c',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationTree, 'ba75350518e0cb61210c992247bca5fe5e06b43c');
+  assert.equal(pin.targetSha256, '68fb6546cbfecd00a97a40c275431d68bca6f7adb79cd072e751aef9797f4768');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
@@ -517,5 +539,8 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS',
   ));
 });
