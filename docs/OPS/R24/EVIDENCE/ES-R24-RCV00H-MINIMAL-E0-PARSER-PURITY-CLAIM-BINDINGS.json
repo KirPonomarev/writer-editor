@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "R24_RCV00H_MINIMAL_E0_PARSER_PURITY_CLAIM_BINDINGS_V1",
+  "evidenceStampId": "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+  "contourId": "R24-RCV-00H",
+  "status": "PASS",
+  "sourceFindingId": "OPS-03",
+  "predecessorContourId": "R24-RCV-00G",
+  "baseSha": "40a68820c913058839afde665bb74c65cd8ac53e",
+  "baseTree": "40cda564a11593a615251ad4a6620a7ebacab142",
+  "predecessorRuntimeCandidateSha": "872459208f6d8c7df8e9de1178a6c66a84f308cf",
+  "predecessorRuntimeCandidateTree": "40cda564a11593a615251ad4a6620a7ebacab142",
+  "localProofs": {
+    "toolchain": {
+      "node": "22.12.0",
+      "npm": "10.9.0",
+      "route": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0"
+    },
+    "opsGateV2Plan": {
+      "command": "node scripts/ops-gate.mjs --task docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md",
+      "exitCode": 0
+    },
+    "focusedContract": {
+      "command": "node --test test/contracts/ops-gate-core-purity-exception.contract.test.js",
+      "passed": 43,
+      "failed": 0,
+      "skipped": 0,
+      "todo": 0
+    },
+    "e0Lane": {
+      "command": "node scripts/ops/r24/run-e0-tests.mjs",
+      "suite": {
+        "tests": 146,
+        "pass": 146,
+        "fail": 0,
+        "skipped": 0,
+        "todo": 0
+      },
+      "mutants": {
+        "total": 40,
+        "killed": 40,
+        "survived": 0
+      },
+      "envRegistry": "PASS",
+      "docsClaimLint": "PASS"
+    }
+  },
+  "acceptance": [
+    {
+      "id": "COMPLETE_INVENTORY_DRIVES_GATE",
+      "status": "PASS",
+      "evidence": "C1B test inventory remains complete with 1464 tests, 993 contract tests, zero required skips, zero unexplained skips, and post-audit test digest rebinding."
+    },
+    {
+      "id": "HISTORICAL_COMPATIBILITY_EXPLICIT",
+      "status": "PASS",
+      "evidence": "R24-RCV-00C corrective register remains a historical generated crosswalk where OPS-03 stays ACTIVE_CONFIRMED with source evidence; RCV00H adds a successor proof instead of mutating that snapshot."
+    },
+    {
+      "id": "LEXICAL_FALSE_POSITIVES_DO_NOT",
+      "status": "PASS",
+      "evidence": "Focused E0 contract keeps identifier suffix, quoted capability label, object-key, comment, string, and template literal false positives out of CORE_PURITY_VIOLATION."
+    },
+    {
+      "id": "NO_SPECULATIVE_MODULE_EXTRACTION",
+      "status": "PASS",
+      "evidence": "RCV00H changes only post-audit verifier, post-audit contract, test inventory, governance approval registry, and this claim binding; no runtime module extraction or product code move is introduced."
+    },
+    {
+      "id": "REAL_VIOLATIONS_FAIL_WITH_PATH_REASON",
+      "status": "PASS",
+      "evidence": "Focused E0 contract still rejects unapproved core effects with CORE_PURITY_VIOLATION and stderr path/reason details instead of count-only success."
+    },
+    {
+      "id": "TASK_PARSER_REACHES_V2_PLAN",
+      "status": "PASS",
+      "evidence": "Exact-head ops gate invocation against the R24 consolidated V2 plan exits 0 under the required Node 22.12.0/npm 10.9.0 envelope."
+    }
+  ],
+  "historicalCompatibility": {
+    "registerPath": "docs/OPS/R24/CORRECTIVE/R24_CORRECTIVE_REGISTER_V1.json",
+    "expectedRegisterStatus": "ACTIVE_CONFIRMED",
+    "expectedPrimaryContourId": "R24-RCV-00G",
+    "expectedLastTransition": "REGISTERED_BY_R24_RCV_00C",
+    "closureReceiptDigestRemainsNull": true,
+    "mergedShaRemainsNull": true
+  },
+  "nonClaims": [
+    "NO_PROGRAM_DONE",
+    "NO_RELEASE_READINESS",
+    "NO_PRODUCT_RUNTIME_CHANGE",
+    "NO_UI_OR_DESIGN_CHANGE",
+    "NO_NEW_DEPENDENCY",
+    "NO_RUNTIME_NETWORK_OR_CLOUD_TRUTH",
+    "NO_GRAPH_NODE_PROMOTION",
+    "NO_RCV00C_REGISTER_MUTATION"
+  ]
+}

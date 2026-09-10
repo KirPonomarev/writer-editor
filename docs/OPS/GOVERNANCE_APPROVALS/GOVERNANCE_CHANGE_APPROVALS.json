@@ -11803,31 +11803,52 @@
       ]
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "baf8800faa10787c8ec86323254660d4768fd784594027206d43c95a4c6bffeb",
-      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T17:58:28Z",
-      "rationale": "Approve exact OPS03/RCV00G post-audit verifier hash after focused CI failure repair; semantic classifier admission remains six-path bounded, with no product runtime, dependency, UI, network, or release-readiness claim change.",
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS.json",
+      "sha256": "650b8768c59b47810f47b9f9f7165ef45ebfa58b98f4cf82161231e1230c1fb7",
+      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "approvedAtUtc": "2026-09-10T19:20:00Z",
+      "rationale": "Approve exact R24 RCV00H claim-binding evidence for minimal E0 parser purity closure: current E0 proof reaches the V2 plan, real violations fail with path/reason, lexical false positives do not block, and RCV00C historical register state remains explicit; no product runtime, UI, dependency, network, graph promotion, release-readiness, or Program DONE claim.",
       "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
+      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c1ea7469613059c95f958e62577eeb078376ade02e8c0807552167188d8a4fd5",
-      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T18:21:43Z",
-      "rationale": "Approve exact OPS03/RCV00G inventory hash after RCV00F synthetic fixture repair rebinding; no product runtime, dependency, UI, network, release-readiness, or historical RCV00F admission change.",
+      "sha256": "f1fb3f3c532f83157625a4c37dec075fcb9684fab7cab16b466a7445ce503058",
+      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "approvedAtUtc": "2026-09-10T19:20:00Z",
+      "rationale": "Approve exact R24 RCV00H C1B inventory rebinding after post-audit contract expansion; denominator remains 1464 tests, 993 contract tests, zero required skips and zero unexplained skips, with no product runtime, UI, dependency, network, release-readiness, graph promotion, or Program DONE claim.",
       "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
+      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "e829c2db3e5b49595280a772fa617fd16022e99f47e3ab11012e5ce43d0c644d",
+      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "approvedAtUtc": "2026-09-10T19:20:00Z",
+      "rationale": "Approve exact R24 RCV00H post-audit verifier bytes for fail-closed successor proof over the delivered OPS03 E0 runtime repair, preserved historical register compatibility, exact five-path delta, acceptance tokens, governed approvals, and negative candidate/proof mutations; no product runtime, UI, dependency, network, release-readiness, graph promotion, or Program DONE claim.",
+      "approved": true,
+      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "52c1a1ea6abb4ece1a60642b1688cfde2b5e204dec490281237fbdab0513d3ea",
-      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T18:21:43Z",
-      "rationale": "Approve exact OPS03/RCV00G post-audit contract hash after RCV00F synthetic fixture repair binding candidate bytes to immutable delivery; no product runtime, dependency, UI, network, release-readiness, or historical RCV00F admission change.",
+      "sha256": "c0c1b6f62061db82f19741595df5f1e4ef9d4c31e0cf3fdbd20778c68edf23d6",
+      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "approvedAtUtc": "2026-09-10T19:20:00Z",
+      "rationale": "Approve exact R24 RCV00H post-audit contract bytes for positive exact and successor proof plus negative unadmitted future path, missing acceptance evidence, hidden historical register mutation, stale inventory digest, and weakened local proof; no product runtime, UI, dependency, network, release-readiness, graph promotion, or Program DONE claim.",
       "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
+      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ]
     }
   ],
   "evidenceStampIds": [
@@ -11835,6 +11856,7 @@
     "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
     "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION",
-    "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
+    "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
   ]
 }
