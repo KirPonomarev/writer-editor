@@ -9,6 +9,14 @@
       "approved": true
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "724da64a85324a56a8825c8bc177db23fd86903e7a00a04331c0656c6ebd3143",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
+      "approved": true
+    },
+    {
       "approvedAtUtc": "2026-09-08T01:50:00Z",
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -273,6 +281,14 @@
       "approved": true
     },
     {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "75256c7b05d7e917797d3d11423ad88918004997c2881cb728d89498b328ee27",
+      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
+      "approvedAtUtc": "2026-09-10T00:30:07Z",
+      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
+      "approved": true
+    },
+    {
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
@@ -310,6 +326,14 @@
       "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
       "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
+      "approved": true
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "fd7896145c710abd46250c9febf5a78bffc4e6796599e3e43613e733455320e0",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -353,6 +377,14 @@
       "approved": true
     },
     {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "b311fc3092c8ded5ea0b4af68a15fd35ae41d71715be498e29dcc7affcd52af1",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
+      "approved": true
+    },
+    {
       "approvedAtUtc": "2026-09-09T01:06:37.093Z",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/exact-toolchain-entrypoint.mjs",
@@ -385,6 +417,14 @@
       "approved": true
     },
     {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "a2e5182b18a5099c28633784fbe85f512db9acc664bf4d76bf840e077fe19cbc",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
+      "approved": true
+    },
+    {
       "approvedAtUtc": "2026-09-09T01:06:37.093Z",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/tests/q0/toolchain.test.mjs",
@@ -414,6 +454,14 @@
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T12:26:17.194Z",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "approved": true
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "232de3a5398eee290acc796b22336fade63f5916cf5f9a8255fd81565d903d7c",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -473,6 +521,14 @@
       "approved": true
     },
     {
+      "filePath": "test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs",
+      "sha256": "8a991bcdc6128ec9e41f6dab746f0f4515c0d0a111996ae0405b3cb3bfb9fb3c",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
+      "approved": true
+    },
+    {
       "approvedAtUtc": "2026-09-09T05:41:16Z",
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
@@ -489,11 +545,19 @@
       "approved": true
     },
     {
-      "approvedAtUtc": "2026-09-09T01:06:37.093Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
+      "filePath": "test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs",
+      "sha256": "a0541085f3f7b332c3e9433f3f3d43dfa971733984c407b32df1a642f9b72465",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
+      "approved": true
+    },
+    {
       "filePath": "test/contracts/r24-wp806-terminal-carriers.contract.test.mjs",
-      "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "05abd8b3927a07c57180440fc79ac6e6cdfafbadcf6ee67e490afa357b902f12",
+      "sha256": "1fa20738ff8c6f4c6f199547516e04d6698aac04f1260d68af5dc493cd52774d",
+      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
+      "approvedAtUtc": "2026-09-10T02:58:16.743Z",
+      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     },
     {
@@ -566,70 +630,6 @@
       "approvedBy": "owner-directive:R24_RCV00D_CURRENT_MAIN_RECONCILIATION_2026_09_09",
       "approvedAtUtc": "2026-09-09T22:18:14Z",
       "rationale": "Approve exact current governance bytes for R24 RCV00D current-main reconciliation after DOCX/interoperability drift: admit only the selector verifier repair, RTK dirty-tree guard allowlist repair, focused contract binding, regenerated inventory, and existing selector evidence over immutable delivery candidates; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "75256c7b05d7e917797d3d11423ad88918004997c2881cb728d89498b328ee27",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "approved": true
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "1c837a33a4063d07fc5062c0fd9f4b7d51fd628a0dba261c12fe8dfae6359ec3",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "569c96f26d953037757e00053f6e5e585c4237701f39b61df938be82e8232640",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "b311fc3092c8ded5ea0b4af68a15fd35ae41d71715be498e29dcc7affcd52af1",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "a2e5182b18a5099c28633784fbe85f512db9acc664bf4d76bf840e077fe19cbc",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "bef24a23b7b6f21fec3bda8cf1db4427177d9d1f2705dca09996330f0eee4bdf",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs",
-      "sha256": "8a991bcdc6128ec9e41f6dab746f0f4515c0d0a111996ae0405b3cb3bfb9fb3c",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "approved": true
-    },
-    {
-      "filePath": "test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs",
-      "sha256": "a0541085f3f7b332c3e9433f3f3d43dfa971733984c407b32df1a642f9b72465",
-      "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
-      "approvedAtUtc": "2026-09-10T02:26:01Z",
-      "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708/WP806 fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair and negative fallback proof, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
       "approved": true
     }
   ],

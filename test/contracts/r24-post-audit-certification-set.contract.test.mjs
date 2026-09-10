@@ -1026,7 +1026,7 @@ test('R24 interop 100 U+000C page-break re-export exception rejects an unadmitte
   const e=R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,fixture=u000cPagebreakGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
   assert.throws(()=>verifyR24Interop100U000cPagebreakReexportPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_INTEROP100_U000C_EXACT_ADMITTED_DELTA/);
 });
-function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBytes,unitTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,wp708CompatibilityTestBytes,wp806CompatibilityTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40)}={}){
+function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBytes,unitTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,wp708CompatibilityTestBytes,wp806CompatibilityTestBytes,wp806TerminalCarrierTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='5'.repeat(40),candidateTree='6'.repeat(40)}={}){
   const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION;
   const bytesByPath=new Map([
     [e.sourcePath,sourceBytes??fs.readFileSync(e.sourcePath)],
@@ -1038,6 +1038,7 @@ function obsExportDocxCommandBridgeGitFixture({changedPaths,sourceBytes,bundleBy
     [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
     [e.wp708CompatibilityTestPath,wp708CompatibilityTestBytes??fs.readFileSync(e.wp708CompatibilityTestPath)],
     [e.wp806CompatibilityTestPath,wp806CompatibilityTestBytes??fs.readFileSync(e.wp806CompatibilityTestPath)],
+    [e.wp806TerminalCarrierTestPath,wp806TerminalCarrierTestBytes??fs.readFileSync(e.wp806TerminalCarrierTestPath)],
     [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
     [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
   ]);
@@ -1063,8 +1064,8 @@ test('R24 OBS export DOCX command bridge outer-failure exception accepts the exa
   assert.equal(result.status,'PASS');
   assert.equal(result.baseSha,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.baseSha);
   assert.equal(result.candidateSha,fixture.candidateSha);
-  assert.equal(result.admittedPathDenominator,11);
-  assert.equal(result.changedPathDenominator,11);
+  assert.equal(result.admittedPathDenominator,12);
+  assert.equal(result.changedPathDenominator,12);
   assert.equal(result.selectedObservationId,'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909');
   assert.equal(result.commandBridgeOuterFailure,'FAIL_CLOSED_BEFORE_NESTED_SUCCESS_UNWRAP');
   assert.equal(result.sourceDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.sourceDigest);
@@ -1072,6 +1073,7 @@ test('R24 OBS export DOCX command bridge outer-failure exception accepts the exa
   assert.equal(result.unitTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.unitTestDigest);
   assert.equal(result.wp708CompatibilityTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp708CompatibilityTestDigest);
   assert.equal(result.wp806CompatibilityTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp806CompatibilityTestDigest);
+  assert.equal(result.wp806TerminalCarrierTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.wp806TerminalCarrierTestDigest);
   assert.equal(result.claimLintDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.claimLintDigest);
   assert.equal(result.claimLintTestDigest,R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION.claimLintTestDigest);
   assert.equal(result.programDone,false);
@@ -1088,6 +1090,11 @@ test('R24 OBS export DOCX command bridge outer-failure exception rejects a missi
 test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP806 fallback proof',()=>{
   const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,wp806Test=fs.readFileSync(e.wp806CompatibilityTestPath,'utf8').replace('current-tree-fallback','current-tree-advisory');
   const fixture=obsExportDocxCommandBridgeGitFixture({wp806CompatibilityTestBytes:Buffer.from(wp806Test)});
+  assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
+});
+test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP806 terminal carrier proof',()=>{
+  const e=R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,wp806TerminalTest=fs.readFileSync(e.wp806TerminalCarrierTestPath,'utf8').replace('mutable current-tree fallback','mutable checkout fallback');
+  const fixture=obsExportDocxCommandBridgeGitFixture({wp806TerminalCarrierTestBytes:Buffer.from(wp806TerminalTest)});
   assert.throws(()=>verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OBS_EXPORT_DOCX_BRIDGE_ARTIFACT_DIGEST/);
 });
 test('R24 OBS export DOCX command bridge outer-failure exception rejects missing WP708 fallback proof',()=>{
