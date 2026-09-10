@@ -11791,42 +11791,6 @@
       ]
     },
     {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "e1b12a010da64b4f17b81648cd2f8cc7eb839f9e3d34e9af06a94f4b2d31ad78",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
-      "approvedAtUtc": "2026-09-10T11:56:14Z",
-      "rationale": "Approve exact R24 RCV00F post-audit verifier regression test bytes for immutable predecessor preservation, exact delivery reconciliation admission, fake verification rejection, and 65-successor candidate selector coverage; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
-      ]
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3e17776b841f830cd765e2ccd09b8a4ad1f6b1763f413b59566677fc142af154",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
-      "approvedAtUtc": "2026-09-10T11:57:21Z",
-      "rationale": "Approve exact R24 RCV00F post-audit verifier bytes after applying the complete-ancestry delivery-candidate selector fix to both new selectors; no product runtime, UI, dependency, network truth, scheduler, observer, second writer, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS"
-      ]
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "4745fa49436c35399cf232e7f0c70e834953e0eb04af5cce77a91ef5b6e62bf2",
-      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T17:28:06Z",
-      "rationale": "Approve exact R24 OPS03 RCV00G C1B test inventory bytes for semantic E0 classifier regression inventory after independent counterexamples and focused negative/mutant proof; no product runtime, UI, dependency, network truth, release readiness, or unrelated governed path claim.",
-      "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
-      ]
-    },
-    {
       "filePath": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
       "sha256": "cb2ce553798c86d7c74cf4429c9f58b8085f0a9f08a431efcfb035303987dfb7",
       "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
@@ -11837,6 +11801,33 @@
       "evidenceStampIds": [
         "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "1e4d26a353e16901da5e2c72e46dff87b7dccc4dd977e7ccc9275cf4177ad9be",
+      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
+      "approvedAtUtc": "2026-09-10T17:56:40Z",
+      "rationale": "Approve exact OPS03/RCV00G semantic E0 classifier delivery and CI repair governed hashes: tokenized core purity classifier, focused scanner/post-audit contract regressions, and test inventory rebinding; no product runtime, dependency, UI, network, or release-readiness claim change.",
+      "approved": true,
+      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "0f45af05b5ed03df8f2057028672e32902ee6a22b5e22dcc1a7b6e737a980076",
+      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
+      "approvedAtUtc": "2026-09-10T17:56:40Z",
+      "rationale": "Approve exact OPS03/RCV00G semantic E0 classifier delivery and CI repair governed hashes: tokenized core purity classifier, focused scanner/post-audit contract regressions, and test inventory rebinding; no product runtime, dependency, UI, network, or release-readiness claim change.",
+      "approved": true,
+      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "af3455623728cbd9745ead4a4e6a3be81da9005108dde3f16933a58a2fd9052e",
+      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
+      "approvedAtUtc": "2026-09-10T17:56:40Z",
+      "rationale": "Approve exact OPS03/RCV00G semantic E0 classifier delivery and CI repair governed hashes: tokenized core purity classifier, focused scanner/post-audit contract regressions, and test inventory rebinding; no product runtime, dependency, UI, network, or release-readiness claim change.",
+      "approved": true,
+      "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY"
     }
   ],
   "evidenceStampIds": [
