@@ -270,6 +270,9 @@ export const DOCX_HOSTILE_FILE_GATE_REASON_CODES = Object.freeze({
   ENCRYPTED_ENTRY_PRESENT: 'STAGE02_ENCRYPTED_ENTRY_PRESENT',
   PATH_TRAVERSAL_DETECTED: 'STAGE02_PATH_TRAVERSAL_DETECTED',
   EXTERNAL_RELATIONSHIP_PRESENT: 'STAGE02_EXTERNAL_RELATIONSHIP_PRESENT',
+  INTERNAL_RELATIONSHIP_TARGET_MISSING: 'STAGE02_INTERNAL_RELATIONSHIP_TARGET_MISSING',
+  INTERNAL_RELATIONSHIP_TARGET_UNSAFE: 'STAGE02_INTERNAL_RELATIONSHIP_TARGET_UNSAFE',
+  UNBOUND_RELATIONSHIP_REFERENCE: 'STAGE02_UNBOUND_RELATIONSHIP_REFERENCE',
   DUPLICATE_ENTRY_NAME: 'STAGE02_DUPLICATE_ENTRY_NAME',
   COMPRESSION_RATIO_EXCEEDED: 'STAGE02_COMPRESSION_RATIO_EXCEEDED',
   XML_DTD_DECLARATION_PRESENT: 'STAGE02_XML_DTD_DECLARATION_PRESENT',
@@ -1531,6 +1534,9 @@ const DOCX_HOSTILE_FILE_GATE_DIAGNOSTIC_MESSAGES = Object.freeze({
   [DOCX_HOSTILE_FILE_GATE_REASON_CODES.ENCRYPTED_ENTRY_PRESENT]: 'encrypted ZIP entry blocks Stage02 gate',
   [DOCX_HOSTILE_FILE_GATE_REASON_CODES.PATH_TRAVERSAL_DETECTED]: 'path traversal entry name blocks Stage02 gate',
   [DOCX_HOSTILE_FILE_GATE_REASON_CODES.EXTERNAL_RELATIONSHIP_PRESENT]: 'external relationship part blocks Stage02 gate',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_MISSING]: 'internal relationship target is missing from the DOCX package',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_UNSAFE]: 'internal relationship target path is unsafe',
+  [DOCX_HOSTILE_FILE_GATE_REASON_CODES.UNBOUND_RELATIONSHIP_REFERENCE]: 'document relationship reference is not bound in document relationships',
   [DOCX_HOSTILE_FILE_GATE_REASON_CODES.DUPLICATE_ENTRY_NAME]: 'duplicate ZIP entry name blocks Stage02 gate',
   [DOCX_HOSTILE_FILE_GATE_REASON_CODES.COMPRESSION_RATIO_EXCEEDED]: 'compression ratio exceeds Stage02 budget',
   [DOCX_HOSTILE_FILE_GATE_REASON_CODES.XML_DTD_DECLARATION_PRESENT]: 'DTD declaration blocks Stage02 gate',
@@ -2009,6 +2015,148 @@ function docxHostileFileGateRelationshipTargetModeBlocked(xmlText, entryId = '')
   });
 }
 
+function docxHostileFileGateRelationshipSource(entryId) {
+  if (entryId === '_rels/.rels') {
+    return { sourcePart: '', baseDir: '' };
+  }
+  const match = String(entryId).match(/^(.*\/)?_rels\/([^/]+)\.rels$/u);
+  if (!match) return { sourcePart: null, baseDir: null };
+  const prefix = match[1] || '';
+  const sourcePart = `${prefix}${match[2]}`;
+  const lastSlashIndex = sourcePart.lastIndexOf('/');
+  return {
+    sourcePart,
+    baseDir: lastSlashIndex === -1 ? '' : sourcePart.slice(0, lastSlashIndex),
+  };
+}
+
+function docxHostileFileGateDecodeXmlAttribute(value) {
+  return String(value ?? '')
+    .replace(/&lt;/giu, '<')
+    .replace(/&gt;/giu, '>')
+    .replace(/&quot;/giu, '"')
+    .replace(/&apos;/giu, "'")
+    .replace(/&amp;/giu, '&');
+}
+
+function docxHostileFileGateRelationshipRows(xmlText) {
+  return Array.from(String(xmlText).matchAll(/<Relationship\b([^>]*)\/?>/giu)).map((match) => ({
+    id: docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(match[1], 'Id') || '',
+    ),
+    target: docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(match[1], 'Target') || '',
+    ),
+    targetMode: docxHostileFileGateRelationshipAttributeValue(match[1], 'TargetMode') || '',
+  }));
+}
+
+function docxHostileFileGateNormalizeInternalRelationshipTarget(baseDir, target) {
+  const rawTarget = String(target || '').replace(/\\/gu, '/');
+  const [targetWithoutFragment] = rawTarget.split('#');
+  if (!targetWithoutFragment) {
+    return { normalizedTarget: '', escapedPackage: false, externalUri: false, unsafeAbsolute: false };
+  }
+  if (/^[a-z][a-z0-9+.-]*:/iu.test(targetWithoutFragment)) {
+    return { normalizedTarget: '', escapedPackage: false, externalUri: true, unsafeAbsolute: false };
+  }
+  if (targetWithoutFragment.startsWith('/')) {
+    return { normalizedTarget: '', escapedPackage: false, externalUri: false, unsafeAbsolute: true };
+  }
+  const sourceSegments = baseDir ? String(baseDir).split('/') : [];
+  const segments = [...sourceSegments, ...targetWithoutFragment.split('/')];
+  const normalized = [];
+  for (const segment of segments) {
+    if (!segment || segment === '.') continue;
+    if (segment === '..') {
+      if (normalized.length === 0) {
+        return { normalizedTarget: '', escapedPackage: true, externalUri: false, unsafeAbsolute: false };
+      }
+      normalized.pop();
+      continue;
+    }
+    normalized.push(segment);
+  }
+  return {
+    normalizedTarget: normalized.join('/'),
+    escapedPackage: false,
+    externalUri: false,
+    unsafeAbsolute: false,
+  };
+}
+
+function docxHostileFileGateRelationshipReferenceIds(xmlText) {
+  return Array.from(String(xmlText).matchAll(/\br:(?:embed|id|link)\s*=\s*(["'])([^"']+)\1/giu))
+    .map((match) => docxHostileFileGateDecodeXmlAttribute(match[2]));
+}
+
+function docxHostileFileGateValidateRelationshipGraph(bytes, metadataEntries) {
+  const packageEntryIds = new Set(metadataEntries.map((entry) => entry.entryId));
+  const documentRelationshipIds = new Set();
+  let documentXmlText = '';
+
+  for (const entry of metadataEntries) {
+    if (entry.entryId !== 'word/document.xml' && !/\.rels$/iu.test(entry.entryId)) continue;
+    const scanResult = docxHostileFileGateInflatedDeclarationText(bytes, entry);
+    if (scanResult.failure) return scanResult.failure;
+    const xmlText = Buffer.from(scanResult.contentBytes).toString('utf8');
+    if (entry.entryId === 'word/document.xml') {
+      documentXmlText = xmlText;
+      continue;
+    }
+
+    const relationshipSource = docxHostileFileGateRelationshipSource(entry.entryId);
+    if (relationshipSource.sourcePart === null) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_UNSAFE,
+        entry.entryId,
+        { kind: 'relationshipGraph', sourceCode: 'DOCX_RELATIONSHIP_PART_SOURCE_UNRESOLVED' },
+      );
+    }
+
+    for (const relationship of docxHostileFileGateRelationshipRows(xmlText)) {
+      if (entry.entryId === 'word/_rels/document.xml.rels' && relationship.id) {
+        documentRelationshipIds.add(relationship.id);
+      }
+      if (relationship.targetMode.trim().toLowerCase() === 'external') continue;
+      const resolution = docxHostileFileGateNormalizeInternalRelationshipTarget(
+        relationshipSource.baseDir || '',
+        relationship.target,
+      );
+      if (
+        resolution.escapedPackage
+        || resolution.externalUri
+        || resolution.unsafeAbsolute
+        || !resolution.normalizedTarget
+      ) {
+        return docxHostileFileGateBlockedResult(
+          DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_UNSAFE,
+          entry.entryId,
+          { kind: 'relationshipGraph', sourceCode: relationship.id || relationship.target || 'DOCX_RELATIONSHIP_TARGET_UNSAFE' },
+        );
+      }
+      if (!packageEntryIds.has(resolution.normalizedTarget)) {
+        return docxHostileFileGateBlockedResult(
+          DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_MISSING,
+          entry.entryId,
+          { kind: 'relationshipGraph', sourceCode: relationship.id || resolution.normalizedTarget },
+        );
+      }
+    }
+  }
+
+  for (const relationshipId of docxHostileFileGateRelationshipReferenceIds(documentXmlText)) {
+    if (!documentRelationshipIds.has(relationshipId)) {
+      return docxHostileFileGateBlockedResult(
+        DOCX_HOSTILE_FILE_GATE_REASON_CODES.UNBOUND_RELATIONSHIP_REFERENCE,
+        'word/document.xml',
+        { kind: 'relationshipGraph', sourceCode: relationshipId },
+      );
+    }
+  }
+  return null;
+}
+
 function docxHostileFileGateCompressionRatioExceeded(entry) {
   if (!isFiniteNonnegativeInteger(entry.byteSize) || !isFiniteNonnegativeInteger(entry.compressedSize)) {
     return false;
@@ -2205,6 +2353,9 @@ export function inspectDocxHostileFileGateFromZipBytes(input) {
       return docxHostileFileGateInvalidScanResult(entry.entryId, 'DOCX_XML_DECLARATION_REGION_UNAVAILABLE');
     }
   }
+
+  const relationshipGraphFailure = docxHostileFileGateValidateRelationshipGraph(bytes, metadataResult.entries);
+  if (relationshipGraphFailure) return relationshipGraphFailure;
 
   return docxHostileFileGateResult(
     'pass',

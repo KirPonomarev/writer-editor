@@ -9322,15 +9322,6 @@
       "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_GENERIC01_CREATE_ONLY_IMPORT"
     },
     {
-      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "sha256": "585294dc211fded73d792df6bce3635597811256d518730ddfcca7f7697da402",
-      "approvedBy": "owner-direct:TASK_ID:GENERIC-01_CREATE_ONLY_IMPORT",
-      "approvedAtUtc": "2026-08-09T06:25:17.945Z",
-      "rationale": "Approve GENERIC-01 create-only import contract tests (G1-G7 plus G8 controls incl. self-amended duplicate control per its own contract comment); tests only.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_GENERIC01_CREATE_ONLY_IMPORT"
-    },
-    {
       "filePath": "docs/CONTEXT.md",
       "sha256": "592cb43898d8530036df0e2e9c9ec3997c28cf23cc9d608a278bd566fe6a34aa",
       "approvedBy": "owner-direct:TASK_ID:PHYS11_DIVERSE_WAVE300_EVIDENCE",
@@ -11794,13 +11785,58 @@
       "filePath": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
       "sha256": "cb2ce553798c86d7c74cf4429c9f58b8085f0a9f08a431efcfb035303987dfb7",
       "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "approvedAtUtc": "2026-09-10T17:28:06Z",
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
       "rationale": "Approve exact R24 OPS03 RCV00G ops-gate semantic classifier contract test bytes for focused positive, negative, adversarial, and implementation-mutant proof; no product runtime, UI, dependency, network truth, release readiness, or unrelated governed path claim.",
       "approved": true,
       "authority": "OWNER_DIRECTIVE_R24_OPS03_RCV00G_EXACT_GOVERNED_HASH_RECONCILIATION_AND_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve exact current bytes for PR1871 main40a688 merge-resync plus R24 RCV00H minimal E0 parser purity merge reconciliation: one approval row per file hash, compound authority for already-authorized post-evaluation gates sharing current carrier bytes; no product runtime, UI, dependency, network truth, release readiness, graph promotion, broad portability PASS, PROGRAM_DONE, or unrelated governed path claim.",
+      "sha256": "0368b120b792508a06204369af860ed31a79ea82b3a800a537342d91bc8e8d87"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Approve exact current bytes for PR1871 main40a688 merge-resync plus R24 RCV00H minimal E0 parser purity merge reconciliation: one approval row per file hash, compound authority for already-authorized post-evaluation gates sharing current carrier bytes; no product runtime, UI, dependency, network truth, release readiness, graph promotion, broad portability PASS, PROGRAM_DONE, or unrelated governed path claim.",
+      "sha256": "de0806d1b7609168e2bdc94f0ceeb13c43de3bd3a49869da5a2cfe9d60984149"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve exact current bytes for PR1871 main40a688 merge-resync plus R24 RCV00H minimal E0 parser purity merge reconciliation: one approval row per file hash, compound authority for already-authorized post-evaluation gates sharing current carrier bytes; no product runtime, UI, dependency, network truth, release readiness, graph promotion, broad portability PASS, PROGRAM_DONE, or unrelated governed path claim.",
+      "sha256": "7e025124c47b1ee758744ebb158e293ade8f83fef364c434f3d5bfa447c8110a"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS.json",
@@ -11815,38 +11851,27 @@
       ]
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f1fb3f3c532f83157625a4c37dec075fcb9684fab7cab16b466a7445ce503058",
-      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "approvedAtUtc": "2026-09-10T19:20:00Z",
-      "rationale": "Approve exact R24 RCV00H C1B inventory rebinding after post-audit contract expansion; denominator remains 1464 tests, 993 contract tests, zero required skips and zero unexplained skips, with no product runtime, UI, dependency, network, release-readiness, graph promotion, or Program DONE claim.",
       "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ]
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC"
+      ],
+      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+      "rationale": "Approve exact current bytes for PR1871 main40a688 merge-resync governance registry normalization: one approval row per file hash, compound authority where multiple already-authorized post-evaluation gates share the same current carrier bytes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
+      "sha256": "e6a9409a1fd754125b5df15a8b706f4ba04efe29489cb7bbf03a9cc4f41a3145"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "e829c2db3e5b49595280a772fa617fd16022e99f47e3ab11012e5ce43d0c644d",
-      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "approvedAtUtc": "2026-09-10T19:20:00Z",
-      "rationale": "Approve exact R24 RCV00H post-audit verifier bytes for fail-closed successor proof over the delivered OPS03 E0 runtime repair, preserved historical register compatibility, exact five-path delta, acceptance tokens, governed approvals, and negative candidate/proof mutations; no product runtime, UI, dependency, network, release-readiness, graph promotion, or Program DONE claim.",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "dfc824418bac2b5d07e1f26236cbdbd58dffd9ac814207dc49dfc2b8d04d7ad7",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "rationale": "Approve exact current PK1R1 governance mirror registry bytes after PR1871 relationship-graph validation and R24 RCV00H merge reconciliation updated shared post-audit carrier hashes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
       "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ]
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "c0c1b6f62061db82f19741595df5f1e4ef9d4c31e0cf3fdbd20778c68edf23d6",
-      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "approvedAtUtc": "2026-09-10T19:20:00Z",
-      "rationale": "Approve exact R24 RCV00H post-audit contract bytes for positive exact and successor proof plus negative unadmitted future path, missing acceptance evidence, hidden historical register mutation, stale inventory digest, and weakened local proof; no product runtime, UI, dependency, network, release-readiness, graph promotion, or Program DONE claim.",
-      "approved": true,
-      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
       ]
     }
@@ -11857,6 +11882,7 @@
     "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION",
     "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
   ]
 }

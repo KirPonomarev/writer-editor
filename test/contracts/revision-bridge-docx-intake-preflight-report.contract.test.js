@@ -9,6 +9,10 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = path.join(ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
 const SECTION_START = '// RB_10_DOCX_INTAKE_PREFLIGHT_REPORT_START';
 const SECTION_END = '// RB_10_DOCX_INTAKE_PREFLIGHT_REPORT_END';
+const ONE_PIXEL_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
+  'base64',
+);
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);
@@ -216,6 +220,19 @@ test('DOCX intake preflight report: bounded degraded parts become content-only c
       body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
     },
   ]));
+  const equivalentInternalRelationship = bridge.buildDocxIntakePreflightReportFromZipBytes(zipFixture([
+    {
+      name: 'word/document.xml',
+      method: 8,
+      body: '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body><w:p><w:r><w:drawing><a:blip r:embed="rImg9"/></w:drawing></w:r></w:p></w:body></w:document>',
+    },
+    { name: 'word/media/image1.png', body: ONE_PIXEL_PNG },
+    { name: 'word/styles.xml', body: '<w:styles/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rStyles" Target="styles.xml"/><Relationship Id="rImg9" Target="./media/../media/image1.png"/></Relationships>',
+    },
+  ]));
   const attachedTemplateExternal = bridge.buildDocxIntakePreflightReportFromZipBytes(cleanDocxZip([
     {
       name: 'word/_rels/document.xml.rels',
@@ -226,7 +243,7 @@ test('DOCX intake preflight report: bounded degraded parts become content-only c
     { name: 'word/styles.xml', body: '<w:styles/>' },
   ]));
 
-  for (const result of [relationship, safeExternalHyperlink, unsupportedStory]) {
+  for (const result of [relationship, safeExternalHyperlink, equivalentInternalRelationship, unsupportedStory]) {
     assertPreParseReport(result);
     assert.equal(result.ok, true);
     assert.equal(result.gatePass, true);
@@ -245,6 +262,7 @@ test('DOCX intake preflight report: bounded degraded parts become content-only c
   }
   assert.equal(relationship.code, 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY');
   assert.equal(safeExternalHyperlink.code, 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY');
+  assert.equal(equivalentInternalRelationship.code, 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY');
   assert.equal(customProperties.ok, true);
   assert.equal(customProperties.gatePass, true);
   assert.equal(customProperties.partPolicy.categories.knownSupportPart.entryIds.includes('docProps/custom.xml'), true);
@@ -278,6 +296,38 @@ test('DOCX intake preflight report: hostile containers stay blocked before seman
       body: `<root>${'a'.repeat(20000)}</root>`,
     },
   ]));
+  const missingRelationshipTarget = bridge.buildDocxIntakePreflightReportFromZipBytes(zipFixture([
+    {
+      name: 'word/document.xml',
+      body: '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p/></w:body></w:document>',
+    },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rImgMissing" Target="media/missing.png"/></Relationships>',
+    },
+  ]));
+  const escapingRelationshipTarget = bridge.buildDocxIntakePreflightReportFromZipBytes(zipFixture([
+    {
+      name: 'word/document.xml',
+      body: '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p/></w:body></w:document>',
+    },
+    { name: 'word/media/image1.png', body: ONE_PIXEL_PNG },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rImgEscape" Target="../../evil.png"/></Relationships>',
+    },
+  ]));
+  const unboundRelationshipReference = bridge.buildDocxIntakePreflightReportFromZipBytes(zipFixture([
+    {
+      name: 'word/document.xml',
+      body: '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body><w:p><w:r><w:drawing><a:blip r:embed="rImgUnbound"/></w:drawing></w:r></w:p></w:body></w:document>',
+    },
+    { name: 'word/media/image1.png', body: ONE_PIXEL_PNG },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rImgActual" Target="media/image1.png"/></Relationships>',
+    },
+  ]));
 
   const expected = [
     [duplicate, 'STAGE02_DUPLICATE_ENTRY_NAME'],
@@ -285,6 +335,9 @@ test('DOCX intake preflight report: hostile containers stay blocked before seman
     [dtd, 'STAGE02_XML_DTD_DECLARATION_PRESENT'],
     [entity, 'STAGE02_XML_ENTITY_DECLARATION_PRESENT'],
     [bomb, 'STAGE02_COMPRESSION_RATIO_EXCEEDED'],
+    [missingRelationshipTarget, 'STAGE02_INTERNAL_RELATIONSHIP_TARGET_MISSING'],
+    [escapingRelationshipTarget, 'STAGE02_INTERNAL_RELATIONSHIP_TARGET_UNSAFE'],
+    [unboundRelationshipReference, 'STAGE02_UNBOUND_RELATIONSHIP_REFERENCE'],
   ];
 
   for (const [result, code] of expected) {

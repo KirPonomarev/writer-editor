@@ -196,6 +196,11 @@ function lossyDocxZip() {
   ].join('');
   return zipFixture([
     { name: 'word/document.xml', method: 8, body: documentXml(body) },
+    {
+      name: 'word/_rels/document.xml.rels',
+      method: 8,
+      body: '<Relationships><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid/generic01" TargetMode="External"/></Relationships>',
+    },
   ]);
 }
 
