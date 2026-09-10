@@ -15,6 +15,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V29,
   HISTORICAL_INVENTORY_CLAIM_PINS_V30,
   HISTORICAL_INVENTORY_CLAIM_PINS_V31,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V32,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -417,6 +418,31 @@ test('RCV00C corrective-register inventory binding is retained only at exact del
   );
 });
 
+test('RCV00D graph-derived selector inventory binding is retained only at exact delivery bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V32.find(
+    (item) => item.stampId === 'ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationSha, '0e0560634c8bce92e83cbf11380b47023b49e7c6');
+  assert.equal(pin.evaluationTree, '8c3dce95e1a822063a9e80d2a9f4079261f398da');
+  assert.equal(pin.targetSha256, 'c57a8e473f25f9ccbd46013097249fb346c9869fa7b0496570ef2b26aa8f4833');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
 test('PRE00E refreshed current inventory bindings are accepted only as historical bytes', () => {
   const expectedPins = [
     'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION',
@@ -456,15 +482,12 @@ test('repository claim surface keeps current and historical C1B inventory bindin
     (binding) => binding.stampId === 'ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION',
   ));
   assert.ok(result.historicalBindings.some(
-    (binding) => binding.stampId === 'ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS',
-  ));
-  assert.ok(result.historicalBindings.some(
-    (binding) => binding.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
-  ));
-  assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-RCV00B-EFFECTIVE-STATE-COMPILER-CLAIM-BINDINGS',
   ));
   assert.ok(result.historicalBindings.some(
-    (binding) => binding.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS',
+    (binding) => binding.stampId === 'ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS',
   ));
 });

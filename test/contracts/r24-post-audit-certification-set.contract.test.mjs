@@ -992,7 +992,7 @@ test('R24 interop 100 safe external hyperlink preview exception rejects denomina
 });
 function u000cPagebreakGitFixture({changedPaths}={}){
   const e=R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,candidateSha='7'.repeat(40),candidateTree='8'.repeat(40);
-  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,fs.readFileSync(repoPath)]));
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,objectFromCommit(e.deliverySha,repoPath)]));
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
