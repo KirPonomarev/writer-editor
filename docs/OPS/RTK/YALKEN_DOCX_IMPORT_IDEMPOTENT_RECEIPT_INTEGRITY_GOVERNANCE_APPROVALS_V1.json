@@ -3,18 +3,98 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T14:33:47Z",
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1"
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+      ],
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "553e052ba9f2df0a950e4bf7def7ce759bbe614c7080df2025a06f5c3ad6e509",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+      ],
+      "filePath": "src/utils/docxImportSafeCreate.js",
+      "sha256": "94ad8cecb463c7741499c260ffbc7bc0e77c458ce0e3261af2c2f4a296fecb0c",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "3513e427a8050cf73fb198a2ff4092819cb179c5f5f638d04d9640fc2d70504b",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "bed4554d7f72f56e212134bab10da2c5033c91080c47af6f7167289da18064b6",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-      "sha256": "ecb0e2a8530282d5abb6da5c66eff438dc94da6ed4b6729a9eb1707a9cce3307",
-      "rationale": "Approve exact bounded DOCX import idempotent receipt integrity regression bytes: valid duplicate safe-create remains zero-write; missing scene, canonical text mutation, receipt hash mutation, batchId mutation, manifestAuthority mutation, transactionEvidence mutation, transactional lease/manifest hash replay mutation, malformed durable receipt JSON, and invalid createdAt shape fail closed through the existing command surface without public path leaks; createdAt is explicitly non-authoritative shape-only metadata and CRLF-only scene byte changes are canonical-text equivalent under the declared receipt scope. No UI, dependency, runtime network, direct Google API/OAuth, raw scene byte integrity claim, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "adfb39ffd9c13397a0fbe8748eb8f9c4050b89dc5072372e305fd512c0a1317d",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
+      "sha256": "3d2d1c834899e9ceb1cd88e7768722b02258cc9ab7abff974a25233fdea33142",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
+      "sha256": "14c56ad3fe678467d51462ea22efd87ba4299859dd093bc6fcd284341daa5c48",
+      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     }
   ],
   "evidenceStampIds": [
-    "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1"
+    "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1",
+    "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
   ]
 }
