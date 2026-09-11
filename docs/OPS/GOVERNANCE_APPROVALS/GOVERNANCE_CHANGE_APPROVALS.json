@@ -11893,48 +11893,59 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f4c5ff9ce40f851d331a5ac4729f0c4f6f076e5da84eae4567a318bca3603a20",
-      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact C1B test inventory bytes for bounded R24 RCV01A normative claim-test-lane manifest repair: refreshed inventory admits the focused contract proving independent required-claim lane denominator and negative/mutant rejection. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "5b8ee6840a7ee108d34f00c389dccfc8d6f1f148767eea784fd08e324bc26e0f",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact merged C1B inventory bytes preserving PR1885 DOCX list-numbering loss identity delivery and adding bounded R24 RCV01A normative claim-test-lane manifest coverage: refreshed digest only after current-base regeneration. No product apply route, UI/design change, dependency, runtime network, Word or Google full-denominator pass, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT",
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "a5ac6bd911d980b8aa76a842f1963cf39fe76e560c57000f7dd573159353bba6",
-      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact bounded R24 RCV01A normative claim-test-lane manifest bytes: establishes independent per-claim test and lane denominator for required load-bearing R24 claims and preserves optional source-coverage status without widening release claims. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "9a696529d2f11ab56a814f1b6d9b203ed8c37a82cbb9557df2482e73caca644f",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_NONSTOP_SUPERVISOR_RESUME_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact focused regression bytes for bounded R24 S09 DOCX list-numbering loss identity delivery on PR1885: proves paragraphIndex, numId, ilvl, and listKey preservation in zero-write preview loss records and suppression of explicit numId zero. No product apply route, UI/design change, dependency, runtime network, Word or Google full-denominator pass, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST",
+      "authority": "OWNER_APPROVED_R24_INTEROP_S09_LIST_NUMBERING_LOSS_IDENTITY_DELIVERY"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
+      "sha256": "abdb2e977c4aa20d266b953fe402c0157c6f3370711465fc9dff38f5001deb35",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact bounded R24 RCV01A normative claim-test-lane manifest bytes bound to current-main candidate base ba9e9772 and tree 8ef67d79: establishes independent per-claim test and lane denominator for required load-bearing R24 claims without widening release claims. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "0efe06d405873c79d90472e3d47c6c347881f9535d1045ed92a5daaa508f1175",
-      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact bounded R24 RCV01A claim-binding evidence bytes for the normative claim-test-lane manifest repair: binds current claims to verifier and focused contract artifacts with exact implementation digests. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "2a5e0d6ca2a63570535a2698602010600f05046ad44a8bb81bebe259e69e6767",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact bounded R24 RCV01A claim-binding evidence bytes for the normative claim-test-lane manifest repair: binds current-main candidate base, final manifest, merged C1B inventory, verifier, and focused contract artifact digests. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
     },
     {
       "filePath": "scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs",
-      "sha256": "230302978dc4dffaa6dcc6683799f567e8b9a3b826794cd1b7a9db518303e780",
-      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact bounded R24 RCV01A verifier bytes: validates immutable manifest identity, required claim coverage, lane denominator, execution receipt, claim bindings, and rejects required-claim shrinkage, missing lanes, duplicate identities, zero-test success, and reduced mutant denominator. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "7f37038cebd4ea236855d3d94db4145b8d96a886edf5aee3851d6a20b2d00138",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact bounded R24 RCV01A verifier bytes after current-base reconciliation: validates immutable base identity, required claim coverage, lane denominator, execution receipt, claim bindings, and rejects required-claim shrinkage, missing lanes, duplicate identities, zero-test success, and reduced mutant denominator. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
@@ -11942,11 +11953,11 @@
     {
       "filePath": "test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs",
       "sha256": "91c711be625a53831a9064957bc123d2b0f4c4e38944b09d8a1033c24636b0b9",
-      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
       "rationale": "Approve exact bounded R24 RCV01A focused contract bytes: proves deterministic manifest generation, required-claim denominator preservation, missing-lane rejection, duplicate identity rejection, zero-test rejection, execution receipt duplication rejection, and mutant denominator regression rejection. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]

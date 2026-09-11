@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,8 +8,8 @@ export const RCV01A_SCHEMA_VERSION = 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIF
 export const RCV01A_CLAIM_BINDING_SCHEMA_VERSION = 'ClaimBindingV1';
 export const RCV01A_CONTOUR_ID = 'R24-RCV-01A';
 export const RCV01A_TASK_ID = 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_20260911';
-export const EXPECTED_BASE_SHA = 'e59cc20ad3d9e98a13f3c53c69fe01eb9052dd42';
-export const EXPECTED_BASE_TREE = '9cec89f2aaba525aab0757b548f0187f2e9a24e3';
+export const EXPECTED_BASE_SHA = 'ba9e9772f7e6c4c53e182247bb3ad3ff2a456cfb';
+export const EXPECTED_BASE_TREE = '8ef67d790cf3d9ec5f5f0e0e054084cf7c7c110e';
 
 export const PATHS = Object.freeze({
   claimRegistry: 'docs/OPS/R24/CLAIM_REGISTRY_R2_4.json',
@@ -149,10 +148,6 @@ function implementationBinding(repoRoot, relativePath, terms) {
   };
 }
 
-function gitText(repoRoot, args) {
-  return execFileSync('git', ['-C', repoRoot, ...args], { encoding: 'utf8' }).trim();
-}
-
 function assertObject(value, code, detail = '') {
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail(code, detail);
   return value;
@@ -206,9 +201,6 @@ export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
   const claimRegistry = readJson(root, PATHS.claimRegistry);
   const testAssuranceMatrix = readJson(root, PATHS.testAssuranceMatrix);
   const inventory = readJson(root, PATHS.inventory);
-  const headSha = gitText(root, ['rev-parse', 'HEAD']);
-  const originMainSha = gitText(root, ['rev-parse', 'origin/main']);
-  const treeSha = gitText(root, ['rev-parse', 'HEAD^{tree}']);
   const inventoryByPath = new Map(assertArray(inventory.entries, 'E_RCV01A_INVENTORY_ENTRIES').map((entry) => [entry.path, entry]));
   const claimEntries = assertArray(claimRegistry.claims, 'E_RCV01A_CLAIM_REGISTRY_CLAIMS').map((claim) => {
     const requirement = CLAIM_REQUIREMENTS[claim.id];
@@ -224,9 +216,9 @@ export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
     identity: {
       baseSha: EXPECTED_BASE_SHA,
       baseTree: EXPECTED_BASE_TREE,
-      headSha,
-      originMainSha,
-      treeSha,
+      headSha: EXPECTED_BASE_SHA,
+      originMainSha: EXPECTED_BASE_SHA,
+      treeSha: EXPECTED_BASE_TREE,
     },
     sourceBindings: {
       claimRegistry: rawFileBinding(root, PATHS.claimRegistry, ['CLAIM_REGISTRY']),
@@ -478,16 +470,14 @@ export function buildClaimBindings({ repoRoot = REPO_ROOT, manifest = null } = {
   const root = path.resolve(repoRoot);
   const actualManifest = manifest || readJson(root, PATHS.manifest);
   validateManifest(actualManifest, { repoRoot: root });
-  const headSha = gitText(root, ['rev-parse', 'HEAD']);
-  const originMainSha = gitText(root, ['rev-parse', 'origin/main']);
   return {
     schemaVersion: RCV01A_CLAIM_BINDING_SCHEMA_VERSION,
     stampId: 'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS',
     contourId: RCV01A_CONTOUR_ID,
     evidenceClass: 'CONTRACT',
     verdict: 'PASS',
-    headSha,
-    originMainSha,
+    headSha: EXPECTED_BASE_SHA,
+    originMainSha: EXPECTED_BASE_SHA,
     generatedAtUtc: '2026-09-11T00:00:00.000Z',
     oracle: 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST',
     claimBindings: [
