@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { execFileSync } from 'node:child_process';
 import {
   RCV00D_BASE_SHA,
   RCV00D_BASE_TREE,
@@ -277,4 +278,65 @@ for (const [name, mutate] of resealedMutations) {
     mutate(receipt);
     assert.throws(() => validateRcv00dSelectorReceipt(receipt, baseContext()), /E_RCV00D_CONTEXT_DERIVATION_BINDING/);
   });
+}
+
+const historicalSnapshots = [
+  { sha: '0b2476fc6ab881202ccc2c0087a57fea85a54195', digest: 'f432c3683d945466e95df98bbf9d2b82d81e471ce60e1dd01c0ebcb398af706a' },
+  { sha: '9c85e70b3166f2a78e61d5aba454820afa303e80', digest: '85fe2b9ed1cce00367444ad6654e51add80c7ce8484015947b20e7a6b8e9af61' },
+];
+const loadHistoricalSnapshot = (snapshot) => JSON.parse(execFileSync('git', [
+  'show', `${snapshot.sha}:docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json`,
+]));
+const historicalMutations = [
+  ['selected source audit forged', (receipt) => { receipt.selected.sourceAuditId = 'FORGED_HISTORICAL_SOURCE'; }],
+  ['unrelated candidate forged and resealed', (receipt) => {
+    receipt.candidates[unrelatedCandidateIndex(receipt)].sourceAuditId = 'FORGED_HISTORICAL_CANDIDATE';
+    resealCandidates(receipt);
+  }],
+  ['unrelated candidate removed and resealed', (receipt) => {
+    receipt.candidates.splice(unrelatedCandidateIndex(receipt), 1);
+    resealCandidates(receipt);
+  }],
+  ['eligible digest forged', (receipt) => { receipt.eligibleCandidateSetDigest = '0'.repeat(64); }],
+  ['register summary forged', (receipt) => { receipt.registerSummary.findingCount += 9; }],
+  ['input digests forged', (receipt) => {
+    for (const key of Object.keys(receipt.inputDigests)) receipt.inputDigests[key] = '0'.repeat(64);
+  }],
+  ['reasons erased', (receipt) => { receipt.reasons = []; }],
+  ['selection policy erased', (receipt) => { receipt.correctiveSelectionPolicy.deliveredContourIds = []; }],
+  ['generated time forged', (receipt) => { receipt.generatedAtUtc = '2099-01-01T00:00:00.000Z'; }],
+];
+const historicalDifferencePaths = [
+  ['graphSchedulerCandidate', 'stateDigest'],
+  ['inputDigests', 'effectiveStateProjection'],
+  ['inputDigests', 'graphSelectionReceipt'],
+];
+
+for (const [index, snapshot] of historicalSnapshots.entries()) {
+  test(`RCV00D exact historical snapshot ${snapshot.sha} accepts serialization and key-order changes`, () => {
+    const receipt = loadHistoricalSnapshot(snapshot);
+    assert.equal(canonicalDigest(receipt), snapshot.digest);
+    const selectedCandidate = receipt.candidates.find((entry) => entry.id === receipt.selected.id);
+    assert.notStrictEqual(receipt.selected, selectedCandidate);
+    assert.deepEqual(receipt.selected, selectedCandidate);
+    assert.equal(validateRcv00dSelectorReceipt(receipt).status, 'PASS');
+    const formatted = JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(receipt).reverse()), null, 4));
+    assert.equal(validateRcv00dSelectorReceipt(formatted).status, 'PASS');
+  });
+  for (const [name, mutate] of historicalMutations) {
+    test(`RCV00D historical snapshot ${snapshot.sha} rejects serialized receipt with ${name}`, () => {
+      const receipt = loadHistoricalSnapshot(snapshot);
+      mutate(receipt);
+      assert.throws(() => validateRcv00dSelectorReceipt(receipt), /E_RCV00D_HISTORICAL_RECEIPT_BINDING/);
+    });
+  }
+  for (const [parent, field] of historicalDifferencePaths) {
+    test(`RCV00D historical snapshot ${snapshot.sha} rejects mixed ${parent}.${field}`, () => {
+      const receipt = loadHistoricalSnapshot(snapshot);
+      const other = loadHistoricalSnapshot(historicalSnapshots[1 - index]);
+      assert.notEqual(receipt[parent][field], other[parent][field]);
+      receipt[parent][field] = other[parent][field];
+      assert.throws(() => validateRcv00dSelectorReceipt(receipt), /E_RCV00D_HISTORICAL_RECEIPT_BINDING/);
+    });
+  }
 }

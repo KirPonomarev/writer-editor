@@ -31,6 +31,11 @@ export const RCV00D_PLAN_STATE_PATH = 'docs/OPS/R24/PLAN_STATE_R24.json';
 export const RCV00D_REGISTER_PATH = RCV00C_REGISTER_PATH;
 export const RCV00D_BASE_SHA = '18bff1711dde771d1c5e8548cef1b4735085ccdd';
 export const RCV00D_BASE_TREE = 'e195f6c2e88251f845325b1706639d5fb80f88d8';
+const RCV00D_HISTORICAL_RECEIPT_DIGESTS = Object.freeze([
+  // Exact original delivery 0b2476fc and verifier-binding follow-up 9c85e70b.
+  'f432c3683d945466e95df98bbf9d2b82d81e471ce60e1dd01c0ebcb398af706a',
+  '85fe2b9ed1cce00367444ad6654e51add80c7ce8484015947b20e7a6b8e9af61',
+]);
 export const RCV00D_EXPECTED_GRAPH_CANDIDATE = null;
 export const RCV00D_EXPECTED_GRAPH_VERDICT = 'NO_ELIGIBLE_NODE';
 export const RCV00D_SELECTED_OBSERVATION_ID = 'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909';
@@ -489,6 +494,8 @@ export function validateRcv00dSelectorReceipt(receipt, context = null) {
     if (canonicalDigest(value) !== canonicalDigest(expectedReceipt)) {
       throw new R24Error('E_RCV00D_CONTEXT_DERIVATION_BINDING');
     }
+  } else if (!RCV00D_HISTORICAL_RECEIPT_DIGESTS.includes(canonicalDigest(value))) {
+    throw new R24Error('E_RCV00D_HISTORICAL_RECEIPT_BINDING');
   }
   return {
     status: 'PASS',

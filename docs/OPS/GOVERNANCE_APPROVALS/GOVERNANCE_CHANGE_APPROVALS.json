@@ -12250,10 +12250,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "44e1c1dbbec974032e90f6ea5c2f286b7b00d691497f9213b51b84d7c21114df",
+      "sha256": "fab7ccafff8ad78f3548f336079ca21873e0215e84d63f44c9e1dd637be0786e",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:18:35.887Z",
-      "rationale": "Owner-directed six-path RCV00D current identity and trusted-context derivation repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
+      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
@@ -12262,10 +12262,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/RCV00D_CURRENT_IDENTITY_BINDING_STATUS_V1.json",
-      "sha256": "f3a03493c2a4c545a6a7cfcd51ff626f9b9b09dd5bce7ca18e7e0d6f32cd6984",
+      "sha256": "1378c9dc06cec4cbd7bd41a2182f7baa400b47a8722e76be8f5d509d9961b9e0",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:18:35.887Z",
-      "rationale": "Owner-directed six-path RCV00D current identity and trusted-context derivation repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
+      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
@@ -12274,10 +12274,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-CURRENT-IDENTITY-BINDING.json",
-      "sha256": "040fb6e518f6c4cea182ef3c28f4d3a688a30d16a576fe09aed11c0586cc9e1f",
+      "sha256": "d9207c9324c38465e4bbbfe94eeeb88af96508e88bc6061404aef2821c66e86a",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:18:35.887Z",
-      "rationale": "Owner-directed six-path RCV00D current identity and trusted-context derivation repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
+      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
@@ -12286,10 +12286,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
-      "sha256": "6bbb53715bb09b495c428ac04a1ca14394bafbcdfdc118b008366ef62d31af3f",
+      "sha256": "d3eafb4db266e508ce4d5f68b743debf1f370eefabf77da7c2ef9c99452061f1",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:18:35.887Z",
-      "rationale": "Owner-directed six-path RCV00D current identity and trusted-context derivation repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
+      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
@@ -12298,10 +12298,10 @@
     },
     {
       "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
-      "sha256": "72511130d9935d80f771159cd6e5d050d0f6765c950e35fcd9e45ec1c6876ebb",
+      "sha256": "7c7c3fc11d86ddfa01214b6d02a1081fffff95107a841497b6f1892747721b32",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:18:35.887Z",
-      "rationale": "Owner-directed six-path RCV00D current identity and trusted-context derivation repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
+      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
