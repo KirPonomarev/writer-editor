@@ -2,11 +2,28 @@
   "approvals": [
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY | OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f567f51050f98731966e2080ed3ac08b4dbe528b4f905cd49c5cf74ca353a850",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim. Also preserves the W0 current-state closure approval binding for the current C1B inventory hash without widening product claims."
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-08T01:50:00Z",
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "d692a84e8b83793e7d130a6746fdb749c2378a577e8b388e573843c1305406e4"
+      "sha256": "d692a84e8b83793e7d130a6746fdb749c2378a577e8b388e573843c1305406e4",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -14,7 +31,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_EFFECTIVE_STATE_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "2647906b92454e64cc42afd541ed2abb6b9d8aa58a3db4ba2554bf2d8626f132"
+      "sha256": "2647906b92454e64cc42afd541ed2abb6b9d8aa58a3db4ba2554bf2d8626f132",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -22,7 +41,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_LEASE_RELEASE_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "db3a53cfa2e9b93b2952861c43f627411827bb777163736e07a52b5dcce87c31"
+      "sha256": "db3a53cfa2e9b93b2952861c43f627411827bb777163736e07a52b5dcce87c31",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -30,7 +51,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_OWNER_AUTHORITY_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "9aa17ad1739364f0a3beb3a987732042235c0605a1ecafa67e64867f51663877"
+      "sha256": "9aa17ad1739364f0a3beb3a987732042235c0605a1ecafa67e64867f51663877",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -38,7 +61,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_SELECTION_RECEIPT_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "4e7d9d3a60fcc0de9e1b88ddd6c789c9c5224d1c4570f40e86ec95abea621949"
+      "sha256": "4e7d9d3a60fcc0de9e1b88ddd6c789c9c5224d1c4570f40e86ec95abea621949",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -46,7 +71,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_STAGE_ADMISSION_ATTESTATION_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "397bd9f0bbde478a8baffe25834ce0e71f01844cb9b2cf52e35194e6a6679e8a"
+      "sha256": "397bd9f0bbde478a8baffe25834ce0e71f01844cb9b2cf52e35194e6a6679e8a",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -54,7 +81,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_MAIN_PRODUCT_STAGE_INSTANCE_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "8bdeaead198e91974af5b4f0a87853144569e85d15f20cbd8dbffae69ef9b2cc"
+      "sha256": "8bdeaead198e91974af5b4f0a87853144569e85d15f20cbd8dbffae69ef9b2cc",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -62,7 +91,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_PROTECTED_WIP_BEFORE_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "4854cc09c4e4369e97079fa3ebdccda2b54897afdf6367aa3ab7cebf8c36bba2"
+      "sha256": "4854cc09c4e4369e97079fa3ebdccda2b54897afdf6367aa3ab7cebf8c36bba2",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -70,7 +101,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_RELEASE_SECURITY_EVALUATOR_CONTRACT_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "9192c159db8cb3baf5bbb7d687eacb3ff90848fa32e2b7073a8b1dda53c87bbe"
+      "sha256": "9192c159db8cb3baf5bbb7d687eacb3ff90848fa32e2b7073a8b1dda53c87bbe",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -78,7 +111,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_STAGE_REGISTRY_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "12a988dfc9a0d107cf626a1b5cdb5e2a4cdbca62d71ad50471a208ff811901b1"
+      "sha256": "12a988dfc9a0d107cf626a1b5cdb5e2a4cdbca62d71ad50471a208ff811901b1",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -86,7 +121,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_SUPERVISOR_SCOPE_DECISION_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b"
+      "sha256": "709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -94,7 +131,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_TERMINAL_RECEIPT_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "39f455df253c6828c368544dacac8be29b2afd84fd36081e95e3332674c6dfff"
+      "sha256": "39f455df253c6828c368544dacac8be29b2afd84fd36081e95e3332674c6dfff",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -102,7 +141,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_WP709_TERMINAL_PREDECESSOR_V1.json",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "d1450b31610affc394b43227568a11adca8a6af89db850dee6f94afd50041cce"
+      "sha256": "d1450b31610affc394b43227568a11adca8a6af89db850dee6f94afd50041cce",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -110,7 +151,9 @@
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66"
+      "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -118,7 +161,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "65725e3cbd32d8e1e607361e3ebdc027cab82025e70f38337883f3f11d35691e"
+      "sha256": "65725e3cbd32d8e1e607361e3ebdc027cab82025e70f38337883f3f11d35691e",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -126,7 +171,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_LIFECYCLE_RECONCILIATION_STATUS_V1.json",
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "3a2002339c257535ea8899460b3077b01cb1cd8b1a43b6c7a5133bc0853dcc26"
+      "sha256": "3a2002339c257535ea8899460b3077b01cb1cd8b1a43b6c7a5133bc0853dcc26",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -134,7 +181,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00D_SUCCESSOR_ADMISSION_PACKET_V1.json",
       "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "b1db763b5fd161bae20a43fcb83b2b2c95e2b2a79e9636372220fccbbd12cf39"
+      "sha256": "b1db763b5fd161bae20a43fcb83b2b2c95e2b2a79e9636372220fccbbd12cf39",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -142,7 +191,33 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09",
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_STATUS_V1.json",
       "rationale": "Bounded PRE00E recovery CI and external confirmation verifier from exact origin/main b39e3200 after PRE00D PR1854 and intervening PR1852; PR1843 remains closed historical evidence only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added.",
-      "sha256": "faff03a263deaca7003535842500faa372b1d6977b8130f339cc30e3b9d081d0"
+      "sha256": "faff03a263deaca7003535842500faa372b1d6977b8130f339cc30e3b9d081d0",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "dfbeb5487744868e4543829834f7531301f6da305b8d26e43e51417026ac9d00"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "7656c03da876f9ec70c320ace7b1742cc9fa4d6dbe4d6ee339ff46735766884f"
     },
     {
       "approved": true,
@@ -150,7 +225,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
       "filePath": "docs/OPS/R24/CORRECTIVE/WP708_CARRIER_REGISTRY_V1.json",
       "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 carrier registry rebind to current WP806 compatibility and terminal carrier test bytes introduced by PR1851 while preserving candidate boundaries; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added.",
-      "sha256": "3431ab88b7f5c42804d24d153007e25f0940331251b5ddb3abce3771c3b5b4fa"
+      "sha256": "3431ab88b7f5c42804d24d153007e25f0940331251b5ddb3abce3771c3b5b4fa",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -158,7 +235,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PR1850_RECONCILE_AFTER_PR1851_2026_09_09_UTC",
       "filePath": "docs/OPS/R24/CORRECTIVE/WP708_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Bounded PR1850 reconciliation after merged PR1851; approves exact WP708 local governance approval rebind to current carrier registry plus WP806 compatibility and terminal carrier test bytes introduced by PR1851; no runtime, dependency, provider, product graph, release-publication, or program-done authority is added.",
-      "sha256": "f9b77c17d3b1f80513ec97c6dea85605c97955fafd3b985d9748d4fc425f6818"
+      "sha256": "f9b77c17d3b1f80513ec97c6dea85605c97955fafd3b985d9748d4fc425f6818",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -166,7 +245,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "4ade89239fd394817167f5e1a9a5db853fb5f68a358ab11901a27e2d0c5181d6"
+      "sha256": "4ade89239fd394817167f5e1a9a5db853fb5f68a358ab11901a27e2d0c5181d6",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -174,7 +255,9 @@
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
       "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "sha256": "fe087ec0d3205c1ec2cbf1cad6511a7f2c203dbac2b131048a1eb0acfa709466"
+      "sha256": "fe087ec0d3205c1ec2cbf1cad6511a7f2c203dbac2b131048a1eb0acfa709466",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -182,7 +265,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "3eceb21ce2f187da971c734485403ce1df06e6d82ef6b10890a5abd4b01ad3fd"
+      "sha256": "3eceb21ce2f187da971c734485403ce1df06e6d82ef6b10890a5abd4b01ad3fd",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -190,7 +275,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00C-CLOSED-STAGE-CANDIDATE-VERIFIER-REPAIR.json",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "7c221f0df6e05fca1f95435a05e24fc7ee52eb044677e372c1742744a7a8542a"
+      "sha256": "7c221f0df6e05fca1f95435a05e24fc7ee52eb044677e372c1742744a7a8542a",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -198,7 +285,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF.json",
       "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "b66b968d2ce1bb7eb86df5b8097e5d419771497ee24634455e0f15bf6a2104f6"
+      "sha256": "b66b968d2ce1bb7eb86df5b8097e5d419771497ee24634455e0f15bf6a2104f6",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -206,7 +295,21 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION.json",
       "rationale": "Bounded PRE00E recovery CI and external confirmation verifier from exact origin/main b39e3200 after PRE00D PR1854 and intervening PR1852; PR1843 remains closed historical evidence only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added.",
-      "sha256": "18936f02792c04bada8d9a2bcb7b804ee7d01eec56c105038fd3a6fd0e9f2210"
+      "sha256": "18936f02792c04bada8d9a2bcb7b804ee7d01eec56c105038fd3a6fd0e9f2210",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "fe0f78ec18617af6fae8e6feecdae3e32c4f161a4dc80631f688b2e63768087a"
     },
     {
       "approved": true,
@@ -214,7 +317,9 @@
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "sha256": "19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d"
+      "sha256": "19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -222,7 +327,9 @@
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
       "rationale": "Approve exact current governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage, regenerated C1B inventory, refreshed claim bindings, certification-set historical delivery pin, and the secondary interop approval registry bytes that validate those same bounded carriers. No product runtime expansion, dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "sha256": "fbc0639235d7ee102789e293c4b1a7601b64ec4740542903430ace9414d05e8c"
+      "sha256": "fbc0639235d7ee102789e293c4b1a7601b64ec4740542903430ace9414d05e8c",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -230,7 +337,9 @@
       "approvedBy": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-SUCCESSOR-ADMISSIONS.json",
       "rationale": "Approve exact current governance bytes for PR1861 ReviewIR replacement grouping boundary successor reconciliation and CI privacy-negative watchdog repair after merging origin/main f4c59873: admit only parser boundary logic, focused tests, successor carriers, inventory, and the timing-only privacy smoke repair over immutable RCV00B delivery; no PRE00E/PRE00F redelivery, PR1845 reopen, product write/apply capability, dependency, runtime network truth, release readiness, or PROGRAM DONE claim.",
-      "sha256": "45dee45b2f2880bbaf58374b3b92af2d4dcb608cebd34452f56890aeaca4cd87"
+      "sha256": "45dee45b2f2880bbaf58374b3b92af2d4dcb608cebd34452f56890aeaca4cd87",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -238,7 +347,9 @@
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "eb71b349011483d0ec5fba1f0032f9a1d74413cbe2371f22ee7309829d98eb8e"
+      "sha256": "eb71b349011483d0ec5fba1f0032f9a1d74413cbe2371f22ee7309829d98eb8e",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -246,7 +357,9 @@
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ce098f4df16b871dd466ad75422b7cca747754582420a99560940621d05c473e"
+      "sha256": "ce098f4df16b871dd466ad75422b7cca747754582420a99560940621d05c473e",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -254,7 +367,33 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS.json",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "8cb59e5ae4d63bdfea0d33e6d853c78dd213cc83d7eb4640cf746eba295a25b7"
+      "sha256": "8cb59e5ae4d63bdfea0d33e6d853c78dd213cc83d7eb4640cf746eba295a25b7",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T19:20:00Z",
+      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS.json",
+      "rationale": "Approve exact R24 RCV00H claim-binding evidence for minimal E0 parser purity closure: current E0 proof reaches the V2 plan, real violations fail with path/reason, lexical false positives do not block, and RCV00C historical register state remains explicit; no product runtime, UI, dependency, network, graph promotion, release-readiness, or Program DONE claim.",
+      "sha256": "650b8768c59b47810f47b9f9f7165ef45ebfa58b98f4cf82161231e1230c1fb7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS.json",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "7615bacbdf19f41f2ca110a5a855b41ec6f9cb5b019a846041b0d47e985b956e"
     },
     {
       "approved": true,
@@ -262,7 +401,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "docs/OPS/R24/TOOLCHAIN_CONTRACT_V1.json",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "960f053b34b419aa903ba668a26e887706f67ab424db1deef8f348abecb0e885"
+      "sha256": "960f053b34b419aa903ba668a26e887706f67ab424db1deef8f348abecb0e885",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -270,7 +411,24 @@
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "94f611c5d431595ebf654316ffdfd993cf08616309d34df0e00acdcf29c3e43c"
+      "sha256": "94f611c5d431595ebf654316ffdfd993cf08616309d34df0e00acdcf29c3e43c",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY | SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_GOVERNANCE_REGISTRY_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "372326c9bf686296ce412e23a1f70bbd6e78d60446a161d990c8ca1ced4c3b47",
+      "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -278,7 +436,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
       "rationale": "Bounded PRE00C closed-stage candidate verifier repair; PRE00B delivery remains pinned to 4107b0b3; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3"
+      "sha256": "48e573531f474829bfae3fb17d862da4a9d46e2546746c8bd2ce3947594d86f3",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -286,7 +446,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
       "filePath": "docs/tasks/R24_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_001.md",
       "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "e4b4da30d905c8665979928458728e03f0619d5b0ab0c988828d9fc5992fba74"
+      "sha256": "e4b4da30d905c8665979928458728e03f0619d5b0ab0c988828d9fc5992fba74",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -294,7 +456,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09",
       "filePath": "docs/tasks/R24_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_001.md",
       "rationale": "Bounded PRE00E recovery CI and external confirmation verifier from exact origin/main b39e3200 after PRE00D PR1854 and intervening PR1852; PR1843 remains closed historical evidence only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added.",
-      "sha256": "9a3521144323ae8ca9d2d1b142637061e8b7ec58694a788cddc16f110b584f13"
+      "sha256": "9a3521144323ae8ca9d2d1b142637061e8b7ec58694a788cddc16f110b584f13",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -302,7 +466,9 @@
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "filePath": "scripts/ops/governance-change-detection.mjs",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "sha256": "bb08e2bb7fc1a4a582864a2b7d650b7b5c8ab7f21515aa365ea8064b92de5f71"
+      "sha256": "bb08e2bb7fc1a4a582864a2b7d650b7b5c8ab7f21515aa365ea8064b92de5f71",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -310,7 +476,9 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/canonical-json.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "9670b0c7f3be8d8eb59ba22620e7a6994bfa4f5913c65d8b410e5834ffd3a304"
+      "sha256": "9670b0c7f3be8d8eb59ba22620e7a6994bfa4f5913c65d8b410e5834ffd3a304",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -318,7 +486,25 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2"
+      "sha256": "2214ca7e7e16ac97c6292be62f5bfb03d4e3187d784ed46e399613a0862177f2",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY | OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "ffdd2ac59c565e4f7b1fc85ebfdca3488a8d8624c13b8e4d05118136145722ff"
     },
     {
       "approved": true,
@@ -326,7 +512,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "4acd91dca5b104472d376639338db2529134834f2ae4dc53bc631c56ea1bb34f"
+      "sha256": "4acd91dca5b104472d376639338db2529134834f2ae4dc53bc631c56ea1bb34f",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -334,7 +522,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_VERIFIER_DESCENDANT_REPAIR_2026_09_08",
       "filePath": "scripts/ops/r24/corrective/pre00b-lifecycle-reconciliation.mjs",
       "rationale": "Bounded PRE00C verifier descendant repair; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "1de7960dea2c65651fb63337840fbaccfffdac0da5ceccdee9991b0b6e95173f"
+      "sha256": "1de7960dea2c65651fb63337840fbaccfffdac0da5ceccdee9991b0b6e95173f",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -342,7 +532,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
       "filePath": "scripts/ops/r24/corrective/pre00d-successor-admission-lease-handoff.mjs",
       "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "d7e582c124b610b61887b2374e14e8f506b4ccc77ae3fe2eb0427f6bc2a8d8b7"
+      "sha256": "d7e582c124b610b61887b2374e14e8f506b4ccc77ae3fe2eb0427f6bc2a8d8b7",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -350,7 +542,21 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09",
       "filePath": "scripts/ops/r24/corrective/pre00e-recovery-ci-external-confirmation.mjs",
       "rationale": "Bounded PRE00E recovery CI and external confirmation verifier from exact origin/main b39e3200 after PRE00D PR1854 and intervening PR1852; PR1843 remains closed historical evidence only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added.",
-      "sha256": "b576476f358bf681bcc647b870c21fd98c09b411877b5473b8b496c974070430"
+      "sha256": "b576476f358bf681bcc647b870c21fd98c09b411877b5473b8b496c974070430",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "9aee83bfa02b8ef1772373f301c9957a9894d8ca61ea967e4b9ebfc3b88ce8a7"
     },
     {
       "approved": true,
@@ -358,7 +564,9 @@
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
       "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1"
+      "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -366,7 +574,9 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/corrective/rcv00e-lease-fencing-cas.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "725534caf9c8768c8b75c56c7a494060b6034eb2a598f19d02f565d273d220a8"
+      "sha256": "725534caf9c8768c8b75c56c7a494060b6034eb2a598f19d02f565d273d220a8",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -374,7 +584,9 @@
       "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CLAIM_LINT_HISTORY_2026_09_10",
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
       "rationale": "Approve exact claim-lint V34 historical inventory pin for RCV00E after the comment-topology successor refreshed current C1B: the old RCV00E stamp remains immutable delivery evidence at c36344ab, digest mismatch detection stays active, and no product runtime, dependency, network truth, release readiness, or PROGRAM_DONE claim is added.",
-      "sha256": "3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c"
+      "sha256": "3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -382,7 +594,21 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/exact-toolchain-entrypoint.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "88a327cfd1e1eef0b2d69324dbc18f64b23d4d0fabcda14d14e3c351cb03c93d"
+      "sha256": "88a327cfd1e1eef0b2d69324dbc18f64b23d4d0fabcda14d14e3c351cb03c93d",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "scripts/ops/r24/executable-program.mjs",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "47613ef9c13c34d023b2fe45c8262f9877db5d626875c4a8eb549b9ddaca712b"
     },
     {
       "approved": true,
@@ -390,7 +616,9 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/lease.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "be13cb8ddb8a5919817a4378a833496e6a48f3440523e81e69d732903f90369e"
+      "sha256": "be13cb8ddb8a5919817a4378a833496e6a48f3440523e81e69d732903f90369e",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -398,7 +626,9 @@
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "scripts/ops/r24/release-security-physical-pk1.mjs",
       "rationale": "Bounded credential-free PK1 evaluator correction; no release effect, dependency, runtime network, user data, or graph transition authority added.",
-      "sha256": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030"
+      "sha256": "a0b84198fe20e82edfe18c628550213ae9092c4e4a8b07f953f4ddea57140030",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -406,7 +636,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/run-e0-tests.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "07ea5823c00f5cc4091234d6d4f70b07179b121d980aa6be8021cccfe9d0e7c3"
+      "sha256": "07ea5823c00f5cc4091234d6d4f70b07179b121d980aa6be8021cccfe9d0e7c3",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -414,7 +646,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/run-q0-tests.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "f70da69beae25f7134868f8e27b34afd5518f1a7a673343a24672b7ad9cb2ad2"
+      "sha256": "f70da69beae25f7134868f8e27b34afd5518f1a7a673343a24672b7ad9cb2ad2",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -422,7 +656,9 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/test-mutants.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "b4b68c4cf073514d69ab8b85980608897e2c3ff3b2d391479138758e192c27a7"
+      "sha256": "b4b68c4cf073514d69ab8b85980608897e2c3ff3b2d391479138758e192c27a7",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -430,7 +666,9 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/tests/canonical-json.test.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "79353cec92d573bccef87627ecd3723f6db3dfc45d463ab5878b43a86ea300c4"
+      "sha256": "79353cec92d573bccef87627ecd3723f6db3dfc45d463ab5878b43a86ea300c4",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -438,7 +676,21 @@
       "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CLAIM_LINT_HISTORY_2026_09_10",
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
       "rationale": "Approve exact regression coverage for the claim-lint V34 historical RCV00E inventory pin: verifies the c36344ab stamp/tree/inventory tuple and repository-surface historical binding, without weakening current digest enforcement or changing evidence stamp bytes.",
-      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f"
+      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "scripts/ops/r24/tests/executable-program.test.mjs",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "b03d15f4be75b38a26bf35adfee82c6f21027626b11e9c167e1ca3a395ff7d58"
     },
     {
       "approved": true,
@@ -446,7 +698,9 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/tests/lease.test.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "36309a166159c7d8e27e24d955c95a18d19f822d19a812f361ad54c8f98926f8"
+      "sha256": "36309a166159c7d8e27e24d955c95a18d19f822d19a812f361ad54c8f98926f8",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -454,7 +708,21 @@
       "approvedBy": "owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10",
       "filePath": "scripts/ops/r24/tests/plan-state.test.mjs",
       "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
-      "sha256": "aaf994238d87b1efacedd770f61344a17e16623a4d234fd0d7c6154153aab015"
+      "sha256": "aaf994238d87b1efacedd770f61344a17e16623a4d234fd0d7c6154153aab015",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "81fb60ee01beccff4c1417ea809374272368f90316abcdab860f5b1ea8e12e57"
     },
     {
       "approved": true,
@@ -462,7 +730,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/tests/q0/toolchain.test.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "31eeca20303c6f41fc6da2980c31033aa8bbd400b782b99065926949cff8254b"
+      "sha256": "31eeca20303c6f41fc6da2980c31033aa8bbd400b782b99065926949cff8254b",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -470,7 +740,35 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/toolchain.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "dde70db83115d1daad9263601e617283920a2207fc881844a2718cce5d0eeb7b"
+      "sha256": "dde70db83115d1daad9263601e617283920a2207fc881844a2718cce5d0eeb7b",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "64d58dbf5050c2a700cb4a01bd9177a266ea0382e52edfcafc2165790ac6dbad",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "f30eba24e437deb91196694d29f1504e7813d1adecc21c0bb087add09ddf6689",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -478,7 +776,9 @@
       "approvedBy": "owner-directive:R24_DOCX_LINEBREAK_SOURCE_EXPORT_POST_AUDIT_APPROVALS_2026_09_09",
       "filePath": "test/contracts/export-contour-01-docx-simple-hardening.contract.test.js",
       "rationale": "Approve exact current governance bytes for PR1864 DOCX source-export line-break fidelity admission after local gates and physical Word proof: admit only minimum DOCX builder line-break serialization, focused regression tests, inventory, export hardening allowlist, post-audit verifier bindings, and PK1R1 approval metadata as admitted governance carriers; no import/apply capability, packaged route, Google route, dependency, runtime network truth, release readiness, broad C1-C8 portability PASS, or PROGRAM DONE claim.",
-      "sha256": "42ab6fe37556f27e97748fa8de6238d5e4879c6f4b505344d8810389d5ebcd66"
+      "sha256": "42ab6fe37556f27e97748fa8de6238d5e4879c6f4b505344d8810389d5ebcd66",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -486,7 +786,37 @@
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
       "filePath": "test/contracts/governance-change-detection.contract.test.js",
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "sha256": "1c04984f3790ecd744653a2f0a55aed7ccb765de0d81a507803075d603aa8782"
+      "sha256": "1c04984f3790ecd744653a2f0a55aed7ccb765de0d81a507803075d603aa8782",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
+      ],
+      "filePath": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
+      "rationale": "Approve exact current bytes for PR1871 main40a688 merge-resync governance registry normalization: one approval row per file hash, compound authority where multiple already-authorized post-evaluation gates share the same current carrier bytes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
+      "sha256": "cb2ce553798c86d7c74cf4429c9f58b8085f0a9f08a431efcfb035303987dfb7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE | SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "ad3478258dca5cc9c291b09db15a0b4321bd9c9085d02554996f2cad2db878a5"
     },
     {
       "approved": true,
@@ -494,7 +824,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
       "rationale": "Bounded R24-RCV-00A exact-toolchain entrypoint and PR-merge verifier repair; local and CI R24 entrypoints fail typed before expensive work under unsupported runtime; current RELEASE01 package wording surface successor is rebound to the same admitted package bytes; WP708/WP806 compatibility and terminal carrier fixtures remain pinned to historical candidate bytes under merge evaluation; no dependency adoption, product graph, process, credential, UI, PK1, V3, WP900, release-publication, or program-done authority is added.",
-      "sha256": "bdb90421f3e8206d1d60e3662666966645522dd226575d62333f68754ca15ffe"
+      "sha256": "bdb90421f3e8206d1d60e3662666966645522dd226575d62333f68754ca15ffe",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -502,7 +834,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "filePath": "test/contracts/r24-pre00b-lifecycle-reconciliation.contract.test.mjs",
       "rationale": "Bounded PRE00B lifecycle reconciliation; CI-facing governance approval route only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "e4828bf36e17b8ad38427e0ee7fdf970f82d6197a1d04d05e478d8e5104a4381"
+      "sha256": "e4828bf36e17b8ad38427e0ee7fdf970f82d6197a1d04d05e478d8e5104a4381",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -510,7 +844,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00D_FRESH_SUCCESSOR_ADMISSION_LEASE_HANDOFF_RESTART_2026_09_09",
       "filePath": "test/contracts/r24-pre00d-successor-admission-lease-handoff.contract.test.mjs",
       "rationale": "Bounded PRE00D restart from exact origin/main 624a62e3; admits the already-present V2 plan as a modify-only successor handoff; closed PK1R1/PRE00B/PRE00C evidence remains read-only; no runtime, dependency, process, credential, product graph, or release-publication authority added.",
-      "sha256": "602220901aa6e6f7ebe7e0b2060add2451198508c5b58048b7d5cdca320b967f"
+      "sha256": "602220901aa6e6f7ebe7e0b2060add2451198508c5b58048b7d5cdca320b967f",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -518,7 +854,21 @@
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_AFTER_INTEROP_PR1852_2026_09_09",
       "filePath": "test/contracts/r24-pre00e-recovery-ci-external-confirmation.contract.test.mjs",
       "rationale": "Bounded PRE00E recovery CI and external confirmation verifier from exact origin/main b39e3200 after PRE00D PR1854 and intervening PR1852; PR1843 remains closed historical evidence only, and no PRE00F plan rebind, runtime, dependency, process, credential, product graph, or release-publication authority is added.",
-      "sha256": "3656815b5d22f1df1e63962e008a8f8804a38f985f1de8a8b483afafda2b62c5"
+      "sha256": "3656815b5d22f1df1e63962e008a8f8804a38f985f1de8a8b483afafda2b62c5",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "d4e817c24fd0e0e0c3e89875b8d635ba7cbeebaec06c2744db8fa384ecd9ab7b"
     },
     {
       "approved": true,
@@ -526,7 +876,9 @@
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
       "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
       "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "c44831a8936410b85e3424d3c3807028727bdd34687f5413fb2cb762fc23e7b3"
+      "sha256": "c44831a8936410b85e3424d3c3807028727bdd34687f5413fb2cb762fc23e7b3",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -534,7 +886,21 @@
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "test/contracts/r24-rcv00e-lease-fencing-cas.contract.test.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ccf5d196ce1a44de9b207d4667caf500a76728d5c510a8a6368ee9baa5b932a0"
+      "sha256": "ccf5d196ce1a44de9b207d4667caf500a76728d5c510a8a6368ee9baa5b932a0",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/r24-w0-current-state-closure.contract.test.mjs",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "93d77128623d6e85ed8ea67897182f4d3a4311df8fb9ee99333bcd5cc6a64543"
     },
     {
       "approved": true,
@@ -542,7 +908,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/r24-wp707-post-audit-compatibility.contract.test.mjs",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "d7ffbe8560d6b68c8592666acd37c4989e8951fe0e0f4f289ad215e87a47e0a7"
+      "sha256": "d7ffbe8560d6b68c8592666acd37c4989e8951fe0e0f4f289ad215e87a47e0a7",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -550,7 +918,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/r24-wp707-terminal-carriers.contract.test.mjs",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "88401c62330889d7f9b3d70d1f0343388431bced68403a72f6f1eabc0efc7a90"
+      "sha256": "88401c62330889d7f9b3d70d1f0343388431bced68403a72f6f1eabc0efc7a90",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -558,7 +928,9 @@
       "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
       "filePath": "test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs",
       "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "sha256": "8a991bcdc6128ec9e41f6dab746f0f4515c0d0a111996ae0405b3cb3bfb9fb3c"
+      "sha256": "8a991bcdc6128ec9e41f6dab746f0f4515c0d0a111996ae0405b3cb3bfb9fb3c",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -566,7 +938,9 @@
       "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
       "filePath": "test/contracts/r24-wp708-terminal-carriers.contract.test.mjs",
       "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP708 terminal-carrier fixture drift over successor-dependent WP806 carrier artifacts: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "sha256": "8e5a21cc6ca5477c369fe1b3cfdffb5b96eb1848f783ed7614a8a4080b926e05"
+      "sha256": "8e5a21cc6ca5477c369fe1b3cfdffb5b96eb1848f783ed7614a8a4080b926e05",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -574,7 +948,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "af18957a49a5244957b10bfa428b5d4a0983c8c6c7986d9d6ec304c9a944fcb2"
+      "sha256": "af18957a49a5244957b10bfa428b5d4a0983c8c6c7986d9d6ec304c9a944fcb2",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -582,7 +958,9 @@
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/r24-wp709-terminal-carriers.contract.test.mjs",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "9f819f7daac55763e531cfbea3db083bbe3c2c0e23616d85e07922396efd73cf"
+      "sha256": "9f819f7daac55763e531cfbea3db083bbe3c2c0e23616d85e07922396efd73cf",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -590,7 +968,9 @@
       "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
       "filePath": "test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs",
       "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "sha256": "a0541085f3f7b332c3e9433f3f3d43dfa971733984c407b32df1a642f9b72465"
+      "sha256": "a0541085f3f7b332c3e9433f3f3d43dfa971733984c407b32df1a642f9b72465",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -598,19 +978,37 @@
       "approvedBy": "owner-directive:R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_2026_09_10",
       "filePath": "test/contracts/r24-wp806-terminal-carriers.contract.test.mjs",
       "rationale": "Approve exact current governance bytes for the selected R24 observation OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909 after CI reproduced mutable-current WP806 terminal-carrier fixture drift: admit only the DOCX export command bridge outer-failure repair, focused side-effect/retry tests, immutable WP708/WP806 historical-candidate fixture repair, terminal-carrier historical-byte repair, regenerated C1B inventory, claim-lint historical inventory pins, and certification-set verifier bindings. No product runtime expansion, dependency, runtime network truth, UI, user-document access, denominator promotion, release readiness, graph transition, or PROGRAM_DONE claim is added.",
-      "sha256": "1fa20738ff8c6f4c6f199547516e04d6698aac04f1260d68af5dc493cd52774d"
+      "sha256": "1fa20738ff8c6f4c6f199547516e04d6698aac04f1260d68af5dc493cd52774d",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY | SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC"
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "b3bdcbe13948d9c1e92a07c59aa2f92106738a1e391a48095ebe75ef2856330c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11 | owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY | SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
-      "sha256": "ce4a48315f2a23023626ffa52d10270e7122d64ebca7b7b96e32bf2656e27081"
+      "sha256": "9947d2283fbf366394a45c22a637bf9b374c871c618b5e526764e98a4439c9ac",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -618,19 +1016,72 @@
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
       "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999"
+      "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11 | owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY | SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC"
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
-      "sha256": "c39b266a2c96becf1698a1f31c4f07ebee83abb4df21ab7329f024a69be4926a"
+      "sha256": "bf508d6c966c8be1419b6c5cd3851bc159782f2c226ce01b98a0799048ce102b",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
+      "sha256": "32f4d15f8fe69fdfc3fe651f09a1ee151e915f96ee933240f177baee37a93067",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
+      "sha256": "c1dab8a4908344d09d813ae3ba9538419d5c9b9e271f36422532a6e00372c469",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T08:08:18.000Z",
+      "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_2026_09_10",
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
+      "rationale": "Approve exact R24 review preview comment topology repair bytes: admits modern DOCX comment parent fallback from last paragraph paraId, namespace-shadow rejection, duplicate/self/cycle parent diagnostics, bounded cycle traversal, explicit flat Review preview topology-loss diagnostic, refreshed C1B inventory, and exact post-audit verifier/test binding. No product write authority, UI change, dependency change, runtime network, Google truth, release readiness, nested reply preservation claim, or PROGRAM_DONE claim.",
+      "sha256": "93f6cb05717d7d3b1b756c74429b44a3e1a15425f32a79d2e90452c1712a1538",
+      "evidenceStampIds": [],
+      "authority": ""
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
+      "sha256": "c40e28bf98f0e17895c3c585affd6dec9e63d2cba49bec93ac29944fef762e22",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -646,11 +1097,26 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+      ],
+      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
+      "sha256": "e6a9409a1fd754125b5df15a8b706f4ba04efe29489cb7bbf03a9cc4f41a3145"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-09T05:41:16Z",
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "rationale": "Bounded PR1852 safe external hyperlink preview and carrier reconciliation after PRE00D exact origin/main 199efa8f; admits only the current safe-hyperlink non-denominator evidence, exact toolchain and inventory rebinding, and historical WP707/WP709 compatibility shims; no dependency, runtime-network, automatic apply, product graph, release-publication, broad C1-C8 portability PASS, or program-done authority is added.",
-      "sha256": "d31cec001293953249c43643e29292b88ba784aa426475fba5dc37513b3a70c2"
+      "sha256": "d31cec001293953249c43643e29292b88ba784aa426475fba5dc37513b3a70c2",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -678,11 +1144,26 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-09T18:24:11.359Z",
-      "approvedBy": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "rationale": "Approve exact current governance bytes for PR1861 ReviewIR replacement grouping boundary successor reconciliation and CI privacy-negative watchdog repair after merging origin/main f4c59873: admit only parser boundary logic, focused tests, successor carriers, inventory, and the timing-only privacy smoke repair over immutable RCV00B delivery; no PRE00E/PRE00F redelivery, PR1845 reopen, product write/apply capability, dependency, runtime network truth, release readiness, or PROGRAM DONE claim.",
-      "sha256": "13ce852b13db4134c9cf81795a809f76781bdf0a6f41f162eae7818ec7511a20"
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T08:08:18.000Z",
+      "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_2026_09_10",
+      "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
+      "rationale": "Approve exact R24 review preview comment topology repair bytes: admits modern DOCX comment parent fallback from last paragraph paraId, namespace-shadow rejection, duplicate/self/cycle parent diagnostics, bounded cycle traversal, explicit flat Review preview topology-loss diagnostic, refreshed C1B inventory, and exact post-audit verifier/test binding. No product write authority, UI change, dependency change, runtime network, Google truth, release readiness, nested reply preservation claim, or PROGRAM_DONE claim.",
+      "sha256": "5174cb10902cd35da6e9240a4e48cc6db8422c99a1f237c65f1840f5e56fbe29",
+      "evidenceStampIds": [],
+      "authority": ""
     },
     {
       "approved": true,
@@ -695,269 +1176,26 @@
       "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
       "sha256": "2a5e8217beb74649ed84f17a66b6ca79faaa3e953c7a66fdbf94553c9386a033"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T08:08:18.000Z",
-      "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_2026_09_10",
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
-      "rationale": "Approve exact R24 review preview comment topology repair bytes: admits modern DOCX comment parent fallback from last paragraph paraId, namespace-shadow rejection, duplicate/self/cycle parent diagnostics, bounded cycle traversal, explicit flat Review preview topology-loss diagnostic, refreshed C1B inventory, and exact post-audit verifier/test binding. No product write authority, UI change, dependency change, runtime network, Google truth, release readiness, nested reply preservation claim, or PROGRAM_DONE claim.",
-      "sha256": "93f6cb05717d7d3b1b756c74429b44a3e1a15425f32a79d2e90452c1712a1538"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T08:08:18.000Z",
-      "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_2026_09_10",
-      "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
-      "rationale": "Approve exact R24 review preview comment topology repair bytes: admits modern DOCX comment parent fallback from last paragraph paraId, namespace-shadow rejection, duplicate/self/cycle parent diagnostics, bounded cycle traversal, explicit flat Review preview topology-loss diagnostic, refreshed C1B inventory, and exact post-audit verifier/test binding. No product write authority, UI change, dependency change, runtime network, Google truth, release readiness, nested reply preservation claim, or PROGRAM_DONE claim.",
-      "sha256": "5174cb10902cd35da6e9240a4e48cc6db8422c99a1f237c65f1840f5e56fbe29"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ],
-      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "e6a9409a1fd754125b5df15a8b706f4ba04efe29489cb7bbf03a9cc4f41a3145"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T19:20:00Z",
-      "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ],
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS.json",
-      "rationale": "Approve exact R24 RCV00H claim-binding evidence for minimal E0 parser purity closure: current E0 proof reaches the V2 plan, real violations fail with path/reason, lexical false positives do not block, and RCV00C historical register state remains explicit; no product runtime, UI, dependency, network, graph promotion, release-readiness, or Program DONE claim.",
-      "sha256": "650b8768c59b47810f47b9f9f7165ef45ebfa58b98f4cf82161231e1230c1fb7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:35:52Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY | OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve current reconciled carrier bytes after PRE00F current-head plan-delivery reconciliation: preserves S03 zero-write DOCX list-numbering silent-loss evidence, W0 immutable current-state closure verifier evidence, and the PRE00F post-evaluation exception binding. No product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "0d287e0626494a99014eecb966462abed24347a57f5255ff1a8ff74808e4888d"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
-      ],
-      "filePath": "test/contracts/ops-gate-core-purity-exception.contract.test.js",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 merge-resync governance registry normalization: one approval row per file hash, compound authority where multiple already-authorized post-evaluation gates share the same current carrier bytes; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, or PROGRAM_DONE claim.",
-      "sha256": "cb2ce553798c86d7c74cf4429c9f58b8085f0a9f08a431efcfb035303987dfb7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:35:52Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY | OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve current reconciled carrier bytes after PRE00F current-head plan-delivery reconciliation: preserves S03 zero-write DOCX list-numbering silent-loss evidence, W0 immutable current-state closure verifier evidence, and the PRE00F post-evaluation exception contract. No product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "341e9245c4b3888c5e87241996cf1d9537ec5d076df073a90f80dbfc1a521100"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "7656c03da876f9ec70c320ace7b1742cc9fa4d6dbe4d6ee339ff46735766884f"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS.json",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "7615bacbdf19f41f2ca110a5a855b41ec6f9cb5b019a846041b0d47e985b956e"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "scripts/ops/r24/executable-program.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "47613ef9c13c34d023b2fe45c8262f9877db5d626875c4a8eb549b9ddaca712b"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "scripts/ops/r24/tests/executable-program.test.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "b03d15f4be75b38a26bf35adfee82c6f21027626b11e9c167e1ca3a395ff7d58"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "d4e817c24fd0e0e0c3e89875b8d635ba7cbeebaec06c2744db8fa384ecd9ab7b"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/r24-w0-current-state-closure.contract.test.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "93d77128623d6e85ed8ea67897182f4d3a4311df8fb9ee99333bcd5cc6a64543"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact T04 content-preview contract bytes after current-main rebind: asserts preserved plain-text candidate output, exact loss items for line/page/column breaks and next-page/continuous section breaks, and lexical false-positive rejection. No UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "41a5690d5eefaf3093b4be2d22c4e210eedac10a857c9765fe27a6b953765526"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11 | OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_REBOUND_TO_W0_CURRENT_MAIN_AUTONOMOUS_DELIVERY | OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact C1B inventory bytes after PRE00F current-head plan-delivery reconciliation: preserves W0 current-state closure inventory additions, T05/P03/RCV00H bindings, T04 typed DOCX break coverage, and PRE00F focused proof inventory metadata. Registry metadata only; no parser behavior beyond PRE00F, UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "aa07cf1be72f2d2b8370e572d0c250cb7615a6bdad0d7791e6f12ab613cdce0a"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_GOVERNANCE_REGISTRY_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
-      ],
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact YALKEN_INTEROP_100 governance registry bytes after PR1878 current-main rebind: preserves W0/current-main approval truth and records T04 typed DOCX break explicit-loss approval hashes. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "f1615548e91c095e45269e79b373d45ce0b4e1765598dfeb9e428317759307bb"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "25d51c956cdec065ded266df965ff320651fda2088fe2ae1c655ed59e2dffd71"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "31869fb06f5c7fd02df02ca8fe409de6666aa1979df649505fabe0ce3df241c5"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "d2c43a608f2efe7e810e64c40c4544baa71ee414971288426eaaa23c432260aa"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "81fb60ee01beccff4c1417ea809374272368f90316abcdab860f5b1ea8e12e57"
     }
   ],
   "evidenceStampIds": [
+    "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+    "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF",
     "ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION",
+    "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
     "ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS",
     "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS",
     "ES-R24-RCV00B-SUCCESSOR-ADMISSIONS",
     "ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS",
-    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
-    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-    "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-    "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+    "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
+    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
+    "ES-R24-W0-CURRENT-STATE-CLOSURE",
+    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS"
   ],
   "sourcePlanRoles": {
     "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",

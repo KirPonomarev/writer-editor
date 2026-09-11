@@ -20,6 +20,8 @@ const ALLOWLIST = [
   PACKAGE_BOUNDARY_TEST_PATH,
   HOSTILE_FILE_GATE_TEST_PATH,
   CONTENT_PREVIEW_TEST_PATH,
+  'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
+  'test/contracts/revision-bridge-docx-part-policy.contract.test.js',
   IMPORT_PREVIEW_PLAN_TEST_PATH,
   IMPORT_PREVIEW_COMMAND_SURFACE_TEST_PATH,
   // ZIP-01 shared evidence + budget module (CRC evidence + effective budgets).
@@ -32,6 +34,11 @@ const ALLOWLIST = [
   'src/main.js',
   // ZIP-01 contract test (parallel to this materializer contract).
   'test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js',
+  'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
+  'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   // ZIP-01 catalog + package metadata touched in Pass 1.
   'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
   'package.json',
@@ -215,6 +222,7 @@ test('RB-06 classifies relationship, unknown, directory, media, and unsupported 
     { name: 'word/webSettings.xml', bodySize: 5 },
     { name: 'word/people.xml', bodySize: 5 },
     { name: 'word/stylesWithEffects.xml', bodySize: 5 },
+    { name: 'word/fonts/font1.odttf', bodySize: 5 },
     { name: 'docProps/thumbnail.jpeg', bodySize: 5 },
     { name: 'customXml/item1.xml', bodySize: 5 },
     { name: 'customXml/itemProps1.xml', bodySize: 5 },
@@ -240,6 +248,7 @@ test('RB-06 classifies relationship, unknown, directory, media, and unsupported 
     { id: 'word/webSettings.xml', kind: 'knownPart', story: undefined, markers: undefined },
     { id: 'word/people.xml', kind: 'knownPart', story: undefined, markers: undefined },
     { id: 'word/stylesWithEffects.xml', kind: 'knownPart', story: undefined, markers: undefined },
+    { id: 'word/fonts/font1.odttf', kind: 'knownPart', story: undefined, markers: ['fontPart'] },
     { id: 'docProps/thumbnail.jpeg', kind: 'knownPart', story: undefined, markers: ['mediaPart'] },
     { id: 'customXml/item1.xml', kind: 'knownPart', story: undefined, markers: undefined },
     { id: 'customXml/itemProps1.xml', kind: 'knownPart', story: undefined, markers: undefined },

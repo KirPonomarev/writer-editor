@@ -677,6 +677,53 @@ export const R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION=Object.freeze({
     'test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js',
   ].sort(),
 });
+export const R24_EMBEDDED_FONT_ADMISSION_EXPECTATION=Object.freeze({
+  baseSha:'496efb3e52bffae4ae6083b290638496902823a7',
+  baseTree:'980d48ed6b365badacbdae556435bb827686fe42',
+  inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  defaultApprovalsPath:'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  pk1r1ApprovalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  interopApprovalsPath:'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  sourcePath:'src/io/revisionBridge/index.mjs',
+  parserPath:'src/io/revisionBridge/reviewTransportPackageParserV2.mjs',
+  contentPreviewTestPath:'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+  hostileFileGateTestPath:'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js',
+  intakePreflightTestPath:'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
+  packageBoundaryTestPath:'test/contracts/revision-bridge-docx-package-boundary.contract.test.js',
+  partPolicyTestPath:'test/contracts/revision-bridge-docx-part-policy.contract.test.js',
+  zipInventoryTestPath:'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
+  parserB02TestPath:'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
+  postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  sourceDigest:'64d58dbf5050c2a700cb4a01bd9177a266ea0382e52edfcafc2165790ac6dbad',
+  parserDigest:'f30eba24e437deb91196694d29f1504e7813d1adecc21c0bb087add09ddf6689',
+  contentPreviewTestDigest:'b3bdcbe13948d9c1e92a07c59aa2f92106738a1e391a48095ebe75ef2856330c',
+  hostileFileGateTestDigest:'9947d2283fbf366394a45c22a637bf9b374c871c618b5e526764e98a4439c9ac',
+  intakePreflightTestDigest:'bf508d6c966c8be1419b6c5cd3851bc159782f2c226ce01b98a0799048ce102b',
+  packageBoundaryTestDigest:'32f4d15f8fe69fdfc3fe651f09a1ee151e915f96ee933240f177baee37a93067',
+  partPolicyTestDigest:'c1dab8a4908344d09d813ae3ba9538419d5c9b9e271f36422532a6e00372c469',
+  zipInventoryTestDigest:'c40e28bf98f0e17895c3c585affd6dec9e63d2cba49bec93ac29944fef762e22',
+  parserB02TestDigest:'ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721',
+  inventoryFileDenominator:1465,
+  approvedBy:'owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11',
+  admittedPaths:[
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'src/io/revisionBridge/index.mjs',
+    'src/io/revisionBridge/reviewTransportPackageParserV2.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js',
+    'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
+    'test/contracts/revision-bridge-docx-package-boundary.contract.test.js',
+    'test/contracts/revision-bridge-docx-part-policy.contract.test.js',
+    'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
+    'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
+  ].sort(),
+});
 export const R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION=Object.freeze({
   baseSha:RCV00E_BASE_SHA,
   baseTree:'40d7ee62bd3ddde90e383eaa606db6aba6dfa372',
@@ -4685,6 +4732,62 @@ export function verifyR24ReviewPreviewCommentTopologyPostEvaluationException({ca
   return{schemaVersion:'R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,sourceDigest:source.digest,parserDigest:parser.digest,reviewPreviewTestDigest:reviewPreviewTest.digest,modernCommentsTestDigest:modernCommentsTest.digest,claimLintDigest:claimLint.digest,claimLintTestDigest:claimLintTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,commentParentGraph:'PRESERVE_UNAMBIGUOUS_MODERN_PARENT_EDGES_OR_TYPED_UNSUPPORTED',reviewPreviewTopology:'EXPLICIT_FLAT_PREVIEW_LOSS_DIAGNOSTIC_ONLY',supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
+function resolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedCandidate,e){
+  const isExact=(sha)=>{
+    try{
+      const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+      return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+    }catch{return false;}
+  };
+  if(isExact(resolvedCandidate))return resolvedCandidate;
+  let candidates=[];
+  try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_EMBEDDED_FONT_CANDIDATE_SEARCH');}
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
+  fail('E_R24_EMBEDDED_FONT_CANDIDATE_NOT_FOUND');
+}
+
+function canResolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedCandidate,e){
+  try{return Boolean(resolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedCandidate,e));}catch{return false;}
+}
+
+export function verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,resolvedRequestedCandidate=gitText(git,['rev-parse',candidateSha]);
+  assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_R24_EMBEDDED_FONT_BASE_TREE_DRIFT');
+  try{git(['merge-base','--is-ancestor',e.baseSha,resolvedRequestedCandidate],{encoding:null});}catch{fail('E_R24_EMBEDDED_FONT_BASE_NOT_ANCESTOR');}
+  const resolvedCandidate=resolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedRequestedCandidate,e);
+  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_EMBEDDED_FONT_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
+  const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_EMBEDDED_FONT_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_EMBEDDED_FONT_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
+  const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
+  const inventory=readJson(e.inventoryPath),defaultApprovals=readJson(e.defaultApprovalsPath),pk1r1Approvals=readJson(e.pk1r1ApprovalsPath),interopApprovals=readJson(e.interopApprovalsPath),source=readText(e.sourcePath),parser=readText(e.parserPath),contentPreviewTest=readText(e.contentPreviewTestPath),hostileFileGateTest=readText(e.hostileFileGateTestPath),intakePreflightTest=readText(e.intakePreflightTestPath),packageBoundaryTest=readText(e.packageBoundaryTestPath),partPolicyTest=readText(e.partPolicyTestPath),zipInventoryTest=readText(e.zipInventoryTestPath),parserB02Test=readText(e.parserB02TestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  assert(source.digest===e.sourceDigest&&parser.digest===e.parserDigest&&contentPreviewTest.digest===e.contentPreviewTestDigest&&hostileFileGateTest.digest===e.hostileFileGateTestDigest&&intakePreflightTest.digest===e.intakePreflightTestDigest&&packageBoundaryTest.digest===e.packageBoundaryTestDigest&&partPolicyTest.digest===e.partPolicyTestDigest&&zipInventoryTest.digest===e.zipInventoryTestDigest&&parserB02Test.digest===e.parserB02TestDigest,'E_R24_EMBEDDED_FONT_ARTIFACT_DIGEST');
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_EMBEDDED_FONT_INVENTORY_SHAPE');
+  for(const [relative,file] of [[e.contentPreviewTestPath,contentPreviewTest],[e.hostileFileGateTestPath,hostileFileGateTest],[e.intakePreflightTestPath,intakePreflightTest],[e.packageBoundaryTestPath,packageBoundaryTest],[e.partPolicyTestPath,partPolicyTest],[e.zipInventoryTestPath,zipInventoryTest],[e.parserB02TestPath,parserB02Test],[e.postAuditTestPath,postAuditTest]]){
+    const entry=inventory.value.entries.find((item)=>item.path===relative);
+    assert(entry?.sha256===file.digest&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_EMBEDDED_FONT_INVENTORY_DIGEST',relative);
+  }
+  for(const registry of [defaultApprovals,pk1r1Approvals,interopApprovals])assert(registry.value.version==='v1.0'&&Array.isArray(registry.value.approvals),'E_R24_EMBEDDED_FONT_APPROVALS_SHAPE');
+  const approvalEntries=[...defaultApprovals.value.approvals,...pk1r1Approvals.value.approvals,...interopApprovals.value.approvals];
+  const approvalRegistryPaths=new Set([e.defaultApprovalsPath,e.pk1r1ApprovalsPath,e.interopApprovalsPath]);
+  for(const relative of e.admittedPaths.filter((item)=>!approvalRegistryPaths.has(item))){
+    const digest=h(objectBytes(git,resolvedCandidate,relative));
+    const approved=approvalEntries.some((entry)=>entry.filePath===relative&&entry.sha256===digest&&entry.approved===true&&approvalMatchesApprovedBy(entry,e.approvedBy));
+    assert(approved,'E_R24_EMBEDDED_FONT_APPROVAL_DIGEST',relative);
+  }
+  for(const token of ['DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY','DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','fontPart','word\\/fonts\\/'])assert(source.text.includes(token),'E_R24_EMBEDDED_FONT_SOURCE_TOKEN',token);
+  for(const token of ['isEmbeddedFontPartName','known-unsupported-part','word\\/fonts\\/'])assert(parser.text.includes(token),'E_R24_EMBEDDED_FONT_PARSER_TOKEN',token);
+  for(const token of ['known degraded parts are ignored','DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','word/fonts/font1.odttf'])assert(contentPreviewTest.text.includes(token),'E_R24_EMBEDDED_FONT_CONTENT_TEST_TOKEN',token);
+  for(const token of ['Stage02 hostile file gate allows bounded ignored parts and quarantines unknown parts','word/fonts/font1.odttf','word/fonts/font1.ttf'])assert(hostileFileGateTest.text.includes(token),'E_R24_EMBEDDED_FONT_HOSTILE_TEST_TOKEN',token);
+  for(const token of ['DOCX intake preflight report: media stays degraded diagnostics only','DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY','fontPart'])assert(intakePreflightTest.text.includes(token),'E_R24_EMBEDDED_FONT_PREFLIGHT_TEST_TOKEN',token);
+  for(const token of ['ZIP_INVENTORY_MATERIALIZER_TEST_PATH','HOSTILE_FILE_GATE_TEST_PATH','CONTENT_PREVIEW_TEST_PATH'])assert(packageBoundaryTest.text.includes(token),'E_R24_EMBEDDED_FONT_BOUNDARY_TEST_TOKEN',token);
+  for(const token of ['fontPart','DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'])assert(partPolicyTest.text.includes(token),'E_R24_EMBEDDED_FONT_POLICY_TEST_TOKEN',token);
+  for(const token of ['word/fonts/font1.odttf','knownPart','fontPart'])assert(zipInventoryTest.text.includes(token),'E_R24_EMBEDDED_FONT_ZIP_TEST_TOKEN',token);
+  for(const token of ['word/fonts/font1.odttf','known-unsupported-part','word/fonts/font1.ttf'])assert(parserB02Test.text.includes(token),'E_R24_EMBEDDED_FONT_B02_TEST_TOKEN',token);
+  for(const token of ['R24_EMBEDDED_FONT_ADMISSION_EXPECTATION','verifyR24EmbeddedFontAdmissionPostEvaluationException','E_R24_EMBEDDED_FONT_EXACT_ADMITTED_DELTA','NO_FONT_RENDERING_OR_PRESERVATION_CLAIM'])assert(postAuditVerifier.text.includes(token),'E_R24_EMBEDDED_FONT_POST_AUDIT_VERIFIER_TOKEN',token);
+  for(const token of ['R24 embedded font admission exception accepts the exact current delta','R24 embedded font admission exception rejects an unadmitted future path','R24 embedded font admission exception rejects missing diagnostics-loss token'])assert(postAuditTest.text.includes(token),'E_R24_EMBEDDED_FONT_POST_AUDIT_TEST_TOKEN',token);
+  return{schemaVersion:'R24_EMBEDDED_FONT_ADMISSION_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,defaultApprovalsDigest:defaultApprovals.digest,pk1r1ApprovalsDigest:pk1r1Approvals.digest,interopApprovalsDigest:interopApprovals.digest,sourceDigest:source.digest,parserDigest:parser.digest,contentPreviewTestDigest:contentPreviewTest.digest,hostileFileGateTestDigest:hostileFileGateTest.digest,intakePreflightTestDigest:intakePreflightTest.digest,packageBoundaryTestDigest:packageBoundaryTest.digest,partPolicyTestDigest:partPolicyTest.digest,zipInventoryTestDigest:zipInventoryTest.digest,parserB02TestDigest:parserB02Test.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,embeddedFontDisposition:'DIAGNOSTICS_AND_EXPLICIT_LOSS_ONLY',rawFontBinaryQuarantine:true,fontRenderingPreservationClaim:false,supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0,nonClaims:['NO_FONT_RENDERING_OR_PRESERVATION_CLAIM','NO_SUPPORTED_DENOMINATOR_CELL_PASS','NO_GOOGLE_NATIVE_ROUTE_CLAIM']};
+}
+
 export function verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
   assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_R24_RCV00E_BASE_TREE_DRIFT');
@@ -5811,6 +5914,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   let r24ReviewPreviewCommentTopologyDescendant=false;
   if(resolvedCandidate!==R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24ReviewPreviewCommentTopologyDescendant=true;}catch{}}
   const r24ReviewPreviewCommentTopologyEnabled=allowAuditCycle2Admission&&r24ReviewPreviewCommentTopologyDescendant;
+  let r24EmbeddedFontAdmissionDescendant=false;
+  if(resolvedCandidate!==R24_EMBEDDED_FONT_ADMISSION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_EMBEDDED_FONT_ADMISSION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24EmbeddedFontAdmissionDescendant=true;}catch{}}
+  const r24EmbeddedFontAdmissionEnabled=allowAuditCycle2Admission&&r24EmbeddedFontAdmissionDescendant&&canResolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedCandidate,R24_EMBEDDED_FONT_ADMISSION_EXPECTATION);
   let r24Rcv00fDeliveryReconciliationDescendant=false;
   if(resolvedCandidate!==R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24Rcv00fDeliveryReconciliationDescendant=true;}catch{}}
   const r24Rcv00fDeliveryReconciliationEnabled=allowAuditCycle2Admission&&r24Rcv00fDeliveryReconciliationDescendant;
@@ -5983,12 +6089,13 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const r24Rcv00eLeaseFencingCasCandidateSha=r24ReviewPreviewCommentTopologyEnabled?R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.baseSha:resolvedCandidate;
   const r24Rcv00eLeaseFencingCasException=r24Rcv00eLeaseFencingCasEnabled?verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:r24Rcv00eLeaseFencingCasCandidateSha,git}):null;
   const r24ReviewPreviewCommentTopologyException=r24ReviewPreviewCommentTopologyEnabled?verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
+  const r24EmbeddedFontAdmissionException=r24EmbeddedFontAdmissionEnabled?verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Rcv00fDeliveryReconciliationException=r24Rcv00fDeliveryReconciliationEnabled?verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24P03RelationshipGraphValidationException=r24P03RelationshipGraphValidationEnabled?verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Ops03SemanticE0ClassifierException=r24Ops03SemanticE0ClassifierEnabled?verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Rcv00hMinimalE0ParserPurityException=r24Rcv00hMinimalE0ParserPurityEnabled?verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24W0CurrentStateClosureException=r24W0CurrentStateClosureEnabled?verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:resolvedCandidate,git}):null;
-  const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(pre00fCurrentHeadPlanDeliveryReconciliationException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[]),...(r24Rcv00hMinimalE0ParserPurityException?.admittedPaths??[]),...(r24W0CurrentStateClosureException?.admittedPaths??[])]);
+  const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(pre00fCurrentHeadPlanDeliveryReconciliationException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24EmbeddedFontAdmissionException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[]),...(r24Rcv00hMinimalE0ParserPurityException?.admittedPaths??[]),...(r24W0CurrentStateClosureException?.admittedPaths??[])]);
   for(const admittedPath of (r24Interop100U000cPagebreakReexportException?.admittedPaths??[]))allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
@@ -6000,6 +6107,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException=r24ImportPreviewBookmarkMetadataExplicitLossException;
   verificationResult.r24Rcv00eLeaseFencingCasPostEvaluationException=r24Rcv00eLeaseFencingCasException;
   verificationResult.r24ReviewPreviewCommentTopologyPostEvaluationException=r24ReviewPreviewCommentTopologyException;
+  verificationResult.r24EmbeddedFontAdmissionPostEvaluationException=r24EmbeddedFontAdmissionException;
   verificationResult.r24Rcv00fDeliveryReconciliationPostEvaluationException=r24Rcv00fDeliveryReconciliationException;
   verificationResult.r24P03RelationshipGraphValidationPostEvaluationException=r24P03RelationshipGraphValidationException;
   verificationResult.r24Ops03SemanticE0ClassifierPostEvaluationException=r24Ops03SemanticE0ClassifierException;

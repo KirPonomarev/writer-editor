@@ -4,8 +4,8 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 export const PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION=Object.freeze({
-  baseSha:'496efb3e52bffae4ae6083b290638496902823a7',
-  baseTree:'980d48ed6b365badacbdae556435bb827686fe42',
+  baseSha:'87072a10c690b99ffb25f20516ebfd410377e2fb',
+  baseTree:'3c5943055c95b20598125ca8020a917d37516250',
   historicalDeliverySha:'31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18',
   historicalDeliveryTree:'4e3947455f98d19bed8aaf1687bfdcaf9a21e83b',
   approvedBy:'OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11',
