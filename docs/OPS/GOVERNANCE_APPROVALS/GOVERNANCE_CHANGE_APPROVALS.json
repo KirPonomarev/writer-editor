@@ -7401,20 +7401,6 @@
       "rationale": "DOCX_INTAKE_PREFLIGHT_CLASSIFICATION_002 approves the bounded DOCX intake preflight command-surface contract update for hostile gate plus package and part-policy classification; no UI, storage write, import mutation, semantic parser execution, export rewrite, network, dependency, or release claim is introduced."
     },
     {
-      "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
-      "sha256": "bc0e7be09ab2d34bdc7c4727563fc0469d658e3807193c26de4977e0396f2cf5",
-      "approvedBy": "ticket:YALKEN_RTK_AUTONOMOUS_MASTER_PLAN_V6_W5_RELEASE_HARDENING_AND_CERTIFICATION",
-      "approvedAtUtc": "2026-07-29T17:48:00.000Z",
-      "rationale": "Approve bounded W5 V6 DOCX package-boundary contract allowlist sync so the existing dirty-tree guard can run alongside W5 local hardening status, verifier, Word evidence guard, and governance approval files while preserving package budget semantics, parser authority limits, no release DONE, no dependency, no runtime behavior change, no UI change, no DOCX Minimal behavior change, and no writer authority change."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
-      "sha256": "729c7c181aefbf5767446d984dba8f53216796d093e1e3ca739ceb7b198152d1",
-      "approvedBy": "ticket:REVIEW_BRIDGE_BOUNDED_FIDELITY_GOLDEN_ACCEPTANCE_001",
-      "approvedAtUtc": "2026-07-12T23:00:00.000Z",
-      "rationale": "Approve part-policy coverage for diagnostics-only relationship, story, directory, and media categories as text parser candidates while retaining zero mutation authority and unknown-part rejection."
-    },
-    {
       "filePath": "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
       "sha256": "77a39218126ee96bb586ca73e4a29471271a3ca4d5be07afc103cbfb13761e7b",
       "approvedBy": "owner-direct:TASK_ID:PARSER-01-HOTFIX-001",
@@ -7436,15 +7422,6 @@
       "approvedBy": "ticket:REVIEW_BRIDGE_DOCX_PREFLIGHT_001",
       "approvedAtUtc": "2026-07-01T20:35:39.000Z",
       "rationale": "Approve bounded contract proof for DOCX review preflight diagnostic-only report preserving no review session, apply, receipt, recovery, project truth write, importDocxV1 routing, dependency, network, UI, release, Word parity, or full DOCX review import claim."
-    },
-    {
-      "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
-      "sha256": "db0a17d6bd5221194b81db54bc07be6ce0899293f26c21eef023fc5c11a06606",
-      "approvedBy": "owner-direct:TASK_ID:ZIP-01_BUDGET_CRC_EVIDENCE",
-      "approvedAtUtc": "2026-08-08T14:15:51.524Z",
-      "rationale": "Approve additive centralCrc32 expectation and ZIP-01 contour allowlist entries in the materializer contract; tests only.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_REQUEST_PROOF_CARRYING_INTEROP_V2_ZIP01_BUDGET_CRC_EVIDENCE"
     },
     {
       "filePath": "test/contracts/revision-bridge-exact-text-apply-crash-reconciliation.contract.test.js",
@@ -7718,15 +7695,6 @@
       "approvedBy": "ticket:YALKEN_WORD_SAFE_SEMANTIC_ROUNDTRIP_V4_E12_WORD_CONTAINER_WORK_ROOT",
       "approvedAtUtc": "2026-07-31T10:45:00.000Z",
       "rationale": "Approve bounded B01 sandbox contracts: verify default Word work root is inside com.microsoft.Word container tmp, T7 artifact root is preserved, plain tmp override is rejected, and survival-only certification boundaries remain enforced without UI, dependency, or network expansion."
-    },
-    {
-      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "sha256": "13ce852b13db4134c9cf81795a809f76781bdf0a6f41f162eae7818ec7511a20",
-      "approvedBy": "owner-directive:R24_RCV00C_GOVERNANCE_APPROVAL_REGISTRY_HYGIENE_2026_09_09",
-      "approvedAtUtc": "2026-09-09T00:00:00.000Z",
-      "rationale": "Registry-only hygiene: preserve unrelated current-main file bytes while rebinding stale global approval hashes so GOVERNANCE_APPROVAL_REGISTRY_VALID_OK reflects exact current repository state; no source, runtime, dependency, UI, graph or release-readiness change.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_APPROVAL_REGISTRY_VALIDATION_REPAIR"
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
@@ -11896,59 +11864,147 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "41a5690d5eefaf3093b4be2d22c4e210eedac10a857c9765fe27a6b953765526",
-      "rationale": "Approve exact T04 content-preview contract bytes after current-main rebind: asserts preserved plain-text candidate output, exact loss items for line/page/column breaks and next-page/continuous section breaks, and lexical false-positive rejection. No UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_REBOUND_TO_W0_CURRENT_MAIN_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "af1056257628248da6a01b0415ce265d5d63b8b9c6da4048cf180a82c54ae796",
-      "rationale": "Approve exact C1B inventory bytes after PR1878 current-main rebind: preserves W0 current-state closure inventory additions and T05/P03/RCV00H bindings while adding the T04 typed DOCX break and section-loss regression hash. Registry metadata only; no parser behavior beyond T04, UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "e4ffd86cc3d1444f2c6ef9a19261845ac436b46ce8f3486f78d831f783d06df3",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_GOVERNANCE_REGISTRY_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "64d58dbf5050c2a700cb4a01bd9177a266ea0382e52edfcafc2165790ac6dbad",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "f30eba24e437deb91196694d29f1504e7813d1adecc21c0bb087add09ddf6689",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "b3bdcbe13948d9c1e92a07c59aa2f92106738a1e391a48095ebe75ef2856330c",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "9947d2283fbf366394a45c22a637bf9b374c871c618b5e526764e98a4439c9ac",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
+      "sha256": "bf508d6c966c8be1419b6c5cd3851bc159782f2c226ce01b98a0799048ce102b",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
+      "sha256": "32f4d15f8fe69fdfc3fe651f09a1ee151e915f96ee933240f177baee37a93067",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
+      "sha256": "c1dab8a4908344d09d813ae3ba9538419d5c9b9e271f36422532a6e00372c469",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
+      "sha256": "c40e28bf98f0e17895c3c585affd6dec9e63d2cba49bec93ac29944fef762e22",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721",
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f1615548e91c095e45269e79b373d45ce0b4e1765598dfeb9e428317759307bb",
-      "rationale": "Approve exact YALKEN_INTEROP_100 governance registry bytes after PR1878 current-main rebind: preserves W0/current-main approval truth and records T04 typed DOCX break explicit-loss approval hashes. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "901acea865d14f378662e12837e2292c47f58150b2a8b587b8715b3077f1ddfc",
+      "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T02:24:58Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_GOVERNANCE_REGISTRY_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T03:05:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE",
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "4b603d77717af369a05a82f241bf4ee374fcec5351b9acdcbf604545b7863b1d",
-      "rationale": "Approve exact PK1R1 governance registry bytes after PR1878 current-main rebind: preserves W0/current-main approval truth and records T04 typed DOCX break explicit-loss approval hashes. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "d56a39a8a40a860e793db78aa148fc4346aef94b453ecd5b4d7d12f2bab3c88a",
+      "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
     }
   ],
   "evidenceStampIds": [
@@ -11958,6 +12014,7 @@
     "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION",
     "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+    "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
   ]
 }

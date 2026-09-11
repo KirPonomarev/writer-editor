@@ -55,6 +55,11 @@ const KNOWN_ADVISORY_PARTS = Object.freeze([
   'docProps/core.xml',
   'docProps/app.xml',
 ]);
+
+function isEmbeddedFontPartName(partName) {
+  return /^word\/fonts\/[A-Za-z0-9_.-]+\.odttf$/u.test(partName);
+}
+
 const ACTIVE_RELATIONSHIP_MARKERS = Object.freeze([
   'vbaProject',
   'oleObject',
@@ -906,6 +911,7 @@ function isKnownAdvisoryPart(partName) {
   if (partName.startsWith('word/footer') && partName.endsWith('.xml')) return true;
   if (partName === 'word/footnotes.xml' || partName === 'word/endnotes.xml') return true;
   if (partName.startsWith('word/theme/') && partName.endsWith('.xml')) return true;
+  if (isEmbeddedFontPartName(partName)) return true;
   return partName.endsWith('.rels') && (partName.startsWith('_rels/') || partName.includes('/_rels/'));
 }
 

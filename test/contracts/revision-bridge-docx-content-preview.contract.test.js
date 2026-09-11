@@ -453,6 +453,10 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
   const degraded = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Media'), [
     { name: 'word/media/image1.png', body: 'png' },
   ]));
+  const embeddedFont = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Font'), [
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
+  ]));
   const malformed = bridge.buildDocxContentPreviewFromZipBytes('review.docx');
 
   for (const result of [duplicate, dtd, malformed]) {
@@ -473,6 +477,21 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
   assert.equal(degraded.contentPreview.paragraphs[0].text, 'Media');
   assert.equal(degraded.diagnostics.some((item) => (
     item.code === 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY'
+  )), true);
+  assert.equal(embeddedFont.ok, true);
+  assert.equal(embeddedFont.status, 'preview');
+  assert.equal(embeddedFont.parse.attempted, true);
+  assert.equal(embeddedFont.contentPreview.paragraphs[0].text, 'Font');
+  assert.equal(embeddedFont.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'
+    && item.entryId === 'word/fonts/font1.odttf'
+  )), true);
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(embeddedFont);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED'
+    && item.category === 'font'
+    && item.sourcePart === 'word/fonts/font1.odttf'
   )), true);
 });
 

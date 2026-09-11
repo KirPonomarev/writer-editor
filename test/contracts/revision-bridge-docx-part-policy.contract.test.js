@@ -7,7 +7,21 @@ const { pathToFileURL } = require('node:url');
 
 const MODULE_PATH = 'src/io/revisionBridge/index.mjs';
 const TEST_PATH = 'test/contracts/revision-bridge-docx-part-policy.contract.test.js';
-const ALLOWLIST = [MODULE_PATH, TEST_PATH];
+const ALLOWLIST = [
+  MODULE_PATH,
+  'src/io/revisionBridge/reviewTransportPackageParserV2.mjs',
+  TEST_PATH,
+  'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+  'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js',
+  'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
+  'test/contracts/revision-bridge-docx-package-boundary.contract.test.js',
+  'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
+  'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
+  'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+];
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
@@ -84,6 +98,7 @@ function assertOutputShape(result) {
   assert.deepEqual(Object.keys(result.categories), [
     'mainDocumentPart',
     'knownSupportPart',
+    'fontPart',
     'mediaPart',
     'relationshipPart',
     'unsupportedStoryPart',
@@ -231,6 +246,11 @@ test('RB-08 unsupported story, unknown, directory, and media are diagnostics-onl
       entry({ id: 'folder/', kind: 'directory', story: undefined, markers: undefined }),
       'directoryPart',
       'DOCX_PART_POLICY_DIRECTORY_DIAGNOSTICS_ONLY',
+    ],
+    [
+      entry({ id: 'word/fonts/font1.odttf', story: undefined, markers: ['fontPart'] }),
+      'fontPart',
+      'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY',
     ],
     [
       entry({ id: 'word/media/image1.png', story: undefined, markers: ['mediaPart'] }),
