@@ -576,12 +576,14 @@ export const DOCX_PART_POLICY_DIAGNOSTIC_CODES = Object.freeze({
   UNKNOWN_PART_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_UNKNOWN_PART_DIAGNOSTICS_ONLY',
   DIRECTORY_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_DIRECTORY_DIAGNOSTICS_ONLY',
   MEDIA_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_MEDIA_DIAGNOSTICS_ONLY',
+  EMBEDDED_FONT_DIAGNOSTICS_ONLY: 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY',
   ACCEPTED: 'DOCX_PART_POLICY_ACCEPTED',
 });
 
 const DOCX_PART_POLICY_CATEGORY_KEYS = [
   'mainDocumentPart',
   'knownSupportPart',
+  'fontPart',
   'mediaPart',
   'relationshipPart',
   'unsupportedStoryPart',
@@ -610,6 +612,7 @@ const DOCX_PART_POLICY_KNOWN_SUPPORT_PARTS = [
 
 const DOCX_PART_POLICY_DEGRADED_CATEGORY_CODES = Object.freeze({
   mediaPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
+  fontPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.EMBEDDED_FONT_DIAGNOSTICS_ONLY,
   relationshipPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
   unsupportedStoryPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
   unknownPart: DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY,
@@ -659,6 +662,7 @@ const DOCX_PACKAGE_BOUNDARY_MARKERS = [
   'unsupportedStory',
   'documentPart',
   'mediaPart',
+  'fontPart',
 ];
 
 const DOCX_PACKAGE_BOUNDARY_REJECTED_SIZE_FIELDS = [
@@ -1289,6 +1293,10 @@ function docxZipKnownSupportPartName(name) {
   );
 }
 
+function docxZipEmbeddedFontPartName(name) {
+  return /^word\/fonts\/[A-Za-z0-9_.-]+\.odttf$/u.test(name);
+}
+
 function docxZipClassifyEntry(name) {
   if (name.endsWith('/') || name.endsWith('\\')) {
     return { kind: 'directory' };
@@ -1298,6 +1306,9 @@ function docxZipClassifyEntry(name) {
   }
   if (name === 'word/document.xml') {
     return { kind: 'knownPart', story: 'main', markers: ['documentPart'] };
+  }
+  if (docxZipEmbeddedFontPartName(name)) {
+    return { kind: 'knownPart', markers: ['fontPart'] };
   }
   if (docxZipKnownSupportPartName(name)) {
     return { kind: 'knownPart' };
@@ -2398,6 +2409,7 @@ const DOCX_PART_POLICY_TYPE = 'docxPartPolicyClassification';
 const DOCX_PART_POLICY_CATEGORY_NAMES = [
   'mainDocumentPart',
   'knownSupportPart',
+  'fontPart',
   'mediaPart',
   'relationshipPart',
   'unsupportedStoryPart',
@@ -2415,6 +2427,7 @@ const DOCX_PART_POLICY_DIAGNOSTIC_MESSAGES = Object.freeze({
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY]: 'unknown part is diagnostics-only',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY]: 'directory part is diagnostics-only',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY]: 'media part is diagnostics-only',
+  [DOCX_PART_POLICY_DIAGNOSTIC_CODES.EMBEDDED_FONT_DIAGNOSTICS_ONLY]: 'embedded font part is diagnostics-only',
   [DOCX_PART_POLICY_DIAGNOSTIC_CODES.ACCEPTED]: 'part policy accepted metadata-only inventory',
 });
 
@@ -2444,6 +2457,7 @@ function docxPartPolicyEligibility(decision, diagnostics) {
     DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
     DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
+    DOCX_PART_POLICY_DIAGNOSTIC_CODES.EMBEDDED_FONT_DIAGNOSTICS_ONLY,
   ]);
   const contentPreviewSafe = diagnostics.every((diagnostic) => contentPreviewSafeCodes.has(diagnostic.code));
   return {
@@ -2497,6 +2511,7 @@ function docxPartPolicyEntryCategories(entry) {
   if (entry?.kind === 'unknownPart') categories.push('unknownPart');
   if (entry?.kind === 'relationshipPart' || markers.includes('relationship')) categories.push('relationshipPart');
   if (entry?.story === 'unsupported' || markers.includes('unsupportedStory')) categories.push('unsupportedStoryPart');
+  if (markers.includes('fontPart')) categories.push('fontPart');
   if (markers.includes('mediaPart')) categories.push('mediaPart');
   if (entry?.story === 'main' || markers.includes('documentPart') || entry?.id === 'word/document.xml') {
     categories.push('mainDocumentPart');
@@ -2620,6 +2635,7 @@ export function classifyDocxPartPolicy(input = {}) {
     ['unsupportedStoryPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY],
     ['unknownPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNKNOWN_PART_DIAGNOSTICS_ONLY],
     ['directoryPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY],
+    ['fontPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.EMBEDDED_FONT_DIAGNOSTICS_ONLY],
     ['mediaPart', DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY],
   ];
   for (const [category, diagnosticCode] of degradedCategories) {
@@ -2692,6 +2708,7 @@ function docxIntakePreflightInventorySummary(inventory) {
   const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
   const categoryCounts = {
     directoryPart: 0,
+    fontPart: 0,
     knownSupportPart: 0,
     mainDocumentPart: 0,
     mediaPart: 0,
@@ -2725,6 +2742,7 @@ function docxIntakePreflightEmptyInventorySummary() {
     totalCompressedSize: 0,
     categoryCounts: {
       directoryPart: 0,
+      fontPart: 0,
       knownSupportPart: 0,
       mainDocumentPart: 0,
       mediaPart: 0,
@@ -7587,6 +7605,9 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_MEDIA_NOT_IMPORTED', category: 'media' };
   }
+  if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.EMBEDDED_FONT_DIAGNOSTICS_ONLY) {
+    return { code: 'DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED', category: 'font' };
+  }
   if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_PACKAGE_DIRECTORY_IGNORED', category: 'package' };
   }
@@ -7632,6 +7653,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY,
+      DOCX_PART_POLICY_DIAGNOSTIC_CODES.EMBEDDED_FONT_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     ].includes(diagnostic.code);
     const knownContentDiagnostic = [

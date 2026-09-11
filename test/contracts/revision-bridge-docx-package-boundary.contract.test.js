@@ -10,9 +10,16 @@ const TEST_PATH = 'test/contracts/revision-bridge-docx-package-boundary.contract
 const ZIP_INVENTORY_MATERIALIZER_TEST_PATH = 'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js';
 const HOSTILE_FILE_GATE_TEST_PATH = 'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js';
 const CONTENT_PREVIEW_TEST_PATH = 'test/contracts/revision-bridge-docx-content-preview.contract.test.js';
+const INTAKE_PREFLIGHT_TEST_PATH = 'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js';
+const PART_POLICY_TEST_PATH = 'test/contracts/revision-bridge-docx-part-policy.contract.test.js';
+const PARSER_V2_PATH = 'src/io/revisionBridge/reviewTransportPackageParserV2.mjs';
+const B02_PARSER_TEST_PATH = 'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js';
 const IMPORT_PREVIEW_PLAN_TEST_PATH = 'test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js';
 const IMPORT_PREVIEW_COMMAND_SURFACE_TEST_PATH = 'test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js';
 const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json';
+const C1B_TEST_INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
+const PK1R1_GOVERNANCE_APPROVALS_PATH = 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json';
+const INTEROP_GOVERNANCE_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 const RELEASE_CANDIDATE_LOCK_PATH = 'docs/OPS/STATUS/RELEASE_CANDIDATE_LOCK.json';
 const W5_STATUS_PATH = 'docs/OPS/RTK/W5_RELEASE_HARDENING_CERTIFICATION_STATUS.json';
 const W5_VERIFIER_PATH = 'scripts/ops/rtk-w5-release-hardening-certification.mjs';
@@ -24,9 +31,16 @@ const ALLOWLIST = [
   ZIP_INVENTORY_MATERIALIZER_TEST_PATH,
   HOSTILE_FILE_GATE_TEST_PATH,
   CONTENT_PREVIEW_TEST_PATH,
+  INTAKE_PREFLIGHT_TEST_PATH,
+  PART_POLICY_TEST_PATH,
+  PARSER_V2_PATH,
+  B02_PARSER_TEST_PATH,
   IMPORT_PREVIEW_PLAN_TEST_PATH,
   IMPORT_PREVIEW_COMMAND_SURFACE_TEST_PATH,
   GOVERNANCE_APPROVALS_PATH,
+  C1B_TEST_INVENTORY_PATH,
+  PK1R1_GOVERNANCE_APPROVALS_PATH,
+  INTEROP_GOVERNANCE_APPROVALS_PATH,
   RELEASE_CANDIDATE_LOCK_PATH,
   W5_STATUS_PATH,
   W5_VERIFIER_PATH,

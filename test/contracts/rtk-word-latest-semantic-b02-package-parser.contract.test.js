@@ -336,6 +336,40 @@ test('B02 parser emits typed opaque unsupported and malformed XML never becomes 
   assert.equal(malformed.code, 'RTK_XML_MALFORMED_BLOCKED');
 });
 
+test('B02 parser treats embedded Word font parts as advisory inventory only', async () => {
+  const parser = await loadParser();
+  const embeddedFont = parser.parseReviewTransportPackageV2({
+    parts: {
+      ...baseParts(documentXml('<w:p><w:r><w:t>Font body</w:t></w:r></w:p>')),
+      'word/fontTable.xml': '<w:fonts xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>',
+      'word/fonts/font1.odttf': '\u0000\u0001font',
+    },
+  }, { cryptoPort });
+  const rawTtf = parser.parseReviewTransportPackageV2({
+    parts: {
+      ...baseParts(documentXml('<w:p><w:r><w:t>Font body</w:t></w:r></w:p>')),
+      'word/fonts/font1.ttf': '\u0000\u0001font',
+    },
+  }, { cryptoPort });
+
+  assert.equal(embeddedFont.ok, true);
+  assert.equal(embeddedFont.canApply, false);
+  assert.equal(embeddedFont.reviewIr.opaqueUnsupported.some((item) => (
+    item.kind === 'known-unsupported-part'
+    && item.partName === 'word/fonts/font1.odttf'
+    && item.typedDiagnostic === 'RTK_OPAQUE_UNSUPPORTED_KNOWN_PART'
+    && item.writerAuthorityImpact === 'inventory-only'
+  )), true);
+  assert.equal(rawTtf.ok, true);
+  assert.equal(rawTtf.canApply, false);
+  assert.equal(rawTtf.reviewIr.opaqueUnsupported.some((item) => (
+    item.kind === 'unknown-part'
+    && item.partName === 'word/fonts/font1.ttf'
+    && item.typedDiagnostic === 'RTK_OPAQUE_UNSUPPORTED_PART'
+    && item.writerAuthorityImpact === 'blocking'
+  )), true);
+});
+
 test('B02 public export and receipt preserve non-certification and platform-neutral parser boundaries', async () => {
   const bridge = await loadIndex();
   const receipt = JSON.parse(fs.readFileSync(path.join(process.cwd(), RECEIPT_PATH), 'utf8'));
