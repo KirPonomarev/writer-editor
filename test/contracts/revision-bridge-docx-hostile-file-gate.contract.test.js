@@ -248,10 +248,11 @@ test('Stage02 hostile file gate allows bounded ignored parts and quarantines unk
     { name: 'word/document.xml', body: '<root/>' },
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
     { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
-  ]));
-  const nonOdttfFontPart = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
-    { name: 'word/document.xml', body: '<root/>' },
     { name: 'word/fonts/font1.ttf', body: Buffer.from([0, 1, 2, 3]) },
+  ]));
+  const unsupportedFontPart = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    { name: 'word/document.xml', body: '<root/>' },
+    { name: 'word/fonts/font1.woff', body: Buffer.from([0, 1, 2, 3]) },
   ]));
   const directoryPart = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
@@ -265,9 +266,9 @@ test('Stage02 hostile file gate allows bounded ignored parts and quarantines unk
   assert.equal(unknownPart.ok, false);
   assert.equal(unknownPart.decision, 'quarantined');
   assert.equal(unknownPart.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED);
-  assert.equal(nonOdttfFontPart.ok, false);
-  assert.equal(nonOdttfFontPart.decision, 'quarantined');
-  assert.equal(nonOdttfFontPart.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED);
+  assert.equal(unsupportedFontPart.ok, false);
+  assert.equal(unsupportedFontPart.decision, 'quarantined');
+  assert.equal(unsupportedFontPart.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED);
   for (const result of [wordSidePart, embeddedFontPart, directoryPart, unsupportedStory]) {
     assert.equal(result.ok, true);
     assert.equal(result.decision, 'pass');
