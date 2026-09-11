@@ -11995,6 +11995,102 @@
       "evidenceStampIds": [
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b446e1d623feae8b4202476019b504818892eb08af411b4f053d693b9b5c5a9e",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_STATUS_V1.json",
+      "sha256": "d90fa3c5bf2f2e21bce0477aee07af7c0ce211ba3f372aa855f52ef09028ae72",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT.json",
+      "sha256": "886b685479dfbd5276bd5f45109405019a2097aafebce715dbe1d6856808d5b0",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7d8c3dcf12ccb8912958f46fe78d0034cce6d0bdb5f0a20804f5c0f69ade30c4",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs",
+      "sha256": "4cb289aae0f9dc5fc061b65862a43ee6fa375bcfd0b0a396f0fd416b719bcbc0",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "df66d72838ca91e17387b31e5bfb32bdc701d97241e560459b244ec15361faf8",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "8416c4f500915ef434ab16279390936f39fd6ac63df0a02606676008ec714391",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00a-current-head-exact-toolchain-entrypoint.contract.test.mjs",
+      "sha256": "de51b630ca13d0ec24f31c56d0a522f53bb4338a3c09dbce0cd92f20a4205dd7",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00A current-head exact-toolchain entrypoint evidence from exact origin/main 389dbc5e; validates Node 22.12.0/npm 10.9.0 package-isolated route and typed unsupported-runtime failure without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, or historical RCV00A admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00A_CANONICAL_EXACT_TOOLCHAIN_ENTRYPOINT_CURRENT_HEAD_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
+      ]
     }
   ],
   "evidenceStampIds": [
