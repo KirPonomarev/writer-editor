@@ -12091,6 +12091,126 @@
       "evidenceStampIds": [
         "ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c9c0ace2f022e949ead320162a8d900e8a9658e0313fdd636fcb27ab95da8498",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_STATUS_V1.json",
+      "sha256": "7a242bd349eec21f52b035df25039e8a48e286494e0769748a03df8d8ca80eef",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER.json",
+      "sha256": "59e7c44a91735dbba6cda2bbba726d26ebc5691321858517a9a001a5ad78a4d9",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7a890bc2b5bd718768ef3f80c76c2939cf82bb7cd7d124f77e6a51f4d62a3741",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs",
+      "sha256": "2a1941ea671cdd357684d1d192eb7024fd0a15598e1c170dba7c13b2b734e26f",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "3d4218f7061c55eb21c3c51603a22cc74d37f810745aa338b4832d6adbd84492",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "fa0baf068ea20d6fd32e360ed71961dcccb3a06558a8c701a837ed892282cfe1",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "3c2798202a43ab34fbc6c8352e4c0b0b70049e945916f582a2de97ae13074d9f",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00b-current-head-effective-state-compiler.contract.test.mjs",
+      "sha256": "df49caa225d3ea1a2982d0d969b9827ad395b5d875e642f32e27dfdaf773fb4f",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
+      "sha256": "353031759cd3fbf62e5370cfa013888eefcb6abc9a30d7c56f7fd5e04b44e78e",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00.000Z",
+      "rationale": "Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
+      ]
     }
   ],
   "evidenceStampIds": [
