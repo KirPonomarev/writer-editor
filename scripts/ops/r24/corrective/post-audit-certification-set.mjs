@@ -90,6 +90,7 @@ import {
   RCV00D_BASE_TREE,
   RCV00D_CONTOUR_ID,
   RCV00D_EXPECTED_GRAPH_CANDIDATE,
+  RCV00D_EXPECTED_GRAPH_VERDICT,
   RCV00D_NON_CLAIMS,
   RCV00D_REGISTER_PATH,
   RCV00D_SCHEMA_VERSION,
@@ -387,8 +388,8 @@ export const R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION=Object.freeze(
 export const R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION=Object.freeze({
   baseSha:RCV00D_BASE_SHA,
   baseTree:RCV00D_BASE_TREE,
-  deliverySha:'19fe47d8fad5f1f1429ab27e89a915527f93b067',
-  deliveryTree:'6f366cf166431673a4493fc4c8bd60bada6061b6',
+  deliverySha:'0b2476fc6ab881202ccc2c0087a57fea85a54195',
+  deliveryTree:'73feb243a63a5169c436111321a0082a40351a0d',
   inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   approvalsPath:'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
   registerPath:RCV00D_REGISTER_PATH,
@@ -409,18 +410,16 @@ export const R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION=Object.freeze({
   selectedObservationId:RCV00D_SELECTED_OBSERVATION_ID,
   selectedContour:RCV00D_SELECTED_CONTOUR,
   graphSchedulerCandidate:RCV00D_EXPECTED_GRAPH_CANDIDATE,
-  inventoryFileDenominator:1462,
+  graphSchedulerVerdict:RCV00D_EXPECTED_GRAPH_VERDICT,
+  inventoryFileDenominator:1465,
   approvedBy:'owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10',
   admittedPaths:[
     'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
-    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs',
-    'scripts/ops/r24/docs-claim-lint.mjs',
-    'scripts/ops/r24/tests/docs-claim-lint.test.mjs',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
   ].sort(),
@@ -4490,7 +4489,7 @@ export function verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({cand
   assert(evidence.value.schemaVersion==='ClaimBindingV1'&&evidence.value.stampId==='ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS'&&evidence.value.contourId===e.contourId&&evidence.value.evidenceClass==='CONTRACT'&&evidence.value.verdict==='PASS'&&evidence.value.oracle==='R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_OBSERVATION_PRIORITY','E_RCV00D_EVIDENCE_SHAPE');
   assert(evidence.value.headSha===e.baseSha&&evidence.value.originMainSha===e.baseSha,'E_RCV00D_EVIDENCE_HEAD_BINDING');
   const selectorResult=validateRcv00dSelectorReceipt(selectorReceipt.value);
-  assert(selectorResult.status==='PASS'&&selectorResult.selectedId===e.selectedObservationId&&selectorResult.selectedContour===e.selectedContour&&selectorResult.graphSchedulerSelectedId===e.graphSchedulerCandidate&&selectorResult.narrativeNextStep==='R24-RCV-00A'&&selectorResult.selectedCount===1,'E_RCV00D_SELECTOR_RECEIPT');
+  assert(selectorResult.status==='PASS'&&selectorResult.selectedId===e.selectedObservationId&&selectorResult.selectedContour===e.selectedContour&&selectorResult.graphSchedulerSelectedId===e.graphSchedulerCandidate&&selectorReceipt.value.graphSchedulerCandidate?.selectedKind==='NONE'&&selectorReceipt.value.graphSchedulerCandidate?.verdict===e.graphSchedulerVerdict&&selectorReceipt.value.graphSchedulerCandidate?.readySet?.length===0&&selectorResult.narrativeNextStep==='R24-RCV-00A'&&selectorResult.selectedCount===1,'E_RCV00D_SELECTOR_RECEIPT');
   assert(selectorReceipt.value.inputDigests.correctiveRegisterFile===register.digest&&selectorReceipt.value.inputDigests.planTextFile===plan.digest&&selectorReceipt.value.inputDigests.planStateFile===planState.digest,'E_RCV00D_SELECTOR_INPUT_DIGEST');
   const claimBindingMap=new Map((evidence.value.claimBindings??[]).map((binding)=>[binding.filePath,binding]));
   for(const [relative,file,term] of [[e.inventoryPath,inventory,'PASS'],[e.registerPath,register,'PASS'],[e.planStatePath,planState,'PASS']]){
@@ -4510,15 +4509,15 @@ export function verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({cand
     const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);
     assert(approval?.approved===true&&approval.approvedBy===e.approvedBy,'E_RCV00D_APPROVAL_DIGEST',relative);
   }
-  for(const token of ['RCV00D_SELECTED_OBSERVATION_ID','RCV00D_EXPECTED_GRAPH_CANDIDATE','CORRECTIVE_SEVERITY_POLICY_OUTRANKS_GRAPH_ONLY_SCHEDULER_CANDIDATE','E_RCV00D_GRAPH_RECEIPT_STATE_BINDING','E_RCV00D_CURRENT_OBSERVATION_GRAPH_PROMOTION','E_RCV00D_BLOCKED_GRAPH_NODE_NOT_PRESERVED'])assert(selector.text.includes(token),'E_RCV00D_SCRIPT_TOKEN',token);
-  for(const token of ['RCV00D selector chooses the active P1 current observation over the graph-only W0 candidate','RCV00D selector records narrative NEXT_STEP as non-authoritative input','RCV00D selector keeps blocked external graph nodes out of the selected corrective lane','RCV00D selector rejects graph-only candidate drift','RCV00D receipt rejects graph-node selection as a false closure'])assert(contractTest.text.includes(token),'E_RCV00D_CONTRACT_TEST_TOKEN',token);
+  for(const token of ['RCV00D_SELECTED_OBSERVATION_ID','RCV00D_EXPECTED_GRAPH_CANDIDATE','RCV00D_EXPECTED_GRAPH_VERDICT','CORRECTIVE_SEVERITY_POLICY_OUTRANKS_GRAPH_ONLY_SCHEDULER_CANDIDATE','CURRENT_NO_ELIGIBLE_GRAPH_RECEIPT_REQUIRES_CORRECTIVE_REGISTER_SELECTION','E_RCV00D_GRAPH_RECEIPT_STATE_BINDING','E_RCV00D_CURRENT_OBSERVATION_GRAPH_PROMOTION','E_RCV00D_BLOCKED_GRAPH_NODE_NOT_PRESERVED'])assert(selector.text.includes(token),'E_RCV00D_SCRIPT_TOKEN',token);
+  for(const token of ['RCV00D selector chooses the active P1 current observation when the graph has no eligible node','RCV00D selector records narrative NEXT_STEP as non-authoritative input','RCV00D selector keeps blocked external graph nodes out of the selected corrective lane','RCV00D selector rejects graph-only candidate drift','RCV00D receipt rejects graph-node selection as a false closure'])assert(contractTest.text.includes(token),'E_RCV00D_CONTRACT_TEST_TOKEN',token);
   for(const token of ['R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION','verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException','E_RCV00D_EXACT_ADMITTED_DELTA','E_RCV00D_SELECTOR_RECEIPT'])assert(postAuditVerifier.text.includes(token),'E_RCV00D_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['RCV00D graph-derived selector exception accepts the exact selector delta','RCV00D graph-derived selector exception rejects an unadmitted future path','RCV00D graph-derived selector exception rejects a mutated selected observation','RCV00D graph-derived selector exception rejects a mutated selector artifact'])assert(postAuditTest.text.includes(token),'E_RCV00D_POST_AUDIT_TEST_TOKEN',token);
-  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V31','ES-R24-RCV00C-CORRECTIVE-REGISTER-CROSSWALK-CLAIM-BINDINGS'])assert(claimLint.text.includes(token),'E_RCV00D_CLAIM_LINT_TOKEN',token);
-  for(const token of ['RCV00C corrective register inventory binding is retained only at exact delivery bytes','repository claim surface keeps current and historical C1B inventory bindings'])assert(claimLintTest.text.includes(token),'E_RCV00D_CLAIM_LINT_TEST_TOKEN',token);
+  for(const token of ['HISTORICAL_INVENTORY_CLAIM_PINS_V32','ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS'])assert(claimLint.text.includes(token),'E_RCV00D_CLAIM_LINT_TOKEN',token);
+  for(const token of ['RCV00D graph-derived selector inventory binding is retained only at exact delivery bytes','repository claim surface keeps current and historical C1B inventory bindings'])assert(claimLintTest.text.includes(token),'E_RCV00D_CLAIM_LINT_TEST_TOKEN',token);
   const nonClaims=new Set(evidence.value.nonClaims??[]);
   for(const token of RCV00D_NON_CLAIMS)assert(nonClaims.has(token),'E_RCV00D_NONCLAIM',token);
-  return{schemaVersion:'R24_RCV00D_GRAPH_DERIVED_SELECTOR_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDenominator:inventory.value.totals.all,registerDigest:register.digest,evidenceDigest:evidence.digest,approvalsDigest:approvals.digest,selectedId:selectorResult.selectedId,selectedContour:selectorResult.selectedContour,graphSchedulerSelectedId:selectorResult.graphSchedulerSelectedId,narrativeNextStep:selectorResult.narrativeNextStep,selectedCount:selectorResult.selectedCount,eligibleCandidateCount:selectorResult.eligibleCandidateCount,candidateCount:selectorResult.candidateCount,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  return{schemaVersion:'R24_RCV00D_GRAPH_DERIVED_SELECTOR_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDenominator:inventory.value.totals.all,registerDigest:register.digest,evidenceDigest:evidence.digest,approvalsDigest:approvals.digest,selectedId:selectorResult.selectedId,selectedContour:selectorResult.selectedContour,graphSchedulerSelectedId:selectorResult.graphSchedulerSelectedId,graphSchedulerSelectedKind:selectorReceipt.value.graphSchedulerCandidate.selectedKind,graphSchedulerVerdict:selectorReceipt.value.graphSchedulerCandidate.verdict,narrativeNextStep:selectorResult.narrativeNextStep,selectedCount:selectorResult.selectedCount,eligibleCandidateCount:selectorResult.eligibleCandidateCount,candidateCount:selectorResult.candidateCount,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyR24DocxLinebreakSourceExportPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){

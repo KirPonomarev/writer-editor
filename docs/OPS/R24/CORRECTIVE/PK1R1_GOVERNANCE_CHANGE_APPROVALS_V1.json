@@ -2,20 +2,6 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T06:51:55Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_P07_PR1881_CURRENT_HEAD_CI_REPAIR",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
-        "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "95c0434ddd680dc3a9580a7377d1b13432ef7497ee49bdc6ac6bade314efb138",
-      "rationale": "Approve exact bounded PR1881 current-head CI repair bytes after merging origin/main 18bff171: refresh C1B inventory and governance-visible claim bindings for P07 markup-compatibility preview delivery while preserving historical PRE00F exact evidence. No full portability, 1120-cell completion, product write/apply, UI, dependency, runtime network, Google source-of-truth, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-08T01:50:00Z",
       "approvedBy": "supervisor-scope-decision:709e69b56e9fd535c14d2e999a9ec562020ca23b375a6a6dfd8517883d51b63b",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_ACCEPTANCE_MATRIX_V1.json",
@@ -350,26 +336,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "eb71b349011483d0ec5fba1f0032f9a1d74413cbe2371f22ee7309829d98eb8e",
-      "evidenceStampIds": [],
-      "authority": ""
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ce098f4df16b871dd466ad75422b7cca747754582420a99560940621d05c473e",
-      "evidenceStampIds": [],
-      "authority": ""
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-10T06:57:51.000Z",
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS.json",
@@ -499,20 +465,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T06:51:55Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_P07_PR1881_CURRENT_HEAD_CI_REPAIR",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
-        "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS"
-      ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact bounded PR1881 current-head CI repair bytes after merging origin/main 18bff171: resolve PRE00F current-head reconciliation to the exact historical delivery candidate when validating a successor branch, without widening admitted paths. No full portability, 1120-cell completion, product write/apply, UI, dependency, runtime network, Google source-of-truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "367f7440d9a6e5aea9e8121043ea7e1caf3f9c68ad3636ee2cda8d5c6b57b6da"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-09T01:06:37.093Z",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "scripts/ops/r24/corrective/post-audit-toolchain.mjs",
@@ -565,16 +517,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1",
-      "evidenceStampIds": [],
-      "authority": ""
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-10T06:57:51.000Z",
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/corrective/rcv00e-lease-fencing-cas.mjs",
@@ -582,20 +524,6 @@
       "sha256": "725534caf9c8768c8b75c56c7a494060b6034eb2a598f19d02f565d273d220a8",
       "evidenceStampIds": [],
       "authority": ""
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T06:51:55Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "rationale": "Approve exact bounded PR1881 current-head CI repair bytes after merging origin/main 18bff171: pin PR1882 PRE00F current-head reconciliation as historical inventory evidence and keep current claim lint bound to refreshed C1B bytes. No full portability, 1120-cell completion, product write/apply, UI, dependency, runtime network, Google source-of-truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "48b6854222028cec2640fdbec46a16ad0834a75e028ed732e9ba1691db8c5022",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
-        "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS"
-      ],
-      "authority": "OWNER_APPROVED_R24_P07_PR1881_CURRENT_HEAD_CI_REPAIR"
     },
     {
       "approved": true,
@@ -676,16 +604,6 @@
       "filePath": "scripts/ops/r24/tests/canonical-json.test.mjs",
       "rationale": "Approve exact bounded R24-RCV-00E lease/fencing/CAS repair bytes including the Windows directory fsync CI repair: admits verified DONE delivery receipt binding for lease release, global CAS fence checks on heartbeat and release, terminal transition non-reactivation proof, focused contract coverage, E0 mutant coverage, C1B inventory rebinding, evidence binding, post-audit exception binding, and unsupported Windows directory fsync guard while preserving file fsync and readback proof. No product UI change, runtime network, dependency change, release readiness, or PROGRAM_DONE claim.",
       "sha256": "79353cec92d573bccef87627ecd3723f6db3dfc45d463ab5878b43a86ea300c4",
-      "evidenceStampIds": [],
-      "authority": ""
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T08:36:00.627Z",
-      "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_CLAIM_LINT_HISTORY_2026_09_10",
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "rationale": "Approve exact regression coverage for the claim-lint V34 historical RCV00E inventory pin: verifies the c36344ab stamp/tree/inventory tuple and repository-surface historical binding, without weakening current digest enforcement or changing evidence stamp bytes.",
-      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f",
       "evidenceStampIds": [],
       "authority": ""
     },
@@ -816,20 +734,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T06:51:55Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_P07_PR1881_CURRENT_HEAD_CI_REPAIR",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
-        "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS"
-      ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact bounded PR1881 current-head CI repair bytes inherited from origin/main 18bff171 and admitted here only as an already-merged PRE00F support carrier required by the current branch governance diff. No full portability, 1120-cell completion, product write/apply, UI, dependency, runtime network, Google source-of-truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "045fea29f6773c762d81254f8f17589683a7cd3f9690609129fb97de10a99f03"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-09T01:06:37.093Z",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_RCV_00A_EXACT_TOOLCHAIN_ENTRYPOINT_2026_09_08_UTC",
       "filePath": "test/contracts/r24-post-audit-corrections.contract.test.mjs",
@@ -879,16 +783,6 @@
       "filePath": "test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
       "sha256": "d4e817c24fd0e0e0c3e89875b8d635ba7cbeebaec06c2744db8fa384ecd9ab7b"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_09",
-      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after CI ops-vector required the PK1R1 carrier to witness the same bounded selector repair set; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "c44831a8936410b85e3424d3c3807028727bdd34687f5413fb2cb762fc23e7b3",
-      "evidenceStampIds": [],
-      "authority": ""
     },
     {
       "approved": true,
@@ -1188,6 +1082,123 @@
       "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
       "sha256": "2a5e8217beb74649ed84f17a66b6ca79faaa3e953c7a66fdbf94553c9386a033"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "d619dd4bfa4aae267bbe9babe9a84c345e0881b85a4111efd90e4730d40bf851"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "6c6dc7bd0fdab3a7163f327fd33a2c30954ea58a402a8c65c73c3049da056b5e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "590c506e52784dfaa4f9fbc5efb5881afe2d1b17e159aa8237f25affb100f601"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "a78143f17a772b577364b132c1cb0d8b641a32838c5f6448f0bf0828422cd2aa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "beac8113efca68565eaa10a516b3b273b1dc6c74b9637f3d7208b1f527e965b8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "6109efd7aabc358d9978a67186b84513a5f5e325168618ec2385d8575b2cf6be"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "c9f3db2da117731fd64e1f65d3cff0e85fa317a19fc6bab0e69f701922b7aad4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "8224047fb4befb7d9654bb8300066ce27cbd3df6ec06c595036ece793503bf19"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ],
+      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "a7919cc36f3284478afc79e86f9b30780bad4336a067157f0fc12455d9c446ea"
     }
   ],
   "evidenceStampIds": [

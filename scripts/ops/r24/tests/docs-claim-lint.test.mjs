@@ -18,6 +18,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V32,
   HISTORICAL_INVENTORY_CLAIM_PINS_V33,
   HISTORICAL_INVENTORY_CLAIM_PINS_V34,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V36,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -517,6 +518,36 @@ test('RCV00E lease-fencing CAS inventory binding is historical after successor r
   assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
   assert.equal(result.currentFileCoverage, false);
   assert.equal(result.evaluationSha, pin.evaluationSha);
+});
+
+test('P07 inventory refresh retains current-claim carriers and RCV00D as historical bytes', () => {
+  const expectedPins = [
+    ['ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS', 'ae8838dc3cca5f3bbcc420936baf589b2d3be3fa', '95c0434ddd680dc3a9580a7377d1b13432ef7497ee49bdc6ac6bade314efb138'],
+    ['ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS', 'ae8838dc3cca5f3bbcc420936baf589b2d3be3fa', '95c0434ddd680dc3a9580a7377d1b13432ef7497ee49bdc6ac6bade314efb138'],
+    ['ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS', '9c85e70b3166f2a78e61d5aba454820afa303e80', '3fb2cd80af4a1c7e2fab999311db7736c3b0420a26a31490e03f52cad5248d5e'],
+  ];
+  for (const [stampId, evaluationSha, targetSha256] of expectedPins) {
+    const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V36.find(
+      (item) => item.stampId === stampId && item.evaluationSha === evaluationSha,
+    );
+    assert.ok(pin, stampId);
+    assert.equal(pin.targetSha256, targetSha256);
+    const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+    const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+      cwd: REPO_ROOT,
+      encoding: null,
+    });
+    const stamp = JSON.parse(stampBytes);
+    const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+    const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+    assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+    assert.equal(result.currentFileCoverage, false);
+    assert.equal(result.evaluationSha, pin.evaluationSha);
+    assert.throws(
+      () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+      /E_HISTORICAL_INVENTORY_BINDING/,
+    );
+  }
 });
 
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {

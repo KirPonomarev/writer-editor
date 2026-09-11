@@ -3,33 +3,31 @@
   "selectorId": "R24-RCV-00D-GRAPH-DERIVED-SELECTOR",
   "contourId": "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
   "status": "PASS",
-  "generatedAtUtc": "2026-09-09T00:00:00.000Z",
+  "generatedAtUtc": "2026-09-11T06:20:42.647Z",
   "identity": {
-    "headSha": "d2366bcc6dfce13a92f2136dae1a80b364c8a0ef",
-    "originMainSha": "d2366bcc6dfce13a92f2136dae1a80b364c8a0ef",
-    "treeSha": "b09080d7161a4489ba3388d9480a88166e2adc0f"
+    "headSha": "18bff1711dde771d1c5e8548cef1b4735085ccdd",
+    "originMainSha": "18bff1711dde771d1c5e8548cef1b4735085ccdd",
+    "treeSha": "e195f6c2e88251f845325b1706639d5fb80f88d8"
   },
   "inputDigests": {
     "correctiveRegister": "84dac77cc7a1a58884d3674bd72687ea9c5f44fd9a443ccd2225f7f825012db2",
     "correctiveRegisterFile": "fbfd6cedecaddd138b70eeb5d2c4d37f2def64a984efd2b35f9094335c203862",
     "planTextFile": "c7e6311c0e3a331cb795bf2f8f6c9151b47763a1ca5706ebb452131e98ba9f06",
     "planStateFile": "f037355e4f1d87107f1593927463d94fa3f7128038790616c4d5611cf42f12f9",
-    "effectiveStateProjection": "8d4b57bb1ebdb8fe402a703135dd02cfc00cac441b0edc49f900ca820e70fc44",
-    "graphSelectionReceipt": "cbfd70229e376d665627adb21c3c997e3f5cc866c531d67b31e7881475d57526"
+    "effectiveStateProjection": "8ed6152bc30f058fa105e5dea9df374db75bd0f7b8b82e2143237955dc4c439a",
+    "graphSelectionReceipt": "582bea91f2973ab417a53ecb467139237d2487ab1d402810c349ef3c54f544df"
   },
   "narrativeNextStep": "R24-RCV-00A",
   "narrativeNextStepAuthoritative": false,
   "graphSchedulerCandidate": {
-    "selectedKind": "NODE",
-    "selectedId": "W0_WORD_PHYSICAL_RECERTIFICATION",
-    "verdict": "SELECTED",
-    "readySet": [
-      "W0_WORD_PHYSICAL_RECERTIFICATION"
-    ],
+    "selectedKind": "NONE",
+    "selectedId": null,
+    "verdict": "NO_ELIGIBLE_NODE",
+    "readySet": [],
     "stateRevision": 283,
     "fencingCounter": 47,
-    "stateDigest": "c067116d0ee1a321ee48f25c875e0f22f8aa670cbb26814fcedeac5953532040",
-    "contourStatesDigest": "76a2d0f113a6151875bbf4cbbcd5325cba7e73e6f99224771d9d4c6b79b12041"
+    "stateDigest": "0d66de3bc9b8b8236d780c7efbae6ee15ba6ad3c8d55042720f7151d447ad9f8",
+    "contourStatesDigest": "d364bf424fa000ee59a2bf55f317e258edeb0de6eae332528172506d050b63ec"
   },
   "correctiveSelectionPolicy": {
     "source": "R24_CORRECTIVE_REGISTER_V1_PLUS_EFFECTIVE_GRAPH_STATE",
@@ -852,6 +850,7 @@
   ],
   "reasons": [
     "CORRECTIVE_SEVERITY_POLICY_OUTRANKS_GRAPH_ONLY_SCHEDULER_CANDIDATE",
+    "CURRENT_NO_ELIGIBLE_GRAPH_RECEIPT_REQUIRES_CORRECTIVE_REGISTER_SELECTION",
     "NARRATIVE_NEXT_STEP_RECORDED_AS_NON_AUTHORITY",
     "ACTIVE_P1_CURRENT_OBSERVATION_SELECTED_BEFORE_P3_DEBT",
     "RECORDED_GRAPH_OPEN_NODE_REQUIRES_GRAPH_READY_SET",
