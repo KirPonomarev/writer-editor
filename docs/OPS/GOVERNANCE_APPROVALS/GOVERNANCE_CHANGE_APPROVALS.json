@@ -11734,42 +11734,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T12:18:57Z",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ],
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "sha256": "9947d2283fbf366394a45c22a637bf9b374c871c618b5e526764e98a4439c9ac",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "fab7e3fe1afbac36d765023590ad08dc480027ea6da8e494f21559d20c295f19",
+      "rationale": "Approve exact current-main carried governance registry reconciliation bytes after merging origin/main d68c587c: update approval row hash only for pre-existing revisionBridge/PK1R1 carrier drift required by whole-registry validation. No revisionBridge implementation mutation in this contour, no product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T12:18:57Z",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "bf508d6c966c8be1419b6c5cd3851bc159782f2c226ce01b98a0799048ce102b",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "82f2f6ac9dd61d300c9ca2ca182fc60d135c9ea85df0580505bbc0dd472809d6",
+      "rationale": "Approve exact current-main carried governance registry reconciliation bytes after merging origin/main d68c587c: update approval row hash only for pre-existing revisionBridge/PK1R1 carrier drift required by whole-registry validation. No revisionBridge implementation mutation in this contour, no product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T12:18:57Z",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ],
       "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
-      "sha256": "c40e28bf98f0e17895c3c585affd6dec9e63d2cba49bec93ac29944fef762e22",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "1867f3a365d469164789faebdf4785485f171907a1e3c9affa60d200791d8939",
+      "rationale": "Approve exact current-main carried governance registry reconciliation bytes after merging origin/main d68c587c: update approval row hash only for pre-existing revisionBridge/PK1R1 carrier drift required by whole-registry validation. No revisionBridge implementation mutation in this contour, no product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -11831,15 +11828,14 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b453fd6131ea3dca4a76747bb5812019f4b4dfce0c2da2b6afd00a4437a25fc5",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "14eea9f4cf6a8d883ea5f3fabe149032de23742219cf38c555c07fa0f1732d3a",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T12:18:57Z",
+      "rationale": "Approve exact current-main carried governance registry reconciliation bytes after merging origin/main d68c587c: update approval row hash only for pre-existing revisionBridge/PK1R1 carrier drift required by whole-registry validation. No revisionBridge implementation mutation in this contour, no product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
     },
     {
@@ -11894,26 +11890,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "915c1cd21fe6b6cc790bec9f2ff02059dc7798822ff5059ae64af42141a4149e",
+      "sha256": "0fae17c0476ca4672a28e10c6043233e12ba3599772ca89ed18cc1c666313ccd",
       "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
-      "approvedAtUtc": "2026-09-11T10:19:40Z",
-      "rationale": "Approve exact merged C1B inventory bytes preserving PR1885 DOCX list-numbering loss identity delivery and adding bounded R24 RCV01A normative claim-test-lane manifest coverage: refreshed digest only after current-base regeneration. No product apply route, UI/design change, dependency, runtime network, Word or Google full-denominator pass, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approvedAtUtc": "2026-09-11T12:18:57Z",
+      "rationale": "Approve exact regenerated C1B inventory bytes after merging origin/main d68c587c into the bounded R24 RCV01A normative claim-test-lane manifest contour: inventory denominator remains generated from current tests and preserves required skip invariants. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT",
         "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "9a696529d2f11ab56a814f1b6d9b203ed8c37a82cbb9557df2482e73caca644f",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_NONSTOP_SUPERVISOR_RESUME_2026_09_11",
-      "approvedAtUtc": "2026-09-11T10:19:40Z",
-      "rationale": "Approve exact focused regression bytes for bounded R24 S09 DOCX list-numbering loss identity delivery on PR1885: proves paragraphIndex, numId, ilvl, and listKey preservation in zero-write preview loss records and suppression of explicit numId zero. No product apply route, UI/design change, dependency, runtime network, Word or Google full-denominator pass, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "befc2b0b1121ee71e08ca86a67172f60a85fd730b69bbafcf8b33372238fd425",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T12:18:57Z",
+      "rationale": "Approve exact current-main carried governance registry reconciliation bytes after merging origin/main d68c587c: update approval row hash only for pre-existing revisionBridge/PK1R1 carrier drift required by whole-registry validation. No revisionBridge implementation mutation in this contour, no product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_INTEROP_S09_LIST_NUMBERING_LOSS_IDENTITY_DELIVERY"
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
