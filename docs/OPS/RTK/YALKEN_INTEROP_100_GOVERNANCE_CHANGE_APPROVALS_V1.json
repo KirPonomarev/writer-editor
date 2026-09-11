@@ -254,6 +254,42 @@
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
       "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721",
       "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:45:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
+      "authority": "OWNER_NONSTOP_SUPERVISOR_RESUME_SAFE_NON_OVERLAPPING_EMBEDDED_FONT_CONTOUR",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve R2.4 embedded-font post-audit gate-repair bytes for diagnostics-only DOCX package handling; no font rendering, preservation, Google native route, or supported-denominator promotion claim.",
+      "sha256": "2232c5943a9371b690b093e58310ccd8d50b8d2dc6fccdf80d4ec7599912eaac"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:45:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
+      "authority": "OWNER_NONSTOP_SUPERVISOR_RESUME_SAFE_NON_OVERLAPPING_EMBEDDED_FONT_CONTOUR",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Approve R2.4 embedded-font post-audit gate-repair bytes for diagnostics-only DOCX package handling; no font rendering, preservation, Google native route, or supported-denominator promotion claim.",
+      "sha256": "7133b1128d9e0bc170d3015f8b474545090e3755660ca6e038345a2d61759ee7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T03:45:00Z",
+      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
+      "authority": "OWNER_NONSTOP_SUPERVISOR_RESUME_SAFE_NON_OVERLAPPING_EMBEDDED_FONT_CONTOUR",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve R2.4 embedded-font post-audit gate-repair bytes for diagnostics-only DOCX package handling; no font rendering, preservation, Google native route, or supported-denominator promotion claim.",
+      "sha256": "f157f6c63bbc1e0d55b12217f9953a208ea0654256484c7633c0c40780c3bdab"
     }
   ],
   "version": "v1.0",

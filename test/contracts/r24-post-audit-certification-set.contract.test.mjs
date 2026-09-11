@@ -48,6 +48,7 @@ import {
   R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
   R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,
+  R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
@@ -96,6 +97,7 @@ import {
   verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException,
   verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
   verifyR24ReviewPreviewCommentTopologyPostEvaluationException,
+  verifyR24EmbeddedFontAdmissionPostEvaluationException,
   verifyR24Rcv00eLeaseFencingCasPostEvaluationException,
   verifyR24Rcv00fDeliveryReconciliationPostEvaluationException,
   verifyR24P03RelationshipGraphValidationPostEvaluationException,
@@ -1287,6 +1289,77 @@ test('R24 review preview comment topology exception rejects stale inventory dige
   const fixture=reviewPreviewCommentTopologyGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_INVENTORY_DIGEST/);
 });
+function embeddedFontAdmissionGitFixture({changedPaths,successorChangedPaths,artifactBytesByPath=new Map(),sourceBytes,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,baseTree,candidateSha='f'.repeat(40),candidateTree='1'.repeat(40),successorSha,successorAncestryShas,successorTree='2'.repeat(40)}={}){
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION;
+  const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
+  const currentBytes=(repoPath)=>{
+    if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
+    if(repoPath===e.sourcePath&&sourceBytes)return Buffer.from(sourceBytes);
+    if(repoPath===e.inventoryPath&&inventoryBytes)return Buffer.from(inventoryBytes);
+    if(repoPath===e.defaultApprovalsPath&&defaultApprovalsBytes)return Buffer.from(defaultApprovalsBytes);
+    if(repoPath===e.pk1r1ApprovalsPath&&pk1r1ApprovalsBytes)return Buffer.from(pk1r1ApprovalsBytes);
+    if(repoPath===e.interopApprovalsPath&&interopApprovalsBytes)return Buffer.from(interopApprovalsBytes);
+    return fs.readFileSync(repoPath);
+  };
+  const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,currentBytes(repoPath)]));
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1));
+      const endSha=range.slice(range.indexOf('..')+2);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 embedded font admission exception accepts the exact current delta',()=>{
+  const fixture=embeddedFontAdmissionGitFixture(),result=verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_EMBEDDED_FONT_ADMISSION_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,15);
+  assert.equal(result.changedPathDenominator,15);
+  assert.equal(result.embeddedFontDisposition,'DIAGNOSTICS_AND_EXPLICIT_LOSS_ONLY');
+  assert.equal(result.rawFontBinaryQuarantine,true);
+  assert.equal(result.fontRenderingPreservationClaim,false);
+  assert.equal(result.supportedDenominatorPromotion,false);
+  assert(result.nonClaims.includes('NO_FONT_RENDERING_OR_PRESERVATION_CLAIM'));
+});
+test('R24 embedded font admission exception accepts successor heads by selecting the immutable exact candidate',()=>{
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,successorSha='3'.repeat(40);
+  const fixture=embeddedFontAdmissionGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'package-lock.json'].sort()});
+  const result=verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+  assert.equal(result.admittedPathDenominator,15);
+  assert.equal(result.changedPathDenominator,15);
+});
+test('R24 embedded font admission exception rejects an unadmitted future path',()=>{
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,fixture=embeddedFontAdmissionGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_CANDIDATE_NOT_FOUND|E_R24_EMBEDDED_FONT_EXACT_ADMITTED_DELTA/);
+});
+test('R24 embedded font admission exception rejects missing diagnostics-loss token',()=>{
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replace('DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_FONT_ADVISORY');
+  const fixture=embeddedFontAdmissionGitFixture({sourceBytes:Buffer.from(source)});
+  assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_ARTIFACT_DIGEST/);
+});
 function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,canonicalJsonBytes,leaseBytes,mutantBytes,canonicalJsonTestBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION;
   const deliverySha=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.baseSha;
@@ -1686,6 +1759,41 @@ function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,ove
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
+  const currentFile=(repoPath)=>fs.readFileSync(repoPath);
+  const currentDigest=(repoPath)=>h(currentFile(repoPath));
+  const refreshedClaimBytes=()=>{
+    const claim=JSON.parse(currentFile(e.claimBindingPath));
+    for(const repoPath of [e.postAuditVerifierPath,e.postAuditTestPath]){
+      const binding=claim.implementationArtifactDigests?.find((entry)=>entry.path===repoPath);
+      if(binding)binding.sha256=currentDigest(repoPath);
+    }
+    return canonicalBytes(claim);
+  };
+  const refreshedInventoryBytes=()=>{
+    const inventory=JSON.parse(currentFile(e.inventoryPath));
+    const entry=inventory.entries?.find((item)=>item.path===e.postAuditTestPath);
+    if(entry)entry.sha256=currentDigest(e.postAuditTestPath);
+    return canonicalBytes(inventory);
+  };
+  const refreshedApprovalsBytes=(repoPath)=>{
+    const approvals=JSON.parse(currentFile(repoPath));
+    const approvalRegistryPaths=new Set([e.approvalsPath,e.pk1r1ApprovalsPath]);
+    approvals.approvals??=[];
+    for(const filePath of e.admittedPaths.filter((item)=>!approvalRegistryPaths.has(item))){
+      const bytes=filePath===e.claimBindingPath?refreshedClaimBytes():(filePath===e.inventoryPath?refreshedInventoryBytes():currentFile(filePath));
+      const sha256=h(bytes);
+      let entry=approvals.approvals.find((item)=>item.filePath===filePath&&item.sha256===sha256);
+      if(!entry){
+        entry={filePath,sha256,approved:true,approvedBy:e.approvedBy,approvedAtUtc:'2026-09-11T03:30:00Z',authority:'TEST_FIXTURE_ONLY',rationale:'Synthetic fixture rebinding current post-audit carrier bytes for W0 verifier compatibility.',evidenceStampIds:[e.approvalEvidenceStampId]};
+        approvals.approvals.push(entry);
+      }
+      entry.approved=true;
+      if(!String(entry.approvedBy||'').split('|').map((part)=>part.trim()).includes(e.approvedBy))entry.approvedBy=`${String(entry.approvedBy||'').trim()} | ${e.approvedBy}`.replace(/^ \| /u,'');
+      entry.evidenceStampIds=Array.from(new Set([...(entry.evidenceStampIds??[]),e.approvalEvidenceStampId])).sort();
+    }
+    approvals.approvals.sort((a,b)=>String(a.filePath).localeCompare(String(b.filePath))||String(a.sha256).localeCompare(String(b.sha256))||String(a.approvedBy).localeCompare(String(b.approvedBy)));
+    return canonicalBytes(approvals);
+  };
   const currentBytes=(repoPath)=>{
     if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
     if(repoPath===e.overlayPath&&overlayBytes)return Buffer.from(overlayBytes);
@@ -1693,7 +1801,11 @@ function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,ove
     if(repoPath===e.inventoryPath&&inventoryBytes)return Buffer.from(inventoryBytes);
     if(repoPath===e.approvalsPath&&approvalsBytes)return Buffer.from(approvalsBytes);
     if(repoPath===e.pk1r1ApprovalsPath&&pk1r1ApprovalsBytes)return Buffer.from(pk1r1ApprovalsBytes);
-    return fs.readFileSync(repoPath);
+    if(repoPath===e.claimBindingPath)return refreshedClaimBytes();
+    if(repoPath===e.inventoryPath)return refreshedInventoryBytes();
+    if(repoPath===e.approvalsPath)return refreshedApprovalsBytes(repoPath);
+    if(repoPath===e.pk1r1ApprovalsPath)return refreshedApprovalsBytes(repoPath);
+    return currentFile(repoPath);
   };
   const bytesByPath=new Map(e.admittedPaths.concat([e.receiptPath]).map((repoPath)=>[repoPath,currentBytes(repoPath)]));
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
