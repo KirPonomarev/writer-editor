@@ -11849,33 +11849,41 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:22:21Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T01:44:23Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_AND_SHARED_GOVERNANCE_REGISTRY_REBIND_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current T05 visible DOCX hyperlink label text governance registry rebind after origin/main 312895d6: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "95b0dcc8fe5a70bbd1907408d68469bb11fd871d1d5afad35c60d819a7838264"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:22:21Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current T05 visible DOCX hyperlink label text governance registry rebind after origin/main 312895d6: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "37c7297ae7a93a73606a0b2b2ac2e54a35a472348a8bf45dc65406fc140435a9"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T01:26:02Z",
-      "approvedBy": "owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_AUTONOMOUS_DELIVERY",
+      "rationale": "Approve exact current governance registry bytes after rebinding the shared C1B inventory approval to the T04 regenerated digest while preserving existing HOSTILE-001, S03, and T05 approval scope. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "02bf85b0bddf17d0fd4623cca0898f3f3da90f525c0873126b0a129adbc50284",
       "evidenceStampIds": [
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+      ]
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T01:44:23Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_AND_SHARED_GOVERNANCE_REGISTRY_REBIND_AUTONOMOUS_DELIVERY",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Approve exact current governance registry bytes after rebinding the shared C1B inventory approval to the T04 regenerated digest while preserving existing HOSTILE-001, S03, and T05 approval scope. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "b1c80238a48962e380baedc9b7c9e7abaa0d963ab0f33e5204b5e2be51879bc2",
+      "evidenceStampIds": [
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+      ]
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T01:44:23Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_AND_HISTORICAL_RCV00F_RCV00H_INVENTORY_REBIND_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
         "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "sha256": "6f1e8e86d5651f0e9984ea9056cdfc53e117d9cf5e509149a2551b1675fa8269",
-      "rationale": "Approve exact T04 typed DOCX break and section loss test inventory rehash after adding zero-write import-preview regression coverage for real w:br line/page/column and w:sectPr nextPage/continuous diagnostics. No UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Approve exact current C1B inventory digest after T04 typed DOCX break and section loss regression coverage, and rebind the same current inventory bytes for existing RCV00F and RCV00H post-evaluation gates. This is approval metadata only: no parser behavior beyond T04, no UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -11897,6 +11905,7 @@
     "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION",
     "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
   ]
 }

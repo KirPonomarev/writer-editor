@@ -723,16 +723,17 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:22:21Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T01:44:23Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_AND_P03_INVENTORY_REBIND_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current T05 visible DOCX hyperlink label text C1B inventory rebind after origin/main 312895d6: admits only zero-write generic DOCX content-preview/import-plan preservation of visible w:hyperlink child text while hyperlink targets, relationships, bookmarks, and malformed relationship graphs remain unsupported, explicit loss, or preflight-blocked. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "93c88b1b821fcf19f68592915ff15b7d2961a2dd93af055ca7505045fdf211d3",
+      "rationale": "Approve exact current C1B inventory digest after T04 typed DOCX break and section loss regression coverage while preserving the existing P03 relationship-graph, RCV00H, HOSTILE-001, S03, and T05 approval bindings for this shared inventory carrier. This is registry rebinding only: no hyperlink target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "6f1e8e86d5651f0e9984ea9056cdfc53e117d9cf5e509149a2551b1675fa8269",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN"
+        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN",
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
       ]
     },
     {
@@ -807,7 +808,8 @@
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
     "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
   ],
   "sourcePlanRoles": {
     "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
