@@ -139,19 +139,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "b064e37aa956c8b2329604de083b7d7b714c8a23531cd52bb8e03dcfd70acc7c",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T03:05:00Z",
       "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
@@ -243,27 +230,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:19:44Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_REPAIR",
+      "approvedAtUtc": "2026-09-11T19:55:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1-20260911",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_DOCX_NAMESPACE_ALIAS_IMPORT_PREVIEW_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-S05-DOCX-TABLE-VISIBLE-TEXT-REPAIR-V1"
+        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "63a5dbba893b424f1a4cfbed5f14e50c34feecac37c6ee09a64cead1bac75beb",
-      "rationale": "Approve bounded S05 DOCX table visible-text preview repair: plain table cell text is preserved in zero-write DOCX import preview while table geometry remains unsupported and explicitly loss-reported. No UI, dependency, runtime network, storage mutation, structured table import, Word saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "7a0a7bcf9e048e9662f1ed4f914dc2431af80751c51a2309a1baca888c936c74",
+      "rationale": "Approve bounded DOCX namespace-alias import-preview repair: valid WordprocessingML elements bound to the official namespace by a non-w prefix are normalized to canonical preview tag names so visible text is preserved, while wrong namespaces remain blocked. No UI, dependency, runtime network, project storage mutation, rich table/bookmark/comment/metadata import, Word physical saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:19:44Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_REPAIR",
+      "approvedAtUtc": "2026-09-11T19:55:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1-20260911",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_DOCX_NAMESPACE_ALIAS_IMPORT_PREVIEW_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-S05-DOCX-TABLE-VISIBLE-TEXT-REPAIR-V1"
+        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "c2bd3d44321ff3350e0c75a53b7044da4569f9626c6896cf03fef26e093d4aea",
-      "rationale": "Approve bounded S05 DOCX table visible-text preview repair: plain table cell text is preserved in zero-write DOCX import preview while table geometry remains unsupported and explicitly loss-reported. No UI, dependency, runtime network, storage mutation, structured table import, Word saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "793327f3f2b1aaa58044ff0034704ed7977891df497f4fb715ab975a1fb041de",
+      "rationale": "Approve bounded DOCX namespace-alias import-preview regression coverage: official WordprocessingML namespace aliases preserve visible text and canonical loss diagnostics, and wrong namespace prefixes still fail closed without empty successful previews. No UI, dependency, runtime network, project storage mutation, rich table/bookmark/comment/metadata import, Word physical saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T19:55:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1-20260911",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_DOCX_NAMESPACE_ALIAS_IMPORT_PREVIEW_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "6d92a17df93b348e7d3d088852db5f153042b0a01e9e43e2592b21e12b34a729",
+      "rationale": "Approve C1B inventory rebind for bounded DOCX namespace-alias import-preview repair after adding exact regression coverage. No UI, dependency, runtime network, project storage mutation, rich table/bookmark/comment/metadata import, Word physical saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     }
   ],
   "version": "v1.0",
@@ -271,6 +270,7 @@
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
     "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
-    "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+    "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
+    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
   ]
 }
