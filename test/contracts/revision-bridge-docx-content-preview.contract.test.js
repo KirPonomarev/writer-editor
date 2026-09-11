@@ -9,7 +9,12 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = path.join(ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
 const SECTION_START = '// RB_11_DOCX_CONTENT_PREVIEW_START';
 const SECTION_END = '// RB_11_DOCX_CONTENT_PREVIEW_END';
-const TTF_BYTES = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
+const TTF_BYTES = Buffer.from([
+  0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10,
+  0x00, 0x00, 0x00, 0x00, 0x68, 0x65, 0x61, 0x64,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c,
+  0x00, 0x00, 0x00, 0x00,
+]);
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);
@@ -449,6 +454,17 @@ test('DOCX content preview: lexical break and section words do not create typed 
 
 test('DOCX content preview: hostile and malformed packages stop while known degraded parts are ignored', async () => {
   const bridge = await loadBridge();
+  const fontType = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/font';
+  const adversarialFontZip = ({
+    contentTypes = fontContentTypesXml(),
+    relationship = fontRelationshipsXml(),
+    fontBody = TTF_BYTES,
+  } = {}) => cleanDocxZip(paragraphXml('BadFont'), [
+    { name: '[Content_Types].xml', body: contentTypes },
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    ...(relationship === null ? [] : [{ name: 'word/_rels/fontTable.xml.rels', body: relationship }]),
+    { name: 'word/fonts/font1.ttf', body: fontBody },
+  ]);
   const duplicate = bridge.buildDocxContentPreviewFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: documentXml(paragraphXml('A')) },
     { name: 'WORD/DOCUMENT.XML', body: documentXml(paragraphXml('B')) },
@@ -521,6 +537,36 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
     && item.category === 'font'
     && item.sourcePart === 'word/fonts/font1.ttf'
   )), true);
+
+  const adversarialCases = [
+    ['comment-only-font-relationships', adversarialFontZip({
+      relationship: `<Relationships><!-- <Relationship Id="rFont1" Type="${fontType}" Target="fonts/font1.ttf"/> --></Relationships>`,
+    })],
+    ['comment-only-ttf-content-type', adversarialFontZip({
+      contentTypes: '<Types><!-- <Default Extension="ttf" ContentType="application/x-font-ttf"/> --></Types>',
+    })],
+    ['shadow-namespaced-content-type', adversarialFontZip({
+      contentTypes: '<Types xmlns:evil="urn:evil"><Default Extension="ttf" evil:ContentType="application/x-font-ttf" ContentType="application/octet-stream"/></Types>',
+    })],
+    ['shadow-namespaced-relationship-type', adversarialFontZip({
+      relationship: `<Relationships xmlns:evil="urn:evil"><Relationship Id="rFont1" evil:Type="${fontType}" Type="urn:not-font" Target="fonts/font1.ttf"/></Relationships>`,
+    })],
+    ['malformed-unclosed-content-default', adversarialFontZip({
+      contentTypes: '<Types><Default Extension="ttf" ContentType="application/x-font-ttf"',
+    })],
+    ['truncated-four-byte-sfnt', adversarialFontZip({
+      fontBody: Buffer.from([0x00, 0x01, 0x00, 0x00]),
+    })],
+  ];
+  for (const [caseId, bytes] of adversarialCases) {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    assert.equal(result.ok, false, caseId);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED', caseId);
+    assert.equal(result.parse.attempted, false, caseId);
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(plan.ok, false, caseId);
+    assert.equal(plan.writeEffects, false, caseId);
+  }
 });
 
 test('DOCX content preview: actual CRC mismatch fails closed before preview ready', async () => {

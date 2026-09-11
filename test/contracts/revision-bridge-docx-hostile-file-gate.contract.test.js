@@ -9,7 +9,12 @@ const ONE_PIXEL_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
   'base64',
 );
-const TTF_BYTES = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
+const TTF_BYTES = Buffer.from([
+  0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10,
+  0x00, 0x00, 0x00, 0x00, 0x68, 0x65, 0x61, 0x64,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c,
+  0x00, 0x00, 0x00, 0x00,
+]);
 const BAD_TTF_BYTES = Buffer.from('BADDfont', 'ascii');
 
 async function loadBridge() {
@@ -292,9 +297,16 @@ test('Stage02 hostile file gate allows bounded ignored parts and quarantines unk
 
 test('Stage02 hostile file gate rejects invalid .ttf font admission controls before semantic parse', async () => {
   const bridge = await loadBridge();
-  const baseEntries = ({ contentType = 'application/x-font-ttf', relationship = fontRelationshipsXml(), fontBody = TTF_BYTES, extras = [] } = {}) => [
+  const fontType = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/font';
+  const baseEntries = ({
+    contentType = 'application/x-font-ttf',
+    contentTypes = fontContentTypesXml(contentType),
+    relationship = fontRelationshipsXml(),
+    fontBody = TTF_BYTES,
+    extras = [],
+  } = {}) => [
     { name: 'word/document.xml', body: '<root/>' },
-    { name: '[Content_Types].xml', body: fontContentTypesXml(contentType) },
+    { name: '[Content_Types].xml', body: contentTypes },
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
     ...(relationship === null ? [] : [{ name: 'word/_rels/fontTable.xml.rels', body: relationship }]),
     { name: 'word/fonts/font1.ttf', body: fontBody },
@@ -306,6 +318,24 @@ test('Stage02 hostile file gate rejects invalid .ttf font admission controls bef
     ['missing-font-relationship', baseEntries({ relationship: null })],
     ['unbound-extra-font-part', baseEntries({
       extras: [{ name: 'word/fonts/unbound-evil.ttf', body: BAD_TTF_BYTES }],
+    })],
+    ['comment-only-font-relationships', baseEntries({
+      relationship: `<Relationships><!-- <Relationship Id="rFont1" Type="${fontType}" Target="fonts/font1.ttf"/> --></Relationships>`,
+    })],
+    ['comment-only-ttf-content-type', baseEntries({
+      contentTypes: '<Types><!-- <Default Extension="ttf" ContentType="application/x-font-ttf"/> --></Types>',
+    })],
+    ['shadow-namespaced-content-type', baseEntries({
+      contentTypes: '<Types xmlns:evil="urn:evil"><Default Extension="ttf" evil:ContentType="application/x-font-ttf" ContentType="application/octet-stream"/></Types>',
+    })],
+    ['shadow-namespaced-relationship-type', baseEntries({
+      relationship: `<Relationships xmlns:evil="urn:evil"><Relationship Id="rFont1" evil:Type="${fontType}" Type="urn:not-font" Target="fonts/font1.ttf"/></Relationships>`,
+    })],
+    ['malformed-unclosed-content-default', baseEntries({
+      contentTypes: '<Types><Default Extension="ttf" ContentType="application/x-font-ttf"',
+    })],
+    ['truncated-four-byte-sfnt', baseEntries({
+      fontBody: Buffer.from([0x00, 0x01, 0x00, 0x00]),
     })],
   ];
 

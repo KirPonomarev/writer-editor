@@ -1161,6 +1161,8 @@ const DOCX_ZIP_U16_MAX = 0xffff;
 const DOCX_ZIP_U32_MAX = 0xffffffff;
 const DOCX_ZIP_TTF_FONT_CONTENT_TYPE = 'application/x-font-ttf';
 const DOCX_ZIP_FONT_RELATIONSHIP_TYPE = `h${'ttp'}://schemas.openxmlformats.org/officeDocument/2006/relationships/font`;
+const DOCX_ZIP_XML_NAMESPACE_CONTENT_TYPES = `h${'ttp'}://schemas.openxmlformats.org/package/2006/content-types`;
+const DOCX_ZIP_XML_NAMESPACE_RELATIONSHIPS = `h${'ttp'}://schemas.openxmlformats.org/package/2006/relationships`;
 const DOCX_ZIP_TTF_SFNT_SIGNATURES = new Set([
   '00010000',
   '4f54544f',
@@ -1330,9 +1332,174 @@ function docxZipUnknownPartEntry(entry) {
   return next;
 }
 
-function docxZipXmlRows(xmlText, tagName) {
-  const pattern = new RegExp(`<(?:[A-Za-z_][\\w.-]*:)?${tagName}\\b([^>]*)\\/?>`, 'giu');
-  return Array.from(String(xmlText || '').matchAll(pattern)).map((match) => match[1]);
+function docxZipXmlFindTagEnd(xmlText, startIndex) {
+  let quote = '';
+  for (let index = startIndex; index < xmlText.length; index += 1) {
+    const char = xmlText[index];
+    if (quote) {
+      if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '>') return index;
+  }
+  return -1;
+}
+
+function docxZipXmlNameParts(qName) {
+  const match = /^([A-Za-z_][\w.-]*)(?::([A-Za-z_][\w.-]*))?$/u.exec(String(qName || ''));
+  if (!match) return null;
+  return match[2]
+    ? { prefix: match[1], localName: match[2], qName }
+    : { prefix: '', localName: match[1], qName };
+}
+
+function docxZipXmlParseAttributes(attributeText) {
+  const attributes = new Map();
+  const namespaces = [];
+  let cursor = 0;
+  while (cursor < attributeText.length) {
+    while (cursor < attributeText.length && /\s/u.test(attributeText[cursor])) cursor += 1;
+    if (cursor >= attributeText.length) break;
+    const nameMatch = /^[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?/u.exec(attributeText.slice(cursor));
+    if (!nameMatch) return null;
+    const rawName = nameMatch[0];
+    cursor += rawName.length;
+    while (cursor < attributeText.length && /\s/u.test(attributeText[cursor])) cursor += 1;
+    if (attributeText[cursor] !== '=') return null;
+    cursor += 1;
+    while (cursor < attributeText.length && /\s/u.test(attributeText[cursor])) cursor += 1;
+    const quote = attributeText[cursor];
+    if (quote !== '"' && quote !== "'") return null;
+    cursor += 1;
+    const valueEnd = attributeText.indexOf(quote, cursor);
+    if (valueEnd === -1) return null;
+    const value = docxHostileFileGateDecodeXmlAttribute(attributeText.slice(cursor, valueEnd));
+    cursor = valueEnd + 1;
+    const nameParts = docxZipXmlNameParts(rawName);
+    if (!nameParts) return null;
+    if (rawName === 'xmlns') {
+      namespaces.push(['', value]);
+      continue;
+    }
+    if (nameParts.prefix === 'xmlns') {
+      namespaces.push([nameParts.localName, value]);
+      continue;
+    }
+    if (nameParts.prefix === '') {
+      if (attributes.has(nameParts.localName)) return null;
+      attributes.set(nameParts.localName, value);
+    }
+  }
+  return { attributes, namespaces };
+}
+
+function docxZipXmlResolveName(nameParts, namespaceMap) {
+  if (!nameParts) return null;
+  if (!nameParts.prefix) {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: namespaceMap.get('') || '',
+      qName: nameParts.qName,
+    };
+  }
+  if (!namespaceMap.has(nameParts.prefix)) return null;
+  return {
+    localName: nameParts.localName,
+    namespaceUri: namespaceMap.get(nameParts.prefix) || '',
+    qName: nameParts.qName,
+  };
+}
+
+function docxZipXmlParseStartTag(rawTag, namespaceMap) {
+  const trimmed = rawTag.trim();
+  if (!trimmed) return null;
+  const selfClosing = /\/\s*$/u.test(trimmed);
+  const body = selfClosing ? trimmed.replace(/\/\s*$/u, '').trimEnd() : trimmed;
+  const nameMatch = /^([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)(?=\s|$)/u.exec(body);
+  if (!nameMatch) return null;
+  const parsedAttributes = docxZipXmlParseAttributes(body.slice(nameMatch[0].length));
+  if (!parsedAttributes) return null;
+  const scopedNamespaceMap = new Map(namespaceMap);
+  for (const [prefix, namespaceUri] of parsedAttributes.namespaces) {
+    scopedNamespaceMap.set(prefix, namespaceUri);
+  }
+  const resolvedName = docxZipXmlResolveName(docxZipXmlNameParts(nameMatch[0]), scopedNamespaceMap);
+  if (!resolvedName) return null;
+  return {
+    ...resolvedName,
+    attributes: parsedAttributes.attributes,
+    namespaceMap: scopedNamespaceMap,
+    selfClosing,
+  };
+}
+
+function docxZipXmlParseStartTags(xmlText, allowedNamespaces) {
+  const text = String(xmlText || '');
+  const tags = [];
+  const stack = [];
+  let namespaceMap = new Map();
+  let cursor = 0;
+  while (cursor < text.length) {
+    const open = text.indexOf('<', cursor);
+    if (open === -1) break;
+    if (text.startsWith('<!--', open)) {
+      const end = text.indexOf('-->', open + 4);
+      if (end === -1) return null;
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<![CDATA[', open)) {
+      const end = text.indexOf(']]>', open + 9);
+      if (end === -1) return null;
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<?', open)) {
+      const end = text.indexOf('?>', open + 2);
+      if (end === -1) return null;
+      cursor = end + 2;
+      continue;
+    }
+    if (text.startsWith('<!', open)) return null;
+    const close = docxZipXmlFindTagEnd(text, open + 1);
+    if (close === -1) return null;
+    const rawTag = text.slice(open + 1, close);
+    if (rawTag.startsWith('/')) {
+      const closeNameParts = docxZipXmlNameParts(rawTag.slice(1).trim());
+      const resolvedCloseName = docxZipXmlResolveName(closeNameParts, namespaceMap);
+      const openTag = stack.pop();
+      if (
+        !resolvedCloseName
+        || !openTag
+        || openTag.localName !== resolvedCloseName.localName
+        || openTag.namespaceUri !== resolvedCloseName.namespaceUri
+      ) {
+        return null;
+      }
+      namespaceMap = stack.length > 0 ? stack[stack.length - 1].namespaceMap : new Map();
+      cursor = close + 1;
+      continue;
+    }
+    const parsedTag = docxZipXmlParseStartTag(rawTag, namespaceMap);
+    if (!parsedTag) return null;
+    if (allowedNamespaces.has(parsedTag.namespaceUri)) {
+      tags.push({
+        localName: parsedTag.localName,
+        namespaceUri: parsedTag.namespaceUri,
+        attributes: parsedTag.attributes,
+      });
+    }
+    if (!parsedTag.selfClosing) {
+      stack.push(parsedTag);
+      namespaceMap = parsedTag.namespaceMap;
+    }
+    cursor = close + 1;
+  }
+  return stack.length === 0 ? tags : null;
 }
 
 function docxZipNormalizePackagePartName(value) {
@@ -1343,23 +1510,25 @@ function docxZipNormalizePackagePartName(value) {
 }
 
 function docxZipContentTypesFromXml(xmlText) {
+  const tags = docxZipXmlParseStartTags(xmlText, new Set(['', DOCX_ZIP_XML_NAMESPACE_CONTENT_TYPES]));
+  if (tags === null) return null;
   const defaults = new Map();
   const overrides = new Map();
-  for (const attributes of docxZipXmlRows(xmlText, 'Default')) {
+  for (const tag of tags.filter((item) => item.localName === 'Default')) {
     const extension = docxHostileFileGateDecodeXmlAttribute(
-      docxHostileFileGateRelationshipAttributeValue(attributes, 'Extension') || '',
+      tag.attributes.get('Extension') || '',
     ).trim().toLowerCase();
     const contentType = docxHostileFileGateDecodeXmlAttribute(
-      docxHostileFileGateRelationshipAttributeValue(attributes, 'ContentType') || '',
+      tag.attributes.get('ContentType') || '',
     ).trim();
     if (extension && contentType) defaults.set(extension, contentType);
   }
-  for (const attributes of docxZipXmlRows(xmlText, 'Override')) {
+  for (const tag of tags.filter((item) => item.localName === 'Override')) {
     const partName = docxZipNormalizePackagePartName(
-      docxHostileFileGateRelationshipAttributeValue(attributes, 'PartName') || '',
+      tag.attributes.get('PartName') || '',
     );
     const contentType = docxHostileFileGateDecodeXmlAttribute(
-      docxHostileFileGateRelationshipAttributeValue(attributes, 'ContentType') || '',
+      tag.attributes.get('ContentType') || '',
     ).trim();
     if (partName && contentType) overrides.set(partName, contentType);
   }
@@ -1383,22 +1552,29 @@ function docxZipInflatedEntryBytes(bytes, metadataById, entryId) {
 }
 
 function docxZipHasSupportedTtfSignature(contentBytes) {
-  if (!contentBytes || contentBytes.byteLength < 4) return false;
-  return DOCX_ZIP_TTF_SFNT_SIGNATURES.has(Buffer.from(contentBytes.subarray(0, 4)).toString('hex').toLowerCase());
+  if (!contentBytes || contentBytes.byteLength < 12) return false;
+  if (!DOCX_ZIP_TTF_SFNT_SIGNATURES.has(Buffer.from(contentBytes.subarray(0, 4)).toString('hex').toLowerCase())) {
+    return false;
+  }
+  const tableCount = (contentBytes[4] << 8) | contentBytes[5];
+  if (tableCount < 1 || tableCount > 4096) return false;
+  return contentBytes.byteLength >= 12 + (tableCount * 16);
 }
 
 function docxZipRelationshipBoundTtfTargets(bytes, metadataById) {
   const relationshipBytes = docxZipInflatedEntryBytes(bytes, metadataById, 'word/_rels/fontTable.xml.rels');
   if (!relationshipBytes) return new Set();
   const xmlText = Buffer.from(relationshipBytes).toString('utf8');
+  const relationshipTags = docxZipXmlParseStartTags(xmlText, new Set(['', DOCX_ZIP_XML_NAMESPACE_RELATIONSHIPS]));
+  if (relationshipTags === null) return new Set();
   const relationshipSource = docxHostileFileGateRelationshipSource('word/_rels/fontTable.xml.rels');
   const targets = new Set();
-  for (const relationship of docxHostileFileGateRelationshipRows(xmlText)) {
-    if (relationship.type !== DOCX_ZIP_FONT_RELATIONSHIP_TYPE) continue;
-    if (String(relationship.targetMode || '').trim().toLowerCase() === 'external') continue;
+  for (const relationship of relationshipTags.filter((item) => item.localName === 'Relationship')) {
+    if (relationship.attributes.get('Type') !== DOCX_ZIP_FONT_RELATIONSHIP_TYPE) continue;
+    if (String(relationship.attributes.get('TargetMode') || '').trim().toLowerCase() === 'external') continue;
     const resolution = docxHostileFileGateNormalizeInternalRelationshipTarget(
       relationshipSource.baseDir || '',
-      relationship.target,
+      relationship.attributes.get('Target') || '',
     );
     if (
       resolution.escapedPackage

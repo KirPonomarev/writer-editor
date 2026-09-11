@@ -13,7 +13,12 @@ const ONE_PIXEL_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
   'base64',
 );
-const TTF_BYTES = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
+const TTF_BYTES = Buffer.from([
+  0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10,
+  0x00, 0x00, 0x00, 0x00, 0x68, 0x65, 0x61, 0x64,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c,
+  0x00, 0x00, 0x00, 0x00,
+]);
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);
@@ -221,6 +226,58 @@ test('DOCX intake preflight report: media stays degraded diagnostics only', asyn
   assert.equal(embeddedFont.diagnostics.some((item) => (
     item.source === 'partPolicy' && item.code === 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'
   )), true);
+});
+
+test('DOCX intake preflight report: adversarial .ttf admission is blocked before semantic parse', async () => {
+  const bridge = await loadBridge();
+  const fontType = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/font';
+  const adversarialFontZip = ({
+    contentTypes = fontContentTypesXml(),
+    relationship = fontRelationshipsXml(),
+    fontBody = TTF_BYTES,
+  } = {}) => cleanDocxZip([
+    { name: '[Content_Types].xml', body: contentTypes },
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    ...(relationship === null ? [] : [{ name: 'word/_rels/fontTable.xml.rels', body: relationship }]),
+    { name: 'word/fonts/font1.ttf', body: fontBody },
+  ]);
+  const cases = [
+    ['comment-only-font-relationships', adversarialFontZip({
+      relationship: `<Relationships><!-- <Relationship Id="rFont1" Type="${fontType}" Target="fonts/font1.ttf"/> --></Relationships>`,
+    })],
+    ['comment-only-ttf-content-type', adversarialFontZip({
+      contentTypes: '<Types><!-- <Default Extension="ttf" ContentType="application/x-font-ttf"/> --></Types>',
+    })],
+    ['shadow-namespaced-content-type', adversarialFontZip({
+      contentTypes: '<Types xmlns:evil="urn:evil"><Default Extension="ttf" evil:ContentType="application/x-font-ttf" ContentType="application/octet-stream"/></Types>',
+    })],
+    ['shadow-namespaced-relationship-type', adversarialFontZip({
+      relationship: `<Relationships xmlns:evil="urn:evil"><Relationship Id="rFont1" evil:Type="${fontType}" Type="urn:not-font" Target="fonts/font1.ttf"/></Relationships>`,
+    })],
+    ['malformed-unclosed-content-default', adversarialFontZip({
+      contentTypes: '<Types><Default Extension="ttf" ContentType="application/x-font-ttf"',
+    })],
+    ['truncated-four-byte-sfnt', adversarialFontZip({
+      fontBody: Buffer.from([0x00, 0x01, 0x00, 0x00]),
+    })],
+  ];
+
+  for (const [caseId, bytes] of cases) {
+    const result = bridge.buildDocxIntakePreflightReportFromZipBytes(bytes);
+    assertPreParseReport(result);
+    assert.equal(result.ok, false, caseId);
+    assert.equal(result.gatePass, false, caseId);
+    assert.equal(result.status, 'rejected', caseId);
+    assert.equal(result.decision, 'quarantined', caseId);
+    assert.equal(result.code, 'STAGE02_PACKAGE_QUARANTINED', caseId);
+    assert.equal(result.preflightSummary.eligibility.parserCandidateOnly, false, caseId);
+    assert.equal(result.preflightSummary.eligibility.canImportMutate, false, caseId);
+    assert.equal(result.preflightSummary.eligibility.canWriteStorage, false, caseId);
+    assert.equal(result.diagnostics.some((item) => (
+      item.code === 'STAGE02_PACKAGE_QUARANTINED'
+      && item.sourceCode === 'DOCX_UNKNOWN_PART_PRESENT'
+    )), true, caseId);
+  }
 });
 
 test('DOCX intake preflight report: bounded degraded parts become content-only candidates', async () => {
