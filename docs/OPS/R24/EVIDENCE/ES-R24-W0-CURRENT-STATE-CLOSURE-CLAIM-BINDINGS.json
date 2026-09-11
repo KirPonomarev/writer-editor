@@ -48,6 +48,20 @@
       "terms": [
         "R24_W0_CURRENT_STATE_CLOSURE"
       ]
+    },
+    {
+      "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "bff02e211b03d4efc842d854c345a48d7c54def4e7bb47d0d3807202304798e1",
+      "terms": [
+        "R24_W0_CURRENT_STATE_CLOSURE"
+      ]
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "1a88444d1f77f9dedaeb596421e0fd9c114c8a3b4122b7b8c0c80581a582cd4e",
+      "terms": [
+        "R24_W0_CURRENT_STATE_CLOSURE"
+      ]
     }
   ],
   "executedEvidence": [
