@@ -18,6 +18,10 @@ const DOCX_IMPORT_PREVIEW_LOSS_REPORT_SCHEMA = 'revision-bridge.docx-import-prev
 const DOCX_CONTENT_PREVIEW_SCHEMA = 'revision-bridge.docx-content-preview.v1';
 const DOCX_CONTENT_PREVIEW_TYPE = 'docxContentPreviewReport';
 const DOCX_CONTENT_PREVIEW_SOURCE_PART = 'word/document.xml';
+const DOCX_IMPORT_SAFE_CREATE_IDEMPOTENT_INTEGRITY_CODE =
+  'DOCX_SAFE_CREATE_IDEMPOTENT_RECEIPT_INTEGRITY_FAILED';
+const DOCX_IMPORT_SAFE_CREATE_IDEMPOTENT_INTEGRITY_REASON =
+  'docx_import_safe_create_idempotent_receipt_integrity_failed';
 const DOCX_IMPORT_SAFE_CREATE_ADMISSION_LIMIT = 64;
 const DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE = /^(DOCX|FLOW)_[A-Z0-9_]{1,95}$/u;
 const docxImportPreviewPlanAdmissions = new Map();
@@ -678,6 +682,176 @@ function buildImportOperationId(options) {
   return `docx-import-op-${operationHash.slice(0, 12)}`;
 }
 
+function buildDocxImportSceneTreeIdentities(importOperationId, sceneId) {
+  const treeNodeId = `yalken.scene.tree.${crypto.createHash('sha256')
+    .update(`${importOperationId}:${sceneId}`, 'utf8').digest('hex').slice(0, 16)}`;
+  const treeId = `yalken.scene.tree.root.${crypto.createHash('sha256')
+    .update(`root:${importOperationId}`, 'utf8').digest('hex').slice(0, 16)}`;
+  return { treeNodeId, treeId };
+}
+
+function buildVerifiedDocxImportScene(entry, importOperationId, content) {
+  const actualContent = normalizeText(content);
+  const { treeNodeId, treeId } = buildDocxImportSceneTreeIdentities(
+    importOperationId,
+    entry.sceneId,
+  );
+  return {
+    sceneId: entry.sceneId,
+    kind: 'scene',
+    title: entry.title,
+    bytesWritten: Buffer.byteLength(actualContent, 'utf8'),
+    outputHash: sha256Text(actualContent),
+    treeNodeId,
+    treeId,
+  };
+}
+
+function buildDocxImportSceneTreeIdentityList(verifiedScene) {
+  return [
+    {
+      sceneId: verifiedScene.sceneId,
+      treeNodeId: verifiedScene.treeNodeId,
+      treeId: verifiedScene.treeId,
+    },
+  ];
+}
+
+function jsonStableEqual(left, right) {
+  return stableStringify(left) === stableStringify(right);
+}
+
+function buildIdempotentReceiptIntegrityError(field, sceneId, failReason, expected = '') {
+  return buildError(
+    DOCX_IMPORT_SAFE_CREATE_IDEMPOTENT_INTEGRITY_CODE,
+    DOCX_IMPORT_SAFE_CREATE_IDEMPOTENT_INTEGRITY_REASON,
+    {
+      field,
+      sceneId,
+      failReason,
+      ...(typeof expected === 'string' && /^[a-f0-9]{8,64}$/u.test(expected)
+        ? { expected }
+        : {}),
+    },
+  );
+}
+
+async function validateExistingDocxImportReceipt(options) {
+  const {
+    receipt,
+    plan,
+    validated,
+    projectRoot,
+    romanRoot,
+    targetPath,
+    importOperationId,
+    projectId,
+  } = options;
+  const entry = validated.value.entry;
+  const fail = (field, failReason, expected = '') => buildIdempotentReceiptIntegrityError(
+    field,
+    entry.sceneId,
+    failReason,
+    expected,
+  );
+
+  if (!isPlainObject(receipt)) return fail('receipt', 'receipt_not_object');
+  if (receipt.schemaVersion !== DOCX_IMPORT_RECEIPT_V2_SCHEMA) {
+    return fail('schemaVersion', 'schema_version_mismatch');
+  }
+  if (receipt.type !== DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE) {
+    return fail('type', 'receipt_type_mismatch');
+  }
+  if (receipt.reason !== DOCX_IMPORT_SAFE_CREATE_READY_REASON) {
+    return fail('reason', 'receipt_reason_mismatch');
+  }
+  if (receipt.importOperationId !== importOperationId) {
+    return fail('importOperationId', 'operation_id_mismatch');
+  }
+  if (receipt.projectId !== projectId) return fail('projectId', 'project_id_mismatch');
+  if (receipt.sourceArtifactSha256 !== validated.value.sourceArtifactSha256) {
+    return fail('sourceArtifactSha256', 'source_artifact_hash_mismatch');
+  }
+  if (receipt.candidateContentSha256 !== entry.candidateContentSha256) {
+    return fail('candidateContentSha256', 'candidate_content_hash_mismatch');
+  }
+  if (receipt.sourcePreviewHash !== validated.value.previewHash) {
+    return fail('sourcePreviewHash', 'source_preview_hash_mismatch');
+  }
+
+  const inputHash = sha256Text(stableStringify(plan));
+  if (receipt.inputHash !== inputHash) return fail('inputHash', 'input_hash_mismatch', inputHash);
+  if (!jsonStableEqual(receipt.createdSceneIds, [entry.sceneId])) {
+    return fail('createdSceneIds', 'created_scene_ids_mismatch');
+  }
+  if (!Array.isArray(receipt.createdScenes) || receipt.createdScenes.length !== 1) {
+    return fail('createdScenes', 'created_scenes_shape_mismatch');
+  }
+
+  if (
+    !isPathInsideBoundary(romanRoot, targetPath, { resolveSymlinks: false })
+    || !isPathInsideBoundary(projectRoot, targetPath, { resolveSymlinks: true })
+  ) {
+    return fail('createdScenes.0.boundary', 'scene_path_boundary_mismatch');
+  }
+
+  let actualContent = '';
+  try {
+    actualContent = normalizeText(await fs.readFile(targetPath, 'utf8'));
+  } catch {
+    return fail('createdScenes.0.outputHash', 'scene_missing_or_unreadable');
+  }
+
+  const expectedContent = normalizeText(entry.content);
+  const expectedVerifiedScene = buildVerifiedDocxImportScene(
+    entry,
+    importOperationId,
+    expectedContent,
+  );
+  if (actualContent !== expectedContent) {
+    return fail(
+      'createdScenes.0.outputHash',
+      'scene_content_mismatch',
+      expectedVerifiedScene.outputHash,
+    );
+  }
+  if (!jsonStableEqual(receipt.createdScenes[0], expectedVerifiedScene)) {
+    return fail(
+      'createdScenes.0',
+      'created_scene_receipt_mismatch',
+      expectedVerifiedScene.outputHash,
+    );
+  }
+
+  const expectedSceneTreeIdentities = buildDocxImportSceneTreeIdentityList(expectedVerifiedScene);
+  if (!jsonStableEqual(receipt.sceneTreeIdentities, expectedSceneTreeIdentities)) {
+    return fail('sceneTreeIdentities', 'scene_tree_identity_mismatch');
+  }
+
+  const outputHash = sha256Text(stableStringify({ createdScenes: [expectedVerifiedScene] }));
+  if (receipt.outputHash !== outputHash) return fail('outputHash', 'output_hash_mismatch', outputHash);
+
+  const expectedLossReportSummary = {
+    schemaVersion: validated.value.lossReport.schemaVersion,
+    mode: validated.value.lossReport.mode,
+    itemCount: validated.value.lossReport.itemCount,
+  };
+  if (!jsonStableEqual(receipt.lossReport, validated.value.lossReport)) {
+    return fail('lossReport', 'loss_report_mismatch');
+  }
+  if (!jsonStableEqual(receipt.lossReportSummary, expectedLossReportSummary)) {
+    return fail('lossReportSummary', 'loss_report_summary_mismatch');
+  }
+  if (!jsonStableEqual(receipt.carrierIgnored, validated.value.carrierIgnored)) {
+    return fail('carrierIgnored', 'carrier_ignored_mismatch');
+  }
+  if (!jsonStableEqual(receipt.atomicEvidence, { sceneCount: 1, markerCleared: true })) {
+    return fail('atomicEvidence', 'atomic_evidence_mismatch');
+  }
+
+  return { ok: true, receipt };
+}
+
 async function applyDocxImportSafeCreate(input = {}, options = {}) {
   const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot.trim() : '';
   const romanRoot = typeof options.romanRoot === 'string' ? options.romanRoot.trim() : '';
@@ -703,26 +877,6 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     sceneId: validated.value.entry.sceneId,
   });
 
-  // GENERIC-01 (G2/G4): idempotent lookup. If a durable receipt already exists
-  // for this importOperationId, return it without performing any new storage
-  // writes (writerCalls=0). This is the idempotent re-apply contract.
-  const existingReceipt = await readDurableReceipt(projectRoot, importOperationId);
-  if (existingReceipt && isPlainObject(existingReceipt) && existingReceipt.importOperationId === importOperationId) {
-    return {
-      ok: true,
-      value: {
-        created: false,
-        safeCreate: true,
-        idempotent: true,
-        createdSceneIds: existingReceipt.createdSceneIds || [],
-        receipt: existingReceipt,
-        receiptStore: { dir: buildReceiptStoreDir(projectRoot) },
-        lookupReceipt: async (opId) => readDurableReceipt(projectRoot, opId || importOperationId),
-        importOperationId,
-      },
-    };
-  }
-
   const targetPath = buildDocxImportScenePath(
     romanRoot,
     validated.value.entry,
@@ -737,6 +891,39 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       'docx_import_safe_create_scene_path_forbidden',
     );
   }
+
+  // GENERIC-01 (G2/G4): idempotent lookup. If a durable receipt already exists
+  // for this importOperationId, accept it only after re-reading the created
+  // scene and revalidating the receipt bindings. A stale or corrupted receipt
+  // fails closed without performing any new storage writes.
+  const existingReceipt = await readDurableReceipt(projectRoot, importOperationId);
+  if (existingReceipt !== null) {
+    const receiptValidation = await validateExistingDocxImportReceipt({
+      receipt: existingReceipt,
+      plan,
+      validated,
+      projectRoot,
+      romanRoot,
+      targetPath,
+      importOperationId,
+      projectId,
+    });
+    if (!receiptValidation.ok) return receiptValidation;
+    return {
+      ok: true,
+      value: {
+        created: false,
+        safeCreate: true,
+        idempotent: true,
+        createdSceneIds: receiptValidation.receipt.createdSceneIds || [],
+        receipt: receiptValidation.receipt,
+        receiptStore: { dir: buildReceiptStoreDir(projectRoot) },
+        lookupReceipt: async (opId) => readDurableReceipt(projectRoot, opId || importOperationId),
+        importOperationId,
+      },
+    };
+  }
+
   if (await pathExists(targetPath)) {
     return buildError(
       'DOCX_SAFE_CREATE_EXISTING_SCENE_BLOCKED',
@@ -856,26 +1043,8 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   // GENERIC-01 (G3): Core-allocated tree-node identity. The tree identity is
   // allocated atomically within the same transaction scope (algorithmic donor
   // when no transactionAuthority port is wired).
-  const treeNodeId = `yalken.scene.tree.${crypto.createHash('sha256')
-    .update(`${importOperationId}:${validated.value.entry.sceneId}`, 'utf8').digest('hex').slice(0, 16)}`;
-  const treeId = `yalken.scene.tree.root.${crypto.createHash('sha256')
-    .update(`root:${importOperationId}`, 'utf8').digest('hex').slice(0, 16)}`;
-  const verifiedScene = {
-    sceneId: normalizedEntry.sceneId,
-    kind: normalizedEntry.kind,
-    title: normalizedEntry.title,
-    bytesWritten: Buffer.byteLength(actualContent, 'utf8'),
-    outputHash: sha256Text(actualContent),
-    treeNodeId,
-    treeId,
-  };
-  const sceneTreeIdentities = [
-    {
-      sceneId: verifiedScene.sceneId,
-      treeNodeId,
-      treeId,
-    },
-  ];
+  const verifiedScene = buildVerifiedDocxImportScene(normalizedEntry, importOperationId, actualContent);
+  const sceneTreeIdentities = buildDocxImportSceneTreeIdentityList(verifiedScene);
   const inputHash = sha256Text(stableStringify(plan));
   const outputHash = sha256Text(stableStringify({ createdScenes: [verifiedScene] }));
 

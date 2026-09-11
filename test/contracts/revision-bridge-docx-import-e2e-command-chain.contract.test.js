@@ -364,10 +364,40 @@ function assertDocxCommandBridgeWiring() {
 }
 
 function readOnlyCreatedScene(romanRoot) {
+  return fs.readFileSync(readOnlyCreatedScenePath(romanRoot), 'utf8');
+}
+
+function readOnlyCreatedScenePath(romanRoot) {
   const importedRoot = path.join(romanRoot, 'Imported');
   const names = fs.readdirSync(importedRoot).filter((name) => name.endsWith('.txt')).sort();
   assert.equal(names.length, 1);
-  return fs.readFileSync(path.join(importedRoot, names[0]), 'utf8');
+  return path.join(importedRoot, names[0]);
+}
+
+function durableReceiptPath(projectRoot, importOperationId) {
+  return path.join(
+    projectRoot,
+    '.yalken',
+    'docx-import',
+    'receipts',
+    `${importOperationId}.json`,
+  );
+}
+
+function mutateDurableReceipt(projectRoot, importOperationId, mutator) {
+  const receiptPath = durableReceiptPath(projectRoot, importOperationId);
+  const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'));
+  const nextReceipt = mutator(receipt) || receipt;
+  fs.writeFileSync(receiptPath, `${JSON.stringify(nextReceipt, null, 2)}\n`, 'utf8');
+  return nextReceipt;
+}
+
+function assertIdempotentIntegrityFailure(result, safeCreatePort, expectedQueueCallCount) {
+  assert.equal(result.ok, false, JSON.stringify(result, null, 2));
+  assert.equal(result.error.code, 'DOCX_SAFE_CREATE_IDEMPOTENT_RECEIPT_INTEGRITY_FAILED');
+  assert.equal(result.error.reason, 'docx_import_safe_create_idempotent_receipt_integrity_failed');
+  assert.equal(safeCreatePort.calls.queueDiskOperation.length, expectedQueueCallCount);
+  assertNoPublicAuthorityLeak(result);
 }
 
 async function runDocxImportCommandChain(bytes, options = {}) {
@@ -489,6 +519,7 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   // writes), not a blocking error. Re-applying the same admitted plan returns
   // the original receipt with the same importOperationId and performs no new
   // storage writes.
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
     requestId: 'request-2',
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
@@ -497,6 +528,7 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   assert.equal(duplicate.safeCreateOk, true);
   assert.equal(duplicate.created, false, 'duplicate must not create a new scene');
   assert.equal(duplicate.receipt.importOperationId, firstOperationId);
+  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(duplicate);
 
@@ -509,6 +541,75 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   });
   assert.equal(tampered.ok, false);
   assert.equal(tampered.error.code, 'DOCX_SAFE_CREATE_PREVIEW_TAMPERED');
+  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(tampered);
+});
+
+test('DOCX import e2e command chain: idempotent receipt fails closed when created scene is missing', async () => {
+  const first = await runDocxImportCommandChain(cleanDocxZip([`Missing scene ${Date.now()}`]));
+  assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
+  const firstOperationId = first.safeCreate.receipt.importOperationId;
+  const scenePath = readOnlyCreatedScenePath(first.romanRoot);
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+
+  fs.unlinkSync(scenePath);
+  const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId: 'request-missing-scene',
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.field, 'createdScenes.0.outputHash');
+  assert.equal(duplicate.error.details.sceneId, first.safeCreate.createdSceneIds[0]);
+  assert.equal(fs.existsSync(scenePath), false);
+  assert.equal(fs.existsSync(durableReceiptPath(first.projectRoot, firstOperationId)), true);
+});
+
+test('DOCX import e2e command chain: idempotent receipt fails closed when created scene bytes change', async () => {
+  const first = await runDocxImportCommandChain(cleanDocxZip([`Changed scene ${Date.now()}`]));
+  assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
+  const scenePath = readOnlyCreatedScenePath(first.romanRoot);
+  const originalText = fs.readFileSync(scenePath, 'utf8');
+  const mutatedText = `${originalText}\nmutant`;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+
+  fs.writeFileSync(scenePath, mutatedText, 'utf8');
+  const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId: 'request-mutated-scene',
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.field, 'createdScenes.0.outputHash');
+  assert.equal(duplicate.error.details.sceneId, first.safeCreate.createdSceneIds[0]);
+  assert.equal(fs.readFileSync(scenePath, 'utf8'), mutatedText);
+});
+
+test('DOCX import e2e command chain: idempotent receipt fails closed when receipt hash binding changes', async () => {
+  const first = await runDocxImportCommandChain(cleanDocxZip([`Receipt hash ${Date.now()}`]));
+  assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
+  const originalText = readOnlyCreatedScene(first.romanRoot);
+  const firstOperationId = first.safeCreate.receipt.importOperationId;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const wrongCandidateHash = '0'.repeat(64);
+
+  mutateDurableReceipt(first.projectRoot, firstOperationId, (receipt) => ({
+    ...receipt,
+    candidateContentSha256: wrongCandidateHash,
+  }));
+  const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId: 'request-mutated-receipt',
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.field, 'candidateContentSha256');
+  assert.equal(duplicate.error.details.sceneId, first.safeCreate.createdSceneIds[0]);
+  assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
+  const receipt = JSON.parse(fs.readFileSync(
+    durableReceiptPath(first.projectRoot, firstOperationId),
+    'utf8',
+  ));
+  assert.equal(receipt.candidateContentSha256, wrongCandidateHash);
 });
