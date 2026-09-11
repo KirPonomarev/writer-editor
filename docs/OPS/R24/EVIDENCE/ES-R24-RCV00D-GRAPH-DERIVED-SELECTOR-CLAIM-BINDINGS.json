@@ -11,7 +11,7 @@
   "claimBindings": [
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "9c8a365a97dcf4c45d3738e8aba49179cf3849d13828bb8dc8dda88aff08aa1d",
+      "sha256": "3fb2cd80af4a1c7e2fab999311db7736c3b0420a26a31490e03f52cad5248d5e",
       "claimTerms": [
         "PASS"
       ]
@@ -34,7 +34,7 @@
   "implementationArtifactDigests": [
     {
       "path": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
-      "sha256": "1cb8b24da7d38de886c3ce242b30aa7d470f47566b5265fa62b70cd3942875af",
+      "sha256": "beac8113efca68565eaa10a516b3b273b1dc6c74b9637f3d7208b1f527e965b8",
       "terms": [
         "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
         "CURRENT_OBSERVATION_SELECTOR"
@@ -50,7 +50,7 @@
     },
     {
       "path": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "989fe7d14d7cd499535cb67319c3516e50a1846f1b87a3b12f58c84d16e2f045",
+      "sha256": "7f0b52e2b4a027e7c3e8c1bf7a931bf869e35a110cf2cbdf791f1d78d4d4aee3",
       "terms": [
         "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
         "POST_AUDIT_CANDIDATE_VERIFIER"
@@ -58,7 +58,7 @@
     },
     {
       "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "be33b009626dd108982b3f0ddb9d6d209424db990db5a60a361eaee74950fbd9",
+      "sha256": "ae41bca84ea07f2cf57df5c38519c050ca8c9bdf3b93d94b1e80ae44f2fefbdb",
       "terms": [
         "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
         "POST_AUDIT_NEGATIVE_PROOF"
@@ -82,7 +82,7 @@
     },
     {
       "path": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
-      "sha256": "1942f887641d8170d97c9257ced2b659298e88e16ddfadcb9a68d190562ca1cf",
+      "sha256": "590c506e52784dfaa4f9fbc5efb5881afe2d1b17e159aa8237f25affb100f601",
       "terms": [
         "R24_RCV_00D_GRAPH_DERIVED_SELECTOR",
         "TERMINAL_SELECTOR_RECEIPT"
@@ -126,13 +126,22 @@
       "requiredDisposition": "focused positive, negative, and implementation-mutant contract proof passed after prepatch 9/12 failure"
     },
     {
-      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test --test-name-pattern='RCV00D graph-derived selector exception' test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test --test-name-pattern='RCV00D' test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "verdict": "PASS",
       "tests": {
-        "pass": 6,
+        "pass": 7,
         "fail": 0
       },
-      "requiredDisposition": "post-audit exact-delta positive and negative verifier proof passed for RCV00D"
+      "requiredDisposition": "RCV00D post-audit exact-delta, successor-routing, and negative verifier proof passed"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 168,
+        "fail": 0
+      },
+      "requiredDisposition": "combined selector and post-audit certification contracts passed, including historical routing and RCV00D delivery binding"
     },
     {
       "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run --silent r24:test-inventory",

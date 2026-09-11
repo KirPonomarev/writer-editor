@@ -12123,6 +12123,110 @@
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
       "approvedAt": "2026-09-11T06:20:42.647Z",
       "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "4f62bf7444f8cd3db68cd79d6260154ada2f9d977d6e83b2d9010577e095b909",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "20074f3c0fb6ce41ab47c254198540ee06fd3f680feb5a2cf12e88dc63c0aaee",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "2711cab587490b05c7e6ce6eb0d6481a3ed8efdc77a5929423ec80e6e49b904c",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
+      "sha256": "590c506e52784dfaa4f9fbc5efb5881afe2d1b17e159aa8237f25affb100f601",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7f0b52e2b4a027e7c3e8c1bf7a931bf869e35a110cf2cbdf791f1d78d4d4aee3",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
+      "sha256": "beac8113efca68565eaa10a516b3b273b1dc6c74b9637f3d7208b1f527e965b8",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "bfda5a7ed587b80c6de2798730bf888c946b86744c400e5aaeec0dd3de1a757b",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "ea3f60b764bca265ad69e193f6acd0ffea7109a6b8b497d024802067a0ee54dc",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "2629122f8fd3c06ccf8ba56a3f5fb701491bac4d064d1d3f55ab3fdb7c6c723b",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "3fb2cd80af4a1c7e2fab999311db7736c3b0420a26a31490e03f52cad5248d5e",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "2ab1c02b3f81d6738f024913561b0cb44299228bf441f43b6328adaf3ea703d4",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "ae41bca84ea07f2cf57df5c38519c050ca8c9bdf3b93d94b1e80ae44f2fefbdb",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "6c6dc7bd0fdab3a7163f327fd33a2c30954ea58a402a8c65c73c3049da056b5e",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
     }
   ],
   "evidenceStampIds": [

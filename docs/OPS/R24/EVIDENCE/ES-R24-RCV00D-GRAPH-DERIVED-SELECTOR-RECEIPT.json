@@ -14,8 +14,8 @@
     "correctiveRegisterFile": "fbfd6cedecaddd138b70eeb5d2c4d37f2def64a984efd2b35f9094335c203862",
     "planTextFile": "c7e6311c0e3a331cb795bf2f8f6c9151b47763a1ca5706ebb452131e98ba9f06",
     "planStateFile": "f037355e4f1d87107f1593927463d94fa3f7128038790616c4d5611cf42f12f9",
-    "effectiveStateProjection": "47193a79c573f734b392f4df4aea8438e530d36f476410d48df8aaa069606692",
-    "graphSelectionReceipt": "251c9bb5d36564d33031298978c0b7b4059e421cf7ab8b3f2279a36d3dd01165"
+    "effectiveStateProjection": "8ed6152bc30f058fa105e5dea9df374db75bd0f7b8b82e2143237955dc4c439a",
+    "graphSelectionReceipt": "582bea91f2973ab417a53ecb467139237d2487ab1d402810c349ef3c54f544df"
   },
   "narrativeNextStep": "R24-RCV-00A",
   "narrativeNextStepAuthoritative": false,
@@ -26,7 +26,7 @@
     "readySet": [],
     "stateRevision": 283,
     "fencingCounter": 47,
-    "stateDigest": "73faac73e794c60e24a0673efd89a088a2717b3ea7bddac8e5523ea8b5dcc58e",
+    "stateDigest": "0d66de3bc9b8b8236d780c7efbae6ee15ba6ad3c8d55042720f7151d447ad9f8",
     "contourStatesDigest": "d364bf424fa000ee59a2bf55f317e258edeb0de6eae332528172506d050b63ec"
   },
   "correctiveSelectionPolicy": {
