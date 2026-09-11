@@ -712,7 +712,7 @@ test('DOCX content preview: actual CRC mismatch fails closed before preview read
   }
 });
 
-test('DOCX content preview: unsupported structures are diagnostics and do not become review or import data', async () => {
+test('DOCX content preview: table text is preserved while unsupported structures stay diagnostic-only', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
     paragraphXml('Before'),
@@ -724,14 +724,24 @@ test('DOCX content preview: unsupported structures are diagnostics and do not be
     '</w:ins>',
     paragraphXml('After'),
   ].join('')));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
 
   assertContentPreviewShell(result);
   assert.equal(result.ok, true);
   assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
   assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
     'Before',
+    'Table text',
     'After',
   ]);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'Before\n\nTable text\n\nAfter');
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
+    && item.category === 'table'
+  )), true);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Inserted text'), false);
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
     && item.tagName === 'w:tbl'

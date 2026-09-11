@@ -47,39 +47,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "sha256": "3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c"
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "73e3d2d3055fdbcff1c47e494b7ef5db9e0eb449010ad6e49edee010f5523e28"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f"
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "a9bbfd232e238db16e9da9f13c6b5fbe42c3d201b80b9516c5ef6d9aa9e9544e"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "sha256": "fe087ec0d3205c1ec2cbf1cad6511a7f2c203dbac2b131048a1eb0acfa709466"
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "7ac9dcc891ce5c91ad6b8c3f4a7997bdb315ae5db45aea67fcf53f85f2dcbaa0"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T00:30:07Z",
-      "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
-      "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
-      "sha256": "fbc0639235d7ee102789e293c4b1a7601b64ec4740542903430ace9414d05e8c"
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "7c00deaa5d56d5b5189570c323fb7ee748ca33cb0a16e26795d2e3707fad0344"
     },
     {
       "approved": true,
@@ -105,9 +105,9 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:35:52Z",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -117,14 +117,14 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "7133b1128d9e0bc170d3015f8b474545090e3755660ca6e038345a2d61759ee7"
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "ee8020e0315e0f1333af1814fb84909cdd43e9f9003dcf9d3239f7ac2811591a"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:35:52Z",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -134,34 +134,21 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "f157f6c63bbc1e0d55b12217f9953a208ea0654256484c7633c0c40780c3bdab"
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "1737aaa7395228fe9eefd0672659615ff120601fcd567cc83170020a1d7462f4"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2232c5943a9371b690b093e58310ccd8d50b8d2dc6fccdf80d4ec7599912eaac",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "64d58dbf5050c2a700cb4a01bd9177a266ea0382e52edfcafc2165790ac6dbad",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "b064e37aa956c8b2329604de083b7d7b714c8a23531cd52bb8e03dcfd70acc7c",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -178,81 +165,68 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "b3bdcbe13948d9c1e92a07c59aa2f92106738a1e391a48095ebe75ef2856330c",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "sha256": "9947d2283fbf366394a45c22a637bf9b374c871c618b5e526764e98a4439c9ac",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "bf508d6c966c8be1419b6c5cd3851bc159782f2c226ce01b98a0799048ce102b",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "4cb98dbc833cfe71a635b8f208f3a61f6f8c564cec49787076d9b2fe47697d95",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
-      "sha256": "32f4d15f8fe69fdfc3fe651f09a1ee151e915f96ee933240f177baee37a93067",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "038e63be34e389fefc6e57036ec139a00182a45b1817f21d032974c2ceb613cc",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
-      "sha256": "c1dab8a4908344d09d813ae3ba9538419d5c9b9e271f36422532a6e00372c469",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "d85b901f5f2deb0baf04257a7592fff8ed5a5b18015b592ad67525b98a0421a6",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
-      "sha256": "c40e28bf98f0e17895c3c585affd6dec9e63d2cba49bec93ac29944fef762e22",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "5c9ca615703848e5617947aadc03bd10d9861b55e194f5611ea87f04ca388904",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
@@ -266,6 +240,30 @@
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
       "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721",
       "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T19:19:44Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-S05-DOCX-TABLE-VISIBLE-TEXT-REPAIR-V1"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "63a5dbba893b424f1a4cfbed5f14e50c34feecac37c6ee09a64cead1bac75beb",
+      "rationale": "Approve bounded S05 DOCX table visible-text preview repair: plain table cell text is preserved in zero-write DOCX import preview while table geometry remains unsupported and explicitly loss-reported. No UI, dependency, runtime network, storage mutation, structured table import, Word saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T19:19:44Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-S05-DOCX-TABLE-VISIBLE-TEXT-REPAIR-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "c2bd3d44321ff3350e0c75a53b7044da4569f9626c6896cf03fef26e093d4aea",
+      "rationale": "Approve bounded S05 DOCX table visible-text preview repair: plain table cell text is preserved in zero-write DOCX import preview while table geometry remains unsupported and explicitly loss-reported. No UI, dependency, runtime network, storage mutation, structured table import, Word saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     }
   ],
   "version": "v1.0",
