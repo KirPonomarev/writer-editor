@@ -11893,16 +11893,25 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "29e9bbe4f37d7a00d5722c97efcf05bc01dd24799e9beb199b81a573464556eb",
-      "approvedBy": "owner-directive:R24_RCV00D_DOCX_MIN_COMMAND_BRIDGE_RETRY_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact C1B test inventory bytes for the bounded R24 RCV00D DOCX min command bridge repair: refreshed hashes for focused tests proving legacy numeric export success normalization, stale outer failure rejection, and retry as a fresh bridge call. No global truthy-ok weakening, UI/design change, dependency, runtime network, graph promotion, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "d18211ecc88e0d3c6819c01a911ebf0781f987a87c12694c76f9ac31e90bd0e0",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_NONSTOP_SUPERVISOR_RESUME_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact C1B inventory bytes for bounded R24 S09 DOCX list-numbering loss identity delivery on PR1885: refreshed digest only after focused preview regression expansion. No product apply route, UI/design change, dependency, runtime network, Word or Google full-denominator pass, release readiness, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV00D_DOCX_MIN_COMMAND_BRIDGE_RETRY",
+      "authority": "OWNER_APPROVED_R24_INTEROP_S09_LIST_NUMBERING_LOSS_IDENTITY_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
         "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
       ]
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "9a696529d2f11ab56a814f1b6d9b203ed8c37a82cbb9557df2482e73caca644f",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_NONSTOP_SUPERVISOR_RESUME_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact focused regression bytes for bounded R24 S09 DOCX list-numbering loss identity delivery on PR1885: proves paragraphIndex, numId, ilvl, and listKey preservation in zero-write preview loss records and suppression of explicit numId zero. No product apply route, UI/design change, dependency, runtime network, Word or Google full-denominator pass, release readiness, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_INTEROP_S09_LIST_NUMBERING_LOSS_IDENTITY_DELIVERY"
     }
   ],
   "evidenceStampIds": [

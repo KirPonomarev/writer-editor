@@ -816,9 +816,9 @@ test('DOCX content preview: hyperlink visible text survives split runs anchors a
 test('DOCX content preview: paragraph numbering is explicit unsupported list loss', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
-    numberedParagraphXml('alpha'),
-    numberedParagraphXml('beta'),
-    numberedParagraphXml('gamma'),
+    numberedParagraphXml('alpha', { numId: '1', ilvl: '0' }),
+    numberedParagraphXml('beta', { numId: '1', ilvl: '1' }),
+    numberedParagraphXml('gamma', { numId: '2', ilvl: '0' }),
   ].join(''), [
     { name: 'word/numbering.xml', method: 8, body: numberingXml() },
   ]);
@@ -835,20 +835,63 @@ test('DOCX content preview: paragraph numbering is explicit unsupported list los
     'beta',
     'gamma',
   ]);
-  assert.equal(result.diagnostics.filter((item) => (
+  const listDiagnostics = result.diagnostics.filter((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC'
     && item.tagName === 'w:numPr'
     && item.sourcePart === 'word/document.xml'
-  )).length, 1);
+  ));
+  assert.deepEqual(listDiagnostics.map((item) => ({
+    paragraphIndex: item.paragraphIndex,
+    numId: item.numId,
+    ilvl: item.ilvl,
+    listKey: item.listKey,
+  })), [
+    { paragraphIndex: 0, numId: '1', ilvl: '0', listKey: 'numId:1|ilvl:0' },
+    { paragraphIndex: 1, numId: '1', ilvl: '1', listKey: 'numId:1|ilvl:1' },
+    { paragraphIndex: 2, numId: '2', ilvl: '0', listKey: 'numId:2|ilvl:0' },
+  ]);
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
   assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'alpha\n\nbeta\n\ngamma');
-  assert.equal(importPreview.lossReport.items.filter((item) => (
+  const listLossItems = importPreview.lossReport.items.filter((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'
     && item.category === 'listNumbering'
     && item.tagName === 'w:numPr'
     && item.sourceCode === 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC'
-  )).length, 1);
+  ));
+  assert.deepEqual(listLossItems.map((item) => ({
+    paragraphIndex: item.paragraphIndex,
+    numId: item.numId,
+    ilvl: item.ilvl,
+    listKey: item.listKey,
+  })), [
+    { paragraphIndex: 0, numId: '1', ilvl: '0', listKey: 'numId:1|ilvl:0' },
+    { paragraphIndex: 1, numId: '1', ilvl: '1', listKey: 'numId:1|ilvl:1' },
+    { paragraphIndex: 2, numId: '2', ilvl: '0', listKey: 'numId:2|ilvl:0' },
+  ]);
+});
+
+test('DOCX content preview: explicit numId zero does not create list loss', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(
+    numberedParagraphXml('not numbered', { numId: '0', ilvl: '0' }),
+    [
+      { name: 'word/numbering.xml', method: 8, body: numberingXml() },
+    ],
+  ));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'not numbered',
+  ]);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC'
+  )), false);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'
+  )), false);
 });
 
 test('DOCX content preview: numbering text and unused numbering part do not create list loss', async () => {
