@@ -1066,29 +1066,29 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:37:20Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_E0_DOCS_CLAIM_HISTORICAL_PIN_REPAIR_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_PR1888_E0_DOCS_CLAIM_HISTORICAL_PIN_REPAIR",
+      "approvedAtUtc": "2026-09-11T18:42:48Z",
+      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
+      "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION",
       "evidenceStampIds": [
         "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER",
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "rationale": "Approve exact current-byte docs-claim-lint historical pin repair for PR1888 e0-mutants: RCV00B current-head effective-state compiler inventory evidence remains historical-only after S11 refreshed current C1B bytes. No product code, UI, dependency, runtime network, product closure or full portability claim.",
-      "sha256": "436a5531d8f8bf794a861b30b03b514e40a5638e7e2877c8716187b164640e79"
+      "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
+      "sha256": "73e3d2d3055fdbcff1c47e494b7ef5db9e0eb449010ad6e49edee010f5523e28"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:37:20Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_E0_DOCS_CLAIM_HISTORICAL_PIN_REPAIR_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_PR1888_E0_DOCS_CLAIM_HISTORICAL_PIN_REPAIR",
+      "approvedAtUtc": "2026-09-11T18:42:48Z",
+      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
+      "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION",
       "evidenceStampIds": [
         "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER",
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "rationale": "Approve exact current-byte docs-claim-lint historical pin repair for PR1888 e0-mutants: RCV00B current-head effective-state compiler inventory evidence remains historical-only after S11 refreshed current C1B bytes. No product code, UI, dependency, runtime network, product closure or full portability claim.",
-      "sha256": "5c89aa493526710168026fdc210488c28ec44bfe63790d1a228b534907df301a"
+      "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
+      "sha256": "a9bbfd232e238db16e9da9f13c6b5fbe42c3d201b80b9516c5ef6d9aa9e9544e"
     },
     {
       "approved": true,
@@ -1105,16 +1105,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:24:43.497Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:42:48Z",
+      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim.",
-      "sha256": "70b743556530625c0a41865b8e2eabadbf751dfc7f1f5ca26d508a80eb2caa16",
+      "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
+      "sha256": "7775640f035e466f71e39a40b3253a99c2ba654ace71de739093894f692e3f76",
       "evidenceStampIds": [
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER",
+        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+      "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION"
     },
     {
       "approved": true,
