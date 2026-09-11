@@ -39,6 +39,8 @@ const ALLOWLIST = [
   'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  // PR1888 bounded font-admission repair approval carrier.
+  'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   // ZIP-01 catalog + package metadata touched in Pass 1.
   'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
   'package.json',
@@ -52,9 +54,15 @@ function textBytes(value) {
   return Buffer.from(value, 'ascii');
 }
 
+function entryBody(entry) {
+  if (Buffer.isBuffer(entry.body)) return entry.body;
+  if (typeof entry.body === 'string') return Buffer.from(entry.body, 'utf8');
+  return Buffer.alloc(entry.bodySize ?? entry.compressedSize ?? 0, 0x61);
+}
+
 function localRecord(entry, offset) {
   const name = textBytes(entry.name);
-  const body = Buffer.alloc(entry.bodySize ?? entry.compressedSize ?? 0, 0x61);
+  const body = entryBody(entry);
   const header = Buffer.alloc(30 + name.length);
   header.writeUInt32LE(0x04034b50, 0);
   header.writeUInt16LE(20, 4);
@@ -73,6 +81,7 @@ function localRecord(entry, offset) {
 
 function centralRecord(entry, localOffset) {
   const name = textBytes(entry.name);
+  const body = entryBody(entry);
   const extra = Buffer.alloc(entry.extraSize ?? 0);
   const comment = Buffer.alloc(entry.commentSize ?? 0);
   const header = Buffer.alloc(46 + name.length + extra.length + comment.length);
@@ -82,8 +91,8 @@ function centralRecord(entry, localOffset) {
   header.writeUInt16LE(entry.flags ?? 0, 8);
   header.writeUInt16LE(entry.method ?? 0, 10);
   header.writeUInt32LE(entry.crc ?? 0, 16);
-  header.writeUInt32LE(entry.centralCompressedSize ?? entry.compressedSize ?? entry.bodySize ?? 0, 20);
-  header.writeUInt32LE(entry.centralByteSize ?? entry.byteSize ?? entry.bodySize ?? 0, 24);
+  header.writeUInt32LE(entry.centralCompressedSize ?? entry.compressedSize ?? body.length, 20);
+  header.writeUInt32LE(entry.centralByteSize ?? entry.byteSize ?? body.length, 24);
   header.writeUInt16LE(entry.centralNameSize ?? name.length, 28);
   header.writeUInt16LE(extra.length, 30);
   header.writeUInt16LE(comment.length, 32);
@@ -126,6 +135,16 @@ function zipFixture(entries, options = {}) {
 function malformedCentralZip(entries) {
   const valid = zipFixture(entries);
   return valid.subarray(0, valid.length - 30);
+}
+
+const TTF_BYTES = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/assets/fonts/Circe-Regular.ttf'));
+
+function fontContentTypesXml(contentType = 'application/x-font-ttf') {
+  return `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="ttf" ContentType="${contentType}"/></Types>`;
+}
+
+function fontRelationshipsXml(target = 'fonts/font1.ttf') {
+  return `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rFont1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="${target}"/></Relationships>`;
 }
 
 function diagnosticCodes(result) {
@@ -250,7 +269,7 @@ test('RB-06 classifies relationship, unknown, directory, media, and unsupported 
     { id: 'word/people.xml', kind: 'knownPart', story: undefined, markers: undefined },
     { id: 'word/stylesWithEffects.xml', kind: 'knownPart', story: undefined, markers: undefined },
     { id: 'word/fonts/font1.odttf', kind: 'knownPart', story: undefined, markers: ['fontPart'] },
-    { id: 'word/fonts/font1.ttf', kind: 'knownPart', story: undefined, markers: ['fontPart'] },
+    { id: 'word/fonts/font1.ttf', kind: 'unknownPart', story: undefined, markers: undefined },
     { id: 'docProps/thumbnail.jpeg', kind: 'knownPart', story: undefined, markers: ['mediaPart'] },
     { id: 'customXml/item1.xml', kind: 'knownPart', story: undefined, markers: undefined },
     { id: 'customXml/itemProps1.xml', kind: 'knownPart', story: undefined, markers: undefined },
@@ -262,6 +281,25 @@ test('RB-06 classifies relationship, unknown, directory, media, and unsupported 
   assert.equal(diagnosticCodes(result.inspection).includes('DOCX_UNKNOWN_PART_PRESENT'), true);
   assert.equal(diagnosticCodes(result.inspection).includes('DOCX_DIRECTORY_ENTRY_PRESENT'), true);
   assert.equal(diagnosticCodes(result.inspection).includes('DOCX_UNSUPPORTED_STORY_MARKER_PRESENT'), true);
+});
+
+test('RB-06 admits .ttf font parts only with content type, font relationship, and SFNT signature', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.materializeDocxPackageInventoryFromZipBytes(zipFixture([
+    { name: '[Content_Types].xml', body: fontContentTypesXml() },
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/_rels/fontTable.xml.rels', body: fontRelationshipsXml() },
+    { name: 'word/fonts/font1.ttf', body: TTF_BYTES },
+  ]));
+
+  assertSuccessShape(result);
+  const fontEntry = result.inventory.entries.find((entry) => entry.id === 'word/fonts/font1.ttf');
+  assert.equal(fontEntry.kind, 'knownPart');
+  assert.deepEqual(fontEntry.markers, ['fontPart']);
+  assert.equal(result.inspection.diagnostics.some((item) => (
+    item.code === 'DOCX_UNKNOWN_PART_PRESENT'
+    && item.entryId === 'word/fonts/font1.ttf'
+  )), false);
 });
 
 test('RB-06 rejects invalid input types and preserves RB-05 direct binary rejection', async () => {
@@ -409,6 +447,10 @@ test('RB-06 implementation section has only allowed binary materializer tokens',
   const sectionStart = text.indexOf('RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_START');
   const sectionEnd = text.indexOf('RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END');
   const section = text.slice(sectionStart, sectionEnd);
+  // Reserved XML namespace identifiers are inert data, not network clients.
+  const executableSection = section
+    .replaceAll("'http://www.w3.org/2000/xmlns/'", "''")
+    .replaceAll("'http://www.w3.org/XML/1998/namespace'", "''");
   const forbiddenPatterns = [
     /\bfs\b/u,
     /\breadFile\b/u,
@@ -441,7 +483,7 @@ test('RB-06 implementation section has only allowed binary materializer tokens',
   assert.notEqual(sectionStart, -1);
   assert.notEqual(sectionEnd, -1);
   for (const pattern of forbiddenPatterns) {
-    assert.equal(pattern.test(section), false, `forbidden RB-06 pattern: ${pattern.source}`);
+    assert.equal(pattern.test(executableSection), false, `forbidden RB-06 pattern: ${pattern.source}`);
   }
   assert.equal(/\bBuffer\b/u.test(section), true);
   assert.equal(/\bUint8Array\b/u.test(section), true);

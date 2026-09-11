@@ -20,6 +20,8 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V34,
   HISTORICAL_INVENTORY_CLAIM_PINS_V36,
   HISTORICAL_INVENTORY_CLAIM_PINS_V38,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V39,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V40,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -564,6 +566,56 @@ test('RCV00B current-head inventory refresh retains RCV00A current-head evidence
     encoding: null,
   });
   const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
+test('PR1888 inventory refresh retains RCV00B current-head effective-state evidence as historical bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V39.find(
+    (item) => item.stampId === 'ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER'
+      && item.evaluationSha === '9fc69f8980a4266ab43a0c4609802d9c6264f7aa',
+  );
+  assert.ok(pin);
+  assert.equal(pin.targetSha256, 'c9c0ace2f022e949ead320162a8d900e8a9658e0313fdd636fcb27ab95da8498');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  assert.equal(stamp.headSha, 'e9aa4e3f5b75ea574d72baec4ac7e4ae20ce5c36');
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
+test('PR1892 merge-forward retains refreshed RCV00B current-head effective-state evidence as historical bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V40.find(
+    (item) => item.stampId === 'ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER'
+      && item.evaluationSha === 'f6bb2126c19abb04e180c8abb6d206cc39b8a2a2',
+  );
+  assert.ok(pin);
+  assert.equal(pin.targetSha256, '1e8a04abd411da50e852a60ddf47cf410b0c4f1fc49d8a78c104e5616fe42877');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  assert.equal(stamp.headSha, 'e9aa4e3f5b75ea574d72baec4ac7e4ae20ce5c36');
   const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
   const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
   assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');

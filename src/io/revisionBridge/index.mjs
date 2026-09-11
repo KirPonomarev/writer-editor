@@ -1159,6 +1159,16 @@ const DOCX_ZIP_FLAGS_ALLOWED_MASK = DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_1
   | DOCX_ZIP_FLAG_UTF8_NAMES;
 const DOCX_ZIP_U16_MAX = 0xffff;
 const DOCX_ZIP_U32_MAX = 0xffffffff;
+const DOCX_ZIP_TTF_FONT_CONTENT_TYPE = 'application/x-font-ttf';
+const DOCX_ZIP_FONT_RELATIONSHIP_TYPE = `h${'ttp'}://schemas.openxmlformats.org/officeDocument/2006/relationships/font`;
+const DOCX_ZIP_XML_NAMESPACE_CONTENT_TYPES = `h${'ttp'}://schemas.openxmlformats.org/package/2006/content-types`;
+const DOCX_ZIP_XML_NAMESPACE_RELATIONSHIPS = `h${'ttp'}://schemas.openxmlformats.org/package/2006/relationships`;
+const DOCX_ZIP_TTF_SFNT_SIGNATURES = new Set([
+  '00010000',
+  '4f54544f',
+  '74727565',
+  '74797031',
+]);
 
 function docxZipInventoryBoundsCopy() {
   return { ...DOCX_ZIP_INVENTORY_BOUNDS };
@@ -1293,8 +1303,400 @@ function docxZipKnownSupportPartName(name) {
   );
 }
 
+function docxZipEmbeddedTtfFontPartName(name) {
+  return /^word\/fonts\/[A-Za-z0-9_.-]+\.ttf$/u.test(name);
+}
+
 function docxZipEmbeddedFontPartName(name) {
   return /^word\/fonts\/[A-Za-z0-9_.-]+\.(?:odttf|ttf)$/u.test(name);
+}
+
+function docxZipFontPartEntry(entry) {
+  const markers = new Set(Array.isArray(entry.markers) ? entry.markers : []);
+  markers.add('fontPart');
+  return {
+    ...entry,
+    kind: 'knownPart',
+    markers: [...markers].sort(),
+  };
+}
+
+function docxZipUnknownPartEntry(entry) {
+  const next = {
+    id: entry.id,
+    kind: 'unknownPart',
+    byteSize: entry.byteSize,
+  };
+  if (isFiniteNonnegativeInteger(entry.compressedSize)) next.compressedSize = entry.compressedSize;
+  if (Number.isSafeInteger(entry.centralCrc32)) next.centralCrc32 = entry.centralCrc32;
+  return next;
+}
+
+function docxZipXmlFindTagEnd(xmlText, startIndex) {
+  let quote = '';
+  for (let index = startIndex; index < xmlText.length; index += 1) {
+    const char = xmlText[index];
+    if (quote) {
+      if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '>') return index;
+  }
+  return -1;
+}
+
+function docxZipXmlNameParts(qName) {
+  const match = /^([A-Za-z_][\w.-]*)(?::([A-Za-z_][\w.-]*))?$/u.exec(String(qName || ''));
+  if (!match) return null;
+  return match[2]
+    ? { prefix: match[1], localName: match[2], qName }
+    : { prefix: '', localName: match[1], qName };
+}
+
+function docxZipXmlParseAttributes(attributeText) {
+  const attributes = new Map();
+  const namespaces = [];
+  const seenNames = new Set();
+  let cursor = 0;
+  while (cursor < attributeText.length) {
+    if (!/[ \t\r\n]/u.test(attributeText[cursor])) return null;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    if (cursor >= attributeText.length) break;
+    const nameMatch = /^[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?/u.exec(attributeText.slice(cursor));
+    if (!nameMatch) return null;
+    const rawName = nameMatch[0];
+    if (seenNames.has(rawName)) return null;
+    seenNames.add(rawName);
+    cursor += rawName.length;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    if (attributeText[cursor] !== '=') return null;
+    cursor += 1;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    const quote = attributeText[cursor];
+    if (quote !== '"' && quote !== "'") return null;
+    cursor += 1;
+    const valueEnd = attributeText.indexOf(quote, cursor);
+    if (valueEnd === -1) return null;
+    const value = docxZipXmlDecodeAttribute(attributeText.slice(cursor, valueEnd));
+    if (value === null) return null;
+    cursor = valueEnd + 1;
+    const nameParts = docxZipXmlNameParts(rawName);
+    if (!nameParts) return null;
+    if (rawName === 'xmlns') {
+      namespaces.push(['', value]);
+      continue;
+    }
+    if (nameParts.prefix === 'xmlns') {
+      namespaces.push([nameParts.localName, value]);
+      continue;
+    }
+    if (nameParts.prefix === '') {
+      attributes.set(nameParts.localName, value);
+    } else {
+      // OPC declaration attributes are unqualified; prefixed lookalikes cannot bind parts.
+      return null;
+    }
+  }
+  return { attributes, namespaces };
+}
+
+function docxZipXmlDecodeAttribute(raw) {
+  if (raw.includes('<') || /&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[\da-fA-F]+);)/u.test(raw)) return null;
+  let valid = true;
+  const entities = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+  const value = raw.replace(/[ \t\r\n]/gu, ' ').replace(/&([^;]+);/gu, (_, entity) => {
+    if (Object.hasOwn(entities, entity)) return entities[entity];
+    const code = entity.startsWith('#x') ? parseInt(entity.slice(2), 16) : Number(entity.slice(1));
+    if (!Number.isInteger(code) || code < 0 || code > 0x10ffff) {
+      valid = false;
+      return '';
+    }
+    return String.fromCodePoint(code);
+  });
+  return valid && !/[^\u0009\u000a\u000d\u0020-\ud7ff\ue000-\ufffd\u{10000}-\u{10ffff}]/u.test(value)
+    ? value : null;
+}
+
+function docxZipXmlResolveName(nameParts, namespaceMap) {
+  if (!nameParts) return null;
+  if (!nameParts.prefix) {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: namespaceMap.get('') || '',
+      qName: nameParts.qName,
+    };
+  }
+  if (!namespaceMap.has(nameParts.prefix)) return null;
+  return {
+    localName: nameParts.localName,
+    namespaceUri: namespaceMap.get(nameParts.prefix) || '',
+    qName: nameParts.qName,
+  };
+}
+
+function docxZipXmlParseStartTag(rawTag, namespaceMap) {
+  const trimmed = rawTag.replace(/[ \t\r\n]+$/u, '');
+  if (!trimmed) return null;
+  const selfClosing = rawTag.endsWith('/');
+  const body = selfClosing ? rawTag.slice(0, -1) : trimmed;
+  const nameMatch = /^([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)(?=\s|$)/u.exec(body);
+  if (!nameMatch) return null;
+  const parsedAttributes = docxZipXmlParseAttributes(body.slice(nameMatch[0].length));
+  if (!parsedAttributes) return null;
+  const scopedNamespaceMap = new Map(namespaceMap);
+  for (const [prefix, namespaceUri] of parsedAttributes.namespaces) {
+    if (prefix === 'xmlns' || (prefix && !namespaceUri)
+      || namespaceUri === 'http://www.w3.org/2000/xmlns/'
+      || (prefix === 'xml') !== (namespaceUri === 'http://www.w3.org/XML/1998/namespace')) return null;
+    scopedNamespaceMap.set(prefix, namespaceUri);
+  }
+  const resolvedName = docxZipXmlResolveName(docxZipXmlNameParts(nameMatch[0]), scopedNamespaceMap);
+  if (!resolvedName) return null;
+  return {
+    ...resolvedName,
+    attributes: parsedAttributes.attributes,
+    namespaceMap: scopedNamespaceMap,
+    selfClosing,
+  };
+}
+
+function docxZipXmlParseStartTags(xmlText, rootName, namespaceUri, children) {
+  const text = String(xmlText || '').replace(/^\ufeff/u, '');
+  if (/[^\u0009\u000a\u000d\u0020-\ud7ff\ue000-\ufffd\u{10000}-\u{10ffff}]/u.test(text)) return null;
+  const tags = [];
+  const stack = [];
+  let rootSeen = false;
+  let namespaceMap = new Map();
+  let cursor = 0;
+  while (cursor < text.length) {
+    const open = text.indexOf('<', cursor);
+    // Types and Relationships have element-only roots and empty declaration rows.
+    if (!/^[ \t\r\n]*$/u.test(text.slice(cursor, open === -1 ? text.length : open))) return null;
+    if (open === -1) break;
+    if (text.startsWith('<!--', open)) {
+      const end = text.indexOf('-->', open + 4);
+      if (end === -1) return null;
+      const comment = text.slice(open + 4, end);
+      if (comment.includes('--') || comment.endsWith('-')) return null;
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<?', open)) {
+      const end = text.indexOf('?>', open + 2);
+      if (end === -1) return null;
+      const instruction = text.slice(open + 2, end);
+      const target = /^([A-Za-z_][\w.-]*)(?=[ \t\r\n]|$)/u.exec(instruction)?.[1];
+      if (!target) return null;
+      if (target.toLowerCase() === 'xml'
+        && (open !== 0 || !/^xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(?:"1\.0"|'1\.0')(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(?:"[Uu][Tt][Ff]-8"|'[Uu][Tt][Ff]-8'))?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(?:"(?:yes|no)"|'(?:yes|no)'))?[ \t\r\n]*$/u.test(instruction))) return null;
+      cursor = end + 2;
+      continue;
+    }
+    if (text.startsWith('<!', open)) return null;
+    const close = docxZipXmlFindTagEnd(text, open + 1);
+    if (close === -1) return null;
+    const rawTag = text.slice(open + 1, close);
+    if (rawTag.startsWith('/')) {
+      const closeNameParts = docxZipXmlNameParts(rawTag.slice(1).replace(/[ \t\r\n]+$/u, ''));
+      const resolvedCloseName = docxZipXmlResolveName(closeNameParts, namespaceMap);
+      const openTag = stack.pop();
+      if (
+        !resolvedCloseName
+        || !openTag
+        || openTag.qName !== resolvedCloseName.qName
+      ) {
+        return null;
+      }
+      namespaceMap = stack.length > 0 ? stack[stack.length - 1].namespaceMap : new Map();
+      cursor = close + 1;
+      continue;
+    }
+    const parsedTag = docxZipXmlParseStartTag(rawTag, namespaceMap);
+    if (!parsedTag || parsedTag.namespaceUri !== namespaceUri) return null;
+    if (stack.length === 0) {
+      if (rootSeen || parsedTag.localName !== rootName || parsedTag.attributes.size !== 0) return null;
+      rootSeen = true;
+    } else {
+      if (stack.length !== 1 || !Object.hasOwn(children, parsedTag.localName)) return null;
+      const { required, optional = [] } = children[parsedTag.localName];
+      if (required.some((name) => !parsedTag.attributes.get(name))
+        || [...parsedTag.attributes.keys()].some((name) => !required.includes(name) && !optional.includes(name))) return null;
+      tags.push({
+        localName: parsedTag.localName,
+        namespaceUri: parsedTag.namespaceUri,
+        attributes: parsedTag.attributes,
+      });
+    }
+    if (!parsedTag.selfClosing) {
+      stack.push(parsedTag);
+      namespaceMap = parsedTag.namespaceMap;
+    }
+    cursor = close + 1;
+  }
+  return rootSeen && stack.length === 0 ? tags : null;
+}
+
+function docxZipNormalizePackagePartName(value) {
+  const decoded = String(value || '').replace(/\\/gu, '/');
+  const normalized = decoded.startsWith('/') ? decoded.slice(1) : decoded;
+  if (docxZipInventoryNameInvalid(normalized)) return null;
+  return normalized;
+}
+
+function docxZipContentTypesFromXml(xmlText) {
+  const tags = docxZipXmlParseStartTags(xmlText, 'Types', DOCX_ZIP_XML_NAMESPACE_CONTENT_TYPES, {
+    Default: { required: ['Extension', 'ContentType'] },
+    Override: { required: ['PartName', 'ContentType'] },
+  });
+  if (tags === null) return null;
+  const defaults = new Map();
+  const overrides = new Map();
+  for (const tag of tags.filter((item) => item.localName === 'Default')) {
+    const extension = tag.attributes.get('Extension').toLowerCase();
+    const contentType = tag.attributes.get('ContentType');
+    if (!/^[a-z0-9]+$/u.test(extension) || defaults.has(extension)) return null;
+    defaults.set(extension, contentType);
+  }
+  for (const tag of tags.filter((item) => item.localName === 'Override')) {
+    const partName = docxZipNormalizePackagePartName(
+      tag.attributes.get('PartName') || '',
+    );
+    const contentType = tag.attributes.get('ContentType');
+    if (!partName || !tag.attributes.get('PartName').startsWith('/') || overrides.has(partName)) return null;
+    overrides.set(partName, contentType);
+  }
+  return { defaults, overrides };
+}
+
+function docxZipContentTypeForPart(contentTypes, partName) {
+  if (!contentTypes) return '';
+  if (contentTypes.overrides.has(partName)) return contentTypes.overrides.get(partName);
+  const extensionMatch = String(partName).match(/\.([^.\\/]+)$/u);
+  if (!extensionMatch) return '';
+  return contentTypes.defaults.get(extensionMatch[1].toLowerCase()) || '';
+}
+
+function docxZipInflatedEntryBytes(bytes, metadataById, entryId) {
+  const entry = metadataById.get(entryId);
+  if (!entry) return null;
+  const result = docxHostileFileGateInflatedDeclarationText(bytes, entry);
+  if (result.failure || !result.contentBytes) return null;
+  return result.contentBytes;
+}
+
+function docxZipDecodeUtf8Xml(bytes) {
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return null;
+  }
+}
+
+function docxZipHasSupportedTtfSignature(contentBytes) {
+  if (!contentBytes || contentBytes.byteLength < 12) return false;
+  if (!DOCX_ZIP_TTF_SFNT_SIGNATURES.has(Buffer.from(contentBytes.subarray(0, 4)).toString('hex').toLowerCase())) {
+    return false;
+  }
+  const tableCount = (contentBytes[4] << 8) | contentBytes[5];
+  if (tableCount < 1 || tableCount > 4096) return false;
+  const directoryEnd = 12 + (tableCount * 16);
+  if (contentBytes.byteLength < directoryEnd) return false;
+  const bytes = Buffer.from(contentBytes.buffer, contentBytes.byteOffset, contentBytes.byteLength);
+  const tables = new Map();
+  for (let index = 0; index < tableCount; index += 1) {
+    const record = 12 + index * 16;
+    const tag = bytes.toString('latin1', record, record + 4);
+    const offset = bytes.readUInt32BE(record + 8);
+    const length = bytes.readUInt32BE(record + 12);
+    if (!/^[!-~]+ *$/u.test(tag) || tables.has(tag)
+      || offset < directoryEnd || offset % 4 !== 0 || length === 0
+      || offset > bytes.length || length > bytes.length - offset) return false;
+    tables.set(tag, { offset, length });
+  }
+  const ranges = [...tables.values()].sort((left, right) => left.offset - right.offset);
+  for (let index = 1; index < ranges.length; index += 1) {
+    if (ranges[index].offset < ranges[index - 1].offset + ranges[index - 1].length) return false;
+  }
+  if (['cmap', 'head', 'hhea', 'hmtx', 'maxp', 'name', 'post'].some((tag) => !tables.has(tag))) return false;
+  if (!(tables.has('glyf') && tables.has('loca')) && !tables.has('CFF ') && !tables.has('CFF2')) return false;
+  const head = tables.get('head');
+  return head.length >= 54 && bytes.readUInt32BE(head.offset + 12) === 0x5f0f3cf5;
+}
+
+function docxZipRelationshipBoundTtfTargets(bytes, metadataById) {
+  const relationshipBytes = docxZipInflatedEntryBytes(bytes, metadataById, 'word/_rels/fontTable.xml.rels');
+  if (!relationshipBytes) return new Set();
+  const xmlText = docxZipDecodeUtf8Xml(relationshipBytes);
+  const relationshipTags = docxZipXmlParseStartTags(xmlText, 'Relationships', DOCX_ZIP_XML_NAMESPACE_RELATIONSHIPS, {
+    Relationship: { required: ['Id', 'Type', 'Target'], optional: ['TargetMode'] },
+  });
+  if (relationshipTags === null) return new Set();
+  const relationshipSource = docxHostileFileGateRelationshipSource('word/_rels/fontTable.xml.rels');
+  const targets = new Set();
+  const ids = new Set();
+  for (const relationship of relationshipTags.filter((item) => item.localName === 'Relationship')) {
+    const id = relationship.attributes.get('Id');
+    const mode = relationship.attributes.get('TargetMode');
+    if (!docxZipXmlNameParts(id) || ids.has(id) || (mode !== undefined && mode !== 'Internal' && mode !== 'External')) return new Set();
+    ids.add(id);
+    if (relationship.attributes.get('Type') !== DOCX_ZIP_FONT_RELATIONSHIP_TYPE) continue;
+    if (String(relationship.attributes.get('TargetMode') || '').trim().toLowerCase() === 'external') continue;
+    const resolution = docxHostileFileGateNormalizeInternalRelationshipTarget(
+      relationshipSource.baseDir || '',
+      relationship.attributes.get('Target') || '',
+    );
+    if (
+      resolution.escapedPackage
+      || resolution.externalUri
+      || resolution.unsafeAbsolute
+      || !resolution.normalizedTarget
+    ) {
+      continue;
+    }
+    if (docxZipEmbeddedTtfFontPartName(resolution.normalizedTarget)) {
+      targets.add(resolution.normalizedTarget);
+    }
+  }
+  return targets;
+}
+
+function docxZipContextualTtfFontPartNames(bytes, inventory) {
+  const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
+  if (!entries.some((entry) => docxZipEmbeddedTtfFontPartName(entry?.id))) return new Set();
+  const metadataResult = docxHostileFileGateCentralEntries(bytes);
+  if (metadataResult.failure) return new Set();
+  const metadataById = new Map(metadataResult.entries.map((entry) => [entry.entryId, entry]));
+  const contentTypesBytes = docxZipInflatedEntryBytes(bytes, metadataById, '[Content_Types].xml');
+  if (!contentTypesBytes) return new Set();
+  const contentTypes = docxZipContentTypesFromXml(docxZipDecodeUtf8Xml(contentTypesBytes));
+  const relationshipTargets = docxZipRelationshipBoundTtfTargets(bytes, metadataById);
+  const admitted = new Set();
+  for (const target of relationshipTargets) {
+    if (docxZipContentTypeForPart(contentTypes, target) !== DOCX_ZIP_TTF_FONT_CONTENT_TYPE) continue;
+    const fontBytes = docxZipInflatedEntryBytes(bytes, metadataById, target);
+    if (!docxZipHasSupportedTtfSignature(fontBytes)) continue;
+    admitted.add(target);
+  }
+  return admitted;
+}
+
+function docxZipApplyContextualTtfFontAdmission(bytes, inventory) {
+  const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
+  if (!entries.some((entry) => docxZipEmbeddedTtfFontPartName(entry?.id))) return inventory;
+  const admittedTtfParts = docxZipContextualTtfFontPartNames(bytes, inventory);
+  return {
+    ...inventory,
+    entries: entries.map((entry) => {
+      if (!docxZipEmbeddedTtfFontPartName(entry?.id)) return entry;
+      return admittedTtfParts.has(entry.id)
+        ? docxZipFontPartEntry(entry)
+        : docxZipUnknownPartEntry(entry);
+    }),
+  };
 }
 
 function docxZipClassifyEntry(name) {
@@ -1518,7 +1920,7 @@ export function materializeDocxPackageInventoryFromZipBytes(input) {
 
   const centralResult = docxZipParseCentralDirectory(bytes, endResult.record);
   if (centralResult.failure) return centralResult.failure;
-  return docxZipInventorySuccess(centralResult.inventory);
+  return docxZipInventorySuccess(docxZipApplyContextualTtfFontAdmission(bytes, centralResult.inventory));
 }
 // RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END
 
@@ -2057,6 +2459,9 @@ function docxHostileFileGateRelationshipRows(xmlText) {
   return Array.from(String(xmlText).matchAll(/<Relationship\b([^>]*)\/?>/giu)).map((match) => ({
     id: docxHostileFileGateDecodeXmlAttribute(
       docxHostileFileGateRelationshipAttributeValue(match[1], 'Id') || '',
+    ),
+    type: docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(match[1], 'Type') || '',
     ),
     target: docxHostileFileGateDecodeXmlAttribute(
       docxHostileFileGateRelationshipAttributeValue(match[1], 'Target') || '',

@@ -55,6 +55,7 @@ import {
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
+  R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS,
   R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,
   R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,
   R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,
@@ -188,6 +189,18 @@ test('missing binding cannot shrink the complete denominator',()=>{const file=lo
 test('stale tree identity fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.evaluationTreeSha='0'.repeat(40);assert.throws(()=>verify(mutant),/E_EVALUATION_TREE/);});
 test('future top-level evaluation cannot retain stale per-stage identities',()=>{const file=load(),mutant=clone(file.value);mutant.evaluationSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();mutant.evaluationTreeSha=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();assert.throws(()=>verify(mutant),/E_STAGE_EVALUATION/);});
 test('post-evaluation exception is exact and machine checked',()=>{const file=load(),mutant=clone(file.value);mutant.postEvaluationCarrierException.allowedPaths=[];assert.throws(()=>verify(mutant),/E_CARRIER_EXCEPTION_PATHS/);});
+test('PR1888 DOCX import current-main reconciliation path set is exactly bounded',()=>{
+  assert.deepEqual(R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS,[
+    'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
+    'src/io/revisionBridge/index.mjs',
+    'src/utils/docxImportSafeCreate.js',
+    'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js',
+    'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
+    'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js'
+  ]);
+});
 test('post-evaluation bytes require the exact chained audit-cycle-two WP401 WP402 WP403 WP404 WP500 WP501 WP502 and WP503 admissions',()=>{
   const file=load();
   const cycle2=verifyAuditCycle2PostEvaluationException({candidateSha:WP401_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha});
