@@ -16,6 +16,8 @@ const ALLOWLIST = [
   'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
   'test/contracts/revision-bridge-docx-package-boundary.contract.test.js',
   'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
+  'scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs',
+  'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
   'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
   'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',

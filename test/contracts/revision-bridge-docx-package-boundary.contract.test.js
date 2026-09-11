@@ -25,6 +25,8 @@ const W5_STATUS_PATH = 'docs/OPS/RTK/W5_RELEASE_HARDENING_CERTIFICATION_STATUS.j
 const W5_VERIFIER_PATH = 'scripts/ops/rtk-w5-release-hardening-certification.mjs';
 const W5_TEST_PATH = 'test/contracts/rtk-w5-release-hardening-certification.contract.test.js';
 const WORD_EVIDENCE_TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
+const PRE00F_CURRENT_HEAD_TEST_PATH = 'scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs';
+const POST_AUDIT_CERTIFICATION_SET_TEST_PATH = 'test/contracts/r24-post-audit-certification-set.contract.test.mjs';
 const ALLOWLIST = [
   MODULE_PATH,
   TEST_PATH,
@@ -46,6 +48,8 @@ const ALLOWLIST = [
   W5_VERIFIER_PATH,
   W5_TEST_PATH,
   WORD_EVIDENCE_TEST_PATH,
+  PRE00F_CURRENT_HEAD_TEST_PATH,
+  POST_AUDIT_CERTIFICATION_SET_TEST_PATH,
 ];
 
 async function loadBridge() {
