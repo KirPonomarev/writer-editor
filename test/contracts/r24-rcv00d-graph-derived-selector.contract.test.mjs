@@ -223,5 +223,58 @@ test('RCV00D receipt validation independently rejects resealed mixed-head contex
   const receipt = buildRcv00dSelectorReceipt({ now: NOW });
   context.graphSelectionReceipt.identityRoles.evaluationHeadSha = '5'.repeat(40);
   receipt.inputDigests.graphSelectionReceipt = canonicalDigest(context.graphSelectionReceipt);
+  context.inputDigests.graphSelectionReceipt = receipt.inputDigests.graphSelectionReceipt;
   assert.throws(() => validateRcv00dSelectorReceipt(receipt, context), /E_RCV00D_EVALUATION_IDENTITY_BINDING/);
 });
+
+const serializedReceipt = () => JSON.parse(JSON.stringify(buildRcv00dSelectorReceipt({ now: NOW })));
+const unrelatedCandidateIndex = (receipt) => {
+  const index = receipt.candidates.findIndex((candidate) => candidate.id !== receipt.selected.id && candidate.id !== 'REL-01');
+  assert.ok(index >= 0);
+  return index;
+};
+const resealCandidates = (receipt) => {
+  const eligible = receipt.candidates.filter((candidate) => candidate.eligible);
+  receipt.candidateSetDigest = canonicalDigest(receipt.candidates);
+  receipt.eligibleCandidateSetDigest = canonicalDigest(eligible);
+  receipt.candidateCount = receipt.candidates.length;
+  receipt.eligibleCandidateCount = eligible.length;
+};
+
+test('RCV00D serialized current receipt validates without selected-candidate object aliasing', () => {
+  const receipt = serializedReceipt();
+  const candidate = receipt.candidates.find((entry) => entry.id === receipt.selected.id);
+  assert.notStrictEqual(receipt.selected, candidate);
+  assert.deepEqual(receipt.selected, candidate);
+  assert.equal(validateRcv00dSelectorReceipt(receipt, baseContext()).status, 'PASS');
+});
+
+const resealedMutations = [
+  ['eligible digest forged', (receipt) => { receipt.eligibleCandidateSetDigest = '0'.repeat(64); }],
+  ['candidate count forged', (receipt) => { receipt.candidateCount += 7; }],
+  ['eligible count forged', (receipt) => { receipt.eligibleCandidateCount += 7; }],
+  ['register summary forged', (receipt) => { receipt.registerSummary.findingCount += 7; }],
+  ['reasons erased', (receipt) => { receipt.reasons = []; }],
+  ['selection policy erased', (receipt) => { receipt.correctiveSelectionPolicy.deliveredContourIds = []; }],
+  ['selected source audit forged', (receipt) => { receipt.selected.sourceAuditId = 'FORGED_SOURCE_AUDIT'; }],
+  ['unrelated candidate removed and resealed', (receipt) => {
+    receipt.candidates.splice(unrelatedCandidateIndex(receipt), 1);
+    resealCandidates(receipt);
+  }],
+  ['unrelated candidate mutated and resealed', (receipt) => {
+    receipt.candidates[unrelatedCandidateIndex(receipt)].sourceAuditId = 'FORGED_CANDIDATE_SOURCE';
+    resealCandidates(receipt);
+  }],
+  ['candidate order reversed and resealed', (receipt) => {
+    receipt.candidates.reverse();
+    resealCandidates(receipt);
+  }],
+];
+
+for (const [name, mutate] of resealedMutations) {
+  test(`RCV00D current context rejects serialized receipt with ${name}`, () => {
+    const receipt = serializedReceipt();
+    mutate(receipt);
+    assert.throws(() => validateRcv00dSelectorReceipt(receipt, baseContext()), /E_RCV00D_CONTEXT_DERIVATION_BINDING/);
+  });
+}

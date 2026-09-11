@@ -341,10 +341,10 @@ export function buildRcv00dSelectorContext({
   };
 }
 
-export function buildRcv00dSelectorReceipt(options = {}) {
-  const context = buildRcv00dSelectorContext(options);
+function deriveRcv00dSelectorReceipt(context) {
   const selection = selectRcv00dCorrectiveCandidate(context);
-  const receipt = {
+  const registerValidation = validateCorrectiveRegister(context.register, { repoRoot: context.repoRoot });
+  return {
     schemaVersion: RCV00D_SCHEMA_VERSION,
     selectorId: RCV00D_SELECTOR_ID,
     contourId: RCV00D_CONTOUR_ID,
@@ -387,11 +387,11 @@ export function buildRcv00dSelectorReceipt(options = {}) {
     eligibleCandidateSetDigest: selection.eligibleCandidateSetDigest,
     candidates: selection.candidates,
     registerSummary: {
-      findingCount: context.registerValidation.findingCount,
-      currentObservationCount: context.registerValidation.currentObservationCount,
-      activeConfirmed: context.registerValidation.activeConfirmed,
-      activeConfirmedCurrentObservations: context.registerValidation.activeConfirmedCurrentObservations,
-      recordedGraphOpen: context.registerValidation.recordedGraphOpen,
+      findingCount: registerValidation.findingCount,
+      currentObservationCount: registerValidation.currentObservationCount,
+      activeConfirmed: registerValidation.activeConfirmed,
+      activeConfirmedCurrentObservations: registerValidation.activeConfirmedCurrentObservations,
+      recordedGraphOpen: registerValidation.recordedGraphOpen,
     },
     nonClaims: [...RCV00D_NON_CLAIMS],
     reasons: [
@@ -403,6 +403,11 @@ export function buildRcv00dSelectorReceipt(options = {}) {
       'NO_GRAPH_PROMOTION_FROM_CURRENT_OBSERVATION',
     ],
   };
+}
+
+export function buildRcv00dSelectorReceipt(options = {}) {
+  const context = buildRcv00dSelectorContext(options);
+  const receipt = deriveRcv00dSelectorReceipt(context);
   validateRcv00dSelectorReceipt(receipt, context);
   return receipt;
 }
@@ -463,7 +468,7 @@ export function validateRcv00dSelectorReceipt(receipt, context = null) {
     }
   }
   if (context) {
-    assertSelectorIdentity(context.effectiveStateProjection, context.graphSelectionReceipt, context.identity);
+    const expectedReceipt = deriveRcv00dSelectorReceipt(context);
     if (value.inputDigests?.correctiveRegister !== canonicalDigest(context.register)) throw new R24Error('E_RCV00D_REGISTER_DIGEST_BINDING');
     if (value.inputDigests?.effectiveStateProjection !== canonicalDigest(context.effectiveStateProjection)) throw new R24Error('E_RCV00D_EFFECTIVE_STATE_DIGEST_BINDING');
     if (value.inputDigests?.graphSelectionReceipt !== canonicalDigest(context.graphSelectionReceipt)) throw new R24Error('E_RCV00D_GRAPH_RECEIPT_DIGEST_BINDING');
@@ -479,6 +484,10 @@ export function validateRcv00dSelectorReceipt(receipt, context = null) {
       if (canonicalDigest(value.graphSchedulerCandidate[field]) !== canonicalDigest(context.graphSelectionReceipt[field])) {
         throw new R24Error('E_RCV00D_GRAPH_SNAPSHOT_BINDING', field);
       }
+    }
+    // A resealed receipt must still match the projection derived from trusted inputs.
+    if (canonicalDigest(value) !== canonicalDigest(expectedReceipt)) {
+      throw new R24Error('E_RCV00D_CONTEXT_DERIVATION_BINDING');
     }
   }
   return {
