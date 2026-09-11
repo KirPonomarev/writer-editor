@@ -28954,7 +28954,11 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
         ? payload.options
         : {},
     });
-    return normalizeUiBridgeMenuResult(response);
+    const normalizedResponse = normalizeUiBridgeMenuResult(response);
+    if (normalizedResponse.ok === true) {
+      return normalizedResponse;
+    }
+    return response;
   },
   'cmd.project.docx.previewContent': async (payload = {}) => {
     return handleDocxContentPreviewCommandSurface(payload);
