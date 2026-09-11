@@ -491,15 +491,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T18:47:11Z",
+      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
+      "authority": "YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
       ],
       "filePath": "scripts/ops/r24/executable-program.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "47613ef9c13c34d023b2fe45c8262f9877db5d626875c4a8eb549b9ddaca712b"
+      "rationale": "Rebind PK1R1 to exact current origin/main executable-program bytes observed during PR1888 merge-forward after PR1892; metadata-only registry correction, no executable code mutation, runtime dependency, network/cloud truth, product graph, release-publication, or full portability claim.",
+      "sha256": "ab9b17ec41e35966ad1190eb1da3df66d58b3d310196d2ee24fde60b620f9fe2"
     },
     {
       "approved": true,
@@ -1178,29 +1178,29 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:53:47Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:47:11Z",
+      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the exact PR1888 DOCX import delta as a checked post-evaluation path set, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "2e06bc95c255eead85c94ccb4857927088cbededb1deed4da12e425d0fe4120a",
+      "rationale": "Approve exact merged PR1888 plus PR1892 post-audit certification-set verifier bytes after current-main reconciliation; preserves bounded governance proof only, no runtime dependency, network/cloud truth, product graph, release-publication, or full portability claim.",
+      "sha256": "ee8020e0315e0f1333af1814fb84909cdd43e9f9003dcf9d3239f7ac2811591a",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
       ],
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+      "authority": "YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:53:47Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:47:11Z",
+      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the exact PR1888 DOCX import delta as a checked post-evaluation path set, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "73493dad6fcf9951d9d65bc4cc8d0c3664c70d589f5d2a60ed53b7f55e229547",
+      "rationale": "Approve exact merged PR1888 plus PR1892 post-audit certification-set contract test bytes after current-main reconciliation; preserves bounded governance proof only, no runtime dependency, network/cloud truth, product graph, release-publication, or full portability claim.",
+      "sha256": "1737aaa7395228fe9eefd0672659615ff120601fcd567cc83170020a1d7462f4",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
       ],
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+      "authority": "YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION"
     },
     {
       "approved": true,
