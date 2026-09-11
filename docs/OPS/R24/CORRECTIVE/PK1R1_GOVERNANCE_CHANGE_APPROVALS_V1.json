@@ -604,13 +604,13 @@
       "approved": true,
       "approvedAtUtc": "2026-09-10T19:53:20.526Z",
       "approvedBy": "owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
-      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
-      "sha256": "ce4a48315f2a23023626ffa52d10270e7122d64ebca7b7b96e32bf2656e27081",
       "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC"
-      ]
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
+      "sha256": "ce4a48315f2a23023626ffa52d10270e7122d64ebca7b7b96e32bf2656e27081"
     },
     {
       "approved": true,
@@ -624,13 +624,13 @@
       "approved": true,
       "approvedAtUtc": "2026-09-10T19:53:20.526Z",
       "approvedBy": "owner-directive:R24_INTEROP_P03_PK1R1_CURRENT_MAIN_APPROVAL_REBINDING_2026_09_10 | owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10",
-      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
-      "sha256": "c39b266a2c96becf1698a1f31c4f07ebee83abb4df21ab7329f024a69be4926a",
       "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC"
-      ]
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
+      "rationale": "Approve exact current-main bytes for the bounded P03 PK1R1 governance rebind after relationship-graph validation, inventory, and approval-registry delivery: admits only the already-reviewed governance/test carrier hashes needed for strict CI evaluation; no product runtime, parser behavior, UI, dependency, runtime network, release readiness, Google truth, broad portability, or PROGRAM_DONE claim.",
+      "sha256": "c39b266a2c96becf1698a1f31c4f07ebee83abb4df21ab7329f024a69be4926a"
     },
     {
       "approved": true,
@@ -858,8 +858,8 @@
         "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "41a5690d5eefaf3093b4be2d22c4e210eedac10a857c9765fe27a6b953765526",
-      "rationale": "Approve exact T04 content-preview contract bytes after current-main rebind: asserts preserved plain-text candidate output, exact loss items for line/page/column breaks and next-page/continuous section breaks, and lexical false-positive rejection. No UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Approve exact T04 content-preview contract bytes after current-main rebind: asserts preserved plain-text candidate output, exact loss items for line/page/column breaks and next-page/continuous section breaks, and lexical false-positive rejection. No UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "41a5690d5eefaf3093b4be2d22c4e210eedac10a857c9765fe27a6b953765526"
     },
     {
       "approved": true,
@@ -876,8 +876,8 @@
         "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "af1056257628248da6a01b0415ce265d5d63b8b9c6da4048cf180a82c54ae796",
-      "rationale": "Approve exact C1B inventory bytes after PR1878 current-main rebind: preserves W0 current-state closure inventory additions and T05/P03/RCV00H bindings while adding the T04 typed DOCX break and section-loss regression hash. Registry metadata only; no parser behavior beyond T04, UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Approve exact C1B inventory bytes after PR1878 current-main rebind: preserves W0 current-state closure inventory additions and T05/P03/RCV00H bindings while adding the T04 typed DOCX break and section-loss regression hash. Registry metadata only; no parser behavior beyond T04, UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "af1056257628248da6a01b0415ce265d5d63b8b9c6da4048cf180a82c54ae796"
     },
     {
       "approved": true,
@@ -889,8 +889,92 @@
         "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
       ],
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "f1615548e91c095e45269e79b373d45ce0b4e1765598dfeb9e428317759307bb",
-      "rationale": "Approve exact YALKEN_INTEROP_100 governance registry bytes after PR1878 current-main rebind: preserves W0/current-main approval truth and records T04 typed DOCX break explicit-loss approval hashes. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Approve exact YALKEN_INTEROP_100 governance registry bytes after PR1878 current-main rebind: preserves W0/current-main approval truth and records T04 typed DOCX break explicit-loss approval hashes. Registry metadata only; no UI, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "f1615548e91c095e45269e79b373d45ce0b4e1765598dfeb9e428317759307bb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "aa07cf1be72f2d2b8370e572d0c250cb7615a6bdad0d7791e6f12ab613cdce0a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "25d51c956cdec065ded266df965ff320651fda2088fe2ae1c655ed59e2dffd71"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "31869fb06f5c7fd02df02ca8fe409de6666aa1979df649505fabe0ce3df241c5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "d2c43a608f2efe7e810e64c40c4544baa71ee414971288426eaaa23c432260aa"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "81fb60ee01beccff4c1417ea809374272368f90316abcdab860f5b1ea8e12e57"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "0d287e0626494a99014eecb966462abed24347a57f5255ff1a8ff74808e4888d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 496efb3e after W0 and T04 closure; preserves immutable historical PRE00F plus later W0/T04 delivered history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
+      "sha256": "341e9245c4b3888c5e87241996cf1d9537ec5d076df073a90f80dbfc1a521100"
     }
   ],
   "evidenceStampIds": [
@@ -905,7 +989,8 @@
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
     "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+    "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
   ],
   "sourcePlanRoles": {
     "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
