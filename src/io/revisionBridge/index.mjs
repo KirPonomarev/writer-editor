@@ -6251,7 +6251,6 @@ const DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS = new Set([
   'w:drawing',
   'w:endnoteReference',
   'w:footnoteReference',
-  'w:hyperlink',
   'w:ins',
   'w:moveFrom',
   'w:moveTo',
@@ -6264,6 +6263,7 @@ const DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS = new Set([
 const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
   'w:bookmarkEnd',
   'w:bookmarkStart',
+  'w:hyperlink',
 ]);
 const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_TAGS = new Set([
   'w:numPr',

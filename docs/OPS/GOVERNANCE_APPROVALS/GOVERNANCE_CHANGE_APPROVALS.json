@@ -11795,17 +11795,18 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T23:06:40Z",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:22:21Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "89d836200bc907ff577fa786bb5a62dac94b18d045dd043bdf9e4ee1b64fdfcb",
+      "rationale": "Approve exact current T05 visible DOCX hyperlink label text repair after origin/main 312895d6: admits only zero-write generic DOCX content-preview/import-plan preservation of visible w:hyperlink child text while hyperlink targets, relationships, bookmarks, and malformed relationship graphs remain unsupported, explicit loss, or preflight-blocked; physical Word repeat3 evidence covers the valid label, split-run, anchor, Unicode, and plain-control subset. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "93c88b1b821fcf19f68592915ff15b7d2961a2dd93af055ca7505045fdf211d3",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
         "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN"
       ]
     },
     {
@@ -11864,30 +11865,33 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T23:06:40Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:22:21Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss governance registry rebind after origin/main 4aa9317c: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No list formatting import, product runtime widening, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "23048580fe99e4dda0f5fd0ba1ac6cb923bb4e0aa14b1f4dabe85f6032a575d8"
+      "rationale": "Approve exact current T05 visible DOCX hyperlink label text governance registry rebind after origin/main 312895d6: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "95b0dcc8fe5a70bbd1907408d68469bb11fd871d1d5afad35c60d819a7838264"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T23:06:40Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:22:21Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss governance registry rebind after origin/main 4aa9317c: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No list formatting import, product runtime widening, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "5acdd767c3bacecef10cdbb109cce52bc5119a515a7c54b59f217e24acabec87"
+      "rationale": "Approve exact current T05 visible DOCX hyperlink label text governance registry rebind after origin/main 312895d6: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "37c7297ae7a93a73606a0b2b2ac2e54a35a472348a8bf45dc65406fc140435a9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T23:06:40Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:22:21Z",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "4820e690303e4da4c6dd031ebcc5463a966d81fe775e5cdafdf17c9b6d1027e5"
+      "rationale": "Approve exact current T05 visible DOCX hyperlink label text repair after origin/main 312895d6: admits only zero-write generic DOCX content-preview/import-plan preservation of visible w:hyperlink child text while hyperlink targets, relationships, bookmarks, and malformed relationship graphs remain unsupported, explicit loss, or preflight-blocked; physical Word repeat3 evidence covers the valid label, split-run, anchor, Unicode, and plain-control subset. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "ffeac334678b1899f1264adcfa4d3f04a8107bb7957d211537ce0637469023d2",
+      "evidenceStampIds": [
+        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN"
+      ]
     }
   ],
   "evidenceStampIds": [
