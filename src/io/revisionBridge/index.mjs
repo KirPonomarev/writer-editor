@@ -7450,6 +7450,9 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
   }
+  if (Number.isInteger(metadata.zeroLengthBookmarkCount) && metadata.zeroLengthBookmarkCount > 0) {
+    paragraph.zeroLengthBookmarkCount = metadata.zeroLengthBookmarkCount;
+  }
   return paragraph;
 }
 
@@ -7633,7 +7636,10 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         paragraphText = '';
         activeParagraphIndex = paragraphs.length;
         activeListNumbering = null;
-        activeParagraphMetadata = {};
+        activeParagraphMetadata = {
+          bookmarkStartIds: new Set(),
+          zeroLengthBookmarkCount: 0,
+        };
       }
       if (selfClosing) {
         const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
@@ -7672,6 +7678,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       activeListNumbering = null;
     } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:pStyle') {
       activeParagraphMetadata.paragraphStyleId = docxContentPreviewAttributeValue(token, 'val').trim();
+    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkStart') {
+      const bookmarkId = docxContentPreviewAttributeValue(token, 'id').trim();
+      if (bookmarkId) activeParagraphMetadata.bookmarkStartIds.add(bookmarkId);
+    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkEnd') {
+      const bookmarkId = docxContentPreviewAttributeValue(token, 'id').trim();
+      if (bookmarkId && activeParagraphMetadata.bookmarkStartIds.has(bookmarkId) && paragraphText.length === 0) {
+        activeParagraphMetadata.zeroLengthBookmarkCount += 1;
+      }
     } else if (insideParagraph && tagName === 'w:t') {
       if (closing) {
         textDepth = Math.max(0, textDepth - 1);
@@ -8303,8 +8317,13 @@ function docxImportPreviewParagraphSectionBreakType(paragraph) {
   return typeof paragraph?.sectionBreakType === 'string' ? paragraph.sectionBreakType.trim() : '';
 }
 
+function docxImportPreviewParagraphZeroLengthBookmarkCount(paragraph) {
+  return Number.isInteger(paragraph?.zeroLengthBookmarkCount) ? paragraph.zeroLengthBookmarkCount : 0;
+}
+
 function docxImportPreviewIsGoogleDocsTabHeader(paragraph, index) {
   return docxImportPreviewParagraphStyleId(paragraph) === 'Title'
+    && docxImportPreviewParagraphZeroLengthBookmarkCount(paragraph) > 0
     && (index === 0 || docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage')
     && typeof paragraph.text === 'string'
     && paragraph.text.trim() !== '';

@@ -436,13 +436,13 @@ test('DOCX import preview plan: bookmark identity and custom metadata diagnostic
 test('DOCX import preview plan: Google Docs tab labels and separators are not manuscript content', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
-    { text: 'Tab 1', paragraphStyleId: 'Title' },
+    { text: 'Tab 1', paragraphStyleId: 'Title', zeroLengthBookmarkCount: 1 },
     { text: 'G01_TOP_A sentinel α 👩‍💻 linkA' },
     { text: '', sectionBreakType: 'nextPage' },
-    { text: 'G01 top two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'G01 top two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage', zeroLengthBookmarkCount: 1 },
     { text: 'G01_TOP_B sentinel β café linkB' },
     { text: '', sectionBreakType: 'nextPage' },
-    { text: 'G01 child of top two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'G01 child of top two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage', zeroLengthBookmarkCount: 1 },
     { text: 'G01_CHILD_B1 sentinel γ שלום linkC' },
     { text: '' },
   ], {
@@ -495,6 +495,14 @@ test('DOCX import preview plan: ordinary title sections do not trigger Google Do
     { text: 'Chapter Two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
     { text: 'Bravo body' },
   ]));
+  const sameTopologyWithoutBookmarks = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    { text: 'Chapter One', paragraphStyleId: 'Title' },
+    { text: 'Alpha body' },
+    { text: '', sectionBreakType: 'nextPage' },
+    { text: 'Chapter Two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'Bravo body' },
+    { text: '' },
+  ]));
 
   assertDocxImportPreviewShell(singleTitle);
   assert.equal(singleTitle.candidateCreatePlan.sceneStrategy, 'single-scene');
@@ -505,6 +513,11 @@ test('DOCX import preview plan: ordinary title sections do not trigger Google Do
   assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.sceneStrategy, 'single-scene');
   assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\n\nChapter Two\n\nBravo body');
   assert.equal(repeatedTitleWithoutSeparators.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
+
+  assertDocxImportPreviewShell(sameTopologyWithoutBookmarks);
+  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.sceneStrategy, 'single-scene');
+  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\n\n\n\nChapter Two\n\nBravo body\n\n');
+  assert.equal(sameTopologyWithoutBookmarks.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 });
 
 test('DOCX import preview plan: empty content stays preview-only and explicit', async () => {
