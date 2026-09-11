@@ -32,6 +32,7 @@ function currentHeadFixture({changedPaths,baseTree,currentTree,statusBytes,evide
     [e.statusPath,statusBytes??boundBytes(e.statusPath)],
     [e.evidencePath,evidenceBytes??boundBytes(e.evidencePath)],
     [e.approvalsPath,boundBytes(e.approvalsPath)],
+    [e.defaultApprovalsPath,boundBytes(e.defaultApprovalsPath)],
     [e.verifierPath,boundBytes(e.verifierPath)],
     [e.contractTestPath,boundBytes(e.contractTestPath)],
     [e.postAuditVerifierPath,boundBytes(e.postAuditVerifierPath)],
@@ -85,6 +86,11 @@ test('PRE00F current-head plan delivery reconciliation rejects a missing histori
   assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_HISTORICAL_DELIVERY_NOT_ANCESTOR/);
 });
 
+test('PRE00F current-head plan delivery reconciliation rejects a missing current base ancestor',()=>{
+  const fixture=currentHeadFixture({baseAncestor:false});
+  assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_BASE_NOT_ANCESTOR/);
+});
+
 test('PRE00F current-head plan delivery reconciliation rejects an unadmitted current path',()=>{
   const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,fixture=currentHeadFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
   assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_EXACT_ADMITTED_DELTA/);
@@ -102,6 +108,21 @@ test('PRE00F current-head plan delivery reconciliation rejects a stale evidence 
   evidence.headSha='0'.repeat(40);
   const fixture=currentHeadFixture({evidenceBytes:canonicalBytes(evidence)});
   assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_EVIDENCE_HEAD_BINDING/);
+});
+
+test('PRE00F current-head plan delivery reconciliation rejects a missing strict default approval',()=>{
+  const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,defaultApprovals=JSON.parse(objectFromCommit(resolveFixtureCandidateSha(),e.defaultApprovalsPath).toString('utf8'));
+  defaultApprovals.approvals=defaultApprovals.approvals.filter((entry)=>entry.filePath!==e.verifierPath);
+  const fixture=currentHeadFixture();
+  const originalGit=fixture.git;
+  const git=(args,options={})=>{
+    if(args[0]==='show'&&String(args[1])===`${fixture.candidateSha}:${e.defaultApprovalsPath}`){
+      const bytes=canonicalBytes(defaultApprovals);
+      return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+    }
+    return originalGit(args,options);
+  };
+  assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git}),/E_PRE00F_CURRENT_DEFAULT_APPROVAL_DIGEST/);
 });
 
 test('RCV00B successor verifier accepts exact current head and reports later contours separately',()=>{
