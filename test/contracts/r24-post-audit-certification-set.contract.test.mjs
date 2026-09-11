@@ -53,6 +53,7 @@ import {
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
   R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,
   R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,
+  R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,
   createAuditCycle2DurableCarrier,
   createAuditCycleDurableCarrier,
   resolvePre00eRecoveryCiExternalConfirmationCandidateSha,
@@ -100,6 +101,7 @@ import {
   verifyR24P03RelationshipGraphValidationPostEvaluationException,
   verifyR24Ops03SemanticE0ClassifierPostEvaluationException,
   verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException,
+  verifyR24W0CurrentStateClosurePostEvaluationException,
   verifyWp702CiMergeRefTestBindingPostEvaluationException,
   verifyWp702Pk0SecuritySuccessorPostEvaluationException,
   verifyWp702Wp504HistoricalSurfacePostEvaluationException,
@@ -1368,21 +1370,22 @@ test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=
 });
 function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,approvalsBytes,packageLockBytes,planStateBytes,planStateTestBytes,postAuditVerifierBytes,postAuditTestBytes,rtkG0bBytes,rtkW1Bytes,rtkW2Bytes,rtkZip01Bytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorAncestryShas,successorTree='3'.repeat(40)}={}){
   const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION;
+  const deliveryObjectSha='7ea8f61dc45bdb3105f15be73d1c14424e20c4ca';
   const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.packageLockPath,packageLockBytes??fs.readFileSync(e.packageLockPath)],
-    [e.planStatePath,planStateBytes??fs.readFileSync(e.planStatePath)],
-    [e.planStateTestPath,planStateTestBytes??fs.readFileSync(e.planStateTestPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.rtkG0bPath,rtkG0bBytes??fs.readFileSync(e.rtkG0bPath)],
-    [e.rtkW1Path,rtkW1Bytes??fs.readFileSync(e.rtkW1Path)],
-    [e.rtkW2Path,rtkW2Bytes??fs.readFileSync(e.rtkW2Path)],
-    [e.rtkZip01Path,rtkZip01Bytes??fs.readFileSync(e.rtkZip01Path)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliveryObjectSha,e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(deliveryObjectSha,e.approvalsPath)],
+    [e.packageLockPath,packageLockBytes??objectFromCommit(deliveryObjectSha,e.packageLockPath)],
+    [e.planStatePath,planStateBytes??objectFromCommit(deliveryObjectSha,e.planStatePath)],
+    [e.planStateTestPath,planStateTestBytes??objectFromCommit(deliveryObjectSha,e.planStateTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliveryObjectSha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliveryObjectSha,e.postAuditTestPath)],
+    [e.rtkG0bPath,rtkG0bBytes??objectFromCommit(deliveryObjectSha,e.rtkG0bPath)],
+    [e.rtkW1Path,rtkW1Bytes??objectFromCommit(deliveryObjectSha,e.rtkW1Path)],
+    [e.rtkW2Path,rtkW2Bytes??objectFromCommit(deliveryObjectSha,e.rtkW2Path)],
+    [e.rtkZip01Path,rtkZip01Bytes??objectFromCommit(deliveryObjectSha,e.rtkZip01Path)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
@@ -1448,17 +1451,18 @@ test('R24 RCV00F delivery reconciliation exception rejects fake typed verificati
 });
 function p03RelationshipGraphValidationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,postAuditVerifierBytes,postAuditTestBytes,generic01TestBytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorTree='3'.repeat(40)}={}){
   const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION;
+  const deliveryObjectSha='bfa2f6c69374ae57d5be9ee0685c2110e1416095';
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.defaultApprovalsPath,defaultApprovalsBytes??fs.readFileSync(e.defaultApprovalsPath)],
-    [e.pk1r1ApprovalsPath,pk1r1ApprovalsBytes??fs.readFileSync(e.pk1r1ApprovalsPath)],
-    [e.interopApprovalsPath,interopApprovalsBytes??fs.readFileSync(e.interopApprovalsPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.generic01TestPath,generic01TestBytes??fs.readFileSync(e.generic01TestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliveryObjectSha,e.inventoryPath)],
+    [e.defaultApprovalsPath,defaultApprovalsBytes??objectFromCommit(deliveryObjectSha,e.defaultApprovalsPath)],
+    [e.pk1r1ApprovalsPath,pk1r1ApprovalsBytes??objectFromCommit(deliveryObjectSha,e.pk1r1ApprovalsPath)],
+    [e.interopApprovalsPath,interopApprovalsBytes??objectFromCommit(deliveryObjectSha,e.interopApprovalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliveryObjectSha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliveryObjectSha,e.postAuditTestPath)],
+    [e.generic01TestPath,generic01TestBytes??objectFromCommit(deliveryObjectSha,e.generic01TestPath)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
@@ -1507,7 +1511,7 @@ test('R24 P03 relationship graph validation exception rejects an unadmitted futu
   assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_CANDIDATE_NOT_FOUND|E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA/);
 });
 test('R24 P03 relationship graph validation exception rejects stale Generic01 inventory digest',()=>{
-  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,inventory=JSON.parse(objectFromCommit('bfa2f6c69374ae57d5be9ee0685c2110e1416095',e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.generic01TestPath).sha256='0'.repeat(64);
   const fixture=p03RelationshipGraphValidationGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_INVENTORY_DIGEST/);
@@ -1578,25 +1582,26 @@ test('R24 OPS03 semantic E0 classifier exception rejects a weakened scanner toke
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_SCANNER_TOKEN/);
 });
 test('R24 OPS03 semantic E0 classifier exception rejects stale inventory binding',()=>{
-  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,inventory=JSON.parse(objectFromCommit('872459208f6d8c7df8e9de1178a6c66a84f308cf',e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
   const fixture=ops03SemanticE0ClassifierGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_INVENTORY_DIGEST/);
 });
 function rcv00hMinimalE0ParserPurityGitFixture({changedPaths,successorChangedPaths,scannerBytes,scannerTestBytes,inventoryBytes,registerBytes,approvalsBytes,claimBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40),successorSha,successorTree='b'.repeat(40)}={}){
   const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION;
+  const historicalSha='def4754a189c8434014f08e9d4339b5a887ca7b5';
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
-    [e.scannerPath,scannerBytes??fs.readFileSync(e.scannerPath)],
-    [e.scannerTestPath,scannerTestBytes??fs.readFileSync(e.scannerTestPath)],
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.registerPath,registerBytes??fs.readFileSync(e.registerPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.claimBindingPath,claimBytes??fs.readFileSync(e.claimBindingPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.scannerPath,scannerBytes??objectFromCommit(historicalSha,e.scannerPath)],
+    [e.scannerTestPath,scannerTestBytes??objectFromCommit(historicalSha,e.scannerTestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(historicalSha,e.inventoryPath)],
+    [e.registerPath,registerBytes??objectFromCommit(historicalSha,e.registerPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(historicalSha,e.approvalsPath)],
+    [e.claimBindingPath,claimBytes??objectFromCommit(historicalSha,e.claimBindingPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(historicalSha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(historicalSha,e.postAuditTestPath)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
@@ -1665,7 +1670,7 @@ test('R24 RCV00H minimal E0 parser purity exception rejects hidden historical re
   assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_HISTORICAL_REGISTER_BINDING/);
 });
 test('R24 RCV00H minimal E0 parser purity exception rejects stale inventory digest',()=>{
-  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION,inventory=JSON.parse(objectFromCommit('def4754a189c8434014f08e9d4339b5a887ca7b5',e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
   const fixture=rcv00hMinimalE0ParserPurityGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_INVENTORY_DIGEST/);
@@ -1675,6 +1680,89 @@ test('R24 RCV00H minimal E0 parser purity exception rejects weakened local proof
   claim.localProofs.e0Lane.mutants.killed=39;
   const fixture=rcv00hMinimalE0ParserPurityGitFixture({claimBytes:canonicalBytes(claim)});
   assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_LOCAL_PROOF_SHAPE/);
+});
+function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,overlayBytes,claimBytes,inventoryBytes,approvalsBytes,pk1r1ApprovalsBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='d'.repeat(40),candidateTree='e'.repeat(40),successorSha,successorTree='f'.repeat(40)}={}){
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION;
+  const successorChain=successorSha?[successorSha]:[];
+  const successorSet=new Set(successorChain);
+  const requestedSha=successorChain.at(-1)??candidateSha;
+  const currentBytes=(repoPath)=>{
+    if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
+    if(repoPath===e.overlayPath&&overlayBytes)return Buffer.from(overlayBytes);
+    if(repoPath===e.claimBindingPath&&claimBytes)return Buffer.from(claimBytes);
+    if(repoPath===e.inventoryPath&&inventoryBytes)return Buffer.from(inventoryBytes);
+    if(repoPath===e.approvalsPath&&approvalsBytes)return Buffer.from(approvalsBytes);
+    if(repoPath===e.pk1r1ApprovalsPath&&pk1r1ApprovalsBytes)return Buffer.from(pk1r1ApprovalsBytes);
+    return fs.readFileSync(repoPath);
+  };
+  const bytesByPath=new Map(e.admittedPaths.concat([e.receiptPath]).map((repoPath)=>[repoPath,currentBytes(repoPath)]));
+  return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===requestedSha)value=requestedSha;
+    else if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.immutableCandidateHeadSha}^{tree}`)value=e.immutableCandidateTreeSha;
+    else if(args[0]==='rev-parse'&&successorSet.has(String(args[1]).replace(/\^\{tree\}$/u,'')))value=successorTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff'){
+      const range=String(args.at(-1)),endSha=range.slice(range.indexOf('..')+2);
+      const paths=successorSet.has(endSha)?(successorChangedPaths??changedPaths??e.admittedPaths):(changedPaths??e.admittedPaths);
+      value=paths.join('\n')+'\n';
+    }
+    else if(args[0]==='rev-list')value=successorChain.length?[candidateSha,...successorChain].join('\n'):candidateSha;
+    else if(args[0]==='show'){
+      const objectSpec=String(args[1]),repoPath=objectSpec.slice(objectSpec.indexOf(':')+1);
+      if(objectSpec.startsWith(`${e.immutableCandidateHeadSha}:`))return execFileSync('git',args,options);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 W0 current-state closure exception accepts the bounded overlay proof',()=>{
+  const fixture=w0CurrentStateClosureGitFixture(),result=verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.immutableCandidateHeadSha,R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.immutableCandidateHeadSha);
+  assert.equal(result.admittedPathDenominator,R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.admittedPaths.length);
+  assert.equal(result.changedPathDenominator,R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.admittedPaths.length);
+  assert.equal(result.overlayDigest,R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.overlayDigest);
+  assert.equal(result.effectiveW0State,'DONE');
+  assert.equal(result.rawW0StatePreserved,'BLOCKED_TYPED');
+  assert.equal(result.programDone,false);
+});
+test('R24 W0 current-state closure exception accepts successor heads by selecting the immutable exact candidate',()=>{
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,successorSha='c'.repeat(40);
+  const fixture=w0CurrentStateClosureGitFixture({successorSha,successorChangedPaths:[...e.admittedPaths,'README.md'].sort()});
+  const result=verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,fixture.deliverySha);
+  assert.equal(result.currentCandidateSha,successorSha);
+});
+test('R24 W0 current-state closure exception rejects an unadmitted future path',()=>{
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,fixture=w0CurrentStateClosureGitFixture({changedPaths:[...e.admittedPaths,'README.md'].sort()});
+  assert.throws(()=>verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_W0_CURRENT_STATE_CANDIDATE_NOT_FOUND|E_R24_W0_CURRENT_STATE_EXACT_ADMITTED_DELTA/);
+});
+test('R24 W0 current-state closure exception rejects a stale overlay candidate tree',()=>{
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,overlay=JSON.parse(fs.readFileSync(e.overlayPath,'utf8'));
+  overlay.immutableCandidateTreeSha='0'.repeat(40);
+  const fixture=w0CurrentStateClosureGitFixture({overlayBytes:canonicalBytes(overlay)});
+  assert.throws(()=>verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_W0_CURRENT_STATE_OVERLAY_IDENTITY|E_R24_W0_CURRENT_STATE_IMMUTABLE_CANDIDATE/);
+});
+test('R24 W0 current-state closure exception rejects stale claim implementation binding',()=>{
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,claim=JSON.parse(fs.readFileSync(e.claimBindingPath,'utf8'));
+  claim.implementationArtifactDigests.find((entry)=>entry.path===e.contractTestPath).sha256='0'.repeat(64);
+  const fixture=w0CurrentStateClosureGitFixture({claimBytes:canonicalBytes(claim)});
+  assert.throws(()=>verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_W0_CURRENT_STATE_IMPLEMENTATION_DIGEST/);
+});
+test('R24 W0 current-state closure exception rejects stale post-audit inventory binding',()=>{
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
+  const fixture=w0CurrentStateClosureGitFixture({inventoryBytes:canonicalBytes(inventory)});
+  assert.throws(()=>verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_W0_CURRENT_STATE_INVENTORY_DIGEST/);
 });
 test('WP401 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp401MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP401_EXCEPTION_UNADMITTED_PATH:package\.json/);});
 test('WP402 successor exception rejects an unadmitted future path',()=>{const hostileGit=(args,options={})=>args[0]==='diff'?(options.encoding==='utf8'?'package.json\n':Buffer.from('package.json\n')):execFileSync('git',args,options);assert.throws(()=>verifyWp402MainProductPostEvaluationException({candidateSha:'HEAD',git:hostileGit}),/E_WP402_EXCEPTION_UNADMITTED_PATH:package\.json/);});

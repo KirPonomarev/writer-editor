@@ -406,13 +406,13 @@ test('scheduler selection receipt is bound to the real full graph rather than a 
   assert.equal(receipt.identityRoles.mergeSha, null);
   assert.equal(receipt.identityRoles.postmergeSha, null);
   assert.equal(receipt.sourceOfTruthPath, 'docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json');
-  assert.equal(receipt.selectedKind, 'NODE');
-  assert.equal(receipt.selectedId, 'W0_WORD_PHYSICAL_RECERTIFICATION');
-  assert.equal(receipt.verdict, 'SELECTED');
-  assert.deepEqual(receipt.reasons, ['SUPERVISED_HANDOFF_ONLY_CANDIDATE']);
+  assert.equal(receipt.selectedKind, 'NONE');
+  assert.equal(receipt.selectedId, null);
+  assert.equal(receipt.verdict, 'NO_ELIGIBLE_NODE');
+  assert.deepEqual(receipt.reasons, ['NO_DEPENDENCY_CLOSED_PENDING_NODE']);
   assert.equal(receipt.selectedId === null || nodeIds.has(receipt.selectedId), true);
   assert.equal(receipt.readySet.every((id) => nodeIds.has(id)), true);
-  assert.deepEqual(receipt.readySet, ['W0_WORD_PHYSICAL_RECERTIFICATION']);
+  assert.deepEqual(receipt.readySet, []);
 });
 
 test('scheduler refuses a plan state not committed at the evaluation head', () => {
@@ -436,14 +436,14 @@ test('CLI validation receipt reports PASS on the committed SOT only', () => {
   assert.equal(receipt.nodeCount, EXPECTED_NODE_COUNT);
   assert.equal(receipt.legacyStageCount, 32);
   assert.equal(receipt.namedDependencyMismatchCount, 6);
-  assert.equal(receipt.effectiveStateDigest, '76a2d0f113a6151875bbf4cbbcd5325cba7e73e6f99224771d9d4c6b79b12041');
+  assert.equal(receipt.effectiveStateDigest, 'd364bf424fa000ee59a2bf55f317e258edeb0de6eae332528172506d050b63ec');
   assert.deepEqual(receipt.effectiveStateCounts, {
-    BLOCKED_TYPED: 4,
-    DONE: 49,
+    BLOCKED_TYPED: 3,
+    DONE: 50,
     INELIGIBLE_OPTIONAL: 10,
     PENDING: 46,
   });
   assert.equal(receipt.effectiveCompletionProgramDone, false);
-  assert.equal(receipt.effectiveCompletionRequiredPendingCount, 50);
+  assert.equal(receipt.effectiveCompletionRequiredPendingCount, 49);
   assert.equal(fs.existsSync(path.join(R24_DIR, 'A0_AUTHORITY_SOT_RECONCILIATION_RECEIPT_V1.json')), true);
 });

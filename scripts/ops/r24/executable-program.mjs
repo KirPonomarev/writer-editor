@@ -30,6 +30,10 @@ export const EXPECTED_MISSION_DIGEST = '2d188140211c4e2a65f0f1bf1bef5bac53e396e3
 export const EXPECTED_NODE_COUNT = 109;
 export const EXPECTED_FOUNDATION_COUNT = 32;
 export const EXPECTED_WORK_PACKAGE_COUNT = 77;
+export const W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_PATH = 'docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json';
+export const W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_SCHEMA_VERSION = 'R24_W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1';
+export const W0_WORD_PHYSICAL_RECEIPT_PATH = 'docs/OPS/RTK/YALKEN_R24_W0_WORD_PHYSICAL_RECERTIFICATION_RECEIPT_V1.json';
+export const W0_WORD_PHYSICAL_RECEIPT_SHA256 = 'ebf5b193e3e87e68fe4e68ede95318eba8fb8486de301cb560df9efc44a015cf';
 
 export const EXPECTED_R24_FILE_DIGESTS = Object.freeze({
   'AUDIT_DISPOSITION_R2_4.json': '0214a60d9614b0c7986fdbf77595fc344ae01eaafee06bb83f8b01037e9c23b6',
@@ -275,6 +279,122 @@ export function buildCurrentG0Program(program) {
   return clone;
 }
 
+function assertExactDescendant(candidateHeadSha, evaluationHeadSha) {
+  if (candidateHeadSha === evaluationHeadSha) return;
+  const result = spawnSync('git', ['merge-base', '--is-ancestor', candidateHeadSha, evaluationHeadSha], {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+  if (result.status !== 0) {
+    throw new R24Error('E_R24_W0_OVERLAY_NON_DESCENDANT_HEAD', `${candidateHeadSha}:${evaluationHeadSha}`);
+  }
+}
+
+function assertW0OverlayField(condition, code, detail) {
+  if (!condition) throw new R24Error(code, detail);
+}
+
+export function normalizeW0EffectiveStateOverlay(carrier, {
+  program,
+  planState,
+  evaluationHeadSha,
+  evaluationTreeSha,
+} = {}) {
+  assertW0OverlayField(carrier && typeof carrier === 'object' && !Array.isArray(carrier), 'E_R24_W0_OVERLAY_SHAPE');
+  assertW0OverlayField(carrier.schemaVersion === W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_SCHEMA_VERSION, 'E_R24_W0_OVERLAY_SCHEMA', String(carrier.schemaVersion || ''));
+  assertW0OverlayField(carrier.overlayId === 'W0_WORD_PHYSICAL_RECERTIFICATION_CURRENT_HEAD_OVERLAY_V1', 'E_R24_W0_OVERLAY_FIELD', 'overlayId');
+  assertW0OverlayField(carrier.stageId === 'W0_WORD_PHYSICAL_RECERTIFICATION', 'E_R24_W0_OVERLAY_FIELD', 'stageId');
+  assertW0OverlayField(carrier.targetNodeId === 'W0_WORD_PHYSICAL_RECERTIFICATION', 'E_R24_W0_OVERLAY_FIELD', 'targetNodeId');
+  assertW0OverlayField(carrier.from === 'BLOCKED_TYPED', 'E_R24_W0_OVERLAY_FIELD', 'from');
+  assertW0OverlayField(carrier.to === 'DONE', 'E_R24_W0_OVERLAY_FIELD', 'to');
+  assertW0OverlayField(carrier.rawPlanStateMutation === false, 'E_R24_W0_OVERLAY_FIELD', 'rawPlanStateMutation');
+  assertW0OverlayField(carrier.programMutation === false, 'E_R24_W0_OVERLAY_FIELD', 'programMutation');
+  assertW0OverlayField(carrier.physicalReceiptId === 'YALKEN_R24_W0_WORD_PHYSICAL_RECERTIFICATION_RECEIPT_V1', 'E_R24_W0_OVERLAY_FIELD', 'physicalReceiptId');
+  assertW0OverlayField(carrier.physicalReceiptSha256 === W0_WORD_PHYSICAL_RECEIPT_SHA256, 'E_R24_W0_OVERLAY_FIELD', 'physicalReceiptSha256');
+  assertW0OverlayField(carrier.proofAuthority === 'OWNER_APPROVED_WORD_PHYSICAL_SESSION_AUTHORITY', 'E_R24_W0_OVERLAY_FIELD', 'proofAuthority');
+  assertW0OverlayField(carrier.source === 'W0_PHYSICAL_RECERTIFICATION_VERIFIER_PASS', 'E_R24_W0_OVERLAY_FIELD', 'source');
+  assertW0OverlayField(
+    carrier.successorHeadPolicy === 'ALLOW_DESCENDANT_HEADS_WITH_IDENTICAL_PROGRAM_AND_PLAN_DIGESTS',
+    'E_R24_W0_OVERLAY_FIELD',
+    'successorHeadPolicy',
+  );
+  assertW0OverlayField(HEX40_RE.test(String(carrier.immutableCandidateHeadSha || '')), 'E_R24_W0_OVERLAY_CANDIDATE_HEAD_SHAPE');
+  assertW0OverlayField(HEX40_RE.test(String(carrier.immutableCandidateTreeSha || '')), 'E_R24_W0_OVERLAY_CANDIDATE_TREE_SHAPE');
+  assertW0OverlayField(HEX40_RE.test(String(evaluationHeadSha || '')), 'E_R24_W0_OVERLAY_EVALUATION_HEAD_SHAPE');
+  assertW0OverlayField(HEX40_RE.test(String(evaluationTreeSha || '')), 'E_R24_W0_OVERLAY_EVALUATION_TREE_SHAPE');
+
+  const requiredNonClaims = [
+    'NO_RAW_PLAN_STATE_MUTATION',
+    'NO_PROGRAM_DONE',
+    'NO_WORD_TERMINAL_PASS',
+    'NO_C1_ROUTE_PASS',
+    'NO_PRODUCT_APPLY_AUTHORITY',
+    'NO_SAFE_APPLY_EXPANSION',
+    'NO_USER_WORD_DOCUMENT_ACCESS',
+    'NO_GOOGLE_DOCS_TRANSFER',
+    'NO_RELEASE_READINESS',
+    'NO_RUNTIME_NETWORK',
+  ];
+  assertSameSet(assertArray(carrier.nonClaims, 'E_R24_W0_OVERLAY_NON_CLAIMS', 'nonClaims'), requiredNonClaims, 'E_R24_W0_OVERLAY_NON_CLAIMS', 'nonClaims');
+
+  const planDigest = canonicalDigest(planState);
+  const programDigest = canonicalDigest(program);
+  assertW0OverlayField(planDigest === carrier.basePlanStateDigest, 'E_R24_W0_OVERLAY_PLAN_DIGEST', `${planDigest} != ${carrier.basePlanStateDigest}`);
+  assertW0OverlayField(programDigest === carrier.baseProgramDigest, 'E_R24_W0_OVERLAY_PROGRAM_DIGEST', `${programDigest} != ${carrier.baseProgramDigest}`);
+  assertW0OverlayField(sha256File(path.join(REPO_ROOT, W0_WORD_PHYSICAL_RECEIPT_PATH)) === carrier.physicalReceiptSha256, 'E_R24_W0_OVERLAY_FIELD', 'physicalReceiptSha256');
+
+  assertExactDescendant(carrier.immutableCandidateHeadSha, evaluationHeadSha);
+  const candidateTreeSha = git(['rev-parse', `${carrier.immutableCandidateHeadSha}^{tree}`]);
+  assertW0OverlayField(candidateTreeSha === carrier.immutableCandidateTreeSha, 'E_R24_W0_OVERLAY_CANDIDATE_TREE', `${candidateTreeSha} != ${carrier.immutableCandidateTreeSha}`);
+  const candidatePlanState = JSON.parse(git(['show', `${carrier.immutableCandidateHeadSha}:docs/OPS/R24/PLAN_STATE_R24.json`]));
+  const candidateProgram = JSON.parse(git(['show', `${carrier.immutableCandidateHeadSha}:docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json`]));
+  assertW0OverlayField(canonicalDigest(candidatePlanState) === carrier.basePlanStateDigest, 'E_R24_W0_OVERLAY_CANDIDATE_PLAN_DIGEST');
+  assertW0OverlayField(canonicalDigest(candidateProgram) === carrier.baseProgramDigest, 'E_R24_W0_OVERLAY_CANDIDATE_PROGRAM_DIGEST');
+
+  return {
+    schemaVersion: 'R24_EFFECTIVE_STATE_OVERLAY_V1',
+    overlayId: carrier.overlayId,
+    sequence: 0,
+    predecessorOverlayId: null,
+    targetNodeId: carrier.targetNodeId,
+    from: carrier.from,
+    to: carrier.to,
+    baseHeadSha: evaluationHeadSha,
+    baseTreeSha: evaluationTreeSha,
+    basePlanStateDigest: carrier.basePlanStateDigest,
+    baseProgramDigest: carrier.baseProgramDigest,
+    receiptId: carrier.physicalReceiptId,
+    receiptSha256: carrier.physicalReceiptSha256,
+    proofAuthority: carrier.proofAuthority,
+    source: carrier.source,
+    transitionId: canonicalDigest({
+      overlayId: carrier.overlayId,
+      targetNodeId: carrier.targetNodeId,
+      immutableCandidateHeadSha: carrier.immutableCandidateHeadSha,
+      evaluationHeadSha,
+      physicalReceiptSha256: carrier.physicalReceiptSha256,
+    }),
+    selfPromotion: false,
+    reason: 'W0_WORD_PHYSICAL_RECERTIFICATION_OWNER_APPROVED_PHYSICAL_RECEIPT_CURRENT_HEAD_CLOSURE',
+  };
+}
+
+export function loadCommittedEffectiveStateOverlays({
+  program,
+  planState,
+  evaluationHeadSha,
+  evaluationTreeSha,
+}) {
+  const carrier = readJsonBounded(path.join(REPO_ROOT, W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_PATH));
+  return [normalizeW0EffectiveStateOverlay(carrier, {
+    program,
+    planState,
+    evaluationHeadSha,
+    evaluationTreeSha,
+  })];
+}
+
 export function buildSchedulerMission({
   missionContract,
   missionApproval,
@@ -330,9 +450,16 @@ export function buildEffectiveStateProjectionOnFullGraph({ now, planState, imple
   if (!HEX40_RE.test(sourceSha)) throw new R24Error('E_R24_IMPLEMENTATION_SOURCE_SHAPE');
   const committedPlanState = JSON.parse(git(['show', evaluationHeadSha + ':docs/OPS/R24/PLAN_STATE_R24.json']));
   if (canonicalDigest(committedPlanState) !== canonicalDigest(planState)) throw new R24Error('E_R24_SELECTION_STATE_NOT_AT_EVALUATION_HEAD');
+  const overlays = loadCommittedEffectiveStateOverlays({
+    program,
+    planState,
+    evaluationHeadSha,
+    evaluationTreeSha,
+  });
   const effectiveStateProjection = compileEffectiveState({
     program,
     planState,
+    overlays,
     generatedAt: now,
     exactIdentity: {
       implementationSourceSha: sourceSha,
