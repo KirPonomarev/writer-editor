@@ -11405,12 +11405,15 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
-      "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
+      "sha256": "2ecbd83bab43f642a6c9d0c1e5a70ecc6e99eb4b9bb2b20b0626051ac0c50eb3",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact bounded post-audit carrier bytes for R24 RCV01A current-base reconciliation: update post-evaluation allowed paths to include only the new RCV01A manifest, claim-binding evidence, verifier, focused contract, and post-audit verifier carrier. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
+      ]
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
@@ -11841,15 +11844,14 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "a78143f17a772b577364b132c1cb0d8b641a32838c5f6448f0bf0828422cd2aa",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "sha256": "c3b188de188d2c90b3c0dd16fa984a18875b5abce87d3ed5ecf6971f0bf70d69",
+      "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T10:19:40Z",
+      "rationale": "Approve exact bounded post-audit verifier bytes for R24 RCV01A current-base reconciliation: admit only the new RCV01A manifest, claim-binding evidence, verifier, focused contract, and post-audit verifier carrier as post-evaluation carriers. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
-      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+        "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
       ]
     },
     {
