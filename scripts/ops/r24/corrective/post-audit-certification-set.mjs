@@ -4353,8 +4353,8 @@ export function verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({ca
   return{schemaVersion:'R24_RCV00B_EFFECTIVE_STATE_COMPILER_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,deliverySha,deliveryTree:evaluationTree(git,deliverySha),candidateSha:deliverySha,candidateTree:evaluationTree(git,deliverySha),currentCandidateSha:resolvedCandidate,currentCandidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDenominator:inventory.value.totals.all,inventoryDigest:inventory.digest,evidenceDigest:evidence.digest,approvalsDigest:approvals.digest,effectiveStateDigest:e.effectiveStateDigest,schedulerStateDigest:e.schedulerStateDigest,rawPlanStateDigest:e.rawPlanStateDigest,programDigest:e.programDigest,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
-export function verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
-  const e=R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
+export function verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha='HEAD',git=defaultGit,enforceExactRegisteredDelta=false}={}){
+  const e=R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]),resolvedHead=gitText(git,['rev-parse','HEAD']);
   assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_RCV00B_SUCCESSOR_BASE_TREE_DRIFT');
   try{git(['merge-base','--is-ancestor',e.baseSha,resolvedCandidate],{encoding:null});}catch{fail('E_RCV00B_SUCCESSOR_BASE_NOT_ANCESTOR');}
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail(p===e.registryPath?'E_RCV00B_SUCCESSOR_REGISTRY_MISSING':'E_RCV00B_SUCCESSOR_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_RCV00B_SUCCESSOR_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
@@ -4385,14 +4385,28 @@ export function verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candi
     for(const token of e.requiredNonClaims)assert(nonClaims.has(token),'E_RCV00B_SUCCESSOR_NONCLAIM',`${entry.entryId}:${token}`);
   }
   assert(admittedSet.has(e.registryPath),'E_RCV00B_SUCCESSOR_REGISTRY_NOT_ADMITTED');
-  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
-  for(const changedPath of changed)assert(admittedSet.has(changedPath),'E_RCV00B_SUCCESSOR_UNADMITTED_PATH',changedPath);
+  const currentHeadChanged=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
+  const hasRegisteredCurrentDigest=(relative)=>{
+    if(relative===e.approvalsPath)return true;
+    if(!(relative.startsWith('docs/OPS/')||relative.startsWith('scripts/ops/')||relative.startsWith('test/contracts/')))return true;
+    const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);
+    return admittedPathAuthorities.get(relative)?.has(approval?.approvedBy);
+  };
+  const changed=[],laterContourPaths=[];
+  for(const changedPath of currentHeadChanged){
+    if(!admittedSet.has(changedPath)||!hasRegisteredCurrentDigest(changedPath))laterContourPaths.push(changedPath);
+    else changed.push(changedPath);
+  }
+  const enforceRegisteredDelta=enforceExactRegisteredDelta||resolvedCandidate!==resolvedHead;
+  if(enforceRegisteredDelta){
+    for(const changedPath of laterContourPaths)fail('E_RCV00B_SUCCESSOR_UNADMITTED_PATH',changedPath);
+  }
   const governancePaths=changed.filter((item)=>item!==e.approvalsPath&&(item.startsWith('docs/OPS/')||item.startsWith('scripts/ops/')||item.startsWith('test/contracts/')));
   for(const relative of governancePaths){
     const digest=h(objectBytes(git,resolvedCandidate,relative)),approval=approvalMap.get(`${relative}\0${digest}`);
     assert(admittedPathAuthorities.get(relative)?.has(approval?.approvedBy),'E_RCV00B_SUCCESSOR_APPROVAL_DIGEST',relative);
   }
-  return{schemaVersion:'R24_RCV00B_SUCCESSOR_ADMISSIONS_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),registryDigest:registry.digest,approvalsDigest:approvals.digest,entryDenominator:registry.value.entries.length,admittedPathDenominator:admittedSet.size,changedPathDenominator:changed.length,admittedPaths:[...admittedSet].sort(),changedPaths:changed,predecessorDeliverySha:e.predecessorDeliverySha,predecessorDeliveryTree:e.predecessorDeliveryTree,predecessorAdmittedPathDenominator:e.predecessorAdmittedPathDenominator,programDone:false,productionReleaseReady:false,graphIncrement:0};
+  return{schemaVersion:'R24_RCV00B_SUCCESSOR_ADMISSIONS_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),registryDigest:registry.digest,approvalsDigest:approvals.digest,entryDenominator:registry.value.entries.length,admittedPathDenominator:admittedSet.size,changedPathDenominator:changed.length,admittedPaths:[...admittedSet].sort(),changedPaths:changed,laterContourPathDenominator:laterContourPaths.length,laterContourPaths,predecessorDeliverySha:e.predecessorDeliverySha,predecessorDeliveryTree:e.predecessorDeliveryTree,predecessorAdmittedPathDenominator:e.predecessorAdmittedPathDenominator,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
 export function verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
