@@ -6274,6 +6274,17 @@ const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
 ]);
 const DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES = Object.freeze({
+  line: 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE',
+  page: 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE',
+  column: 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN',
+});
+const DOCX_CONTENT_PREVIEW_SECTION_BREAK_SOURCE_CODES = Object.freeze({
+  nextPage: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
+  continuous: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_CONTINUOUS',
+});
 const DOCX_CUSTOM_PROPERTIES_NAMESPACE = [
   'h',
   'ttp://schemas.openxmlformats.org/officeDocument/2006/custom-properties',
@@ -6560,6 +6571,17 @@ function docxContentPreviewTagName(token) {
   return match ? match[1] : '';
 }
 
+function docxContentPreviewAttributeValue(token, localName) {
+  const pattern = /\s([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)\s*=\s*(["'])([\s\S]*?)\2/gu;
+  let match;
+  while ((match = pattern.exec(String(token || ''))) !== null) {
+    if (docxContentPreviewLocalName(match[1]) === localName) {
+      return docxContentPreviewDecodeText(match[3]);
+    }
+  }
+  return '';
+}
+
 function docxContentPreviewLocalName(name) {
   const text = String(name || '');
   return text.includes(':') ? text.slice(text.indexOf(':') + 1) : text;
@@ -6642,6 +6664,48 @@ function docxContentPreviewAddListNumberingDiagnostic(diagnostics, seenTags, tag
   }));
 }
 
+function docxContentPreviewNormalizeTypedBreakType(token) {
+  const rawType = docxContentPreviewAttributeValue(token, 'type').trim();
+  if (rawType === 'page') return 'page';
+  if (rawType === 'column') return 'column';
+  return 'line';
+}
+
+function docxContentPreviewAddTypedBreakDiagnostic(diagnostics, seenKinds, breakType) {
+  const sourceCode = DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES[breakType];
+  if (!sourceCode || seenKinds.has(sourceCode)) return;
+  seenKinds.add(sourceCode);
+  if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
+  diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC, {
+    severity: 'warning',
+    sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    sourceCode,
+    tagName: 'w:br',
+    message: `DOCX ${breakType} break is flattened in the plain text import candidate`,
+  }));
+}
+
+function docxContentPreviewNormalizeSectionBreakType(token) {
+  const rawValue = docxContentPreviewAttributeValue(token, 'val').trim();
+  if (rawValue === 'nextPage') return 'nextPage';
+  if (rawValue === 'continuous') return 'continuous';
+  return '';
+}
+
+function docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenKinds, sectionType) {
+  const sourceCode = DOCX_CONTENT_PREVIEW_SECTION_BREAK_SOURCE_CODES[sectionType];
+  if (!sourceCode || seenKinds.has(sourceCode)) return;
+  seenKinds.add(sourceCode);
+  if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
+  diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC, {
+    severity: 'warning',
+    sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    sourceCode,
+    tagName: 'w:sectPr',
+    message: `DOCX ${sectionType} section break is not represented in the plain text import candidate`,
+  }));
+}
+
 function docxContentPreviewBuildParagraph(order, text) {
   return {
     order,
@@ -6699,12 +6763,15 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   const diagnostics = [];
   const seenUnsupportedTags = new Set();
   const seenListNumberingTags = new Set();
+  const seenTypedBreakKinds = new Set();
+  const seenSectionBreakKinds = new Set();
   const paragraphs = [];
   const elementStack = [];
   let rootSeen = false;
   let rootTagName = '';
   let paragraphText = '';
   let insideParagraph = false;
+  let sectionPropertiesDepth = 0;
   let unsupportedDepth = 0;
   let textDepth = 0;
   let totalTextChars = 0;
@@ -6791,6 +6858,21 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     }
     if (unsupportedDepth > 0) continue;
 
+    if (tagName === 'w:sectPr') {
+      if (closing) {
+        sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
+      } else {
+        sectionPropertiesDepth += 1;
+        if (selfClosing) sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
+      }
+    } else if (sectionPropertiesDepth > 0 && tagName === 'w:type' && !closing) {
+      docxContentPreviewAddSectionBreakDiagnostic(
+        diagnostics,
+        seenSectionBreakKinds,
+        docxContentPreviewNormalizeSectionBreakType(token),
+      );
+    }
+
     if (tagName === 'w:p' && !closing) {
       if (!insideParagraph) {
         insideParagraph = true;
@@ -6816,6 +6898,13 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       }
     } else if (insideParagraph && !closing && (tagName === 'w:tab' || tagName === 'w:br')) {
       const marker = tagName === 'w:tab' ? '\t' : '\n';
+      if (tagName === 'w:br') {
+        docxContentPreviewAddTypedBreakDiagnostic(
+          diagnostics,
+          seenTypedBreakKinds,
+          docxContentPreviewNormalizeTypedBreakType(token),
+        );
+      }
       paragraphText += marker;
       totalTextChars += marker.length;
       if (totalTextChars > DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars) {
@@ -7442,23 +7531,63 @@ function docxImportPreviewValidateParagraphs(contentPreview) {
 }
 
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
-  const sourceCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
-  if (sourceCode === DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC) {
+  const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
+  const sourceCode = typeof diagnostic.sourceCode === 'string' ? diagnostic.sourceCode : '';
+  if (diagnosticCode === DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC) {
     return { code: 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED', category: 'metadata' };
   }
-  if (sourceCode === DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC) {
+  if (diagnosticCode === DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC) {
     return { code: 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED', category: 'listNumbering' };
   }
-  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
+  if (diagnosticCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC) {
+    if (sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.line) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY',
+        category: 'lineBreak',
+        message: 'DOCX line break is flattened to a newline in the plain text import candidate',
+      };
+    }
+    if (sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.page) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY',
+        category: 'pageBreak',
+        message: 'DOCX page break is flattened to a newline in the plain text import candidate',
+      };
+    }
+    if (sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.column) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY',
+        category: 'columnBreak',
+        message: 'DOCX column break is flattened to a newline in the plain text import candidate',
+      };
+    }
+  }
+  if (diagnosticCode === DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC) {
+    if (sourceCode === DOCX_CONTENT_PREVIEW_SECTION_BREAK_SOURCE_CODES.nextPage) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED',
+        category: 'sectionBreak',
+        message: 'DOCX next-page section break is not represented in the plain text import candidate',
+      };
+    }
+    if (sourceCode === DOCX_CONTENT_PREVIEW_SECTION_BREAK_SOURCE_CODES.continuous) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_CONTINUOUS_NOT_IMPORTED',
+        category: 'sectionBreak',
+        message: 'DOCX continuous section break is not represented in the plain text import candidate',
+      };
+    }
+  }
+  if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
-  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY) {
+  if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_STORY_NOT_IMPORTED', category: 'story' };
   }
-  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY) {
+  if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_MEDIA_NOT_IMPORTED', category: 'media' };
   }
-  if (sourceCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY) {
+  if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_PACKAGE_DIRECTORY_IGNORED', category: 'package' };
   }
   const tagName = typeof diagnostic.tagName === 'string' ? diagnostic.tagName : '';
@@ -7509,6 +7638,8 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
       DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC,
+      DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC,
+      DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC,
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
@@ -7516,12 +7647,12 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
     items.push(docxImportPreviewLossItem(mapped.code, {
       category: mapped.category,
       severity: 'warning',
-      sourceCode: diagnostic.code,
+      sourceCode: diagnostic.sourceCode || diagnostic.code,
       sourcePart: diagnostic.sourcePart || diagnostic.entryId || contentPreview.sourcePart,
       tagName: diagnostic.tagName,
-      message: knownIgnoredPart
+      message: mapped.message || (knownIgnoredPart
         ? 'known DOCX package part is ignored by the plain text import candidate'
-        : 'unsupported DOCX structure is not represented in the plain text import candidate',
+        : 'unsupported DOCX structure is not represented in the plain text import candidate'),
     }));
   }
   const sortedItems = docxImportPreviewSortRecords(items);
