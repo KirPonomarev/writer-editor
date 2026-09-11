@@ -83,30 +83,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:22:21Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
-      "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Approve exact current T05 visible DOCX hyperlink label text source repair after origin/main 312895d6: admits only zero-write generic DOCX content-preview/import-plan transparent traversal of w:hyperlink child text while hyperlink targets, relationships, bookmarks, and malformed relationship graphs remain unsupported, explicit loss, or preflight-blocked. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "e636c00b50a46713d10ca278ede5df99ab7db07d2b09ad888d150a2ac272fa8c",
-      "evidenceStampIds": [
-        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN"
-      ]
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:22:21Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T05_VISIBLE_HYPERLINK_TEXT_AUTONOMOUS_DELIVERY",
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current T05 visible DOCX hyperlink label text contract repair after origin/main 312895d6: admits focused regression coverage for valid external labels, split runs, anchors, Unicode labels, unsupported targets, explicit relationship/link/bookmark loss, and zero-write preview behavior. No link target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ffeac334678b1899f1264adcfa4d3f04a8107bb7957d211537ce0637469023d2",
-      "evidenceStampIds": [
-        "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN"
-      ]
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-10T04:37:34.949Z",
       "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
       "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
@@ -147,44 +123,77 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T01:44:23Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_T05_VISIBLE_HYPERLINK_TEXT_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_AND_P03_INVENTORY_REBIND_AUTONOMOUS_DELIVERY",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current C1B inventory digest after T04 typed DOCX break and section loss regression coverage while preserving the existing P03 relationship-graph, RCV00H, HOSTILE-001, S03, and T05 approval bindings for this shared inventory carrier. This is registry rebinding only: no hyperlink target import, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "6f1e8e86d5651f0e9984ea9056cdfc53e117d9cf5e509149a2551b1675fa8269",
+      "approvedAtUtc": "2026-09-11T02:24:58Z",
+      "approvedBy": "owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+      ],
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "3e7e91dcb8d993d6b72201706152d7cd339b854676ff0b18ea45a4d0d00b4f75",
+      "rationale": "Approve exact T04 revision bridge bytes after current-main rebind: DOCX import preview detects real w:br line/page/column breaks and next-page/continuous section breaks and reports explicit plain-text loss without changing project truth, UI, export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T02:24:58Z",
+      "approvedBy": "owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "41a5690d5eefaf3093b4be2d22c4e210eedac10a857c9765fe27a6b953765526",
+      "rationale": "Approve exact T04 content-preview contract bytes after current-main rebind: asserts preserved plain-text candidate output, exact loss items for line/page/column breaks and next-page/continuous section breaks, and lexical false-positive rejection. No UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T02:24:58Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_REBOUND_TO_W0_CURRENT_MAIN_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
         "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
         "ES-R24-T05-VISIBLE-HYPERLINK-TEXT-BRANCH-RERUN",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE",
         "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY"
-      ]
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "af1056257628248da6a01b0415ce265d5d63b8b9c6da4048cf180a82c54ae796",
+      "rationale": "Approve exact C1B inventory bytes after PR1878 current-main rebind: preserves W0 current-state closure inventory additions and T05/P03/RCV00H bindings while adding the T04 typed DOCX break and section-loss regression hash. Registry metadata only; no parser behavior beyond T04, UI, project write/apply, DOCX export, Word/Google route completion, dependency, runtime network, full denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "de0806d1b7609168e2bdc94f0ceeb13c43de3bd3a49869da5a2cfe9d60984149"
+      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
+      "sha256": "bff02e211b03d4efc842d854c345a48d7c54def4e7bb47d0d3807202304798e1"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
+        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "7e025124c47b1ee758744ebb158e293ade8f83fef364c434f3d5bfa447c8110a"
+      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
+      "sha256": "e6f0aba6a3b342ee2e4cc4455359163cb90c5a1e9e4848cb9a853695b78e6f05"
     }
   ],
   "version": "v1.0",

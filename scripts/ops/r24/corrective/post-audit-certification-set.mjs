@@ -821,6 +821,70 @@ export const R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION=Object.freeze({
     'NO_SPECULATIVE_MODULE_EXTRACTION',
   ].sort(),
 });
+export const R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION=Object.freeze({
+  baseSha:'4aa9317c57cf2ed18db74c9c231687f43c344e94',
+  baseTree:'47e5939703ce2c6f546b4f2f4d7eae14658a2917',
+  immutableCandidateHeadSha:'e0661ea3da5f99d6d001ee76d86ed45d3620b132',
+  immutableCandidateTreeSha:'f249afac1b5f9b3b0e7118e219f41f927499703d',
+  planStatePath:'docs/OPS/R24/PLAN_STATE_R24.json',
+  programPath:'docs/OPS/R24/EXECUTABLE_PROGRAM_R2_4.json',
+  overlayPath:'docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json',
+  claimBindingPath:'docs/OPS/R24/EVIDENCE/ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS.json',
+  receiptPath:'docs/OPS/RTK/YALKEN_R24_W0_WORD_PHYSICAL_RECERTIFICATION_RECEIPT_V1.json',
+  physicalReceiptSha256:'ebf5b193e3e87e68fe4e68ede95318eba8fb8486de301cb560df9efc44a015cf',
+  inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath:'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  pk1r1ApprovalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  executableProgramPath:'scripts/ops/r24/executable-program.mjs',
+  executableProgramTestPath:'scripts/ops/r24/tests/executable-program.test.mjs',
+  effectiveStateCompilerTestPath:'test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs',
+  contractTestPath:'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
+  postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  rtkG0bTestPath:'test/contracts/rtk-g0b-feasibility.contract.test.js',
+  rtkW1TestPath:'test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js',
+  rtkW2TestPath:'test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js',
+  rtkZip01TestPath:'test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js',
+  overlayDigest:'7656c03da876f9ec70c320ace7b1742cc9fa4d6dbe4d6ee339ff46735766884f',
+  basePlanStateDigest:'8015e9fe16c18bcc4fb9e3b371f400ee3454e5eba7a5c5d24fadb0420e48398c',
+  baseProgramDigest:'8686b5dff19f2dbda6af7ea45793bdf9b36fb4c6c49424960350632b248cdffb',
+  evidenceStampId:'ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS',
+  approvalEvidenceStampId:'ES-R24-W0-CURRENT-STATE-CLOSURE',
+  approvedBy:'owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10',
+  inventoryFileDenominator:1465,
+  inventoryContractDenominator:994,
+  focusedContractPassCount:30,
+  w0MutantKilledCount:8,
+  admittedPaths:[
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json',
+    'docs/OPS/R24/EVIDENCE/ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/executable-program.mjs',
+    'scripts/ops/r24/tests/executable-program.test.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs',
+    'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
+    'test/contracts/rtk-g0b-feasibility.contract.test.js',
+    'test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js',
+    'test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js',
+    'test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js',
+  ].sort(),
+  nonClaims:[
+    'NO_RAW_PLAN_STATE_MUTATION',
+    'NO_PROGRAM_DONE',
+    'NO_WORD_TERMINAL_PASS',
+    'NO_C1_ROUTE_PASS',
+    'NO_PRODUCT_APPLY_AUTHORITY',
+    'NO_SAFE_APPLY_EXPANSION',
+    'NO_USER_WORD_DOCUMENT_ACCESS',
+    'NO_GOOGLE_DOCS_TRANSFER',
+    'NO_RELEASE_READINESS',
+    'NO_RUNTIME_NETWORK',
+  ].sort(),
+});
 export const AUDIT_CYCLE_2_ADMISSION_EXPECTATION=Object.freeze({
   authorityPath:'docs/OPS/R24/CORRECTIVE/POST_AUDIT_CORRECTIONS_OWNER_AMENDMENT_V17.json',
   authorityDigest:'f4e7617cfc0014b4582d76fdc62986f1da5a9451ce953e06959199b0aed4fa92',
@@ -1472,6 +1536,7 @@ export const WP700_CI_REPAIR_TEMPORAL_ADMISSION_EXPECTATION=Object.freeze({
   refreshedInventoryDigest:'ea0de2ec5f28464e847d581c8bcba0fcaa9a0958a5a4a71bc0092d044f7d9858',inventoryFileDenominator:1312,lateMjsDenominator:8,correctedTerminalTestDigest:'46b15391f32e663a515ea8c91eb2435c07d35be1f8e0a986d060a509cda5fc72'
 });
 const h=(bytes)=>crypto.createHash('sha256').update(bytes).digest('hex');
+const canonicalValueDigest=(value)=>h(canonicalBytes(value).subarray(0,-1));
 const fail=(code,detail='')=>{const error=new Error(`${code}${detail?`:${detail}`:''}`);error.code=code;throw error;};
 const assert=(condition,code,detail)=>{if(!condition)fail(code,detail);};
 const approvalMatchesApprovedBy=(entry,approvedBy)=>{
@@ -4821,6 +4886,57 @@ export function verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({can
   return{schemaVersion:'R24_RCV00H_MINIMAL_E0_PARSER_PURITY_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,claimBindingDigest:claim.digest,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,completeInventoryDrivesGate:true,taskParserReachesV2Plan:true,realViolationsFailWithPathReason:true,lexicalFalsePositivesDoNotBlock:true,historicalCompatibilityExplicit:true,noSpeculativeModuleExtraction:true,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
+function resolveR24W0CurrentStateClosureCandidateSha(git,resolvedCandidate,e){
+  const isExact=(sha)=>{
+    const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+    return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+  };
+  if(isExact(resolvedCandidate))return resolvedCandidate;
+  let candidates=[];
+  try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_W0_CURRENT_STATE_CANDIDATE_SEARCH');}
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
+  fail('E_R24_W0_CURRENT_STATE_CANDIDATE_NOT_FOUND');
+}
+
+export function verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,resolvedRequestedCandidate=gitText(git,['rev-parse',candidateSha]);
+  assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_R24_W0_CURRENT_STATE_BASE_TREE_DRIFT');
+  try{git(['merge-base','--is-ancestor',e.baseSha,resolvedRequestedCandidate],{encoding:null});}catch{fail('E_R24_W0_CURRENT_STATE_BASE_NOT_ANCESTOR');}
+  const resolvedCandidate=resolveR24W0CurrentStateClosureCandidateSha(git,resolvedRequestedCandidate,e);
+  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_W0_CURRENT_STATE_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
+  const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_W0_CURRENT_STATE_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_W0_CURRENT_STATE_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
+  const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
+  const overlay=readJson(e.overlayPath),claim=readJson(e.claimBindingPath),inventory=readJson(e.inventoryPath),approvals=readJson(e.approvalsPath),pk1r1Approvals=readJson(e.pk1r1ApprovalsPath),executableProgram=readText(e.executableProgramPath),executableProgramTest=readText(e.executableProgramTestPath),effectiveStateCompilerTest=readText(e.effectiveStateCompilerTestPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  const o=overlay.value;
+  assert(overlay.digest===e.overlayDigest&&o.schemaVersion==='R24_W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1'&&o.overlayId==='W0_WORD_PHYSICAL_RECERTIFICATION_CURRENT_HEAD_OVERLAY_V1'&&o.stageId==='W0_WORD_PHYSICAL_RECERTIFICATION'&&o.targetNodeId==='W0_WORD_PHYSICAL_RECERTIFICATION'&&o.from==='BLOCKED_TYPED'&&o.to==='DONE','E_R24_W0_CURRENT_STATE_OVERLAY_IDENTITY');
+  assert(o.immutableCandidateHeadSha===e.immutableCandidateHeadSha&&o.immutableCandidateTreeSha===e.immutableCandidateTreeSha&&evaluationTree(git,e.immutableCandidateHeadSha)===e.immutableCandidateTreeSha,'E_R24_W0_CURRENT_STATE_IMMUTABLE_CANDIDATE');
+  try{git(['merge-base','--is-ancestor',e.immutableCandidateHeadSha,resolvedCandidate],{encoding:null});}catch{fail('E_R24_W0_CURRENT_STATE_IMMUTABLE_CANDIDATE_NOT_ANCESTOR');}
+  assert(o.rawPlanStateMutation===false&&o.programMutation===false&&o.physicalReceiptId==='YALKEN_R24_W0_WORD_PHYSICAL_RECERTIFICATION_RECEIPT_V1'&&o.physicalReceiptSha256===e.physicalReceiptSha256&&o.proofAuthority==='OWNER_APPROVED_WORD_PHYSICAL_SESSION_AUTHORITY'&&o.source==='W0_PHYSICAL_RECERTIFICATION_VERIFIER_PASS'&&o.successorHeadPolicy==='ALLOW_DESCENDANT_HEADS_WITH_IDENTICAL_PROGRAM_AND_PLAN_DIGESTS','E_R24_W0_CURRENT_STATE_OVERLAY_POLICY');
+  assert(JSON.stringify([...(o.nonClaims??[])].sort())===JSON.stringify(e.nonClaims),'E_R24_W0_CURRENT_STATE_OVERLAY_NON_CLAIMS');
+  const immutablePlan=JSON.parse(objectBytes(git,e.immutableCandidateHeadSha,e.planStatePath).toString('utf8')),immutableProgram=JSON.parse(objectBytes(git,e.immutableCandidateHeadSha,e.programPath).toString('utf8'));
+  assert(o.basePlanStateDigest===e.basePlanStateDigest&&o.baseProgramDigest===e.baseProgramDigest&&canonicalValueDigest(immutablePlan)===e.basePlanStateDigest&&canonicalValueDigest(immutableProgram)===e.baseProgramDigest,'E_R24_W0_CURRENT_STATE_PLAN_PROGRAM_DIGEST');
+  assert(h(objectBytes(git,resolvedCandidate,e.receiptPath))===e.physicalReceiptSha256,'E_R24_W0_CURRENT_STATE_RECEIPT_DIGEST');
+  assert(claim.value.schemaVersion==='ClaimBindingV1'&&claim.value.stampId===e.evidenceStampId&&claim.value.contourId==='R24_W0_CURRENT_STATE_CLOSURE'&&claim.value.verdict==='PASS'&&claim.value.headSha===e.immutableCandidateHeadSha&&claim.value.originMainSha===e.immutableCandidateHeadSha&&claim.value.oracle==='W0_CURRENT_HEAD_EFFECTIVE_STATE_CLOSURE_OVERLAY_AND_NEGATIVE_MATRIX','E_R24_W0_CURRENT_STATE_CLAIM_SHAPE');
+  const overlayBinding=claim.value.claimBindings?.find((entry)=>entry.filePath===e.overlayPath);
+  assert(overlayBinding?.sha256===overlay.digest&&JSON.stringify([...(overlayBinding.claimTerms??[])].sort())===JSON.stringify(['DONE','PASS','READY','SAFE']),'E_R24_W0_CURRENT_STATE_CLAIM_OVERLAY_BINDING');
+  const implementationDigests=new Map((claim.value.implementationArtifactDigests??[]).map((entry)=>[entry.path,entry.sha256]));
+  for(const [relative,file] of [[e.executableProgramPath,executableProgram],[e.executableProgramTestPath,executableProgramTest],[e.effectiveStateCompilerTestPath,effectiveStateCompilerTest],[e.contractTestPath,contractTest],[e.postAuditVerifierPath,postAuditVerifier],[e.postAuditTestPath,postAuditTest]])assert(implementationDigests.get(relative)===file.digest,'E_R24_W0_CURRENT_STATE_IMPLEMENTATION_DIGEST',relative);
+  const proofCommands=claim.value.executedEvidence??[];
+  assert(proofCommands.some((entry)=>entry.command?.includes('--package=node@22.12.0')&&entry.command?.includes('--package=npm@10.9.0')&&entry.command?.includes('node --test test/contracts/r24-w0-current-state-closure.contract.test.mjs')&&entry.verdict==='PASS'&&entry.tests?.pass===e.focusedContractPassCount&&entry.tests?.fail===0),'E_R24_W0_CURRENT_STATE_FOCUSED_PROOF');
+  assert(proofCommands.some((entry)=>entry.command?.includes('--package=node@22.12.0')&&entry.command?.includes('--package=npm@10.9.0')&&entry.command?.includes('npm run test:r24-w0')&&entry.verdict==='PASS'&&entry.tests?.pass===e.w0MutantKilledCount&&entry.tests?.fail===0&&entry.mutants?.killed===e.w0MutantKilledCount&&entry.mutants?.survived===0),'E_R24_W0_CURRENT_STATE_MUTANT_PROOF');
+  assert(JSON.stringify([...(claim.value.nonClaims??[])].filter((item)=>e.nonClaims.includes(item)).sort())===JSON.stringify(e.nonClaims)&&claim.value.nonClaims?.includes('NO_UI_OR_DESIGN_CHANGE')&&claim.value.nonClaims?.includes('NO_NEW_DEPENDENCY'),'E_R24_W0_CURRENT_STATE_CLAIM_NON_CLAIMS');
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.byKind?.CONTRACT===e.inventoryContractDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_W0_CURRENT_STATE_INVENTORY_SHAPE');
+  for(const [relative,file] of [[e.effectiveStateCompilerTestPath,effectiveStateCompilerTest],[e.contractTestPath,contractTest],[e.postAuditTestPath,postAuditTest]]){const entry=inventory.value.entries.find((item)=>item.path===relative);assert(entry?.sha256===file.digest&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_W0_CURRENT_STATE_INVENTORY_DIGEST',relative);}
+  const approvalEntries=[...(approvals.value.approvals??[]),...(pk1r1Approvals.value.approvals??[])];
+  for(const relative of e.admittedPaths.filter((item)=>item!==e.approvalsPath&&item!==e.pk1r1ApprovalsPath)){const digest=h(objectBytes(git,resolvedCandidate,relative)),approved=approvalEntries.some((entry)=>entry.filePath===relative&&entry.sha256===digest&&entry.approved===true&&approvalMatchesApprovedBy(entry,e.approvedBy)&&entry.evidenceStampIds?.includes(e.approvalEvidenceStampId));assert(approved,'E_R24_W0_CURRENT_STATE_APPROVAL_DIGEST',relative);}
+  for(const token of ['normalizeW0EffectiveStateOverlay','W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_PATH','E_R24_W0_OVERLAY_CANDIDATE_TREE'])assert(executableProgram.text.includes(token),'E_R24_W0_CURRENT_STATE_EXECUTABLE_TOKEN',token);
+  for(const token of ['W0 current-head overlay closes only the effective state while preserving raw plan state','W0 overlay rejects a mutated immutable candidate tree binding','W0 overlay rejects missing non-claim fences'])assert(contractTest.text.includes(token),'E_R24_W0_CURRENT_STATE_CONTRACT_TEST_TOKEN',token);
+  for(const token of ['R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION','verifyR24W0CurrentStateClosurePostEvaluationException','E_R24_W0_CURRENT_STATE_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_W0_CURRENT_STATE_POST_AUDIT_VERIFIER_TOKEN',token);
+  for(const token of ['R24 W0 current-state closure exception accepts the bounded overlay proof','R24 W0 current-state closure exception accepts successor heads by selecting the immutable exact candidate','R24 W0 current-state closure exception rejects an unadmitted future path'])assert(postAuditTest.text.includes(token),'E_R24_W0_CURRENT_STATE_POST_AUDIT_TEST_TOKEN',token);
+  return{schemaVersion:'R24_W0_CURRENT_STATE_CLOSURE_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),immutableCandidateHeadSha:e.immutableCandidateHeadSha,immutableCandidateTreeSha:e.immutableCandidateTreeSha,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,overlayDigest:overlay.digest,claimBindingDigest:claim.digest,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,pk1r1ApprovalsDigest:pk1r1Approvals.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,physicalReceiptSha256:e.physicalReceiptSha256,effectiveW0State:'DONE',rawW0StatePreserved:'BLOCKED_TYPED',programDone:false,productionReleaseReady:false,graphIncrement:0};
+}
+
 export function verifyWp602MainProductPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=WP602_MAIN_PRODUCT_ADMISSION_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
   const read=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_WP602_CANDIDATE_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_WP602_CANONICAL_LF',p);return{value:JSON.parse(bytes),digest:h(bytes)};};
@@ -5700,6 +5816,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   let r24Rcv00hMinimalE0ParserPurityDescendant=false;
   if(resolvedCandidate!==R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_RCV00H_MINIMAL_E0_PARSER_PURITY_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24Rcv00hMinimalE0ParserPurityDescendant=true;}catch{}}
   const r24Rcv00hMinimalE0ParserPurityEnabled=allowAuditCycle2Admission&&r24Rcv00hMinimalE0ParserPurityDescendant;
+  let r24W0CurrentStateClosureDescendant=false;
+  if(resolvedCandidate!==R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24W0CurrentStateClosureDescendant=true;}catch{}}
+  const r24W0CurrentStateClosureEnabled=allowAuditCycle2Admission&&r24W0CurrentStateClosureDescendant;
   const wp709Enabled=allowMainProductWp709Admission||pk1r1Enabled||(allowAuditCycle2Admission&&wp709Descendant);
   const wp707Enabled=allowMainProductWp707Admission||wp709Enabled||(allowAuditCycle2Admission&&wp707Descendant);
   const wp706Enabled=allowMainProductWp706Admission||wp707Enabled||(allowAuditCycle2Admission&&wp706Descendant);
@@ -5860,7 +5979,8 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const r24P03RelationshipGraphValidationException=r24P03RelationshipGraphValidationEnabled?verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Ops03SemanticE0ClassifierException=r24Ops03SemanticE0ClassifierEnabled?verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Rcv00hMinimalE0ParserPurityException=r24Rcv00hMinimalE0ParserPurityEnabled?verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
-  const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[]),...(r24Rcv00hMinimalE0ParserPurityException?.admittedPaths??[])]);
+  const r24W0CurrentStateClosureException=r24W0CurrentStateClosureEnabled?verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:resolvedCandidate,git}):null;
+  const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[]),...(r24Rcv00hMinimalE0ParserPurityException?.admittedPaths??[]),...(r24W0CurrentStateClosureException?.admittedPaths??[])]);
   for(const admittedPath of (r24Interop100U000cPagebreakReexportException?.admittedPaths??[]))allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
@@ -5876,6 +5996,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24P03RelationshipGraphValidationPostEvaluationException=r24P03RelationshipGraphValidationException;
   verificationResult.r24Ops03SemanticE0ClassifierPostEvaluationException=r24Ops03SemanticE0ClassifierException;
   verificationResult.r24Rcv00hMinimalE0ParserPurityPostEvaluationException=r24Rcv00hMinimalE0ParserPurityException;
+  verificationResult.r24W0CurrentStateClosurePostEvaluationException=r24W0CurrentStateClosureException;
   return verificationResult;
 }
 

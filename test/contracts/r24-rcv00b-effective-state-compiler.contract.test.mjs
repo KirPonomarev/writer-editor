@@ -28,5 +28,7 @@ test('R24-RCV-00B binds status, next-node selection and completion to one effect
   assert.deepEqual(status.effectiveStateCounts, effectiveStateProjection.statusProjection.counts);
   assert.equal(status.effectiveCompletionProgramDone, effectiveStateProjection.completion.programDone);
   assert.equal(status.effectiveCompletionRequiredPendingCount, effectiveStateProjection.completion.requiredPendingCount);
+  assert.equal(effectiveStateProjection.rawState.contourStates.W0_WORD_PHYSICAL_RECERTIFICATION, 'BLOCKED_TYPED');
+  assert.equal(effectiveStateProjection.effectiveState.states.W0_WORD_PHYSICAL_RECERTIFICATION, 'DONE');
   assert.equal(effectiveStateProjection.noAutomaticGraphTransition, true);
 });

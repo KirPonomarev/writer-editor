@@ -66,6 +66,10 @@ const R24_A0_AUTHORITY_SOT_ALLOWLIST = [
   'test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js',
   'test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js',
 ];
+const R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST = [
+  'docs/OPS/R24/CORRECTIVE/W0_CURRENT_HEAD_EFFECTIVE_STATE_OVERLAY_V1.json',
+  'test/contracts/r24-w0-current-state-closure.contract.test.mjs',
+];
 const ALLOWLIST = [
   // ZIP-01 Pass 2c fixture repair (real CRC32 in builder headers).
   '.github/workflows/rtk-required.yml',
@@ -159,6 +163,7 @@ const ALLOWLIST = [
   // MULTI-01 Pass 2: closure evaluator accepts the typed blocked profile cell.
   'scripts/ops/rtk-word-release-audit-p0-multiscene-atomic-comment-state-closure.mjs',
   ...R24_A0_AUTHORITY_SOT_ALLOWLIST,
+  ...R24_W0_CURRENT_STATE_CLOSURE_ALLOWLIST,
 ];
 
 const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
