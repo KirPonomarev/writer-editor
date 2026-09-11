@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
 import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
+import { RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs';
 import { verifyRuleset } from '../../scripts/ops/r24/corrective/post-audit-merge-gate.mjs';
 import {
   AUDIT_CYCLE_1_DURABLE_EXPECTATION,
@@ -156,6 +157,17 @@ test('PRE00F current-head reconciliation is admitted as a post-evaluation except
   assert.deepEqual(current.changedPaths,PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.admittedPaths);
   assert.equal(current.programDone,false);
   assert.equal(current.graphIncrement,0);
+});
+test('RCV00A current-head exact-toolchain entrypoint is admitted as a post-evaluation exception',()=>{
+  const file=load(),result=verify(file.value,file.fileDigest),current=result.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException;
+  assert.equal(current.status,'PASS');
+  assert.equal(current.admittedPathDenominator,RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION.admittedPaths.length);
+  assert.deepEqual(current.changedPaths,RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION.admittedPaths);
+  assert.equal(current.exactNode,'22.12.0');
+  assert.equal(current.exactNpm,'10.9.0');
+  assert.equal(current.programDone,false);
+  assert.equal(current.graphIncrement,0);
+  assert.equal(current.historicalRcv00aAdmissionWidened,false);
 });
 test('historical false-green is reproduced as exactly nine Git-object mismatches',()=>{const value=JSON.parse(fs.readFileSync(OLD));let denominator=0,mismatches=0;for(const stage of value.stages)for(const binding of stage.artifactBindings){denominator+=1;const bytes=execFileSync('git',['show',`${value.evaluationSha}:${binding.path}`]);if(h(bytes)!==binding.sha256)mismatches+=1;}assert.equal(denominator,137);assert.equal(mismatches,9);});
 test('declared artifact mismatch fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].sha256='0'.repeat(64);assert.throws(()=>verify(mutant),/E_ARTIFACT_DIGEST_MISMATCH/);});
