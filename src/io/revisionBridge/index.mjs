@@ -1294,7 +1294,7 @@ function docxZipKnownSupportPartName(name) {
 }
 
 function docxZipEmbeddedFontPartName(name) {
-  return /^word\/fonts\/[A-Za-z0-9_.-]+\.odttf$/u.test(name);
+  return /^word\/fonts\/[A-Za-z0-9_.-]+\.(?:odttf|ttf)$/u.test(name);
 }
 
 function docxZipClassifyEntry(name) {

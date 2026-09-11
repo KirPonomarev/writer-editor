@@ -180,6 +180,7 @@ test('DOCX intake preflight report: media stays degraded diagnostics only', asyn
   const embeddedFont = bridge.buildDocxIntakePreflightReportFromZipBytes(cleanDocxZip([
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
     { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
+    { name: 'word/fonts/font1.ttf', body: Buffer.from([0, 1, 2, 3]) },
   ]));
 
   assertPreParseReport(result);
@@ -202,7 +203,7 @@ test('DOCX intake preflight report: media stays degraded diagnostics only', asyn
   assert.equal(embeddedFont.code, 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY');
   assert.equal(embeddedFont.partPolicy.eligibility.parserCandidateOnly, true);
   assert.equal(embeddedFont.preflightSummary.eligibility.parserCandidateOnly, true);
-  assert.equal(embeddedFont.preflightSummary.inventory.categoryCounts.fontPart, 1);
+  assert.equal(embeddedFont.preflightSummary.inventory.categoryCounts.fontPart, 2);
   assert.equal(embeddedFont.diagnostics.some((item) => (
     item.source === 'partPolicy' && item.code === 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'
   )), true);
