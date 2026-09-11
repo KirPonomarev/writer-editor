@@ -9,6 +9,7 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = path.join(REPO_ROOT, 'src', 'utils', 'docxImportLocalFilePreview.js');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
+const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_SCHEMA,
@@ -112,7 +113,7 @@ function zipFixture(entries) {
 }
 
 function documentXml(body) {
-  return `<w:document><w:body>${body}</w:body></w:document>`;
+  return `<w:document xmlns:w="${WORDPROCESSINGML_NS}"><w:body>${body}</w:body></w:document>`;
 }
 
 function paragraphXml(text) {

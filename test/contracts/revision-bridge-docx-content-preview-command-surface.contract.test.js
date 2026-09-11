@@ -11,6 +11,7 @@ const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
 const SECTION_START = '// DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START';
 const SECTION_END = '// DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_END';
+const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 function readMainSource() {
   return fs.readFileSync(MAIN_PATH, 'utf8');
@@ -153,7 +154,7 @@ function zipFixture(entries) {
 }
 
 function documentXml(body) {
-  return `<w:document><w:body>${body}</w:body></w:document>`;
+  return `<w:document xmlns:w="${WORDPROCESSINGML_NS}"><w:body>${body}</w:body></w:document>`;
 }
 
 function paragraphXml(text) {

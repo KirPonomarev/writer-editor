@@ -6720,6 +6720,34 @@ const DOCX_WORDPROCESSINGML_MAIN_NAMESPACE = [
   'h',
   'ttp://schemas.openxmlformats.org/wordprocessingml/2006/main',
 ].join('');
+const DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE = [
+  'h',
+  'ttp://schemas.openxmlformats.org/officeDocument/2006/relationships',
+].join('');
+const DOCX_MARKUP_COMPATIBILITY_NAMESPACE = [
+  'h',
+  'ttp://schemas.openxmlformats.org/markup-compatibility/2006',
+].join('');
+const DOCX_WORDPROCESSINGML_W14_NAMESPACE = [
+  'h',
+  'ttp://schemas.microsoft.com/office/word/2010/wordml',
+].join('');
+const DOCX_XML_NAMESPACE = [
+  'h',
+  'ttp://www.w3.org/XML/1998/namespace',
+].join('');
+const DOCX_XMLNS_NAMESPACE = [
+  'h',
+  'ttp://www.w3.org/2000/xmlns/',
+].join('');
+const DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES = new Map([
+  ['xml', DOCX_XML_NAMESPACE],
+  ['w', DOCX_WORDPROCESSINGML_MAIN_NAMESPACE],
+  ['r', DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE],
+  ['mc', DOCX_MARKUP_COMPATIBILITY_NAMESPACE],
+  ['w14', DOCX_WORDPROCESSINGML_W14_NAMESPACE],
+  ['w99', 'urn:yalken:legacy-unsupported-wordprocessingml-choice'],
+]);
 const DOCX_CONTENT_PREVIEW_WORDPROCESSINGML_GUARD_LOCAL_NAMES = new Set([
   'body',
   'bookmarkEnd',
@@ -7057,8 +7085,8 @@ function docxContentPreviewAttributeValue(token, localName) {
 
 function docxContentPreviewAttributeNamespaceUri(attributeName, namespaceMap) {
   const prefix = docxContentPreviewPrefixName(attributeName);
-  if (prefix === 'w' && (!(namespaceMap instanceof Map) || !namespaceMap.has('w'))) {
-    return DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
+  if (prefix && (!(namespaceMap instanceof Map) || !namespaceMap.has(prefix))) {
+    return DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES.get(prefix) || '';
   }
   if (!prefix) return '';
   return namespaceMap instanceof Map ? namespaceMap.get(prefix) || '' : '';
@@ -7100,11 +7128,44 @@ function docxContentPreviewNamespaceMapForToken(parentMap, token) {
 
 function docxContentPreviewNamespaceUriForTagName(tagName, namespaceMap) {
   const prefix = docxContentPreviewPrefixName(tagName);
-  if (prefix === 'w' && (!(namespaceMap instanceof Map) || !namespaceMap.has('w'))) {
-    return DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
+  if (prefix && (!(namespaceMap instanceof Map) || !namespaceMap.has(prefix))) {
+    return DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES.get(prefix) || '';
   }
   if (prefix) return namespaceMap instanceof Map ? namespaceMap.get(prefix) || '' : '';
   return namespaceMap instanceof Map ? namespaceMap.get('') || '' : '';
+}
+
+function docxContentPreviewResolveQName(nameParts, namespaceMap, { allowLegacy = false, attribute = false } = {}) {
+  if (!nameParts) return null;
+  if (!nameParts.prefix) {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: attribute ? '' : (namespaceMap.get('') || ''),
+      qName: nameParts.qName,
+    };
+  }
+  if (nameParts.prefix === 'xml') {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: DOCX_XML_NAMESPACE,
+      qName: nameParts.qName,
+    };
+  }
+  if (namespaceMap.has(nameParts.prefix)) {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: namespaceMap.get(nameParts.prefix) || '',
+      qName: nameParts.qName,
+    };
+  }
+  if (!allowLegacy) return null;
+  const legacyNamespace = DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES.get(nameParts.prefix);
+  if (!legacyNamespace) return null;
+  return {
+    localName: nameParts.localName,
+    namespaceUri: legacyNamespace,
+    qName: nameParts.qName,
+  };
 }
 
 function docxContentPreviewCanonicalTagName(tagName, namespaceMap) {
@@ -7121,6 +7182,169 @@ function docxContentPreviewUnsupportedNamespacePrefix(tagName, namespaceMap) {
   if (docxContentPreviewNamespaceUriForTagName(tagName, namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) return '';
   const prefix = docxContentPreviewPrefixName(tagName);
   return prefix || 'default';
+}
+
+function docxContentPreviewParseStrictAttributes(attributeText) {
+  const attributes = [];
+  const namespaces = [];
+  const seenQNames = new Set();
+  let cursor = 0;
+  while (cursor < attributeText.length) {
+    if (!/[ \t\r\n]/u.test(attributeText[cursor])) return null;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    if (cursor >= attributeText.length) break;
+    const nameMatch = /^[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?/u.exec(attributeText.slice(cursor));
+    if (!nameMatch) return null;
+    const rawName = nameMatch[0];
+    if (seenQNames.has(rawName)) return null;
+    seenQNames.add(rawName);
+    cursor += rawName.length;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    if (attributeText[cursor] !== '=') return null;
+    cursor += 1;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    const quote = attributeText[cursor];
+    if (quote !== '"' && quote !== "'") return null;
+    cursor += 1;
+    const valueEnd = attributeText.indexOf(quote, cursor);
+    if (valueEnd === -1) return null;
+    const value = docxZipXmlDecodeAttribute(attributeText.slice(cursor, valueEnd));
+    if (value === null) return null;
+    cursor = valueEnd + 1;
+    const nameParts = docxZipXmlNameParts(rawName);
+    if (!nameParts) return null;
+    if (rawName === 'xmlns') {
+      namespaces.push({ prefix: '', value });
+    } else if (nameParts.prefix === 'xmlns') {
+      namespaces.push({ prefix: nameParts.localName, value });
+    } else {
+      attributes.push({ nameParts, value });
+    }
+  }
+  return { attributes, namespaces };
+}
+
+function docxContentPreviewScopedNamespaceMap(parentNamespaceMap, namespaces) {
+  const namespaceMap = new Map(parentNamespaceMap instanceof Map ? parentNamespaceMap : []);
+  const seenNamespacePrefixes = new Set();
+  for (const namespace of namespaces) {
+    if (!namespace || typeof namespace.prefix !== 'string') return null;
+    if (seenNamespacePrefixes.has(namespace.prefix)) return null;
+    seenNamespacePrefixes.add(namespace.prefix);
+    if (
+      namespace.prefix === 'xmlns'
+      || (namespace.prefix && !namespace.value)
+      || namespace.value === DOCX_XMLNS_NAMESPACE
+      || (namespace.prefix === 'xml') !== (namespace.value === DOCX_XML_NAMESPACE)
+    ) {
+      return null;
+    }
+    namespaceMap.set(namespace.prefix, namespace.value);
+  }
+  return namespaceMap;
+}
+
+function docxContentPreviewParseStrictStartTag(rawTag, parentNamespaceMap) {
+  const trimmed = rawTag.replace(/[ \t\r\n]+$/u, '');
+  if (!trimmed) return null;
+  const selfClosing = /\/$/u.test(trimmed);
+  const body = selfClosing ? trimmed.slice(0, -1) : trimmed;
+  const nameMatch = /^([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)(?=\s|$)/u.exec(body);
+  if (!nameMatch) return null;
+  const parsedAttributes = docxContentPreviewParseStrictAttributes(body.slice(nameMatch[0].length));
+  if (!parsedAttributes) return null;
+  const namespaceMap = docxContentPreviewScopedNamespaceMap(parentNamespaceMap, parsedAttributes.namespaces);
+  if (!namespaceMap) return null;
+  const resolvedName = docxContentPreviewResolveQName(docxZipXmlNameParts(nameMatch[0]), namespaceMap);
+  if (!resolvedName) return null;
+  const seenExpandedAttributes = new Set();
+  for (const attribute of parsedAttributes.attributes) {
+    const resolvedAttribute = docxContentPreviewResolveQName(attribute.nameParts, namespaceMap, { attribute: true });
+    if (!resolvedAttribute) return null;
+    const expandedKey = `${resolvedAttribute.namespaceUri}\u0000${resolvedAttribute.localName}`;
+    if (seenExpandedAttributes.has(expandedKey)) return null;
+    seenExpandedAttributes.add(expandedKey);
+  }
+  return {
+    ...resolvedName,
+    rawTagName: nameMatch[0],
+    namespaceMap,
+    selfClosing,
+  };
+}
+
+function docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText) {
+  const text = String(xmlText || '').replace(/^\ufeff/u, '');
+  if (/[^\u0009\u000a\u000d\u0020-\ud7ff\ue000-\ufffd\u{10000}-\u{10ffff}]/u.test(text)) {
+    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_INVALID_CHARACTER') };
+  }
+  const stack = [];
+  let cursor = 0;
+  while (cursor < text.length) {
+    const open = text.indexOf('<', cursor);
+    if (open === -1) break;
+    cursor = open;
+    if (text.startsWith('<!--', open)) {
+      const end = text.indexOf('-->', open + 4);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_COMMENT_MALFORMED') };
+      const body = text.slice(open + 4, end);
+      if (body.includes('--') || body.endsWith('-')) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_COMMENT_MALFORMED') };
+      }
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<?', open)) {
+      const end = text.indexOf('?>', open + 2);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+      const instruction = text.slice(open + 2, end);
+      const target = /^([A-Za-z_][\w.-]*)(?=[ \t\r\n]|$)/u.exec(instruction)?.[1];
+      if (!target) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+      cursor = end + 2;
+      continue;
+    }
+    if (text.startsWith('<![CDATA[', open)) {
+      const end = text.indexOf(']]>', open + 9);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_CDATA_MALFORMED') };
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<!', open)) {
+      const end = docxZipXmlFindTagEnd(text, open + 1);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_MALFORMED') };
+      cursor = end + 1;
+      continue;
+    }
+    const close = docxZipXmlFindTagEnd(text, open + 1);
+    if (close === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MALFORMED') };
+    const rawTag = text.slice(open + 1, close);
+    if (rawTag.startsWith('/')) {
+      const rawCloseName = rawTag.slice(1).replace(/[ \t\r\n]+$/u, '');
+      const closeNameParts = docxZipXmlNameParts(rawCloseName);
+      const parentNamespaceMap = stack.length > 0 ? stack[stack.length - 1].namespaceMap : new Map();
+      const resolvedCloseName = docxContentPreviewResolveQName(closeNameParts, parentNamespaceMap);
+      const openTag = stack.pop();
+      if (!resolvedCloseName || !openTag || openTag.rawTagName !== resolvedCloseName.qName) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MISMATCH', rawCloseName) };
+      }
+      cursor = close + 1;
+      continue;
+    }
+    const parentNamespaceMap = stack.length > 0 ? stack[stack.length - 1].namespaceMap : new Map();
+    const parsedTag = docxContentPreviewParseStrictStartTag(rawTag, parentNamespaceMap);
+    if (!parsedTag) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_ATTRIBUTE_MALFORMED') };
+    }
+    if (!parsedTag.selfClosing) stack.push(parsedTag);
+    cursor = close + 1;
+  }
+  if (cursor !== text.length && text.slice(cursor).trim() !== '') {
+    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  }
+  if (stack.length > 0) {
+    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_UNCLOSED_TAG', stack[stack.length - 1].rawTagName) };
+  }
+  return { ok: true };
 }
 
 function docxContentPreviewRootElement(xmlText) {
@@ -7514,6 +7738,8 @@ function docxContentPreviewUnsupportedEncoding(xmlText) {
 }
 
 function docxContentPreviewParseMainDocumentXml(xmlText) {
+  const xmlValidation = docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText);
+  if (xmlValidation.failure) return { failure: xmlValidation.failure };
   const mceSelection = docxContentPreviewSelectMarkupCompatibilityXml(xmlText);
   if (mceSelection.failure) return { failure: mceSelection.failure };
   const xmlTextForPreview = mceSelection.xmlText;
