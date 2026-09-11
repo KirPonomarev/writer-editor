@@ -843,7 +843,6 @@ function rcv00dGitFixture({changedPaths,evidenceBytes,artifactBytesByPath=new Ma
   const currentBytes=(repoPath)=>{
     if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
     if(repoPath===e.evidencePath&&evidenceBytes)return Buffer.from(evidenceBytes);
-    if(fs.existsSync(repoPath))return fs.readFileSync(repoPath);
     return objectFromCommit(e.deliverySha,repoPath);
   };
   const bytesByPath=new Map(e.admittedPaths.concat([e.registerPath,e.planPath,e.planStatePath,e.approvalCarrierPath,e.claimLintPath,e.claimLintTestPath]).map((repoPath)=>[repoPath,currentBytes(repoPath)]));
@@ -910,7 +909,7 @@ test('RCV00D graph-derived selector exception rejects a mutated graph scheduler 
   assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_GRAPH_CANDIDATE_BINDING|E_RCV00D_SELECTOR_RECEIPT/);
 });
 test('RCV00D graph-derived selector exception rejects a mutated selector artifact',()=>{
-  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,mutated=new Map([[e.selectorPath,Buffer.from(`${fs.readFileSync(e.selectorPath,'utf8')}\n// mutated immutable selector artifact\n`)]]);
+  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,mutated=new Map([[e.selectorPath,Buffer.from(`${objectFromCommit(e.deliverySha,e.selectorPath).toString('utf8')}\n// mutated immutable selector artifact\n`)]]);
   const fixture=rcv00dGitFixture({artifactBytesByPath:mutated});
   assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_EVIDENCE_ARTIFACT_DIGEST/);
 });
