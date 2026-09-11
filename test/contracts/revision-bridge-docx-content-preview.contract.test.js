@@ -9,6 +9,7 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = path.join(ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
 const SECTION_START = '// RB_11_DOCX_CONTENT_PREVIEW_START';
 const SECTION_END = '// RB_11_DOCX_CONTENT_PREVIEW_END';
+const TTF_BYTES = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);
@@ -137,6 +138,14 @@ function documentXml(body) {
 
 function contentTypesXml() {
   return '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+}
+
+function fontContentTypesXml(contentType = 'application/x-font-ttf') {
+  return `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="ttf" ContentType="${contentType}"/></Types>`;
+}
+
+function fontRelationshipsXml(target = 'fonts/font1.ttf') {
+  return `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rFont1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="${target}"/></Relationships>`;
 }
 
 function paragraphXml(text) {
@@ -454,13 +463,21 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
     { name: 'word/media/image1.png', body: 'png' },
   ]));
   const embeddedFont = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Font'), [
+    { name: '[Content_Types].xml', body: fontContentTypesXml() },
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/_rels/fontTable.xml.rels', body: fontRelationshipsXml() },
     { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
-    { name: 'word/fonts/font1.ttf', body: Buffer.from([0, 1, 2, 3]) },
+    { name: 'word/fonts/font1.ttf', body: TTF_BYTES },
+  ]));
+  const badFont = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('BadFont'), [
+    { name: '[Content_Types].xml', body: fontContentTypesXml() },
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/_rels/fontTable.xml.rels', body: fontRelationshipsXml() },
+    { name: 'word/fonts/font1.ttf', body: Buffer.from('BADDfont', 'ascii') },
   ]));
   const malformed = bridge.buildDocxContentPreviewFromZipBytes('review.docx');
 
-  for (const result of [duplicate, dtd, malformed]) {
+  for (const result of [duplicate, dtd, badFont, malformed]) {
     assertContentPreviewShell(result);
     assert.equal(result.ok, false);
     assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED');
@@ -471,6 +488,7 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
   }
   assert.equal(duplicate.reason, 'STAGE02_DUPLICATE_ENTRY_NAME');
   assert.equal(dtd.reason, 'STAGE02_XML_DTD_DECLARATION_PRESENT');
+  assert.equal(badFont.reason, 'STAGE02_PACKAGE_QUARANTINED');
   assert.equal(malformed.reason, 'STAGE02_PACKAGE_MALFORMED');
   assert.equal(degraded.ok, true);
   assert.equal(degraded.status, 'preview');

@@ -9,6 +9,8 @@ const ONE_PIXEL_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
   'base64',
 );
+const TTF_BYTES = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
+const BAD_TTF_BYTES = Buffer.from('BADDfont', 'ascii');
 
 async function loadBridge() {
   return import(pathToFileURL(path.join(process.cwd(), MODULE_PATH)).href);
@@ -98,6 +100,14 @@ function zipFixture(entries) {
   end.writeUInt32LE(offset, 16);
   end.writeUInt16LE(0, 20);
   return Buffer.concat([Buffer.concat(locals.map((entry) => entry.bytes)), central, end]);
+}
+
+function fontContentTypesXml(contentType = 'application/x-font-ttf') {
+  return `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="ttf" ContentType="${contentType}"/></Types>`;
+}
+
+function fontRelationshipsXml(target = 'fonts/font1.ttf') {
+  return `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rFont1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="${target}"/></Relationships>`;
 }
 
 function assertExactShape(result) {
@@ -246,9 +256,11 @@ test('Stage02 hostile file gate allows bounded ignored parts and quarantines unk
   ]));
   const embeddedFontPart = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
+    { name: '[Content_Types].xml', body: fontContentTypesXml() },
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/_rels/fontTable.xml.rels', body: fontRelationshipsXml() },
     { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
-    { name: 'word/fonts/font1.ttf', body: Buffer.from([0, 1, 2, 3]) },
+    { name: 'word/fonts/font1.ttf', body: TTF_BYTES },
   ]));
   const unsupportedFontPart = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
     { name: 'word/document.xml', body: '<root/>' },
@@ -275,6 +287,38 @@ test('Stage02 hostile file gate allows bounded ignored parts and quarantines unk
     assert.equal(result.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PASS);
     assert.equal(result.parse.attempted, false);
     assert.equal(result.parse.semanticAllowed, true);
+  }
+});
+
+test('Stage02 hostile file gate rejects invalid .ttf font admission controls before semantic parse', async () => {
+  const bridge = await loadBridge();
+  const baseEntries = ({ contentType = 'application/x-font-ttf', relationship = fontRelationshipsXml(), fontBody = TTF_BYTES, extras = [] } = {}) => [
+    { name: 'word/document.xml', body: '<root/>' },
+    { name: '[Content_Types].xml', body: fontContentTypesXml(contentType) },
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    ...(relationship === null ? [] : [{ name: 'word/_rels/fontTable.xml.rels', body: relationship }]),
+    { name: 'word/fonts/font1.ttf', body: fontBody },
+    ...extras,
+  ];
+  const cases = [
+    ['bad-font-magic', baseEntries({ fontBody: BAD_TTF_BYTES })],
+    ['bad-ttf-content-type', baseEntries({ contentType: 'application/octet-stream' })],
+    ['missing-font-relationship', baseEntries({ relationship: null })],
+    ['unbound-extra-font-part', baseEntries({
+      extras: [{ name: 'word/fonts/unbound-evil.ttf', body: BAD_TTF_BYTES }],
+    })],
+  ];
+
+  for (const [caseId, entries] of cases) {
+    const result = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture(entries));
+    assert.equal(result.ok, false, caseId);
+    assert.equal(result.decision, 'quarantined', caseId);
+    assert.equal(result.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.PACKAGE_QUARANTINED, caseId);
+    assert.equal(result.parse.attempted, false, caseId);
+    assert.equal(result.parse.semanticAllowed, false, caseId);
+    assert.equal(result.diagnostics.some((item) => (
+      item.sourceCode === 'DOCX_UNKNOWN_PART_PRESENT'
+    )), true, caseId);
   }
 });
 

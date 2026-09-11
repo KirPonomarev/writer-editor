@@ -1159,6 +1159,14 @@ const DOCX_ZIP_FLAGS_ALLOWED_MASK = DOCX_ZIP_FLAG_DEFLATE_COMPRESSION_OPTION_1
   | DOCX_ZIP_FLAG_UTF8_NAMES;
 const DOCX_ZIP_U16_MAX = 0xffff;
 const DOCX_ZIP_U32_MAX = 0xffffffff;
+const DOCX_ZIP_TTF_FONT_CONTENT_TYPE = 'application/x-font-ttf';
+const DOCX_ZIP_FONT_RELATIONSHIP_TYPE = `h${'ttp'}://schemas.openxmlformats.org/officeDocument/2006/relationships/font`;
+const DOCX_ZIP_TTF_SFNT_SIGNATURES = new Set([
+  '00010000',
+  '4f54544f',
+  '74727565',
+  '74797031',
+]);
 
 function docxZipInventoryBoundsCopy() {
   return { ...DOCX_ZIP_INVENTORY_BOUNDS };
@@ -1293,8 +1301,153 @@ function docxZipKnownSupportPartName(name) {
   );
 }
 
+function docxZipEmbeddedTtfFontPartName(name) {
+  return /^word\/fonts\/[A-Za-z0-9_.-]+\.ttf$/u.test(name);
+}
+
 function docxZipEmbeddedFontPartName(name) {
   return /^word\/fonts\/[A-Za-z0-9_.-]+\.(?:odttf|ttf)$/u.test(name);
+}
+
+function docxZipFontPartEntry(entry) {
+  const markers = new Set(Array.isArray(entry.markers) ? entry.markers : []);
+  markers.add('fontPart');
+  return {
+    ...entry,
+    kind: 'knownPart',
+    markers: [...markers].sort(),
+  };
+}
+
+function docxZipUnknownPartEntry(entry) {
+  const next = {
+    id: entry.id,
+    kind: 'unknownPart',
+    byteSize: entry.byteSize,
+  };
+  if (isFiniteNonnegativeInteger(entry.compressedSize)) next.compressedSize = entry.compressedSize;
+  if (Number.isSafeInteger(entry.centralCrc32)) next.centralCrc32 = entry.centralCrc32;
+  return next;
+}
+
+function docxZipXmlRows(xmlText, tagName) {
+  const pattern = new RegExp(`<(?:[A-Za-z_][\\w.-]*:)?${tagName}\\b([^>]*)\\/?>`, 'giu');
+  return Array.from(String(xmlText || '').matchAll(pattern)).map((match) => match[1]);
+}
+
+function docxZipNormalizePackagePartName(value) {
+  const decoded = docxHostileFileGateDecodeXmlAttribute(value || '').replace(/\\/gu, '/');
+  const normalized = decoded.startsWith('/') ? decoded.slice(1) : decoded;
+  if (docxZipInventoryNameInvalid(normalized)) return null;
+  return normalized;
+}
+
+function docxZipContentTypesFromXml(xmlText) {
+  const defaults = new Map();
+  const overrides = new Map();
+  for (const attributes of docxZipXmlRows(xmlText, 'Default')) {
+    const extension = docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(attributes, 'Extension') || '',
+    ).trim().toLowerCase();
+    const contentType = docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(attributes, 'ContentType') || '',
+    ).trim();
+    if (extension && contentType) defaults.set(extension, contentType);
+  }
+  for (const attributes of docxZipXmlRows(xmlText, 'Override')) {
+    const partName = docxZipNormalizePackagePartName(
+      docxHostileFileGateRelationshipAttributeValue(attributes, 'PartName') || '',
+    );
+    const contentType = docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(attributes, 'ContentType') || '',
+    ).trim();
+    if (partName && contentType) overrides.set(partName, contentType);
+  }
+  return { defaults, overrides };
+}
+
+function docxZipContentTypeForPart(contentTypes, partName) {
+  if (!contentTypes) return '';
+  if (contentTypes.overrides.has(partName)) return contentTypes.overrides.get(partName);
+  const extensionMatch = String(partName).match(/\.([^.\\/]+)$/u);
+  if (!extensionMatch) return '';
+  return contentTypes.defaults.get(extensionMatch[1].toLowerCase()) || '';
+}
+
+function docxZipInflatedEntryBytes(bytes, metadataById, entryId) {
+  const entry = metadataById.get(entryId);
+  if (!entry) return null;
+  const result = docxHostileFileGateInflatedDeclarationText(bytes, entry);
+  if (result.failure || !result.contentBytes) return null;
+  return result.contentBytes;
+}
+
+function docxZipHasSupportedTtfSignature(contentBytes) {
+  if (!contentBytes || contentBytes.byteLength < 4) return false;
+  return DOCX_ZIP_TTF_SFNT_SIGNATURES.has(Buffer.from(contentBytes.subarray(0, 4)).toString('hex').toLowerCase());
+}
+
+function docxZipRelationshipBoundTtfTargets(bytes, metadataById) {
+  const relationshipBytes = docxZipInflatedEntryBytes(bytes, metadataById, 'word/_rels/fontTable.xml.rels');
+  if (!relationshipBytes) return new Set();
+  const xmlText = Buffer.from(relationshipBytes).toString('utf8');
+  const relationshipSource = docxHostileFileGateRelationshipSource('word/_rels/fontTable.xml.rels');
+  const targets = new Set();
+  for (const relationship of docxHostileFileGateRelationshipRows(xmlText)) {
+    if (relationship.type !== DOCX_ZIP_FONT_RELATIONSHIP_TYPE) continue;
+    if (String(relationship.targetMode || '').trim().toLowerCase() === 'external') continue;
+    const resolution = docxHostileFileGateNormalizeInternalRelationshipTarget(
+      relationshipSource.baseDir || '',
+      relationship.target,
+    );
+    if (
+      resolution.escapedPackage
+      || resolution.externalUri
+      || resolution.unsafeAbsolute
+      || !resolution.normalizedTarget
+    ) {
+      continue;
+    }
+    if (docxZipEmbeddedTtfFontPartName(resolution.normalizedTarget)) {
+      targets.add(resolution.normalizedTarget);
+    }
+  }
+  return targets;
+}
+
+function docxZipContextualTtfFontPartNames(bytes, inventory) {
+  const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
+  if (!entries.some((entry) => docxZipEmbeddedTtfFontPartName(entry?.id))) return new Set();
+  const metadataResult = docxHostileFileGateCentralEntries(bytes);
+  if (metadataResult.failure) return new Set();
+  const metadataById = new Map(metadataResult.entries.map((entry) => [entry.entryId, entry]));
+  const contentTypesBytes = docxZipInflatedEntryBytes(bytes, metadataById, '[Content_Types].xml');
+  if (!contentTypesBytes) return new Set();
+  const contentTypes = docxZipContentTypesFromXml(Buffer.from(contentTypesBytes).toString('utf8'));
+  const relationshipTargets = docxZipRelationshipBoundTtfTargets(bytes, metadataById);
+  const admitted = new Set();
+  for (const target of relationshipTargets) {
+    if (docxZipContentTypeForPart(contentTypes, target) !== DOCX_ZIP_TTF_FONT_CONTENT_TYPE) continue;
+    const fontBytes = docxZipInflatedEntryBytes(bytes, metadataById, target);
+    if (!docxZipHasSupportedTtfSignature(fontBytes)) continue;
+    admitted.add(target);
+  }
+  return admitted;
+}
+
+function docxZipApplyContextualTtfFontAdmission(bytes, inventory) {
+  const entries = Array.isArray(inventory?.entries) ? inventory.entries : [];
+  if (!entries.some((entry) => docxZipEmbeddedTtfFontPartName(entry?.id))) return inventory;
+  const admittedTtfParts = docxZipContextualTtfFontPartNames(bytes, inventory);
+  return {
+    ...inventory,
+    entries: entries.map((entry) => {
+      if (!docxZipEmbeddedTtfFontPartName(entry?.id)) return entry;
+      return admittedTtfParts.has(entry.id)
+        ? docxZipFontPartEntry(entry)
+        : docxZipUnknownPartEntry(entry);
+    }),
+  };
 }
 
 function docxZipClassifyEntry(name) {
@@ -1518,7 +1671,7 @@ export function materializeDocxPackageInventoryFromZipBytes(input) {
 
   const centralResult = docxZipParseCentralDirectory(bytes, endResult.record);
   if (centralResult.failure) return centralResult.failure;
-  return docxZipInventorySuccess(centralResult.inventory);
+  return docxZipInventorySuccess(docxZipApplyContextualTtfFontAdmission(bytes, centralResult.inventory));
 }
 // RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END
 
@@ -2057,6 +2210,9 @@ function docxHostileFileGateRelationshipRows(xmlText) {
   return Array.from(String(xmlText).matchAll(/<Relationship\b([^>]*)\/?>/giu)).map((match) => ({
     id: docxHostileFileGateDecodeXmlAttribute(
       docxHostileFileGateRelationshipAttributeValue(match[1], 'Id') || '',
+    ),
+    type: docxHostileFileGateDecodeXmlAttribute(
+      docxHostileFileGateRelationshipAttributeValue(match[1], 'Type') || '',
     ),
     target: docxHostileFileGateDecodeXmlAttribute(
       docxHostileFileGateRelationshipAttributeValue(match[1], 'Target') || '',

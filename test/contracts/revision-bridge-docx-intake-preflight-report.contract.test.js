@@ -13,6 +13,7 @@ const ONE_PIXEL_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
   'base64',
 );
+const TTF_BYTES = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00]);
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);
@@ -127,6 +128,14 @@ function cleanDocxZip(extraEntries = []) {
   ]);
 }
 
+function fontContentTypesXml(contentType = 'application/x-font-ttf') {
+  return `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="ttf" ContentType="${contentType}"/></Types>`;
+}
+
+function fontRelationshipsXml(target = 'fonts/font1.ttf') {
+  return `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rFont1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="${target}"/></Relationships>`;
+}
+
 function collectKeys(value, pathParts = []) {
   if (Array.isArray(value)) {
     return value.flatMap((item, index) => collectKeys(item, pathParts.concat(String(index))));
@@ -178,9 +187,11 @@ test('DOCX intake preflight report: media stays degraded diagnostics only', asyn
     { name: 'word/media/image1.png', body: 'png' },
   ]));
   const embeddedFont = bridge.buildDocxIntakePreflightReportFromZipBytes(cleanDocxZip([
+    { name: '[Content_Types].xml', body: fontContentTypesXml() },
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/_rels/fontTable.xml.rels', body: fontRelationshipsXml() },
     { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
-    { name: 'word/fonts/font1.ttf', body: Buffer.from([0, 1, 2, 3]) },
+    { name: 'word/fonts/font1.ttf', body: TTF_BYTES },
   ]));
 
   assertPreParseReport(result);
@@ -200,7 +211,10 @@ test('DOCX intake preflight report: media stays degraded diagnostics only', asyn
   assert.equal(embeddedFont.gatePass, true);
   assert.equal(embeddedFont.status, 'degraded');
   assert.equal(embeddedFont.decision, 'degraded');
-  assert.equal(embeddedFont.code, 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY');
+  assert.equal(embeddedFont.partPolicy.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'
+    && item.entryId === 'word/fonts/font1.ttf'
+  )), true);
   assert.equal(embeddedFont.partPolicy.eligibility.parserCandidateOnly, true);
   assert.equal(embeddedFont.preflightSummary.eligibility.parserCandidateOnly, true);
   assert.equal(embeddedFont.preflightSummary.inventory.categoryCounts.fontPart, 2);
