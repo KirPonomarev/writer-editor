@@ -25,6 +25,12 @@ const W5_STATUS_PATH = 'docs/OPS/RTK/W5_RELEASE_HARDENING_CERTIFICATION_STATUS.j
 const W5_VERIFIER_PATH = 'scripts/ops/rtk-w5-release-hardening-certification.mjs';
 const W5_TEST_PATH = 'test/contracts/rtk-w5-release-hardening-certification.contract.test.js';
 const WORD_EVIDENCE_TEST_PATH = 'test/contracts/revision-bridge-word-evidence-check.contract.test.js';
+const PRE00F_CURRENT_HEAD_TEST_PATH = 'scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs';
+const POST_AUDIT_CERTIFICATION_SET_TEST_PATH = 'test/contracts/r24-post-audit-certification-set.contract.test.mjs';
+const POST_AUDIT_CERTIFICATION_SET_PATH = 'scripts/ops/r24/corrective/post-audit-certification-set.mjs';
+const DOCS_CLAIM_LINT_PATH = 'scripts/ops/r24/docs-claim-lint.mjs';
+const INTEROP_C1B_CLAIM_BINDING_PATH = 'docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json';
+const RCV00A_CLAIM_BINDING_PATH = 'docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json';
 const ALLOWLIST = [
   MODULE_PATH,
   TEST_PATH,
@@ -46,6 +52,12 @@ const ALLOWLIST = [
   W5_VERIFIER_PATH,
   W5_TEST_PATH,
   WORD_EVIDENCE_TEST_PATH,
+  PRE00F_CURRENT_HEAD_TEST_PATH,
+  POST_AUDIT_CERTIFICATION_SET_TEST_PATH,
+  POST_AUDIT_CERTIFICATION_SET_PATH,
+  DOCS_CLAIM_LINT_PATH,
+  INTEROP_C1B_CLAIM_BINDING_PATH,
+  RCV00A_CLAIM_BINDING_PATH,
 ];
 
 async function loadBridge() {

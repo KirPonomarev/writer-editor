@@ -6294,6 +6294,7 @@ const DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_CU
 const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES = Object.freeze({
   line: 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE',
   page: 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE',
@@ -6303,6 +6304,12 @@ const DOCX_CONTENT_PREVIEW_SECTION_BREAK_SOURCE_CODES = Object.freeze({
   nextPage: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
   continuous: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_CONTINUOUS',
 });
+const DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES = Object.freeze({
+  fallbackSelected: 'DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_FALLBACK_SELECTED',
+  noSupportedBranch: 'DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_NO_SUPPORTED_BRANCH',
+  emptySelectedBranch: 'DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SELECTED_BRANCH_EMPTY',
+});
+const DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SUPPORTED_REQUIRES = new Set(['w14']);
 const DOCX_CUSTOM_PROPERTIES_NAMESPACE = [
   'h',
   'ttp://schemas.openxmlformats.org/officeDocument/2006/custom-properties',
@@ -6724,6 +6731,213 @@ function docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenKinds, sec
   }));
 }
 
+function docxContentPreviewAddMarkupCompatibilityDiagnostic(diagnostics, seenKinds, sourceCode, message) {
+  if (!sourceCode || seenKinds.has(sourceCode)) return;
+  seenKinds.add(sourceCode);
+  if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
+  diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC, {
+    severity: 'warning',
+    sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    sourceCode,
+    tagName: 'mc:AlternateContent',
+    message,
+  }));
+}
+
+function docxContentPreviewMarkupCompatibilityChoiceSupported(token) {
+  const requiredPrefixes = docxContentPreviewAttributeValue(token, 'Requires')
+    .trim()
+    .split(/\s+/u)
+    .filter(Boolean);
+  return requiredPrefixes.length > 0
+    && requiredPrefixes.every((prefix) => DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SUPPORTED_REQUIRES.has(prefix));
+}
+
+function docxContentPreviewMarkupCompatibilityFrame() {
+  return {
+    branchActive: false,
+    branchDepth: 0,
+    selectedBranch: '',
+    selectedBranchEmitted: false,
+    unsupportedChoiceSeen: false,
+  };
+}
+
+function docxContentPreviewMarkupCompatibilityShouldEmit(frames) {
+  return frames.every((frame) => frame.branchDepth > 0 && frame.branchActive === true);
+}
+
+function docxContentPreviewMarkupCompatibilityMarkEmission(frames, token) {
+  if (!docxContentPreviewMarkupCompatibilityShouldEmit(frames)) return;
+  const text = String(token || '');
+  if (text.trim() === '') return;
+  if (text.startsWith('<!--') || text.startsWith('<?') || text.startsWith('<!')) return;
+  for (const frame of frames) {
+    if (frame.branchActive) frame.selectedBranchEmitted = true;
+  }
+}
+
+function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
+  const diagnostics = [];
+  const seenKinds = new Set();
+  const output = [];
+  const elementStack = [];
+  const frames = [];
+  const text = String(xmlText || '');
+  const tokenPattern = new RegExp('<!--[\\s\\S]*?-->|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>|<[^>]+>|[^<]+', 'gu');
+  let match;
+  let cursor = 0;
+
+  function topFrame() {
+    return frames.length > 0 ? frames[frames.length - 1] : null;
+  }
+
+  function closeSelectedBranch(frame) {
+    if (!frame || frame.branchDepth !== 0 || !frame.branchActive) return;
+    if (!frame.selectedBranchEmitted) {
+      docxContentPreviewAddMarkupCompatibilityDiagnostic(
+        diagnostics,
+        seenKinds,
+        DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.emptySelectedBranch,
+        'DOCX markup-compatibility selected branch contains no importable preview content',
+      );
+    }
+    frame.branchActive = false;
+  }
+
+  function closeAlternateContent(frame) {
+    if (!frame.selectedBranch) {
+      docxContentPreviewAddMarkupCompatibilityDiagnostic(
+        diagnostics,
+        seenKinds,
+        DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.noSupportedBranch,
+        'DOCX markup-compatibility content has no supported Choice or Fallback branch for preview import',
+      );
+    }
+  }
+
+  while ((match = tokenPattern.exec(text)) !== null) {
+    if (match.index !== cursor) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+    }
+    cursor = tokenPattern.lastIndex;
+    const token = match[0];
+    if (!token.startsWith('<')) {
+      if (frames.length === 0 || docxContentPreviewMarkupCompatibilityShouldEmit(frames)) {
+        output.push(token);
+        docxContentPreviewMarkupCompatibilityMarkEmission(frames, token);
+      }
+      continue;
+    }
+    if (token.startsWith('<!--') || token.startsWith('<?') || token.startsWith('<!')) {
+      if (frames.length === 0 || docxContentPreviewMarkupCompatibilityShouldEmit(frames)) output.push(token);
+      continue;
+    }
+
+    const tagName = docxContentPreviewTagName(token);
+    if (!tagName) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_NAME_MISSING') };
+    const closing = /^<\//u.test(token);
+    const selfClosing = /\/>\s*$/u.test(token);
+    const tagPrefix = docxContentPreviewPrefixName(tagName);
+    const tagLocalName = docxContentPreviewLocalName(tagName);
+    const isAlternateContent = tagPrefix === 'mc' && tagLocalName === 'AlternateContent';
+    const isChoice = tagPrefix === 'mc' && tagLocalName === 'Choice';
+    const isFallback = tagPrefix === 'mc' && tagLocalName === 'Fallback';
+    const mceBranchTag = isChoice || isFallback;
+
+    if (!closing) {
+      if (isAlternateContent) {
+        if (!selfClosing) {
+          elementStack.push(tagName);
+          frames.push(docxContentPreviewMarkupCompatibilityFrame());
+        } else {
+          docxContentPreviewAddMarkupCompatibilityDiagnostic(
+            diagnostics,
+            seenKinds,
+            DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.noSupportedBranch,
+            'DOCX markup-compatibility content has no branch for preview import',
+          );
+        }
+        continue;
+      }
+
+      const frame = topFrame();
+      if (frame && frame.branchDepth === 0 && mceBranchTag) {
+        let active = false;
+        if (isChoice) {
+          active = !frame.selectedBranch && docxContentPreviewMarkupCompatibilityChoiceSupported(token);
+          if (!active && !frame.selectedBranch) frame.unsupportedChoiceSeen = true;
+        } else {
+          active = !frame.selectedBranch;
+          if (active && frame.unsupportedChoiceSeen) {
+            docxContentPreviewAddMarkupCompatibilityDiagnostic(
+              diagnostics,
+              seenKinds,
+              DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.fallbackSelected,
+              'DOCX markup-compatibility Fallback branch selected because no supported Choice branch was available',
+            );
+          }
+        }
+        if (active) frame.selectedBranch = isChoice ? 'Choice' : 'Fallback';
+        frame.branchActive = active;
+        frame.branchDepth = selfClosing ? 0 : 1;
+        if (selfClosing) closeSelectedBranch(frame);
+        continue;
+      }
+
+      if (frames.length === 0 || docxContentPreviewMarkupCompatibilityShouldEmit(frames)) {
+        output.push(token);
+        docxContentPreviewMarkupCompatibilityMarkEmission(frames, token);
+      }
+      if (!selfClosing) {
+        elementStack.push(tagName);
+        for (const activeFrame of frames) {
+          if (activeFrame.branchDepth > 0) activeFrame.branchDepth += 1;
+        }
+      }
+      continue;
+    }
+
+    const closingBranchFrame = topFrame();
+    if (closingBranchFrame && closingBranchFrame.branchDepth === 1 && mceBranchTag) {
+      closingBranchFrame.branchDepth = 0;
+      closeSelectedBranch(closingBranchFrame);
+      continue;
+    }
+
+    const expectedTagName = elementStack.pop();
+    if (expectedTagName !== tagName) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MISMATCH', tagName) };
+    }
+    if (isAlternateContent) {
+      const frame = frames.pop();
+      closeAlternateContent(frame);
+      continue;
+    }
+
+    if (frames.length === 0 || docxContentPreviewMarkupCompatibilityShouldEmit(frames)) {
+      output.push(token);
+      docxContentPreviewMarkupCompatibilityMarkEmission(frames, token);
+    }
+    for (const activeFrame of frames) {
+      if (activeFrame.branchDepth > 0) {
+        activeFrame.branchDepth = Math.max(0, activeFrame.branchDepth - 1);
+        closeSelectedBranch(activeFrame);
+      }
+    }
+  }
+
+  if (cursor !== text.length && text.slice(cursor).trim() !== '') {
+    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  }
+  if (elementStack.length > 0) {
+    return {
+      failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_UNCLOSED_TAG', elementStack[elementStack.length - 1]),
+    };
+  }
+  return { xmlText: output.join(''), diagnostics };
+}
+
 function docxContentPreviewBuildParagraph(order, text) {
   return {
     order,
@@ -6778,7 +6992,10 @@ function docxContentPreviewUnsupportedPrefix(xmlText) {
 }
 
 function docxContentPreviewParseMainDocumentXml(xmlText) {
-  const diagnostics = [];
+  const mceSelection = docxContentPreviewSelectMarkupCompatibilityXml(xmlText);
+  if (mceSelection.failure) return { failure: mceSelection.failure };
+  const xmlTextForPreview = mceSelection.xmlText;
+  const diagnostics = [...mceSelection.diagnostics];
   const seenUnsupportedTags = new Set();
   const seenListNumberingTags = new Set();
   const seenTypedBreakKinds = new Set();
@@ -6797,7 +7014,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let match;
   let cursor = 0;
 
-  while ((match = tokenPattern.exec(xmlText)) !== null) {
+  while ((match = tokenPattern.exec(xmlTextForPreview)) !== null) {
     if (match.index !== cursor) {
       return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
     }
@@ -6937,7 +7154,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     }
   }
 
-  if (cursor !== xmlText.length && xmlText.slice(cursor).trim() !== '') {
+  if (cursor !== xmlTextForPreview.length && xmlTextForPreview.slice(cursor).trim() !== '') {
     return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
   }
   if (elementStack.length > 0) {
@@ -7596,6 +7813,29 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
       };
     }
   }
+  if (diagnosticCode === DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC) {
+    if (sourceCode === DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.fallbackSelected) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_FALLBACK_SELECTED',
+        category: 'markupCompatibility',
+        message: 'DOCX markup-compatibility Fallback branch was selected because no supported Choice branch was available',
+      };
+    }
+    if (sourceCode === DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.noSupportedBranch) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_BRANCH_NOT_IMPORTED',
+        category: 'markupCompatibility',
+        message: 'DOCX markup-compatibility content had no supported Choice or Fallback branch for preview import',
+      };
+    }
+    if (sourceCode === DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_SOURCE_CODES.emptySelectedBranch) {
+      return {
+        code: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_SELECTED_BRANCH_EMPTY',
+        category: 'markupCompatibility',
+        message: 'DOCX markup-compatibility selected branch contained no importable preview content',
+      };
+    }
+  }
   if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
@@ -7662,6 +7902,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC,
+      DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC,
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;

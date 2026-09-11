@@ -584,6 +584,124 @@ test('DOCX content preview: unsupported structures are diagnostics and do not be
   )), true);
 });
 
+test('DOCX content preview: markup compatibility imports exactly one effective branch with explicit loss', async () => {
+  const bridge = await loadBridge();
+  const before = paragraphXml('P07_ALT_BEFORE');
+  const choice = paragraphXml('P07_CHOICE_TEXT_WORD14_BRANCH');
+  const fallback = paragraphXml('P07_FALLBACK_TEXT_STANDARD_BRANCH');
+  const after = paragraphXml('P07_ALT_AFTER');
+  const alternateContent = (requires, body, fallbackBody = fallback) => [
+    before,
+    '<mc:AlternateContent>',
+    `<mc:Choice Requires="${requires}">`,
+    body,
+    '</mc:Choice>',
+    fallbackBody === null ? '' : `<mc:Fallback>${fallbackBody}</mc:Fallback>`,
+    '</mc:AlternateContent>',
+    after,
+  ].join('');
+  const multiChoiceAlternateContent = [
+    before,
+    '<mc:AlternateContent>',
+    '<mc:Choice Requires="w99">',
+    paragraphXml('P07_UNSUPPORTED_FIRST_BRANCH'),
+    '</mc:Choice>',
+    '<mc:Choice Requires="w14">',
+    choice,
+    '</mc:Choice>',
+    '<mc:Fallback>',
+    fallback,
+    '</mc:Fallback>',
+    '</mc:AlternateContent>',
+    after,
+  ].join('');
+  const cases = [
+    {
+      label: 'supported choice',
+      bytes: cleanDocxZip(alternateContent('w14', choice)),
+      paragraphs: ['P07_ALT_BEFORE', 'P07_CHOICE_TEXT_WORD14_BRANCH', 'P07_ALT_AFTER'],
+      imported: 'P07_ALT_BEFORE\n\nP07_CHOICE_TEXT_WORD14_BRANCH\n\nP07_ALT_AFTER',
+      absentText: 'P07_FALLBACK_TEXT_STANDARD_BRANCH',
+      lossCode: null,
+    },
+    {
+      label: 'second supported choice only',
+      bytes: cleanDocxZip(multiChoiceAlternateContent),
+      paragraphs: ['P07_ALT_BEFORE', 'P07_CHOICE_TEXT_WORD14_BRANCH', 'P07_ALT_AFTER'],
+      imported: 'P07_ALT_BEFORE\n\nP07_CHOICE_TEXT_WORD14_BRANCH\n\nP07_ALT_AFTER',
+      absentText: 'P07_UNSUPPORTED_FIRST_BRANCH',
+      lossCode: null,
+    },
+    {
+      label: 'unsupported choice with fallback',
+      bytes: cleanDocxZip(alternateContent('w99', choice)),
+      paragraphs: ['P07_ALT_BEFORE', 'P07_FALLBACK_TEXT_STANDARD_BRANCH', 'P07_ALT_AFTER'],
+      imported: 'P07_ALT_BEFORE\n\nP07_FALLBACK_TEXT_STANDARD_BRANCH\n\nP07_ALT_AFTER',
+      absentText: 'P07_CHOICE_TEXT_WORD14_BRANCH',
+      lossCode: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_FALLBACK_SELECTED',
+    },
+    {
+      label: 'unsupported choice without fallback',
+      bytes: cleanDocxZip(alternateContent('w99', choice, null)),
+      paragraphs: ['P07_ALT_BEFORE', 'P07_ALT_AFTER'],
+      imported: 'P07_ALT_BEFORE\n\nP07_ALT_AFTER',
+      absentText: 'P07_CHOICE_TEXT_WORD14_BRANCH',
+      lossCode: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_BRANCH_NOT_IMPORTED',
+    },
+    {
+      label: 'empty selected branch',
+      bytes: cleanDocxZip(alternateContent('w14', '', fallback)),
+      paragraphs: ['P07_ALT_BEFORE', 'P07_ALT_AFTER'],
+      imported: 'P07_ALT_BEFORE\n\nP07_ALT_AFTER',
+      absentText: 'P07_FALLBACK_TEXT_STANDARD_BRANCH',
+      lossCode: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_SELECTED_BRANCH_EMPTY',
+    },
+    {
+      label: 'Word-normalized effective branch',
+      bytes: cleanDocxZip([before, choice, after].join('')),
+      paragraphs: ['P07_ALT_BEFORE', 'P07_CHOICE_TEXT_WORD14_BRANCH', 'P07_ALT_AFTER'],
+      imported: 'P07_ALT_BEFORE\n\nP07_CHOICE_TEXT_WORD14_BRANCH\n\nP07_ALT_AFTER',
+      absentText: 'P07_FALLBACK_TEXT_STANDARD_BRANCH',
+      lossCode: null,
+    },
+    {
+      label: 'plain positive control',
+      bytes: cleanDocxZip([paragraphXml('P07_CONTROL_BEFORE'), paragraphXml('P07_CONTROL_AFTER')].join('')),
+      paragraphs: ['P07_CONTROL_BEFORE', 'P07_CONTROL_AFTER'],
+      imported: 'P07_CONTROL_BEFORE\n\nP07_CONTROL_AFTER',
+      absentText: 'P07_CHOICE_TEXT_WORD14_BRANCH',
+      lossCode: null,
+    },
+  ];
+
+  for (const item of cases) {
+    const original = Buffer.from(item.bytes);
+    const result = bridge.buildDocxContentPreviewFromZipBytes(item.bytes);
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+    assertContentPreviewShell(result);
+    assert.equal(item.bytes.equals(original), true, `${item.label} must stay zero-write`);
+    assert.equal(result.ok, true, item.label);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY', item.label);
+    assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), item.paragraphs, item.label);
+    assert.equal(importPreview.ok, true, item.label);
+    assert.equal(importPreview.writeEffects, false, item.label);
+    assert.equal(importPreview.candidateCreatePlan.entries[0].content, item.imported, item.label);
+    assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes(item.absentText), false, item.label);
+    if (item.lossCode) {
+      assert.equal(importPreview.lossReport.items.some((loss) => (
+        loss.code === item.lossCode
+        && loss.category === 'markupCompatibility'
+        && loss.tagName === 'mc:AlternateContent'
+      )), true, item.label);
+    } else {
+      assert.equal(importPreview.lossReport.items.some((loss) => (
+        loss.category === 'markupCompatibility'
+      )), false, item.label);
+    }
+  }
+});
+
 test('DOCX content preview: safe external hyperlinks preserve visible labels but stay inert preview candidates', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([

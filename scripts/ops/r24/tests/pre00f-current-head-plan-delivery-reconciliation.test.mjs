@@ -1,9 +1,6 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
-import { fileURLToPath } from 'node:url';
 import { canonicalBytes } from '../corrective/canonical-json.mjs';
 import {
   PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,
@@ -14,22 +11,31 @@ import {
   verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException,
 } from '../corrective/post-audit-certification-set.mjs';
 
-const TEST_DIR=path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT=path.resolve(TEST_DIR,'..','..','..','..');
-const readRepo=(repoPath,encoding)=>fs.readFileSync(path.join(REPO_ROOT,repoPath),encoding);
+const objectFromCommit=(sha,repoPath)=>execFileSync('git',['show',`${sha}:${repoPath}`],{maxBuffer:64*1024*1024});
+function resolveFixtureCandidateSha(){
+  const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION;
+  const candidates=String(execFileSync('git',['rev-list','--reverse',`${e.baseSha}..HEAD`],{encoding:'utf8'})).trim().split('\n').filter(Boolean);
+  for(const sha of candidates){
+    const changed=String(execFileSync('git',['diff','--name-only',`${e.baseSha}..${sha}`],{encoding:'utf8'})).trim().split('\n').filter(Boolean).sort();
+    if(JSON.stringify(changed)===JSON.stringify(e.admittedPaths))return sha;
+  }
+  throw new Error('PRE00F_CURRENT_HEAD_FIXTURE_CANDIDATE_NOT_FOUND');
+}
 
 function currentHeadFixture({changedPaths,baseTree,currentTree,statusBytes,evidenceBytes,historicalAncestor=true,baseAncestor=true}={}){
   const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,candidateSha='3'.repeat(40),candidateTree=currentTree??'4'.repeat(40);
+  const fixtureCandidateSha=resolveFixtureCandidateSha();
+  const boundBytes=(repoPath)=>objectFromCommit(fixtureCandidateSha,repoPath);
   const bytesByPath=new Map([
-    [e.planPath,readRepo(e.planPath)],
-    [e.inventoryPath,readRepo(e.inventoryPath)],
-    [e.statusPath,statusBytes??readRepo(e.statusPath)],
-    [e.evidencePath,evidenceBytes??readRepo(e.evidencePath)],
-    [e.approvalsPath,readRepo(e.approvalsPath)],
-    [e.verifierPath,readRepo(e.verifierPath)],
-    [e.contractTestPath,readRepo(e.contractTestPath)],
-    [e.postAuditVerifierPath,readRepo(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,readRepo(e.postAuditTestPath)],
+    [e.planPath,boundBytes(e.planPath)],
+    [e.inventoryPath,boundBytes(e.inventoryPath)],
+    [e.statusPath,statusBytes??boundBytes(e.statusPath)],
+    [e.evidencePath,evidenceBytes??boundBytes(e.evidencePath)],
+    [e.approvalsPath,boundBytes(e.approvalsPath)],
+    [e.verifierPath,boundBytes(e.verifierPath)],
+    [e.contractTestPath,boundBytes(e.contractTestPath)],
+    [e.postAuditVerifierPath,boundBytes(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,boundBytes(e.postAuditTestPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
@@ -85,14 +91,14 @@ test('PRE00F current-head plan delivery reconciliation rejects an unadmitted cur
 });
 
 test('PRE00F current-head plan delivery reconciliation rejects a mutated status rebind',()=>{
-  const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,status=JSON.parse(readRepo(e.statusPath,'utf8'));
+  const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,status=JSON.parse(objectFromCommit(resolveFixtureCandidateSha(),e.statusPath).toString('utf8'));
   status.rebinding.authoringBaseSha='0'.repeat(40);
   const fixture=currentHeadFixture({statusBytes:canonicalBytes(status)});
   assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_STATUS_REBINDING/);
 });
 
 test('PRE00F current-head plan delivery reconciliation rejects a stale evidence head binding',()=>{
-  const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,evidence=JSON.parse(readRepo(e.evidencePath,'utf8'));
+  const e=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,evidence=JSON.parse(objectFromCommit(resolveFixtureCandidateSha(),e.evidencePath).toString('utf8'));
   evidence.headSha='0'.repeat(40);
   const fixture=currentHeadFixture({evidenceBytes:canonicalBytes(evidence)});
   assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_EVIDENCE_HEAD_BINDING/);

@@ -1375,7 +1375,7 @@ test('R24 embedded font admission exception rejects an unadmitted future path',(
   assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_CANDIDATE_NOT_FOUND|E_R24_EMBEDDED_FONT_EXACT_ADMITTED_DELTA/);
 });
 test('R24 embedded font admission exception rejects missing diagnostics-loss token',()=>{
-  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replace('DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_FONT_ADVISORY');
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,source=objectFromCommit(PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,e.sourcePath).toString('utf8').replace('DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_FONT_ADVISORY');
   const fixture=embeddedFontAdmissionGitFixture({sourceBytes:Buffer.from(source)});
   assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_ARTIFACT_DIGEST/);
 });

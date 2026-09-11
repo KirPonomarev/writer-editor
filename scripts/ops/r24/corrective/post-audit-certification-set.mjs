@@ -4146,6 +4146,24 @@ export function resolvePre00eRecoveryCiExternalConfirmationCandidateSha({resolve
   try{git(['merge-base','--is-ancestor',e.deliverySha,resolvedCandidate],{encoding:null});return e.deliverySha;}catch{return resolvedCandidate;}
 }
 
+function resolvePre00fCurrentHeadPlanDeliveryReconciliationCandidateSha(git,resolvedCandidate,e){
+  const isExact=(sha)=>{
+    try{
+      const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+      return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+    }catch{return false;}
+  };
+  if(isExact(resolvedCandidate))return resolvedCandidate;
+  let candidates=[];
+  try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_PRE00F_CURRENT_DELIVERY_CANDIDATE_SEARCH');}
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
+  fail('E_PRE00F_CURRENT_DELIVERY_CANDIDATE_NOT_FOUND');
+}
+
+function canResolvePre00fCurrentHeadPlanDeliveryReconciliationCandidateSha(git,resolvedCandidate,e){
+  try{return Boolean(resolvePre00fCurrentHeadPlanDeliveryReconciliationCandidateSha(git,resolvedCandidate,e));}catch{return false;}
+}
+
 export function verifyPre00fPlanDeliveryPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=PRE00F_PLAN_DELIVERY_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
   const deliverySha=gitText(git,['rev-parse',e.deliverySha]);
@@ -5879,7 +5897,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   try{git(['merge-base','--is-ancestor',PRE00E_RECOVERY_CI_EXTERNAL_CONFIRMATION_EXPECTATION.baseSha,PRE00F_PLAN_DELIVERY_EXPECTATION.baseSha],{encoding:null});pre00fPlanDeliveryBaseDescendsFromCurrentPre00e=true;}catch{}
   let pre00fCurrentHeadPlanDeliveryReconciliationDescendant=false;
   if(resolvedCandidate!==PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});pre00fCurrentHeadPlanDeliveryReconciliationDescendant=true;}catch{}}
-  const pre00fCurrentHeadPlanDeliveryReconciliationEnabled=allowAuditCycle2Admission&&pre00fCurrentHeadPlanDeliveryReconciliationDescendant;
+  const pre00fCurrentHeadPlanDeliveryReconciliationEnabled=allowAuditCycle2Admission&&pre00fCurrentHeadPlanDeliveryReconciliationDescendant&&canResolvePre00fCurrentHeadPlanDeliveryReconciliationCandidateSha(git,resolvedCandidate,PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION);
   let r24Rcv00aExactToolchainEntryPointDescendant=false;
   if(resolvedCandidate!==R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_RCV00A_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24Rcv00aExactToolchainEntryPointDescendant=true;}catch{}}
   const r24Rcv00aExactToolchainEntryPointEnabled=allowAuditCycle2Admission&&r24Rcv00aExactToolchainEntryPointDescendant;
@@ -6081,7 +6099,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const pre00eRecoveryCiExternalConfirmationException=pre00eRecoveryCiExternalConfirmationEnabled?verifyPre00eRecoveryCiExternalConfirmationPostEvaluationException({candidateSha:pre00eRecoveryCiExternalConfirmationCandidateSha,git}):null;
   const pre00fSuccessorCandidateSha=resolvedCandidate;
   const pre00fPlanDeliveryException=pre00fPlanDeliveryEnabled?verifyPre00fPlanDeliveryPostEvaluationException({candidateSha:pre00fSuccessorCandidateSha,git}):null;
-  const pre00fCurrentHeadPlanDeliveryReconciliationCandidateSha=r24Rcv00dGraphDerivedSelectorEnabled?R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.baseSha:resolvedCandidate;
+  const pre00fCurrentHeadPlanDeliveryReconciliationCandidateSha=pre00fCurrentHeadPlanDeliveryReconciliationEnabled?resolvePre00fCurrentHeadPlanDeliveryReconciliationCandidateSha(git,resolvedCandidate,PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION):null;
   const pre00fCurrentHeadPlanDeliveryReconciliationException=pre00fCurrentHeadPlanDeliveryReconciliationEnabled?verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:pre00fCurrentHeadPlanDeliveryReconciliationCandidateSha,git}):null;
   const r24Rcv00aExactToolchainEntryPointException=r24Rcv00aExactToolchainEntryPointEnabled?verifyR24Rcv00aExactToolchainEntryPointPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Rcv00bEffectiveStateCompilerException=r24Rcv00bEffectiveStateCompilerEnabled?verifyR24Rcv00bEffectiveStateCompilerPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
