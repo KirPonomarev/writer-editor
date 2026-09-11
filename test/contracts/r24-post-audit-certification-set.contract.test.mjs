@@ -1848,6 +1848,7 @@ function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,ove
     if(repoPath===e.inventoryPath&&inventoryBytes)return Buffer.from(inventoryBytes);
     if(repoPath===e.approvalsPath&&approvalsBytes)return Buffer.from(approvalsBytes);
     if(repoPath===e.pk1r1ApprovalsPath&&pk1r1ApprovalsBytes)return Buffer.from(pk1r1ApprovalsBytes);
+    if([e.executableProgramPath,e.executableProgramTestPath,e.contractTestPath].includes(repoPath))return historicalFile(repoPath);
     if(repoPath===e.claimBindingPath)return refreshedClaimBytes();
     if(repoPath===e.inventoryPath)return refreshedInventoryBytes();
     if(repoPath===e.approvalsPath)return refreshedApprovalsBytes(repoPath);

@@ -7,13 +7,20 @@ import { canonicalDigest, readJsonBounded } from '../canonical-json.mjs';
 import {
   EFFECTIVE_STATE_COMPILER_ID,
   buildRawContourStates,
+  compileCommittedEffectiveState,
   compileEffectiveState,
   countStates,
 } from '../effective-state-compiler.mjs';
+import {
+  buildEffectiveStateProjectionOnFullGraph,
+  buildSelectionReceiptOnFullGraph,
+  validateCommittedR24Sot,
+} from '../executable-program.mjs';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..');
 const R24_DIR = path.join(REPO_ROOT, 'docs', 'OPS', 'R24');
 const NOW = '2026-09-09T00:00:00.000Z';
+const CURRENT_NOW = '2026-09-11T00:00:00.000Z';
 const HEAD = '4761f80544808396bd287a44a640104d400bbf55';
 const TREE = '9'.repeat(40);
 const DIGEST = '1'.repeat(64);
@@ -110,6 +117,42 @@ test('current committed R24 plan compiles to one immutable projection for status
   assert.equal(projection.completion.programDone, false);
   assert.equal(projection.completion.requiredPendingCount, 50);
   assert.equal(projection.noAutomaticGraphTransition, true);
+});
+
+test('public current-state entrypoints share committed overlay truth at exact head', () => {
+  const state = readJsonBounded(path.join(R24_DIR, 'PLAN_STATE_R24.json'));
+  const committed = compileCommittedEffectiveState({ now: CURRENT_NOW });
+  const { effectiveStateProjection } = buildEffectiveStateProjectionOnFullGraph({ now: CURRENT_NOW, planState: state });
+  const selection = buildSelectionReceiptOnFullGraph({ now: CURRENT_NOW, planState: state });
+  const validation = validateCommittedR24Sot({ now: CURRENT_NOW });
+  const expectedSchedulerDigest = committed.schedulerProjection.stateDigest;
+  assert.match(expectedSchedulerDigest, /^[a-f0-9]{64}$/u);
+
+  for (const projection of [committed, effectiveStateProjection]) {
+    assert.equal(projection.overlayResolution.appliedCount, 1);
+    assert.equal(projection.effectiveState.digest, 'd364bf424fa000ee59a2bf55f317e258edeb0de6eae332528172506d050b63ec');
+    assert.equal(projection.schedulerProjection.stateDigest, expectedSchedulerDigest);
+    assert.equal(projection.effectiveState.states.W0_WORD_PHYSICAL_RECERTIFICATION, 'DONE');
+    assert.deepEqual(projection.effectiveState.counts, {
+      BLOCKED_TYPED: 3,
+      DONE: 50,
+      INELIGIBLE_OPTIONAL: 10,
+      PENDING: 46,
+    });
+    assert.equal(projection.completion.requiredPendingCount, 49);
+  }
+
+  assert.equal(committed.effectiveState.digest, effectiveStateProjection.effectiveState.digest);
+  assert.equal(committed.schedulerProjection.stateDigest, effectiveStateProjection.schedulerProjection.stateDigest);
+  assert.equal(selection.contourStatesDigest, committed.effectiveState.digest);
+  assert.equal(selection.stateDigest, committed.schedulerProjection.stateDigest);
+  assert.equal(selection.verdict, 'NO_ELIGIBLE_NODE');
+  assert.deepEqual(selection.readySet, []);
+  assert.equal(validation.effectiveStateDigest, committed.effectiveState.digest);
+  assert.equal(validation.effectiveSchedulerStateDigest, committed.schedulerProjection.stateDigest);
+  assert.equal(validation.effectiveCompletionRequiredPendingCount, 49);
+  assert.equal(validation.selectionVerdict, 'NO_ELIGIBLE_NODE');
+  assert.equal(validation.selectionReadySetCount, 0);
 });
 
 test('valid append-only overlay updates only effective projection and preserves raw state', () => {
