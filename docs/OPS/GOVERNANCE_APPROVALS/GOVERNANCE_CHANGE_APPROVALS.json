@@ -11413,22 +11413,6 @@
       "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
     },
     {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "sha256": "fe087ec0d3205c1ec2cbf1cad6511a7f2c203dbac2b131048a1eb0acfa709466",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09",
-      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
-      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
-      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
-      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
-      "evidenceStampIds": [
-        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
-      ]
-    },
-    {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-PLAN-DELIVERY-CLAIM-BINDINGS.json",
       "sha256": "19bbacedee1e8d39267000c05c2a8ed5b6408880b7c4acd13b9d2be0776eec4d",
       "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
@@ -11436,22 +11420,6 @@
       "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
       "approved": true,
       "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS.json",
-      "sha256": "fbc0639235d7ee102789e293c4b1a7601b64ec4740542903430ace9414d05e8c",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "approved": true,
-      "authority": "OWNER_PRIORITY_COMMAND_PRE00E_SUCCESSOR_GATE_RECOVERY_PR1858_CURRENT_MAIN_RECONCILIATION_2026_09_09",
-      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
-      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
-      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
-      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files.",
-      "evidenceStampIds": [
-        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
-      ]
     },
     {
       "filePath": "scripts/ops/governance-change-detection.mjs",
@@ -11653,88 +11621,6 @@
       "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK"
     },
     {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "eb71b349011483d0ec5fba1f0032f9a1d74413cbe2371f22ee7309829d98eb8e",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
-      "sha256": "ce098f4df16b871dd466ad75422b7cca747754582420a99560940621d05c473e",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
-      "sha256": "2e9e3b3438b7d599be52cc2068fa10c1d2ce65756e14bcbd41dc8fc2159c7be1",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
-    },
-    {
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "sha256": "3b2f50cb1eb772c45300339e9cf893d270389b0002f64537a6d42cf8e8cc0b0c",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve exact R24 RCV00D graph-derived selector governance bytes after current-main reconciliation required immutable 11-path delivery evidence to remain distinct from the current PR delta and RTK guard allowlists; no product runtime, graph transition, UI, dependency, network truth, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
-      ],
-      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
-      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
-      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
-      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
-    },
-    {
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "sha256": "f7b3f88f45ab7600a0fd517f398785be6e1326c803a20fb7c80184787e75aa1f",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-GOVERNANCE-APPROVAL-REGISTRY-RECONCILIATION"
-      ],
-      "reconciledBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
-      "reconciledAtUtc": "2026-09-10T09:45:52.647Z",
-      "reconciliationAuthority": "SUPERVISOR_DIRECTIVE_R24_RCV00F_DELIVERY_RECONCILIATION_AUTONOMOUS_DELIVERY",
-      "reconciliationRationale": "Reconcile pre-existing current-main governance approval registry drift so strict governance change detection validates current checked-in bytes without mutating the approved source/test/evidence files."
-    },
-    {
-      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
-      "sha256": "c44831a8936410b85e3424d3c3807028727bdd34687f5413fb2cb762fc23e7b3",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAtUtc": "2026-09-09T22:18:14Z",
-      "rationale": "Approve R24 RCV00D graph-derived selector repair bytes: current-observation selection over graph-only W0, immutable selector receipt, historical RCV00C inventory pin, and focused negative/mutant verifier coverage; no product runtime, graph transition, UI, dependency, network, release readiness, or PROGRAM_DONE claim.",
-      "approved": true,
-      "authority": "SUPERVISOR_DIRECTIVE_R24_RCV00D_GRAPH_DERIVED_SELECTOR_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS"
-      ]
-    },
-    {
       "filePath": "scripts/ops/r24/plan-state.mjs",
       "sha256": "b07b5f4ad4a480d69fe5b152b6607035d9c1fb38c4ca2d93a7f92e2bfaa03ff5",
       "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10",
@@ -11769,40 +11655,6 @@
       "evidenceStampIds": [
         "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS"
       ]
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:35:52Z",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "7133b1128d9e0bc170d3015f8b474545090e3755660ca6e038345a2d61759ee7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:35:52Z",
-      "approvedBy": "owner-directive:R24_RCV00F_DELIVERY_RECONCILIATION_2026_09_10 | owner-directive:R24_OPS03_RCV00G_SEMANTIC_E0_CLASSIFIER_2026_09_10 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11 | owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "f157f6c63bbc1e0d55b12217f9953a208ea0654256484c7633c0c40780c3bdab"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS.json",
@@ -11873,47 +11725,8 @@
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2232c5943a9371b690b093e58310ccd8d50b8d2dc6fccdf80d4ec7599912eaac",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "64d58dbf5050c2a700cb4a01bd9177a266ea0382e52edfcafc2165790ac6dbad",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "f30eba24e437deb91196694d29f1504e7813d1adecc21c0bb087add09ddf6689",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "b3bdcbe13948d9c1e92a07c59aa2f92106738a1e391a48095ebe75ef2856330c",
       "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
@@ -11940,32 +11753,6 @@
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
       "sha256": "bf508d6c966c8be1419b6c5cd3851bc159782f2c226ce01b98a0799048ce102b",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
-      "sha256": "32f4d15f8fe69fdfc3fe651f09a1ee151e915f96ee933240f177baee37a93067",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
-      "sha256": "c1dab8a4908344d09d813ae3ba9538419d5c9b9e271f36422532a6e00372c469",
       "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
@@ -12008,225 +11795,114 @@
       "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
     },
     {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "1821772c896fad980cbe3a61a7b0afa4d9aab33cd1473bed2a4844efc51de876",
-      "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "ff42a76664375e831e40081ef1a0838ffd4af5e89ca8eb8d4959c21f86f7be58",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "27356bc2ee141beaf1040afa41af6905653688fc1dab1e84300e897dc23aa22d",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
-      "sha256": "1942f887641d8170d97c9257ced2b659298e88e16ddfadcb9a68d190562ca1cf",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "ef796e043e335af1c755a76ae53f244e34a2032e1904bf0498dc580c81cd8963",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
-      "sha256": "1cb8b24da7d38de886c3ce242b30aa7d470f47566b5265fa62b70cd3942875af",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "e2fc1c77b019e02030b04dbd97b00b620b9f6bf3cb1cab9f2c9dc729111481f9",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
       "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
       "sha256": "a7919cc36f3284478afc79e86f9b30780bad4336a067157f0fc12455d9c446ea",
       "approved": true,
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "9c8a365a97dcf4c45d3738e8aba49179cf3849d13828bb8dc8dda88aff08aa1d",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "04d3dfd1d611f8d8d7a6eb283cd6004ae4bf6aa06f527ea430c02b3afffb5633",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "be33b009626dd108982b3f0ddb9d6d209424db990db5a60a361eaee74950fbd9",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "ab21ce7fcf1e6ffb74a0877d7fa9d562c58fc95283781e9daf1062e5d91b08ef",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "989fe7d14d7cd499535cb67319c3516e50a1846f1b87a3b12f58c84d16e2f045",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "ce82655c4254b53d5e6d5137add98e7526d0ae5b1c07f6b79550837ba0caabcf",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "4f62bf7444f8cd3db68cd79d6260154ada2f9d977d6e83b2d9010577e095b909",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "20074f3c0fb6ce41ab47c254198540ee06fd3f680feb5a2cf12e88dc63c0aaee",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "2711cab587490b05c7e6ce6eb0d6481a3ed8efdc77a5929423ec80e6e49b904c",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+      "approvedAtUtc": "2026-09-11T06:20:42.647Z",
+      "rationale": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
       "sha256": "590c506e52784dfaa4f9fbc5efb5881afe2d1b17e159aa8237f25affb100f601",
       "approved": true,
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "7f0b52e2b4a027e7c3e8c1bf7a931bf869e35a110cf2cbdf791f1d78d4d4aee3",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+      "approvedAtUtc": "2026-09-11T06:20:42.647Z",
+      "rationale": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
     },
     {
       "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
       "sha256": "beac8113efca68565eaa10a516b3b273b1dc6c74b9637f3d7208b1f527e965b8",
       "approved": true,
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "bfda5a7ed587b80c6de2798730bf888c946b86744c400e5aaeec0dd3de1a757b",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "ea3f60b764bca265ad69e193f6acd0ffea7109a6b8b497d024802067a0ee54dc",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "2629122f8fd3c06ccf8ba56a3f5fb701491bac4d064d1d3f55ab3fdb7c6c723b",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "3fb2cd80af4a1c7e2fab999311db7736c3b0420a26a31490e03f52cad5248d5e",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
-      "sha256": "2ab1c02b3f81d6738f024913561b0cb44299228bf441f43b6328adaf3ea703d4",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
-    },
-    {
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "ae41bca84ea07f2cf57df5c38519c050ca8c9bdf3b93d94b1e80ae44f2fefbdb",
-      "approved": true,
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+      "approvedAtUtc": "2026-09-11T06:20:42.647Z",
+      "rationale": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
       "sha256": "6c6dc7bd0fdab3a7163f327fd33a2c30954ea58a402a8c65c73c3049da056b5e",
       "approved": true,
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
-      "approvedAt": "2026-09-11T06:20:42.647Z",
-      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+      "approvedAtUtc": "2026-09-11T06:20:42.647Z",
+      "rationale": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d619dd4bfa4aae267bbe9babe9a84c345e0881b85a4111efd90e4730d40bf851",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b453fd6131ea3dca4a76747bb5812019f4b4dfce0c2da2b6afd00a4437a25fc5",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "a78143f17a772b577364b132c1cb0d8b641a32838c5f6448f0bf0828422cd2aa",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "sha256": "6109efd7aabc358d9978a67186b84513a5f5e325168618ec2385d8575b2cf6be",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "sha256": "c9f3db2da117731fd64e1f65d3cff0e85fa317a19fc6bab0e69f701922b7aad4",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "8224047fb4befb7d9654bb8300066ce27cbd3df6ec06c595036ece793503bf19",
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
+      "approvedAtUtc": "2026-09-11T00:00:00Z",
+      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: default governance detector and doctor baseline require current-byte approval for governance-visible selector, post-audit, docs-claim-lint, evidence, C1B inventory, and PK1R1 local approval registry files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approved": true,
+      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
+      ]
     }
   ],
   "evidenceStampIds": [
