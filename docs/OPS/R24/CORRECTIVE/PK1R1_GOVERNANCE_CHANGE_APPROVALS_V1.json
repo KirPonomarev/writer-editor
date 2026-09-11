@@ -132,16 +132,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-09T12:26:17.194Z",
-      "approvedBy": "owner-directive:R24_PRE00E_SUCCESSOR_DELTA_GATE_RECOVERY_PR1858_RECONCILIATION_2026_09_09",
-      "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
-      "rationale": "Approve exact current bytes for PR1858 PRE00E successor delta gate recovery after resolving the protected merge from origin/main 97114d0f: preserve closed PRE00D, PRE00E and PRE00F history while routing successor/current-head governance through exact current carrier bytes; no interop implementation, product runtime, dependency, network truth, user documents, release readiness, PK1, V3, WP900, or PROGRAM DONE claim.",
-      "sha256": "e27c58dbbf257164d8ff1515b49f772c1516a0d9aabcd8a76858dbd1d3c3cb66",
-      "evidenceStampIds": [],
-      "authority": ""
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "filePath": "docs/OPS/R24/CORRECTIVE/PRE00B_GOVERNANCE_CHANGE_APPROVALS_V1.json",
@@ -179,18 +169,6 @@
       "sha256": "faff03a263deaca7003535842500faa372b1d6977b8130f339cc30e3b9d081d0",
       "evidenceStampIds": [],
       "authority": ""
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "dfbeb5487744868e4543829834f7531301f6da305b8d26e43e51417026ac9d00"
     },
     {
       "approved": true,
@@ -287,18 +265,6 @@
       "sha256": "18936f02792c04bada8d9a2bcb7b804ee7d01eec56c105038fd3a6fd0e9f2210",
       "evidenceStampIds": [],
       "authority": ""
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "904281313aec77f5f4ca82e183c15aaa595af0278ba98e317b15760ccaa93a8f"
     },
     {
       "approved": true,
@@ -505,18 +471,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE",
-      "evidenceStampIds": [
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
-      ],
-      "filePath": "scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs",
-      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main 87072a10 after embedded-font admission drift; preserves immutable historical PRE00F plus later delivered W0/T04/embedded-font history while binding only the current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, or PROGRAM DONE authority is added.",
-      "sha256": "9aee83bfa02b8ef1772373f301c9957a9894d8ca61ea967e4b9ebfc3b88ce8a7"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-10T06:57:51.000Z",
       "approvedBy": "owner-directive:R24_RCV00E_LEASE_FENCING_CAS_2026_09_10",
       "filePath": "scripts/ops/r24/corrective/rcv00e-lease-fencing-cas.mjs",
@@ -638,20 +592,6 @@
       "sha256": "aaf994238d87b1efacedd770f61344a17e16623a4d234fd0d7c6154153aab015",
       "evidenceStampIds": [],
       "authority": ""
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T06:51:55Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_P07_PR1881_CURRENT_HEAD_CI_REPAIR",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
-        "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS"
-      ],
-      "filePath": "scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs",
-      "rationale": "Approve exact bounded PR1881 current-head CI repair bytes inherited from origin/main 18bff171 and admitted here only as an already-merged PRE00F support carrier required by the current branch governance diff. No full portability, 1120-cell completion, product write/apply, UI, dependency, runtime network, Google source-of-truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "227ba143c312a979129268ef8eed43c03552c6d942210685cc7b95f588b37534"
     },
     {
       "approved": true,
@@ -1081,19 +1021,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T11:44:09.000Z",
-      "approvedBy": "owner-directive:YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
-      "evidenceStampIds": [
-        "S13_GOOGLE_EXPORT_MATERIALIZED_REVERSE_PREVIEW_POSTFIX",
-        "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact bounded Google-exported DOCX TTF font-part diagnostics fix and required current-byte governance carriers: classifier source, affected DOCX bridge contract tests, and regenerated C1B inventory only. No product truth mutation beyond zero-write DOCX preview diagnostics, UI, dependency, runtime network, Google source-of-truth, font rendering, release readiness, full 1120-cell denominator closure, or PROGRAM_DONE claim.",
-      "sha256": "1400d0230f4f1ad4a4e53aaa044fae5c932488f7bc4ce7bc5465320a514290d9"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T00:00:00Z",
       "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
       "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
@@ -1117,19 +1044,6 @@
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
       "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "sha256": "590c506e52784dfaa4f9fbc5efb5881afe2d1b17e159aa8237f25affb100f601"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
-      ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
-      "sha256": "a78143f17a772b577364b132c1cb0d8b641a32838c5f6448f0bf0828422cd2aa"
     },
     {
       "approved": true,
@@ -1179,22 +1093,105 @@
         "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
         "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
       ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
-      "sha256": "8224047fb4befb7d9654bb8300066ce27cbd3df6ec06c595036ece793503bf19"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
-      ],
       "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
       "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "sha256": "a7919cc36f3284478afc79e86f9b30780bad4336a067157f0fc12455d9c446ea"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "0fae17c0476ca4672a28e10c6043233e12ba3599772ca89ed18cc1c666313ccd",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "2ecbd83bab43f642a6c9d0c1e5a70ecc6e99eb4b9bb2b20b0626051ac0c50eb3",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "68fc824a85d7e5751ef6f803e8571112aeb0c83ed89b78306901f2abdcd65e20",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "aa326767ecdd3d9097cbaf372904f62e28b0824eab8c3b0c189c35ce695bbbc3",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "a49b0addaae1467f85d9d406a55d8bb1383fa9a5bc931d1cf41ac94bd700b250",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "0e10362169c3de919b77151618d23db6f9970c9a1fa50d02e7530a9afd3d366c",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "c3b188de188d2c90b3c0dd16fa984a18875b5abce87d3ed5ecf6971f0bf70d69",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T13:42:17Z",
+      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Bounded PRE00F current-head plan delivery reconciliation from exact origin/main c12cbe14 after merged PRE00E RCV01A closure; preserves immutable historical PRE00F delivery plus intervening delivered history while rebinding only current-head reconciliation status, evidence and dedicated verifier proof. No runtime, dependency, process, credential, product graph, release-publication, PK1, V3, WP900, PRE00E redelivery or PROGRAM DONE authority is added.",
+      "sha256": "784cc0d3704756caaf47c1eeaa5fda29534ec15ca15a06e8e23d8b05d62ca119",
+      "evidenceStampIds": [
+        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
+      ],
+      "authority": "OWNER_APPROVED_R24_PRE00F_SEQUENCE_AFTER_PRE00E_ROUTINE_REVERSIBLE_REPOSITORY_SCOPE"
     }
   ],
   "evidenceStampIds": [
