@@ -456,6 +456,7 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
   const embeddedFont = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(paragraphXml('Font'), [
     { name: 'word/fontTable.xml', body: '<w:fonts/>' },
     { name: 'word/fonts/font1.odttf', body: Buffer.from([0, 1, 2, 3]) },
+    { name: 'word/fonts/font1.ttf', body: Buffer.from([0, 1, 2, 3]) },
   ]));
   const malformed = bridge.buildDocxContentPreviewFromZipBytes('review.docx');
 
@@ -486,12 +487,21 @@ test('DOCX content preview: hostile and malformed packages stop while known degr
     item.code === 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'
     && item.entryId === 'word/fonts/font1.odttf'
   )), true);
+  assert.equal(embeddedFont.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_EMBEDDED_FONT_DIAGNOSTICS_ONLY'
+    && item.entryId === 'word/fonts/font1.ttf'
+  )), true);
   const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(embeddedFont);
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED'
     && item.category === 'font'
     && item.sourcePart === 'word/fonts/font1.odttf'
+  )), true);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED'
+    && item.category === 'font'
+    && item.sourcePart === 'word/fonts/font1.ttf'
   )), true);
 });
 
