@@ -6283,9 +6283,6 @@ const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
   'w:bookmarkStart',
   'w:hyperlink',
 ]);
-const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_TAGS = new Set([
-  'w:numPr',
-]);
 const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS,
   ...DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS,
@@ -6328,6 +6325,10 @@ function docxContentPreviewDiagnostic(code, options = {}) {
   if (options.sourcePart !== undefined) diagnostic.sourcePart = options.sourcePart;
   if (options.sourceCode !== undefined) diagnostic.sourceCode = options.sourceCode;
   if (options.tagName !== undefined) diagnostic.tagName = options.tagName;
+  if (options.paragraphIndex !== undefined) diagnostic.paragraphIndex = options.paragraphIndex;
+  if (options.numId !== undefined) diagnostic.numId = options.numId;
+  if (options.ilvl !== undefined) diagnostic.ilvl = options.ilvl;
+  if (options.listKey !== undefined) diagnostic.listKey = options.listKey;
   if (options.actual !== undefined) diagnostic.actual = options.actual;
   if (options.limit !== undefined) diagnostic.limit = options.limit;
   return diagnostic;
@@ -6348,6 +6349,10 @@ function docxContentPreviewSortRecords(records) {
     || String(left.sourceCode || '').localeCompare(String(right.sourceCode || ''))
     || String(left.sourcePart || '').localeCompare(String(right.sourcePart || ''))
     || String(left.tagName || '').localeCompare(String(right.tagName || ''))
+    || String(left.paragraphIndex ?? '').localeCompare(String(right.paragraphIndex ?? ''), undefined, { numeric: true })
+    || String(left.numId || '').localeCompare(String(right.numId || ''))
+    || String(left.ilvl || '').localeCompare(String(right.ilvl || ''))
+    || String(left.listKey || '').localeCompare(String(right.listKey || ''))
   ));
 }
 
@@ -6677,14 +6682,29 @@ function docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenTags, tagNa
   }));
 }
 
-function docxContentPreviewAddListNumberingDiagnostic(diagnostics, seenTags, tagName) {
-  if (!DOCX_CONTENT_PREVIEW_LIST_NUMBERING_TAGS.has(tagName) || seenTags.has(tagName)) return;
-  seenTags.add(tagName);
+function docxContentPreviewListNumberingValue(token, localName) {
+  return docxContentPreviewAttributeValue(token, localName).trim();
+}
+
+function docxContentPreviewListNumberingKey(numId, ilvl) {
+  return `numId:${numId}|ilvl:${ilvl || 'unknown'}`;
+}
+
+function docxContentPreviewAddListNumberingDiagnostic(diagnostics, numberingContext) {
+  if (!isPlainObject(numberingContext)) return;
+  const numId = typeof numberingContext.numId === 'string' ? numberingContext.numId.trim() : '';
+  if (!numId || numId === '0') return;
+  const ilvl = typeof numberingContext.ilvl === 'string' ? numberingContext.ilvl.trim() : '';
   if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
   diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC, {
     severity: 'warning',
     sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
-    tagName,
+    sourceCode: DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC,
+    tagName: 'w:numPr',
+    paragraphIndex: numberingContext.paragraphIndex,
+    numId,
+    ilvl,
+    listKey: docxContentPreviewListNumberingKey(numId, ilvl),
     message: 'DOCX paragraph list or numbering properties are retained as preview diagnostic only',
   }));
 }
@@ -6997,7 +7017,6 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   const xmlTextForPreview = mceSelection.xmlText;
   const diagnostics = [...mceSelection.diagnostics];
   const seenUnsupportedTags = new Set();
-  const seenListNumberingTags = new Set();
   const seenTypedBreakKinds = new Set();
   const seenSectionBreakKinds = new Set();
   const paragraphs = [];
@@ -7006,6 +7025,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let rootTagName = '';
   let paragraphText = '';
   let insideParagraph = false;
+  let activeParagraphIndex = -1;
+  let activeListNumbering = null;
   let sectionPropertiesDepth = 0;
   let unsupportedDepth = 0;
   let textDepth = 0;
@@ -7082,7 +7103,6 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       rootSeen = true;
       rootTagName = tagName;
     }
-    docxContentPreviewAddListNumberingDiagnostic(diagnostics, seenListNumberingTags, tagName);
     const diagnostic = DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS.has(tagName);
     if (diagnostic) docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenUnsupportedTags, tagName);
     const unsupported = DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS.has(tagName);
@@ -7112,19 +7132,42 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       if (!insideParagraph) {
         insideParagraph = true;
         paragraphText = '';
+        activeParagraphIndex = paragraphs.length;
+        activeListNumbering = null;
       }
       if (selfClosing) {
         const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
         if (pushed.failure) return pushed;
         insideParagraph = false;
         paragraphText = '';
+        activeParagraphIndex = -1;
+        activeListNumbering = null;
       }
     } else if (tagName === 'w:p' && closing && insideParagraph) {
       const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
       if (pushed.failure) return pushed;
       insideParagraph = false;
       paragraphText = '';
+      activeParagraphIndex = -1;
+      activeListNumbering = null;
       textDepth = 0;
+    } else if (insideParagraph && tagName === 'w:numPr' && !closing) {
+      activeListNumbering = {
+        paragraphIndex: activeParagraphIndex,
+        numId: '',
+        ilvl: '',
+      };
+      if (selfClosing) {
+        docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
+        activeListNumbering = null;
+      }
+    } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:numId') {
+      activeListNumbering.numId = docxContentPreviewListNumberingValue(token, 'val');
+    } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:ilvl') {
+      activeListNumbering.ilvl = docxContentPreviewListNumberingValue(token, 'val');
+    } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering) {
+      docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
+      activeListNumbering = null;
     } else if (insideParagraph && tagName === 'w:t') {
       if (closing) {
         textDepth = Math.max(0, textDepth - 1);
@@ -7492,6 +7535,10 @@ function docxImportPreviewLossItem(code, options = {}) {
   if (options.sourceCode !== undefined) item.sourceCode = options.sourceCode;
   if (options.sourcePart !== undefined) item.sourcePart = options.sourcePart;
   if (options.tagName !== undefined) item.tagName = options.tagName;
+  if (options.paragraphIndex !== undefined) item.paragraphIndex = options.paragraphIndex;
+  if (options.numId !== undefined) item.numId = options.numId;
+  if (options.ilvl !== undefined) item.ilvl = options.ilvl;
+  if (options.listKey !== undefined) item.listKey = options.listKey;
   return item;
 }
 
@@ -7503,6 +7550,10 @@ function docxImportPreviewSortRecords(records) {
     || String(left.sourceCode || '').localeCompare(String(right.sourceCode || ''))
     || String(left.sourcePart || '').localeCompare(String(right.sourcePart || ''))
     || String(left.tagName || '').localeCompare(String(right.tagName || ''))
+    || String(left.paragraphIndex ?? '').localeCompare(String(right.paragraphIndex ?? ''), undefined, { numeric: true })
+    || String(left.numId || '').localeCompare(String(right.numId || ''))
+    || String(left.ilvl || '').localeCompare(String(right.ilvl || ''))
+    || String(left.listKey || '').localeCompare(String(right.listKey || ''))
     || String(left.field || '').localeCompare(String(right.field || ''))
   ));
 }
@@ -7913,6 +7964,10 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       sourceCode: diagnostic.sourceCode || diagnostic.code,
       sourcePart: diagnostic.sourcePart || diagnostic.entryId || contentPreview.sourcePart,
       tagName: diagnostic.tagName,
+      paragraphIndex: diagnostic.paragraphIndex,
+      numId: diagnostic.numId,
+      ilvl: diagnostic.ilvl,
+      listKey: diagnostic.listKey,
       message: mapped.message || (knownIgnoredPart
         ? 'known DOCX package part is ignored by the plain text import candidate'
         : 'unsupported DOCX structure is not represented in the plain text import candidate'),
