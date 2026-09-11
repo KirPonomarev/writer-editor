@@ -602,12 +602,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ad65dee9e3847fc0c25f1cb1d277fe48aa6f20df1e6dc1a6930d97052e895e00"
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "4820e690303e4da4c6dd031ebcc5463a966d81fe775e5cdafdf17c9b6d1027e5"
     },
     {
       "approved": true,
@@ -643,6 +643,18 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "39b6201eb18b813f24499444d5b9369678bdf69acc86a90414befb1980c68cd5"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-09T05:41:16Z",
       "approvedBy": "OWNER_CHAT_DIRECT_INTEROP_PR1852_COORDINATION_WINDOW_OPEN_2026_09_09",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
@@ -651,11 +663,47 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "2be3e5987f345743a5f2cf76612861b845e9ed7a98fd5f1f2c89e798784d45b9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "7325874e0260d0e22aabae33caeeb494ecea7cd639b85e48a29d1295b18dbad7"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-09T18:24:11.359Z",
       "approvedBy": "owner-directive:R24_PR1861_REVIEWIR_BOUNDARY_SUCCESSOR_RECONCILIATION_2026_09_09",
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
       "rationale": "Approve exact current governance bytes for PR1861 ReviewIR replacement grouping boundary successor reconciliation and CI privacy-negative watchdog repair after merging origin/main f4c59873: admit only parser boundary logic, focused tests, successor carriers, inventory, and the timing-only privacy smoke repair over immutable RCV00B delivery; no PRE00E/PRE00F redelivery, PR1845 reopen, product write/apply capability, dependency, runtime network truth, release readiness, or PROGRAM DONE claim.",
       "sha256": "13ce852b13db4134c9cf81795a809f76781bdf0a6f41f162eae7818ec7511a20"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-10T22:45:18Z",
+      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
+      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
+      "sha256": "2a5e8217beb74649ed84f17a66b6ca79faaa3e953c7a66fdbf94553c9386a033"
     },
     {
       "approved": true,
@@ -688,6 +736,20 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
+      "sha256": "188d90247d4df7e9c5b10d96afcbead5c90b0c02a656fa6f50283a3b9433576f"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-10T19:20:00Z",
       "approvedBy": "owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
       "authority": "OWNER_DIRECTIVE_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
@@ -700,12 +762,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:47.812Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "b725ade28809bbc97829aa700a99881a021bfd45388dc3c7f818af686eb45c6f",
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss governance registry rebind after origin/main 4aa9317c: admits only registry hash propagation for the already scoped zero-write content-preview/import-plan repair. No list formatting import, product runtime widening, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "5acdd767c3bacecef10cdbb109cce52bc5119a515a7c54b59f217e24acabec87",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
@@ -713,16 +775,17 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+        "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "de0806d1b7609168e2bdc94f0ceeb13c43de3bd3a49869da5a2cfe9d60984149"
+      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
+      "sha256": "bff02e211b03d4efc842d854c345a48d7c54def4e7bb47d0d3807202304798e1"
     },
     {
       "approved": true,
@@ -738,28 +801,17 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-11T00:35:52Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_RECONCILE_2026_09_11",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_RECONCILED_WITH_R24_S03_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "7e025124c47b1ee758744ebb158e293ade8f83fef364c434f3d5bfa447c8110a"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
+        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "43d28104f748e06f4d478b8526e8d98514f847d34e5fb0b635cd2e7dfda7f0fe"
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
+      "sha256": "1a88444d1f77f9dedaeb596421e0fd9c114c8a3b4122b7b8c0c80581a582cd4e"
     },
     {
       "approved": true,
@@ -832,81 +884,11 @@
       "filePath": "test/contracts/r24-w0-current-state-closure.contract.test.mjs",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
       "sha256": "93d77128623d6e85ed8ea67897182f4d3a4311df8fb9ee99333bcd5cc6a64543"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "39b6201eb18b813f24499444d5b9369678bdf69acc86a90414befb1980c68cd5"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "2be3e5987f345743a5f2cf76612861b845e9ed7a98fd5f1f2c89e798784d45b9"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "7325874e0260d0e22aabae33caeeb494ecea7cd639b85e48a29d1295b18dbad7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "2a5e8217beb74649ed84f17a66b6ca79faaa3e953c7a66fdbf94553c9386a033"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "bff02e211b03d4efc842d854c345a48d7c54def4e7bb47d0d3807202304798e1"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T22:45:18Z",
-      "approvedBy": "owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_W0_CURRENT_STATE_CLOSURE_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "1a88444d1f77f9dedaeb596421e0fd9c114c8a3b4122b7b8c0c80581a582cd4e"
     }
   ],
   "evidenceStampIds": [
+    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+    "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-PRE00D-FRESH-SUCCESSOR-ADMISSION-LEASE-HANDOFF",
     "ES-R24-PRE00E-RECOVERY-CI-EXTERNAL-CONFIRMATION",
@@ -914,12 +896,10 @@
     "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS",
     "ES-R24-RCV00B-SUCCESSOR-ADMISSIONS",
     "ES-R24-RCV00E-LEASE-FENCING-CAS-CLAIM-BINDINGS",
-    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
-    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-    "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
     "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-    "ES-R24-W0-CURRENT-STATE-CLOSURE"
+    "ES-R24-W0-CURRENT-STATE-CLOSURE",
+    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS"
   ],
   "sourcePlanRoles": {
     "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",

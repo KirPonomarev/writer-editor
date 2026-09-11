@@ -83,21 +83,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:47.812Z",
-      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "a0cd6b5fbcaa123e6e8df442443ac87810f03999daaeaffbbc29b8d6cc46e8f2"
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "683220ab13944467ca20e9d174c3a8ceb3b5e2b46c9b9e2c69e63d23bb54eed5"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge: admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ad65dee9e3847fc0c25f1cb1d277fe48aa6f20df1e6dc1a6930d97052e895e00"
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "4820e690303e4da4c6dd031ebcc5463a966d81fe775e5cdafdf17c9b6d1027e5"
     },
     {
       "approved": true,
@@ -141,12 +141,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T22:01:04.016Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-10T23:06:40Z",
+      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10 | owner-directive:R24_HOSTILE_GATE_001_CRC_PREVIEW_PR1874_DELIVERY_2026_09_11 | owner-directive:R24_S03_LIST_NUMBERING_SILENT_LOSS_2026_09_10",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_S03_LIST_NUMBERING_SILENT_LOSS_AUTONOMOUS_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current PR1874 HOSTILE-GATE-001 CRC preview delivery bytes after origin/main e0661ea3 merge while preserving historical post-audit verifier compatibility tokens for shared C1B inventory carrier rows. This admits only DOCX content-preview actual CRC fail-closed regression coverage, C1B inventory rebind, and governance mirror registry rebind for CI delivery. No product write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "25abace1b65e1ba66e4682ba867a7d3c7aaed468d7f17b3d222336a06e52f0c6",
+      "rationale": "Approve exact current S03 DOCX list-numbering silent-loss repair after origin/main 4aa9317c: admits only zero-write content-preview/import-plan detection of paragraph w:numPr as explicit unsupported list-numbering loss, focused regression coverage, C1B inventory rebind, and governance registry rebind for delivery. No list formatting import, project write authority, UI change, dependency, runtime network, Google truth, full 1120-cell portability PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "89d836200bc907ff577fa786bb5a62dac94b18d045dd043bdf9e4ee1b64fdfcb",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
