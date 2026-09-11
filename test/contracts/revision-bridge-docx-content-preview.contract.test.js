@@ -293,6 +293,7 @@ test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are
     '<w:p><w:r><w:t>A&amp;B</w:t><w:tab/><w:t>C&lt;D</w:t><w:br/><w:t>&quot;E&apos;</w:t></w:r></w:p>',
     '<w:p/>',
   ].join('')));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
 
   assertContentPreviewShell(result);
   assert.equal(result.ok, true);
@@ -301,7 +302,140 @@ test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are
     '',
   ]);
   assert.equal(result.contentPreview.paragraphCount, 2);
-  assert.equal(result.diagnostics.length, 0);
+  assert.equal(result.diagnostics.filter((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'
+    && item.tagName === 'w:br'
+  )).length, 1);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY'
+    && item.category === 'lineBreak'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'
+    && item.tagName === 'w:br'
+  )), true);
+});
+
+test('DOCX content preview: typed breaks and section types have exact plain text loss items', async () => {
+  const bridge = await loadBridge();
+  const input = cleanDocxZip([
+    '<w:p><w:r><w:t>T04_LINE_BEFORE</w:t><w:br/><w:t>T04_LINE_AFTER</w:t></w:r></w:p>',
+    '<w:p><w:r><w:t>T04_PAGE_BEFORE</w:t><w:br w:type="page"/><w:t>T04_PAGE_AFTER</w:t></w:r></w:p>',
+    '<w:p><w:r><w:t>T04_COLUMN_BEFORE</w:t><w:br w:type="column"/><w:t>T04_COLUMN_AFTER</w:t></w:r></w:p>',
+    paragraphXml('T04_PARAGRAPH_ONE'),
+    paragraphXml('T04_PARAGRAPH_TWO'),
+    [
+      '<w:p><w:r><w:t>T04_SECTION_ONE</w:t></w:r><w:pPr><w:sectPr>',
+      '<w:type w:val="nextPage"/>',
+      '</w:sectPr></w:pPr></w:p>',
+    ].join(''),
+    [
+      '<w:p><w:r><w:t>T04_SECTION_TWO</w:t></w:r><w:pPr><w:sectPr>',
+      '<w:type w:val="continuous"/>',
+      '</w:sectPr></w:pPr></w:p>',
+    ].join(''),
+  ].join(''));
+  const before = Buffer.from(input);
+  const result = bridge.buildDocxContentPreviewFromZipBytes(input);
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(input.equals(before), true);
+  assert.equal(result.ok, true);
+  assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'T04_LINE_BEFORE\nT04_LINE_AFTER',
+    'T04_PAGE_BEFORE\nT04_PAGE_AFTER',
+    'T04_COLUMN_BEFORE\nT04_COLUMN_AFTER',
+    'T04_PARAGRAPH_ONE',
+    'T04_PARAGRAPH_TWO',
+    'T04_SECTION_ONE',
+    'T04_SECTION_TWO',
+  ]);
+  for (const sourceCode of [
+    'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE',
+    'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE',
+    'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN',
+  ]) {
+    assert.equal(result.diagnostics.filter((item) => (
+      item.code === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC'
+      && item.sourceCode === sourceCode
+      && item.sourcePart === 'word/document.xml'
+      && item.tagName === 'w:br'
+    )).length, 1);
+  }
+  for (const sourceCode of [
+    'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
+    'DOCX_CONTENT_PREVIEW_SECTION_BREAK_CONTINUOUS',
+  ]) {
+    assert.equal(result.diagnostics.filter((item) => (
+      item.code === 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC'
+      && item.sourceCode === sourceCode
+      && item.sourcePart === 'word/document.xml'
+      && item.tagName === 'w:sectPr'
+    )).length, 1);
+  }
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content, [
+    'T04_LINE_BEFORE\nT04_LINE_AFTER',
+    'T04_PAGE_BEFORE\nT04_PAGE_AFTER',
+    'T04_COLUMN_BEFORE\nT04_COLUMN_AFTER',
+    'T04_PARAGRAPH_ONE',
+    'T04_PARAGRAPH_TWO',
+    'T04_SECTION_ONE',
+    'T04_SECTION_TWO',
+  ].join('\n\n'));
+  for (const expected of [
+    ['DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY', 'lineBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'],
+    ['DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY', 'pageBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE'],
+    ['DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY', 'columnBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'],
+    [
+      'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED',
+      'sectionBreak',
+      'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
+    ],
+    [
+      'DOCX_IMPORT_PREVIEW_SECTION_BREAK_CONTINUOUS_NOT_IMPORTED',
+      'sectionBreak',
+      'DOCX_CONTENT_PREVIEW_SECTION_BREAK_CONTINUOUS',
+    ],
+  ]) {
+    const [code, category, sourceCode] = expected;
+    assert.equal(importPreview.lossReport.items.filter((item) => (
+      item.code === code
+      && item.category === category
+      && item.sourceCode === sourceCode
+    )).length, 1);
+  }
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY'
+    && item.category === 'formatting'
+  )), true);
+});
+
+test('DOCX content preview: lexical break and section words do not create typed loss', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(
+    paragraphXml('Visible w:br w:type page column w:sectPr nextPage continuous only'),
+  ));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Visible w:br w:type page column w:sectPr nextPage continuous only',
+  ]);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC'
+    || item.code === 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC'
+  )), false);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY'
+    || item.code === 'DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY'
+    || item.code === 'DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY'
+    || item.code === 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED'
+    || item.code === 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_CONTINUOUS_NOT_IMPORTED'
+  )), false);
 });
 
 test('DOCX content preview: hostile and malformed packages stop while known degraded parts are ignored', async () => {
