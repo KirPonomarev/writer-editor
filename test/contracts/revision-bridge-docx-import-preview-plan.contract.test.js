@@ -433,7 +433,7 @@ test('DOCX import preview plan: bookmark identity and custom metadata diagnostic
   )), false);
 });
 
-test('DOCX import preview plan: Google Docs tab labels and separators are not manuscript content', async () => {
+test('DOCX import preview plan: Google Docs tab diagnostic preserves tab labels and paragraphs', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
     { text: 'Tab 1', paragraphStyleId: 'Title', zeroLengthBookmarkCount: 1 },
@@ -457,29 +457,74 @@ test('DOCX import preview plan: Google Docs tab labels and separators are not ma
   assert.equal(result.candidateCreatePlan.entryCount, 1);
   assert.equal(
     result.candidateCreatePlan.entries[0].content,
-    'G01_TOP_A sentinel α 👩‍💻 linkA\n\nG01_TOP_B sentinel β café linkB\n\nG01_CHILD_B1 sentinel γ שלום linkC',
+    'Tab 1\n\nG01_TOP_A sentinel α 👩‍💻 linkA\n\n\n\nG01 top two\n\nG01_TOP_B sentinel β café linkB\n\n\n\nG01 child of top two\n\nG01_CHILD_B1 sentinel γ שלום linkC\n\n',
   );
-  assert.equal(result.candidateCreatePlan.entries[0].content.includes('Tab 1'), false);
-  assert.equal(result.candidateCreatePlan.entries[0].content.includes('G01 top two'), false);
-  assert.deepEqual(result.candidateCreatePlan.entries[0].source.paragraphRange, { start: 1, end: 7 });
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('Tab 1'), true);
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('G01 top two'), true);
+  assert.deepEqual(result.candidateCreatePlan.entries[0].source.paragraphRange, { start: 0, end: 8 });
   assert.deepEqual(result.candidateCreatePlan.entries[0].source.googleDocsTabs.tabLabels, [
     'Tab 1',
     'G01 top two',
     'G01 child of top two',
   ]);
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.detectedParagraphCount, 6);
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.excludedParagraphCount, 0);
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.importedParagraphCount, 9);
   assert.equal(result.evidence.some((item) => (
     item.kind === 'googleDocsTabs'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE'
+    && item.originAuthoritative === false
     && item.tabCount === 3
-    && item.excludedParagraphCount === 6
+    && item.detectedParagraphCount === 6
+    && item.excludedParagraphCount === 0
   )), true);
   assert.equal(result.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED'
     && item.category === 'googleDocsTabs'
-    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_DETECTED'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE'
+    && item.originAuthoritative === false
     && item.tabCount === 3
-    && item.excludedParagraphCount === 6
+    && item.detectedParagraphCount === 6
+    && item.excludedParagraphCount === 0
     && Array.isArray(item.tabLabels)
     && item.tabLabels.includes('G01 child of top two')
+  )), true);
+});
+
+test('DOCX import preview plan: same-topology Word titles with user bookmarks remain lossless', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    { text: 'Chapter One', paragraphStyleId: 'Title', zeroLengthBookmarkCount: 1 },
+    { text: 'Alpha body' },
+    { text: '', sectionBreakType: 'nextPage' },
+    { text: 'Chapter Two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage', zeroLengthBookmarkCount: 1 },
+    { text: 'Bravo body' },
+    { text: '', sectionBreakType: 'nextPage' },
+    { text: 'Chapter Three', paragraphStyleId: 'Title', sectionBreakType: 'nextPage', zeroLengthBookmarkCount: 1 },
+    { text: 'Charlie body' },
+    { text: '' },
+  ]));
+
+  assertDocxImportPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
+  assert.equal(
+    result.candidateCreatePlan.entries[0].content,
+    'Chapter One\n\nAlpha body\n\n\n\nChapter Two\n\nBravo body\n\n\n\nChapter Three\n\nCharlie body\n\n',
+  );
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('Chapter One'), true);
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('Chapter Two'), true);
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('Chapter Three'), true);
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+  assert.equal(result.candidateCreatePlan.entries[0].source.googleDocsTabs.excludedParagraphCount, 0);
+  assert.equal(result.lossReport.items.some((item) => (
+    item.category === 'googleDocsTabs'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE'
+    && item.originAuthoritative === false
+    && item.excludedParagraphCount === 0
   )), true);
 });
 

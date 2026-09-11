@@ -7055,6 +7055,29 @@ function docxContentPreviewAttributeValue(token, localName) {
   return '';
 }
 
+function docxContentPreviewAttributeNamespaceUri(attributeName, namespaceMap) {
+  const prefix = docxContentPreviewPrefixName(attributeName);
+  if (prefix === 'w' && (!(namespaceMap instanceof Map) || !namespaceMap.has('w'))) {
+    return DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
+  }
+  if (!prefix) return '';
+  return namespaceMap instanceof Map ? namespaceMap.get(prefix) || '' : '';
+}
+
+function docxContentPreviewWordAttributeValue(token, namespaceMap, localName) {
+  const pattern = /\s([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)\s*=\s*(["'])([\s\S]*?)\2/gu;
+  let match;
+  while ((match = pattern.exec(String(token || ''))) !== null) {
+    if (
+      docxContentPreviewLocalName(match[1]) === localName
+      && docxContentPreviewAttributeNamespaceUri(match[1], namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
+    ) {
+      return docxContentPreviewDecodeText(match[3]);
+    }
+  }
+  return '';
+}
+
 function docxContentPreviewLocalName(name) {
   const text = String(name || '');
   return text.includes(':') ? text.slice(text.indexOf(':') + 1) : text;
@@ -7160,8 +7183,8 @@ function docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenTags, tagNa
   }));
 }
 
-function docxContentPreviewListNumberingValue(token, localName) {
-  return docxContentPreviewAttributeValue(token, localName).trim();
+function docxContentPreviewListNumberingValue(token, namespaceMap, localName) {
+  return docxContentPreviewWordAttributeValue(token, namespaceMap, localName).trim();
 }
 
 function docxContentPreviewListNumberingKey(numId, ilvl) {
@@ -7187,8 +7210,8 @@ function docxContentPreviewAddListNumberingDiagnostic(diagnostics, numberingCont
   }));
 }
 
-function docxContentPreviewNormalizeTypedBreakType(token) {
-  const rawType = docxContentPreviewAttributeValue(token, 'type').trim();
+function docxContentPreviewNormalizeTypedBreakType(token, namespaceMap) {
+  const rawType = docxContentPreviewWordAttributeValue(token, namespaceMap, 'type').trim();
   if (rawType === 'page') return 'page';
   if (rawType === 'column') return 'column';
   return 'line';
@@ -7208,8 +7231,8 @@ function docxContentPreviewAddTypedBreakDiagnostic(diagnostics, seenKinds, break
   }));
 }
 
-function docxContentPreviewNormalizeSectionBreakType(token) {
-  const rawValue = docxContentPreviewAttributeValue(token, 'val').trim();
+function docxContentPreviewNormalizeSectionBreakType(token, namespaceMap) {
+  const rawValue = docxContentPreviewWordAttributeValue(token, namespaceMap, 'val').trim();
   if (rawValue === 'nextPage') return 'nextPage';
   if (rawValue === 'continuous') return 'continuous';
   return '';
@@ -7623,7 +7646,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         if (selfClosing) sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
       }
     } else if (sectionPropertiesDepth > 0 && tagName === 'w:type' && !closing) {
-      const sectionBreakType = docxContentPreviewNormalizeSectionBreakType(token);
+      const sectionBreakType = docxContentPreviewNormalizeSectionBreakType(token, tokenNamespaceMap);
       if (insideParagraph && activeParagraphMetadata && sectionBreakType) {
         activeParagraphMetadata.sectionBreakType = sectionBreakType;
       }
@@ -7670,19 +7693,19 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         activeListNumbering = null;
       }
     } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:numId') {
-      activeListNumbering.numId = docxContentPreviewListNumberingValue(token, 'val');
+      activeListNumbering.numId = docxContentPreviewListNumberingValue(token, tokenNamespaceMap, 'val');
     } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:ilvl') {
-      activeListNumbering.ilvl = docxContentPreviewListNumberingValue(token, 'val');
+      activeListNumbering.ilvl = docxContentPreviewListNumberingValue(token, tokenNamespaceMap, 'val');
     } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering) {
       docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
       activeListNumbering = null;
     } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:pStyle') {
-      activeParagraphMetadata.paragraphStyleId = docxContentPreviewAttributeValue(token, 'val').trim();
+      activeParagraphMetadata.paragraphStyleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val').trim();
     } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkStart') {
-      const bookmarkId = docxContentPreviewAttributeValue(token, 'id').trim();
+      const bookmarkId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'id').trim();
       if (bookmarkId) activeParagraphMetadata.bookmarkStartIds.add(bookmarkId);
     } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkEnd') {
-      const bookmarkId = docxContentPreviewAttributeValue(token, 'id').trim();
+      const bookmarkId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'id').trim();
       if (bookmarkId && activeParagraphMetadata.bookmarkStartIds.has(bookmarkId) && paragraphText.length === 0) {
         activeParagraphMetadata.zeroLengthBookmarkCount += 1;
       }
@@ -7698,7 +7721,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         docxContentPreviewAddTypedBreakDiagnostic(
           diagnostics,
           seenTypedBreakKinds,
-          docxContentPreviewNormalizeTypedBreakType(token),
+          docxContentPreviewNormalizeTypedBreakType(token, tokenNamespaceMap),
         );
       }
       paragraphText += marker;
@@ -7936,7 +7959,7 @@ const DOCX_IMPORT_PREVIEW_CODES = Object.freeze({
   INPUT_LAYER_LEAK: 'DOCX_IMPORT_PREVIEW_INPUT_LAYER_LEAK',
   BUDGET_EXCEEDED: 'DOCX_IMPORT_PREVIEW_BUDGET_EXCEEDED',
 });
-const DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_DETECTED';
+const DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE';
 const DOCX_IMPORT_PREVIEW_BOUNDS = Object.freeze({
   maxCandidateScenes: 1,
   maxParagraphs: DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs,
@@ -8030,7 +8053,9 @@ function docxImportPreviewLossItem(code, options = {}) {
   if (options.ilvl !== undefined) item.ilvl = options.ilvl;
   if (options.listKey !== undefined) item.listKey = options.listKey;
   if (options.tabCount !== undefined) item.tabCount = options.tabCount;
+  if (options.detectedParagraphCount !== undefined) item.detectedParagraphCount = options.detectedParagraphCount;
   if (options.excludedParagraphCount !== undefined) item.excludedParagraphCount = options.excludedParagraphCount;
+  if (options.originAuthoritative !== undefined) item.originAuthoritative = options.originAuthoritative;
   if (Array.isArray(options.tabLabels)) item.tabLabels = options.tabLabels.slice();
   return item;
 }
@@ -8344,8 +8369,7 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
   if (headerIndexes.length < 2 || headerIndexes[0] !== 0) return null;
 
   const tabLabels = [];
-  const importParagraphIndexes = [];
-  const excludedParagraphIndexes = [];
+  const diagnosticParagraphIndexes = [];
   for (let headerOrdinal = 0; headerOrdinal < headerIndexes.length; headerOrdinal += 1) {
     const headerIndex = headerIndexes[headerOrdinal];
     const nextHeaderIndex = headerIndexes[headerOrdinal + 1] ?? paragraphs.length;
@@ -8360,16 +8384,18 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
     const bodyIndexes = segmentIndexes.slice(0, -1);
     if (!bodyIndexes.some((index) => String(paragraphs[index]?.text ?? '').trim() !== '')) return null;
     tabLabels.push(paragraphs[headerIndex].text);
-    excludedParagraphIndexes.push(headerIndex, separatorIndex);
-    importParagraphIndexes.push(...bodyIndexes);
+    diagnosticParagraphIndexes.push(headerIndex, separatorIndex);
   }
 
   return {
     tabCount: headerIndexes.length,
     tabLabels,
-    excludedParagraphIndexes,
-    excludedParagraphCount: excludedParagraphIndexes.length,
-    importParagraphIndexes,
+    originAuthoritative: false,
+    diagnosticParagraphIndexes,
+    detectedParagraphCount: diagnosticParagraphIndexes.length,
+    excludedParagraphIndexes: [],
+    excludedParagraphCount: 0,
+    importParagraphIndexes: paragraphs.map((_paragraph, index) => index),
   };
 }
 
@@ -8496,8 +8522,10 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       tagName: 'w:p',
       tabCount: googleDocsTabs.tabCount,
       tabLabels: googleDocsTabs.tabLabels,
+      originAuthoritative: googleDocsTabs.originAuthoritative,
+      detectedParagraphCount: googleDocsTabs.detectedParagraphCount,
       excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
-      message: 'Google Docs tab labels and separator paragraphs are excluded from the plain text candidate; tab labels are retained in this loss report',
+      message: 'Possible Google Docs tab structure was detected, but all paragraph text is retained in the plain text candidate because package origin is not authoritative',
     }));
   }
   if (importedText.length === 0) {
@@ -8599,6 +8627,8 @@ function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview,
       sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
       tabCount: googleDocsTabs.tabCount,
       tabLabels: googleDocsTabs.tabLabels.slice(),
+      originAuthoritative: googleDocsTabs.originAuthoritative,
+      detectedParagraphCount: googleDocsTabs.detectedParagraphCount,
       excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
       importedParagraphCount: importParagraphIndexes.length,
     };
@@ -8707,6 +8737,8 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
         ? docxImportPreviewEvidence('googleDocsTabs', {
           sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
           tabCount: googleDocsTabs.tabCount,
+          originAuthoritative: googleDocsTabs.originAuthoritative,
+          detectedParagraphCount: googleDocsTabs.detectedParagraphCount,
           excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
         })
         : null,

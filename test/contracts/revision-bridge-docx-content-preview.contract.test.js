@@ -926,7 +926,7 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
   )), true);
 });
 
-test('DOCX content preview: Google Docs tab structure excludes tab labels from import candidate with explicit loss', async () => {
+test('DOCX content preview: Google Docs tab structure preserves labels in import candidate with explicit diagnostic', async () => {
   const bridge = await loadBridge();
   const tabTitle = (id, label, withSectionType = true) => [
     '<w:p><w:pPr><w:pStyle w:val="Title"/><w:sectPr>',
@@ -982,22 +982,168 @@ test('DOCX content preview: Google Docs tab structure excludes tab labels from i
   assert.equal(importPreview.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
   assert.equal(
     importPreview.candidateCreatePlan.entries[0].content,
-    'T02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end',
+    'Tab 1\n\nT02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\n\n\nT02 G03 tab B\n\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\n',
   );
-  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Tab 1'), false);
-  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('T02 G03 tab B'), false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Tab 1'), true);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('T02 G03 tab B'), true);
   assert.deepEqual(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.tabLabels, [
     'Tab 1',
     'T02 G03 tab B',
   ]);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.detectedParagraphCount, 4);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.excludedParagraphCount, 0);
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED'
     && item.category === 'googleDocsTabs'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE'
+    && item.originAuthoritative === false
     && item.tabCount === 2
-    && item.excludedParagraphCount === 4
+    && item.detectedParagraphCount === 4
+    && item.excludedParagraphCount === 0
     && item.tabLabels.includes('T02 G03 tab B')
   )), true);
   assert.equal(importPreview.lossReport.items.some((item) => item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'), true);
+});
+
+test('DOCX content preview: Google tab metadata uses only WordprocessingML attributes', async (t) => {
+  const bridge = await loadBridge();
+  const docxWithNamespaces = (body) => rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}" xmlns:x="urn:foreign">`,
+    `<w:body>${body}</w:body>`,
+    '</w:document>',
+  ].join(''));
+  const tabTitle = ({
+    id,
+    label,
+    styleAttrs = 'w:val="Title"',
+    sectionTypeAttrs = 'w:val="nextPage"',
+    bookmarkStartAttrs = `w:name="_tab${id}" w:id="${id}"`,
+    bookmarkEndAttrs = `w:id="${id}"`,
+    withSectionType = true,
+  }) => [
+    '<w:p><w:pPr>',
+    `<w:pStyle ${styleAttrs}/>`,
+    '<w:sectPr>',
+    withSectionType ? `<w:type ${sectionTypeAttrs}/>` : '',
+    '</w:sectPr></w:pPr>',
+    `<w:bookmarkStart ${bookmarkStartAttrs}/>`,
+    `<w:bookmarkEnd ${bookmarkEndAttrs}/>`,
+    `<w:r><w:t>${label}</w:t></w:r>`,
+    '</w:p>',
+  ].join('');
+  const separator = (sectionTypeAttrs = 'w:val="nextPage"') => [
+    '<w:p><w:pPr><w:sectPr>',
+    `<w:type ${sectionTypeAttrs}/>`,
+    '</w:sectPr></w:pPr></w:p>',
+  ].join('');
+  const bodyFor = (firstTitleOptions, secondTitleOptions, separatorTypeAttrs = 'w:val="nextPage"') => [
+    tabTitle({ id: 1, label: 'Tab A', withSectionType: false, ...firstTitleOptions }),
+    '<w:p><w:r><w:t>Body A</w:t></w:r></w:p>',
+    separator(separatorTypeAttrs),
+    tabTitle({ id: 2, label: 'Tab B', ...secondTitleOptions }),
+    '<w:p><w:r><w:t>Body B</w:t></w:r></w:p>',
+    '<w:p/>',
+  ].join('');
+  const hasGoogleTabsDiagnostic = (plan) => plan.lossReport.items.some((item) => item.category === 'googleDocsTabs');
+
+  await t.test('foreign pStyle val before semantic Normal cannot spoof Google tab header', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      { styleAttrs: 'x:val="Title" w:val="Normal"' },
+      { styleAttrs: 'x:val="Title" w:val="Normal"' },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Normal');
+    assert.equal(result.contentPreview.paragraphs[3].paragraphStyleId, 'Normal');
+    assert.equal(hasGoogleTabsDiagnostic(plan), false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign section val before semantic continuous cannot spoof next-page tab header', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {},
+      { sectionTypeAttrs: 'x:val="nextPage" w:val="continuous"' },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'continuous');
+    assert.equal(hasGoogleTabsDiagnostic(plan), false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign bookmark id pairs before nonmatching semantic ids cannot spoof zero-length anchors', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {
+        bookmarkStartAttrs: 'w:name="_tab1" x:id="1" w:id="11"',
+        bookmarkEndAttrs: 'x:id="1" w:id="12"',
+      },
+      {
+        bookmarkStartAttrs: 'w:name="_tab2" x:id="2" w:id="21"',
+        bookmarkEndAttrs: 'x:id="2" w:id="22"',
+      },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[0], 'zeroLengthBookmarkCount'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[3], 'zeroLengthBookmarkCount'), false);
+    assert.equal(hasGoogleTabsDiagnostic(plan), false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+  });
+
+  await t.test('foreign pStyle val before semantic Title still admits valid tab diagnostic', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      { styleAttrs: 'x:val="Normal" w:val="Title"' },
+      { styleAttrs: 'x:val="Normal" w:val="Title"' },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+    assert.equal(result.contentPreview.paragraphs[3].paragraphStyleId, 'Title');
+    assert.equal(hasGoogleTabsDiagnostic(plan), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign bookmark ids before matching semantic ids still admit valid tab diagnostic', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {
+        bookmarkStartAttrs: 'w:name="_tab1" x:id="101" w:id="1"',
+        bookmarkEndAttrs: 'x:id="102" w:id="1"',
+      },
+      {
+        bookmarkStartAttrs: 'w:name="_tab2" x:id="201" w:id="2"',
+        bookmarkEndAttrs: 'x:id="202" w:id="2"',
+      },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
+    assert.equal(result.contentPreview.paragraphs[3].zeroLengthBookmarkCount, 1);
+    assert.equal(hasGoogleTabsDiagnostic(plan), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign separator val before semantic next-page still admits valid tab diagnostic', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {},
+      {},
+      'x:val="continuous" w:val="nextPage"',
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
+    assert.equal(hasGoogleTabsDiagnostic(plan), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
 });
 
 test('DOCX content preview: hyperlink visible text survives split runs anchors and Unicode', async () => {
