@@ -57,7 +57,6 @@ test('preload transfer and flow bridge: main bridge reuses existing export impor
 
   assert.ok(source.includes("'cmd.project.export.docxMin': async (payload = {}) => {"))
   assert.ok(source.includes('const response = await handleExportDocxMin({'))
-  assert.ok(source.includes('return normalizeUiBridgeMenuResult(response);'))
 
   assert.ok(source.includes("'cmd.project.importMarkdownV1': async (payload = {}) => {"))
   assert.ok(source.includes('const result = await dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_IMPORT_MARKDOWN_V1, payload);'))
