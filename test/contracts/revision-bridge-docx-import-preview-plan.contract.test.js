@@ -40,7 +40,7 @@ function normalizeText(value) {
   return String(value ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 }
 
-function paragraph(order, rawText) {
+function paragraph(order, rawText, overrides = {}) {
   const text = normalizeText(rawText);
   return {
     order,
@@ -48,11 +48,18 @@ function paragraph(order, rawText) {
     text,
     textHash: stableHash(text),
     charCount: text.length,
+    ...overrides,
   };
 }
 
 function contentPreviewReport(paragraphTexts, overrides = {}) {
-  const paragraphs = paragraphTexts.map((text, index) => paragraph(index, text));
+  const paragraphs = paragraphTexts.map((item, index) => {
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      const { text, ...paragraphOverrides } = item;
+      return paragraph(index, text, paragraphOverrides);
+    }
+    return paragraph(index, item);
+  });
   const joinedText = paragraphs.map((item) => item.text).join('\n');
   return {
     ok: true,
@@ -424,6 +431,80 @@ test('DOCX import preview plan: bookmark identity and custom metadata diagnostic
     item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
     || item.code === 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED'
   )), false);
+});
+
+test('DOCX import preview plan: Google Docs tab labels and separators are not manuscript content', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    { text: 'Tab 1', paragraphStyleId: 'Title' },
+    { text: 'G01_TOP_A sentinel α 👩‍💻 linkA' },
+    { text: '', sectionBreakType: 'nextPage' },
+    { text: 'G01 top two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'G01_TOP_B sentinel β café linkB' },
+    { text: '', sectionBreakType: 'nextPage' },
+    { text: 'G01 child of top two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'G01_CHILD_B1 sentinel γ שלום linkC' },
+    { text: '' },
+  ], {
+    reportOverrides: {
+      sourceArtifactSha256: 'c'.repeat(64),
+    },
+  }));
+
+  assertDocxImportPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
+  assert.equal(result.candidateCreatePlan.entryCount, 1);
+  assert.equal(
+    result.candidateCreatePlan.entries[0].content,
+    'G01_TOP_A sentinel α 👩‍💻 linkA\n\nG01_TOP_B sentinel β café linkB\n\nG01_CHILD_B1 sentinel γ שלום linkC',
+  );
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('Tab 1'), false);
+  assert.equal(result.candidateCreatePlan.entries[0].content.includes('G01 top two'), false);
+  assert.deepEqual(result.candidateCreatePlan.entries[0].source.paragraphRange, { start: 1, end: 7 });
+  assert.deepEqual(result.candidateCreatePlan.entries[0].source.googleDocsTabs.tabLabels, [
+    'Tab 1',
+    'G01 top two',
+    'G01 child of top two',
+  ]);
+  assert.equal(result.evidence.some((item) => (
+    item.kind === 'googleDocsTabs'
+    && item.tabCount === 3
+    && item.excludedParagraphCount === 6
+  )), true);
+  assert.equal(result.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED'
+    && item.category === 'googleDocsTabs'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_DETECTED'
+    && item.tabCount === 3
+    && item.excludedParagraphCount === 6
+    && Array.isArray(item.tabLabels)
+    && item.tabLabels.includes('G01 child of top two')
+  )), true);
+});
+
+test('DOCX import preview plan: ordinary title sections do not trigger Google Docs tab stripping', async () => {
+  const bridge = await loadBridge();
+  const singleTitle = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    { text: 'Novel Title', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'Chapter body' },
+  ]));
+  const repeatedTitleWithoutSeparators = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    { text: 'Chapter One', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'Alpha body' },
+    { text: 'Chapter Two', paragraphStyleId: 'Title', sectionBreakType: 'nextPage' },
+    { text: 'Bravo body' },
+  ]));
+
+  assertDocxImportPreviewShell(singleTitle);
+  assert.equal(singleTitle.candidateCreatePlan.sceneStrategy, 'single-scene');
+  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\n\nChapter body');
+  assert.equal(singleTitle.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
+
+  assertDocxImportPreviewShell(repeatedTitleWithoutSeparators);
+  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.sceneStrategy, 'single-scene');
+  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\n\nChapter Two\n\nBravo body');
+  assert.equal(repeatedTitleWithoutSeparators.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 });
 
 test('DOCX import preview plan: empty content stays preview-only and explicit', async () => {

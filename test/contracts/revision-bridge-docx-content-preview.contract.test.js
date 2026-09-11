@@ -926,6 +926,78 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
   )), true);
 });
 
+test('DOCX content preview: Google Docs tab structure excludes tab labels from import candidate with explicit loss', async () => {
+  const bridge = await loadBridge();
+  const tabTitle = (id, label, withSectionType = true) => [
+    '<w:p><w:pPr><w:pStyle w:val="Title"/><w:sectPr>',
+    withSectionType ? '<w:type w:val="nextPage"/>' : '',
+    '</w:sectPr></w:pPr>',
+    `<w:bookmarkStart w:name="_tab${id}" w:id="${id}"/>`,
+    `<w:bookmarkEnd w:id="${id}"/>`,
+    `<w:r><w:t xml:space="preserve">${label}</w:t></w:r>`,
+    '</w:p>',
+  ].join('');
+  const tabSeparator = (withSectionType = true) => [
+    '<w:p><w:pPr><w:rPr/>',
+    withSectionType ? '<w:sectPr><w:type w:val="nextPage"/></w:sectPr>' : '',
+    '</w:pPr></w:p>',
+  ].join('');
+  const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
+    tabTitle(0, 'Tab 1', false),
+    '<w:p><w:r><w:t xml:space="preserve">T02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end</w:t></w:r></w:p>',
+    tabSeparator(),
+    tabTitle(1, 'T02 G03 tab B'),
+    '<w:p><w:r><w:t xml:space="preserve">T02_TAB_B prefix 👩‍💻 combining:é NFC:café </w:t></w:r>',
+    '<w:hyperlink r:id="rIdGDoc"><w:r><w:t>SAME_TARGET</w:t></w:r></w:hyperlink>',
+    '<w:r><w:t xml:space="preserve"> end</w:t></w:r></w:p>',
+    tabSeparator(false),
+  ].join(''), [
+    {
+      name: 'word/_rels/document.xml.rels',
+      method: 8,
+      body: '<Relationships><Relationship Id="rIdGDoc" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
+    },
+  ]));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Tab 1',
+    'T02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end',
+    '',
+    'T02 G03 tab B',
+    'T02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end',
+    '',
+  ]);
+  assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[0], 'sectionBreakType'), false);
+  assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
+  assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'nextPage');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[5], 'sectionBreakType'), false);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(importPreview.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
+  assert.equal(
+    importPreview.candidateCreatePlan.entries[0].content,
+    'T02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end',
+  );
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Tab 1'), false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('T02 G03 tab B'), false);
+  assert.deepEqual(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.tabLabels, [
+    'Tab 1',
+    'T02 G03 tab B',
+  ]);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED'
+    && item.category === 'googleDocsTabs'
+    && item.tabCount === 2
+    && item.excludedParagraphCount === 4
+    && item.tabLabels.includes('T02 G03 tab B')
+  )), true);
+  assert.equal(importPreview.lossReport.items.some((item) => item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'), true);
+});
+
 test('DOCX content preview: hyperlink visible text survives split runs anchors and Unicode', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([

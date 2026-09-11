@@ -7436,17 +7436,24 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   return { xmlText: output.join(''), diagnostics };
 }
 
-function docxContentPreviewBuildParagraph(order, text) {
-  return {
+function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
+  const paragraph = {
     order,
     sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
     text,
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
+  if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
+    paragraph.paragraphStyleId = metadata.paragraphStyleId;
+  }
+  if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
+    paragraph.sectionBreakType = metadata.sectionBreakType;
+  }
+  return paragraph;
 }
 
-function docxContentPreviewPushParagraph(paragraphs, text) {
+function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}) {
   const nextCount = paragraphs.length + 1;
   if (nextCount > DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs) {
     return {
@@ -7457,7 +7464,7 @@ function docxContentPreviewPushParagraph(paragraphs, text) {
       }),
     };
   }
-  paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text));
+  paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
   return { ok: true };
 }
 
@@ -7497,6 +7504,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let insideParagraph = false;
   let activeParagraphIndex = -1;
   let activeListNumbering = null;
+  let activeParagraphMetadata = null;
   let sectionPropertiesDepth = 0;
   let unsupportedDepth = 0;
   let textDepth = 0;
@@ -7612,11 +7620,11 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         if (selfClosing) sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
       }
     } else if (sectionPropertiesDepth > 0 && tagName === 'w:type' && !closing) {
-      docxContentPreviewAddSectionBreakDiagnostic(
-        diagnostics,
-        seenSectionBreakKinds,
-        docxContentPreviewNormalizeSectionBreakType(token),
-      );
+      const sectionBreakType = docxContentPreviewNormalizeSectionBreakType(token);
+      if (insideParagraph && activeParagraphMetadata && sectionBreakType) {
+        activeParagraphMetadata.sectionBreakType = sectionBreakType;
+      }
+      docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
     }
 
     if (tagName === 'w:p' && !closing) {
@@ -7625,22 +7633,25 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         paragraphText = '';
         activeParagraphIndex = paragraphs.length;
         activeListNumbering = null;
+        activeParagraphMetadata = {};
       }
       if (selfClosing) {
-        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
+        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
         if (pushed.failure) return pushed;
         insideParagraph = false;
         paragraphText = '';
         activeParagraphIndex = -1;
         activeListNumbering = null;
+        activeParagraphMetadata = null;
       }
     } else if (tagName === 'w:p' && closing && insideParagraph) {
-      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
+      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
       if (pushed.failure) return pushed;
       insideParagraph = false;
       paragraphText = '';
       activeParagraphIndex = -1;
       activeListNumbering = null;
+      activeParagraphMetadata = null;
       textDepth = 0;
     } else if (insideParagraph && tagName === 'w:numPr' && !closing) {
       activeListNumbering = {
@@ -7659,6 +7670,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering) {
       docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
       activeListNumbering = null;
+    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:pStyle') {
+      activeParagraphMetadata.paragraphStyleId = docxContentPreviewAttributeValue(token, 'val').trim();
     } else if (insideParagraph && tagName === 'w:t') {
       if (closing) {
         textDepth = Math.max(0, textDepth - 1);
@@ -7704,7 +7717,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   }
 
   if (insideParagraph) {
-    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
+    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
     if (pushed.failure) return pushed;
   }
 
@@ -7909,6 +7922,7 @@ const DOCX_IMPORT_PREVIEW_CODES = Object.freeze({
   INPUT_LAYER_LEAK: 'DOCX_IMPORT_PREVIEW_INPUT_LAYER_LEAK',
   BUDGET_EXCEEDED: 'DOCX_IMPORT_PREVIEW_BUDGET_EXCEEDED',
 });
+const DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_DETECTED';
 const DOCX_IMPORT_PREVIEW_BOUNDS = Object.freeze({
   maxCandidateScenes: 1,
   maxParagraphs: DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs,
@@ -8001,6 +8015,9 @@ function docxImportPreviewLossItem(code, options = {}) {
   if (options.numId !== undefined) item.numId = options.numId;
   if (options.ilvl !== undefined) item.ilvl = options.ilvl;
   if (options.listKey !== undefined) item.listKey = options.listKey;
+  if (options.tabCount !== undefined) item.tabCount = options.tabCount;
+  if (options.excludedParagraphCount !== undefined) item.excludedParagraphCount = options.excludedParagraphCount;
+  if (Array.isArray(options.tabLabels)) item.tabLabels = options.tabLabels.slice();
   return item;
 }
 
@@ -8278,6 +8295,65 @@ function docxImportPreviewValidateParagraphs(contentPreview) {
   return { ok: true, texts, joinedPreviewText };
 }
 
+function docxImportPreviewParagraphStyleId(paragraph) {
+  return typeof paragraph?.paragraphStyleId === 'string' ? paragraph.paragraphStyleId.trim() : '';
+}
+
+function docxImportPreviewParagraphSectionBreakType(paragraph) {
+  return typeof paragraph?.sectionBreakType === 'string' ? paragraph.sectionBreakType.trim() : '';
+}
+
+function docxImportPreviewIsGoogleDocsTabHeader(paragraph, index) {
+  return docxImportPreviewParagraphStyleId(paragraph) === 'Title'
+    && (index === 0 || docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage')
+    && typeof paragraph.text === 'string'
+    && paragraph.text.trim() !== '';
+}
+
+function docxImportPreviewIsGoogleDocsTabSeparator(paragraph) {
+  return typeof paragraph?.text === 'string'
+    && paragraph.text === ''
+    && docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage';
+}
+
+function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
+  if (!Array.isArray(paragraphs) || paragraphs.length < 5) return null;
+  const headerIndexes = [];
+  for (let index = 0; index < paragraphs.length; index += 1) {
+    if (docxImportPreviewIsGoogleDocsTabHeader(paragraphs[index], index)) headerIndexes.push(index);
+  }
+  if (headerIndexes.length < 2 || headerIndexes[0] !== 0) return null;
+
+  const tabLabels = [];
+  const importParagraphIndexes = [];
+  const excludedParagraphIndexes = [];
+  for (let headerOrdinal = 0; headerOrdinal < headerIndexes.length; headerOrdinal += 1) {
+    const headerIndex = headerIndexes[headerOrdinal];
+    const nextHeaderIndex = headerIndexes[headerOrdinal + 1] ?? paragraphs.length;
+    const segmentIndexes = [];
+    for (let index = headerIndex + 1; index < nextHeaderIndex; index += 1) segmentIndexes.push(index);
+    if (segmentIndexes.length < 2) return null;
+    const separatorIndex = segmentIndexes[segmentIndexes.length - 1];
+    const lastSegmentTrailingBlank = headerOrdinal === headerIndexes.length - 1
+      && separatorIndex === paragraphs.length - 1
+      && paragraphs[separatorIndex]?.text === '';
+    if (!docxImportPreviewIsGoogleDocsTabSeparator(paragraphs[separatorIndex]) && !lastSegmentTrailingBlank) return null;
+    const bodyIndexes = segmentIndexes.slice(0, -1);
+    if (!bodyIndexes.some((index) => String(paragraphs[index]?.text ?? '').trim() !== '')) return null;
+    tabLabels.push(paragraphs[headerIndex].text);
+    excludedParagraphIndexes.push(headerIndex, separatorIndex);
+    importParagraphIndexes.push(...bodyIndexes);
+  }
+
+  return {
+    tabCount: headerIndexes.length,
+    tabLabels,
+    excludedParagraphIndexes,
+    excludedParagraphCount: excludedParagraphIndexes.length,
+    importParagraphIndexes,
+  };
+}
+
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
   const sourceCode = typeof diagnostic.sourceCode === 'string' ? diagnostic.sourceCode : '';
@@ -8385,13 +8461,26 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   return { code: 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED', category: 'structure' };
 }
 
-function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText) {
+function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText, googleDocsTabs = null) {
   const items = [
     docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY', {
       category: 'formatting',
       message: 'DOCX import preview candidate is limited to plain text scene content',
     }),
   ];
+  if (googleDocsTabs) {
+    items.push(docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED', {
+      category: 'googleDocsTabs',
+      severity: 'warning',
+      sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
+      sourcePart: contentPreview.sourcePart,
+      tagName: 'w:p',
+      tabCount: googleDocsTabs.tabCount,
+      tabLabels: googleDocsTabs.tabLabels,
+      excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
+      message: 'Google Docs tab labels and separator paragraphs are excluded from the plain text candidate; tab labels are retained in this loss report',
+    }));
+  }
   if (importedText.length === 0) {
     items.push(docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_EMPTY_CONTENT_DIAGNOSTIC', {
       category: 'content',
@@ -8444,7 +8533,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
   };
 }
 
-function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview, importedText) {
+function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview, importedText, options = {}) {
   const contentTextHash = docxContentPreviewStableHash(importedText);
   const sourceTextHash = typeof contentPreview.textHash === 'string' ? contentPreview.textHash : '';
   // GENERIC-01 (G1): sceneId derives from the full artifact SHA-256, not the
@@ -8465,9 +8554,39 @@ function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview,
   } catch {
     candidateContentSha256 = null;
   }
+  const googleDocsTabs = isPlainObject(options.googleDocsTabs) ? options.googleDocsTabs : null;
+  const importParagraphIndexes = Array.isArray(options.importParagraphIndexes)
+    ? options.importParagraphIndexes.filter((index) => Number.isInteger(index) && index >= 0)
+    : [];
+  const paragraphRangeStart = importParagraphIndexes.length > 0
+    ? Math.min(...importParagraphIndexes)
+    : (contentPreview.paragraphCount > 0 ? 0 : -1);
+  const paragraphRangeEnd = importParagraphIndexes.length > 0
+    ? Math.max(...importParagraphIndexes)
+    : (contentPreview.paragraphCount > 0 ? contentPreview.paragraphCount - 1 : -1);
+  const source = {
+    schemaVersion: sourceReport.schemaVersion,
+    type: sourceReport.type,
+    sourcePart: contentPreview.sourcePart,
+    paragraphRange: {
+      start: paragraphRangeStart,
+      end: paragraphRangeEnd,
+    },
+    paragraphCount: contentPreview.paragraphCount,
+    textHash: sourceTextHash,
+  };
+  if (googleDocsTabs) {
+    source.googleDocsTabs = {
+      sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
+      tabCount: googleDocsTabs.tabCount,
+      tabLabels: googleDocsTabs.tabLabels.slice(),
+      excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
+      importedParagraphCount: importParagraphIndexes.length,
+    };
+  }
   return {
     mode: 'create-only',
-    sceneStrategy: 'single-scene',
+    sceneStrategy: googleDocsTabs ? 'google-docs-tabs-flattened-single-scene' : 'single-scene',
     entryCount: 1,
     entries: [
       {
@@ -8477,17 +8596,7 @@ function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview,
         content: importedText,
         contentTextHash,
         candidateContentSha256,
-        source: {
-          schemaVersion: sourceReport.schemaVersion,
-          type: sourceReport.type,
-          sourcePart: contentPreview.sourcePart,
-          paragraphRange: {
-            start: contentPreview.paragraphCount > 0 ? 0 : -1,
-            end: contentPreview.paragraphCount > 0 ? contentPreview.paragraphCount - 1 : -1,
-          },
-          paragraphCount: contentPreview.paragraphCount,
-          textHash: sourceTextHash,
-        },
+        source,
       },
     ],
   };
@@ -8512,10 +8621,17 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     });
   }
 
-  const importedText = paragraphValidation.texts.join('\n\n');
+  const googleDocsTabs = docxImportPreviewDetectGoogleDocsTabs(contentPreview.paragraphs);
+  const importParagraphIndexes = googleDocsTabs
+    ? googleDocsTabs.importParagraphIndexes
+    : paragraphValidation.texts.map((_text, index) => index);
+  const importedText = importParagraphIndexes.map((index) => paragraphValidation.texts[index]).join('\n\n');
   const sourceHash = docxImportPreviewStableHash(input);
-  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText);
-  const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText);
+  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText, {
+    googleDocsTabs,
+    importParagraphIndexes,
+  });
+  const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText, googleDocsTabs);
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview
   // report into the preview plan source. This is the identity thread: raw
   // artifact bytes -> content preview -> preview plan source -> receipt.
@@ -8568,10 +8684,17 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
         entryCount: candidateCreatePlan.entryCount,
         contentTextHash: candidateCreatePlan.entries[0].contentTextHash,
       }),
+      googleDocsTabs
+        ? docxImportPreviewEvidence('googleDocsTabs', {
+          sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
+          tabCount: googleDocsTabs.tabCount,
+          excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
+        })
+        : null,
       docxImportPreviewEvidence('lossReport', {
         itemCount: lossReport.itemCount,
       }),
-    ],
+    ].filter(Boolean),
     candidateCreatePlan,
     lossReport,
   });
