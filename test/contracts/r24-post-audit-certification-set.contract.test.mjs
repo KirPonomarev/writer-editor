@@ -1772,14 +1772,16 @@ test('R24 RCV00H minimal E0 parser purity exception rejects weakened local proof
   const fixture=rcv00hMinimalE0ParserPurityGitFixture({claimBytes:canonicalBytes(claim)});
   assert.throws(()=>verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_RCV00H_LOCAL_PROOF_SHAPE/);
 });
+const W0_CURRENT_STATE_HISTORICAL_DELIVERY_SHA='7a6ec5c1f6804e7184d61bb751d31dca012387fc';
 function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,overlayBytes,claimBytes,inventoryBytes,approvalsBytes,pk1r1ApprovalsBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='d'.repeat(40),candidateTree='e'.repeat(40),successorSha,successorTree='f'.repeat(40)}={}){
   const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION;
-  const historicalDeliverySha='7a6ec5c1f6804e7184d61bb751d31dca012387fc';
+  const historicalDeliverySha=W0_CURRENT_STATE_HISTORICAL_DELIVERY_SHA;
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const currentFile=(repoPath)=>fs.readFileSync(repoPath);
   const currentDigest=(repoPath)=>h(currentFile(repoPath));
+  const historicalFile=(repoPath)=>objectFromCommit(historicalDeliverySha,repoPath);
   const refreshedClaimBytes=()=>{
     const claim=JSON.parse(currentFile(e.claimBindingPath));
     for(const repoPath of [e.postAuditVerifierPath,e.postAuditTestPath]){
@@ -1789,7 +1791,7 @@ function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,ove
     return canonicalBytes(claim);
   };
   const refreshedInventoryBytes=()=>{
-    const inventory=JSON.parse(currentFile(e.inventoryPath));
+    const inventory=JSON.parse(historicalFile(e.inventoryPath).toString('utf8'));
     const entry=inventory.entries?.find((item)=>item.path===e.postAuditTestPath);
     if(entry)entry.sha256=currentDigest(e.postAuditTestPath);
     return canonicalBytes(inventory);
@@ -1890,7 +1892,7 @@ test('R24 W0 current-state closure exception rejects stale claim implementation 
   assert.throws(()=>verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_W0_CURRENT_STATE_IMPLEMENTATION_DIGEST/);
 });
 test('R24 W0 current-state closure exception rejects stale post-audit inventory binding',()=>{
-  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION,inventory=JSON.parse(objectFromCommit(W0_CURRENT_STATE_HISTORICAL_DELIVERY_SHA,e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
   const fixture=w0CurrentStateClosureGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_W0_CURRENT_STATE_INVENTORY_DIGEST/);
