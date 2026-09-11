@@ -6680,13 +6680,13 @@ const DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS = new Set([
   'w:object',
   'w:pict',
   'w:sdt',
-  'w:tbl',
 ]);
 
 const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
   'w:bookmarkEnd',
   'w:bookmarkStart',
   'w:hyperlink',
+  'w:tbl',
 ]);
 const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS,
