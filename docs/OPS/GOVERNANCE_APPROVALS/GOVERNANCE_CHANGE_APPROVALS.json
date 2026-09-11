@@ -12019,6 +12019,110 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "1821772c896fad980cbe3a61a7b0afa4d9aab33cd1473bed2a4844efc51de876",
       "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "ff42a76664375e831e40081ef1a0838ffd4af5e89ca8eb8d4959c21f86f7be58",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "27356bc2ee141beaf1040afa41af6905653688fc1dab1e84300e897dc23aa22d",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json",
+      "sha256": "1942f887641d8170d97c9257ced2b659298e88e16ddfadcb9a68d190562ca1cf",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "ef796e043e335af1c755a76ae53f244e34a2032e1904bf0498dc580c81cd8963",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
+      "sha256": "1cb8b24da7d38de886c3ce242b30aa7d470f47566b5265fa62b70cd3942875af",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "e2fc1c77b019e02030b04dbd97b00b620b9f6bf3cb1cab9f2c9dc729111481f9",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
+      "sha256": "a7919cc36f3284478afc79e86f9b30780bad4336a067157f0fc12455d9c446ea",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9c8a365a97dcf4c45d3738e8aba49179cf3849d13828bb8dc8dda88aff08aa1d",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "04d3dfd1d611f8d8d7a6eb283cd6004ae4bf6aa06f527ea430c02b3afffb5633",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "be33b009626dd108982b3f0ddb9d6d209424db990db5a60a361eaee74950fbd9",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "ab21ce7fcf1e6ffb74a0877d7fa9d562c58fc95283781e9daf1062e5d91b08ef",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "989fe7d14d7cd499535cb67319c3516e50a1846f1b87a3b12f58c84d16e2f045",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS.json",
+      "sha256": "ce82655c4254b53d5e6d5137add98e7526d0ae5b1c07f6b79550837ba0caabcf",
+      "approved": true,
+      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_2026_09_10",
+      "approvedAt": "2026-09-11T06:20:42.647Z",
+      "reason": "R24-RCV-00D current-head graph-derived selector repair evidence binding"
     }
   ],
   "evidenceStampIds": [

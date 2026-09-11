@@ -29,9 +29,10 @@ export const RCV00D_CONTOUR_ID = 'R24_RCV_00D_GRAPH_DERIVED_SELECTOR';
 export const RCV00D_PLAN_PATH = 'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md';
 export const RCV00D_PLAN_STATE_PATH = 'docs/OPS/R24/PLAN_STATE_R24.json';
 export const RCV00D_REGISTER_PATH = RCV00C_REGISTER_PATH;
-export const RCV00D_BASE_SHA = 'd2366bcc6dfce13a92f2136dae1a80b364c8a0ef';
-export const RCV00D_BASE_TREE = 'b09080d7161a4489ba3388d9480a88166e2adc0f';
-export const RCV00D_EXPECTED_GRAPH_CANDIDATE = 'W0_WORD_PHYSICAL_RECERTIFICATION';
+export const RCV00D_BASE_SHA = '18bff1711dde771d1c5e8548cef1b4735085ccdd';
+export const RCV00D_BASE_TREE = 'e195f6c2e88251f845325b1706639d5fb80f88d8';
+export const RCV00D_EXPECTED_GRAPH_CANDIDATE = null;
+export const RCV00D_EXPECTED_GRAPH_VERDICT = 'NO_ELIGIBLE_NODE';
 export const RCV00D_SELECTED_OBSERVATION_ID = 'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909';
 export const RCV00D_SELECTED_CONTOUR = 'R24-RCV-00D';
 export const RCV00D_REQUIRED_PROOF = 'SCOPED_CONTRACT_FIX_WITH_FAILURE_AFTER_SIDE_EFFECT_AND_RETRY_COVERAGE';
@@ -236,7 +237,11 @@ export function selectRcv00dCorrectiveCandidate({
   if (!HEX64_RE.test(String(graphReceipt.contourStatesDigest)) || graphReceipt.contourStatesDigest !== effective.schedulerProjection?.contourStatesDigest) {
     throw new R24Error('E_RCV00D_GRAPH_RECEIPT_CONTOUR_BINDING');
   }
-  if (graphReceipt.selectedKind !== 'NODE' || graphReceipt.selectedId !== RCV00D_EXPECTED_GRAPH_CANDIDATE) {
+  if (
+    graphReceipt.selectedKind !== 'NONE'
+    || graphReceipt.selectedId !== RCV00D_EXPECTED_GRAPH_CANDIDATE
+    || graphReceipt.verdict !== RCV00D_EXPECTED_GRAPH_VERDICT
+  ) {
     throw new R24Error('E_RCV00D_GRAPH_CANDIDATE_BINDING', String(graphReceipt.selectedId));
   }
 
@@ -279,16 +284,12 @@ export function buildRcv00dSelectorContext({
   const actualPlanState = planState || readJsonBounded(repoPath(root, RCV00D_PLAN_STATE_PATH));
   const { effectiveStateProjection } = buildEffectiveStateProjectionOnFullGraph({ now, planState: actualPlanState });
   const graphSelectionReceipt = buildSelectionReceiptOnFullGraph({ now, planState: actualPlanState });
-  const headSha = RCV00D_BASE_SHA;
-  const originMainSha = RCV00D_BASE_SHA;
-  const treeSha = gitText(root, ['rev-parse', `${RCV00D_BASE_SHA}^{tree}`]);
+  const headSha = gitText(root, ['rev-parse', 'HEAD']);
+  const originMainSha = gitText(root, ['rev-parse', 'origin/main']);
+  const treeSha = gitText(root, ['rev-parse', 'HEAD^{tree}']);
   if (!HEX40_RE.test(headSha) || !HEX40_RE.test(originMainSha) || !HEX40_RE.test(treeSha)) throw new R24Error('E_RCV00D_GIT_IDENTITY');
+  if (headSha !== RCV00D_BASE_SHA || originMainSha !== RCV00D_BASE_SHA) throw new R24Error('E_RCV00D_BASE_SHA_DRIFT');
   if (treeSha !== RCV00D_BASE_TREE) throw new R24Error('E_RCV00D_BASE_TREE_DRIFT');
-  try {
-    execFileSync('git', ['-C', root, 'merge-base', '--is-ancestor', RCV00D_BASE_SHA, 'HEAD'], { stdio: 'ignore' });
-  } catch {
-    throw new R24Error('E_RCV00D_BASE_NOT_ANCESTOR');
-  }
   return {
     repoRoot: root,
     now,
@@ -370,6 +371,7 @@ export function buildRcv00dSelectorReceipt(options = {}) {
     nonClaims: [...RCV00D_NON_CLAIMS],
     reasons: [
       'CORRECTIVE_SEVERITY_POLICY_OUTRANKS_GRAPH_ONLY_SCHEDULER_CANDIDATE',
+      'CURRENT_NO_ELIGIBLE_GRAPH_RECEIPT_REQUIRES_CORRECTIVE_REGISTER_SELECTION',
       'NARRATIVE_NEXT_STEP_RECORDED_AS_NON_AUTHORITY',
       'ACTIVE_P1_CURRENT_OBSERVATION_SELECTED_BEFORE_P3_DEBT',
       'RECORDED_GRAPH_OPEN_NODE_REQUIRES_GRAPH_READY_SET',
@@ -387,7 +389,11 @@ export function validateRcv00dSelectorReceipt(receipt, context = null) {
   }
   if (value.status !== 'PASS') throw new R24Error('E_RCV00D_RECEIPT_STATUS', String(value.status));
   if (value.narrativeNextStepAuthoritative !== false) throw new R24Error('E_RCV00D_NARRATIVE_AUTHORITY');
-  if (value.graphSchedulerCandidate?.selectedId !== RCV00D_EXPECTED_GRAPH_CANDIDATE || value.graphSchedulerCandidate?.selectedKind !== 'NODE') {
+  if (
+    value.graphSchedulerCandidate?.selectedId !== RCV00D_EXPECTED_GRAPH_CANDIDATE
+    || value.graphSchedulerCandidate?.selectedKind !== 'NONE'
+    || value.graphSchedulerCandidate?.verdict !== RCV00D_EXPECTED_GRAPH_VERDICT
+  ) {
     throw new R24Error('E_RCV00D_GRAPH_CANDIDATE_BINDING', String(value.graphSchedulerCandidate?.selectedId));
   }
   if (value.selectedCount !== 1) throw new R24Error('E_RCV00D_SELECTED_COUNT', String(value.selectedCount));

@@ -4,6 +4,7 @@ import {
   RCV00D_BASE_SHA,
   RCV00D_BASE_TREE,
   RCV00D_EXPECTED_GRAPH_CANDIDATE,
+  RCV00D_EXPECTED_GRAPH_VERDICT,
   RCV00D_NON_CLAIMS,
   RCV00D_REQUIRED_COVERAGE,
   RCV00D_REQUIRED_PROOF,
@@ -26,7 +27,7 @@ const clone = (value) => structuredClone(value);
 const loadRegister = () => readJsonBounded(RCV00C_REGISTER_PATH);
 const baseContext = () => buildRcv00dSelectorContext({ now: NOW });
 
-test('RCV00D selector chooses the active P1 current observation over the graph-only W0 candidate', () => {
+test('RCV00D selector chooses the active P1 current observation when the graph has no eligible node', () => {
   const receipt = buildRcv00dSelectorReceipt({ now: NOW });
   const result = validateRcv00dSelectorReceipt(receipt);
 
@@ -34,6 +35,9 @@ test('RCV00D selector chooses the active P1 current observation over the graph-o
   assert.equal(receipt.identity.headSha, RCV00D_BASE_SHA);
   assert.equal(receipt.identity.treeSha, RCV00D_BASE_TREE);
   assert.equal(receipt.graphSchedulerCandidate.selectedId, RCV00D_EXPECTED_GRAPH_CANDIDATE);
+  assert.equal(receipt.graphSchedulerCandidate.selectedKind, 'NONE');
+  assert.equal(receipt.graphSchedulerCandidate.verdict, RCV00D_EXPECTED_GRAPH_VERDICT);
+  assert.equal(receipt.graphSchedulerCandidate.readySet.length, 0);
   assert.equal(receipt.narrativeNextStep, 'R24-RCV-00A');
   assert.equal(receipt.narrativeNextStepAuthoritative, false);
   assert.equal(receipt.selected.kind, 'CURRENT_OBSERVATION');
@@ -118,7 +122,9 @@ test('RCV00D selector rejects wrong graph receipt identity', () => {
 test('RCV00D selector rejects graph-only candidate drift', () => {
   const context = baseContext();
   context.graphSelectionReceipt = clone(context.graphSelectionReceipt);
+  context.graphSelectionReceipt.selectedKind = 'NODE';
   context.graphSelectionReceipt.selectedId = 'PK1_RELEASE_SECURITY_PHYSICAL';
+  context.graphSelectionReceipt.verdict = 'SELECTED';
 
   assert.throws(() => selectRcv00dCorrectiveCandidate(context), /E_RCV00D_GRAPH_CANDIDATE_BINDING/);
 });

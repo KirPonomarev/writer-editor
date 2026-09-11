@@ -843,9 +843,10 @@ function rcv00dGitFixture({changedPaths,evidenceBytes,artifactBytesByPath=new Ma
   const currentBytes=(repoPath)=>{
     if(artifactBytesByPath.has(repoPath))return artifactBytesByPath.get(repoPath);
     if(repoPath===e.evidencePath&&evidenceBytes)return Buffer.from(evidenceBytes);
+    if(fs.existsSync(repoPath))return fs.readFileSync(repoPath);
     return objectFromCommit(e.deliverySha,repoPath);
   };
-  const bytesByPath=new Map(e.admittedPaths.concat([e.registerPath,e.planPath,e.planStatePath]).map((repoPath)=>[repoPath,currentBytes(repoPath)]));
+  const bytesByPath=new Map(e.admittedPaths.concat([e.registerPath,e.planPath,e.planStatePath,e.approvalCarrierPath,e.claimLintPath,e.claimLintTestPath]).map((repoPath)=>[repoPath,currentBytes(repoPath)]));
   return{candidateSha,git:(args,options={})=>{
     let value='';
     if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
@@ -870,12 +871,14 @@ test('RCV00D graph-derived selector exception accepts the exact selector delta',
   assert.equal(result.candidateSha,fixture.candidateSha);
   assert.equal(result.admittedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
   assert.equal(result.changedPathDenominator,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.length);
-  assert.equal(result.changedPathDenominator,11);
-  assert.ok(result.changedPaths.includes(R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.approvalCarrierPath));
-  assert.equal(result.inventoryDenominator,1462);
+  assert.equal(result.changedPathDenominator,8);
+  assert.ok(!result.changedPaths.includes(R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.approvalCarrierPath));
+  assert.equal(result.inventoryDenominator,1465);
   assert.equal(result.selectedId,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.selectedObservationId);
   assert.equal(result.selectedContour,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.selectedContour);
   assert.equal(result.graphSchedulerSelectedId,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.graphSchedulerCandidate);
+  assert.equal(result.graphSchedulerSelectedKind,'NONE');
+  assert.equal(result.graphSchedulerVerdict,R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.graphSchedulerVerdict);
   assert.equal(result.narrativeNextStep,'R24-RCV-00A');
   assert.equal(result.graphIncrement,0);
 });
@@ -897,6 +900,14 @@ test('RCV00D graph-derived selector exception rejects a mutated selected observa
   receipt.selected.id='PK1_RELEASE_SECURITY_PHYSICAL';
   const fixture=rcv00dGitFixture({artifactBytesByPath:new Map([[e.selectorReceiptPath,canonicalBytes(receipt)]])});
   assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_SELECTED_ITEM_BINDING|E_RCV00D_SELECTOR_RECEIPT/);
+});
+test('RCV00D graph-derived selector exception rejects a mutated graph scheduler receipt',()=>{
+  const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,receipt=JSON.parse(fs.readFileSync(e.selectorReceiptPath,'utf8'));
+  receipt.graphSchedulerCandidate.selectedKind='NODE';
+  receipt.graphSchedulerCandidate.selectedId='PK1_RELEASE_SECURITY_PHYSICAL';
+  receipt.graphSchedulerCandidate.verdict='SELECTED';
+  const fixture=rcv00dGitFixture({artifactBytesByPath:new Map([[e.selectorReceiptPath,canonicalBytes(receipt)]])});
+  assert.throws(()=>verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_RCV00D_GRAPH_CANDIDATE_BINDING|E_RCV00D_SELECTOR_RECEIPT/);
 });
 test('RCV00D graph-derived selector exception rejects a mutated selector artifact',()=>{
   const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,mutated=new Map([[e.selectorPath,Buffer.from(`${fs.readFileSync(e.selectorPath,'utf8')}\n// mutated immutable selector artifact\n`)]]);
