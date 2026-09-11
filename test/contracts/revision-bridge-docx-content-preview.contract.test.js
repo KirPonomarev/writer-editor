@@ -9,12 +9,7 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = path.join(ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
 const SECTION_START = '// RB_11_DOCX_CONTENT_PREVIEW_START';
 const SECTION_END = '// RB_11_DOCX_CONTENT_PREVIEW_END';
-const TTF_BYTES = Buffer.from([
-  0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10,
-  0x00, 0x00, 0x00, 0x00, 0x68, 0x65, 0x61, 0x64,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c,
-  0x00, 0x00, 0x00, 0x00,
-]);
+const TTF_BYTES = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/assets/fonts/Circe-Regular.ttf'));
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);
@@ -152,6 +147,95 @@ function fontContentTypesXml(contentType = 'application/x-font-ttf') {
 function fontRelationshipsXml(target = 'fonts/font1.ttf') {
   return `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rFont1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/font" Target="${target}"/></Relationships>`;
 }
+
+test('DOCX font admission: independent S11 OPC XML and SFNT boundary controls', async (t) => {
+  const bridge = await loadBridge();
+  const ctNs = 'http://schemas.openxmlformats.org/package/2006/content-types';
+  const relNs = 'http://schemas.openxmlformats.org/package/2006/relationships';
+  const ct = fontContentTypesXml();
+  const rels = fontRelationshipsXml();
+  const mutateFont = (change) => {
+    const copy = Buffer.from(TTF_BYTES);
+    return change(copy) || copy;
+  };
+  const headRecord = Array.from({ length: TTF_BYTES.readUInt16BE(4) }, (_, i) => 12 + i * 16)
+    .find((offset) => TTF_BYTES.toString('ascii', offset, offset + 4) === 'head');
+  assert.notEqual(headRecord, undefined);
+  const cases = [
+    ['ct-multiple-roots', { ct: ct + `<Types xmlns="${ctNs}"/>` }],
+    ['ct-wrong-root-canonical-child', { ct: `<Envelope xmlns="urn:evil"><Default xmlns="${ctNs}" Extension="ttf" ContentType="application/x-font-ttf"/></Envelope>` }],
+    ['rels-wrong-root-canonical-child', { rels: rels.replace('<Relationships ', '<Envelope ').replace('</Relationships>', '</Envelope>') }],
+    ['ct-no-namespace', { ct: ct.replace(` xmlns="${ctNs}"`, '') }],
+    ['rels-no-namespace', { rels: rels.replace(` xmlns="${relNs}"`, '') }],
+    ['ct-duplicate-default-xmlns', { ct: ct.replace('<Types ', `<Types xmlns="${ctNs}" `) }],
+    ['rels-duplicate-default-xmlns', { rels: rels.replace('<Relationships ', `<Relationships xmlns="${relNs}" `) }],
+    ['ct-trailing-garbage', { ct: ct + 'GARBAGE' }],
+    ['rels-trailing-garbage', { rels: rels + 'GARBAGE' }],
+    ['ct-invalid-utf8-comment', { ct: Buffer.concat([Buffer.from(ct + '<!--'), Buffer.from([0xc3, 0x28]), Buffer.from('-->')]) }],
+    ['rels-invalid-utf8-comment', { rels: Buffer.concat([Buffer.from(rels + '<!--'), Buffer.from([0xc3, 0x28]), Buffer.from('-->')]) }],
+    ['ct-unescaped-less-than-attribute', { ct: ct.replace('<Types ', '<Types Note="<" ') }],
+    ['font-offset-past-eof', { font: mutateFont((f) => { f.writeUInt32BE(f.length + 4096, 20); }) }],
+    ['font-length-overflow', { font: mutateFont((f) => { f.writeUInt32BE(0xffffffff, 24); }) }],
+    ['font-duplicate-table-tag', { font: mutateFont((f) => { f.copy(f, 28, 12, 16); }) }],
+    ['font-required-head-removed', { font: mutateFont((f) => { f.write('xxxx', headRecord, 'ascii'); }) }],
+    ['font-head-magic-corrupt', { font: mutateFont((f) => { f.write('BAD!', f.readUInt32BE(headRecord + 8) + 12, 'ascii'); }) }],
+    ['font-truncated-after-directory', { font: TTF_BYTES.subarray(0, 12 + TTF_BYTES.readUInt16BE(4) * 16) }],
+    ['ct-nested-default', { ct: ct.replace('<Default ', '<Default Extension="xml" ContentType="application/xml"><Default ').replace('/></Types>', '/></Default></Types>') }],
+    ['rels-nested-relationship', { rels: rels.replace('<Relationship ', '<Relationship Id="outer" Type="urn:other" Target="fontTable.xml"><Relationship ').replace('/></Relationships>', '/></Relationship></Relationships>') }],
+    ['ct-mismatched-closing-prefix', { ct: ct.replace('<Types ', `<a:Types xmlns:a="${ctNs}" xmlns:b="${ctNs}" `).replace('</Types>', '</b:Types>') }],
+    ['ct-attribute-without-separator', { ct: ct.replace('" ContentType=', '"ContentType=') }],
+    ['ct-invalid-entity', { ct: ct.replace('Extension="ttf"', 'Extension="ttf" Note="&bogus;"') }],
+    ['ct-invalid-comment', { ct: ct.replace('<Default ', '<!-- invalid -- comment --><Default ') }],
+    ['ct-cdata-outside-root', { ct: '<![CDATA[ignored]]>' + ct }],
+    ['ct-late-xml-declaration', { ct: ct + '<?xml version="1.0"?>' }],
+    ['ct-duplicate-default-entry', { ct: ct.replace('</Types>', '<Default Extension="ttf" ContentType="application/x-font-ttf"/></Types>') }],
+    ['rels-duplicate-id', { rels: rels.replace('</Relationships>', '<Relationship Id="rFont1" Type="urn:other" Target="fontTable.xml"/></Relationships>') }],
+    ['font-table-inside-directory', { font: mutateFont((f) => { f.writeUInt32BE(12, 20); }) }],
+    ['font-overlapping-tables', { font: mutateFont((f) => { f.writeUInt32BE(f.readUInt32BE(36), 20); }) }],
+    ['font-nonprintable-tag', { font: mutateFont((f) => { f[12] = 0; }) }],
+    ['font-unaligned-table', { font: mutateFont((f) => { f.writeUInt32BE(f.readUInt32BE(20) + 1, 20); }) }],
+  ];
+  const inputFor = (value = {}) => cleanDocxZip(paragraphXml('S11 preserved text'), [
+    { name: '[Content_Types].xml', body: value.ct ?? ct },
+    { name: 'word/fontTable.xml', body: '<w:fonts/>' },
+    { name: 'word/_rels/fontTable.xml.rels', body: value.rels ?? rels },
+    { name: 'word/fonts/font1.ttf', body: value.font ?? TTF_BYTES },
+  ]);
+  for (const [id, value] of cases) {
+    await t.test(id, () => {
+      const bytes = inputFor(value);
+      const before = Buffer.from(bytes);
+      const preflight = bridge.buildDocxIntakePreflightReportFromZipBytes(bytes);
+      const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+      assert.equal(preflight.gatePass, false);
+      assert.equal(preview.ok, false);
+      assert.equal(plan.ok, false);
+      assert.notEqual(plan.writeEffects, true);
+      assert.deepEqual(bytes, before);
+    });
+  }
+  await t.test('real-font-positive-and-prefixed-OPC-positive', () => {
+    for (const value of [{}, { ct: '<?xml version = "1.0" encoding = "UTF-8" standalone = "yes"?>' + ct }, {
+      ct: '<?xml version="1.0" encoding="UTF-8"?>' + ct
+        .replace('<Types ', '<c:Types ').replace('xmlns=', 'xmlns:c=')
+        .replace('<Default ', '<c:Default ').replace('</Types>', '</c:Types>'),
+      rels: rels.replace('<Relationships ', '<r:Relationships ').replace('xmlns=', 'xmlns:r=')
+        .replace('<Relationship ', '<r:Relationship ').replace('</Relationships>', '</r:Relationships>'),
+    }]) {
+      const bytes = inputFor(value);
+      const preflight = bridge.buildDocxIntakePreflightReportFromZipBytes(bytes);
+      const preview = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
+      assert.equal(preflight.gatePass, true);
+      assert.equal(preview.ok, true);
+      assert.equal(plan.ok, true);
+      assert.notEqual(plan.writeEffects, true);
+      assert.equal(plan.lossReport.items.some((item) => item.category === 'font'), true);
+      assert.equal(preview.contentPreview.paragraphs[0].text, 'S11 preserved text');
+    }
+  });
+});
 
 function paragraphXml(text) {
   return `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;

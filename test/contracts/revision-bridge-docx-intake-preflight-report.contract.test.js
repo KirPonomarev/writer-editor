@@ -13,12 +13,7 @@ const ONE_PIXEL_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=',
   'base64',
 );
-const TTF_BYTES = Buffer.from([
-  0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10,
-  0x00, 0x00, 0x00, 0x00, 0x68, 0x65, 0x61, 0x64,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c,
-  0x00, 0x00, 0x00, 0x00,
-]);
+const TTF_BYTES = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/assets/fonts/Circe-Regular.ttf'));
 
 async function loadBridge() {
   return import(pathToFileURL(MODULE_PATH).href);

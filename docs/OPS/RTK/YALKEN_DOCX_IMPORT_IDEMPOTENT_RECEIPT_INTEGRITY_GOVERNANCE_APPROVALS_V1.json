@@ -3,7 +3,7 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedAtUtc": "2026-09-11T18:23:16.298Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
@@ -11,8 +11,8 @@
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "553e052ba9f2df0a950e4bf7def7ce759bbe614c7080df2025a06f5c3ad6e509",
-      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "26a20eb25c7ed1b14fd437c5bd6952b991ed1cbd0678ad38605d7025f1d94e0e",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
@@ -29,7 +29,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedAtUtc": "2026-09-11T18:23:16.299Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
@@ -37,12 +37,12 @@
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "3513e427a8050cf73fb198a2ff4092819cb179c5f5f638d04d9640fc2d70504b",
-      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "e4d70605460dbb71fb955c75a5db7322fbc4265efd21270f115e7699513d9aa0",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedAtUtc": "2026-09-11T18:19:44.892Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
@@ -50,8 +50,8 @@
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "sha256": "bed4554d7f72f56e212134bab10da2c5033c91080c47af6f7167289da18064b6",
-      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
@@ -68,7 +68,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedAtUtc": "2026-09-11T18:19:44.892Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
@@ -76,12 +76,12 @@
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "3d2d1c834899e9ceb1cd88e7768722b02258cc9ab7abff974a25233fdea33142",
-      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "4cb98dbc833cfe71a635b8f208f3a61f6f8c564cec49787076d9b2fe47697d95",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
+      "approvedAtUtc": "2026-09-11T18:24:43.489Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
@@ -89,8 +89,8 @@
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
-      "sha256": "14c56ad3fe678467d51462ea22efd87ba4299859dd093bc6fcd284341daa5c48",
-      "rationale": "Approve exact bounded PR1888 DOCX import bytes after current-main reconciliation: idempotent receipt integrity, TTF XML admission, duplicate-import zero-write protection, explicit degraded-part loss reporting, and hostile package guards are covered by current source and contract tests. No UI, dependency, runtime network, direct Google API/OAuth, font rendering preservation, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "5c9ca615703848e5617947aadc03bd10d9861b55e194f5611ea87f04ca388904",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     }
   ],
   "evidenceStampIds": [

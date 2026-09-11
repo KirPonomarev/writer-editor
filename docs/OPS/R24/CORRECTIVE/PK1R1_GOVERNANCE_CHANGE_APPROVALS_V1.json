@@ -615,8 +615,8 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:23:16.305Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
@@ -624,8 +624,8 @@
         "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "553e052ba9f2df0a950e4bf7def7ce759bbe614c7080df2025a06f5c3ad6e509",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "26a20eb25c7ed1b14fd437c5bd6952b991ed1cbd0678ad38605d7025f1d94e0e",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
@@ -829,8 +829,8 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:23:16.306Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
@@ -838,13 +838,13 @@
         "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "3513e427a8050cf73fb198a2ff4092819cb179c5f5f638d04d9640fc2d70504b"
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim.",
+      "sha256": "e4d70605460dbb71fb955c75a5db7322fbc4265efd21270f115e7699513d9aa0"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:19:44.905Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
@@ -852,8 +852,8 @@
         "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
       ],
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "sha256": "bed4554d7f72f56e212134bab10da2c5033c91080c47af6f7167289da18064b6",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
@@ -867,8 +867,8 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:19:44.905Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
@@ -876,8 +876,8 @@
         "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "3d2d1c834899e9ceb1cd88e7768722b02258cc9ab7abff974a25233fdea33142",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "4cb98dbc833cfe71a635b8f208f3a61f6f8c564cec49787076d9b2fe47697d95",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
@@ -919,8 +919,8 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:24:43.496Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
@@ -928,8 +928,8 @@
         "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
       ],
       "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
-      "sha256": "14c56ad3fe678467d51462ea22efd87ba4299859dd093bc6fcd284341daa5c48",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "5c9ca615703848e5617947aadc03bd10d9861b55e194f5611ea87f04ca388904",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
     },
     {
       "approved": true,
@@ -1107,11 +1107,11 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:53:47Z",
-      "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11 | owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:24:43.497Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the exact PR1888 DOCX import delta as a checked post-evaluation path set, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "df1695de2273ee18a26ca52dc5c5219bea810d1a16b03a5ce0b2c7d159da0ce2",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim.",
+      "sha256": "70b743556530625c0a41865b8e2eabadbf751dfc7f1f5ca26d508a80eb2caa16",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
         "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION"
@@ -1206,11 +1206,11 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-11T18:24:43.498Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "filePath": "docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "604403b814bb45551cfaed263a84828f16095c6f4247cf7ef8ce13468b11821b",
+      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim.",
+      "sha256": "c174b022706df175222b08c0416bb0678618823719d0e3fabd02d7b2af12a943",
       "evidenceStampIds": [
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],

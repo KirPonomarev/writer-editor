@@ -39,6 +39,8 @@ const ALLOWLIST = [
   'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  // PR1888 bounded font-admission repair approval carrier.
+  'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   // ZIP-01 catalog + package metadata touched in Pass 1.
   'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
   'package.json',
@@ -135,12 +137,7 @@ function malformedCentralZip(entries) {
   return valid.subarray(0, valid.length - 30);
 }
 
-const TTF_BYTES = Buffer.from([
-  0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x00, 0x10,
-  0x00, 0x00, 0x00, 0x00, 0x68, 0x65, 0x61, 0x64,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1c,
-  0x00, 0x00, 0x00, 0x00,
-]);
+const TTF_BYTES = fs.readFileSync(path.resolve(__dirname, '../../src/renderer/assets/fonts/Circe-Regular.ttf'));
 
 function fontContentTypesXml(contentType = 'application/x-font-ttf') {
   return `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="ttf" ContentType="${contentType}"/></Types>`;
@@ -450,6 +447,10 @@ test('RB-06 implementation section has only allowed binary materializer tokens',
   const sectionStart = text.indexOf('RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_START');
   const sectionEnd = text.indexOf('RB_06_DOCX_ZIP_INVENTORY_MATERIALIZER_END');
   const section = text.slice(sectionStart, sectionEnd);
+  // Reserved XML namespace identifiers are inert data, not network clients.
+  const executableSection = section
+    .replaceAll("'http://www.w3.org/2000/xmlns/'", "''")
+    .replaceAll("'http://www.w3.org/XML/1998/namespace'", "''");
   const forbiddenPatterns = [
     /\bfs\b/u,
     /\breadFile\b/u,
@@ -482,7 +483,7 @@ test('RB-06 implementation section has only allowed binary materializer tokens',
   assert.notEqual(sectionStart, -1);
   assert.notEqual(sectionEnd, -1);
   for (const pattern of forbiddenPatterns) {
-    assert.equal(pattern.test(section), false, `forbidden RB-06 pattern: ${pattern.source}`);
+    assert.equal(pattern.test(executableSection), false, `forbidden RB-06 pattern: ${pattern.source}`);
   }
   assert.equal(/\bBuffer\b/u.test(section), true);
   assert.equal(/\bUint8Array\b/u.test(section), true);
