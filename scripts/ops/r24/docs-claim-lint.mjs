@@ -279,10 +279,27 @@ export const HISTORICAL_INVENTORY_CLAIM_PINS_V36 = Object.freeze([
     evaluationSha: '9c85e70b3166f2a78e61d5aba454820afa303e80', evaluationTree: 'f3709b7a15ed7309c6043ed3f4736c8673375027', targetSha256: '3fb2cd80af4a1c7e2fab999311db7736c3b0420a26a31490e03f52cad5248d5e' }),
   ...HISTORICAL_INVENTORY_CLAIM_PINS_V35,
 ]);
+// Current-head exact-toolchain evidence refreshes the live C1B inventory. The
+// PRE00F current-head and RCV01A manifest carriers from the exact RCV00A base
+// remain immutable historical bytes.
+export const HISTORICAL_INVENTORY_CLAIM_PINS_V37 = Object.freeze([
+  Object.freeze({ stampId: 'ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION', stampSha256: 'aa326767ecdd3d9097cbaf372904f62e28b0824eab8c3b0c189c35ce695bbbc3',
+    evaluationSha: '389dbc5e39a5d541b64a8187921c24ca5bf43876', evaluationTree: '5e792c0867a35c1b2c85cffb3478fb4357bd159c', targetSha256: '0fae17c0476ca4672a28e10c6043233e12ba3599772ca89ed18cc1c666313ccd' }),
+  Object.freeze({ stampId: 'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS', stampSha256: '57d2bf5a2dabc4b2e8f55d05ff4f95029526f9fa6f409e76762d5827068948dc',
+    evaluationSha: '389dbc5e39a5d541b64a8187921c24ca5bf43876', evaluationTree: '5e792c0867a35c1b2c85cffb3478fb4357bd159c', targetSha256: '0fae17c0476ca4672a28e10c6043233e12ba3599772ca89ed18cc1c666313ccd' }),
+  ...HISTORICAL_INVENTORY_CLAIM_PINS_V36,
+]);
+// RCV00B current-head effective-state compiler evidence refreshes live C1B
+// inventory; the RCV00A current-head exact-toolchain carrier stays historical.
+export const HISTORICAL_INVENTORY_CLAIM_PINS_V38 = Object.freeze([
+  Object.freeze({ stampId: 'ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT', stampSha256: '886b685479dfbd5276bd5f45109405019a2097aafebce715dbe1d6856808d5b0',
+    evaluationSha: 'e9aa4e3f5b75ea574d72baec4ac7e4ae20ce5c36', evaluationTree: '31526ec5d5aebf883a65352ccf7525903d7cd2a9', targetSha256: 'b446e1d623feae8b4202476019b504818892eb08af411b4f053d693b9b5c5a9e' }),
+  ...HISTORICAL_INVENTORY_CLAIM_PINS_V37,
+]);
 const INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 const historicalGit = (rootDir, args) => execFileSync('git', args, { cwd: rootDir, encoding: null, maxBuffer: 4 * 1024 * 1024, timeout: 15000, stdio: ['ignore','pipe','pipe'] });
 export function verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes, binding, git = historicalGit }) {
-  const pins = HISTORICAL_INVENTORY_CLAIM_PINS_V36.filter(item => item.stampId === stamp.stampId);
+  const pins = HISTORICAL_INVENTORY_CLAIM_PINS_V38.filter(item => item.stampId === stamp.stampId);
   if (pins.length === 0 || binding.filePath !== INVENTORY_PATH) return null;
   const fail = () => { const error = new Error('E_HISTORICAL_INVENTORY_BINDING'); error.code = error.message; throw error; };
   const stampDigest = sha256hex(stampBytes);
@@ -353,7 +370,7 @@ function addBinding({ rootDir, evidenceDir, stamp, file, bindingsByFile, histori
     }
     const actual = sha256hex(fs.readFileSync(normalizedTarget));
     if (actual !== binding.sha256 && relativePath === INVENTORY_PATH
-      && HISTORICAL_INVENTORY_CLAIM_PINS_V36.some(pin => pin.stampId === stamp.stampId)) {
+      && HISTORICAL_INVENTORY_CLAIM_PINS_V38.some(pin => pin.stampId === stamp.stampId)) {
       try {
         const historical = verifyHistoricalInventoryClaim({ rootDir, stamp, stampBytes: fs.readFileSync(file), binding });
         if (historical) { historicalBindings.push(historical); continue; }

@@ -4,14 +4,15 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 export const PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION=Object.freeze({
-  baseSha:'87072a10c690b99ffb25f20516ebfd410377e2fb',
-  baseTree:'3c5943055c95b20598125ca8020a917d37516250',
+  baseSha:'c12cbe14a6b1e52d0139ab1968d35a61c4ba4861',
+  baseTree:'058a77bc6a51682bca90d0fc0feae3e7611f5620',
   historicalDeliverySha:'31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18',
   historicalDeliveryTree:'4e3947455f98d19bed8aaf1687bfdcaf9a21e83b',
-  approvedBy:'OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_W0_2026_09_11',
+  approvedBy:'OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11',
   evidenceStampId:'ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION',
   planPath:'docs/tasks/2026-09-08--r24-consolidated-remediation-and-completion-plan.md',
   approvalsPath:'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  defaultApprovalsPath:'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
   inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   statusPath:'docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json',
   evidencePath:'docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json',
@@ -20,14 +21,12 @@ export const PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION=Object
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   admittedPaths:[
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
     'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
-    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
     'docs/OPS/R24/CORRECTIVE/PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_STATUS_V1.json',
     'docs/OPS/R24/EVIDENCE/ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION.json',
-    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs',
     'scripts/ops/r24/tests/pre00f-current-head-plan-delivery-reconciliation.test.mjs',
-    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   ].sort(),
 });
 
@@ -51,7 +50,7 @@ export function verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha=
   assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_PRE00F_CURRENT_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
   const readText=(repoPath)=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,repoPath);}catch{fail('E_PRE00F_CURRENT_ARTIFACT_MISSING',repoPath);}assert(bytes.at(-1)===0x0a,'E_PRE00F_CURRENT_CANONICAL_LF',repoPath);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=(repoPath)=>{const file=readText(repoPath);return{...file,value:JSON.parse(file.text)};};
-  const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),status=readJson(e.statusPath),evidence=readJson(e.evidencePath),approvals=readJson(e.approvalsPath),verifier=readText(e.verifierPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  const plan=readText(e.planPath),inventory=readJson(e.inventoryPath),status=readJson(e.statusPath),evidence=readJson(e.evidencePath),approvals=readJson(e.approvalsPath),defaultApprovals=readJson(e.defaultApprovalsPath),verifier=readText(e.verifierPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
   for(const token of [
     'STATUS: FRESH_PRE00F_PLAN_DELIVERY_CANDIDATE_AFTER_PRE00E_CLOSURE',
     'AUTHORING_BASE_SHA: 6e9be072a12ff3bd5cc1608da153caf13c5e94c2',
@@ -87,11 +86,18 @@ export function verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha=
     const approval=approvalMap.get(`${relative}\0${digest}`);
     assert(approval?.approved===true&&approvalMatchesApprovedBy(approval,e.approvedBy)&&approval.evidenceStampIds?.includes(e.evidenceStampId),'E_PRE00F_CURRENT_APPROVAL_DIGEST',relative);
   }
+  assert(defaultApprovals.value.version==='v1.0'&&Array.isArray(defaultApprovals.value.approvals),'E_PRE00F_CURRENT_DEFAULT_APPROVALS_SHAPE');
+  const defaultApprovalMap=new Map(defaultApprovals.value.approvals.map((entry)=>[`${entry.filePath}\0${entry.sha256}`,entry]));
+  for(const relative of [e.approvalsPath,e.statusPath,e.evidencePath,e.verifierPath,e.contractTestPath]){
+    const digest=h(objectBytes(git,resolvedCandidate,relative));
+    const approval=defaultApprovalMap.get(`${relative}\0${digest}`);
+    assert(approval?.approved===true&&approvalMatchesApprovedBy(approval,e.approvedBy),'E_PRE00F_CURRENT_DEFAULT_APPROVAL_DIGEST',relative);
+  }
   for(const token of ['PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION','verifyPre00fCurrentHeadPlanDeliveryReconciliation','E_PRE00F_CURRENT_EXACT_ADMITTED_DELTA'])assert(verifier.text.includes(token),'E_PRE00F_CURRENT_VERIFIER_TOKEN',token);
-  for(const token of ['PRE00F current-head plan delivery reconciliation accepts the exact current delta','PRE00F current-head plan delivery reconciliation rejects a mutated status rebind','PRE00F current-head plan delivery reconciliation rejects a stale evidence head binding'])assert(contractTest.text.includes(token),'E_PRE00F_CURRENT_TEST_TOKEN',token);
+  for(const token of ['PRE00F current-head plan delivery reconciliation accepts the exact current delta','PRE00F current-head plan delivery reconciliation rejects a missing current base ancestor','PRE00F current-head plan delivery reconciliation rejects a mutated status rebind','PRE00F current-head plan delivery reconciliation rejects a stale evidence head binding'])assert(contractTest.text.includes(token),'E_PRE00F_CURRENT_TEST_TOKEN',token);
   for(const token of ['pre00fCurrentHeadPlanDeliveryReconciliationPostEvaluationException','verifyPre00fCurrentHeadPlanDeliveryReconciliation'])assert(postAuditVerifier.text.includes(token),'E_PRE00F_CURRENT_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['PRE00F current-head reconciliation is admitted as a post-evaluation exception','pre00fCurrentHeadPlanDeliveryReconciliationPostEvaluationException'])assert(postAuditTest.text.includes(token),'E_PRE00F_CURRENT_POST_AUDIT_TEST_TOKEN',token);
-  return{schemaVersion:'PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),historicalDeliverySha:e.historicalDeliverySha,historicalDeliveryTree:e.historicalDeliveryTree,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,planDigest:plan.digest,inventoryDigest:inventory.digest,statusDigest:status.digest,evidenceDigest:evidence.digest,verifierDigest:verifier.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,programDone:false,productionReleaseReady:false,graphIncrement:0,nextStep:'R24-RCV-00A'};
+  return{schemaVersion:'PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_VERIFICATION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),historicalDeliverySha:e.historicalDeliverySha,historicalDeliveryTree:e.historicalDeliveryTree,admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,planDigest:plan.digest,inventoryDigest:inventory.digest,statusDigest:status.digest,evidenceDigest:evidence.digest,approvalsDigest:approvals.digest,defaultApprovalsDigest:defaultApprovals.digest,verifierDigest:verifier.digest,contractTestDigest:contractTest.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,programDone:false,productionReleaseReady:false,graphIncrement:0,nextStep:'R24-RCV-00A'};
 }
 
 if(import.meta.url===`file://${process.argv[1]}`){
