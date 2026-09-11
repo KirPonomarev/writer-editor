@@ -123,7 +123,12 @@ export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_PROTECTED_WIP_AFTER_V1.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_TERMINAL_ATTESTATION_DURABLE_CARRIER_V1.json',
   'docs/OPS/R24/CORRECTIVE/C1C_GOVERNANCE_CHANGE_APPROVALS_V1.json',
-  'docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json'
+  'docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json',
+  'docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json',
+  'docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json',
+  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs',
+  'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs'
 ]);
 export const PRE00B_LIFECYCLE_RECONCILIATION_ADMITTED_PATHS=Object.freeze([
   PRE00B_PATHS.testInventory,
