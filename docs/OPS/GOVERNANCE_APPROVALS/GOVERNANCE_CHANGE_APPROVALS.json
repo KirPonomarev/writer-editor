@@ -12247,6 +12247,66 @@
       "evidenceStampIds": [
         "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
       ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b11ce6cc761cef26e25fec5a11b3fe5de318ecb1504905ca98ac377dc5baee7a",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T20:38:43.695Z",
+      "rationale": "Owner-directed six-path RCV00D current identity repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/RCV00D_CURRENT_IDENTITY_BINDING_STATUS_V1.json",
+      "sha256": "440fbc657a889de788479f50c14bc297453320a6d81a08f918eb4d063b96e6d4",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T20:38:43.695Z",
+      "rationale": "Owner-directed six-path RCV00D current identity repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ]
+    },
+    {
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-CURRENT-IDENTITY-BINDING.json",
+      "sha256": "feb51fd3c6d00d32b821b9d511feab05b967d801f1e53ee0e123ef63635ff287",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T20:38:43.695Z",
+      "rationale": "Owner-directed six-path RCV00D current identity repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ]
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
+      "sha256": "8b3d29f4d093c48313e5166846eead6d77bfeba758d0739b93617ddccd3c6bd4",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T20:38:43.695Z",
+      "rationale": "Owner-directed six-path RCV00D current identity repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ]
+    },
+    {
+      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
+      "sha256": "01384d6779d5fab862511dc3bcf1f43ecd9e81a35005a9719f4ad62df480e17b",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T20:38:43.695Z",
+      "rationale": "Owner-directed six-path RCV00D current identity repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ]
     }
   ],
   "evidenceStampIds": [

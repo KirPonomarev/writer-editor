@@ -220,10 +220,29 @@ function findingCandidate(finding, { readySet, contourStates, deliveredContourId
   return candidate;
 }
 
+function assertSelectorIdentity(effective, graphReceipt, identity) {
+  const expected = assertObject(identity, 'E_RCV00D_EXPECTED_IDENTITY_REQUIRED');
+  for (const field of ['headSha', 'originMainSha', 'treeSha']) {
+    if (!HEX40_RE.test(String(expected[field]))) throw new R24Error('E_RCV00D_EXPECTED_IDENTITY_SHAPE', field);
+  }
+  const actual = assertObject(effective.exactIdentity, 'E_RCV00D_EFFECTIVE_IDENTITY_REQUIRED');
+  const roles = assertObject(graphReceipt.identityRoles, 'E_RCV00D_GRAPH_IDENTITY_REQUIRED');
+  for (const [role, field] of [['evaluationHeadSha', 'headSha'], ['evaluationTreeSha', 'treeSha']]) {
+    if (actual[role] !== expected[field] || roles[role] !== expected[field]) {
+      throw new R24Error('E_RCV00D_EVALUATION_IDENTITY_BINDING', role);
+    }
+  }
+  if (actual.originMainSha !== expected.originMainSha) throw new R24Error('E_RCV00D_ORIGIN_IDENTITY_BINDING');
+  if (!HEX40_RE.test(String(actual.implementationSourceSha)) || roles.implementationSourceSha !== actual.implementationSourceSha) {
+    throw new R24Error('E_RCV00D_IMPLEMENTATION_IDENTITY_BINDING');
+  }
+}
+
 export function selectRcv00dCorrectiveCandidate({
   register,
   effectiveStateProjection,
   graphSelectionReceipt,
+  identity,
   deliveredContourIds = RCV00D_DELIVERED_CONTOUR_IDS,
 } = {}) {
   const validatedRegister = assertObject(register, 'E_RCV00D_REGISTER_REQUIRED');
@@ -231,6 +250,7 @@ export function selectRcv00dCorrectiveCandidate({
   const graphReceipt = assertObject(graphSelectionReceipt, 'E_RCV00D_GRAPH_RECEIPT_REQUIRED');
   if (effective.schemaVersion !== 'R24_EFFECTIVE_STATE_PROJECTION_V1') throw new R24Error('E_RCV00D_EFFECTIVE_STATE_SCHEMA');
   if (graphReceipt.schemaVersion !== 'SelectionReceiptR2_4') throw new R24Error('E_RCV00D_GRAPH_RECEIPT_SCHEMA');
+  assertSelectorIdentity(effective, graphReceipt, identity);
   if (!HEX64_RE.test(String(graphReceipt.stateDigest)) || graphReceipt.stateDigest !== effective.schedulerProjection?.stateDigest) {
     throw new R24Error('E_RCV00D_GRAPH_RECEIPT_STATE_BINDING');
   }
@@ -286,14 +306,15 @@ export function buildRcv00dSelectorContext({
   const graphSelectionReceipt = buildSelectionReceiptOnFullGraph({ now, planState: actualPlanState });
   const currentHeadSha = gitText(root, ['rev-parse', 'HEAD']);
   const originMainSha = gitText(root, ['rev-parse', 'origin/main']);
-  const treeSha = gitText(root, ['rev-parse', `${RCV00D_BASE_SHA}^{tree}`]);
+  const treeSha = gitText(root, ['rev-parse', 'HEAD^{tree}']);
+  const historicalTreeSha = gitText(root, ['rev-parse', `${RCV00D_BASE_SHA}^{tree}`]);
   if (!HEX40_RE.test(currentHeadSha) || !HEX40_RE.test(originMainSha) || !HEX40_RE.test(treeSha)) throw new R24Error('E_RCV00D_GIT_IDENTITY');
   try {
     execFileSync('git', ['-C', root, 'merge-base', '--is-ancestor', RCV00D_BASE_SHA, 'HEAD'], { stdio: 'ignore' });
   } catch {
     throw new R24Error('E_RCV00D_BASE_NOT_ANCESTOR');
   }
-  if (treeSha !== RCV00D_BASE_TREE) throw new R24Error('E_RCV00D_BASE_TREE_DRIFT');
+  if (historicalTreeSha !== RCV00D_BASE_TREE) throw new R24Error('E_RCV00D_BASE_TREE_DRIFT');
   return {
     repoRoot: root,
     now,
@@ -305,8 +326,8 @@ export function buildRcv00dSelectorContext({
     effectiveStateProjection,
     graphSelectionReceipt,
     identity: {
-      headSha: RCV00D_BASE_SHA,
-      originMainSha: RCV00D_BASE_SHA,
+      headSha: currentHeadSha,
+      originMainSha,
       treeSha,
     },
     inputDigests: {
@@ -429,13 +450,36 @@ export function validateRcv00dSelectorReceipt(receipt, context = null) {
   for (const token of RCV00D_NON_CLAIMS) {
     if (!nonClaims.has(token)) throw new R24Error('E_RCV00D_NONCLAIM', token);
   }
+  const receiptIdentity = assertObject(value.identity, 'E_RCV00D_RECEIPT_IDENTITY_REQUIRED');
+  // Without current context, only the pinned historical candidate is admissible.
+  const expectedIdentity = context?.identity || {
+    headSha: RCV00D_BASE_SHA,
+    originMainSha: RCV00D_BASE_SHA,
+    treeSha: RCV00D_BASE_TREE,
+  };
+  for (const field of ['headSha', 'originMainSha', 'treeSha']) {
+    if (!HEX40_RE.test(String(receiptIdentity[field])) || receiptIdentity[field] !== expectedIdentity[field]) {
+      throw new R24Error('E_RCV00D_RECEIPT_IDENTITY_BINDING', field);
+    }
+  }
   if (context) {
+    assertSelectorIdentity(context.effectiveStateProjection, context.graphSelectionReceipt, context.identity);
     if (value.inputDigests?.correctiveRegister !== canonicalDigest(context.register)) throw new R24Error('E_RCV00D_REGISTER_DIGEST_BINDING');
     if (value.inputDigests?.effectiveStateProjection !== canonicalDigest(context.effectiveStateProjection)) throw new R24Error('E_RCV00D_EFFECTIVE_STATE_DIGEST_BINDING');
     if (value.inputDigests?.graphSelectionReceipt !== canonicalDigest(context.graphSelectionReceipt)) throw new R24Error('E_RCV00D_GRAPH_RECEIPT_DIGEST_BINDING');
     if (value.graphSchedulerCandidate.stateDigest !== context.graphSelectionReceipt.stateDigest) throw new R24Error('E_RCV00D_GRAPH_RECEIPT_STATE_BINDING');
     if (value.graphSchedulerCandidate.contourStatesDigest !== context.graphSelectionReceipt.contourStatesDigest) throw new R24Error('E_RCV00D_GRAPH_RECEIPT_CONTOUR_BINDING');
     if (value.narrativeNextStep !== parseNarrativeNextStep(context.planText)) throw new R24Error('E_RCV00D_NARRATIVE_BINDING');
+    for (const field of ['correctiveRegisterFile', 'planTextFile', 'planStateFile']) {
+      if (!HEX64_RE.test(String(context.inputDigests?.[field])) || value.inputDigests?.[field] !== context.inputDigests[field]) {
+        throw new R24Error('E_RCV00D_SOURCE_FILE_DIGEST_BINDING', field);
+      }
+    }
+    for (const field of ['stateRevision', 'fencingCounter', 'readySet']) {
+      if (canonicalDigest(value.graphSchedulerCandidate[field]) !== canonicalDigest(context.graphSelectionReceipt[field])) {
+        throw new R24Error('E_RCV00D_GRAPH_SNAPSHOT_BINDING', field);
+      }
+    }
   }
   return {
     status: 'PASS',
@@ -475,11 +519,12 @@ function parseArgs(argv) {
 export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const repoRoot = path.resolve(args.get('--repo-root') || process.cwd());
-  const receipt = buildRcv00dSelectorReceipt({
+  const options = {
     repoRoot,
     now: args.get('--now') || '2026-09-09T00:00:00.000Z',
-  });
-  const result = validateRcv00dSelectorReceipt(receipt);
+  };
+  const receipt = buildRcv00dSelectorReceipt(options);
+  const result = validateRcv00dSelectorReceipt(receipt, buildRcv00dSelectorContext(options));
   if (args.has('--json')) {
     process.stdout.write(`${JSON.stringify(receipt, null, 2)}\n`);
   } else {

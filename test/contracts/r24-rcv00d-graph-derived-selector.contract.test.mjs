@@ -20,7 +20,7 @@ import {
   RCV00C_REGISTER_PATH,
   validateCorrectiveRegister,
 } from '../../scripts/ops/r24/corrective/rcv00c-corrective-register.mjs';
-import { readJsonBounded } from '../../scripts/ops/r24/canonical-json.mjs';
+import { canonicalDigest, readJsonBounded } from '../../scripts/ops/r24/canonical-json.mjs';
 
 const NOW = '2026-09-09T00:00:00.000Z';
 const clone = (value) => structuredClone(value);
@@ -29,11 +29,13 @@ const baseContext = () => buildRcv00dSelectorContext({ now: NOW });
 
 test('RCV00D selector chooses the active P1 current observation when the graph has no eligible node', () => {
   const receipt = buildRcv00dSelectorReceipt({ now: NOW });
-  const result = validateRcv00dSelectorReceipt(receipt);
+  const context = baseContext();
+  const result = validateRcv00dSelectorReceipt(receipt, context);
 
   assert.equal(result.status, 'PASS');
-  assert.equal(receipt.identity.headSha, RCV00D_BASE_SHA);
-  assert.equal(receipt.identity.treeSha, RCV00D_BASE_TREE);
+  assert.equal(receipt.identity.headSha, context.effectiveStateProjection.exactIdentity.evaluationHeadSha);
+  assert.equal(receipt.identity.treeSha, context.effectiveStateProjection.exactIdentity.evaluationTreeSha);
+  assert.equal(receipt.identity.originMainSha, context.effectiveStateProjection.exactIdentity.originMainSha);
   assert.equal(receipt.graphSchedulerCandidate.selectedId, RCV00D_EXPECTED_GRAPH_CANDIDATE);
   assert.equal(receipt.graphSchedulerCandidate.selectedKind, 'NONE');
   assert.equal(receipt.graphSchedulerCandidate.verdict, RCV00D_EXPECTED_GRAPH_VERDICT);
@@ -151,4 +153,75 @@ test('RCV00D receipt rejects graph-node selection as a false closure', () => {
   mutant.selected = receipt.candidates.find((candidate) => candidate.id === 'REL-01');
 
   assert.throws(() => validateRcv00dSelectorReceipt(mutant), /E_RCV00D_SELECTED_ITEM_BINDING/);
+});
+
+test('RCV00D immutable historical receipt remains valid only at its pinned identity', () => {
+  const receipt = readJsonBounded('docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json');
+  assert.equal(receipt.identity.headSha, RCV00D_BASE_SHA);
+  assert.equal(receipt.identity.treeSha, RCV00D_BASE_TREE);
+  assert.equal(validateRcv00dSelectorReceipt(receipt).status, 'PASS');
+  const changed = clone(receipt);
+  changed.identity.headSha = '1'.repeat(40);
+  assert.throws(() => validateRcv00dSelectorReceipt(changed), /E_RCV00D_RECEIPT_IDENTITY_BINDING/);
+});
+
+for (const field of ['headSha', 'originMainSha', 'treeSha']) {
+  test(`RCV00D current receipt rejects wrong, malformed and absent ${field}`, () => {
+    const context = baseContext();
+    const receipt = buildRcv00dSelectorReceipt({ now: NOW });
+    for (const value of ['1'.repeat(40), 'invalid-sha', undefined]) {
+      const changed = clone(receipt);
+      if (value === undefined) delete changed.identity[field]; else changed.identity[field] = value;
+      assert.throws(() => validateRcv00dSelectorReceipt(changed, context), /E_RCV00D_RECEIPT_IDENTITY_BINDING/);
+    }
+  });
+}
+
+test('RCV00D current receipt requires context and rejects stale successor identity after digest resealing', () => {
+  const context = baseContext();
+  const receipt = buildRcv00dSelectorReceipt({ now: NOW });
+  assert.equal(validateRcv00dSelectorReceipt(receipt, context).status, 'PASS');
+  assert.throws(() => validateRcv00dSelectorReceipt(receipt), /E_RCV00D_RECEIPT_IDENTITY_BINDING/);
+  const stale = clone(receipt);
+  stale.identity = { headSha: RCV00D_BASE_SHA, originMainSha: RCV00D_BASE_SHA, treeSha: RCV00D_BASE_TREE };
+  assert.throws(() => validateRcv00dSelectorReceipt(stale, context), /E_RCV00D_RECEIPT_IDENTITY_BINDING/);
+  const absent = clone(receipt);
+  delete absent.identity;
+  assert.throws(() => validateRcv00dSelectorReceipt(absent, context), /E_RCV00D_RECEIPT_IDENTITY_REQUIRED/);
+});
+
+test('RCV00D selector rejects mixed graph and projection identity roles', () => {
+  for (const field of ['implementationSourceSha', 'evaluationHeadSha', 'evaluationTreeSha']) {
+    const context = baseContext();
+    context.graphSelectionReceipt.identityRoles[field] = '2'.repeat(40);
+    assert.throws(() => selectRcv00dCorrectiveCandidate(context), /E_RCV00D_(EVALUATION|IMPLEMENTATION)_IDENTITY_BINDING/);
+  }
+  for (const field of ['implementationSourceSha', 'evaluationHeadSha', 'evaluationTreeSha', 'originMainSha']) {
+    const context = baseContext();
+    context.effectiveStateProjection.exactIdentity[field] = '3'.repeat(40);
+    assert.throws(() => selectRcv00dCorrectiveCandidate(context), /E_RCV00D_(EVALUATION|IMPLEMENTATION|ORIGIN)_IDENTITY_BINDING/);
+  }
+});
+
+test('RCV00D current receipt rejects changed source-file digests and graph snapshot revision', () => {
+  const context = baseContext();
+  const receipt = buildRcv00dSelectorReceipt({ now: NOW });
+  for (const field of ['correctiveRegisterFile', 'planTextFile', 'planStateFile']) {
+    const changed = clone(receipt);
+    changed.inputDigests[field] = '4'.repeat(64);
+    assert.throws(() => validateRcv00dSelectorReceipt(changed, context), /E_RCV00D_SOURCE_FILE_DIGEST_BINDING/);
+  }
+  for (const field of ['stateRevision', 'fencingCounter', 'readySet']) {
+    const changed = clone(receipt);
+    changed.graphSchedulerCandidate[field] = field === 'readySet' ? ['PK1_RELEASE_SECURITY_PHYSICAL'] : changed.graphSchedulerCandidate[field] + 1;
+    assert.throws(() => validateRcv00dSelectorReceipt(changed, context), /E_RCV00D_GRAPH_SNAPSHOT_BINDING/);
+  }
+});
+
+test('RCV00D receipt validation independently rejects resealed mixed-head context', () => {
+  const context = baseContext();
+  const receipt = buildRcv00dSelectorReceipt({ now: NOW });
+  context.graphSelectionReceipt.identityRoles.evaluationHeadSha = '5'.repeat(40);
+  receipt.inputDigests.graphSelectionReceipt = canonicalDigest(context.graphSelectionReceipt);
+  assert.throws(() => validateRcv00dSelectorReceipt(receipt, context), /E_RCV00D_EVALUATION_IDENTITY_BINDING/);
 });
