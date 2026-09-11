@@ -136,6 +136,16 @@ function documentXml(body) {
   return `<w:document><w:body>${body}</w:body></w:document>`;
 }
 
+const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+
+function documentXmlWithWordPrefix(prefix, body) {
+  return `<${prefix}:document xmlns:${prefix}="${WORDPROCESSINGML_NS}"><${prefix}:body>${body}</${prefix}:body></${prefix}:document>`;
+}
+
+function paragraphXmlWithWordPrefix(prefix, text) {
+  return `<${prefix}:p><${prefix}:r><${prefix}:t>${text}</${prefix}:t></${prefix}:r></${prefix}:p>`;
+}
+
 function contentTypesXml() {
   return '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
 }
@@ -1172,7 +1182,59 @@ test('DOCX content preview: accepted containers still fail closed on malformed X
   assert.equal(writerScaleOverOldLimit.contentPreview.textLength, 1000001);
 });
 
-test('DOCX content preview: unsupported encoding and namespace prefix do not produce empty successful previews', async () => {
+test('DOCX content preview: official WordprocessingML namespace aliases preserve text and canonical loss diagnostics', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxContentPreviewFromZipBytes(rawStoredDocxZip(documentXmlWithWordPrefix('wx', [
+    '<wx:p><wx:r><wx:t>Alias before</wx:t><wx:tab/><wx:t>after</wx:t></wx:r></wx:p>',
+    '<wx:tbl><wx:tr><wx:tc>',
+    paragraphXmlWithWordPrefix('wx', 'Alias table text'),
+    '</wx:tc></wx:tr></wx:tbl>',
+    '<wx:p>',
+    '<wx:bookmarkStart wx:id="7" wx:name="AliasAnchor"/>',
+    '<wx:r><wx:t>Alias bookmark</wx:t></wx:r>',
+    '<wx:bookmarkEnd wx:id="7"/>',
+    '</wx:p>',
+  ].join(''))));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Alias before\tafter',
+    'Alias table text',
+    'Alias bookmark',
+  ]);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+    && item.tagName === 'w:tbl'
+  )), true);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+    && item.tagName === 'w:bookmarkStart'
+  )), true);
+  assert.equal(result.diagnostics.some((item) => (
+    item.code === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC'
+    && item.tagName === 'w:br'
+  )), false);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(
+    importPreview.candidateCreatePlan.entries[0].content,
+    'Alias before\tafter\n\nAlias table text\n\nAlias bookmark',
+  );
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
+    && item.category === 'table'
+    && item.tagName === 'w:tbl'
+  )), true);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
+    && item.category === 'bookmark'
+  )), true);
+});
+
+test('DOCX content preview: unsupported encoding and wrong namespace prefix do not produce empty successful previews', async () => {
   const bridge = await loadBridge();
   const unsupportedEncoding = bridge.buildDocxContentPreviewFromZipBytes(zipFixture([
     {
@@ -1183,6 +1245,9 @@ test('DOCX content preview: unsupported encoding and namespace prefix do not pro
   ]));
   const unsupportedPrefix = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip(
     '<x:p><x:r><x:t>Hidden</x:t></x:r></x:p>',
+  ));
+  const wrongBoundPrefix = bridge.buildDocxContentPreviewFromZipBytes(rawStoredDocxZip(
+    '<x:document xmlns:x="urn:not-wordprocessingml"><x:body><x:p><x:r><x:t>Hidden</x:t></x:r></x:p></x:body></x:document>',
   ));
 
   assertContentPreviewShell(unsupportedEncoding);
@@ -1198,6 +1263,13 @@ test('DOCX content preview: unsupported encoding and namespace prefix do not pro
   assert.equal(unsupportedPrefix.parse.attempted, true);
   assert.equal(unsupportedPrefix.parse.completed, false);
   assert.equal(unsupportedPrefix.contentPreview, null);
+
+  assertContentPreviewShell(wrongBoundPrefix);
+  assert.equal(wrongBoundPrefix.ok, false);
+  assert.equal(wrongBoundPrefix.code, 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_XML_PREFIX');
+  assert.equal(wrongBoundPrefix.parse.attempted, true);
+  assert.equal(wrongBoundPrefix.parse.completed, false);
+  assert.equal(wrongBoundPrefix.contentPreview, null);
 });
 
 test('DOCX content preview: trailing XML garbage and multiple roots never return ready', async () => {
