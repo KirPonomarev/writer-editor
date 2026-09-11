@@ -1299,6 +1299,7 @@ test('R24 review preview comment topology exception rejects stale inventory dige
 });
 function embeddedFontAdmissionGitFixture({changedPaths,successorChangedPaths,artifactBytesByPath=new Map(),sourceBytes,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,baseTree,candidateSha='f'.repeat(40),candidateTree='1'.repeat(40),successorSha,successorAncestryShas,successorTree='2'.repeat(40)}={}){
   const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION;
+  const immutableCandidateSha=PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.baseSha;
   const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
@@ -1309,7 +1310,7 @@ function embeddedFontAdmissionGitFixture({changedPaths,successorChangedPaths,art
     if(repoPath===e.defaultApprovalsPath&&defaultApprovalsBytes)return Buffer.from(defaultApprovalsBytes);
     if(repoPath===e.pk1r1ApprovalsPath&&pk1r1ApprovalsBytes)return Buffer.from(pk1r1ApprovalsBytes);
     if(repoPath===e.interopApprovalsPath&&interopApprovalsBytes)return Buffer.from(interopApprovalsBytes);
-    return fs.readFileSync(repoPath);
+    return objectFromCommit(immutableCandidateSha,repoPath);
   };
   const bytesByPath=new Map(e.admittedPaths.map((repoPath)=>[repoPath,currentBytes(repoPath)]));
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
@@ -1364,7 +1365,7 @@ test('R24 embedded font admission exception rejects an unadmitted future path',(
   assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_CANDIDATE_NOT_FOUND|E_R24_EMBEDDED_FONT_EXACT_ADMITTED_DELTA/);
 });
 test('R24 embedded font admission exception rejects missing diagnostics-loss token',()=>{
-  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,source=fs.readFileSync(e.sourcePath,'utf8').replace('DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_FONT_ADVISORY');
+  const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,source=objectFromCommit(PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,e.sourcePath).toString('utf8').replace('DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_FONT_ADVISORY');
   const fixture=embeddedFontAdmissionGitFixture({sourceBytes:Buffer.from(source)});
   assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_ARTIFACT_DIGEST/);
 });
