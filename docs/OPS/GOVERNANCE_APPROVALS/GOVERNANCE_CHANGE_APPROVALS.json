@@ -11914,10 +11914,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json",
-      "sha256": "6493ecbe349516990691b77c985f6dc2427abcdd4b8ab7456d58e232a93d09bf",
+      "sha256": "3abae8086e0ad7fb1975cf83854526703523930f2995c7272843e0f7fc240b42",
       "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
-      "approvedAtUtc": "2026-09-11T10:19:40Z",
-      "rationale": "Approve exact bounded R24 RCV01A normative claim-test-lane manifest bytes bound to current-main candidate base ba9e9772 and tree 8ef67d79: establishes independent per-claim test and lane denominator for required load-bearing R24 claims without widening release claims. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approvedAtUtc": "2026-09-11T12:22:02Z",
+      "rationale": "Approve exact regenerated R24 RCV01A manifest/evidence bytes after merging origin/main d68c587c and refreshing the C1B inventory digest binding. This preserves the fixed claim-test-lane denominator and negative proof obligations without product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
@@ -11926,10 +11926,10 @@
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json",
-      "sha256": "a96ad20df209fe7d37d9e0da792ad2bd4e672132cbead1aed3ce8a65dd89dd7d",
+      "sha256": "57d2bf5a2dabc4b2e8f55d05ff4f95029526f9fa6f409e76762d5827068948dc",
       "approvedBy": "owner-directive:R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION_2026_09_11",
-      "approvedAtUtc": "2026-09-11T10:19:40Z",
-      "rationale": "Approve exact bounded R24 RCV01A claim-binding evidence bytes for the normative claim-test-lane manifest repair: binds current-main candidate base, final manifest, merged C1B inventory, verifier, and focused contract artifact digests. No product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
+      "approvedAtUtc": "2026-09-11T12:22:02Z",
+      "rationale": "Approve exact regenerated R24 RCV01A manifest/evidence bytes after merging origin/main d68c587c and refreshing the C1B inventory digest binding. This preserves the fixed claim-test-lane denominator and negative proof obligations without product runtime, UI/design change, dependency, runtime network, release readiness, graph promotion, PK1, V3, WP900, or PROGRAM_DONE claim.",
       "approved": true,
       "authority": "OWNER_APPROVED_R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_CURRENT_BASE_RECONCILIATION",
       "evidenceStampIds": [
