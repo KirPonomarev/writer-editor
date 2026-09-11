@@ -58,7 +58,7 @@
     },
     {
       "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "sha256": "1a88444d1f77f9dedaeb596421e0fd9c114c8a3b4122b7b8c0c80581a582cd4e",
+      "sha256": "e6f0aba6a3b342ee2e4cc4455359163cb90c5a1e9e4848cb9a853695b78e6f05",
       "terms": [
         "R24_W0_CURRENT_STATE_CLOSURE"
       ]

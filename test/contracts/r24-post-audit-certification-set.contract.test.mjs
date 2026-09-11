@@ -1370,21 +1370,22 @@ test('R24 RCV00E lease fencing CAS exception rejects stale inventory digest',()=
 });
 function rcv00fDeliveryReconciliationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,approvalsBytes,packageLockBytes,planStateBytes,planStateTestBytes,postAuditVerifierBytes,postAuditTestBytes,rtkG0bBytes,rtkW1Bytes,rtkW2Bytes,rtkZip01Bytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorAncestryShas,successorTree='3'.repeat(40)}={}){
   const e=R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION;
+  const deliveryObjectSha='7ea8f61dc45bdb3105f15be73d1c14424e20c4ca';
   const successorChain=successorAncestryShas??(successorSha?[successorSha]:[]);
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.packageLockPath,packageLockBytes??fs.readFileSync(e.packageLockPath)],
-    [e.planStatePath,planStateBytes??fs.readFileSync(e.planStatePath)],
-    [e.planStateTestPath,planStateTestBytes??fs.readFileSync(e.planStateTestPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.rtkG0bPath,rtkG0bBytes??fs.readFileSync(e.rtkG0bPath)],
-    [e.rtkW1Path,rtkW1Bytes??fs.readFileSync(e.rtkW1Path)],
-    [e.rtkW2Path,rtkW2Bytes??fs.readFileSync(e.rtkW2Path)],
-    [e.rtkZip01Path,rtkZip01Bytes??fs.readFileSync(e.rtkZip01Path)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliveryObjectSha,e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??objectFromCommit(deliveryObjectSha,e.approvalsPath)],
+    [e.packageLockPath,packageLockBytes??objectFromCommit(deliveryObjectSha,e.packageLockPath)],
+    [e.planStatePath,planStateBytes??objectFromCommit(deliveryObjectSha,e.planStatePath)],
+    [e.planStateTestPath,planStateTestBytes??objectFromCommit(deliveryObjectSha,e.planStateTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliveryObjectSha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliveryObjectSha,e.postAuditTestPath)],
+    [e.rtkG0bPath,rtkG0bBytes??objectFromCommit(deliveryObjectSha,e.rtkG0bPath)],
+    [e.rtkW1Path,rtkW1Bytes??objectFromCommit(deliveryObjectSha,e.rtkW1Path)],
+    [e.rtkW2Path,rtkW2Bytes??objectFromCommit(deliveryObjectSha,e.rtkW2Path)],
+    [e.rtkZip01Path,rtkZip01Bytes??objectFromCommit(deliveryObjectSha,e.rtkZip01Path)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
@@ -1450,17 +1451,18 @@ test('R24 RCV00F delivery reconciliation exception rejects fake typed verificati
 });
 function p03RelationshipGraphValidationGitFixture({changedPaths,successorChangedPaths,inventoryBytes,defaultApprovalsBytes,pk1r1ApprovalsBytes,interopApprovalsBytes,postAuditVerifierBytes,postAuditTestBytes,generic01TestBytes,baseTree,candidateSha='1'.repeat(40),candidateTree='2'.repeat(40),successorSha,successorTree='3'.repeat(40)}={}){
   const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION;
+  const deliveryObjectSha='bfa2f6c69374ae57d5be9ee0685c2110e1416095';
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
   const bytesByPath=new Map([
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.defaultApprovalsPath,defaultApprovalsBytes??fs.readFileSync(e.defaultApprovalsPath)],
-    [e.pk1r1ApprovalsPath,pk1r1ApprovalsBytes??fs.readFileSync(e.pk1r1ApprovalsPath)],
-    [e.interopApprovalsPath,interopApprovalsBytes??fs.readFileSync(e.interopApprovalsPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
-    [e.generic01TestPath,generic01TestBytes??fs.readFileSync(e.generic01TestPath)],
+    [e.inventoryPath,inventoryBytes??objectFromCommit(deliveryObjectSha,e.inventoryPath)],
+    [e.defaultApprovalsPath,defaultApprovalsBytes??objectFromCommit(deliveryObjectSha,e.defaultApprovalsPath)],
+    [e.pk1r1ApprovalsPath,pk1r1ApprovalsBytes??objectFromCommit(deliveryObjectSha,e.pk1r1ApprovalsPath)],
+    [e.interopApprovalsPath,interopApprovalsBytes??objectFromCommit(deliveryObjectSha,e.interopApprovalsPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??objectFromCommit(deliveryObjectSha,e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??objectFromCommit(deliveryObjectSha,e.postAuditTestPath)],
+    [e.generic01TestPath,generic01TestBytes??objectFromCommit(deliveryObjectSha,e.generic01TestPath)],
   ]);
   return{candidateSha:requestedSha,deliverySha:candidateSha,git:(args,options={})=>{
     let value='';
@@ -1509,7 +1511,7 @@ test('R24 P03 relationship graph validation exception rejects an unadmitted futu
   assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_CANDIDATE_NOT_FOUND|E_R24_P03_RELATIONSHIP_EXACT_ADMITTED_DELTA/);
 });
 test('R24 P03 relationship graph validation exception rejects stale Generic01 inventory digest',()=>{
-  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,inventory=JSON.parse(objectFromCommit('bfa2f6c69374ae57d5be9ee0685c2110e1416095',e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.generic01TestPath).sha256='0'.repeat(64);
   const fixture=p03RelationshipGraphValidationGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_P03_RELATIONSHIP_INVENTORY_DIGEST/);
@@ -1580,7 +1582,7 @@ test('R24 OPS03 semantic E0 classifier exception rejects a weakened scanner toke
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_SCANNER_TOKEN/);
 });
 test('R24 OPS03 semantic E0 classifier exception rejects stale inventory binding',()=>{
-  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,inventory=JSON.parse(fs.readFileSync(e.inventoryPath,'utf8'));
+  const e=R24_OPS03_SEMANTIC_E0_CLASSIFIER_EXPECTATION,inventory=JSON.parse(objectFromCommit('872459208f6d8c7df8e9de1178a6c66a84f308cf',e.inventoryPath).toString('utf8'));
   inventory.entries.find((entry)=>entry.path===e.postAuditTestPath).sha256='0'.repeat(64);
   const fixture=ops03SemanticE0ClassifierGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24Ops03SemanticE0ClassifierPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_OPS03_INVENTORY_DIGEST/);

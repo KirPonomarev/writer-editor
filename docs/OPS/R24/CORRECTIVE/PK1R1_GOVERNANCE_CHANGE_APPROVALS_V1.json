@@ -746,7 +746,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "188d90247d4df7e9c5b10d96afcbead5c90b0c02a656fa6f50283a3b9433576f"
+      "sha256": "d99c2ed96057ee376543fd7ac0a9a57b656576585adb12769753d69a57be8ec5"
     },
     {
       "approved": true,
@@ -811,7 +811,7 @@
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "rationale": "Approve current reconciled carrier bytes after PR1875 S03 and W0 current-state closure: preserves S03 zero-write DOCX list-numbering silent-loss evidence and W0 immutable current-state closure verifier evidence, with no product runtime, UI, dependency, network truth, release-readiness, PROGRAM_DONE, or graph-promotion claim.",
-      "sha256": "1a88444d1f77f9dedaeb596421e0fd9c114c8a3b4122b7b8c0c80581a582cd4e"
+      "sha256": "e6f0aba6a3b342ee2e4cc4455359163cb90c5a1e9e4848cb9a853695b78e6f05"
     },
     {
       "approved": true,
@@ -835,7 +835,7 @@
       ],
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-W0-CURRENT-STATE-CLOSURE-CLAIM-BINDINGS.json",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
-      "sha256": "3ed5b261d5159d68979d494c3934c989847675a145ac2f9bf5404674ccd481ba"
+      "sha256": "7615bacbdf19f41f2ca110a5a855b41ec6f9cb5b019a846041b0d47e985b956e"
     },
     {
       "approved": true,
