@@ -44,6 +44,7 @@ import {
   R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION,
   R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_EXPECTATION,
   R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,
+  RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION,
   R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
@@ -94,6 +95,7 @@ import {
   verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException,
   verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException,
   verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException,
+  verifyRcv00dCurrentIdentityBindingPostEvaluationException,
   verifyR24DocxLinebreakSourceExportPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
@@ -121,6 +123,173 @@ const clone=(value)=>structuredClone(value);
 const verify=(value,fileDigest=load().fileDigest)=>verifyCertificationSet({value,fileDigest,candidateSha:'HEAD',allowAuditCycle2Admission:true,allowMainProductWp401Admission:true});
 const raw=(file)=>{const bytes=fs.readFileSync(file);return{bytes,value:JSON.parse(bytes),digest:h(bytes)}};
 const objectFromCommit=(sha,repoPath)=>execFileSync('git',['show',`${sha}:${repoPath}`],{maxBuffer:64*1024*1024});
+
+function rcv00dCurrentIdentityGitFixture({ changedPaths, baseTree, denyBase = false, denyRepair = false, successor = false } = {}) {
+  const e = RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION;
+  const candidateSha = 'a'.repeat(40), candidateTree = 'b'.repeat(40), successorSha = 'c'.repeat(40);
+  const files = new Map();
+  const put = (file, value) => files.set(file, canonicalBytes(value));
+  const read = (file) => JSON.parse(files.get(file));
+  const codePaths = [e.selectorPath, e.selectorTestPath, e.verifierPath, e.verifierTestPath].sort();
+  for (const file of [e.selectorPath, e.selectorTestPath]) files.set(file, objectFromCommit(e.repairSha, file));
+  for (const file of [e.verifierPath, e.verifierTestPath]) files.set(file, fs.readFileSync(file));
+  files.set(e.historicalReceiptPath, objectFromCommit(e.baseSha, e.historicalReceiptPath));
+  put(e.inventoryPath, JSON.parse(objectFromCommit(e.baseSha, e.inventoryPath)));
+  put(e.approvalsPath, JSON.parse(objectFromCommit(e.baseSha, e.approvalsPath)));
+  const primaryStatus = JSON.parse(objectFromCommit(e.repairSha, e.statusPath));
+  const status = clone(primaryStatus);
+  status.programDone = false;
+  status.productionReleaseReady = false;
+  status.certificationSuccessor = {
+    repairSha: e.repairSha, repairTree: e.repairTree, admittedPaths: [...e.admittedPaths],
+    evaluationIdentity: { headSha: e.repairSha, originMainSha: e.baseSha, treeSha: e.repairTree },
+    predecessorGateFailure: primaryStatus.openDeliveryFinding,
+  };
+  delete status.openDeliveryFinding;
+  put(e.statusPath, status);
+  put(e.evidencePath, JSON.parse(objectFromCommit(e.repairSha, e.evidencePath)));
+  const seal = () => {
+    const inventory = read(e.inventoryPath);
+    for (const file of [e.selectorTestPath, e.verifierTestPath]) inventory.entries.find((entry) => entry.path === file).sha256 = h(files.get(file));
+    put(e.inventoryPath, inventory);
+    const status = read(e.statusPath);
+    status.implementationArtifacts = codePaths.map((file) => ({ path: file, sha256: h(files.get(file)) }));
+    put(e.statusPath, status);
+    const evidence = read(e.evidencePath);
+    evidence.implementationArtifactDigests = codePaths.map((file) => ({
+      ...(evidence.implementationArtifactDigests.find((entry) => entry.path === file) ?? { path: file, terms: ['CERTIFICATION_SUCCESSOR_CANDIDATE_BYTES_NOT_EXECUTION_PROOF'] }),
+      sha256: h(files.get(file)),
+    }));
+    evidence.claimBindings = evidence.claimBindings.map((entry) => ({ ...entry, sha256: h(files.get(entry.filePath)) }));
+    put(e.evidencePath, evidence);
+    const approvals = read(e.approvalsPath);
+    approvals.approvals = approvals.approvals.filter((entry) => entry.approvedBy !== e.approvedBy);
+    for (const file of e.admittedPaths.filter((file) => file !== e.approvalsPath)) approvals.approvals.push({ filePath: file, sha256: h(files.get(file)), approvedBy: e.approvedBy, approved: true, evidenceStampIds: [e.stampId] });
+    put(e.approvalsPath, approvals);
+  };
+  seal();
+  const git = (args, options = {}) => {
+    let result;
+    if (args[0] === 'rev-parse') {
+      const ref = args[1];
+      if (ref === `${e.baseSha}^{tree}`) result = baseTree ?? e.baseTree;
+      else if (ref === `${e.repairSha}^{tree}`) result = e.repairTree;
+      else if (ref.endsWith('^{tree}')) result = candidateTree;
+      else result = ref === 'HEAD' ? (successor ? successorSha : candidateSha) : ref;
+    } else if (args[0] === 'merge-base') {
+      if ((args[2] === e.baseSha && denyBase) || (args[2] === e.repairSha && denyRepair)) throw new Error('fixture ancestry denied');
+      result = '';
+    } else if (args[0] === 'diff') {
+      result = (args[2] === `${e.baseSha}..${successorSha}` ? [...e.admittedPaths, 'README.md'].sort() : changedPaths ?? e.admittedPaths).join('\n');
+    } else if (args[0] === 'rev-list') {
+      result = successor ? candidateSha : '';
+    } else if (args[0] === 'show') {
+      const separator = args[1].indexOf(':'), sha = args[1].slice(0, separator), file = args[1].slice(separator + 1);
+      if (sha === candidateSha || sha === successorSha) {
+        if (!files.has(file)) throw new Error('fixture missing object');
+        result = files.get(file);
+      } else result = objectFromCommit(sha, file);
+    } else throw new Error(`Unexpected fixture Git command: ${args.join(' ')}`);
+    return options.encoding === 'utf8' ? String(result) : Buffer.from(result);
+  };
+  return { e, files, read, put, seal, git, candidateSha, candidateTree, requestedSha: successor ? successorSha : candidateSha };
+}
+
+const verifyCurrentIdentityFixture = (fixture) => verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: fixture.requestedSha, git: fixture.git });
+
+test('RCV00D current-identity certification accepts only the exact eight-path successor bindings', () => {
+  const fixture = rcv00dCurrentIdentityGitFixture(), result = verifyCurrentIdentityFixture(fixture);
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.candidateSha, fixture.candidateSha);
+  assert.equal(result.candidateTree, fixture.candidateTree);
+  assert.equal(result.admittedPathDenominator, 8);
+  assert.deepEqual(result.changedPaths, fixture.e.admittedPaths);
+  assert.equal(result.programDone, false);
+  assert.equal(result.graphIncrement, 0);
+  assert.equal(fixture.read(fixture.e.statusPath).executedProof.focused.pass, 57);
+  assert.equal(fixture.read(fixture.e.evidencePath).verdict, 'PASS');
+  assert.equal(fixture.read(fixture.e.evidencePath).evidenceClass, 'CONTRACT');
+  assert(!R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.includes(fixture.e.statusPath));
+  assert(!R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION.admittedPaths.includes(fixture.e.evidencePath));
+});
+
+test('RCV00D current-identity certification selects a closed exact candidate without admitting later paths', () => {
+  const fixture = rcv00dCurrentIdentityGitFixture({ successor: true }), result = verifyCurrentIdentityFixture(fixture);
+  assert.equal(result.candidateSha, fixture.candidateSha);
+  assert.equal(result.currentCandidateSha, fixture.requestedSha);
+  assert.equal(result.changedPathDenominator, 8);
+  assert(!result.admittedPaths.includes('README.md'));
+});
+
+for (const [name, options, signal] of [
+  ['wrong base tree', { baseTree: '0'.repeat(40) }, /E_RCVID_BASE_TREE/],
+  ['wrong base ancestry', { denyBase: true }, /E_RCVID_BASE_NOT_ANCESTOR/],
+  ['missing repaired ancestry', { denyRepair: true }, /E_RCVID_REPAIR_NOT_ANCESTOR/],
+  ['missing path', { changedPaths: RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.admittedPaths.slice(1) }, /E_RCVID_EXACT_ADMITTED_DELTA/],
+  ['extra path', { changedPaths: [...RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.admittedPaths, 'README.md'] }, /E_RCVID_EXACT_ADMITTED_DELTA/],
+]) {
+  test(`RCV00D current-identity certification rejects ${name}`, () => assert.throws(() => verifyCurrentIdentityFixture(rcv00dCurrentIdentityGitFixture(options)), signal));
+}
+
+const currentIdentityMutations = [
+  ['wrong status base despite resealing', (f) => { const v = f.read(f.e.statusPath); v.baseSha = '0'.repeat(40); f.put(f.e.statusPath, v); f.seal(); }, /E_RCVID_STATUS_BASE/],
+  ['different-head evidence despite resealing', (f) => { const v = f.read(f.e.evidencePath); v.headSha = '9'.repeat(40); f.put(f.e.evidencePath, v); f.seal(); }, /E_RCVID_EVIDENCE_HEAD/],
+  ['different-head status despite resealing', (f) => { const v = f.read(f.e.statusPath); v.evaluationIdentity.headSha = '9'.repeat(40); f.put(f.e.statusPath, v); f.seal(); }, /E_RCVID_STATUS_HEAD/],
+  ['missing status scope despite resealing', (f) => { const v = f.read(f.e.statusPath); delete v.certificationSuccessor; f.put(f.e.statusPath, v); f.seal(); }, /E_RCVID_STATUS_SCOPE/],
+  ['mutated repaired source despite coordinated resealing', (f) => { f.files.set(f.e.selectorPath, Buffer.concat([f.files.get(f.e.selectorPath), Buffer.from('// changed\n')])); f.seal(); }, /E_RCVID_REPAIRED_BYTES/],
+  ['mutated repaired test despite coordinated resealing', (f) => { f.files.set(f.e.selectorTestPath, Buffer.concat([f.files.get(f.e.selectorTestPath), Buffer.from('// changed\n')])); f.seal(); }, /E_RCVID_REPAIRED_BYTES/],
+  ['mutated support artifact', (f) => { f.files.set(f.e.verifierPath, Buffer.concat([f.files.get(f.e.verifierPath), Buffer.from('// changed\n')])); }, /E_RCVID_STATUS_ARTIFACT_BINDING/],
+  ['wrong artifact hash', (f) => { const v = f.read(f.e.evidencePath); v.implementationArtifactDigests[0].sha256 = '0'.repeat(64); f.put(f.e.evidencePath, v); }, /E_RCVID_EVIDENCE_ARTIFACT_BINDING/],
+  ['wrong claim hash', (f) => { const v = f.read(f.e.evidencePath); v.claimBindings[0].sha256 = '0'.repeat(64); f.put(f.e.evidencePath, v); }, /E_RCVID_CLAIM_DIGEST/],
+  ['missing artifact', (f) => { f.files.delete(f.e.statusPath); }, /E_RCVID_ARTIFACT_MISSING/],
+  ['unrelated inventory mutation despite resealing', (f) => { const v = f.read(f.e.inventoryPath); v.entries[0].sha256 = '0'.repeat(64); f.put(f.e.inventoryPath, v); f.seal(); }, /E_RCVID_INVENTORY_DELTA/],
+  ['mutated approval hash', (f) => { const v = f.read(f.e.approvalsPath); v.approvals.find((entry) => entry.approvedBy === f.e.approvedBy).sha256 = '0'.repeat(64); f.put(f.e.approvalsPath, v); }, /E_RCVID_APPROVAL_BINDING/],
+  ['revoked approval', (f) => { const v = f.read(f.e.approvalsPath); v.approvals.find((entry) => entry.approvedBy === f.e.approvedBy).approved = false; f.put(f.e.approvalsPath, v); }, /E_RCVID_APPROVAL_AUTHORITY/],
+  ['changed prior approval despite resealing', (f) => { const v = f.read(f.e.approvalsPath); v.approvals[0].sha256 = '0'.repeat(64); f.put(f.e.approvalsPath, v); f.seal(); }, /E_RCVID_APPROVAL_HISTORY/],
+  ['mixed historical snapshot', (f) => { const v = f.read(f.e.historicalReceiptPath); const old = JSON.parse(objectFromCommit('0b2476fc6ab881202ccc2c0087a57fea85a54195', f.e.historicalReceiptPath)); v.graphSchedulerCandidate.stateDigest = old.graphSchedulerCandidate.stateDigest; f.put(f.e.historicalReceiptPath, v); f.seal(); }, /E_RCVID_HISTORICAL_BYTES/],
+];
+for (const [name, mutate, signal] of currentIdentityMutations) {
+  test(`RCV00D current-identity certification rejects ${name}`, () => {
+    const fixture = rcv00dCurrentIdentityGitFixture();
+    mutate(fixture);
+    assert.throws(() => verifyCurrentIdentityFixture(fixture), signal);
+  });
+}
+
+const currentIdentityClaimMutations = [
+  ['status program done', 'statusPath', (v) => { v.programDone = true; }],
+  ['status release ready', 'statusPath', (v) => { v.productionReleaseReady = true; }],
+  ['status claim class escalated', 'statusPath', (v) => { v.claimClass = 'PROGRAM_DONE_RELEASE_READY'; }],
+  ['status failed proof', 'statusPath', (v) => { v.executedProof = { focused: { pass: 0, fail: 57 } }; }],
+  ['evidence failed verdict', 'evidencePath', (v) => { v.verdict = 'FAIL'; }],
+  ['evidence narrative class', 'evidencePath', (v) => { v.evidenceClass = 'NARRATIVE'; }],
+  ['evidence program done', 'evidencePath', (v) => { v.programDone = true; }],
+  ['evidence nonClaims erased', 'evidencePath', (v) => { v.nonClaims = []; }],
+  ['status nonClaims erased', 'statusPath', (v) => { v.nonClaims = []; }],
+  ['evidence oracle forged', 'evidencePath', (v) => { v.oracle = 'SELF_AUTHORED_SUCCESS'; }],
+  ['executed evidence forged', 'evidencePath', (v) => { for (const row of v.executedEvidence) row.verdict = 'FAIL'; }],
+  ['proof summary inconsistent', 'statusPath', (v) => { v.executedProof.focused.pass -= 1; }],
+];
+for (const [name, key, mutate] of currentIdentityClaimMutations) {
+  test(`RCV00D current-identity certification rejects coherently resealed ${name}`, () => {
+    const fixture = rcv00dCurrentIdentityGitFixture();
+    const value = fixture.read(fixture.e[key]);
+    mutate(value);
+    fixture.put(fixture.e[key], value);
+    fixture.seal();
+    assert.throws(() => verifyCurrentIdentityFixture(fixture), key === 'statusPath' ? /E_RCVID_STATUS_SEMANTICS/ : /E_RCVID_EVIDENCE_SEMANTICS/);
+  });
+}
+
+test('RCV00D current-identity certification rejects a fabricated StageAdmission grant', () => {
+  const fixture = rcv00dCurrentIdentityGitFixture();
+  const status = fixture.read(fixture.e.statusPath);
+  status.stageAdmissionAndLease = 'GRANTED';
+  fixture.put(fixture.e.statusPath, status);
+  fixture.seal();
+  assert.throws(() => verifyCurrentIdentityFixture(fixture), /E_RCVID_AUTHORITY_ROUTE/);
+});
+
 const CRC_TABLE=new Uint32Array(256).map((_,i)=>{let v=i;for(let b=0;b<8;b+=1)v=(v&1)?(0xedb88320^(v>>>1)):(v>>>1);return v>>>0;});
 const crc32=(bytes)=>{let v=0xffffffff;for(const byte of bytes)v=CRC_TABLE[(v^byte)&0xff]^(v>>>8);return(v^0xffffffff)>>>0;};
 function zip(entries){const locals=[],centrals=[];let offset=0;for(const entry of entries){const name=Buffer.from(entry.name),bytes=Buffer.from(entry.bytes),crc=crc32(bytes);const local=Buffer.alloc(30);local.writeUInt32LE(0x04034b50,0);local.writeUInt16LE(20,4);local.writeUInt32LE(crc,14);local.writeUInt32LE(bytes.length,18);local.writeUInt32LE(bytes.length,22);local.writeUInt16LE(name.length,26);locals.push(local,name,bytes);const central=Buffer.alloc(46);central.writeUInt32LE(0x02014b50,0);central.writeUInt16LE((3<<8)|20,4);central.writeUInt16LE(20,6);central.writeUInt32LE(crc,16);central.writeUInt32LE(bytes.length,20);central.writeUInt32LE(bytes.length,24);central.writeUInt16LE(name.length,28);central.writeUInt32LE((0o100644<<16)>>>0,38);central.writeUInt32LE(offset,42);centrals.push(central,name);offset+=local.length+name.length+bytes.length;}const centralBytes=Buffer.concat(centrals),eocd=Buffer.alloc(22);eocd.writeUInt32LE(0x06054b50,0);eocd.writeUInt16LE(entries.length,8);eocd.writeUInt16LE(entries.length,10);eocd.writeUInt32LE(centralBytes.length,12);eocd.writeUInt32LE(offset,16);return Buffer.concat([...locals,centralBytes,eocd]);}

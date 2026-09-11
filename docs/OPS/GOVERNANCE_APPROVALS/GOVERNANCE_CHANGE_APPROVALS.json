@@ -12250,63 +12250,87 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "fab7ccafff8ad78f3548f336079ca21873e0215e84d63f44c9e1dd637be0786e",
+      "sha256": "d48a33c61c747c4541c78cb5ceb55fc0143f324636795d1a48730a21c04147f1",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
-      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
         "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
-      ]
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/RCV00D_CURRENT_IDENTITY_BINDING_STATUS_V1.json",
-      "sha256": "1378c9dc06cec4cbd7bd41a2182f7baa400b47a8722e76be8f5d509d9961b9e0",
+      "sha256": "8ea3a5f28ce0c9be7da3f2a197db9b6a7a7fba53a2a98ee1a0ac59437546a529",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
-      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
         "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
-      ]
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
     },
     {
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-CURRENT-IDENTITY-BINDING.json",
-      "sha256": "d9207c9324c38465e4bbbfe94eeeb88af96508e88bc6061404aef2821c66e86a",
+      "sha256": "130de422076af98f97996f7eaaef5e40ec73213b7ca5286294b591f8f3fadd65",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
-      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
         "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
-      ]
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "d9b2f288eb1c53ff6965633e36236446cd9cff3e514fd9997f2022f296e4e6c0",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
     },
     {
       "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
       "sha256": "d3eafb4db266e508ce4d5f68b743debf1f370eefabf77da7c2ef9c99452061f1",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
-      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
         "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
-      ]
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
+    },
+    {
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "sha256": "b5aeed8a7796e10a2796395d53427a61486a9866af3e5b2d3d72bd045b0b8f26",
+      "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
+      "approved": true,
+      "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
+      "evidenceStampIds": [
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
     },
     {
       "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
       "sha256": "7c7c3fc11d86ddfa01214b6d02a1081fffff95107a841497b6f1892747721b32",
       "approvedBy": "OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11",
-      "approvedAtUtc": "2026-09-11T21:43:22.226Z",
-      "rationale": "Owner-directed six-path RCV00D current identity, trusted-context derivation and exact historical semantic binding repair under the direct corrective route; preserve historical candidates, unrelated product source, graph state, admissions and interop history. Selector observations and test evidence confer no mutation authority.",
+      "approvedAtUtc": "2026-09-11T22:02:19.495Z",
       "approved": true,
       "authority": "OWNER_TASK_R24_RCV00D_CURRENT_IDENTITY_BINDING_DIRECT_CORRECTIVE_SCOPE",
       "evidenceStampIds": [
         "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
-      ]
+      ],
+      "rationale": "Owner and coordinator authorized exact eight-path RCV00D repair delivery support after an observed mandatory certification gate failure. Primary proof semantics are pinned to immutable ae9196d1 carriers; successor bytes confer no new execution, terminal, graph, or mutation authority. Historical admissions, receipts and unrelated approvals are preserved."
     }
   ],
   "evidenceStampIds": [
