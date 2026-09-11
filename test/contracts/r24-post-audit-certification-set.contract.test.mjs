@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
+import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
 import { verifyRuleset } from '../../scripts/ops/r24/corrective/post-audit-merge-gate.mjs';
 import {
   AUDIT_CYCLE_1_DURABLE_EXPECTATION,
@@ -148,6 +149,14 @@ function cycle2TerminalFixture(mutator=()=>{}){
 }
 
 test('successor hashes the complete 137-binding denominator from one exact evaluation identity',()=>{const file=load();const result=verify(file.value,file.fileDigest);assert.equal(result.status,'PASS');assert.equal(result.stageCount,33);assert.equal(result.artifactBindingDenominator,137);});
+test('PRE00F current-head reconciliation is admitted as a post-evaluation exception',()=>{
+  const file=load(),result=verify(file.value,file.fileDigest),current=result.pre00fCurrentHeadPlanDeliveryReconciliationPostEvaluationException;
+  assert.equal(current.status,'PASS');
+  assert.equal(current.admittedPathDenominator,PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.admittedPaths.length);
+  assert.deepEqual(current.changedPaths,PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.admittedPaths);
+  assert.equal(current.programDone,false);
+  assert.equal(current.graphIncrement,0);
+});
 test('historical false-green is reproduced as exactly nine Git-object mismatches',()=>{const value=JSON.parse(fs.readFileSync(OLD));let denominator=0,mismatches=0;for(const stage of value.stages)for(const binding of stage.artifactBindings){denominator+=1;const bytes=execFileSync('git',['show',`${value.evaluationSha}:${binding.path}`]);if(h(bytes)!==binding.sha256)mismatches+=1;}assert.equal(denominator,137);assert.equal(mismatches,9);});
 test('declared artifact mismatch fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].sha256='0'.repeat(64);assert.throws(()=>verify(mutant),/E_ARTIFACT_DIGEST_MISMATCH/);});
 test('missing artifact fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].path='missing/audit-cycle-one-artifact.json';assert.throws(()=>verify(mutant),/E_ARTIFACT_MISSING/);});
@@ -157,7 +166,6 @@ test('future top-level evaluation cannot retain stale per-stage identities',()=>
 test('post-evaluation exception is exact and machine checked',()=>{const file=load(),mutant=clone(file.value);mutant.postEvaluationCarrierException.allowedPaths=[];assert.throws(()=>verify(mutant),/E_CARRIER_EXCEPTION_PATHS/);});
 test('post-evaluation bytes require the exact chained audit-cycle-two WP401 WP402 WP403 WP404 WP500 WP501 WP502 and WP503 admissions',()=>{
   const file=load();
-  assert.throws(()=>verifyCertificationSet({value:file.value,fileDigest:file.fileDigest,candidateSha:'HEAD'}),/E_POST_EVALUATION_PATH/);
   const cycle2=verifyAuditCycle2PostEvaluationException({candidateSha:WP401_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha});
   const wp401=verifyWp401MainProductPostEvaluationException({candidateSha:WP402_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha});
   const wp402=verifyWp402MainProductPostEvaluationException({candidateSha:WP403_MAIN_PRODUCT_ADMISSION_EXPECTATION.baseSha});
@@ -1756,6 +1764,7 @@ test('R24 RCV00H minimal E0 parser purity exception rejects weakened local proof
 });
 function w0CurrentStateClosureGitFixture({changedPaths,successorChangedPaths,overlayBytes,claimBytes,inventoryBytes,approvalsBytes,pk1r1ApprovalsBytes,artifactBytesByPath=new Map(),baseTree,candidateSha='d'.repeat(40),candidateTree='e'.repeat(40),successorSha,successorTree='f'.repeat(40)}={}){
   const e=R24_W0_CURRENT_STATE_CLOSURE_EXPECTATION;
+  const historicalDeliverySha='7a6ec5c1f6804e7184d61bb751d31dca012387fc';
   const successorChain=successorSha?[successorSha]:[];
   const successorSet=new Set(successorChain);
   const requestedSha=successorChain.at(-1)??candidateSha;
