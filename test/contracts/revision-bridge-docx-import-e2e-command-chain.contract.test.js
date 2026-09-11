@@ -475,8 +475,9 @@ async function assertDurableReceiptMutationFailsClosed({
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
 }
 
-function makeDocxImportTransactionAuthority(overrides = {}) {
+function makeDocxImportTransactionAuthority(overrides = {}, options = {}) {
   const calls = [];
+  const readCalls = [];
   const result = {
     revision: 'ignored-revision',
     fencingGeneration: 7,
@@ -485,13 +486,65 @@ function makeDocxImportTransactionAuthority(overrides = {}) {
     durablePublication: true,
     ...overrides,
   };
-  return {
+  let committedAuthority = null;
+  const authority = {
     calls,
+    readCalls,
     async commitManifestText(payload) {
       calls.push(cloneJsonSafe(payload));
+      committedAuthority = {
+        revision: String(result.fencingGeneration),
+        fencingGeneration: result.fencingGeneration,
+        nextHash: result.nextHash,
+        previousHash: result.previousHash,
+        durablePublication: result.durablePublication,
+      };
       return { ...result };
     },
   };
+  if (options.exposeReadback !== false) {
+    authority.readManifestAuthorityForImport = async (payload) => {
+      readCalls.push(cloneJsonSafe(payload));
+      if (typeof options.readback === 'function') {
+        return options.readback(cloneJsonSafe(payload), cloneJsonSafe(committedAuthority));
+      }
+      if (options.readback !== undefined) return cloneJsonSafe(options.readback);
+      return cloneJsonSafe(committedAuthority);
+    };
+  }
+  return authority;
+}
+
+async function assertTransactionAuthorityCoherentForgeryFailsClosed({
+  paragraphPrefix,
+  requestId,
+  mutate,
+  field = 'manifestAuthority',
+  failReason = 'trusted_manifest_authority_mismatch',
+}) {
+  const transactionAuthority = makeDocxImportTransactionAuthority();
+  const first = await runDocxImportCommandChain(
+    cleanDocxZip([`${paragraphPrefix} ${Date.now()}`]),
+    { transactionAuthority },
+  );
+  assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
+  const originalText = readOnlyCreatedScene(first.romanRoot);
+  const receipt = first.safeCreate.receipt;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+
+  mutateDurableReceipt(first.projectRoot, receipt.importOperationId, mutate);
+  const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId,
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.field, field);
+  assert.equal(duplicate.error.details.failReason, failReason);
+  assert.equal(transactionAuthority.readCalls.length, 1);
+  assert.equal(transactionAuthority.readCalls[0].projectId, 'docx-e2e-project');
+  assert.equal(transactionAuthority.readCalls[0].importOperationId, receipt.importOperationId);
+  assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
 }
 
 test('DOCX import e2e command chain: command ids remain live-dispatch wired', () => {
@@ -818,6 +871,150 @@ test('DOCX import e2e command chain: transaction manifest authority replay binds
   assert.equal(tampered.error.details.field, 'transactionEvidence.lease');
   assert.equal(tampered.error.details.failReason, 'transaction_lease_mismatch');
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
+});
+
+test('DOCX import e2e command chain: coherent replay forgery of manifest next hash fails trusted readback', async () => {
+  await assertTransactionAuthorityCoherentForgeryFailsClosed({
+    paragraphPrefix: 'Coherent next hash',
+    requestId: 'request-coherent-next-hash-forgery',
+    mutate: (receipt) => {
+      const forgedHash = 'c'.repeat(64);
+      return {
+        ...receipt,
+        manifestAuthority: {
+          ...receipt.manifestAuthority,
+          nextHash: forgedHash,
+        },
+        transactionEvidence: {
+          ...receipt.transactionEvidence,
+          manifestHash: forgedHash,
+        },
+      };
+    },
+  });
+});
+
+test('DOCX import e2e command chain: coherent replay forgery of revision and lease fails trusted readback', async () => {
+  await assertTransactionAuthorityCoherentForgeryFailsClosed({
+    paragraphPrefix: 'Coherent revision lease',
+    requestId: 'request-coherent-revision-lease-forgery',
+    mutate: (receipt) => ({
+      ...receipt,
+      manifestAuthority: {
+        ...receipt.manifestAuthority,
+        revision: '8',
+        fencingGeneration: 8,
+      },
+      transactionEvidence: {
+        ...receipt.transactionEvidence,
+        lease: { fencingGeneration: 8 },
+      },
+    }),
+  });
+});
+
+test('DOCX import e2e command chain: coherent replay forgery of previous hash fails trusted readback', async () => {
+  await assertTransactionAuthorityCoherentForgeryFailsClosed({
+    paragraphPrefix: 'Coherent previous hash',
+    requestId: 'request-coherent-previous-hash-forgery',
+    mutate: (receipt) => ({
+      ...receipt,
+      manifestAuthority: {
+        ...receipt.manifestAuthority,
+        previousHash: 'd'.repeat(64),
+      },
+    }),
+  });
+});
+
+test('DOCX import e2e command chain: coherent replay forgery of durable publication fails trusted readback', async () => {
+  await assertTransactionAuthorityCoherentForgeryFailsClosed({
+    paragraphPrefix: 'Coherent durable publication',
+    requestId: 'request-coherent-durable-publication-forgery',
+    mutate: (receipt) => ({
+      ...receipt,
+      manifestAuthority: {
+        ...receipt.manifestAuthority,
+        durablePublication: false,
+      },
+    }),
+  });
+});
+
+test('DOCX import e2e command chain: coherent replay forgery of batch evidence is not returned as authority', async () => {
+  const transactionAuthority = makeDocxImportTransactionAuthority();
+  const first = await runDocxImportCommandChain(
+    cleanDocxZip([`Coherent batch evidence ${Date.now()}`]),
+    { transactionAuthority },
+  );
+  assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
+  const originalText = readOnlyCreatedScene(first.romanRoot);
+  const receipt = first.safeCreate.receipt;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const forgedBatchId = 'flow-batch-999999999999-deadbeef';
+
+  mutateDurableReceipt(first.projectRoot, receipt.importOperationId, (storedReceipt) => ({
+    ...storedReceipt,
+    batchId: forgedBatchId,
+    transactionEvidence: {
+      ...storedReceipt.transactionEvidence,
+      batchManifestHash: sha256Text(forgedBatchId),
+    },
+  }));
+  const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId: 'request-coherent-batch-evidence-forgery',
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+
+  assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
+  assert.equal(duplicate.created, false);
+  assert.equal(transactionAuthority.readCalls.length, 1);
+  assert.equal(duplicate.receipt.batchId, undefined);
+  assert.equal(duplicate.receipt.transactionEvidence.batchManifestHash, undefined);
+  assert.equal(
+    duplicate.receipt.batchEvidenceAuthority,
+    'NOT_RETURNED_ON_IDEMPOTENT_REPLAY_WITHOUT_TRUSTED_BATCH_READBACK',
+  );
+  assert.deepEqual(duplicate.receipt.manifestAuthority, receipt.manifestAuthority);
+  assert.deepEqual(duplicate.receipt.transactionEvidence.lease, receipt.transactionEvidence.lease);
+  assert.equal(
+    duplicate.receipt.transactionEvidence.manifestHash,
+    receipt.transactionEvidence.manifestHash,
+  );
+  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
+  assertNoPublicAuthorityLeak(duplicate);
+});
+
+test('DOCX import e2e command chain: transaction replay without trusted readback strips stored authority fields', async () => {
+  const transactionAuthority = makeDocxImportTransactionAuthority({}, { exposeReadback: false });
+  const first = await runDocxImportCommandChain(
+    cleanDocxZip([`No readback replay ${Date.now()}`]),
+    { transactionAuthority },
+  );
+  assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
+  const originalText = readOnlyCreatedScene(first.romanRoot);
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+
+  const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId: 'request-transaction-authority-replay-without-readback',
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+
+  assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
+  assert.equal(duplicate.created, false);
+  assert.equal(duplicate.receipt.batchId, undefined);
+  assert.equal(duplicate.receipt.manifestAuthority, undefined);
+  assert.equal(duplicate.receipt.transactionEvidence, undefined);
+  assert.deepEqual(duplicate.receipt.replayAuthority, {
+    schemaVersion: 'revision-bridge.docx-import-safe-create-replay-authority.v1',
+    status: 'NON_AUTHORITATIVE',
+    reason: 'TRUSTED_TRANSACTION_READBACK_UNAVAILABLE',
+  });
+  assert.equal(transactionAuthority.readCalls.length, 0);
+  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
+  assertNoPublicAuthorityLeak(duplicate);
 });
 
 test('DOCX import e2e command chain: idempotent receipt fails closed on malformed durable receipt json', async () => {

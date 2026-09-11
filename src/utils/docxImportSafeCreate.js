@@ -871,6 +871,107 @@ function validateDocxImportManifestAuthority(manifestAuthority, importOperationI
   return { ok: true };
 }
 
+function isAlgorithmicDocxImportManifestAuthority(manifestAuthority) {
+  return isPlainObject(manifestAuthority) && manifestAuthority.algorithmic === true;
+}
+
+function coerceTrustedDocxImportManifestAuthority(value) {
+  if (isPlainObject(value) && isPlainObject(value.manifestAuthority)) {
+    return value.manifestAuthority;
+  }
+  return value;
+}
+
+function buildNonAuthoritativeReplayReceipt(receipt, reason) {
+  const replayReceipt = cloneJsonSafe(receipt);
+  delete replayReceipt.batchId;
+  delete replayReceipt.manifestAuthority;
+  delete replayReceipt.transactionEvidence;
+  replayReceipt.replayAuthority = {
+    schemaVersion: 'revision-bridge.docx-import-safe-create-replay-authority.v1',
+    status: 'NON_AUTHORITATIVE',
+    reason,
+  };
+  return replayReceipt;
+}
+
+function buildTrustedManifestReplayReceipt(receipt) {
+  const replayReceipt = cloneJsonSafe(receipt);
+  delete replayReceipt.batchId;
+  if (isPlainObject(replayReceipt.transactionEvidence)) {
+    replayReceipt.transactionEvidence = {
+      lease: cloneJsonSafe(replayReceipt.transactionEvidence.lease),
+      manifestHash: replayReceipt.transactionEvidence.manifestHash,
+    };
+  }
+  replayReceipt.batchEvidenceAuthority = 'NOT_RETURNED_ON_IDEMPOTENT_REPLAY_WITHOUT_TRUSTED_BATCH_READBACK';
+  return replayReceipt;
+}
+
+async function validateDocxImportTrustedReplayAuthority({
+  transactionAuthority,
+  receipt,
+  importOperationId,
+  projectId,
+}) {
+  if (isAlgorithmicDocxImportManifestAuthority(receipt.manifestAuthority)) {
+    return { ok: true, receipt };
+  }
+
+  if (
+    !transactionAuthority
+    || typeof transactionAuthority.readManifestAuthorityForImport !== 'function'
+  ) {
+    return {
+      ok: true,
+      receipt: buildNonAuthoritativeReplayReceipt(
+        receipt,
+        'TRUSTED_TRANSACTION_READBACK_UNAVAILABLE',
+      ),
+    };
+  }
+
+  let trustedReadback = null;
+  try {
+    trustedReadback = await transactionAuthority.readManifestAuthorityForImport({
+      projectId,
+      importOperationId,
+    });
+  } catch {
+    return {
+      ok: false,
+      field: 'manifestAuthority',
+      failReason: 'trusted_manifest_authority_read_failed',
+    };
+  }
+
+  const trustedManifestAuthority = coerceTrustedDocxImportManifestAuthority(trustedReadback);
+  const trustedValidation = validateDocxImportManifestAuthority(
+    trustedManifestAuthority,
+    importOperationId,
+  );
+  if (!trustedValidation.ok) {
+    return {
+      ok: false,
+      field: trustedValidation.field,
+      failReason: `trusted_${trustedValidation.failReason}`,
+      expected: trustedValidation.expected || '',
+    };
+  }
+  if (!jsonStableEqual(receipt.manifestAuthority, trustedManifestAuthority)) {
+    return {
+      ok: false,
+      field: 'manifestAuthority',
+      failReason: 'trusted_manifest_authority_mismatch',
+    };
+  }
+
+  return {
+    ok: true,
+    receipt: buildTrustedManifestReplayReceipt(receipt),
+  };
+}
+
 async function validateExistingDocxImportReceipt(options) {
   const {
     receipt,
@@ -881,6 +982,7 @@ async function validateExistingDocxImportReceipt(options) {
     targetPath,
     importOperationId,
     projectId,
+    transactionAuthority,
   } = options;
   const entry = validated.value.entry;
   const fail = (field, failReason, expected = '') => buildIdempotentReceiptIntegrityError(
@@ -1049,7 +1151,21 @@ async function validateExistingDocxImportReceipt(options) {
     return fail('atomicEvidence', 'atomic_evidence_mismatch');
   }
 
-  return { ok: true, receipt };
+  const trustedReplayAuthorityValidation = await validateDocxImportTrustedReplayAuthority({
+    transactionAuthority,
+    receipt,
+    importOperationId,
+    projectId,
+  });
+  if (!trustedReplayAuthorityValidation.ok) {
+    return fail(
+      trustedReplayAuthorityValidation.field,
+      trustedReplayAuthorityValidation.failReason,
+      trustedReplayAuthorityValidation.expected || '',
+    );
+  }
+
+  return { ok: true, receipt: trustedReplayAuthorityValidation.receipt };
 }
 
 async function applyDocxImportSafeCreate(input = {}, options = {}) {
@@ -1091,6 +1207,10 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       'docx_import_safe_create_scene_path_forbidden',
     );
   }
+  const transactionAuthority = typeof options.transactionAuthority === 'object'
+    && options.transactionAuthority !== null
+    ? options.transactionAuthority
+    : null;
 
   // GENERIC-01 (G2/G4): idempotent lookup. If a durable receipt already exists
   // for this importOperationId, accept it only after re-reading the created
@@ -1107,6 +1227,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       targetPath,
       importOperationId,
       projectId,
+      transactionAuthority,
     });
     if (!receiptValidation.ok) return receiptValidation;
     return {
@@ -1161,11 +1282,6 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   // transactionAuthority port is wired) commits in the same scope. Without a
   // transactionAuthority port (unit-test direct calls), the manifest evidence
   // is algorithmic (donor pattern) so the atomic invariant is still observable.
-  const transactionAuthority = typeof options.transactionAuthority === 'object'
-    && options.transactionAuthority !== null
-    ? options.transactionAuthority
-    : null;
-
   let writeResult = null;
   let manifestEvidence = null;
   try {
