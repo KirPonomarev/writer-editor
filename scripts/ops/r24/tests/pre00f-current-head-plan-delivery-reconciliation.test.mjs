@@ -6,6 +6,10 @@ import {
   PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION,
   verifyPre00fCurrentHeadPlanDeliveryReconciliation,
 } from '../corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
+import {
+  R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION,
+  verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException,
+} from '../corrective/post-audit-certification-set.mjs';
 
 const objectFromCommit=(sha,repoPath)=>execFileSync('git',['show',`${sha}:${repoPath}`],{maxBuffer:64*1024*1024});
 function resolveFixtureCandidateSha(){
@@ -98,4 +102,25 @@ test('PRE00F current-head plan delivery reconciliation rejects a stale evidence 
   evidence.headSha='0'.repeat(40);
   const fixture=currentHeadFixture({evidenceBytes:canonicalBytes(evidence)});
   assert.throws(()=>verifyPre00fCurrentHeadPlanDeliveryReconciliation({candidateSha:fixture.candidateSha,git:fixture.git}),/E_PRE00F_CURRENT_EVIDENCE_HEAD_BINDING/);
+});
+
+test('RCV00B successor verifier accepts exact current head and reports later contours separately',()=>{
+  const result=verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:'HEAD'});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_RCV00B_SUCCESSOR_ADMISSION_REGISTRY_EXPECTATION.baseSha);
+  assert.equal(result.predecessorAdmittedPathDenominator,19);
+  assert.equal(result.admittedPathDenominator,12);
+  assert(result.changedPathDenominator<result.admittedPathDenominator);
+  assert(result.laterContourPathDenominator>0);
+  assert(result.laterContourPaths.includes('docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json'));
+  assert(result.laterContourPaths.includes('scripts/ops/r24/corrective/post-audit-certification-set.mjs'));
+  assert(result.laterContourPaths.includes('src/export/docx/docxMinBuilder.js'));
+});
+
+test('RCV00B successor verifier treats the exact current SHA as current head evidence',()=>{
+  const headSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  const result=verifyR24Rcv00bSuccessorAdmissionsPostEvaluationException({candidateSha:headSha});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.candidateSha,headSha);
+  assert(result.laterContourPathDenominator>0);
 });
