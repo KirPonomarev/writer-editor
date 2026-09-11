@@ -34,6 +34,7 @@ export const RCV00B_CURRENT_HEAD_PATHS = Object.freeze({
   compiler: 'scripts/ops/r24/effective-state-compiler.mjs',
   executableProgram: 'scripts/ops/r24/executable-program.mjs',
   scheduler: 'scripts/ops/r24/scheduler.mjs',
+  currentCompilerTest: 'scripts/ops/r24/tests/effective-state-compiler.test.mjs',
   claimLint: 'scripts/ops/r24/docs-claim-lint.mjs',
   verifier: 'scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs',
   historicalContractTest: 'test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs',
@@ -48,6 +49,9 @@ export const RCV00B_CURRENT_HEAD_ADMITTED_PATHS = Object.freeze([
   RCV00B_CURRENT_HEAD_PATHS.inventory,
   RCV00B_CURRENT_HEAD_PATHS.status,
   RCV00B_CURRENT_HEAD_PATHS.evidence,
+  RCV00B_CURRENT_HEAD_PATHS.compiler,
+  RCV00B_CURRENT_HEAD_PATHS.executableProgram,
+  RCV00B_CURRENT_HEAD_PATHS.currentCompilerTest,
   RCV00B_CURRENT_HEAD_PATHS.verifier,
   RCV00B_CURRENT_HEAD_PATHS.claimLint,
   RCV00B_CURRENT_HEAD_PATHS.claimLintTest,
@@ -231,6 +235,7 @@ export function buildRcv00bCurrentHeadEvidence(repoRoot = REPO_ROOT) {
     p.compiler,
     p.executableProgram,
     p.scheduler,
+    p.currentCompilerTest,
     p.claimLint,
     p.claimLintTest,
     p.verifier,
@@ -329,7 +334,7 @@ export function writeRcv00bCurrentHeadGovernanceApprovals(repoRoot = REPO_ROOT) 
       sha256: sha256(readBytes(repoRoot, filePath)),
       approvedBy: RCV00B_CURRENT_HEAD_APPROVED_BY,
       approvedAtUtc: RCV00B_CURRENT_HEAD_APPROVED_AT_UTC,
-      rationale: 'Bounded R24-RCV-00B current-head effective-state compiler evidence from exact origin/main e9aa4e3f; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.',
+      rationale: 'Bounded R24-RCV-00B current-head effective-state compiler evidence and public entrypoint parity repair; binds the derived projection and selector receipt with NO_ELIGIBLE_NODE without product runtime, dependency, network, UI, release-readiness, PROGRAM DONE, PRE00E/PRE00F redelivery, or historical RCV00B 19-path admission widening.',
       approved: true,
       authority: 'OWNER_APPROVED_R24_RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_SCOPE',
       evidenceStampIds: [RCV00B_CURRENT_HEAD_EVIDENCE_STAMP_ID],
@@ -462,7 +467,7 @@ export function verifyRcv00bCurrentHeadEffectiveStateCompiler({ candidateSha = '
   assert(claimBindingMap.get(p.status)?.sha256 === status.digest, 'E_RCV00B_CURRENT_STATUS_BINDING_DIGEST');
   assert(claimBindingMap.get(p.inventory)?.sha256 === h(objectBytes(git, deliveryCandidate, p.inventory)), 'E_RCV00B_CURRENT_INVENTORY_BINDING_DIGEST');
   const implementationDigestMap = new Map((evidence.value.implementationArtifactDigests ?? []).map((entry) => [entry.path, entry]));
-  for (const relative of [p.inventory, p.historicalEvidence, p.successorRegistry, p.compiler, p.executableProgram, p.scheduler, p.claimLint, p.claimLintTest, p.verifier, p.historicalContractTest, p.contractTest, p.postAuditVerifier, p.postAuditTest]) {
+  for (const relative of [p.inventory, p.historicalEvidence, p.successorRegistry, p.compiler, p.executableProgram, p.scheduler, p.currentCompilerTest, p.claimLint, p.claimLintTest, p.verifier, p.historicalContractTest, p.contractTest, p.postAuditVerifier, p.postAuditTest]) {
     const artifact = implementationDigestMap.get(relative);
     assert(artifact?.sha256 === h(objectBytes(git, deliveryCandidate, relative)), 'E_RCV00B_CURRENT_IMPLEMENTATION_DIGEST', relative);
   }

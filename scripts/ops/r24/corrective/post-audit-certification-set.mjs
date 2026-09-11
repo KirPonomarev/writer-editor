@@ -5048,14 +5048,33 @@ export function verifyR24Rcv00hMinimalE0ParserPurityPostEvaluationException({can
 }
 
 function resolveR24W0CurrentStateClosureCandidateSha(git,resolvedCandidate,e){
-  const isExact=(sha)=>{
-    const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
-    return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+  const hasExactDelta=(sha)=>{
+    try{
+      const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+      return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+    }catch{
+      return false;
+    }
   };
-  if(isExact(resolvedCandidate))return resolvedCandidate;
+  const hasSelfConsistentImplementationClaim=(sha)=>{
+    try{
+      const claim=JSON.parse(objectBytes(git,sha,e.claimBindingPath).toString('utf8'));
+      const implementationDigests=new Map((claim.implementationArtifactDigests??[]).map((entry)=>[entry.path,entry.sha256]));
+      for(const relative of [e.executableProgramPath,e.executableProgramTestPath,e.effectiveStateCompilerTestPath,e.contractTestPath,e.postAuditVerifierPath,e.postAuditTestPath]){
+        if(implementationDigests.get(relative)!==h(objectBytes(git,sha,relative)))return false;
+      }
+      return true;
+    }catch{
+      return false;
+    }
+  };
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_W0_CURRENT_STATE_CANDIDATE_SEARCH');}
-  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
+  const exactCandidates=[...new Set([resolvedCandidate,...candidates].filter(hasExactDelta))];
+  if(exactCandidates.includes(resolvedCandidate)&&hasSelfConsistentImplementationClaim(resolvedCandidate))return resolvedCandidate;
+  for(const sha of [...exactCandidates].reverse())if(hasSelfConsistentImplementationClaim(sha))return sha;
+  if(exactCandidates.includes(resolvedCandidate))return resolvedCandidate;
+  if(exactCandidates.length)return exactCandidates.at(-1);
   fail('E_R24_W0_CURRENT_STATE_CANDIDATE_NOT_FOUND');
 }
 

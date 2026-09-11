@@ -63,6 +63,7 @@ function currentHeadFixture({
     [e.paths.compiler, fileBytes(e.paths.compiler)],
     [e.paths.executableProgram, fileBytes(e.paths.executableProgram)],
     [e.paths.scheduler, fileBytes(e.paths.scheduler)],
+    [e.paths.currentCompilerTest, fileBytes(e.paths.currentCompilerTest)],
     [e.paths.claimLint, fileBytes(e.paths.claimLint)],
     [e.paths.claimLintTest, fileBytes(e.paths.claimLintTest)],
     [e.paths.verifier, fileBytes(e.paths.verifier)],
