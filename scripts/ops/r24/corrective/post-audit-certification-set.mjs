@@ -4503,6 +4503,114 @@ export function verifyR24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationExceptio
   return{schemaVersion:'R24_RCV00C_CORRECTIVE_REGISTER_CROSSWALK_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDenominator:inventory.value.totals.all,registerDigest:register.digest,evidenceDigest:evidence.digest,approvalsDigest:approvals.digest,findingDenominator:registerResult.findingCount,currentObservationDenominator:registerResult.currentObservationCount,activeConfirmed:registerResult.activeConfirmed,activeConfirmedCurrentObservations:registerResult.activeConfirmedCurrentObservations,recordedGraphOpen:registerResult.recordedGraphOpen,programDone:false,productionReleaseReady:false,graphIncrement:0};
 }
 
+export const RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION = Object.freeze({
+  baseSha: '7beb60f4b5d8a8e83f9029efbd6cfbd729b1ae6f',
+  baseTree: '19f7f7609e684c2e71672a4a1675783903254529',
+  repairSha: 'ae9196d1167b8ccdb455e4bda8992d996d53fbbf',
+  repairTree: 'a6f9e86e76287a42f8cd25e162d8dc4fb136622a',
+  taskId: 'R24_RCV00D_CURRENT_IDENTITY_BINDING_20260911',
+  stampId: 'ES-R24-RCV00D-CURRENT-IDENTITY-BINDING',
+  approvedBy: 'OWNER_APPROVED_R24_RCV00D_CURRENT_IDENTITY_BINDING_2026_09_11',
+  selectorPath: 'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs',
+  selectorTestPath: 'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  verifierTestPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+  statusPath: 'docs/OPS/R24/CORRECTIVE/RCV00D_CURRENT_IDENTITY_BINDING_STATUS_V1.json',
+  evidencePath: 'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-CURRENT-IDENTITY-BINDING.json',
+  historicalReceiptPath: 'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT.json',
+  admittedPaths: Object.freeze([
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/RCV00D_CURRENT_IDENTITY_BINDING_STATUS_V1.json',
+    'docs/OPS/R24/EVIDENCE/ES-R24-RCV00D-CURRENT-IDENTITY-BINDING.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
+  ].sort()),
+});
+
+export function verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  const same = (left, right) => left !== undefined && right !== undefined && canonicalBytes(left).equals(canonicalBytes(right));
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_RCVID_BASE_TREE');
+  assert(evaluationTree(git, e.repairSha) === e.repairTree, 'E_RCVID_REPAIR_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_RCVID_BASE_NOT_ANCESTOR'); }
+  try { git(['merge-base', '--is-ancestor', e.repairSha, requested], { encoding: null }); } catch { fail('E_RCVID_REPAIR_NOT_ANCESTOR'); }
+  const delta = (sha) => gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+  let resolved = requested;
+  if (!same(delta(resolved), e.admittedPaths)) {
+    const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.repairSha}..${requested}`]).split('\n').filter(Boolean);
+    resolved = ancestors.reverse().find((sha) => same(delta(sha), e.admittedPaths));
+    assert(resolved, 'E_RCVID_EXACT_ADMITTED_DELTA');
+  }
+  const changed = delta(resolved);
+  assert(same(changed, e.admittedPaths), 'E_RCVID_EXACT_ADMITTED_DELTA');
+  const bytes = (file, sha = resolved) => {
+    try { return objectBytes(git, sha, file); } catch { fail('E_RCVID_ARTIFACT_MISSING', file); }
+  };
+  const json = (file, sha = resolved) => JSON.parse(bytes(file, sha));
+  const codePaths = [e.selectorPath, e.selectorTestPath, e.verifierPath, e.verifierTestPath].sort();
+  for (const file of [e.selectorPath, e.selectorTestPath]) {
+    assert(h(bytes(file)) === h(bytes(file, e.repairSha)), 'E_RCVID_REPAIRED_BYTES', file);
+  }
+  assert(h(bytes(e.historicalReceiptPath)) === h(bytes(e.historicalReceiptPath, e.baseSha)), 'E_RCVID_HISTORICAL_BYTES');
+  const status = json(e.statusPath), evidence = json(e.evidencePath), inventory = json(e.inventoryPath), approvals = json(e.approvalsPath);
+  const primaryStatus = json(e.statusPath, e.repairSha);
+  const primaryEvidence = json(e.evidencePath, e.repairSha);
+  assert(status.schemaVersion === 'R24_RCV00D_CURRENT_IDENTITY_BINDING_STATUS_V1' && status.taskId === e.taskId, 'E_RCVID_STATUS_SHAPE');
+  assert(status.baseSha === e.baseSha && status.baseTree === e.baseTree, 'E_RCVID_STATUS_BASE');
+  assert(same(status.evaluationIdentity, primaryStatus.evaluationIdentity), 'E_RCVID_STATUS_HEAD');
+  assert(status.stageAdmissionAndLease === 'NOT_APPLICABLE_TO_NO_GRAPH_DIRECT_CORRECTIVE', 'E_RCVID_AUTHORITY_ROUTE');
+  assert(status.certificationSuccessor?.repairSha === e.repairSha && status.certificationSuccessor?.repairTree === e.repairTree && same(status.certificationSuccessor?.admittedPaths, e.admittedPaths), 'E_RCVID_STATUS_SCOPE');
+  assert(evidence.schemaVersion === 'ClaimBindingV1' && evidence.stampId === e.stampId && evidence.contourId === 'R24_RCV00D_CURRENT_IDENTITY_BINDING', 'E_RCVID_EVIDENCE_SHAPE');
+  assert(evidence.headSha === primaryEvidence.headSha && evidence.originMainSha === e.baseSha, 'E_RCVID_EVIDENCE_HEAD');
+  const assertBindings = (entries, field, paths, signal) => {
+    assert(Array.isArray(entries) && same(entries.map((entry) => entry[field]).sort(), paths), signal);
+    for (const entry of entries) assert(entry.sha256 === h(bytes(entry[field])), signal, entry[field]);
+  };
+  assertBindings(status.implementationArtifacts, 'path', codePaths, 'E_RCVID_STATUS_ARTIFACT_BINDING');
+  assertBindings(evidence.implementationArtifactDigests, 'path', codePaths, 'E_RCVID_EVIDENCE_ARTIFACT_BINDING');
+  assertBindings(evidence.claimBindings, 'filePath', [e.inventoryPath, e.statusPath].sort(), 'E_RCVID_CLAIM_DIGEST');
+  const expectedInventory = json(e.inventoryPath, e.baseSha);
+  for (const file of [e.selectorTestPath, e.verifierTestPath]) {
+    const entry = expectedInventory.entries.find((item) => item.path === file);
+    assert(entry?.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_RCVID_BASE_INVENTORY');
+    entry.sha256 = h(bytes(file));
+  }
+  assert(same(inventory, expectedInventory), 'E_RCVID_INVENTORY_DELTA');
+  // Primary claims remain immutable; successor bindings do not create new execution claims.
+  const expectedStatus = structuredClone(primaryStatus);
+  expectedStatus.implementationArtifacts = codePaths.map((file) => ({ path: file, sha256: h(bytes(file)) }));
+  expectedStatus.programDone = false;
+  expectedStatus.productionReleaseReady = false;
+  expectedStatus.certificationSuccessor = {
+    repairSha: e.repairSha, repairTree: e.repairTree, admittedPaths: [...e.admittedPaths],
+    evaluationIdentity: { headSha: e.repairSha, originMainSha: e.baseSha, treeSha: e.repairTree },
+    predecessorGateFailure: primaryStatus.openDeliveryFinding,
+  };
+  delete expectedStatus.openDeliveryFinding;
+  assert(same(status, expectedStatus), 'E_RCVID_STATUS_SEMANTICS');
+  const expectedEvidence = structuredClone(primaryEvidence);
+  expectedEvidence.implementationArtifactDigests = codePaths.map((file) => ({
+    ...(primaryEvidence.implementationArtifactDigests.find((entry) => entry.path === file) ?? { path: file, terms: ['CERTIFICATION_SUCCESSOR_CANDIDATE_BYTES_NOT_EXECUTION_PROOF'] }),
+    sha256: h(bytes(file)),
+  }));
+  expectedEvidence.claimBindings = primaryEvidence.claimBindings.map((entry) => ({ ...entry, sha256: h(bytes(entry.filePath)) }));
+  assert(same(evidence, expectedEvidence), 'E_RCVID_EVIDENCE_SEMANTICS');
+  const baseApprovals = json(e.approvalsPath, e.baseSha);
+  assert(approvals.version === baseApprovals.version && Array.isArray(approvals.approvals), 'E_RCVID_APPROVAL_SHAPE');
+  const own = approvals.approvals.filter((entry) => entry.approvedBy === e.approvedBy);
+  const preserved = { ...approvals, approvals: approvals.approvals.filter((entry) => entry.approvedBy !== e.approvedBy) };
+  assert(same(preserved, baseApprovals), 'E_RCVID_APPROVAL_HISTORY');
+  assertBindings(own, 'filePath', e.admittedPaths.filter((file) => file !== e.approvalsPath), 'E_RCVID_APPROVAL_BINDING');
+  for (const entry of own) assert(entry.approved === true && entry.evidenceStampIds?.includes(e.stampId), 'E_RCVID_APPROVAL_AUTHORITY', entry.filePath);
+  return { schemaVersion: 'RCV00D_CURRENT_IDENTITY_BINDING_POST_EVALUATION_EXCEPTION_V1', status: 'PASS', baseSha: e.baseSha, baseTree: e.baseTree, repairSha: e.repairSha, candidateSha: resolved, candidateTree: evaluationTree(git, resolved), currentCandidateSha: requested, admittedPaths: [...e.admittedPaths], changedPaths: changed, admittedPathDenominator: e.admittedPaths.length, changedPathDenominator: changed.length, statusDigest: h(bytes(e.statusPath)), evidenceDigest: h(bytes(e.evidencePath)), scope: 'EXACT_DIRECT_CORRECTIVE_ARTIFACT_BINDINGS_NOT_TEST_EXECUTION_OR_MUTATION_AUTHORITY', programDone: false, productionReleaseReady: false, graphIncrement: 0 };
+}
+
 export function verifyR24Rcv00dGraphDerivedSelectorPostEvaluationException({candidateSha='HEAD',git=defaultGit}={}){
   const e=R24_RCV00D_GRAPH_DERIVED_SELECTOR_EXPECTATION,resolvedCandidate=gitText(git,['rev-parse',candidateSha]);
   assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_RCV00D_BASE_TREE_DRIFT');
@@ -6191,12 +6299,19 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const r24W0CurrentStateClosureException=r24W0CurrentStateClosureEnabled?verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(pre00fCurrentHeadPlanDeliveryReconciliationException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(rcv00aCurrentHeadExactToolchainEntryPointException?.admittedPaths??[]),...(rcv00bCurrentHeadEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24EmbeddedFontAdmissionException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[]),...(r24Rcv00hMinimalE0ParserPurityException?.admittedPaths??[]),...(r24W0CurrentStateClosureException?.admittedPaths??[])]);
   for(const admittedPath of (r24Interop100U000cPagebreakReexportException?.admittedPaths??[]))allowedPaths.add(admittedPath);
+  let rcv00dCurrentIdentityBindingEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.repairSha) {
+    try { git(['merge-base', '--is-ancestor', RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.repairSha, resolvedCandidate], { encoding: null }); rcv00dCurrentIdentityBindingEnabled = true; } catch {}
+  }
+  const rcv00dCurrentIdentityBindingException = rcv00dCurrentIdentityBindingEnabled ? verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (rcv00dCurrentIdentityBindingException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
   assert(value.requiredOrUnexplainedSkips===0&&value.programDone===false&&value.mainProductGraphNodeStarted===false,'E_TERMINAL_SCOPE');
   const verificationResult={schemaVersion:'POST_AUDIT_CERTIFICATION_SET_VERIFICATION_V1',status:'PASS',certificationSetDigest:fileDigest,evaluationSha:value.evaluationSha,evaluationTreeSha:value.evaluationTreeSha,stageCount:value.stageCount,artifactBindingDenominator:denominator,postEvaluationChangedPaths:changed,auditCycle2PostEvaluationException:cycle2Exception,wp401MainProductPostEvaluationException:wp401Exception,wp402MainProductPostEvaluationException:wp402Exception,wp403MainProductPostEvaluationException:wp403Exception,wp404MainProductPostEvaluationException:wp404Exception,wp500MainProductPostEvaluationException:wp500Exception,wp501MainProductPostEvaluationException:wp501Exception,wp501GateIntegrationPostEvaluationException:wp501GateException,wp501PerformanceIntegrationPostEvaluationException:wp501PerformanceException,wp501AuditR2CompatibilityPostEvaluationException:wp501AuditR2Exception,wp501InventoryFinalizationPostEvaluationException:wp501InventoryException,wp501TerminalExceptionPostEvaluationException:wp501TerminalException,wp502MainProductPostEvaluationException:wp502Exception,wp503MainProductPostEvaluationException:wp503Exception,wp504MainProductPostEvaluationException:wp504Exception,wp505MainProductPostEvaluationException:wp505Exception,wp506MainProductPostEvaluationException:wp506Exception,wp700MainProductPostEvaluationException:wp700Exception,wp700CiRepairPostEvaluationException:wp700CiRepairException,wp700CiRepairInventorySuccessor:wp700CiInventoryException,wp700CiRepairTemporalSuccessor:wp700CiTemporalException,wp507MainProductPostEvaluationException:wp507Exception,wp701MainProductPostEvaluationException:wp701Exception,wp702MainProductPostEvaluationException:wp702Exception,wp702CiCompatibilityPostEvaluationException:wp702CiCompatibilityException,wp702TestInventoryPostEvaluationException:wp702TestInventoryException,wp702EvidenceStampPostEvaluationException:wp702EvidenceStampException,wp702DependencyAuditPostEvaluationException:wp702DependencyAuditException,wp702Release01RebindPostEvaluationException:wp702Release01RebindException,wp702RendererBundleRebindPostEvaluationException:wp702RendererBundleRebindException,wp702Pk0SecurityPostEvaluationException:wp702Pk0SecurityException,wp702Pk0InventoryRefreshPostEvaluationException:wp702Pk0InventoryRefreshException,wp702CiMergeRefTestBindingPostEvaluationException:wp702CiMergeRefTestBindingException,wp702Wp504HistoricalSurfacePostEvaluationException:wp702Wp504HistoricalSurfaceException,wp600MainProductPostEvaluationException:wp600Exception,wp703MainProductPostEvaluationException:wp703Exception,wp601MainProductPostEvaluationException:wp601Exception,wp601HistoricalInventoryPostEvaluationException:wp601HistoricalException,wp601HistoricalInventoryAnchorRepairPostEvaluationException:wp601AnchorRepairException,wp704MainProductPostEvaluationException:wp704Exception,wp704EnvironmentRegistrationPostEvaluationException:wp704EnvException,wp705MainProductPostEvaluationException:wp705Exception,wp705HistoricalInventoryPostEvaluationException:wp705HistoricalException,wp602MainProductPostEvaluationException:wp602Exception,p01AdmissionPreparationPostEvaluationException:p01Exception,p03ContextRestorationPostEvaluationException:p03Exception,wp603MainProductPostEvaluationException:wp603Exception,wp604MainProductPostEvaluationException:wp604Exception,wp605MainProductPostEvaluationException:wp605Exception,wp710MainProductPostEvaluationException:wp710Exception,wp606MainProductPostEvaluationException:wp606Exception,wp607MainProductPostEvaluationException:wp607Exception,wp800MainProductPostEvaluationException:wp800Exception,wp801MainProductPostEvaluationException:wp801Exception,wp802MainProductPostEvaluationException:wp802Exception,wp803MainProductPostEvaluationException:wp803Exception,wp804MainProductPostEvaluationException:wp804Exception,wp805MainProductPostEvaluationException:wp805Exception,wp806MainProductPostEvaluationException:wp806Exception,wp708MainProductPostEvaluationException:wp708Exception,wp706MainProductPostEvaluationException:wp706Exception,wp707MainProductPostEvaluationException:wp707Exception,wp709MainProductPostEvaluationException:wp709Exception,pk1r1MainProductPostEvaluationException:pk1r1Exception,pre00bLifecycleReconciliationPostEvaluationException:pre00bException,pre00cNextContourSelectionPostEvaluationException:pre00cException,pre00cClosedStageCandidateVerifierRepairPostEvaluationException:pre00cClosedStageCandidateVerifierRepairException,pre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException:pre00dFreshSuccessorAdmissionLeaseHandoffException,pre00eRecoveryCiExternalConfirmationPostEvaluationException:pre00eRecoveryCiExternalConfirmationException,pre00fPlanDeliveryPostEvaluationException:pre00fPlanDeliveryException,pre00fCurrentHeadPlanDeliveryReconciliationPostEvaluationException:pre00fCurrentHeadPlanDeliveryReconciliationException,r24Rcv00aExactToolchainEntryPointPostEvaluationException:r24Rcv00aExactToolchainEntryPointException,r24Rcv00bEffectiveStateCompilerPostEvaluationException:r24Rcv00bEffectiveStateCompilerException,r24Rcv00bSuccessorAdmissionsPostEvaluationException:r24Rcv00bSuccessorAdmissionsException,r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException:r24Rcv00cCorrectiveRegisterCrosswalkException,r24DocxLinebreakSourceExportPostEvaluationException:r24DocxLinebreakSourceExportException,r24Rcv00dGraphDerivedSelectorPostEvaluationException:r24Rcv00dGraphDerivedSelectorException,r24Interop100GoogleDocxImportRoutePostEvaluationException:r24Interop100GoogleDocxImportRouteException,r24Interop100SafeDocxHyperlinkPreviewPostEvaluationException:r24Interop100SafeDocxHyperlinkPreviewException};
   verificationResult.r24Interop100U000cPagebreakReexportPostEvaluationException=r24Interop100U000cPagebreakReexportException;
+  verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException=rcv00aCurrentHeadExactToolchainEntryPointException;
   verificationResult.r24Rcv00bCurrentHeadEffectiveStateCompilerPostEvaluationException=rcv00bCurrentHeadEffectiveStateCompilerException;
   verificationResult.r24ObsExportDocxCommandBridgeOuterFailPostEvaluationException=r24ObsExportDocxCommandBridgeOuterFailException;
