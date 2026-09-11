@@ -268,8 +268,11 @@ test('DOCX content preview command surface: blocked and malformed reports do not
   const malformedXml = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip(
     '<w:p><w:r><w:t>Leaked</w:p></w:r>',
   )));
+  const invalidEntity = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip(
+    paragraphXml('A &bogus; B'),
+  )));
 
-  for (const result of [duplicate, malformedXml]) {
+  for (const result of [duplicate, malformedXml, invalidEntity]) {
     assert.equal(result.ok, true);
     assert.equal(result.previewOk, false);
     assert.equal(result.docxContentPreviewReport.ok, false);
@@ -281,6 +284,11 @@ test('DOCX content preview command surface: blocked and malformed reports do not
   assert.equal(duplicate.previewReason, 'STAGE02_DUPLICATE_ENTRY_NAME');
   assert.equal(malformedXml.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
   assert.equal(malformedXml.docxContentPreviewReport.parse.attempted, true);
+  assert.equal(invalidEntity.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(invalidEntity.docxContentPreviewReport.parse.attempted, true);
+  assert.equal(invalidEntity.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_ENTITY_INVALID'
+  )), true);
 });
 
 test('DOCX content preview command surface: malformed payloads fail as typed command errors', async () => {

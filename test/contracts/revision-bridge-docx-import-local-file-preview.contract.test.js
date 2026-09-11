@@ -292,6 +292,28 @@ test('DOCX local file preview adapter: malformed XML fails closed and does not b
   assertNoForbiddenPublicFields(result);
 });
 
+test('DOCX local file preview adapter: invalid XML text entities fail before import planning', async () => {
+  const result = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-invalid-entity' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'InvalidEntity.docx') }),
+      readLocalFileBytes: async () => cleanDocxZip(paragraphXml('A &bogus; B')),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.importPreviewOk, false);
+  assert.equal(result.docxContentPreviewReport.ok, false);
+  assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(result.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_ENTITY_INVALID'
+  )), true);
+  assert.equal(result.docxImportPreviewPlan, null);
+  assertNoForbiddenPublicFields(result);
+});
+
 test('DOCX local file preview adapter: unsupported extension and oversized bytes fail closed before preview helpers', async () => {
   let readCalls = 0;
   let loadCalls = 0;

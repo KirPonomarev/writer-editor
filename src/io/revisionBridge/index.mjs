@@ -7063,8 +7063,73 @@ function docxContentPreviewDecodeEntity(entity) {
   return `&${entity};`;
 }
 
+function docxContentPreviewIsValidXmlCharCode(codePoint) {
+  return (
+    codePoint === 0x09
+    || codePoint === 0x0a
+    || codePoint === 0x0d
+    || (codePoint >= 0x20 && codePoint <= 0xd7ff)
+    || (codePoint >= 0xe000 && codePoint <= 0xfffd)
+    || (codePoint >= 0x10000 && codePoint <= 0x10ffff)
+  );
+}
+
+function docxContentPreviewDecodeEntityStrict(entity) {
+  const named = {
+    amp: '&',
+    apos: "'",
+    gt: '>',
+    lt: '<',
+    quot: '"',
+  };
+  if (Object.prototype.hasOwnProperty.call(named, entity)) return { ok: true, value: named[entity] };
+  if (/^#x[0-9a-fA-F]+$/u.test(entity)) {
+    const value = Number.parseInt(entity.slice(2), 16);
+    return Number.isSafeInteger(value) && docxContentPreviewIsValidXmlCharCode(value)
+      ? { ok: true, value: String.fromCodePoint(value) }
+      : { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+  }
+  if (/^#[0-9]+$/u.test(entity)) {
+    const value = Number.parseInt(entity.slice(1), 10);
+    return Number.isSafeInteger(value) && docxContentPreviewIsValidXmlCharCode(value)
+      ? { ok: true, value: String.fromCodePoint(value) }
+      : { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+  }
+  return { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+}
+
+function docxContentPreviewDecodeTextStrict(text) {
+  const input = String(text || '');
+  if (input.includes(']]>')) return { ok: false, sourceCode: 'DOCX_XML_CDATA_CLOSING_SEQUENCE_IN_TEXT' };
+  let output = '';
+  let cursor = 0;
+  while (cursor < input.length) {
+    const amp = input.indexOf('&', cursor);
+    if (amp === -1) {
+      output += input.slice(cursor);
+      break;
+    }
+    output += input.slice(cursor, amp);
+    const end = input.indexOf(';', amp + 1);
+    if (end === -1) return { ok: false, sourceCode: 'DOCX_XML_ENTITY_UNTERMINATED' };
+    const entity = input.slice(amp + 1, end);
+    if (entity === '' || /[\s<>&]/u.test(entity)) {
+      return { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+    }
+    const decoded = docxContentPreviewDecodeEntityStrict(entity);
+    if (!decoded.ok) return decoded;
+    output += decoded.value;
+    cursor = end + 1;
+  }
+  return { ok: true, value: output };
+}
+
 function docxContentPreviewDecodeText(text) {
   return String(text).replace(/&([^;\s<>&]+);/gu, (_match, entity) => docxContentPreviewDecodeEntity(entity));
+}
+
+function docxContentPreviewIsValidXmlDeclaration(instruction) {
+  return /^xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(?:"1\.[0-9]+"|'1\.[0-9]+')(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(?:"[A-Za-z][A-Za-z0-9._-]*"|'[A-Za-z][A-Za-z0-9._-]*'))?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(?:"(?:yes|no)"|'(?:yes|no)'))?[ \t\r\n]*$/u.test(String(instruction || ''));
 }
 
 function docxContentPreviewTagName(token) {
@@ -7283,6 +7348,11 @@ function docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText) {
   while (cursor < text.length) {
     const open = text.indexOf('<', cursor);
     if (open === -1) break;
+    const characterData = text.slice(cursor, open);
+    const decodedCharacterData = docxContentPreviewDecodeTextStrict(characterData);
+    if (!decodedCharacterData.ok) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic(decodedCharacterData.sourceCode) };
+    }
     cursor = open;
     if (text.startsWith('<!--', open)) {
       const end = text.indexOf('-->', open + 4);
@@ -7300,12 +7370,19 @@ function docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText) {
       const instruction = text.slice(open + 2, end);
       const target = /^([A-Za-z_][\w.-]*)(?=[ \t\r\n]|$)/u.exec(instruction)?.[1];
       if (!target) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+      if (target.toLowerCase() === 'xml' && open !== 0) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_RESERVED_DECLARATION_POSITION') };
+      }
+      if (target.toLowerCase() === 'xml' && (target !== 'xml' || !docxContentPreviewIsValidXmlDeclaration(instruction))) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_MALFORMED') };
+      }
       cursor = end + 2;
       continue;
     }
     if (text.startsWith('<![CDATA[', open)) {
       const end = text.indexOf(']]>', open + 9);
       if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_CDATA_MALFORMED') };
+      if (stack.length === 0) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };
       cursor = end + 3;
       continue;
     }
@@ -7338,8 +7415,15 @@ function docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText) {
     if (!parsedTag.selfClosing) stack.push(parsedTag);
     cursor = close + 1;
   }
-  if (cursor !== text.length && text.slice(cursor).trim() !== '') {
-    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  if (cursor !== text.length) {
+    const trailingData = text.slice(cursor);
+    const decodedTrailingData = docxContentPreviewDecodeTextStrict(trailingData);
+    if (!decodedTrailingData.ok) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic(decodedTrailingData.sourceCode) };
+    }
+    if (trailingData.trim() !== '') {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+    }
   }
   if (stack.length > 0) {
     return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_UNCLOSED_TAG', stack[stack.length - 1].rawTagName) };
@@ -7793,6 +7877,26 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     }
 
     if (token.startsWith('<!--') || token.startsWith('<?')) continue;
+    if (token.startsWith('<![CDATA[')) {
+      if (elementStack.length === 0 && rootSeen) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };
+      }
+      if (unsupportedDepth === 0 && insideParagraph && textDepth > 0) {
+        const decoded = token.slice(9, -3);
+        paragraphText += decoded;
+        totalTextChars += decoded.length;
+        if (totalTextChars > DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars) {
+          return {
+            failure: docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_CODES.XML_PARSE_LIMIT_EXCEEDED, {
+              sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+              actual: totalTextChars,
+              limit: DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars,
+            }),
+          };
+        }
+      }
+      continue;
+    }
     if (token.startsWith('<!')) {
       if (elementStack.length === 0 && rootSeen) {
         return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };

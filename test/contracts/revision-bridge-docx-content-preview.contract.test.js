@@ -430,6 +430,124 @@ test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are
   )), true);
 });
 
+test('DOCX content preview: XML character data follows parser legality and preserves CDATA text', async (t) => {
+  const bridge = await loadBridge();
+  const assertMalformedNoWrite = (result) => {
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+    assert.equal(result.parse.attempted, true);
+    assert.equal(result.parse.completed, false);
+    assert.equal(result.contentPreview, null);
+    assert.equal(importPreview.ok, false);
+    assert.notEqual(importPreview.writeEffects, true);
+  };
+
+  const positives = [
+    ['valid-baseline', cleanDocxZip(paragraphXml('Alpha')), 'Alpha'],
+    [
+      'valid-xml-declaration',
+      rawStoredDocxZip(`<?xml version = "1.0" encoding = "UTF-8" standalone = "yes"?>${documentXml(paragraphXml('Alpha'))}`),
+      'Alpha',
+    ],
+    [
+      'valid-bom-xml-declaration',
+      rawStoredDocxZip(`\ufeff<?xml version="1.0"?>${documentXml(paragraphXml('Alpha'))}`),
+      'Alpha',
+    ],
+    [
+      'valid-generic-pi-before-root',
+      rawStoredDocxZip(`<?yalken-preview ok?>${documentXml(paragraphXml('Alpha'))}`),
+      'Alpha',
+    ],
+    [
+      'valid-generic-pi-inside-root',
+      rawStoredDocxZip(documentXml(`<?yalken-preview ok?>${paragraphXml('Alpha')}`)),
+      'Alpha',
+    ],
+    ['valid-gt-text', cleanDocxZip(paragraphXml('A > B')), 'A > B'],
+    [
+      'valid-predefined-entities',
+      cleanDocxZip(paragraphXml('A &amp; &lt; &gt; &quot; &apos; B')),
+      'A & < > " \' B',
+    ],
+    ['valid-numeric-entity', cleanDocxZip(paragraphXml('A &#65; &#x41; B')), 'A A A B'],
+    ['valid-numeric-whitespace', cleanDocxZip(paragraphXml('A &#x9;&#xA;&#xD; B')), 'A \t\n\r B', false],
+    [
+      'valid-numeric-xml-char-edges',
+      cleanDocxZip(paragraphXml('A &#x7F; &#xD7FF; &#xE000; &#xFDD0; &#xFFFD; &#x10000; B')),
+      `A ${String.fromCodePoint(0x7f)} ${String.fromCodePoint(0xd7ff)} ${String.fromCodePoint(0xe000)} ${String.fromCodePoint(0xfdd0)} ${String.fromCodePoint(0xfffd)} ${String.fromCodePoint(0x10000)} B`,
+    ],
+    ['valid-cdata', cleanDocxZip('<w:p><w:r><w:t>A <![CDATA[< & >]]> B</w:t></w:r></w:p>'), 'A < & > B'],
+    [
+      'valid-adjacent-cdata',
+      cleanDocxZip('<w:p><w:r><w:t>A<![CDATA[ <]]><![CDATA[&> ]]>&#66;</w:t></w:r></w:p>'),
+      'A <&> B',
+    ],
+  ];
+
+  for (const [name, bytes, expectedText, expectedImportOk = true] of positives) {
+    await t.test(name, () => {
+      const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+      assertContentPreviewShell(result);
+      assert.equal(result.ok, true);
+      assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+      assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [expectedText]);
+      assert.equal(importPreview.ok, expectedImportOk);
+      assert.notEqual(importPreview.writeEffects, true);
+    });
+  }
+
+  const negatives = [
+    ['unknown-entity-text', cleanDocxZip(paragraphXml('A &bogus; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['bare-amp-text', cleanDocxZip(paragraphXml('A & B')), 'DOCX_XML_ENTITY_UNTERMINATED'],
+    ['numeric-null', cleanDocxZip(paragraphXml('A &#0; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['numeric-control-1', cleanDocxZip(paragraphXml('A &#1; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['numeric-surrogate', cleanDocxZip(paragraphXml('A &#xD800; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['numeric-ffff', cleanDocxZip(paragraphXml('A &#xFFFF; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['uppercase-x-numeric-entity', cleanDocxZip(paragraphXml('A &#X41; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['cdata-closing-sequence-in-text', cleanDocxZip(paragraphXml('A ]]> B')), 'DOCX_XML_CDATA_CLOSING_SEQUENCE_IN_TEXT'],
+    [
+      'xml-declaration-inside-root',
+      cleanDocxZip('<w:p><w:r><w:t>A</w:t><?xml version="1.0"?><w:t>B</w:t></w:r></w:p>'),
+      'DOCX_XML_RESERVED_DECLARATION_POSITION',
+    ],
+    [
+      'xml-declaration-after-leading-space',
+      rawStoredDocxZip(` <?xml version="1.0"?>${documentXml(paragraphXml('Alpha'))}`),
+      'DOCX_XML_RESERVED_DECLARATION_POSITION',
+    ],
+    [
+      'uppercase-xml-declaration-at-start',
+      rawStoredDocxZip(`<?XML version="1.0"?>${documentXml(paragraphXml('Alpha'))}`),
+      'DOCX_XML_DECLARATION_MALFORMED',
+    ],
+    [
+      'malformed-xml-declaration-at-start',
+      rawStoredDocxZip(`<?xml fake?>${documentXml(paragraphXml('Alpha'))}`),
+      'DOCX_XML_DECLARATION_MALFORMED',
+    ],
+    [
+      'cdata-outside-root',
+      rawStoredDocxZip(`<![CDATA[Alpha]]>${documentXml(paragraphXml('Beta'))}`),
+      'DOCX_XML_MARKUP_OUTSIDE_ROOT',
+    ],
+  ];
+
+  for (const [name, bytes, sourceCode] of negatives) {
+    await t.test(name, () => {
+      const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      assertMalformedNoWrite(result);
+      assert.equal(result.diagnostics.some((item) => (
+        item.code === 'DOCX_CONTENT_PREVIEW_XML_MALFORMED'
+        && item.sourceCode === sourceCode
+      )), true);
+    });
+  }
+});
+
 test('DOCX content preview: typed breaks and section types have exact plain text loss items', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
