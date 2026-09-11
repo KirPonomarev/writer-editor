@@ -3,15 +3,15 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T13:36:55Z",
+      "approvedAtUtc": "2026-09-11T14:33:47Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_AUTONOMOUS_DELIVERY",
       "evidenceStampIds": [
         "ES-R24-DOCX-IDEMPOTENT-RECEIPT-INTEGRITY-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-      "sha256": "6bae4356e9a872b1bc2de54be8d09610a2d41a1cc2f699d11764ca075b8cbafe",
-      "rationale": "Approve exact bounded DOCX import idempotent receipt integrity regression bytes: valid duplicate safe-create remains zero-write, while missing scene, mutated scene bytes, and mismatched receipt candidateContentSha256 fail closed through the existing command surface without public path leaks. No UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "ecb0e2a8530282d5abb6da5c66eff438dc94da6ed4b6729a9eb1707a9cce3307",
+      "rationale": "Approve exact bounded DOCX import idempotent receipt integrity regression bytes: valid duplicate safe-create remains zero-write; missing scene, canonical text mutation, receipt hash mutation, batchId mutation, manifestAuthority mutation, transactionEvidence mutation, transactional lease/manifest hash replay mutation, malformed durable receipt JSON, and invalid createdAt shape fail closed through the existing command surface without public path leaks; createdAt is explicitly non-authoritative shape-only metadata and CRLF-only scene byte changes are canonical-text equivalent under the declared receipt scope. No UI, dependency, runtime network, direct Google API/OAuth, raw scene byte integrity claim, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     }
   ],
   "evidenceStampIds": [
