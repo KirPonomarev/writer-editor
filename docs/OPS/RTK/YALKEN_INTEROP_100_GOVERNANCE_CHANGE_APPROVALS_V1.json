@@ -7,7 +7,7 @@
       "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
-      "sha256": "c2201dc0a134ecd6c23e232dc3f7e7d5c2dee5a9033aaa73f285bd5757633c5d"
+      "sha256": "ab557a1f02ad68724383325694d56c391e93b66e4414bf180da1656a6ba14765"
     },
     {
       "approved": true,
@@ -156,7 +156,7 @@
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
-      "sha256": "947c857ed00aa58ebf5b670ec860e260d0b941b95be1a8ee59c4529a65855901"
+      "sha256": "df34493269689ff1a8bfb3a3023cdb1e4e2134cb2fed95a9cf6f42344664e958"
     },
     {
       "approved": true,
