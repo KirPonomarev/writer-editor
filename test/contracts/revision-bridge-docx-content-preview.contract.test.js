@@ -1181,6 +1181,103 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
   assert.equal(importPreview.lossReport.items.some((item) => item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'), true);
 });
 
+test('DOCX content preview: field hyperlink instructions produce explicit link loss only for Word field frames', async () => {
+  const bridge = await loadBridge();
+  const docxWithNamespaces = (body, prefix = 'w') => rawStoredDocxZip([
+    `<${prefix}:document xmlns:${prefix}="${WORDPROCESSINGML_NS}" xmlns:x="urn:yalken:foreign-field-instruction">`,
+    `<${prefix}:body>${body}</${prefix}:body>`,
+    `</${prefix}:document>`,
+  ].join(''));
+  const run = (prefix = 'w') => `<${prefix}:r><${prefix}:t>LABEL</${prefix}:t></${prefix}:r>`;
+  const simpleField = (prefix, attributes) => [
+    `<${prefix}:p>`,
+    `<${prefix}:fldSimple ${attributes}>`,
+    run(prefix),
+    `</${prefix}:fldSimple>`,
+    `</${prefix}:p>`,
+  ].join('');
+  const complexField = [
+    '<w:p>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText xml:space="preserve"> HYPERLINK &quot;https://target.example/complex&quot; </w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="separate"/></w:r>',
+    run('w'),
+    '<w:r><w:fldChar w:fldCharType="end"/></w:r>',
+    '</w:p>',
+  ].join('');
+  const isolatedInstrText = [
+    '<w:p>',
+    '<w:r><w:instrText xml:space="preserve"> HYPERLINK &quot;https://target.example/isolated&quot; </w:instrText></w:r>',
+    run('w'),
+    '</w:p>',
+  ].join('');
+  const cases = [
+    [
+      'valid-word-instr',
+      docxWithNamespaces(simpleField('w', 'w:instr="HYPERLINK &quot;https://target.example/word&quot;"')),
+      true,
+    ],
+    [
+      'valid-alias-instr',
+      docxWithNamespaces(simpleField('q', 'q:instr="HYPERLINK &quot;https://target.example/alias&quot;"'), 'q'),
+      true,
+    ],
+    [
+      'valid-foreign-before-word-hyperlink',
+      docxWithNamespaces(simpleField('w', 'x:instr="DOCPROPERTY SAFE" w:instr="HYPERLINK &quot;https://target.example/before&quot;"')),
+      true,
+    ],
+    [
+      'valid-word-hyperlink-before-foreign',
+      docxWithNamespaces(simpleField('w', 'w:instr="HYPERLINK &quot;https://target.example/after&quot;" x:instr="DOCPROPERTY SAFE"')),
+      true,
+    ],
+    ['valid-complex-field-control', docxWithNamespaces(complexField), true],
+    [
+      'foreign-only-hyperlink-attribute',
+      docxWithNamespaces(simpleField('w', 'x:instr="HYPERLINK &quot;https://target.example/foreign-only&quot;"')),
+      false,
+    ],
+    [
+      'unqualified-only-hyperlink-attribute',
+      docxWithNamespaces(simpleField('w', 'instr="HYPERLINK &quot;https://target.example/unqualified&quot;"')),
+      false,
+    ],
+    [
+      'foreign-hyperlink-before-word-nonhyperlink',
+      docxWithNamespaces(simpleField('w', 'x:instr="HYPERLINK &quot;https://target.example/foreign-before&quot;" w:instr="DOCPROPERTY SAFE"')),
+      false,
+    ],
+    [
+      'word-nonhyperlink-before-foreign-hyperlink',
+      docxWithNamespaces(simpleField('w', 'w:instr="DOCPROPERTY SAFE" x:instr="HYPERLINK &quot;https://target.example/foreign-after&quot;"')),
+      false,
+    ],
+    ['isolated-instrtext-without-complex-field', docxWithNamespaces(isolatedInstrText), false],
+  ];
+
+  for (const [name, bytes, expectedLoss] of cases) {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    const content = importPreview?.candidateCreatePlan?.entries?.[0]?.content || '';
+    const hasDiagnostic = result.diagnostics.some((item) => (
+      item.code === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC'
+      && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+    ));
+    const hasLoss = importPreview.lossReport.items.some((item) => (
+      item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
+      && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+    ));
+
+    assert.equal(result.ok, true, `${name}: content preview must be ready`);
+    assert.equal(importPreview.ok, true, `${name}: import preview must be ready`);
+    assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), ['LABEL'], `${name}: visible label`);
+    assert.equal(content.includes('target.example'), false, `${name}: field target must not leak into candidate text`);
+    assert.equal(hasDiagnostic, expectedLoss, `${name}: content diagnostic`);
+    assert.equal(hasLoss, expectedLoss, `${name}: import loss`);
+  }
+});
+
 test('DOCX content preview: Google tab metadata uses only WordprocessingML attributes', async (t) => {
   const bridge = await loadBridge();
   const docxWithNamespaces = (body) => rawStoredDocxZip([
