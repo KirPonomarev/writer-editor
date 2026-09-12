@@ -10,6 +10,7 @@ import { readJsonBounded, sha256hex, canonicalDigest, R24Error, HEX40_RE, HEX64_
 import { verifyApprovalReceipt } from './mission-contract.mjs';
 import { loadValidatedOwnerGateApprovals } from './owner-gate-decisions.mjs';
 import { selectNextFromEffectiveState } from './scheduler.mjs';
+import { runScheduledContour, observeAdmittedContour } from './corrective/rcv00f-resumable-executor.mjs';
 import {
   compileEffectiveState,
   loadCommittedEffectiveStateOverlays,
@@ -463,7 +464,7 @@ export function validateCommittedR24Sot({ now = new Date().toISOString() } = {})
   };
 }
 
-export function main(argv = process.argv.slice(2)) {
+export function main(argv = process.argv.slice(2), { executor = null } = {}) {
   const args = new Map();
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
@@ -477,6 +478,14 @@ export function main(argv = process.argv.slice(2)) {
     }
   }
   const now = args.get('--now') || new Date().toISOString();
+  if (args.has('--drive-one') || args.has('--observe-one')) {
+    if (!executor) throw new R24Error('E_RCV00F_TRUSTED_HOST_REQUIRED');
+    if (args.has('--drive-one') && args.has('--observe-one')) throw new R24Error('E_RCV00F_ENTRYPOINT_MODE');
+    const result = args.has('--drive-one') ? runScheduledContour({ ...executor, now })
+      : observeAdmittedContour(executor.filePath, { now, previous: executor.previous ?? null });
+    process.stdout.write(`R24_RCV00F_EXECUTION_RECEIPT=${JSON.stringify(result)}\n`);
+    return result;
+  }
   const receipt = validateCommittedR24Sot({ now });
   process.stdout.write(`R24_A0_EXECUTABLE_PROGRAM_SOT_RECEIPT=${JSON.stringify(receipt)}\n`);
   return receipt;

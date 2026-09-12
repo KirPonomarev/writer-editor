@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "FEATURE_INTEGRATION_MANIFEST_V1",
+  "stageId": "R24-RCV-00F",
+  "status": "SUBSTRATE_ONLY_F_UNCREDITED",
+  "planPredecessorCredit": false,
+  "missingAcceptance": ["CONCRETE_NON_TEST_TRUSTED_REPOSITORY_HOST", "REAL_ADMITTED_CONTOUR_DELIVERY_AND_RESTART_PROOF"],
+  "nextRequiredSlice": "Integrate the finite executor into the existing single trusted repository host and prove a real bounded contour through PR CI normal merge and postmerge; no new scheduler or background process.",
+  "productPlane": {"owner": "EXISTING_OPS_HOST", "sourceTruth": "PLAN_STATE_CAS_AND_TRUSTED_ADMISSION_PORT", "mutation": "SINGLE_DERIVED_OPS_RUN_ONLY"},
+  "interfacePlane": {"surface": "NONE", "renderer": "NONE", "designOs": "NOT_APPLICABLE_NO_UI"},
+  "operations": {"commands": ["runAdmittedContour", "stopAdmittedContour", "revokeAdmittedContour"], "queries": ["observeAdmittedContour"], "events": ["STEP_RECEIPT_VERIFIED"], "effects": ["EXISTING_PLAN_STATE_CAS", "TRUSTED_IDEMPOTENT_HOST_EFFECT_PORT"], "backgroundJobs": []},
+  "ports": {"product": [], "designOs": [], "ops": ["admissionPort.revalidate", "effectPort.execute", "effectPort.reconcile", "receiptPort.verify", "controlPort.read"]},
+  "projection": {"schemas": ["R24_RCV00F_RUN_V1", "R24_RCV00F_OBSERVER_V1"], "immutable": true, "identityGuards": ["bindingDigest", "headSha", "treeSha", "contourId", "runId", "writerId", "fencingToken", "revision", "stateDigest", "stepId", "effectIdempotencyKey"], "maximumSteps": 32},
+  "fallbacks": ["NO_ADMISSION_NO_WRITE_OR_EFFECT", "RESERVED_EFFECT_RECONCILE_BEFORE_RETRY", "OWNER_OR_EXTERNAL_TYPED_WAIT", "STOP_PRESERVES_RESERVATION", "REVOKED_RUN_NEVER_REACTIVATES"],
+  "recovery": "DURABLE_CAS_RUN_RELOADED_ON_EVERY_INVOCATION; NO_CHAT_MEMORY; EXISTING_LEASE_TAKEOVER_REMAINS_EXTERNAL_TO_THIS_EXECUTOR",
+  "performance": {"maximumSteps": 32, "observerIntervalMs": 600000, "timersCreated": 0},
+  "accessibility": {"status": "NOT_APPLICABLE_NO_UI"},
+  "negativeProofs": ["STALE_ADMISSION", "FALSE_SELECTION_AUTHORITY", "SECOND_WRITER", "CRASH_BEFORE_AND_AFTER_EFFECT", "WRONG_RECEIPT_IDENTITY", "FAILED_INDEPENDENT_RECEIPT_ORACLE", "STALE_PUBLICATION", "STOP_AND_REVOKE", "OBSERVER_ZERO_WRITES", "IMPLEMENTATION_MUTANTS"],
+  "trustBoundary": "Ports are fixed trusted host code, never read from JSON, paths, commands or callbacks supplied by an external payload. Effect port enforces idempotency; distinct receiptPort verifies actual effect evidence. A NOT_APPLIED_FINAL reconciliation is a verified final absence, never a timeout or provisional absence. Pending STOP or REVOKE is durably latched and reconciled before terminalization; unknown outcome remains typed wait.",
+  "integrationBoundary": "No daemon, timer, scheduler, provider, live graph adapter or automatic startup. The existing single host invokes the finite executor and passive observer. Synthetic contract proofs do not claim physical provider delivery.",
+  "dependencies": [],
+  "runtimeNetwork": false,
+  "programDone": false
+}

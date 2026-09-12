@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
+import { R24_F_SUBSTRATE_EXPECTATION, verifyFSubstratePostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
 import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
 import { RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs';
@@ -1844,7 +1845,7 @@ for (const [name, mutate, signal] of [
 function ePlanPredecessorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
   const e = R24_E_PLAN_PREDECESSOR_EXPECTATION;
   const candidate = 'c'.repeat(40), requested = successor ? 'd'.repeat(40) : candidate;
-  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const files = new Map(e.admittedPaths.map(relative => [relative, objectFromCommit('69dc3872cc4cc0f46bc450cc4f89ddf8da44ecb6', relative)]));
   const inventory = JSON.parse(files.get(e.inventoryPath));
   for (const relative of e.testPaths) {
     const entry = inventory.entries.find(item => item.path === relative);
@@ -1877,6 +1878,112 @@ function ePlanPredecessorFixture({ changedPaths, baseTree, unrelatedBase = false
   return { candidate, requested, git };
 }
 const verifyEPlanFixture = fixture => verifyEPlanPredecessorPostEvaluationException({ candidateSha: fixture.requested, git: fixture.git });
+function fSubstrateFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, successorPaths = ['future.txt'], mutate = () => {}, mutateCurrent = () => {} } = {}) {
+  const e = R24_F_SUBSTRATE_EXPECTATION, candidate = 'c'.repeat(40), requested = successor ? 'd'.repeat(40) : candidate;
+  const files = new Map(e.admittedPaths.map(relative => [relative, objectFromCommit('b14e38bc83a05c1bb4e8e6a7c0c341e532fd0c9e', relative)]));
+  const inventory = JSON.parse(files.get(e.inventoryPath));
+  for (const relative of e.testPaths) Object.assign(inventory.entries.find(row => row.path === relative), {
+    sha256: h(files.get(relative)), required: true, executionStatus: 'DECLARED_EXECUTABLE',
+  });
+  files.set(e.inventoryPath, canonicalBytes(inventory));
+  const approvals = JSON.parse(files.get(e.approvalsPath));
+  approvals.approvals = e.admittedPaths.filter(relative => relative !== e.approvalsPath).map(relative => ({
+    filePath: relative, sha256: h(files.get(relative)), approved: true, approvedBy: e.approvedBy,
+  }));
+  files.set(e.approvalsPath, canonicalBytes(approvals));
+  const secondary = JSON.parse(files.get(e.interopApprovalsPath));
+  for (const row of secondary.approvals) if ([e.inventoryPath, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs', 'test/contracts/r24-post-audit-certification-set.contract.test.mjs'].includes(row.filePath)) {
+    Object.assign(row, { sha256: h(files.get(row.filePath)), approved: true, approvedBy: e.approvedBy });
+  }
+  files.set(e.interopApprovalsPath, canonicalBytes(secondary));
+  mutate(files, e);
+  const currentFiles = new Map([...files].map(([relative, bytes]) => [relative, Buffer.from(bytes)]));
+  mutateCurrent(currentFiles, e);
+  const git = (args, options = {}) => {
+    let value = '';
+    if (args[0] === 'rev-parse' && args[1] === `${e.baseSha}^{tree}`) value = baseTree ?? e.baseTree;
+    else if (args[0] === 'rev-parse' && args[1] === `${candidate}^{tree}`) value = 'e'.repeat(40);
+    else if (args[0] === 'rev-parse' && args[1] === `${requested}^{tree}`) value = 'f'.repeat(40);
+    else if (args[0] === 'rev-parse') value = args[1];
+    else if (args[0] === 'merge-base') { if (unrelatedBase) throw new Error('NOT_ANCESTOR'); }
+    else if (args[0] === 'rev-list') value = candidate;
+    else if (args[0] === 'diff') value = (successor && args.at(-1) === `${candidate}..${requested}` ? successorPaths
+      : successor && args.at(-1).endsWith(requested) ? [...new Set([...e.admittedPaths, ...successorPaths])].sort()
+      : changedPaths ?? e.admittedPaths).join('\n');
+    else if (args[0] === 'show' && args[1] === `${e.baseSha}:${e.interopApprovalsPath}`) return objectFromCommit(e.baseSha, e.interopApprovalsPath);
+    else if (args[0] === 'show') {
+      const separator = args[1].indexOf(':'), ref = args[1].slice(0, separator);
+      const bytes = (successor && ref === requested ? currentFiles : files).get(args[1].slice(separator + 1));
+      if (!bytes) throw new Error('MISSING_FIXTURE_ARTIFACT');
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : Buffer.from(bytes);
+    } else throw new Error(`UNEXPECTED_FIXTURE_GIT:${args[0]}`);
+    return options.encoding === 'utf8' ? value + '\n' : Buffer.from(value + '\n');
+  };
+  return { candidate, requested, git };
+}
+const verifyFSubstrateFixture = fixture => verifyFSubstratePostEvaluationException({ candidateSha: fixture.requested, git: fixture.git });
+test('F substrate admission verifies exact delta without F closure or mutation credit', () => {
+  const fixture = fSubstrateFixture(), result = verifyFSubstrateFixture(fixture);
+  assert.equal(result.admittedPathDenominator, 10);
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.planPredecessorCredit, false);
+  assert.equal(result.mutationAllowed, false);
+  assert.equal(result.programDone, false);
+  assert.equal(result.missingAcceptance.length, 2);
+});
+test('F substrate admission separates immutable evidence from a different current head', () => {
+  const fixture = fSubstrateFixture({ successor: true }), result = verifyFSubstrateFixture(fixture);
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.currentCandidateSha, fixture.requested);
+  assert.equal(result.closedCandidateOnly, true);
+  assert(!result.admittedPaths.includes('future.txt'));
+});
+test('F substrate admission keeps historical B when metadata C rebinds the current ledger registry', t => {
+  const e = R24_F_SUBSTRATE_EXPECTATION;
+  const ledgerPath = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json';
+  const successorPaths = [ledgerPath, e.interopApprovalsPath].sort();
+  const currentRegistry = JSON.parse(objectFromCommit('b14e38bc83a05c1bb4e8e6a7c0c341e532fd0c9e', e.interopApprovalsPath));
+  currentRegistry.approvals.find(row => row.filePath === ledgerPath).sha256 = '0'.repeat(64);
+  const currentBytes = canonicalBytes(currentRegistry), originalRead = fs.readFileSync;
+  t.mock.method(fs, 'readFileSync', function (relative, ...args) {
+    return relative === e.interopApprovalsPath ? currentBytes : originalRead.call(this, relative, ...args);
+  });
+  const fixture = fSubstrateFixture({ successor: true, successorPaths, mutateCurrent: files => files.set(e.interopApprovalsPath, currentBytes) });
+  assert.deepEqual(fixture.git(['show', `${fixture.requested}:${e.interopApprovalsPath}`]), currentBytes);
+  assert.notDeepEqual(fixture.git(['show', `${fixture.candidate}:${e.interopApprovalsPath}`]), currentBytes);
+  assert.deepEqual(fixture.git(['diff', '--name-only', `${fixture.candidate}..${fixture.requested}`], { encoding: 'utf8' }).trim().split('\n'), successorPaths);
+  const result = verifyFSubstrateFixture(fixture);
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.currentCandidateSha, fixture.requested);
+  assert.equal(result.closedCandidateOnly, true);
+  assert.equal(result.mutationAllowed, false);
+  assert.equal(result.planPredecessorCredit, false);
+  assert(!result.admittedPaths.includes(ledgerPath));
+});
+for (const [name, options, signal] of [
+  ['base tree', { baseTree: '0'.repeat(40) }, /E_F_SUBSTRATE_BASE_TREE/],
+  ['base ancestry', { unrelatedBase: true }, /E_F_SUBSTRATE_BASE_ANCESTRY/],
+  ['missing path', { changedPaths: R24_F_SUBSTRATE_EXPECTATION.admittedPaths.slice(1) }, /E_F_SUBSTRATE_EXACT_ADMITTED_DELTA/],
+  ['extra path', { changedPaths: [...R24_F_SUBSTRATE_EXPECTATION.admittedPaths, 'future.txt'] }, /E_F_SUBSTRATE_EXACT_ADMITTED_DELTA/],
+]) test(`F substrate admission rejects ${name}`, () => assert.throws(() => verifyFSubstrateFixture(fSubstrateFixture(options)), signal));
+for (const relative of Object.keys(R24_F_SUBSTRATE_EXPECTATION.semanticDigests)) {
+  test(`F substrate admission rejects changed ${relative}`, () => assert.throws(() => verifyFSubstrateFixture(fSubstrateFixture({
+    mutate: files => files.set(relative, Buffer.concat([files.get(relative), Buffer.from('\n')])),
+  })), /E_F_SUBSTRATE_ARTIFACT_DIGEST/));
+}
+for (const [name, mutate, signal] of [
+  ['missing artifact', (files, e) => files.delete(e.testPaths[0]), /E_F_SUBSTRATE_ARTIFACT_MISSING/],
+  ['wrong inventory', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.totals.all = 0; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_F_SUBSTRATE_INVENTORY/],
+  ['stale inventory binding', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(row => row.path === e.testPaths[0]).sha256 = '0'.repeat(64); files.set(e.inventoryPath, canonicalBytes(value)); }, /E_F_SUBSTRATE_INVENTORY_BINDING/],
+  ['foreign approval', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(row => { row.approvedBy = 'NOT_AUTHORITY'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_F_SUBSTRATE_APPROVAL_BINDING/],
+]) test(`F substrate admission rejects ${name}`, () => assert.throws(() => verifyFSubstrateFixture(fSubstrateFixture({ mutate })), signal));
+for (const [name, change, signal] of [
+  ['secondary stale hash', (registry, e) => { registry.approvals.find(row => row.filePath === e.inventoryPath).sha256 = '0'.repeat(64); }, /E_F_SUBSTRATE_SECONDARY_BINDING/],
+  ['secondary historical ledger rewrite', registry => { registry.approvals.find(row => row.filePath.endsWith('YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json')).sha256 = '0'.repeat(64); }, /E_F_SUBSTRATE_SECONDARY_PRESERVATION/],
+]) test(`F substrate admission rejects ${name}`, () => assert.throws(() => verifyFSubstrateFixture(fSubstrateFixture({ mutate: (files, e) => {
+  const registry = JSON.parse(files.get(e.interopApprovalsPath)); change(registry, e); files.set(e.interopApprovalsPath, canonicalBytes(registry));
+} })), signal));
 test('E plan predecessor admission accepts only the exact nine-path correction', () => {
   const fixture = ePlanPredecessorFixture(), result = verifyEPlanFixture(fixture);
   assert.equal(result.admittedPathDenominator, 9);
