@@ -223,6 +223,7 @@ test('DOCX local file preview adapter: clean local DOCX becomes pathless preview
       pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'Preview.docx') }),
       readLocalFileBytes: async () => cleanDocxZip([
         paragraphXml('Alpha'),
+        paragraphXml('A<?audit <!FOO>?>B'),
         paragraphXml('Bravo'),
       ].join('')),
       loadRevisionBridgeModule: loadBridge,
@@ -242,11 +243,12 @@ test('DOCX local file preview adapter: clean local DOCX becomes pathless preview
   assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_READY');
   assert.deepEqual(result.docxContentPreviewReport.contentPreview.paragraphs.map((entry) => entry.text), [
     'Alpha',
+    'AB',
     'Bravo',
   ]);
   assert.equal(result.docxImportPreviewPlan.code, 'DOCX_IMPORT_PREVIEW_READY');
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.mode, 'create-only');
-  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nAB\n\nBravo');
   assert.equal(result.docxImportPreviewPlan.lossReport.mode, 'plain-text-only');
   assertNoForbiddenPublicFields(result);
 });

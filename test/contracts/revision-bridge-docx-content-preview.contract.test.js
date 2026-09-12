@@ -466,6 +466,11 @@ test('DOCX content preview: XML character data follows parser legality and prese
       rawStoredDocxZip(documentXml(`<?yalken-preview ok?>${paragraphXml('Alpha')}`)),
       'Alpha',
     ],
+    [
+      'valid-pi-with-gt-data-inside-text',
+      cleanDocxZip(paragraphXml('A<?audit <!FOO>?>B')),
+      'AB',
+    ],
     ['valid-gt-text', cleanDocxZip(paragraphXml('A > B')), 'A > B'],
     [
       'valid-predefined-entities',

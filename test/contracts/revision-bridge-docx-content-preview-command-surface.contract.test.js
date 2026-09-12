@@ -250,6 +250,7 @@ test('DOCX content preview command surface: clean container returns wrapped prev
   const port = instantiateDocxContentPreviewPort();
   const result = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip([
     paragraphXml('Alpha'),
+    paragraphXml('A<?audit <!FOO>?>B'),
     paragraphXml('Bravo'),
   ].join(''))));
 
@@ -264,6 +265,7 @@ test('DOCX content preview command surface: clean container returns wrapped prev
   assert.equal(result.docxContentPreviewReport.type, 'docxContentPreviewReport');
   assert.deepEqual(result.docxContentPreviewReport.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
     'Alpha',
+    'AB',
     'Bravo',
   ]);
   assertNoForbiddenResultFields(result);

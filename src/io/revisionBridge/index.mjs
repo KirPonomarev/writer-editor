@@ -7603,6 +7603,33 @@ function docxContentPreviewMarkupCompatibilityMarkEmission(frames, token) {
   }
 }
 
+function docxContentPreviewNextXmlToken(text, cursor) {
+  if (cursor >= text.length) return null;
+  if (text[cursor] !== '<') {
+    const nextOpen = text.indexOf('<', cursor);
+    const end = nextOpen === -1 ? text.length : nextOpen;
+    return { token: text.slice(cursor, end), nextCursor: end };
+  }
+  if (text.startsWith('<!--', cursor)) {
+    const end = text.indexOf('-->', cursor + 4);
+    if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_COMMENT_MALFORMED') };
+    return { token: text.slice(cursor, end + 3), nextCursor: end + 3 };
+  }
+  if (text.startsWith('<?', cursor)) {
+    const end = text.indexOf('?>', cursor + 2);
+    if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+    return { token: text.slice(cursor, end + 2), nextCursor: end + 2 };
+  }
+  if (text.startsWith('<![CDATA[', cursor)) {
+    const end = text.indexOf(']]>', cursor + 9);
+    if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_CDATA_MALFORMED') };
+    return { token: text.slice(cursor, end + 3), nextCursor: end + 3 };
+  }
+  const close = docxZipXmlFindTagEnd(text, cursor + 1);
+  if (close === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MALFORMED') };
+  return { token: text.slice(cursor, close + 1), nextCursor: close + 1 };
+}
+
 function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   const diagnostics = [];
   const seenKinds = new Set();
@@ -7610,8 +7637,6 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   const elementStack = [];
   const frames = [];
   const text = String(xmlText || '');
-  const tokenPattern = new RegExp('<!--[\\s\\S]*?-->|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>|<[^>]+>|[^<]+', 'gu');
-  let match;
   let cursor = 0;
 
   function topFrame() {
@@ -7642,12 +7667,13 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
     }
   }
 
-  while ((match = tokenPattern.exec(text)) !== null) {
-    if (match.index !== cursor) {
-      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  while (cursor < text.length) {
+    const nextToken = docxContentPreviewNextXmlToken(text, cursor);
+    if (!nextToken || nextToken.failure) {
+      return { failure: nextToken?.failure || docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
     }
-    cursor = tokenPattern.lastIndex;
-    const token = match[0];
+    cursor = nextToken.nextCursor;
+    const token = nextToken.token;
     if (!token.startsWith('<')) {
       if (frames.length === 0 || docxContentPreviewMarkupCompatibilityShouldEmit(frames)) {
         output.push(token);
@@ -7842,16 +7868,15 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let unsupportedDepth = 0;
   let textDepth = 0;
   let totalTextChars = 0;
-  const tokenPattern = new RegExp('<!--[\\s\\S]*?-->|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>|<[^>]+>|[^<]+', 'gu');
-  let match;
   let cursor = 0;
 
-  while ((match = tokenPattern.exec(xmlTextForPreview)) !== null) {
-    if (match.index !== cursor) {
-      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  while (cursor < xmlTextForPreview.length) {
+    const nextToken = docxContentPreviewNextXmlToken(xmlTextForPreview, cursor);
+    if (!nextToken || nextToken.failure) {
+      return { failure: nextToken?.failure || docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
     }
-    cursor = tokenPattern.lastIndex;
-    const token = match[0];
+    cursor = nextToken.nextCursor;
+    const token = nextToken.token;
     if (!token.startsWith('<')) {
       if (elementStack.length === 0 && token.trim() !== '') {
         return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TEXT_OUTSIDE_ROOT') };
