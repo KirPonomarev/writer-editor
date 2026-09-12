@@ -2,12 +2,12 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T15:37:08Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
+      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
+      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
+      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact bounded PR1905 CI repair bytes: safe-link historical negative fixture reads immutable historical ledger bytes before mutating its non-cell evidence into a denominator-promotion identity mutant, and the denominator contract now proves the post-audit promotion allowlist remains exact-path bounded. C1B inventory is re-bound to that test hash. No product runtime behavior, UI, dependency, network truth, Word or Google denominator closure, additional cell PASS, release readiness, PROGRAM_DONE, or 100 percent portability claim.",
-      "sha256": "f8889bdc67078570d31740f3eedfefdbf843f930451627951b34a4c2b1265679"
+      "rationale": "Rebind this existing secondary approval row to unchanged immutable B732a83fa bytes already owned by the E primary registry. Metadata-only registry reconciliation; referenced file is not changed by C. No new evidence credit, product change, denominator increase or expanded admission.",
+      "sha256": "6fd003365c74150b868539385ed6d01a5755aa0500096a50a3f5abd6c428d49f"
     },
     {
       "approved": true,
@@ -47,12 +47,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:19:44.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SINGLE_CELL_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
+      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
+      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
-      "rationale": "Approve exact bounded interop 100 one-cell evidence promotion: TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME is counted from fresh exact-head physical Microsoft Word C1 source-runtime evidence under Node 22.12.0 with semantic/order preservation, independent readback, zero silent drops, and explicit outside-contract loss reporting. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
-      "sha256": "7aac461588befdc7e40f4c15f6015e383a02360b8d72ae2a7edad9f94a642b3c"
+      "rationale": "Rebind only existing Cell001 to clean immutable B732a83fa and independently audited exact Node22.12.0/npm10.9.0 physical Word receipt. Raw text, paragraph vector and codepoint equality plus five rejected mutants; audit134 of134. Numerator remains1 of1120, delta0, broadPassClaimfalse; no product, packaged UI, Google, rich-field, release or program completion claim.",
+      "sha256": "b30bda4482451f0f72696ede29c340dfc2dc9044f93554321ecfb66b3f897579"
     },
     {
       "approved": true,
@@ -65,9 +65,9 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
+      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
+      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -77,8 +77,8 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "01cc6fd731e79952a5e4794e66250541f910c1aa4017f7d34fc565efdbad72d0"
+      "rationale": "Rebind this existing secondary approval row to unchanged immutable B732a83fa bytes already owned by the E primary registry. Metadata-only registry reconciliation; referenced file is not changed by C. No new evidence credit, product change, denominator increase or expanded admission.",
+      "sha256": "af3a7191822e53ef11dd4d3ad08fa0a4c31e978b14c8e432f80792e11f01c902"
     },
     {
       "approved": true,
@@ -143,9 +143,9 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T15:14:00.749Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
+      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
+      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
+      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -155,8 +155,8 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact bounded PR1905 CI repair bytes: safe-link historical negative fixture reads immutable historical ledger bytes before mutating its non-cell evidence into a denominator-promotion identity mutant, so zero-pass rollup and evidence-identity invariants are both preserved; C1B inventory is re-bound to that test hash. No product runtime behavior, UI, dependency, network truth, Word or Google denominator closure, additional cell PASS, release readiness, PROGRAM_DONE, or 100 percent portability claim.",
-      "sha256": "ede405feec02cc63e8c1b59fbc1815d80fa4dbbf260319911c53ad36e308c25b"
+      "rationale": "Rebind this existing secondary approval row to unchanged immutable B732a83fa bytes already owned by the E primary registry. Metadata-only registry reconciliation; referenced file is not changed by C. No new evidence credit, product change, denominator increase or expanded admission.",
+      "sha256": "e2c4f85d3bbe6fd8c6e34825398f5da280237504e6ec5abe27eeb0941ee341fa"
     },
     {
       "approved": true,
