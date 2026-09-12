@@ -7,11 +7,11 @@
   "status": "DENOMINATOR_FROZEN_EVIDENCE_OPEN",
   "claimBoundary": "This is the closed supported interchange denominator. It is not a claim of arbitrary Microsoft Word or Google Docs feature parity and it does not promote any route or platform to PASS.",
   "currentGap": {
-    "code": "NO_EXACT_HEAD_FIELD_VOLUME_ROUTE_BUILD_CELL_EVIDENCE",
+    "code": "ONE_EXACT_HEAD_FIELD_VOLUME_ROUTE_BUILD_CELL_PROVEN_REMAINING_OPEN",
     "requiredCellDenominator": 1120,
-    "exactHeadPassedNumerator": 0,
-    "percentage": 0,
-    "reason": "The C1-C8 matrix is a stale route-only register and WP709 7-of-7 is a separate bounded route corpus; neither supplies current exact-head cell evidence over the frozen field, volume, route, and execution-profile axes."
+    "exactHeadPassedNumerator": 1,
+    "percentage": 0.089286,
+    "reason": "Exactly one required cell, TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME, has fresh exact-head physical Word C1 evidence with semantic/order preservation, zero silent drops, independent readback, and explicit outside-contract loss reporting; the remaining 1119 cells are not executed and no broad portability claim is made."
   },
   "fields": [
     { "id": "TEXT", "supportClass": "REQUIRED_SEMANTIC_PRESERVATION", "currentProof": "NOT_PROVEN" },
