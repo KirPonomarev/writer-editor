@@ -1476,12 +1476,14 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 }
 
 function main() {
+  const externalEvidencePackageRootIndex = process.argv.indexOf('--external-evidence-package-root');
+  const externalEvidencePackageRoot = externalEvidencePackageRootIndex === -1
+    ? ''
+    : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
-    requireLocalPhysicalPackage: process.argv.includes('--require-local-physical-package')
-      || process.env.YALKEN_INTEROP100_REQUIRE_LOCAL_PHYSICAL_PACKAGE === '1',
-    requireExternalEvidencePackage: process.argv.includes('--require-external-evidence-package')
-      || process.env.YALKEN_INTEROP100_REQUIRE_EXTERNAL_EVIDENCE_PACKAGE === '1',
-    externalEvidencePackageRoot: process.env.YALKEN_INTEROP100_EXTERNAL_EVIDENCE_PACKAGE_ROOT || '',
+    requireLocalPhysicalPackage: process.argv.includes('--require-local-physical-package'),
+    requireExternalEvidencePackage: process.argv.includes('--require-external-evidence-package'),
+    externalEvidencePackageRoot,
   });
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   if (!report.ok) process.exitCode = 1;

@@ -252,7 +252,7 @@
       "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
       "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
-      "sha256": "48afcad9149bf65f5fa70539d4f1fd9f88f080c678d806c846799d53e0dacaac"
+      "sha256": "10a0b385bf2ed7b45eeb735e842db47b016865dea36c103c481614026ae9ad72"
     },
     {
       "approved": true,
