@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "yalken.interop100.evidenceEnvelope.v1",
+  "contractId": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
+  "bindingBaseSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+  "status": "CHECKED_IN_EVIDENCE_ENVELOPE_REQUIRED_FOR_CELL_ADMISSION",
+  "entries": [
+    {
+      "cellId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "status": "PASS",
+      "evidenceClass": "CELL_EXECUTION_EXACT_HEAD",
+      "exactHeadSha": "984b12ee237a892b09443cd661176ea0515b3fe1",
+      "sourceRevision": "984b12ee237a892b09443cd661176ea0515b3fe1",
+      "sourceTree": "f3074f6f654b9c7830681c46b6cf28b44a268130",
+      "targetRevision": "sha256:2e23ed41d7099fd754f54ad682e14c4cabcf6a84d341d160080618bc33f02bb9",
+      "generationId": "cell001-interim-v3-base-node22-984b12ee-20260913T000000Z",
+      "artifactSha256": "sha256:0ceb493be4edf30314799cf6c06a9b5e01278a0da84879a6a11a2b8523be72f1",
+      "canonicalPassEntrySha256": "sha256:2566b96e4efeca77e43158de51802a486b6bcc50e8e0e5928863bf14ab06e501",
+      "evidenceReceipt": {
+        "schemaVersion": "yalken.interop100.cell001.hardened.physical.commitB-node22-rerun.v1",
+        "status": "PASS_HARDENED_EXISTING_CELL_INTERIM_CURRENT_BASE_BINDING_AWAITING_FRESH_WORD_PACKAGE",
+        "runId": "cell001-interim-v3-base-node22-984b12ee-20260913T000000Z",
+        "nodeVersion": "v22.12.0",
+        "npmVersion": "10.9.0",
+        "receiptSha256": "sha256:0ceb493be4edf30314799cf6c06a9b5e01278a0da84879a6a11a2b8523be72f1",
+        "sealSha256": "sha256:36211c2cb8ef89812af35598378b91c9368d2fd967b529a7dba47eb35577170c",
+        "checkpointBasename": "checkpoint-cell001-interim-v3-base-node22-984b12ee-20260913T000000Z",
+        "runnerSha256": "sha256:b41fefc7cdaae8523599e3986890d0bc411fc83da8d722f2173b21e3295b7a30",
+        "independentAuditSha256": "sha256:e73c6e32b6ae59839dc12160f8dc9c9d418e2b53709bf492583a6193bbb774fb",
+        "independentAuditorSha256": "sha256:065173e5ef00c2286c912c4d6d22f698aa9ee06daacc350abb758d2926ec43dd",
+        "wordRootKind": "MICROSOFT_WORD_CONTAINER_DOCUMENTS_YALKEN_R2_4",
+        "numeratorDelta": 0,
+        "broadPassClaim": false,
+        "limitations": [
+          "Only TEXT/SINGLE_SCENE/C1/SOURCE_RUNTIME is claimed.",
+          "Word rewrites package bytes; byte identity is not claimed.",
+          "Word-added package relationships and plain-text-only import are explicitly reported as outside-contract loss.",
+          "No styles, comments, notes, tables, media, sections, anchors, tracked review semantics, metadata, Google route, packaged runtime, or full user-flow closure."
+        ]
+      },
+      "oracles": {
+        "SEMANTIC": {
+          "artifactSha256": "sha256:42970fb9b875f939917a0d52fba0a6e9f4aa50768c57f428ef144998b2b74779",
+          "authority": "RAW_AND_NORMALIZED_FULL_CANDIDATE_TEXT_AND_CODEPOINT_EQUALITY"
+        },
+        "STRUCTURE": {
+          "artifactSha256": "sha256:e73c6e32b6ae59839dc12160f8dc9c9d418e2b53709bf492583a6193bbb774fb",
+          "authority": "INDEPENDENT_OOXML_PARAGRAPH_VECTOR_EQUALITY_SOURCE_SAVED_REOPENED"
+        },
+        "ORDER": {
+          "artifactSha256": "sha256:e73c6e32b6ae59839dc12160f8dc9c9d418e2b53709bf492583a6193bbb774fb",
+          "authority": "RAW_FULL_PARAGRAPH_VECTOR_AND_CODEPOINT_EQUALITY_WITH_ORDER_MUTANT_REJECTION"
+        },
+        "LOSS": {
+          "artifactSha256": "sha256:257154c9c8afb9482708c899021c52b20a6d9fa2ae01b735fdedcce59ec9a660",
+          "authority": "EXPLICIT_LOSS_REPORT_NON_SILENT"
+        },
+        "PROVENANCE": {
+          "artifactSha256": "sha256:ab5c2dfe1796571aaa402471c6f3930b5931b61445e6ff4ff7f5e1f0b3626cf3",
+          "authority": "RUN_RECEIPT_HASH_CHAIN"
+        },
+        "INDEPENDENT_READBACK": {
+          "artifactSha256": "sha256:e73c6e32b6ae59839dc12160f8dc9c9d418e2b53709bf492583a6193bbb774fb",
+          "authority": "INDEPENDENT_ZIP_CRC_OOXML_RAW_TEXT_AND_CODEPOINT_READBACK"
+        },
+        "CLEANUP": {
+          "artifactSha256": "sha256:e73c6e32b6ae59839dc12160f8dc9c9d418e2b53709bf492583a6193bbb774fb",
+          "authority": "WORD_DOCUMENT_COUNT_AFTER_RUN"
+        }
+      },
+      "hopEvidence": [
+        {
+          "hopId": "YALKEN_EXPORT",
+          "sourceArtifactSha256": "sha256:83e73f79608f6d8e4ae6434ffa1989e61ceda7efe89b43cc6b14bf463e24c719",
+          "targetArtifactSha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9",
+          "provenanceSha256": "sha256:ab5c2dfe1796571aaa402471c6f3930b5931b61445e6ff4ff7f5e1f0b3626cf3",
+          "lossLedgerSha256": "sha256:257154c9c8afb9482708c899021c52b20a6d9fa2ae01b735fdedcce59ec9a660"
+        },
+        {
+          "hopId": "WORD_LIFECYCLE",
+          "sourceArtifactSha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9",
+          "targetArtifactSha256": "sha256:2e23ed41d7099fd754f54ad682e14c4cabcf6a84d341d160080618bc33f02bb9",
+          "provenanceSha256": "sha256:ab5c2dfe1796571aaa402471c6f3930b5931b61445e6ff4ff7f5e1f0b3626cf3",
+          "lossLedgerSha256": "sha256:257154c9c8afb9482708c899021c52b20a6d9fa2ae01b735fdedcce59ec9a660"
+        },
+        {
+          "hopId": "YALKEN_RETURN_INTAKE",
+          "sourceArtifactSha256": "sha256:2e23ed41d7099fd754f54ad682e14c4cabcf6a84d341d160080618bc33f02bb9",
+          "targetArtifactSha256": "sha256:83e73f79608f6d8e4ae6434ffa1989e61ceda7efe89b43cc6b14bf463e24c719",
+          "provenanceSha256": "sha256:ab5c2dfe1796571aaa402471c6f3930b5931b61445e6ff4ff7f5e1f0b3626cf3",
+          "lossLedgerSha256": "sha256:257154c9c8afb9482708c899021c52b20a6d9fa2ae01b735fdedcce59ec9a660"
+        }
+      ],
+      "providerEvidence": [
+        {
+          "profileId": "WORD_DESKTOP",
+          "exactHeadSha": "984b12ee237a892b09443cd661176ea0515b3fe1",
+          "buildIdentity": "Microsoft Word 16.112 com.microsoft.Word UBF8T346G9",
+          "documentIdentity": "cell001-interim-v3-base-node22-984b12ee-20260913T000000Z",
+          "revisionIdentity": "sha256:2e23ed41d7099fd754f54ad682e14c4cabcf6a84d341d160080618bc33f02bb9",
+          "artifactSha256": "sha256:2e23ed41d7099fd754f54ad682e14c4cabcf6a84d341d160080618bc33f02bb9"
+        }
+      ],
+      "cycles": [
+        {
+          "roundId": "round-001",
+          "lossLedgerSha256": "sha256:257154c9c8afb9482708c899021c52b20a6d9fa2ae01b735fdedcce59ec9a660"
+        }
+      ],
+      "physicalPackage": {
+        "wordRootKind": "MICROSOFT_WORD_CONTAINER_DOCUMENTS_YALKEN_R2_4",
+        "runDirectoryBasename": "cell001-hardened-commitB-node22-732a83fa-20260912T171458Z-0f4705",
+        "localRehydrationPolicy": "STRICT_LOCAL_CHECK_OPTIONAL_FOR_PORTABLE_CI",
+        "artifacts": [
+          {
+            "role": "YALKEN_EXPORT_DOCX",
+            "basename": "source-yalken-export.docx",
+            "sha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9"
+          },
+          {
+            "role": "WORD_SAVED_DOCX",
+            "basename": "word-saved.docx",
+            "sha256": "sha256:15d2e0f64c3de2b29ccabc286f8dbf3dfa69bd362fbf85d1b67fba3f94e65268"
+          },
+          {
+            "role": "WORD_REOPENED_DOCX",
+            "basename": "word-reopened.docx",
+            "sha256": "sha256:2e23ed41d7099fd754f54ad682e14c4cabcf6a84d341d160080618bc33f02bb9"
+          }
+        ]
+      },
+      "externalRehydrationPackage": {
+        "schemaVersion": "yalken.interop100.rootDurableEvidencePackage.v1",
+        "packageId": "cell001-source-package-v1",
+        "manifestSha256": "sha256:ff3a612c1c87cf51a107019aa8e71709160214b047f14e3c85bc5cc1d2f7a62a",
+        "verifierSha256": "sha256:1ba6ecf6c0ecc95148dd73aec15afba983c1420b237e5591461a3657ddef079d",
+        "reportSha256": "sha256:0dd5b424590aeaced185ddcf3ebf9f063b26076bc3289116296c0e379bd24054",
+        "reportStatus": "PASS_100_OF_100_TWO_BYTE_IDENTICAL_REPORTS",
+        "ledgerEntryRawSha256": "sha256:7f7ff1a6ff92e1e7904cf05f3218cd6fc00289d844258c77a22dc83ef0b118dc",
+        "mutationAuditorSha256": "sha256:1ac983f44987c28569efc7205d2980dbfcabff397ea02d9fa34284a773f34ba6",
+        "mutationReportSha256": "sha256:79eb7e2a1592e6bb2f76193014aa20e869d51277e5ddaddba6da48734a6215e8",
+        "mutationReportStatus": "PASS_6_OF_6_KILLED_ZERO_SURVIVORS",
+        "fileCount": 18
+      }
+    }
+  ]
+}

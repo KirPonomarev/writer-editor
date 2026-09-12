@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
 import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
@@ -50,6 +52,7 @@ import {
   R24_DOCX_LINEBREAK_SOURCE_EXPORT_EXPECTATION,
   R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION,
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
+  R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION,
   R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
   R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
@@ -108,6 +111,7 @@ import {
   verifyR24DocxLinebreakSourceExportPostEvaluationException,
   verifyR24Interop100GoogleDocxImportRoutePostEvaluationException,
   verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationException,
+  verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException,
   verifyR24Interop100U000cPagebreakReexportPostEvaluationException,
   verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException,
   verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
@@ -128,11 +132,19 @@ import {
 const FILE='docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json';
 const OLD='docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V1.json';
 const h=(bytes)=>crypto.createHash('sha256').update(bytes).digest('hex');
+const approvalMatchesApprovedBy=(entry,approvedBy)=>{
+  const actual=String(entry?.approvedBy||'').trim();
+  const expected=String(approvedBy||'').trim();
+  if(!actual||!expected)return false;
+  if(actual===expected)return true;
+  return actual.split('|').map((part)=>part.trim()).includes(expected);
+};
 const load=()=>{const bytes=fs.readFileSync(FILE);return{value:JSON.parse(bytes),fileDigest:h(bytes)}};
 const clone=(value)=>structuredClone(value);
 const verify=(value,fileDigest=load().fileDigest)=>verifyCertificationSet({value,fileDigest,candidateSha:'HEAD',allowAuditCycle2Admission:true,allowMainProductWp401Admission:true});
 const raw=(file)=>{const bytes=fs.readFileSync(file);return{bytes,value:JSON.parse(bytes),digest:h(bytes)}};
 const objectFromCommit=(sha,repoPath)=>execFileSync('git',['show',`${sha}:${repoPath}`],{maxBuffer:64*1024*1024});
+const git=(cwd,args)=>execFileSync('git',args,{cwd,encoding:'utf8'}).trim();
 
 function rcv00dCurrentIdentityGitFixture({ changedPaths, baseTree, denyBase = false, denyRepair = false, successor = false } = {}) {
   const e = RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION;
@@ -240,6 +252,212 @@ for (const [name, options, signal] of [
 ]) {
   test(`RCV00D current-identity certification rejects ${name}`, () => assert.throws(() => verifyCurrentIdentityFixture(rcv00dCurrentIdentityGitFixture(options)), signal));
 }
+
+function stableJsonValue(value) {
+  if (Array.isArray(value)) return value.map(stableJsonValue);
+  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stableJsonValue(value[key])]));
+  return value;
+}
+
+function sha256StableJson(value) {
+  return `sha256:${crypto.createHash('sha256').update(JSON.stringify(stableJsonValue(value))).digest('hex')}`;
+}
+
+function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSeal, mutateAfterSeal } = {}) {
+  const e = R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION;
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-interop100-post-audit-'));
+  git(repoRoot, ['init', '-q']);
+  git(repoRoot, ['config', 'user.email', 'interop100-post-audit@example.invalid']);
+  git(repoRoot, ['config', 'user.name', 'Interop 100 Post Audit']);
+  fs.writeFileSync(path.join(repoRoot, 'base.txt'), 'base\n');
+  git(repoRoot, ['add', 'base.txt']);
+  git(repoRoot, ['commit', '-q', '-m', 'base']);
+  const files = new Map([...new Set([...e.admittedPaths, e.denominatorPath])].map((relative) => [relative, fs.readFileSync(relative)]));
+  const read = (relative) => JSON.parse(files.get(relative));
+  const put = (relative, value) => files.set(relative, canonicalBytes(value));
+  const writeRepoFilesFromMap = () => {
+    for (const relative of e.admittedPaths) {
+      const absolutePath = path.join(repoRoot, relative);
+      fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+      fs.writeFileSync(absolutePath, files.get(relative));
+    }
+  };
+  let sourceSha;
+  let sourceTree;
+  let candidateSha;
+  let candidateTree;
+  const rebindEvidence = (headSha, treeSha) => {
+    const ledger = read(e.ledgerPath), envelope = read(e.evidenceEnvelopePath);
+    const ledgerEntry = ledger.entries[0], envelopeEntry = envelope.entries[0];
+    const generationId = `cell001-post-audit-fixture-${headSha.slice(0, 8)}`;
+    for (const target of [ledgerEntry, envelopeEntry]) {
+      target.exactHeadSha = headSha;
+      target.sourceRevision = headSha;
+      target.sourceTree = treeSha;
+      target.generationId = generationId;
+      target.evidenceReceipt.status = 'PASS_HARDENED_EXISTING_CELL_TEST_FIXTURE';
+      target.evidenceReceipt.runId = generationId;
+      target.evidenceReceipt.checkpointBasename = `checkpoint-${generationId}`;
+      for (const provider of target.providerEvidence || []) {
+        provider.exactHeadSha = headSha;
+        provider.documentIdentity = generationId;
+      }
+    }
+    envelopeEntry.canonicalPassEntrySha256 = sha256StableJson(ledgerEntry);
+    put(e.ledgerPath, ledger);
+    put(e.evidenceEnvelopePath, envelope);
+  };
+  const seal = () => {
+    rebindEvidence(sourceSha, sourceTree);
+    const inventory = read(e.inventoryPath);
+    for (const relative of [e.contractTestPath, e.postAuditTestPath]) {
+      const entry = inventory.entries.find((item) => item.path === relative);
+      entry.sha256 = h(files.get(relative));
+      entry.required = true;
+      entry.executionStatus = 'DECLARED_EXECUTABLE';
+    }
+    put(e.inventoryPath, inventory);
+    const approvals = read(e.approvalsPath);
+    approvals.approvals = approvals.approvals.filter((entry) => !(e.admittedPaths.includes(entry.filePath) && approvalMatchesApprovedBy(entry, e.approvedBy)));
+    for (const relative of e.admittedPaths.filter((item) => item !== e.approvalsPath)) {
+      approvals.approvals.push({
+        approved: true,
+        approvedAtUtc: '2026-09-13T00:00:00Z',
+        approvedBy: e.approvedBy,
+        authority: e.authority,
+        filePath: relative,
+        rationale: 'Fixture approval for exact R24 interop100 denominator hardening candidate bytes.',
+        sha256: h(files.get(relative)),
+      });
+    }
+    put(e.approvalsPath, approvals);
+  };
+  if (mutateBeforeSeal) mutateBeforeSeal({ e, files, read, put, rebindEvidence });
+  writeRepoFilesFromMap();
+  git(repoRoot, ['add', '.']);
+  git(repoRoot, ['commit', '-q', '-m', 'source-implementation']);
+  sourceSha = git(repoRoot, ['rev-parse', 'HEAD']);
+  sourceTree = git(repoRoot, ['rev-parse', `${sourceSha}^{tree}`]);
+  seal();
+  writeRepoFilesFromMap();
+  git(repoRoot, ['add', '.']);
+  git(repoRoot, ['commit', '-q', '-m', 'candidate-metadata']);
+  candidateSha = git(repoRoot, ['rev-parse', 'HEAD']);
+  candidateTree = git(repoRoot, ['rev-parse', `${candidateSha}^{tree}`]);
+  if (mutateAfterSeal) mutateAfterSeal({ e, files, read, put, sourceSha, sourceTree, candidateSha, candidateTree, rebindEvidence });
+  const fixtureGit = (args, options = {}) => {
+    let result;
+    if (args[0] === 'rev-parse') {
+      const ref = args[1];
+      if (ref === `${e.baseSha}^{tree}`) result = e.baseTree;
+      else if (ref === `${candidateSha}^{tree}`) result = candidateTree;
+      else if (ref.endsWith('^{tree}')) result = candidateTree;
+      else result = ref === 'HEAD' ? candidateSha : ref;
+    } else if (args[0] === 'merge-base') {
+      result = '';
+    } else if (args[0] === 'diff') {
+      result = (changedPaths ?? e.admittedPaths).join('\n');
+    } else if (args[0] === 'rev-list') {
+      result = candidateSha;
+    } else if (args[0] === 'show') {
+      const separator = args[1].indexOf(':'), sha = args[1].slice(0, separator), file = args[1].slice(separator + 1);
+      if (sha === candidateSha) {
+        if (!files.has(file)) throw new Error('fixture missing object');
+        result = files.get(file);
+      } else result = objectFromCommit(sha, file);
+    } else throw new Error(`Unexpected fixture Git command: ${args.join(' ')}`);
+    return options.encoding === 'utf8' ? String(result) : Buffer.from(result);
+  };
+  return { e, files, read, put, git: fixtureGit, repoRoot, candidateSha, candidateTree, sourceSha, sourceTree, cleanup: () => fs.rmSync(repoRoot, { recursive: true, force: true }) };
+}
+
+const verifyInterop100DenominatorAdmissionFixture = (fixture) => verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException({
+  candidateSha: fixture.candidateSha,
+  git: fixture.git,
+  repoRoot: fixture.repoRoot,
+});
+
+test('R24 interop100 denominator hardening exception accepts exact current delta', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture();
+  try {
+    const result = verifyInterop100DenominatorAdmissionFixture(fixture);
+    assert.equal(result.status, 'PASS');
+    assert.equal(result.candidateSha, fixture.candidateSha);
+    assert.equal(result.admittedPathDenominator, 8);
+    assert.equal(result.passedRequiredCells, 0);
+    assert.equal(result.diagnosticPassedRequiredCells, 1);
+    assert.equal(result.claimVerdict, 'AUTHORITATIVE_REHYDRATION_REQUIRED');
+    assert.equal(result.supportedDenominatorPromotion, false);
+    assert.equal(result.programDone, false);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('R24 interop100 denominator hardening exception rejects an unadmitted future path', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture({ changedPaths: [...R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION.admittedPaths, 'README.md'] });
+  try {
+    assert.throws(() => verifyInterop100DenominatorAdmissionFixture(fixture), /E_R24_INTEROP100_DENOMINATOR_CANDIDATE_NOT_FOUND/);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('R24 interop100 denominator hardening exception rejects missing envelope binding token', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture({
+    mutateBeforeSeal({ e, files }) {
+      files.set(e.validatorPath, Buffer.from(String(files.get(e.validatorPath)).replaceAll('EVIDENCE_ENVELOPE_PATH', 'EVIDENCE_ENVELOPE_REMOVED')));
+    },
+  });
+  try {
+    assert.throws(() => verifyInterop100DenominatorAdmissionFixture(fixture), /E_R24_INTEROP100_DENOMINATOR_VALIDATOR_TOKEN/);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('R24 interop100 denominator hardening exception rejects stale source head binding', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture({
+    mutateAfterSeal({ e, rebindEvidence }) {
+      rebindEvidence(e.baseSha, e.baseTree);
+    },
+  });
+  try {
+    assert.throws(() => verifyInterop100DenominatorAdmissionFixture(fixture), /CELL_EXECUTION_PROMOTION_NOT_DESCENDANT|CELL_EXECUTION_PROMOTION_DIFF_UNAVAILABLE/);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('R24 interop100 denominator hardening exception rejects stale approval hash', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture({
+    mutateAfterSeal({ e, read, put }) {
+      const approvals = read(e.approvalsPath);
+      approvals.approvals.find((entry) => entry.filePath === e.validatorPath && approvalMatchesApprovedBy(entry, e.approvedBy)).sha256 = '0'.repeat(64);
+      put(e.approvalsPath, approvals);
+    },
+  });
+  try {
+    assert.throws(() => verifyInterop100DenominatorAdmissionFixture(fixture), /E_R24_INTEROP100_DENOMINATOR_APPROVAL_DIGEST/);
+  } finally {
+    fixture.cleanup();
+  }
+});
+
+test('R24 interop100 denominator hardening exception rejects wrong approval authority', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture({
+    mutateAfterSeal({ e, read, put }) {
+      const approvals = read(e.approvalsPath);
+      approvals.approvals.find((entry) => entry.filePath === e.validatorPath && approvalMatchesApprovedBy(entry, e.approvedBy)).authority = 'WRONG_AUTHORITY';
+      put(e.approvalsPath, approvals);
+    },
+  });
+  try {
+    assert.throws(() => verifyInterop100DenominatorAdmissionFixture(fixture), /E_R24_INTEROP100_DENOMINATOR_APPROVAL_DIGEST/);
+  } finally {
+    fixture.cleanup();
+  }
+});
 
 const currentIdentityMutations = [
   ['wrong status base despite resealing', (f) => { const v = f.read(f.e.statusPath); v.baseSha = '0'.repeat(40); f.put(f.e.statusPath, v); f.seal(); }, /E_RCVID_STATUS_BASE/],
