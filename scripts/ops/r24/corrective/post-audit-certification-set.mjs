@@ -753,6 +753,37 @@ export const R24_EMBEDDED_FONT_ADMISSION_EXPECTATION=Object.freeze({
     'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
 	  ].sort(),
 	});
+export const R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION = Object.freeze({
+  baseSha: 'd816f9cab446509c1ed84ba3c4e9d32dcf5d6fe2',
+  baseTree: 'af5506cb398f799fd0817a351ca0e3c3e3b8161d',
+  contourId: 'R24-RCV-00D',
+  observationId: 'OBS-EXPORT-DOCX-MIN-COMMAND-BRIDGE-OUTER-FAIL-20260909',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  contractPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  historicalSemanticPatchDigest: 'c9ff0ea87c5ece07a97d42dffbc92857141c15f1eee03aba60d0e5dec00cc64d',
+  semanticPatchDigest: '14611b69ea6875fbed97ff5a0e2cf13556d2db717bae87c147649ccc317588e8',
+  semanticDigests: Object.freeze({
+    'src/export/docx/docxMinExportHandler.js': 'a4f73625024fa0cd16cc02651604a4350302847bece6cb9df6073803e6167940',
+    'src/renderer/commands/projectCommands.mjs': 'bdeb5532a49ef8ff8a29b7362804cfa7b90a1f756e32066dc7b9146a35d22ee3',
+    'test/unit/docx-export-notification-outcome.test.js': '426a09428c730b44da06d5c6ade8fa9fef6c97e52ce21512a890a4022432f022',
+  }),
+  bundlePath: 'src/renderer/editor.bundle.js',
+  bundleDigest: 'd16fa75cfee0a4d067b6f31b042df674c47f60c3aa8265739e33f7eadd9e53f5',
+  inventoryFileDenominator: 1469,
+  approvedBy: 'owner-directive:R24_RCV00D_DOCX_POSTWRITE_NOTIFICATION_2026_09_12',
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'src/export/docx/docxMinExportHandler.js',
+    'src/renderer/commands/projectCommands.mjs',
+    'src/renderer/editor.bundle.js',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/unit/docx-export-notification-outcome.test.js',
+  ].sort()),
+});
 export const R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION=Object.freeze({
   baseSha:'071daa0fa544accd0d1f038175780036145372aa',
   baseTree:'244712adbbe7bfe745f5df38900b776b2ca9b0aa',
@@ -4993,6 +5024,59 @@ export function verifyR24EmbeddedFontAdmissionPostEvaluationException({candidate
 	  return{schemaVersion:'R24_EMBEDDED_FONT_ADMISSION_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,defaultApprovalsDigest:defaultApprovals.digest,pk1r1ApprovalsDigest:pk1r1Approvals.digest,interopApprovalsDigest:interopApprovals.digest,sourceDigest:source.digest,parserDigest:parser.digest,contentPreviewTestDigest:contentPreviewTest.digest,hostileFileGateTestDigest:hostileFileGateTest.digest,intakePreflightTestDigest:intakePreflightTest.digest,packageBoundaryTestDigest:packageBoundaryTest.digest,partPolicyTestDigest:partPolicyTest.digest,zipInventoryTestDigest:zipInventoryTest.digest,parserB02TestDigest:parserB02Test.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,embeddedFontDisposition:'DIAGNOSTICS_AND_EXPLICIT_LOSS_ONLY',rawFontBinaryQuarantine:true,fontRenderingPreservationClaim:false,supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0,nonClaims:['NO_FONT_RENDERING_OR_PRESERVATION_CLAIM','NO_SUPPORTED_DENOMINATOR_CELL_PASS','NO_GOOGLE_NATIVE_ROUTE_CLAIM']};
 	}
 
+function resolveDocxNotificationCandidate(git, requested, e) {
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  if (exact(requested)) return requested;
+  const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+  for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
+  fail('E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA');
+}
+
+export function verifyDocxNotificationOutcomePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_DOCX_NOTIFICATION_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_DOCX_NOTIFICATION_BASE_ANCESTRY'); }
+  const candidate = resolveDocxNotificationCandidate(git, requested, e);
+  const changed = gitText(git, ['diff', '--name-only', `${e.baseSha}..${candidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed) === JSON.stringify(e.admittedPaths), 'E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_DOCX_NOTIFICATION_IDENTITY');
+  const artifacts = new Map(e.admittedPaths.map(relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_DOCX_NOTIFICATION_ARTIFACT_MISSING', relative); }
+    return [relative, { bytes, digest: h(bytes) }];
+  }));
+  for (const [relative, digest] of Object.entries({ ...e.semanticDigests, [e.bundlePath]: e.bundleDigest })) {
+    assert(artifacts.get(relative).digest === digest, 'E_DOCX_NOTIFICATION_ARTIFACT_DIGEST', relative);
+  }
+  const inventory = JSON.parse(artifacts.get(e.inventoryPath).bytes);
+  assert(inventory.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.totals?.all === e.inventoryFileDenominator && inventory.totals?.requiredSkips === 0 && inventory.totals?.unexplainedSkips === 0, 'E_DOCX_NOTIFICATION_INVENTORY');
+  for (const relative of [e.contractPath, 'test/unit/docx-export-notification-outcome.test.js']) {
+    const entry = inventory.entries.find(item => item.path === relative);
+    assert(entry?.sha256 === artifacts.get(relative).digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_DOCX_NOTIFICATION_INVENTORY_DIGEST', relative);
+  }
+  const approvals = JSON.parse(artifacts.get(e.approvalsPath).bytes);
+  assert(approvals.version === 'v1.0' && Array.isArray(approvals.approvals), 'E_DOCX_NOTIFICATION_APPROVALS');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    const digest = artifacts.get(relative).digest;
+    assert(approvals.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy)), 'E_DOCX_NOTIFICATION_APPROVAL_DIGEST', relative);
+  }
+  return {
+    schemaVersion: 'R24_DOCX_NOTIFICATION_OUTCOME_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree,
+    currentCandidateSha: requested, currentCandidateTree: requestedTree, closedCandidateOnly: candidate !== requested,
+    admittedPaths: e.admittedPaths, changedPaths: changed, admittedPathDenominator: e.admittedPaths.length,
+    semanticPatchDigest: e.semanticPatchDigest, semanticDigests: e.semanticDigests,
+    generatedOutput: { path: e.bundlePath, sha256: e.bundleDigest },
+    artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    contourId: e.contourId, observationId: e.observationId, graphSchedulerSelectedId: null,
+    stageAdmissionAndLease: 'NOT_APPLICABLE_TO_NO_GRAPH_DIRECT_CORRECTIVE', graphIncrement: 0,
+    evidenceScope: 'IMMUTABLE_CANDIDATE_BYTES_AND_DIRECT_CORRECTIVE_ADMISSION_NOT_EXECUTED_RUNTIME_PROOF',
+    programDone: false, productionReleaseReady: false, packagedUiRouteClaim: false,
+  };
+}
+
 function resolveR24O01O08SemanticOracleHardeningCandidateSha(git,resolvedCandidate,e){
   const isExact=(sha)=>{
     try{
@@ -6392,6 +6476,16 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const rcv00dCurrentIdentityBindingException = rcv00dCurrentIdentityBindingEnabled ? verifyRcv00dCurrentIdentityBindingPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (rcv00dCurrentIdentityBindingException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let docxNotificationOutcomeEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, 'test/unit/docx-export-notification-outcome.test.js');
+      docxNotificationOutcomeEnabled = true;
+    } catch {}
+  }
+  const docxNotificationOutcomeException = docxNotificationOutcomeEnabled ? verifyDocxNotificationOutcomePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (docxNotificationOutcomeException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -6399,6 +6493,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const verificationResult={schemaVersion:'POST_AUDIT_CERTIFICATION_SET_VERIFICATION_V1',status:'PASS',certificationSetDigest:fileDigest,evaluationSha:value.evaluationSha,evaluationTreeSha:value.evaluationTreeSha,stageCount:value.stageCount,artifactBindingDenominator:denominator,postEvaluationChangedPaths:changed,auditCycle2PostEvaluationException:cycle2Exception,wp401MainProductPostEvaluationException:wp401Exception,wp402MainProductPostEvaluationException:wp402Exception,wp403MainProductPostEvaluationException:wp403Exception,wp404MainProductPostEvaluationException:wp404Exception,wp500MainProductPostEvaluationException:wp500Exception,wp501MainProductPostEvaluationException:wp501Exception,wp501GateIntegrationPostEvaluationException:wp501GateException,wp501PerformanceIntegrationPostEvaluationException:wp501PerformanceException,wp501AuditR2CompatibilityPostEvaluationException:wp501AuditR2Exception,wp501InventoryFinalizationPostEvaluationException:wp501InventoryException,wp501TerminalExceptionPostEvaluationException:wp501TerminalException,wp502MainProductPostEvaluationException:wp502Exception,wp503MainProductPostEvaluationException:wp503Exception,wp504MainProductPostEvaluationException:wp504Exception,wp505MainProductPostEvaluationException:wp505Exception,wp506MainProductPostEvaluationException:wp506Exception,wp700MainProductPostEvaluationException:wp700Exception,wp700CiRepairPostEvaluationException:wp700CiRepairException,wp700CiRepairInventorySuccessor:wp700CiInventoryException,wp700CiRepairTemporalSuccessor:wp700CiTemporalException,wp507MainProductPostEvaluationException:wp507Exception,wp701MainProductPostEvaluationException:wp701Exception,wp702MainProductPostEvaluationException:wp702Exception,wp702CiCompatibilityPostEvaluationException:wp702CiCompatibilityException,wp702TestInventoryPostEvaluationException:wp702TestInventoryException,wp702EvidenceStampPostEvaluationException:wp702EvidenceStampException,wp702DependencyAuditPostEvaluationException:wp702DependencyAuditException,wp702Release01RebindPostEvaluationException:wp702Release01RebindException,wp702RendererBundleRebindPostEvaluationException:wp702RendererBundleRebindException,wp702Pk0SecurityPostEvaluationException:wp702Pk0SecurityException,wp702Pk0InventoryRefreshPostEvaluationException:wp702Pk0InventoryRefreshException,wp702CiMergeRefTestBindingPostEvaluationException:wp702CiMergeRefTestBindingException,wp702Wp504HistoricalSurfacePostEvaluationException:wp702Wp504HistoricalSurfaceException,wp600MainProductPostEvaluationException:wp600Exception,wp703MainProductPostEvaluationException:wp703Exception,wp601MainProductPostEvaluationException:wp601Exception,wp601HistoricalInventoryPostEvaluationException:wp601HistoricalException,wp601HistoricalInventoryAnchorRepairPostEvaluationException:wp601AnchorRepairException,wp704MainProductPostEvaluationException:wp704Exception,wp704EnvironmentRegistrationPostEvaluationException:wp704EnvException,wp705MainProductPostEvaluationException:wp705Exception,wp705HistoricalInventoryPostEvaluationException:wp705HistoricalException,wp602MainProductPostEvaluationException:wp602Exception,p01AdmissionPreparationPostEvaluationException:p01Exception,p03ContextRestorationPostEvaluationException:p03Exception,wp603MainProductPostEvaluationException:wp603Exception,wp604MainProductPostEvaluationException:wp604Exception,wp605MainProductPostEvaluationException:wp605Exception,wp710MainProductPostEvaluationException:wp710Exception,wp606MainProductPostEvaluationException:wp606Exception,wp607MainProductPostEvaluationException:wp607Exception,wp800MainProductPostEvaluationException:wp800Exception,wp801MainProductPostEvaluationException:wp801Exception,wp802MainProductPostEvaluationException:wp802Exception,wp803MainProductPostEvaluationException:wp803Exception,wp804MainProductPostEvaluationException:wp804Exception,wp805MainProductPostEvaluationException:wp805Exception,wp806MainProductPostEvaluationException:wp806Exception,wp708MainProductPostEvaluationException:wp708Exception,wp706MainProductPostEvaluationException:wp706Exception,wp707MainProductPostEvaluationException:wp707Exception,wp709MainProductPostEvaluationException:wp709Exception,pk1r1MainProductPostEvaluationException:pk1r1Exception,pre00bLifecycleReconciliationPostEvaluationException:pre00bException,pre00cNextContourSelectionPostEvaluationException:pre00cException,pre00cClosedStageCandidateVerifierRepairPostEvaluationException:pre00cClosedStageCandidateVerifierRepairException,pre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException:pre00dFreshSuccessorAdmissionLeaseHandoffException,pre00eRecoveryCiExternalConfirmationPostEvaluationException:pre00eRecoveryCiExternalConfirmationException,pre00fPlanDeliveryPostEvaluationException:pre00fPlanDeliveryException,pre00fCurrentHeadPlanDeliveryReconciliationPostEvaluationException:pre00fCurrentHeadPlanDeliveryReconciliationException,r24Rcv00aExactToolchainEntryPointPostEvaluationException:r24Rcv00aExactToolchainEntryPointException,r24Rcv00bEffectiveStateCompilerPostEvaluationException:r24Rcv00bEffectiveStateCompilerException,r24Rcv00bSuccessorAdmissionsPostEvaluationException:r24Rcv00bSuccessorAdmissionsException,r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException:r24Rcv00cCorrectiveRegisterCrosswalkException,r24DocxLinebreakSourceExportPostEvaluationException:r24DocxLinebreakSourceExportException,r24Rcv00dGraphDerivedSelectorPostEvaluationException:r24Rcv00dGraphDerivedSelectorException,r24Interop100GoogleDocxImportRoutePostEvaluationException:r24Interop100GoogleDocxImportRouteException,r24Interop100SafeDocxHyperlinkPreviewPostEvaluationException:r24Interop100SafeDocxHyperlinkPreviewException};
   verificationResult.r24Interop100U000cPagebreakReexportPostEvaluationException=r24Interop100U000cPagebreakReexportException;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
+  verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException=rcv00aCurrentHeadExactToolchainEntryPointException;
   verificationResult.r24Rcv00bCurrentHeadEffectiveStateCompilerPostEvaluationException=rcv00bCurrentHeadEffectiveStateCompilerException;
   verificationResult.r24ObsExportDocxCommandBridgeOuterFailPostEvaluationException=r24ObsExportDocxCommandBridgeOuterFailException;

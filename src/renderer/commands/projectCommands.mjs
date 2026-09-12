@@ -2892,6 +2892,15 @@ export function registerProjectCommands(registry, options = {}) {
         exported: true,
         outPath: typeof bridged.outPath === 'string' ? bridged.outPath : '',
         bytesWritten: Number.isInteger(bridged.bytesWritten) ? bridged.bytesWritten : 0,
+        ...(Array.isArray(bridged.warnings)
+          && bridged.warnings.length === 1
+          && bridged.warnings[0]?.code === 'W_EXPORT_STATUS_NOTIFICATION_FAILED'
+          && bridged.warnings[0]?.reason === 'STATUS_NOTIFICATION_FAILED'
+          ? { warnings: [{
+            code: 'W_EXPORT_STATUS_NOTIFICATION_FAILED',
+            reason: 'STATUS_NOTIFICATION_FAILED',
+          }] }
+          : {}),
       });
     }
 

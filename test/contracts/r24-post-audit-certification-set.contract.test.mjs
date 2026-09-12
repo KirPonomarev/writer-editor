@@ -54,6 +54,8 @@ import {
   R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,
   R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,
   R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,
+  R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION,
+  verifyDocxNotificationOutcomePostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
@@ -1613,17 +1615,18 @@ test('R24 embedded font admission exception rejects missing diagnostics-loss tok
 });
 function o01O08SemanticOracleHardeningGitFixture({changedPaths,oracleBytes,physicalCanaryBytes,oracleTestBytes,n4StructuralReturnTestBytes,claimLintBytes,claimLintTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='4'.repeat(40),candidateTree='5'.repeat(40)}={}){
   const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION;
+  const historical = relative => objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha, relative);
   const bytesByPath=new Map([
-    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
-    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
-    [e.oraclePath,oracleBytes??fs.readFileSync(e.oraclePath)],
-    [e.physicalCanaryPath,physicalCanaryBytes??fs.readFileSync(e.physicalCanaryPath)],
-    [e.oracleTestPath,oracleTestBytes??fs.readFileSync(e.oracleTestPath)],
-    [e.n4StructuralReturnTestPath,n4StructuralReturnTestBytes??fs.readFileSync(e.n4StructuralReturnTestPath)],
-    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
-    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
-    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
-    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+    [e.inventoryPath,inventoryBytes??historical(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??historical(e.approvalsPath)],
+    [e.oraclePath,oracleBytes??historical(e.oraclePath)],
+    [e.physicalCanaryPath,physicalCanaryBytes??historical(e.physicalCanaryPath)],
+    [e.oracleTestPath,oracleTestBytes??historical(e.oracleTestPath)],
+    [e.n4StructuralReturnTestPath,n4StructuralReturnTestBytes??historical(e.n4StructuralReturnTestPath)],
+    [e.claimLintPath,claimLintBytes??historical(e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??historical(e.claimLintTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??historical(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??historical(e.postAuditTestPath)],
   ]);
   return{candidateSha,git:(args,options={})=>{
     let value='';
@@ -1664,29 +1667,104 @@ test('R24 O01-O08 semantic oracle hardening exception rejects an unadmitted futu
   assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_CANDIDATE_NOT_FOUND|E_R24_O01_O08_EXACT_ADMITTED_DELTA/);
 });
 test('R24 O01-O08 semantic oracle hardening exception rejects missing oracle mismatch token',()=>{
-  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,oracle=fs.readFileSync(e.oraclePath,'utf8').replace('C5V2_ORACLE_COMMENT_BODY_MISMATCH','C5V2_ORACLE_COMMENT_TEXT_MISSING');
-  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,oracle=objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha,e.oraclePath).toString('utf8').replace('C5V2_ORACLE_COMMENT_BODY_MISMATCH','C5V2_ORACLE_COMMENT_TEXT_MISSING');
+  const approvals=JSON.parse(objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha,e.approvalsPath));
   const oracleDigest=h(Buffer.from(oracle));
   for(const entry of approvals.approvals)if(entry.filePath===e.oraclePath)entry.sha256=oracleDigest;
   const fixture=o01O08SemanticOracleHardeningGitFixture({oracleBytes:Buffer.from(oracle),approvalsBytes:Buffer.from(`${JSON.stringify(approvals,null,2)}\n`)});
   assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_ORACLE_TOKEN/);
 });
 test('R24 O01-O08 semantic oracle hardening exception rejects missing physical canary semantic intent token',()=>{
-  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,physicalCanary=fs.readFileSync(e.physicalCanaryPath,'utf8').replace('spanType: semanticIntent.spanType','spanType: semanticIntent.formatSpanType');
-  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,physicalCanary=objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha,e.physicalCanaryPath).toString('utf8').replace('spanType: semanticIntent.spanType','spanType: semanticIntent.formatSpanType');
+  const approvals=JSON.parse(objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha,e.approvalsPath));
   const physicalCanaryDigest=h(Buffer.from(physicalCanary));
   for(const entry of approvals.approvals)if(entry.filePath===e.physicalCanaryPath)entry.sha256=physicalCanaryDigest;
   const fixture=o01O08SemanticOracleHardeningGitFixture({physicalCanaryBytes:Buffer.from(physicalCanary),approvalsBytes:Buffer.from(`${JSON.stringify(approvals,null,2)}\n`)});
   assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_PHYSICAL_CANARY_TOKEN/);
 });
 test('R24 O01-O08 semantic oracle hardening exception rejects missing N4 structural-return source contract token',()=>{
-  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,n4StructuralReturnTest=fs.readFileSync(e.n4StructuralReturnTestPath,'utf8').replace('structuralSemantics:\\s*\\{ kind:\\s*semanticIntent\\.kind','structuralSemantics:\\s*\\{ kind:\\s*operation\\.semanticIntent\\.kind');
-  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,n4StructuralReturnTest=objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha,e.n4StructuralReturnTestPath).toString('utf8').replace('structuralSemantics:\\s*\\{ kind:\\s*semanticIntent\\.kind','structuralSemantics:\\s*\\{ kind:\\s*operation\\.semanticIntent\\.kind');
+  const approvals=JSON.parse(objectFromCommit(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.baseSha,e.approvalsPath));
   const n4StructuralReturnTestDigest=h(Buffer.from(n4StructuralReturnTest));
   for(const entry of approvals.approvals)if(entry.filePath===e.n4StructuralReturnTestPath)entry.sha256=n4StructuralReturnTestDigest;
   const fixture=o01O08SemanticOracleHardeningGitFixture({n4StructuralReturnTestBytes:Buffer.from(n4StructuralReturnTest),approvalsBytes:Buffer.from(`${JSON.stringify(approvals,null,2)}\n`)});
   assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_N4_TEST_TOKEN/);
 });
+function docxNotificationFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
+  const e = R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION, candidate = 'a'.repeat(40), requested = successor ? 'b'.repeat(40) : candidate;
+  const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const inventory = JSON.parse(files.get(e.inventoryPath));
+  inventory.totals.all = e.inventoryFileDenominator;
+  for (const relative of [e.contractPath, 'test/unit/docx-export-notification-outcome.test.js']) {
+    inventory.entries = inventory.entries.filter(entry => entry.path !== relative);
+    inventory.entries.push({ path: relative, sha256: sha(files.get(relative)), required: true, executionStatus: 'DECLARED_EXECUTABLE' });
+  }
+  files.set(e.inventoryPath, canonicalBytes(inventory));
+  files.set(e.approvalsPath, canonicalBytes({ version: 'v1.0', approvals: e.admittedPaths.filter(relative => relative !== e.approvalsPath).map(filePath => ({ filePath, sha256: sha(files.get(filePath)), approved: true, approvedBy: e.approvedBy })) }));
+  mutate(files, e);
+  const git = (args, options = {}) => {
+    let value;
+    if (args[0] === 'rev-parse') {
+      const ref = args[1];
+      value = ref === `${e.baseSha}^{tree}` ? baseTree ?? e.baseTree : ref.endsWith('^{tree}') ? (ref.startsWith(candidate) ? 'c' : 'd').repeat(40) : ref;
+    } else if (args[0] === 'merge-base') { if (unrelatedBase) throw Error('not ancestor'); value = ''; }
+    else if (args[0] === 'diff') value = (successor && args.at(-1).endsWith(requested) ? [...e.admittedPaths, 'future.txt'] : changedPaths ?? e.admittedPaths).join('\n');
+    else if (args[0] === 'rev-list') value = successor ? candidate : '';
+    else if (args[0] === 'show') {
+      assert.equal(args[1].split(':')[0], candidate, 'Different-head bytes must never verify a closed candidate');
+      const relative = args[1].slice(candidate.length + 1);
+      if (!files.has(relative)) throw Error('missing artifact');
+      return options.encoding === 'utf8' ? files.get(relative).toString('utf8') : files.get(relative);
+    } else throw Error(`Unexpected fixture Git operation: ${args}`);
+    return options.encoding === 'utf8' ? `${value}\n` : Buffer.from(`${value}\n`);
+  };
+  return { e, candidate, requested, git, files };
+}
+const verifyDocxFixture = (fixture, verify = verifyDocxNotificationOutcomePostEvaluationException) => verify({ candidateSha: fixture.requested, git: fixture.git });
+
+test('DOCX notification admission binds the exact eight-path direct corrective without graph or lease authority', () => {
+  const fixture = docxNotificationFixture(), result = verifyDocxFixture(fixture);
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.admittedPathDenominator, 8);
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.candidateTree, 'c'.repeat(40));
+  assert.equal(result.graphSchedulerSelectedId, null);
+  assert.equal(result.stageAdmissionAndLease, 'NOT_APPLICABLE_TO_NO_GRAPH_DIRECT_CORRECTIVE');
+  assert.equal(Object.keys(result.semanticDigests).length, 3);
+  assert.equal(result.generatedOutput.sha256, fixture.e.bundleDigest);
+  assert.equal(result.graphIncrement, 0);
+  assert.equal(result.productionReleaseReady, false);
+});
+test('DOCX notification admission separates historical candidate bytes from different-head evidence', () => {
+  const fixture = docxNotificationFixture({ successor: true }), result = verifyDocxFixture(fixture);
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.currentCandidateSha, fixture.requested);
+  assert.equal(result.currentCandidateTree, 'd'.repeat(40));
+  assert.equal(result.closedCandidateOnly, true);
+  assert(!result.admittedPaths.includes('future.txt'));
+});
+for (const [name, options, signal] of [
+  ['base tree drift', { baseTree: '0'.repeat(40) }, /E_DOCX_NOTIFICATION_BASE_TREE/],
+  ['unrelated base', { unrelatedBase: true }, /E_DOCX_NOTIFICATION_BASE_ANCESTRY/],
+  ['missing path', { changedPaths: R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.admittedPaths.slice(1) }, /E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA/],
+  ['extra path', { changedPaths: [...R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.admittedPaths, 'future.txt'] }, /E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA/],
+]) test(`DOCX notification admission rejects ${name}`, () => assert.throws(() => verifyDocxFixture(docxNotificationFixture(options)), signal));
+for (const relative of [...Object.keys(R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.semanticDigests), R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION.bundlePath]) {
+  test(`DOCX notification admission rejects mutated or stale ${relative}`, () => {
+    const fixture = docxNotificationFixture({ mutate: files => files.set(relative, Buffer.concat([files.get(relative), Buffer.from('\n// mutated\n')])) });
+    assert.throws(() => verifyDocxFixture(fixture), /E_DOCX_NOTIFICATION_ARTIFACT_DIGEST/);
+  });
+}
+for (const [name, mutate, signal] of [
+  ['missing artifact', (files, e) => files.delete(e.bundlePath), /E_DOCX_NOTIFICATION_ARTIFACT_MISSING/],
+  ['wrong inventory', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.totals.all = 0; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_INVENTORY/],
+  ['stale inventory test binding', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(entry => entry.path === e.contractPath).sha256 = '0'.repeat(64); files.set(e.inventoryPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_INVENTORY_DIGEST/],
+  ['test requirement downgrade', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(entry => entry.path === e.contractPath).required = false; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_INVENTORY_DIGEST/],
+  ['stale approvals', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals[0].sha256 = '0'.repeat(64); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
+  ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(entry => { entry.approvedBy = 'not-authority'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
+]) test(`DOCX notification admission rejects ${name}`, () => assert.throws(() => verifyDocxFixture(docxNotificationFixture({ mutate })), signal));
+
 function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,canonicalJsonBytes,leaseBytes,mutantBytes,canonicalJsonTestBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION;
   const deliverySha=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION.baseSha;
