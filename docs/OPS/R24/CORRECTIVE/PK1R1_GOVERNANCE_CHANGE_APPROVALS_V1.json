@@ -214,20 +214,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T06:51:55Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "rationale": "Approve exact bounded PR1881 current-head CI repair bytes after merging origin/main 18bff171: refresh C1B inventory and governance-visible claim bindings for P07 markup-compatibility preview delivery while preserving historical PRE00F exact evidence. No full portability, 1120-cell completion, product write/apply, UI, dependency, runtime network, Google source-of-truth, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "7ac9dcc891ce5c91ad6b8c3f4a7997bdb315ae5db45aea67fcf53f85f2dcbaa0",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
-        "ES-R24-PRE00F-CURRENT-HEAD-PLAN-DELIVERY-RECONCILIATION",
-        "ES-R24-RCV00A-EXACT-TOOLCHAIN-ENTRYPOINT-CLAIM-BINDINGS"
-      ],
-      "authority": "OWNER_APPROVED_R24_P07_PR1881_CURRENT_HEAD_CI_REPAIR"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00B_RESUME_AUTONOMOUS_ROUTINE_REVERSIBLE_SCOPE_2026_09_08",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-PRE00B-LIFECYCLE-RECONCILIATION-CLAIM-BINDINGS.json",
@@ -856,16 +842,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T08:08:18.000Z",
-      "approvedBy": "owner-directive:R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_2026_09_10",
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
-      "rationale": "Approve exact R24 review preview comment topology repair bytes: admits modern DOCX comment parent fallback from last paragraph paraId, namespace-shadow rejection, duplicate/self/cycle parent diagnostics, bounded cycle traversal, explicit flat Review preview topology-loss diagnostic, refreshed C1B inventory, and exact post-audit verifier/test binding. No product write authority, UI change, dependency change, runtime network, Google truth, release readiness, nested reply preservation claim, or PROGRAM_DONE claim.",
-      "sha256": "93f6cb05717d7d3b1b756c74429b44a3e1a15425f32a79d2e90452c1712a1538",
-      "evidenceStampIds": [],
-      "authority": ""
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T18:24:43.496Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
@@ -987,32 +963,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:42:48Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION",
-      "evidenceStampIds": [
-        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER",
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
-      ],
-      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
-      "sha256": "73e3d2d3055fdbcff1c47e494b7ef5db9e0eb449010ad6e49edee010f5523e28"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T18:42:48Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION",
-      "evidenceStampIds": [
-        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER",
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
-      ],
-      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
-      "sha256": "a9bbfd232e238db16e9da9f13c6b5fbe42c3d201b80b9516c5ef6d9aa9e9544e"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T13:42:17Z",
       "approvedBy": "OWNER_CHAT_DIRECT_R24_PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_AFTER_PRE00E_2026_09_11",
       "filePath": "docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json",
@@ -1097,15 +1047,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T00:21:08Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "5f254189afefdf7ca4d803baf09564fdd37666d45285e9033d229e257f42e3a6"
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "7b43f37f673358b5bb2bda0de887933c823e42191797cb75c0644d18de1dc776"
     },
     {
       "approved": true,
@@ -1118,18 +1069,6 @@
       "filePath": "test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js",
       "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
       "sha256": "de9836c6b8c78f940325b6fda168208f5da8d1944a91297c97aa560c63403e0e"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-12T00:21:08Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
-      "evidenceStampIds": [
-        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "0ea8ade7354f2db5848d426c172f7574311e2e2efd5ec8416fe13eef2c5594e3"
     },
     {
       "approved": true,
@@ -1205,15 +1144,81 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T01:32:35Z",
-      "approvedBy": "owner-directive:R24_DOCX_E2E_VALID_FIXTURE_REPAIR_7E765913_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_E2E_VALID_FIXTURE_REPAIR_7E765913",
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1"
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current-byte DOCX e2e command-chain test fixture repair: bind valid WordprocessingML namespace declarations so the clean positive fixture is legal under the strict XML preview parser, preserve S21 idempotent receipt integrity regressions, and refresh C1B inventory for the changed contract digest. No product runtime change, UI change, dependency, runtime network, Word/Google physical claim, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "f9b86954a75445edda058b936168484b66ba589294e7dd7bf745989025857f7a"
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "8ddbb2c40b70b74fa6251bd89d59967cd2014c3c5698d8ab6be3d812a93545ec"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "bc26e4f5907c1142e667f2385641116ba5079b442ae614ed5fe135be914106c6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "5fa5b6c60471781a4b6c58084c72fbca848d0924d5d9c584a8aa9894131de9cc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "2e96b6c7a050b962f288eec10744ab28a969dddd37bfec6c0c3ca4f8d8e65662"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "fc1d390beb41e3a7d57c39462dc69ba20879779e4ae09714f9fcf9fb7dda5f03"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T03:27:20Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_R02_REVIEW_PREVIEW_COMMENT_ANCHOR_AND_CLAIM_LINT_REPAIR",
+      "evidenceStampIds": [
+        "ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS",
+        "ES-R24-RCV00D-CURRENT-IDENTITY-BINDING"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session.contract.test.js",
+      "rationale": "Approve exact current-byte PR1897 interop repair chain after PR1858 merge and R02 comment-anchor boundary fix: refresh C1B inventory/current claim binding, retain RCV00D current-identity binding as historical-only, preserve existing DOCX preview/import hardening admissions, and add focused review-preview regression evidence. No product write/apply expansion, UI change, dependency, runtime network, Google source-of-truth, release readiness, 100 percent portability, 1120-cell completion, or PROGRAM_DONE claim.",
+      "sha256": "deb8395b413008964c0191e24e81c88f0b8d7eed7a9993a778aa3f02b324f756"
     }
   ],
   "evidenceStampIds": [
