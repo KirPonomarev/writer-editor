@@ -24,7 +24,7 @@ function expectInvalid(report, codeFragment) {
   );
 }
 
-test('interop 100 denominator keeps the closed 1120-cell baseline without promoted pass claims', async () => {
+test('interop 100 denominator keeps the closed 1120-cell baseline with one exact-head C1 text cell', async () => {
   const validator = await loadValidator();
   const spec = validator.readInterop100Denominator();
   const ledger = validator.readInterop100EvidenceLedger();
@@ -32,13 +32,23 @@ test('interop 100 denominator keeps the closed 1120-cell baseline without promot
 
   assert.equal(report.ok, true);
   assert.equal(report.requiredCells, 1120);
-  assert.equal(report.recordedCells, 0);
-  assert.equal(report.passedRequiredCells, 0);
-  assert.equal(report.percentage, 0);
-  assert.equal(report.statusCounts.NOT_EXECUTED, 1120);
+  assert.equal(report.recordedCells, 1);
+  assert.equal(report.passedRequiredCells, 1);
+  assert.equal(report.percentage, 0.089286);
+  assert.equal(report.statusCounts.NOT_EXECUTED, 1119);
   assert.equal(report.claimVerdict, 'NEEDS_MORE_EVIDENCE');
-  assert.equal(spec.currentGap.percentage, 0);
+  assert.equal(spec.currentGap.exactHeadPassedNumerator, 1);
+  assert.equal(spec.currentGap.percentage, 0.089286);
   assert.equal(ledger.declaredRollup.broadPassClaim, false);
+  assert.equal(ledger.entries[0].cellId, 'TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME');
+  assert.notEqual(ledger.entries[0].sourceRevision, currentHead());
+  assert.equal(ledger.entries[0].outsideContractLedger.silentDropCount, 0);
+  assert.deepEqual(ledger.entries[0].outsideContractLedger.dispositions, [
+    'EXPLICIT_LOSS',
+    'EXPLICIT_LOSS',
+    'EXPLICIT_LOSS',
+  ]);
+  assert.equal(ledger.entries[0].evidenceReceipt.broadPassClaim, false);
 });
 
 test('Google local DOCX native import is route-qualified only through an internal uploaded-file reference', async () => {
@@ -130,5 +140,17 @@ test('validator rejects attempts to count route qualification, direct local path
     const ledger = clone(baseLedger);
     ledger.routeQualificationEvidence[0].exactHeadSha = '0000000000000000000000000000000000000000';
     expectInvalid(validator.validateInterop100({ spec: clone(baseSpec), ledger, currentHead: head }), 'ROUTE_QUALIFICATION_BINDING_HEAD_MISMATCH');
+  }
+
+  {
+    const ledger = clone(baseLedger);
+    ledger.entries[0].sourceRevision = head;
+    expectInvalid(validator.validateInterop100({ spec: clone(baseSpec), ledger, currentHead: head }), 'CELL_EXECUTION_SOURCE_HEAD_MISMATCH');
+  }
+
+  {
+    const spec = clone(baseSpec);
+    spec.currentGap.exactHeadPassedNumerator = 2;
+    expectInvalid(validator.validateInterop100({ spec, ledger: clone(baseLedger), currentHead: head }), 'CURRENT_GAP_ROLLUP_MISMATCH');
   }
 });

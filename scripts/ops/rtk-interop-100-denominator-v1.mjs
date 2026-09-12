@@ -6,10 +6,20 @@ import { fileURLToPath } from 'node:url';
 
 export const DENOMINATOR_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 export const LEDGER_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json';
+export const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
+export const C1B_INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 export const CONTRACT_BASENAME = 'rtk-interop-100-denominator.contract.test.js';
 export const CONTRACT_ID = 'YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1';
 export const SPEC_SCHEMA = 'yalken.interop100.denominator.v1';
 export const LEDGER_SCHEMA = 'yalken.interop100.evidenceLedger.v1';
+export const CELL_EVIDENCE_PROMOTION_METADATA_PATHS = Object.freeze([
+  C1B_INVENTORY_PATH,
+  DENOMINATOR_PATH,
+  LEDGER_PATH,
+  GOVERNANCE_APPROVALS_PATH,
+  'scripts/ops/rtk-interop-100-denominator-v1.mjs',
+  `test/contracts/${CONTRACT_BASENAME}`,
+]);
 
 export const FIELD_IDS = Object.freeze([
   'TEXT',
@@ -118,6 +128,44 @@ function currentGitHead(repoRoot) {
   const result = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' });
   if (result.status !== 0) return '';
   return String(result.stdout || '').trim();
+}
+
+function gitMergeBaseIsAncestor(repoRoot, ancestor, descendant) {
+  if (ancestor === descendant) return true;
+  const result = spawnSync('git', ['merge-base', '--is-ancestor', ancestor, descendant], { cwd: repoRoot, encoding: 'utf8' });
+  return result.status === 0;
+}
+
+function gitDiffNameOnly(repoRoot, base, head) {
+  const result = spawnSync('git', ['diff', '--name-only', `${base}..${head}`], { cwd: repoRoot, encoding: 'utf8' });
+  if (result.status !== 0) return null;
+  return String(result.stdout || '').split('\n').map((line) => line.trim()).filter(Boolean);
+}
+
+function validateEvidenceHeadBinding({ cellId, exactHeadSha, sourceRevision, currentHead, repoRoot, context, errors }) {
+  if (exactHeadSha === currentHead) return;
+  if (!commitSha(exactHeadSha)) {
+    errors.push(`${cellId}:${context}_HEAD_INVALID`);
+    return;
+  }
+  if (sourceRevision !== exactHeadSha) {
+    errors.push(`${cellId}:${context}_SOURCE_HEAD_MISMATCH`);
+    return;
+  }
+  if (!gitMergeBaseIsAncestor(repoRoot, exactHeadSha, currentHead)) {
+    errors.push(`${cellId}:${context}_PROMOTION_NOT_DESCENDANT`);
+    return;
+  }
+  const changedFiles = gitDiffNameOnly(repoRoot, exactHeadSha, currentHead);
+  if (!Array.isArray(changedFiles)) {
+    errors.push(`${cellId}:${context}_PROMOTION_DIFF_UNAVAILABLE`);
+    return;
+  }
+  const allowed = new Set(CELL_EVIDENCE_PROMOTION_METADATA_PATHS);
+  const outside = changedFiles.filter((filePath) => !allowed.has(filePath));
+  if (outside.length > 0) {
+    errors.push(`${cellId}:${context}_PROMOTION_PATHS_OUTSIDE_ALLOWLIST:${outside.join(',')}`);
+  }
 }
 
 export function readInterop100Denominator(repoRoot = repoRootFromHere()) {
@@ -244,8 +292,19 @@ function validateSpec(spec, errors) {
   if (spec.securityPolicy?.externalTestConnectorNetworkAllowed !== true) errors.push('EXTERNAL_TEST_CONNECTOR_NETWORK_POLICY_INVALID');
   validateWordPhysicalRuntimePolicy(spec, errors);
   validateProviderTransportPolicy(spec, errors);
-  if (spec.currentGap?.requiredCellDenominator !== EXPECTED_REQUIRED_CELLS || spec.currentGap?.exactHeadPassedNumerator !== 0 || spec.currentGap?.percentage !== 0) {
-    errors.push('CURRENT_GAP_MUST_REMAIN_ZERO_BASELINE');
+  if (!isObject(spec.currentGap)
+    || spec.currentGap.requiredCellDenominator !== EXPECTED_REQUIRED_CELLS
+    || !Number.isSafeInteger(spec.currentGap.exactHeadPassedNumerator)
+    || spec.currentGap.exactHeadPassedNumerator < 0
+    || spec.currentGap.exactHeadPassedNumerator > EXPECTED_REQUIRED_CELLS
+    || typeof spec.currentGap.percentage !== 'number'
+    || spec.currentGap.percentage < 0
+    || spec.currentGap.percentage > 100
+    || typeof spec.currentGap.code !== 'string'
+    || spec.currentGap.code.length === 0
+    || typeof spec.currentGap.reason !== 'string'
+    || spec.currentGap.reason.length === 0) {
+    errors.push('CURRENT_GAP_INVALID');
   }
   const cells = buildRequiredCells(spec);
   if (cells.length !== EXPECTED_REQUIRED_CELLS) errors.push(`EXPANDED_DENOMINATOR_INVALID:${cells.length}`);
@@ -299,7 +358,7 @@ function validateHopEvidence(entry, route, errors) {
   }
 }
 
-function validateProviderEvidence(entry, route, currentHead, errors) {
+function validateProviderEvidence(entry, route, currentHead, repoRoot, errors) {
   if (!Array.isArray(entry.providerEvidence)) {
     errors.push(`${entry.cellId}:PROVIDER_EVIDENCE_REQUIRED`);
     return;
@@ -309,7 +368,15 @@ function validateProviderEvidence(entry, route, currentHead, errors) {
     errors.push(`${entry.cellId}:PROVIDER_PROFILE_DENOMINATOR_MISMATCH`);
   }
   for (const item of entry.providerEvidence) {
-    if (item?.exactHeadSha !== currentHead) errors.push(`${entry.cellId}:PROVIDER_DIFFERENT_HEAD:${item?.profileId || 'UNKNOWN'}`);
+    validateEvidenceHeadBinding({
+      cellId: entry.cellId,
+      exactHeadSha: item?.exactHeadSha,
+      sourceRevision: entry.sourceRevision,
+      currentHead,
+      repoRoot,
+      context: `PROVIDER_${item?.profileId || 'UNKNOWN'}`,
+      errors,
+    });
     if (!item?.buildIdentity || !item?.documentIdentity || !item?.revisionIdentity) {
       errors.push(`${entry.cellId}:PROVIDER_IDENTITY_INCOMPLETE:${item?.profileId || 'UNKNOWN'}`);
     }
@@ -352,13 +419,22 @@ function validateOutsideContract(entry, errors) {
   }
 }
 
-function validatePackagedBuild(entry, currentHead, errors) {
+function validatePackagedBuild(entry, currentHead, repoRoot, errors) {
   const proof = entry.packagedBuildEvidence;
   if (!isObject(proof)) {
     errors.push(`${entry.cellId}:PACKAGED_BUILD_EVIDENCE_REQUIRED`);
     return;
   }
-  if (proof.exactHeadSha !== currentHead || !sha256(proof.packageSha256) || !proof.buildIdentity) {
+  validateEvidenceHeadBinding({
+    cellId: entry.cellId,
+    exactHeadSha: proof.exactHeadSha,
+    sourceRevision: entry.sourceRevision,
+    currentHead,
+    repoRoot,
+    context: 'PACKAGED_BUILD',
+    errors,
+  });
+  if (!sha256(proof.packageSha256) || !proof.buildIdentity) {
     errors.push(`${entry.cellId}:PACKAGED_BUILD_IDENTITY_INVALID`);
   }
   if (proof.installed !== true || proof.executed !== true || proof.reopen !== true || proof.readback !== true) {
@@ -443,20 +519,29 @@ function validateRouteQualificationEvidence(ledger, bindingBaseSha, errors) {
   }
 }
 
-function validatePassEntry(entry, cell, spec, currentHead, errors) {
+function validatePassEntry(entry, cell, spec, currentHead, repoRoot, errors) {
   const route = spec.routes.find((item) => item.id === cell.routeId);
   const hostile = cell.volumeId === 'MALFORMED_HOSTILE_INPUT';
   if (entry.evidenceClass !== 'CELL_EXECUTION_EXACT_HEAD') errors.push(`${entry.cellId}:EVIDENCE_CLASS_INVALID`);
-  if (entry.exactHeadSha !== currentHead) errors.push(`${entry.cellId}:EXACT_HEAD_MISMATCH`);
+  validateEvidenceHeadBinding({
+    cellId: entry.cellId,
+    exactHeadSha: entry.exactHeadSha,
+    sourceRevision: entry.sourceRevision,
+    currentHead,
+    repoRoot,
+    context: 'CELL_EXECUTION',
+    errors,
+  });
+  if (entry.sourceRevision !== entry.exactHeadSha) errors.push(`${entry.cellId}:SOURCE_REVISION_HEAD_MISMATCH`);
   if (!sha256(entry.artifactSha256)) errors.push(`${entry.cellId}:ARTIFACT_SHA_INVALID`);
   if (!entry.sourceRevision || !entry.targetRevision || !entry.generationId) errors.push(`${entry.cellId}:REVISION_GENERATION_IDENTITY_INCOMPLETE`);
   validateFixture(entry, errors);
   validateOracles(entry, errors);
   validateHopEvidence(entry, route, errors);
-  validateProviderEvidence(entry, route, currentHead, errors);
+  validateProviderEvidence(entry, route, currentHead, repoRoot, errors);
   validateCycles(entry, route, errors);
   validateOutsideContract(entry, errors);
-  if (cell.executionProfileId === 'PACKAGED_BUILD_RUNTIME') validatePackagedBuild(entry, currentHead, errors);
+  if (cell.executionProfileId === 'PACKAGED_BUILD_RUNTIME') validatePackagedBuild(entry, currentHead, repoRoot, errors);
 
   if (!hostile) {
     if (entry.outcome !== 'PRESERVED') errors.push(`${entry.cellId}:VALID_SUPPORTED_OUTCOME_NOT_PRESERVED`);
@@ -474,7 +559,7 @@ function validatePassEntry(entry, cell, spec, currentHead, errors) {
   }
 }
 
-export function validateInterop100({ spec, ledger, currentHead }) {
+export function validateInterop100({ spec, ledger, currentHead, repoRoot = repoRootFromHere() }) {
   const errors = [];
   validateSpec(spec, errors);
   if (!commitSha(currentHead)) errors.push('CURRENT_HEAD_INVALID');
@@ -509,7 +594,7 @@ export function validateInterop100({ spec, ledger, currentHead }) {
     statusCounts[entry.status] += 1;
     if (entry.status === COUNTED_STATUS) {
       const before = errors.length;
-      validatePassEntry(entry, cellById.get(entry.cellId), spec, currentHead, errors);
+      validatePassEntry(entry, cellById.get(entry.cellId), spec, currentHead, repoRoot, errors);
       if (errors.length === before) passedRequiredCells += 1;
     }
   }
@@ -525,6 +610,12 @@ export function validateInterop100({ spec, ledger, currentHead }) {
     || declared.percentage !== percentage
     || declared.broadPassClaim !== (passedRequiredCells === cells.length && cells.length > 0)) {
     errors.push('DECLARED_ROLLUP_MISMATCH');
+  }
+  if (!isObject(spec.currentGap)
+    || spec.currentGap.requiredCellDenominator !== cells.length
+    || spec.currentGap.exactHeadPassedNumerator !== passedRequiredCells
+    || spec.currentGap.percentage !== percentage) {
+    errors.push('CURRENT_GAP_ROLLUP_MISMATCH');
   }
   return {
     ok: errors.length === 0,
@@ -546,7 +637,7 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
   const ledger = options.ledger || readInterop100EvidenceLedger(repoRoot);
   const currentHead = options.currentHead || currentGitHead(repoRoot);
-  return validateInterop100({ spec, ledger, currentHead });
+  return validateInterop100({ spec, ledger, currentHead, repoRoot });
 }
 
 function main() {

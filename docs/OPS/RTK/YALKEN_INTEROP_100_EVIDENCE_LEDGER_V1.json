@@ -3,8 +3,142 @@
   "contractId": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
   "createdAtUtc": "2026-09-09T00:00:00.000Z",
   "bindingBaseSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
-  "status": "OPEN_ROUTE_QUALIFIED_ZERO_EXACT_HEAD_PASS_CELLS",
-  "entries": [],
+  "status": "OPEN_ONE_EXACT_HEAD_PASS_CELL_REMAINING_EVIDENCE_OPEN",
+  "entries": [
+    {
+      "cellId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "status": "PASS",
+      "evidenceClass": "CELL_EXECUTION_EXACT_HEAD",
+      "exactHeadSha": "797103d4b64dcd8c3518a38d74bb1c2bc4692a38",
+      "artifactSha256": "sha256:6d1e7d9235822d147c092a0c06a5d1cb3a0f7a1e3a2188df62d393fd2fbb31d6",
+      "sourceRevision": "797103d4b64dcd8c3518a38d74bb1c2bc4692a38",
+      "targetRevision": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+      "generationId": "interop-c1-text-single-scene-source-node22-20260912t141613819z-405e0540",
+      "fixture": {
+        "seeded": true,
+        "synthetic": true,
+        "disposable": true,
+        "userDocumentOpened": false,
+        "existingDriveDocumentUsed": false
+      },
+      "outcome": "PRESERVED",
+      "typedResult": false,
+      "hopEvidence": [
+        {
+          "hopId": "YALKEN_EXPORT",
+          "sourceArtifactSha256": "sha256:e9370c4a2f56fb5cd596ba32e6bcc1827688115d1080d936f6b94adc3df071bd",
+          "targetArtifactSha256": "sha256:c34f24477d49b28739a8594c7d07d515e716698cf4f90ba73b5092950e6fe15f",
+          "provenanceSha256": "sha256:5604c0111f5b30c88cf025cc24438655f5f26f54f091fd702791de60bffd776d",
+          "lossLedgerSha256": "sha256:705889ea6d205138435a9c8f9d76f3b88950630968de72df3b4cbf8e180b9684",
+          "fieldOutcome": "PRESERVED",
+          "silentDropCount": 0
+        },
+        {
+          "hopId": "WORD_LIFECYCLE",
+          "sourceArtifactSha256": "sha256:c34f24477d49b28739a8594c7d07d515e716698cf4f90ba73b5092950e6fe15f",
+          "targetArtifactSha256": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+          "provenanceSha256": "sha256:5604c0111f5b30c88cf025cc24438655f5f26f54f091fd702791de60bffd776d",
+          "lossLedgerSha256": "sha256:705889ea6d205138435a9c8f9d76f3b88950630968de72df3b4cbf8e180b9684",
+          "fieldOutcome": "PRESERVED",
+          "silentDropCount": 0
+        },
+        {
+          "hopId": "YALKEN_RETURN_INTAKE",
+          "sourceArtifactSha256": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+          "targetArtifactSha256": "sha256:e9370c4a2f56fb5cd596ba32e6bcc1827688115d1080d936f6b94adc3df071bd",
+          "provenanceSha256": "sha256:5604c0111f5b30c88cf025cc24438655f5f26f54f091fd702791de60bffd776d",
+          "lossLedgerSha256": "sha256:705889ea6d205138435a9c8f9d76f3b88950630968de72df3b4cbf8e180b9684",
+          "fieldOutcome": "PRESERVED",
+          "silentDropCount": 0
+        }
+      ],
+      "providerEvidence": [
+        {
+          "profileId": "WORD_DESKTOP",
+          "exactHeadSha": "797103d4b64dcd8c3518a38d74bb1c2bc4692a38",
+          "buildIdentity": "Microsoft Word 16.112 com.microsoft.Word UBF8T346G9",
+          "documentIdentity": "interop-c1-text-single-scene-source-node22-20260912t141613819z-405e0540",
+          "revisionIdentity": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+          "syntheticOnly": true,
+          "lifecycle": true,
+          "reopen": true,
+          "readback": true,
+          "reexport": true,
+          "cleanupVerified": true,
+          "artifactSha256": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f"
+        }
+      ],
+      "oracles": {
+        "SEMANTIC": {
+          "status": "PASS",
+          "artifactSha256": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+          "authority": "YALKEN_IMPORT_PREVIEW_RETURNED_CANDIDATE"
+        },
+        "STRUCTURE": {
+          "status": "PASS",
+          "artifactSha256": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+          "authority": "YALKEN_IMPORT_PREVIEW_CANDIDATE_CREATE_PLAN"
+        },
+        "ORDER": {
+          "status": "PASS",
+          "artifactSha256": "sha256:da4900fa5dea6dffcce1cf2d0b36446b0ec205d218f01ee0550c368cbc86280f",
+          "authority": "MARKER_INDEX_MONOTONICITY"
+        },
+        "LOSS": {
+          "status": "PASS",
+          "artifactSha256": "sha256:705889ea6d205138435a9c8f9d76f3b88950630968de72df3b4cbf8e180b9684",
+          "authority": "EXPLICIT_LOSS_REPORT_NON_SILENT"
+        },
+        "PROVENANCE": {
+          "status": "PASS",
+          "artifactSha256": "sha256:5604c0111f5b30c88cf025cc24438655f5f26f54f091fd702791de60bffd776d",
+          "authority": "RUN_RECEIPT_HASH_CHAIN"
+        },
+        "INDEPENDENT_READBACK": {
+          "status": "PASS",
+          "artifactSha256": "sha256:a753c68400030c3014ca722d65cc1ff60aec76cd4d02219f8f6a2b2daacf0d19",
+          "authority": "SYSTEM_UNZIP_DOCUMENT_XML"
+        },
+        "CLEANUP": {
+          "status": "PASS",
+          "artifactSha256": "sha256:838746d100583995ba12128e4e38a0c04fd9104c74fa389f4533da47808194bd",
+          "authority": "WORD_DOCUMENT_COUNT_AFTER_RUN"
+        }
+      },
+      "cycles": [
+        {
+          "roundId": "round-001",
+          "lossLedgerSha256": "sha256:705889ea6d205138435a9c8f9d76f3b88950630968de72df3b4cbf8e180b9684",
+          "semanticPreserved": true,
+          "newLossCount": 0
+        }
+      ],
+      "outsideContractLedger": {
+        "observedCount": 3,
+        "silentDropCount": 0,
+        "dispositions": [
+          "EXPLICIT_LOSS",
+          "EXPLICIT_LOSS",
+          "EXPLICIT_LOSS"
+        ]
+      },
+      "evidenceReceipt": {
+        "schemaVersion": "yalken.interop100.c1TextSingleSceneSourceRuntime.cellReceipt.v1",
+        "status": "PASS",
+        "runId": "interop-c1-text-single-scene-source-node22-20260912t141613819z-405e0540",
+        "nodeVersion": "v22.12.0",
+        "receiptSha256": "sha256:6d1e7d9235822d147c092a0c06a5d1cb3a0f7a1e3a2188df62d393fd2fbb31d6",
+        "wordRootKind": "MICROSOFT_WORD_CONTAINER_DOCUMENTS_YALKEN_R2_4",
+        "broadPassClaim": false,
+        "limitations": [
+          "Only TEXT/SINGLE_SCENE/C1/SOURCE_RUNTIME is claimed.",
+          "Word rewrites package bytes; byte identity is not claimed.",
+          "Word-added package relationships and plain-text-only import are explicitly reported as outside-contract loss.",
+          "No styles, comments, notes, tables, media, sections, anchors, tracked review semantics, metadata, Google route, packaged runtime, or full user-flow closure."
+        ]
+      }
+    }
+  ],
   "routeQualificationEvidence": [
     {
       "id": "GOOGLE_LOCAL_DOCX_TO_NATIVE_IMPORT_ROUTEU2_20260909",
@@ -147,9 +281,9 @@
   ],
   "declaredRollup": {
     "requiredCells": 1120,
-    "passedRequiredCells": 0,
-    "notExecutedCells": 1120,
-    "percentage": 0,
+    "passedRequiredCells": 1,
+    "notExecutedCells": 1119,
+    "percentage": 0.089286,
     "broadPassClaim": false
   },
   "nonClaims": [
