@@ -1261,7 +1261,7 @@ test('R24 interop 100 safe external hyperlink preview exception accepts exact PR
   assert.equal(result.safeExternalHyperlinkPreview,'PASS_NON_CELL_WITH_EXPLICIT_LINK_RELATIONSHIP_LOSS');
 });
 test('R24 interop 100 safe external hyperlink preview exception rejects denominator promotion',()=>{
-  const e=R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,ledger=JSON.parse(fs.readFileSync(e.ledgerPath,'utf8'));
+  const e=R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,historicalFixture=safeHyperlinkGitFixture(),ledger=JSON.parse(objectFromCommit(historicalFixture.candidateSha,e.ledgerPath).toString('utf8'));
   const evidence=ledger.implementationContourEvidence.find((item)=>item.id===e.evidenceId);
   evidence.denominatorImpact.passedRequiredCellsAdded=1;
   const fixture=safeHyperlinkGitFixture({ledgerBytes:canonicalBytes(ledger)});

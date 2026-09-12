@@ -2,12 +2,12 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:19:44.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T15:14:00.749Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Secondary interop 100 governance registry and maintained C1B inventory hygiene required so exact current repository bytes validate before the one-cell evidence promotion can be gated. Metadata-only rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside maintained metadata, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "5b936e290b8749ab321e754b91d2ba8ba5a5bf5294f0362fd272430e84f0d83f"
+      "rationale": "Approve exact bounded PR1905 CI repair bytes: safe-link historical negative fixture reads immutable historical ledger bytes before mutating its non-cell evidence into a denominator-promotion identity mutant, so zero-pass rollup and evidence-identity invariants are both preserved; C1B inventory is re-bound to that test hash. No product runtime behavior, UI, dependency, network truth, Word or Google denominator closure, additional cell PASS, release readiness, PROGRAM_DONE, or 100 percent portability claim.",
+      "sha256": "81109f276f2d0a7401f941af0e51b86b1f261b6cfd4292e02cc8e55c0db6927e"
     },
     {
       "approved": true,
@@ -143,9 +143,9 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T15:14:00.749Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -155,8 +155,8 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "81162bc3afcb2dcd05571d7ce9277e4347e5a00acb077bf540a72a00272cef53"
+      "rationale": "Approve exact bounded PR1905 CI repair bytes: safe-link historical negative fixture reads immutable historical ledger bytes before mutating its non-cell evidence into a denominator-promotion identity mutant, so zero-pass rollup and evidence-identity invariants are both preserved; C1B inventory is re-bound to that test hash. No product runtime behavior, UI, dependency, network truth, Word or Google denominator closure, additional cell PASS, release readiness, PROGRAM_DONE, or 100 percent portability claim.",
+      "sha256": "ede405feec02cc63e8c1b59fbc1815d80fa4dbbf260319911c53ad36e308c25b"
     },
     {
       "approved": true,
