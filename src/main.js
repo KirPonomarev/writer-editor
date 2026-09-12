@@ -10099,6 +10099,7 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
 
   let safeCreateResult = null;
   try {
+    const requestId = normalizeDocxImportSafeCreateRequestId(payload?.requestId);
     await ensureProjectStructure();
     const romanRoot = getProjectSectionPath('roman');
     const projectBinding = await resolveProjectBindingForFile(romanRoot);
@@ -10125,6 +10126,7 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
         operationLabel: 'safe create DOCX import scene batch',
         writeBatchAtomic: writeFlowSceneBatchAtomic,
         transactionAuthority: docxImportTransactionAuthority,
+        importRequestNonce: requestId,
       },
     );
   } catch (error) {
