@@ -529,7 +529,10 @@ test('RCV00D current closure: native store never follows embedded evidence paths
   let store;
   try { store = api.loadCurrentCorrectiveClosureStore(); } finally { fs.readFileSync = originalRead; }
   assert.equal(reads.length, 1);
-  assert(reads[0].endsWith(api.CURRENT_CORRECTIVE_CLOSURES_PATH));
+  const hasCarrierSuffix = pathname => pathname.replaceAll('\\', '/').endsWith(api.CURRENT_CORRECTIVE_CLOSURES_PATH);
+  assert(hasCarrierSuffix(reads[0]));
+  assert(hasCarrierSuffix('C:\\repo\\' + api.CURRENT_CORRECTIVE_CLOSURES_PATH.replaceAll('/', '\\')));
+  assert(!hasCarrierSuffix('C:\\repo\\untrusted.json'));
   assert.equal(hash(store.readClosureReceipt(acceptedDigest)), acceptedDigest);
   assert.throws(() => store.readClosureReceipt('f'.repeat(64)), /E_CURRENT_CLOSURE_UNTRUSTED_RECEIPT/);
 });

@@ -814,7 +814,7 @@ export const R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION = Object.freeze({
   approvedBy: 'owner-directive:R24_RCV00D_CURRENT_CLOSURE_SELECTOR_2026_09_12',
   semanticDigests: Object.freeze({
     'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs': '9923e5110c176f9a29a16afb7271cf47c9547590b7e4d9632c5826761cc86ca4',
-    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs': '2d0b7c332cab02d83934303ba58c07c00f3b2dbd75114c7e8a7a30dacb87be12',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs': '575e7b8311a67250661a2a7a2864c24ec8005555492b51721e60fb7744e3e1e2',
     'docs/OPS/R24/EVIDENCE/RCV00D_CURRENT_CORRECTIVE_CLOSURES_V1.json': '367795f8baa1c5f1f60c0e729bb70147261a738ee78b749767ed2f17d8f1c556',
   }),
   admittedPaths: Object.freeze([
