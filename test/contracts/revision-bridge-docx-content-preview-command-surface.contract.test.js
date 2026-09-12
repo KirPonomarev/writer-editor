@@ -171,6 +171,16 @@ function cleanDocxZip(body = '<w:p/>') {
   ]);
 }
 
+function rawStoredDocxZip(body) {
+  return zipFixture([
+    {
+      name: 'word/document.xml',
+      method: 0,
+      body,
+    },
+  ]);
+}
+
 function toPayload(bytes, overrides = {}) {
   return {
     requestId: 'request-1',
@@ -271,8 +281,16 @@ test('DOCX content preview command surface: blocked and malformed reports do not
   const invalidEntity = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip(
     paragraphXml('A &bogus; B'),
   )));
+  const invalidUtf8 = await port.handleDocxContentPreviewCommandSurface(toPayload(rawStoredDocxZip(Buffer.concat([
+    Buffer.from(documentXml('<w:p><w:r><w:t>A '), 'utf8'),
+    Buffer.from([0xc3, 0x28]),
+    Buffer.from(' B</w:t></w:r></w:p>', 'utf8'),
+  ]))));
+  const invalidDeclaration = await port.handleDocxContentPreviewCommandSurface(toPayload(rawStoredDocxZip(
+    documentXml(`<!ELEMENT w:t ANY>${paragraphXml('A')}`),
+  )));
 
-  for (const result of [duplicate, malformedXml, invalidEntity]) {
+  for (const result of [duplicate, malformedXml, invalidEntity, invalidUtf8, invalidDeclaration]) {
     assert.equal(result.ok, true);
     assert.equal(result.previewOk, false);
     assert.equal(result.docxContentPreviewReport.ok, false);
@@ -288,6 +306,14 @@ test('DOCX content preview command surface: blocked and malformed reports do not
   assert.equal(invalidEntity.docxContentPreviewReport.parse.attempted, true);
   assert.equal(invalidEntity.docxContentPreviewReport.diagnostics.some((item) => (
     item.sourceCode === 'DOCX_XML_ENTITY_INVALID'
+  )), true);
+  assert.equal(invalidUtf8.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(invalidUtf8.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_UTF8_MALFORMED'
+  )), true);
+  assert.equal(invalidDeclaration.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(invalidDeclaration.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_DECLARATION_UNSUPPORTED'
   )), true);
 });
 

@@ -130,6 +130,16 @@ function cleanDocxZip(body = '<w:p/>') {
   ]);
 }
 
+function rawStoredDocxZip(body) {
+  return zipFixture([
+    {
+      name: 'word/document.xml',
+      method: 0,
+      body,
+    },
+  ]);
+}
+
 function collectKeys(value, pathParts = []) {
   if (Array.isArray(value)) {
     return value.flatMap((item, index) => collectKeys(item, pathParts.concat(String(index))));
@@ -312,6 +322,45 @@ test('DOCX local file preview adapter: invalid XML text entities fail before imp
   )), true);
   assert.equal(result.docxImportPreviewPlan, null);
   assertNoForbiddenPublicFields(result);
+});
+
+test('DOCX local file preview adapter: malformed UTF-8 and declaration markup fail before import planning', async () => {
+  const invalidUtf8 = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-invalid-utf8' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'InvalidUtf8.docx') }),
+      readLocalFileBytes: async () => rawStoredDocxZip(Buffer.concat([
+        Buffer.from(documentXml('<w:p><w:r><w:t>A '), 'utf8'),
+        Buffer.from([0xc3, 0x28]),
+        Buffer.from(' B</w:t></w:r></w:p>', 'utf8'),
+      ])),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+  const invalidDeclaration = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-invalid-declaration' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'InvalidDeclaration.docx') }),
+      readLocalFileBytes: async () => rawStoredDocxZip(documentXml(`<!NOTATION gif SYSTEM "image/gif">${paragraphXml('A')}`)),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+
+  for (const result of [invalidUtf8, invalidDeclaration]) {
+    assert.equal(result.ok, true);
+    assert.equal(result.status, 'blocked');
+    assert.equal(result.importPreviewOk, false);
+    assert.equal(result.docxContentPreviewReport.ok, false);
+    assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+    assert.equal(result.docxImportPreviewPlan, null);
+    assertNoForbiddenPublicFields(result);
+  }
+  assert.equal(invalidUtf8.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_UTF8_MALFORMED'
+  )), true);
+  assert.equal(invalidDeclaration.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_DECLARATION_UNSUPPORTED'
+  )), true);
 });
 
 test('DOCX local file preview adapter: unsupported extension and oversized bytes fail closed before preview helpers', async () => {

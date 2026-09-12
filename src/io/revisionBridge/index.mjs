@@ -7387,10 +7387,7 @@ function docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText) {
       continue;
     }
     if (text.startsWith('<!', open)) {
-      const end = docxZipXmlFindTagEnd(text, open + 1);
-      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_MALFORMED') };
-      cursor = end + 1;
-      continue;
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_UNSUPPORTED') };
     }
     const close = docxZipXmlFindTagEnd(text, open + 1);
     if (close === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MALFORMED') };
@@ -7901,14 +7898,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       if (elementStack.length === 0 && rootSeen) {
         return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };
       }
-      if (diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
-        diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_MARKUP_DIAGNOSTIC', {
-          severity: 'warning',
-          sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
-          message: 'unsupported XML markup retained as preview diagnostic only',
-        }));
-      }
-      continue;
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_UNSUPPORTED') };
     }
 
     const rawTagName = docxContentPreviewTagName(token);
@@ -8161,7 +8151,30 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     });
   }
 
-  const xmlText = Buffer.from(extraction.bytes).toString('utf8');
+  const xmlText = docxZipDecodeUtf8Xml(extraction.bytes);
+  if (xmlText === null) {
+    return docxContentPreviewResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_CONTENT_PREVIEW_CODES.XML_MALFORMED,
+      reason: 'DOCX_XML_UTF8_MALFORMED',
+      decision: 'blocked',
+      preflightSummary,
+      parseAttempted: true,
+      parseCompleted: false,
+      diagnostics: [
+        docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_UTF8_MALFORMED'),
+      ],
+      evidence: [
+        docxContentPreviewEvidence('mainDocument', {
+          sourcePart: extraction.entry.entryId,
+          byteSize: extraction.entry.byteSize,
+        }),
+      ],
+      sourceArtifactSha256,
+      carrierIgnored,
+    });
+  }
   const unsupportedEncoding = docxContentPreviewUnsupportedEncoding(xmlText);
   if (unsupportedEncoding) {
     return docxContentPreviewResult({

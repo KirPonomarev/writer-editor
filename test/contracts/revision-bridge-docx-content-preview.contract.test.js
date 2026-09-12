@@ -479,6 +479,11 @@ test('DOCX content preview: XML character data follows parser legality and prese
       cleanDocxZip(paragraphXml('A &#x7F; &#xD7FF; &#xE000; &#xFDD0; &#xFFFD; &#x10000; B')),
       `A ${String.fromCodePoint(0x7f)} ${String.fromCodePoint(0xd7ff)} ${String.fromCodePoint(0xe000)} ${String.fromCodePoint(0xfdd0)} ${String.fromCodePoint(0xfffd)} ${String.fromCodePoint(0x10000)} B`,
     ],
+    [
+      'valid-encoded-replacement-character',
+      cleanDocxZip(paragraphXml(`A ${String.fromCodePoint(0xfffd)} B`)),
+      `A ${String.fromCodePoint(0xfffd)} B`,
+    ],
     ['valid-cdata', cleanDocxZip('<w:p><w:r><w:t>A <![CDATA[< & >]]> B</w:t></w:r></w:p>'), 'A < & > B'],
     [
       'valid-adjacent-cdata',
@@ -533,6 +538,45 @@ test('DOCX content preview: XML character data follows parser legality and prese
       'cdata-outside-root',
       rawStoredDocxZip(`<![CDATA[Alpha]]>${documentXml(paragraphXml('Beta'))}`),
       'DOCX_XML_MARKUP_OUTSIDE_ROOT',
+    ],
+    [
+      'invalid-utf8-main-document',
+      rawStoredDocxZip(Buffer.concat([
+        Buffer.from(documentXml('<w:p><w:r><w:t>A '), 'utf8'),
+        Buffer.from([0xc3, 0x28]),
+        Buffer.from(' B</w:t></w:r></w:p>', 'utf8'),
+      ])),
+      'DOCX_XML_UTF8_MALFORMED',
+    ],
+    [
+      'unsupported-uppercase-declaration',
+      rawStoredDocxZip(documentXml(`<!FOO>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-lowercase-declaration',
+      rawStoredDocxZip(documentXml(`<!foo>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-element-declaration',
+      rawStoredDocxZip(documentXml(`<!ELEMENT w:t ANY>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-attlist-declaration',
+      rawStoredDocxZip(documentXml(`<!ATTLIST w:t id ID #IMPLIED>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-notation-declaration',
+      rawStoredDocxZip(documentXml(`<!NOTATION gif SYSTEM "image/gif">${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-ignore-section-declaration',
+      rawStoredDocxZip(documentXml(`<![IGNORE[hidden]]>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
     ],
   ];
 
