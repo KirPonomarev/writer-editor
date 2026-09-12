@@ -356,21 +356,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11 | owner-directive:R24_W0_CURRENT_STATE_CLOSURE_2026_09_10 | owner-directive:R24_T04_TYPED_BREAK_SECTION_LOSS_2026_09_11 | owner-directive:R24_PR1878_CURRENT_MAIN_REBIND_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY | SUPERVISOR_DIRECTIVE_R24_T04_TYPED_BREAK_SECTION_LOSS_GOVERNANCE_REGISTRY_CURRENT_MAIN_REBIND_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
-        "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "372326c9bf686296ce412e23a1f70bbd6e78d60446a161d990c8ca1ced4c3b47",
-      "rationale": "Approve exact governance approval registry bytes for the bounded embedded-font DOCX admission contour: records only current file-hash approvals for metadata-only Word embedded-font admission and explicit loss reporting. Registry metadata only; no product behavior beyond the approved embedded-font package classifier, no font rendering or preservation claim, no Word/Google full denominator PASS, no release readiness, and no PROGRAM_DONE claim."
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-08T00:00:00Z",
       "approvedBy": "OWNER_CHAT_DIRECT_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_2026_09_08",
       "filePath": "docs/tasks/R24_PRE00C_CLOSED_STAGE_CANDIDATE_VERIFIER_REPAIR_001.md",
@@ -615,20 +600,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:23:16.305Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
-      "evidenceStampIds": [
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "S13_GOOGLE_EXPORT_MATERIALIZED_REVERSE_PREVIEW_POSTFIX",
-        "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
-      ],
-      "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "26a20eb25c7ed1b14fd437c5bd6952b991ed1cbd0678ad38605d7025f1d94e0e",
-      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T03:05:00Z",
       "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
@@ -829,20 +800,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:23:16.306Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
-      "evidenceStampIds": [
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "S13_GOOGLE_EXPORT_MATERIALIZED_REVERSE_PREVIEW_POSTFIX",
-        "S14_GOOGLE_EXPORT_WORD_PHYSICAL"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim.",
-      "sha256": "e4d70605460dbb71fb955c75a5db7322fbc4265efd21270f115e7699513d9aa0"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T18:19:44.905Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_R24_S13_GOOGLE_TTF_FONT_PART_GOVERNANCE_REFRESH",
@@ -854,16 +811,6 @@
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
       "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca",
       "rationale": "Current-byte binding for the explicitly authorized PR1888 S11 OPC XML and bounded SFNT intake repair. Includes regression controls and dependent inventory or approval carriers. No new dependency, runtime network, font rendering, product closure or full portability claim."
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
-      "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
-      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999",
-      "evidenceStampIds": [],
-      "authority": ""
     },
     {
       "approved": true,
@@ -942,19 +889,6 @@
       "filePath": "test/contracts/rtk-g0b-feasibility.contract.test.js",
       "rationale": "Approve exact bounded W0 current-head effective-state closure bytes: immutable W0 physical receipt/candidate binding, append-only effective-state overlay, raw plan/program preservation, claim-binding evidence, post-audit exception repair, no product runtime, UI, dependency, network truth, user-document access, release-readiness, graph promotion beyond W0, or PROGRAM_DONE claim.",
       "sha256": "39b6201eb18b813f24499444d5b9369678bdf69acc86a90414befb1980c68cd5"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
-      "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
-      ],
-      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "e6a9409a1fd754125b5df15a8b706f4ba04efe29489cb7bbf03a9cc4f41a3145"
     },
     {
       "approved": true,
@@ -1053,19 +987,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
-      ],
-      "filePath": "scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs",
-      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
-      "sha256": "beac8113efca68565eaa10a516b3b273b1dc6c74b9637f3d7208b1f527e965b8"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T18:42:48Z",
       "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
       "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION",
@@ -1089,32 +1010,6 @@
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
       "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
       "sha256": "a9bbfd232e238db16e9da9f13c6b5fbe42c3d201b80b9516c5ef6d9aa9e9544e"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T00:00:00Z",
-      "approvedBy": "owner-directive:R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION_PR1883_2026_09_11",
-      "authority": "OWNER_APPROVED_R24_RCV00D_GRAPH_DERIVED_SELECTOR_CURRENT_HEAD_RECONCILIATION",
-      "evidenceStampIds": [
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-CLAIM-BINDINGS",
-        "ES-R24-RCV00D-GRAPH-DERIVED-SELECTOR-RECEIPT"
-      ],
-      "filePath": "test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs",
-      "rationale": "Approve exact bounded PR1883 RCV00D graph-derived selector current-head reconciliation bytes after merging origin/main ae8838dc/P07 drift: governance-visible selector, post-audit, docs-claim-lint, evidence, and C1B inventory files only. No product runtime, UI, dependency, runtime network, user-document access, release-readiness, graph promotion beyond RCV00D/PRE00E recovery, PK1, V3, WP900, or PROGRAM_DONE claim.",
-      "sha256": "a7919cc36f3284478afc79e86f9b30780bad4336a067157f0fc12455d9c446ea"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T18:42:48Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current-byte PR1888 merge-forward reconciliation after PR1892 RCV00B loader parity: C1B inventory regenerated from merged source, docs-claim-lint preserves RCV00B current-head evidence carriers as historical-only, and no product closure, UI, dependency, runtime network, release readiness, or full portability claim is added.",
-      "sha256": "7775640f035e466f71e39a40b3253a99c2ba654ace71de739093894f692e3f76",
-      "evidenceStampIds": [
-        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER",
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
-      ],
-      "authority": "OWNER_APPROVED_YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION"
     },
     {
       "approved": true,
@@ -1178,32 +1073,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T18:47:11Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact merged PR1888 plus PR1892 post-audit certification-set verifier bytes after current-main reconciliation; preserves bounded governance proof only, no runtime dependency, network/cloud truth, product graph, release-publication, or full portability claim.",
-      "sha256": "ee8020e0315e0f1333af1814fb84909cdd43e9f9003dcf9d3239f7ac2811591a",
-      "evidenceStampIds": [
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
-      ],
-      "authority": "YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T18:47:11Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION_2026_09_11",
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact merged PR1888 plus PR1892 post-audit certification-set contract test bytes after current-main reconciliation; preserves bounded governance proof only, no runtime dependency, network/cloud truth, product graph, release-publication, or full portability claim.",
-      "sha256": "1737aaa7395228fe9eefd0672659615ff120601fcd567cc83170020a1d7462f4",
-      "evidenceStampIds": [
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1",
-        "ES-R24-RCV00B-CURRENT-HEAD-EFFECTIVE-STATE-COMPILER"
-      ],
-      "authority": "YALKEN_PR1888_MERGE_FORWARD_PR1892_RCV00B_RECONCILIATION"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T18:24:43.498Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "filePath": "docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json",
@@ -1225,6 +1094,102 @@
         "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
       ],
       "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_CURRENT_MAIN_RECONCILIATION"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "5f254189afefdf7ca4d803baf09564fdd37666d45285e9033d229e257f42e3a6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "de9836c6b8c78f940325b6fda168208f5da8d1944a91297c97aa560c63403e0e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "0ea8ade7354f2db5848d426c172f7574311e2e2efd5ec8416fe13eef2c5594e3"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-data-descriptor.contract.test.js",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "da26809b77da15f45f3677fd4cb3ede3a14ea565d8451ffd037de97bb34bf614"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "407c2b849754c0607a855b6af4513ec99d4ec0a75d854e2773d9277db4f77d34"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "8d1162254f08e4e2ecd6ab10b06aefcc694cdcab9d333b56e9cb6250c60a423b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "58c01e3244593be86e71ff9f253201f2be5bd9d219ba2fc0e97f1e2a93067d11"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:21:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
+      "sha256": "ebc59db0bfbf48e1c3e6bf92a928a9e26345d34876ead4f3f43c80cbcdbb6aa9"
     }
   ],
   "evidenceStampIds": [
@@ -1245,7 +1210,8 @@
     "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
     "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
     "ES-R24-W0-CURRENT-STATE-CLOSURE",
-    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS"
+    "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
+    "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
   ],
   "sourcePlanRoles": {
     "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
