@@ -47,30 +47,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "73e3d2d3055fdbcff1c47e494b7ef5db9e0eb449010ad6e49edee010f5523e28"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "40146844c1293c043a5c8dd7247e70933767195b43e6ed6b889253265b64a177",
+      "evidenceStampIds": [
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
+      ]
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "a9bbfd232e238db16e9da9f13c6b5fbe42c3d201b80b9516c5ef6d9aa9e9544e"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "cf35a36472e16831b1284a2adb0c91000e5d470791a3ec441895e172916495bc",
+      "evidenceStampIds": [
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
+      ]
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "filePath": "docs/OPS/R24/EVIDENCE/ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS.json",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "7ac9dcc891ce5c91ad6b8c3f4a7997bdb315ae5db45aea67fcf53f85f2dcbaa0"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "bc26e4f5907c1142e667f2385641116ba5079b442ae614ed5fe135be914106c6",
+      "evidenceStampIds": [
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
+      ]
     },
     {
       "approved": true,
@@ -83,59 +92,51 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T04:37:34.949Z",
-      "approvedBy": "owner-directive:R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
-      "rationale": "Approve exact bounded PR1867 DOCX import-preview bookmark/custom metadata explicit-loss delivery bytes after merge-forward onto PR1866 main: admits only zero-write content/import preview diagnostics, explicit loss-report regression coverage, C1B inventory rebinding, post-audit certification binding, and CI governance approval carrier rebinding. No product runtime write, UI change, dependency, network truth, full-denominator portability PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "7feab096a999cf5599046406e75a3539178ffd741c3b8af1f78e74bf54874999"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "8d1162254f08e4e2ecd6ab10b06aefcc694cdcab9d333b56e9cb6250c60a423b",
+      "evidenceStampIds": [
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
+      ]
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-10T19:53:20.526Z",
-      "approvedBy": "owner-directive:R24_INTEROP_P03_RELATIONSHIP_GRAPH_VALIDATION_2026_09_10 | owner-directive:R24_INTEROP_P03_POSTEVAL_GENERIC01_ADMISSION_REPAIR_20260910 | owner-directive:R24_RCV00H_MINIMAL_E0_PARSER_PURITY_2026_09_10",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_P03_PR1871_MAIN40A688_RESYNC_AND_R24_RCV00H_MINIMAL_E0_PARSER_PURITY_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
       ],
       "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "rationale": "Approve exact current bytes for PR1871 main40a688 relationship-graph validation plus R24 RCV00H merge reconciliation where shared post-audit carriers were regenerated or resolved; no product runtime, UI, dependency, network truth, release readiness, broad portability PASS, PROGRAM_DONE, graph promotion, or unrelated governed path claim.",
-      "sha256": "e6a9409a1fd754125b5df15a8b706f4ba04efe29489cb7bbf03a9cc4f41a3145"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "58c01e3244593be86e71ff9f253201f2be5bd9d219ba2fc0e97f1e2a93067d11"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ee8020e0315e0f1333af1814fb84909cdd43e9f9003dcf9d3239f7ac2811591a"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "e0bc171e3e00d646bb486971cc3a12dbb1b07825c695431d7372b188219bb699"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR_CURRENT_HEAD:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_DELIVERY_METADATA_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "1737aaa7395228fe9eefd0672659615ff120601fcd567cc83170020a1d7462f4"
+      "rationale": "Secondary interop governance registry hygiene during bounded T07 field-boundary delivery repair: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "28e011c7d013949a9bb8f8d5414c370d2031144a87690639ccf778afc2898599"
     },
     {
       "approved": true,
@@ -230,39 +231,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:55:00Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1-20260911",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_DOCX_NAMESPACE_ALIAS_IMPORT_PREVIEW_REPAIR",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_IMPORT_PREVIEW_FIX_CURRENT_HEAD_2026_09_12",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_IMPORT_PREVIEW_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "7a0a7bcf9e048e9662f1ed4f914dc2431af80751c51a2309a1baca888c936c74",
-      "rationale": "Approve bounded DOCX namespace-alias import-preview repair: valid WordprocessingML elements bound to the official namespace by a non-w prefix are normalized to canonical preview tag names so visible text is preserved, while wrong namespaces remain blocked. No UI, dependency, runtime network, project storage mutation, rich table/bookmark/comment/metadata import, Word physical saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "166189874969521de455b38b3f58f0aa49bcdfa7397abe65a136cf80a9e43a1e",
+      "rationale": "Approve bounded T07 DOCX field-boundary import-preview repair and delivery metadata: complex-field instruction text no longer leaks into visible manuscript candidates, unclosed complex fields emit explicit structure and link loss where fallback text is used, and C1B inventory is rebound to the exact regression bytes. No UI, dependency, runtime network, project storage mutation, physical Word run, Google Docs bridge run, packaged app run, 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:55:00Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1-20260911",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_DOCX_NAMESPACE_ALIAS_IMPORT_PREVIEW_REPAIR",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_IMPORT_PREVIEW_FIX_CURRENT_HEAD_2026_09_12",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_IMPORT_PREVIEW_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "793327f3f2b1aaa58044ff0034704ed7977891df497f4fb715ab975a1fb041de",
-      "rationale": "Approve bounded DOCX namespace-alias import-preview regression coverage: official WordprocessingML namespace aliases preserve visible text and canonical loss diagnostics, and wrong namespace prefixes still fail closed without empty successful previews. No UI, dependency, runtime network, project storage mutation, rich table/bookmark/comment/metadata import, Word physical saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "e48cfbe4e5cbfc5ef1afecf9be8cb3f163cda19072280d55cd6f7e2791a8be40",
+      "rationale": "Approve bounded T07 DOCX field-boundary import-preview repair and delivery metadata: complex-field instruction text no longer leaks into visible manuscript candidates, unclosed complex fields emit explicit structure and link loss where fallback text is used, and C1B inventory is rebound to the exact regression bytes. No UI, dependency, runtime network, project storage mutation, physical Word run, Google Docs bridge run, packaged app run, 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T19:55:00Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1-20260911",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_DOCX_NAMESPACE_ALIAS_IMPORT_PREVIEW_REPAIR",
+      "approvedAtUtc": "2026-09-12T11:35:00Z",
+      "approvedBy": "owner-direct:TASK_ID:R24_T07_FIELD_BOUNDARY_IMPORT_PREVIEW_FIX_CURRENT_HEAD_2026_09_12",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_T07_FIELD_BOUNDARY_IMPORT_PREVIEW_REPAIR",
       "evidenceStampIds": [
-        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+        "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "6d92a17df93b348e7d3d088852db5f153042b0a01e9e43e2592b21e12b34a729",
-      "rationale": "Approve C1B inventory rebind for bounded DOCX namespace-alias import-preview repair after adding exact regression coverage. No UI, dependency, runtime network, project storage mutation, rich table/bookmark/comment/metadata import, Word physical saturation, Google closure, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "sha256": "17107f7a66bda1f3d36a0a98d44e60b6061e9ff3834b00fb0e9a6993c20b300b",
+      "rationale": "Approve bounded T07 DOCX field-boundary import-preview repair and delivery metadata: complex-field instruction text no longer leaks into visible manuscript candidates, unclosed complex fields emit explicit structure and link loss where fallback text is used, and C1B inventory is rebound to the exact regression bytes. No UI, dependency, runtime network, project storage mutation, physical Word run, Google Docs bridge run, packaged app run, 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
     }
   ],
   "version": "v1.0",
@@ -271,6 +272,7 @@
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
     "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
     "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
-    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1",
+    "ES-R24-T07-FIELD-BOUNDARY-PREVIEW-FIX"
   ]
 }
