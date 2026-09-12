@@ -6693,6 +6693,8 @@ const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS,
 ]);
 const DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION';
 const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC';
@@ -7570,6 +7572,23 @@ function docxContentPreviewAddMarkupCompatibilityDiagnostic(diagnostics, seenKin
   }));
 }
 
+function docxContentPreviewFieldInstructionHasHyperlink(value) {
+  return /\bHYPERLINK\b/iu.test(String(value || ''));
+}
+
+function docxContentPreviewAddFieldHyperlinkDiagnostic(diagnostics, seenKinds, sourceCode, tagName) {
+  if (!sourceCode || seenKinds.has(sourceCode)) return;
+  seenKinds.add(sourceCode);
+  if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
+  diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC, {
+    severity: 'warning',
+    sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    sourceCode,
+    tagName,
+    message: 'DOCX field hyperlink instruction is retained as explicit link loss only',
+  }));
+}
+
 function docxContentPreviewMarkupCompatibilityChoiceSupported(token) {
   const requiredPrefixes = docxContentPreviewAttributeValue(token, 'Requires')
     .trim()
@@ -7854,6 +7873,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   const seenUnsupportedTags = new Set();
   const seenTypedBreakKinds = new Set();
   const seenSectionBreakKinds = new Set();
+  const seenFieldHyperlinkKinds = new Set();
   const paragraphs = [];
   const elementStack = [];
   let rootSeen = false;
@@ -7867,6 +7887,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let sectionPropertiesDepth = 0;
   let unsupportedDepth = 0;
   let textDepth = 0;
+  let fieldInstructionTextDepth = 0;
+  const complexFieldStack = [];
   let totalTextChars = 0;
   let cursor = 0;
 
@@ -7895,6 +7917,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
           };
         }
       }
+      if (
+        unsupportedDepth === 0
+        && insideParagraph
+        && fieldInstructionTextDepth > 0
+        && complexFieldStack.length > 0
+      ) {
+        complexFieldStack[complexFieldStack.length - 1].instructionText += docxContentPreviewDecodeText(token);
+      }
       continue;
     }
 
@@ -7916,6 +7946,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
             }),
           };
         }
+      }
+      if (
+        unsupportedDepth === 0
+        && insideParagraph
+        && fieldInstructionTextDepth > 0
+        && complexFieldStack.length > 0
+      ) {
+        complexFieldStack[complexFieldStack.length - 1].instructionText += token.slice(9, -3);
       }
       continue;
     }
@@ -7983,6 +8021,44 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     }
     if (unsupportedDepth > 0) continue;
 
+    if (insideParagraph && !closing && tagName === 'w:fldSimple') {
+      const instruction = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'instr');
+      if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
+        docxContentPreviewAddFieldHyperlinkDiagnostic(
+          diagnostics,
+          seenFieldHyperlinkKinds,
+          DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE,
+          'w:fldSimple',
+        );
+      }
+    } else if (insideParagraph && !closing && tagName === 'w:fldChar') {
+      const fldCharType = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'fldCharType').trim();
+      if (fldCharType === 'begin') {
+        complexFieldStack.push({ instructionText: '', sawSeparate: false });
+      } else if (fldCharType === 'separate' && complexFieldStack.length > 0) {
+        complexFieldStack[complexFieldStack.length - 1].sawSeparate = true;
+      } else if (fldCharType === 'end' && complexFieldStack.length > 0) {
+        const fieldFrame = complexFieldStack.pop();
+        if (
+          fieldFrame.sawSeparate
+          && docxContentPreviewFieldInstructionHasHyperlink(fieldFrame.instructionText)
+        ) {
+          docxContentPreviewAddFieldHyperlinkDiagnostic(
+            diagnostics,
+            seenFieldHyperlinkKinds,
+            DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE,
+            'w:instrText',
+          );
+        }
+      }
+    } else if (insideParagraph && tagName === 'w:instrText') {
+      if (closing) {
+        fieldInstructionTextDepth = Math.max(0, fieldInstructionTextDepth - 1);
+      } else if (!selfClosing && complexFieldStack.length > 0 && !complexFieldStack[complexFieldStack.length - 1].sawSeparate) {
+        fieldInstructionTextDepth += 1;
+      }
+    }
+
     if (tagName === 'w:sectPr') {
       if (closing) {
         sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
@@ -8027,6 +8103,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       activeListNumbering = null;
       activeParagraphMetadata = null;
       textDepth = 0;
+      fieldInstructionTextDepth = 0;
+      complexFieldStack.length = 0;
     } else if (insideParagraph && tagName === 'w:numPr' && !closing) {
       activeListNumbering = {
         paragraphIndex: activeParagraphIndex,
@@ -8838,6 +8916,16 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
       };
     }
   }
+  if (
+    diagnosticCode === DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC
+    && sourceCode === DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE
+  ) {
+    return {
+      code: 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED',
+      category: 'link',
+      message: 'DOCX field hyperlink instruction is retained as explicit link loss only',
+    };
+  }
   if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
@@ -8920,6 +9008,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC,
+      DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC,
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
