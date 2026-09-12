@@ -16,6 +16,7 @@ const {
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
+const DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE = 'docx-import-safe-create-request';
 
 async function loadBridge() {
   return import(pathToFileURL(BRIDGE_MODULE_PATH).href);
@@ -151,7 +152,11 @@ function makeProjectRoot(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
-function expectedImportOperationId(plan, projectId = '') {
+function expectedImportOperationId(
+  plan,
+  projectId = '',
+  operationNonce = DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE,
+) {
   const entry = plan.candidateCreatePlan.entries[0];
   const operationCanonical = {
     projectId,
@@ -162,13 +167,21 @@ function expectedImportOperationId(plan, projectId = '') {
     previewHash: typeof plan.previewHash === 'string' ? plan.previewHash : '',
     sceneId: typeof entry.sceneId === 'string' ? entry.sceneId : '',
   };
+  if (operationNonce !== DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE) {
+    operationCanonical.operationNonce = operationNonce;
+  }
   const operationHash = sha256Text(stableStringify(operationCanonical));
   return `docx-import-op-${operationHash.slice(0, 12)}`;
 }
 
-function expectedScenePath(romanRoot, plan, projectId = '') {
+function expectedScenePath(
+  romanRoot,
+  plan,
+  projectId = '',
+  operationNonce = DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE,
+) {
   const entry = plan.candidateCreatePlan.entries[0];
-  const importOperationId = expectedImportOperationId(plan, projectId);
+  const importOperationId = expectedImportOperationId(plan, projectId, operationNonce);
   return path.join(
     romanRoot,
     'Imported',
@@ -279,6 +292,51 @@ test('DOCX import safe create: reapply returns durable idempotent receipt withou
   assert.equal(second.value.importOperationId, first.value.importOperationId);
   assert.deepEqual(second.value.receipt, first.value.receipt);
   assert.equal(fs.readFileSync(scenePath, 'utf8'), 'First');
+});
+
+test('DOCX import safe create: same request nonce replays and new nonce creates a second import', async () => {
+  const projectRoot = makeProjectRoot('docx-import-safe-create-second-import-');
+  const romanRoot = path.join(projectRoot, 'roman');
+  const plan = admitPreviewPlan(await buildPreviewPlan(['Second import']));
+  const firstNonce = 'request-nonce-a';
+  const secondNonce = 'request-nonce-b';
+  const firstScenePath = expectedScenePath(romanRoot, plan, '', firstNonce);
+  const secondScenePath = expectedScenePath(romanRoot, plan, '', secondNonce);
+
+  const first = await applyDocxImportSafeCreate(
+    { docxImportPreviewPlan: plan },
+    { projectRoot, romanRoot, importRequestNonce: firstNonce },
+  );
+  assert.equal(first.ok, true, JSON.stringify(first, null, 2));
+  assert.equal(first.value.created, true);
+  assert.equal(first.value.receipt.importOperationNonce, firstNonce);
+  assert.equal(first.value.importOperationId, expectedImportOperationId(plan, '', firstNonce));
+  assert.equal(fs.readFileSync(firstScenePath, 'utf8'), 'Second import');
+
+  const replay = await applyDocxImportSafeCreate(
+    { docxImportPreviewPlan: plan },
+    { projectRoot, romanRoot, importRequestNonce: firstNonce },
+  );
+  assert.equal(replay.ok, true, JSON.stringify(replay, null, 2));
+  assert.equal(replay.value.created, false);
+  assert.equal(replay.value.idempotent, true);
+  assert.equal(replay.value.importOperationId, first.value.importOperationId);
+  assert.deepEqual(replay.value.receipt, first.value.receipt);
+
+  const second = await applyDocxImportSafeCreate(
+    { docxImportPreviewPlan: plan },
+    { projectRoot, romanRoot, importRequestNonce: secondNonce },
+  );
+  assert.equal(second.ok, true, JSON.stringify(second, null, 2));
+  assert.equal(second.value.created, true);
+  assert.equal(second.value.receipt.importOperationNonce, secondNonce);
+  assert.notEqual(second.value.importOperationId, first.value.importOperationId);
+  assert.equal(second.value.importOperationId, expectedImportOperationId(plan, '', secondNonce));
+  assert.equal(fs.readFileSync(secondScenePath, 'utf8'), 'Second import');
+
+  const createdFiles = listFilesRecursive(path.join(romanRoot, 'Imported'))
+    .filter((item) => item.endsWith('.txt'));
+  assert.equal(createdFiles.length, 2);
 });
 
 test('DOCX import safe create: existing target without durable receipt is blocked without mutation', async () => {

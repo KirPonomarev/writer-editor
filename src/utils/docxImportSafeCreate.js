@@ -28,6 +28,8 @@ const DOCX_IMPORT_SAFE_CREATE_SCENE_INTEGRITY_SCOPE =
   'CANONICAL_TEXT_NORMALIZED_LINE_ENDINGS';
 const DOCX_IMPORT_SAFE_CREATE_CREATED_AT_AUTHORITY =
   'NON_AUTHORITATIVE_EVENT_METADATA_SHAPE_ONLY';
+const DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE = 'docx-import-safe-create-request';
+const DOCX_IMPORT_SAFE_CREATE_MAX_OPERATION_NONCE_CHARS = 120;
 const docxImportPreviewPlanAdmissions = new Map();
 
 // GENERIC-01 (Pass 2): durable receipt store. The store is keyed by the
@@ -693,11 +695,20 @@ async function writeDurableReceipt(projectRoot, importOperationId, receipt) {
   await writeJsonAtomic(receiptPath, receipt);
 }
 
+function normalizeDocxImportOperationNonce(value) {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  if (!raw) return DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE;
+  if (raw.length <= DOCX_IMPORT_SAFE_CREATE_MAX_OPERATION_NONCE_CHARS) return raw;
+  return `sha256:${crypto.createHash('sha256').update(raw, 'utf8').digest('hex')}`;
+}
+
 // GENERIC-01 (B): main-owned importOperationId. Canonical form derives from the
 // operation-scoped identity (projectId + sourceArtifactSha256 +
-// candidateContentSha256 + previewHash), NOT from a single content hash. Two
-// distinct raw artifacts therefore yield distinct operation ids.
+// candidateContentSha256 + previewHash + optional request nonce), NOT from a
+// single content hash. Two distinct raw artifacts or user-confirmed import
+// requests therefore yield distinct operation ids.
 function buildImportOperationId(options) {
+  const operationNonce = normalizeDocxImportOperationNonce(options.operationNonce);
   const operationCanonical = {
     projectId: typeof options.projectId === 'string' ? options.projectId : '',
     sourceArtifactSha256: typeof options.sourceArtifactSha256 === 'string'
@@ -707,6 +718,9 @@ function buildImportOperationId(options) {
     previewHash: typeof options.previewHash === 'string' ? options.previewHash : '',
     sceneId: typeof options.sceneId === 'string' ? options.sceneId : '',
   };
+  if (operationNonce !== DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE) {
+    operationCanonical.operationNonce = operationNonce;
+  }
   const operationHash = crypto.createHash('sha256')
     .update(stableStringify(operationCanonical), 'utf8').digest('hex');
   return `docx-import-op-${operationHash.slice(0, 12)}`;
@@ -981,6 +995,7 @@ async function validateExistingDocxImportReceipt(options) {
     romanRoot,
     targetPath,
     importOperationId,
+    operationNonce,
     projectId,
     transactionAuthority,
   } = options;
@@ -1004,6 +1019,19 @@ async function validateExistingDocxImportReceipt(options) {
   }
   if (receipt.importOperationId !== importOperationId) {
     return fail('importOperationId', 'operation_id_mismatch');
+  }
+  if (
+    operationNonce !== DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE
+    && receipt.importOperationNonce !== operationNonce
+  ) {
+    return fail('importOperationNonce', 'operation_nonce_mismatch');
+  }
+  if (
+    operationNonce === DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE
+    && receipt.importOperationNonce !== undefined
+    && receipt.importOperationNonce !== operationNonce
+  ) {
+    return fail('importOperationNonce', 'operation_nonce_mismatch');
   }
   if (receipt.projectId !== projectId) return fail('projectId', 'project_id_mismatch');
   if (receipt.sourceArtifactSha256 !== validated.value.sourceArtifactSha256) {
@@ -1185,12 +1213,14 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   if (!roots.ok) return roots;
 
   const projectId = typeof options.projectId === 'string' ? options.projectId : '';
+  const operationNonce = normalizeDocxImportOperationNonce(options.importRequestNonce);
   const importOperationId = buildImportOperationId({
     projectId,
     sourceArtifactSha256: validated.value.sourceArtifactSha256,
     candidateContentSha256: validated.value.entry.candidateContentSha256,
     previewHash: validated.value.previewHash,
     sceneId: validated.value.entry.sceneId,
+    operationNonce,
   });
 
   const targetPath = buildDocxImportScenePath(
@@ -1226,6 +1256,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       romanRoot,
       targetPath,
       importOperationId,
+      operationNonce,
       projectId,
       transactionAuthority,
     });
@@ -1389,6 +1420,9 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     reason: DOCX_IMPORT_SAFE_CREATE_READY_REASON,
     sceneIntegrityScope: DOCX_IMPORT_SAFE_CREATE_SCENE_INTEGRITY_SCOPE,
     importOperationId,
+    ...(operationNonce !== DOCX_IMPORT_SAFE_CREATE_DEFAULT_OPERATION_NONCE
+      ? { importOperationNonce: operationNonce }
+      : {}),
     projectId,
     sourceArtifactSha256: validated.value.sourceArtifactSha256,
     candidateContentSha256: validated.value.entry.candidateContentSha256,

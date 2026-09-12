@@ -225,8 +225,8 @@ function makeRomanRoot(projectRoot) {
   return romanRoot;
 }
 
-function defaultApplyOptions(projectRoot, romanRoot) {
-  return {
+function defaultApplyOptions(projectRoot, romanRoot, importRequestNonce = undefined) {
+  const options = {
     projectRoot,
     romanRoot,
     projectId: 'generic01-probe-project',
@@ -234,13 +234,15 @@ function defaultApplyOptions(projectRoot, romanRoot) {
     writeBatchAtomic: writeFlowSceneBatchAtomic,
     operationLabel: 'safe create DOCX import scene batch',
   };
+  if (importRequestNonce !== undefined) options.importRequestNonce = importRequestNonce;
+  return options;
 }
 
-async function applyPlan(plan, projectRoot, romanRoot) {
+async function applyPlan(plan, projectRoot, romanRoot, importRequestNonce = undefined) {
   rememberDocxImportPreviewPlanAdmission(plan);
   return applyDocxImportSafeCreate(
     { docxImportPreviewPlan: plan },
-    defaultApplyOptions(projectRoot, romanRoot),
+    defaultApplyOptions(projectRoot, romanRoot, importRequestNonce),
   );
 }
 
@@ -365,6 +367,43 @@ test('GENERIC01-G2-duplicate-returns-receipt: re-applying one admitted plan must
   // No new scene files created by the duplicate.
   assert.equal(readCreatedSceneFiles(romanRoot).length, 1);
   assert.equal(readSingleCreatedScene(romanRoot).content, originalText);
+});
+
+test('GENERIC01-X02-intentional-second-import: same request nonce is idempotent and a new nonce creates a second import', async () => {
+  const projectRoot = makeProjectRoot();
+  const romanRoot = makeRomanRoot(projectRoot);
+  const plan = await previewPlanFromBytes(cleanDocxZip(['Intentional', 'Second']));
+  const firstNonce = 'generic01-x02-request-a';
+  const secondNonce = 'generic01-x02-request-b';
+
+  const first = await applyPlan(plan, projectRoot, romanRoot, firstNonce);
+  assert.equal(first.ok, true, JSON.stringify(first, null, 2));
+  assert.equal(first.value.created, true);
+  assert.equal(first.value.receipt.importOperationNonce, firstNonce);
+  const firstOperationId = first.value.importOperationId;
+
+  const replay = await applyPlan(plan, projectRoot, romanRoot, firstNonce);
+  assert.equal(replay.ok, true, JSON.stringify(replay, null, 2));
+  assert.equal(replay.value.created, false, 'same request nonce must not create another scene');
+  assert.equal(replay.value.idempotent, true);
+  assert.equal(replay.value.importOperationId, firstOperationId);
+  assert.deepEqual(replay.value.receipt, first.value.receipt);
+  assert.equal(readCreatedSceneFiles(romanRoot).length, 1);
+
+  const second = await applyPlan(plan, projectRoot, romanRoot, secondNonce);
+  assert.equal(second.ok, true, JSON.stringify(second, null, 2));
+  assert.equal(second.value.created, true);
+  assert.equal(second.value.receipt.importOperationNonce, secondNonce);
+  assert.notEqual(
+    second.value.importOperationId,
+    firstOperationId,
+    'new request nonce must create a distinct operation id for the same admitted plan',
+  );
+
+  const createdNames = readCreatedSceneFiles(romanRoot);
+  assert.equal(createdNames.length, 2, `expected two imported scene files, got ${createdNames.join(', ')}`);
+  const createdTexts = createdNames.map((name) => fs.readFileSync(path.join(romanRoot, 'Imported', name), 'utf8'));
+  assert.deepEqual(createdTexts.sort(), ['Intentional\n\nSecond', 'Intentional\n\nSecond']);
 });
 
 // ===========================================================================
