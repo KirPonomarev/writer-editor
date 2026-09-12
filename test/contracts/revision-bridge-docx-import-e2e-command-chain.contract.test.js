@@ -654,6 +654,20 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(duplicate);
 
+  const second = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
+    requestId: 'request-intentional-second-import',
+    docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
+  });
+  assert.equal(second.ok, true, JSON.stringify(second, null, 2));
+  assert.equal(second.safeCreateOk, true);
+  assert.equal(second.created, true);
+  assert.notEqual(second.receipt.importOperationId, firstOperationId);
+  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate + 1);
+  const createdFiles = fs.readdirSync(path.join(first.romanRoot, 'Imported')).filter((name) => name.endsWith('.txt'));
+  assert.equal(createdFiles.length, 2, `expected two imported scene files, got ${createdFiles.join(', ')}`);
+  const queueCallsAfterSecondImport = first.ports.safeCreate.calls.queueDiskOperation.length;
+  assertNoPublicAuthorityLeak(second);
+
   const tamperedPlan = cloneJsonSafe(first.preview.docxImportPreviewPlan);
   tamperedPlan.previewHash = '00000000';
   rememberDocxImportPreviewPlanAdmission(tamperedPlan);
@@ -663,8 +677,10 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   });
   assert.equal(tampered.ok, false);
   assert.equal(tampered.error.code, 'DOCX_SAFE_CREATE_PREVIEW_TAMPERED');
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
-  assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
+  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsAfterSecondImport);
+  const filesAfterTamper = fs.readdirSync(path.join(first.romanRoot, 'Imported')).filter((name) => name.endsWith('.txt'));
+  assert.deepEqual(filesAfterTamper.sort(), createdFiles.sort());
+  assert.ok(filesAfterTamper.every((name) => fs.readFileSync(path.join(first.romanRoot, 'Imported', name), 'utf8') === originalText));
   assertNoPublicAuthorityLeak(tampered);
 });
 

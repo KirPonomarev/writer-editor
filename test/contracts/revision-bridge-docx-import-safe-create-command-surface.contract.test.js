@@ -61,7 +61,6 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
             romanRoot: helperOptions.romanRoot,
             projectId: helperOptions.projectId,
             operationLabel: helperOptions.operationLabel,
-            importRequestNonce: helperOptions.importRequestNonce,
             hasQueueDiskOperation: typeof helperOptions.queueDiskOperation === 'function',
             hasWriteBatchAtomic: typeof helperOptions.writeBatchAtomic === 'function',
             hasTransactionAuthority: helperOptions.transactionAuthority !== null
@@ -272,7 +271,6 @@ test('DOCX import safe create command surface: clean plan delegates with trusted
   assert.equal(port.calls.helper[0].options.projectRoot, '/trusted/project');
   assert.equal(port.calls.helper[0].options.romanRoot, '/trusted/project/roman');
   assert.equal(port.calls.helper[0].options.operationLabel, 'safe create DOCX import scene batch');
-  assert.equal(port.calls.helper[0].options.importRequestNonce, 'request-1');
   assert.equal(port.calls.helper[0].options.hasQueueDiskOperation, true);
   assert.equal(port.calls.helper[0].options.hasWriteBatchAtomic, true);
 
