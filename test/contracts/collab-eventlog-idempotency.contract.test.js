@@ -13,6 +13,7 @@ test('collab event log rejects duplicate opId with typed error', async () => {
   const first = collab.appendEventLogEntry({
     eventLog: collab.createEmptyEventLog(),
     entry: {
+      eventId: 'event-1',
       opId: 'evt-dup',
       ts: '2026-02-13T10:20:00.000Z',
       actorId: 'writer-A',
@@ -27,6 +28,7 @@ test('collab event log rejects duplicate opId with typed error', async () => {
   const duplicate = collab.appendEventLogEntry({
     eventLog: first.eventLog,
     entry: {
+      eventId: 'event-2',
       opId: 'evt-dup',
       ts: '2026-02-13T10:20:01.000Z',
       actorId: 'writer-B',
