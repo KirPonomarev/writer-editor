@@ -56,6 +56,8 @@ import {
   R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,
   R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION,
   R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION,
+  R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION,
+  verifyCurrentClosureSelectorPostEvaluationException,
   verifyDocxNotificationOutcomePostEvaluationException,
   verifyR24X01IdempotentContractRecoveryPostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
@@ -1766,6 +1768,77 @@ for (const [name, mutate, signal] of [
   ['stale approvals', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals[0].sha256 = '0'.repeat(64); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
   ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(entry => { entry.approvedBy = 'not-authority'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
 ]) test(`DOCX notification admission rejects ${name}`, () => assert.throws(() => verifyDocxFixture(docxNotificationFixture({ mutate })), signal));
+
+function currentClosureSelectorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
+  const e = R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION;
+  const candidate = 'c'.repeat(40), requested = successor ? 'd'.repeat(40) : candidate;
+  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const inventory = JSON.parse(files.get(e.inventoryPath));
+  for (const relative of [e.selectorTestPath, e.contractPath]) {
+    const entry = inventory.entries.find(item => item.path === relative);
+    Object.assign(entry, { sha256: h(files.get(relative)), required: true, executionStatus: 'DECLARED_EXECUTABLE' });
+  }
+  files.set(e.inventoryPath, canonicalBytes(inventory));
+  const approvals = JSON.parse(files.get(e.approvalsPath));
+  approvals.approvals = e.admittedPaths.filter(relative => relative !== e.approvalsPath).map(relative => ({
+    filePath: relative, sha256: h(files.get(relative)), approved: true, approvedBy: e.approvedBy,
+  }));
+  files.set(e.approvalsPath, canonicalBytes(approvals));
+  mutate(files, e);
+  const git = (args, options = {}) => {
+    let value = '';
+    if (args[0] === 'rev-parse' && args[1] === `${e.baseSha}^{tree}`) value = baseTree ?? e.baseTree;
+    else if (args[0] === 'rev-parse' && args[1] === `${candidate}^{tree}`) value = 'e'.repeat(40);
+    else if (args[0] === 'rev-parse' && args[1] === `${requested}^{tree}`) value = 'f'.repeat(40);
+    else if (args[0] === 'rev-parse') value = args[1];
+    else if (args[0] === 'merge-base') { if (unrelatedBase) throw new Error('NOT_ANCESTOR'); }
+    else if (args[0] === 'rev-list') value = candidate;
+    else if (args[0] === 'diff') value = (successor && args.at(-1).endsWith(requested)
+      ? [...e.admittedPaths, 'future.txt'] : changedPaths ?? e.admittedPaths).join('\n');
+    else if (args[0] === 'show') {
+      const bytes = files.get(args[1].slice(args[1].indexOf(':') + 1));
+      if (!bytes) throw new Error('MISSING_FIXTURE_ARTIFACT');
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : Buffer.from(bytes);
+    } else throw new Error(`UNEXPECTED_FIXTURE_GIT:${args[0]}`);
+    return options.encoding === 'utf8' ? value + '\n' : Buffer.from(value + '\n');
+  };
+  return { candidate, requested, git };
+}
+const verifyCurrentSelectorFixture = fixture => verifyCurrentClosureSelectorPostEvaluationException({ candidateSha: fixture.requested, git: fixture.git });
+test('Current closure selector admission accepts only the exact seven-path correction', () => {
+  const fixture = currentClosureSelectorFixture(), result = verifyCurrentSelectorFixture(fixture);
+  assert.equal(result.admittedPathDenominator, 7);
+  assert.equal(result.candidateSha, fixture.requested);
+  assert.equal(result.mutationAllowed, false);
+  assert.equal(result.programDone, false);
+});
+test('Current closure selector admission preserves distinct closed candidate and different current head', () => {
+  const fixture = currentClosureSelectorFixture({ successor: true }), result = verifyCurrentSelectorFixture(fixture);
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.currentCandidateSha, fixture.requested);
+  assert.equal(result.closedCandidateOnly, true);
+  assert(!result.admittedPaths.includes('future.txt'));
+});
+for (const [name, options, signal] of [
+  ['base tree', { baseTree: '0'.repeat(40) }, /E_CURRENT_SELECTOR_BASE_TREE/],
+  ['base ancestry', { unrelatedBase: true }, /E_CURRENT_SELECTOR_BASE_ANCESTRY/],
+  ['missing path', { changedPaths: R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION.admittedPaths.slice(1) }, /E_CURRENT_SELECTOR_EXACT_ADMITTED_DELTA/],
+  ['extra path', { changedPaths: [...R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION.admittedPaths, 'future.txt'] }, /E_CURRENT_SELECTOR_EXACT_ADMITTED_DELTA/],
+]) test(`Current closure selector admission rejects ${name}`, () => assert.throws(() => verifyCurrentSelectorFixture(currentClosureSelectorFixture(options)), signal));
+for (const relative of Object.keys(R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION.semanticDigests)) {
+  test(`Current closure selector admission rejects changed ${relative}`, () => {
+    const fixture = currentClosureSelectorFixture({ mutate: files => files.set(relative, Buffer.concat([files.get(relative), Buffer.from('\n')])) });
+    assert.throws(() => verifyCurrentSelectorFixture(fixture), /E_CURRENT_SELECTOR_ARTIFACT_DIGEST/);
+  });
+}
+for (const [name, mutate, signal] of [
+  ['missing artifact', (files, e) => files.delete(e.selectorTestPath), /E_CURRENT_SELECTOR_ARTIFACT_MISSING/],
+  ['wrong denominator', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.totals.all = 0; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_CURRENT_SELECTOR_INVENTORY/],
+  ['stale test binding', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(row => row.path === e.selectorTestPath).sha256 = '0'.repeat(64); files.set(e.inventoryPath, canonicalBytes(value)); }, /E_CURRENT_SELECTOR_INVENTORY_DIGEST/],
+  ['optional test downgrade', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(row => row.path === e.selectorTestPath).required = false; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_CURRENT_SELECTOR_INVENTORY_DIGEST/],
+  ['stale approval', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals[0].sha256 = '0'.repeat(64); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_CURRENT_SELECTOR_APPROVAL_DIGEST/],
+  ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(row => { row.approvedBy = 'NOT_AUTHORITY'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_CURRENT_SELECTOR_APPROVAL_DIGEST/],
+]) test(`Current closure selector admission rejects ${name}`, () => assert.throws(() => verifyCurrentSelectorFixture(currentClosureSelectorFixture({ mutate })), signal));
 
 function x01IdempotentFixture({ changedPaths, baseTree, mutate = () => {} } = {}) {
   const e = R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION, candidate = 'c'.repeat(40), candidateTree = 'd'.repeat(40);

@@ -802,6 +802,31 @@ export const R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION = Object.freeze({
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   ].sort()),
 });
+export const R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION = Object.freeze({
+  baseSha: '4521ba15f772230c581e5e15c943cb322deb4de7',
+  baseTree: '9dd6d028635d5f411becd797930514f77b121a9a',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  contractPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  selectorTestPath: 'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
+  inventoryFileDenominator: 1469,
+  approvedBy: 'owner-directive:R24_RCV00D_CURRENT_CLOSURE_SELECTOR_2026_09_12',
+  semanticDigests: Object.freeze({
+    'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs': '9923e5110c176f9a29a16afb7271cf47c9547590b7e4d9632c5826761cc86ca4',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs': '2d0b7c332cab02d83934303ba58c07c00f3b2dbd75114c7e8a7a30dacb87be12',
+    'docs/OPS/R24/EVIDENCE/RCV00D_CURRENT_CORRECTIVE_CLOSURES_V1.json': '367795f8baa1c5f1f60c0e729bb70147261a738ee78b749767ed2f17d8f1c556',
+  }),
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/EVIDENCE/RCV00D_CURRENT_CORRECTIVE_CLOSURES_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
+  ].sort()),
+});
 export const R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION=Object.freeze({
   baseSha:'071daa0fa544accd0d1f038175780036145372aa',
   baseTree:'244712adbbe7bfe745f5df38900b776b2ca9b0aa',
@@ -5103,6 +5128,51 @@ export function verifyR24X01IdempotentContractRecoveryPostEvaluationException({ 
   };
 }
 
+export function verifyCurrentClosureSelectorPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_CURRENT_SELECTOR_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_CURRENT_SELECTOR_BASE_ANCESTRY'); }
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  let candidate = exact(requested) ? requested : null;
+  if (!candidate) {
+    const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+    for (const sha of ancestors.reverse()) if (exact(sha)) { candidate = sha; break; }
+  }
+  assert(candidate, 'E_CURRENT_SELECTOR_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_CURRENT_SELECTOR_IDENTITY');
+  const artifacts = new Map(e.admittedPaths.map(relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_CURRENT_SELECTOR_ARTIFACT_MISSING', relative); }
+    return [relative, { bytes, digest: h(bytes) }];
+  }));
+  for (const [relative, digest] of Object.entries(e.semanticDigests)) {
+    assert(artifacts.get(relative).digest === digest, 'E_CURRENT_SELECTOR_ARTIFACT_DIGEST', relative);
+  }
+  const inventory = JSON.parse(artifacts.get(e.inventoryPath).bytes);
+  assert(inventory.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.totals?.all === e.inventoryFileDenominator
+    && inventory.totals?.requiredSkips === 0 && inventory.totals?.unexplainedSkips === 0, 'E_CURRENT_SELECTOR_INVENTORY');
+  for (const relative of [e.contractPath, e.selectorTestPath]) {
+    const entry = inventory.entries.find(item => item.path === relative);
+    assert(entry?.sha256 === artifacts.get(relative).digest && entry.required === true
+      && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_CURRENT_SELECTOR_INVENTORY_DIGEST', relative);
+  }
+  const approvals = JSON.parse(artifacts.get(e.approvalsPath).bytes);
+  assert(approvals.version === 'v1.0' && Array.isArray(approvals.approvals), 'E_CURRENT_SELECTOR_APPROVALS');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    assert(approvals.approvals.some(entry => entry.filePath === relative && entry.sha256 === artifacts.get(relative).digest
+      && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy)), 'E_CURRENT_SELECTOR_APPROVAL_DIGEST', relative);
+  }
+  return { schemaVersion: 'R24_CURRENT_CLOSURE_SELECTOR_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree,
+    currentCandidateSha: requested, currentCandidateTree: requestedTree, closedCandidateOnly: candidate !== requested,
+    admittedPaths: e.admittedPaths, admittedPathDenominator: e.admittedPaths.length,
+    semanticDigests: e.semanticDigests, artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    evidenceScope: 'EXACT_CANDIDATE_ARTIFACT_BINDINGS_NOT_EXECUTED_RUNTIME_PROOF_OR_SELECTION_AUTHORITY',
+    programDone: false, productionReleaseReady: false, graphIncrement: 0, mutationAllowed: false };
+}
+
 export function verifyDocxNotificationOutcomePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
   const e = R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION;
   const requested = gitText(git, ['rev-parse', candidateSha]);
@@ -6567,6 +6637,12 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const r24X01IdempotentContractRecoveryException = r24X01IdempotentContractRecoveryEnabled ? verifyR24X01IdempotentContractRecoveryPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (r24X01IdempotentContractRecoveryException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let currentClosureSelectorEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION.baseSha) {
+    try { git(['merge-base', '--is-ancestor', R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION.baseSha, resolvedCandidate], { encoding: null }); currentClosureSelectorEnabled = true; } catch {}
+  }
+  const currentClosureSelectorException = currentClosureSelectorEnabled ? verifyCurrentClosureSelectorPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (currentClosureSelectorException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -6576,6 +6652,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
+  verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
   verificationResult.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException=rcv00aCurrentHeadExactToolchainEntryPointException;
   verificationResult.r24Rcv00bCurrentHeadEffectiveStateCompilerPostEvaluationException=rcv00bCurrentHeadEffectiveStateCompilerException;
   verificationResult.r24ObsExportDocxCommandBridgeOuterFailPostEvaluationException=r24ObsExportDocxCommandBridgeOuterFailException;
