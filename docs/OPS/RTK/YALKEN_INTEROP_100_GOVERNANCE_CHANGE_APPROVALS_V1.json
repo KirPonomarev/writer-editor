@@ -2,12 +2,12 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
-      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
-      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
+      "approvedAtUtc": "2026-09-12T19:47:42.866Z",
+      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
+      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Rebind this existing secondary approval row to unchanged immutable B732a83fa bytes already owned by the E primary registry. Metadata-only registry reconciliation; referenced file is not changed by C. No new evidence credit, product change, denominator increase or expanded admission.",
-      "sha256": "6fd003365c74150b868539385ed6d01a5755aa0500096a50a3f5abd6c428d49f"
+      "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
+      "sha256": "c2201dc0a134ecd6c23e232dc3f7e7d5c2dee5a9033aaa73f285bd5757633c5d"
     },
     {
       "approved": true,
@@ -65,9 +65,9 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
-      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
-      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
+      "approvedAtUtc": "2026-09-12T19:47:42.869Z",
+      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
+      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -77,8 +77,8 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Rebind this existing secondary approval row to unchanged immutable B732a83fa bytes already owned by the E primary registry. Metadata-only registry reconciliation; referenced file is not changed by C. No new evidence credit, product change, denominator increase or expanded admission.",
-      "sha256": "af3a7191822e53ef11dd4d3ad08fa0a4c31e978b14c8e432f80792e11f01c902"
+      "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
+      "sha256": "c67398e8b5c197a202aef2b4aabe5b518e26f742e012dfa935445b873e163f89"
     },
     {
       "approved": true,
@@ -143,9 +143,9 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
-      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
-      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
+      "approvedAtUtc": "2026-09-12T19:27:47.219Z",
+      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
+      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -155,8 +155,8 @@
         "ES-R24-W0-CURRENT-STATE-CLOSURE"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Rebind this existing secondary approval row to unchanged immutable B732a83fa bytes already owned by the E primary registry. Metadata-only registry reconciliation; referenced file is not changed by C. No new evidence credit, product change, denominator increase or expanded admission.",
-      "sha256": "e2c4f85d3bbe6fd8c6e34825398f5da280237504e6ec5abe27eeb0941ee341fa"
+      "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
+      "sha256": "947c857ed00aa58ebf5b670ec860e260d0b941b95be1a8ee59c4529a65855901"
     },
     {
       "approved": true,

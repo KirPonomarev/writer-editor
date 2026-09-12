@@ -5128,6 +5128,92 @@ export function verifyR24X01IdempotentContractRecoveryPostEvaluationException({ 
   };
 }
 
+export const R24_F_SUBSTRATE_EXPECTATION = Object.freeze({
+  baseSha: '69dc3872cc4cc0f46bc450cc4f89ddf8da44ecb6',
+  baseTree: 'bd06c63b74d18feda4d9fe62f0dc0d91e8384500',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  interopApprovalsPath: 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  approvedBy: 'owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12',
+  testPaths: Object.freeze(['test/contracts/r24-rcv00f-resumable-executor.contract.test.mjs', 'test/contracts/r24-post-audit-certification-set.contract.test.mjs']),
+  semanticDigests: Object.freeze({
+    'scripts/ops/r24/corrective/rcv00f-resumable-executor.mjs': '598ed48ba25f381db668208f9f4166470c294f5bfbadf6a073a42cbcc33c602c',
+    'test/contracts/r24-rcv00f-resumable-executor.contract.test.mjs': '2fa02dc30ff2bbf12cafb62dca93ec4a86feef2b6d98e3476060c3a8d6ad694e',
+    'scripts/ops/r24/executable-program.mjs': '0583fdbe2d4f27871d10951e82a971e111501fc0713c7c873529dd2748509534',
+    'test/fixtures/r24-rcv00f-host.mjs': '58a3c8d8c603727702d4a739c30df2b8212556c52e744a001c4e874a516b10ec',
+    'docs/OPS/R24/CORRECTIVE/RCV00F_FEATURE_INTEGRATION_MANIFEST_V1.json': '77343f5d38286ca666a193b3b539eb6ad1c68db8663b91cd9545e383a8f342bb',
+  }),
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/CORRECTIVE/RCV00F_FEATURE_INTEGRATION_MANIFEST_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/corrective/rcv00f-resumable-executor.mjs',
+    'scripts/ops/r24/executable-program.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-rcv00f-resumable-executor.contract.test.mjs',
+    'test/fixtures/r24-rcv00f-host.mjs',
+  ].sort()),
+});
+
+export function verifyFSubstratePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_F_SUBSTRATE_EXPECTATION, requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(/^[a-f0-9]{40}$/.test(requested), 'E_F_SUBSTRATE_CURRENT_IDENTITY');
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_F_SUBSTRATE_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_F_SUBSTRATE_BASE_ANCESTRY'); }
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  let candidate = exact(requested) ? requested : null;
+  if (!candidate) {
+    const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+    for (const sha of ancestors.reverse()) if (exact(sha)) { candidate = sha; break; }
+  }
+  assert(candidate, 'E_F_SUBSTRATE_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), currentCandidateTree = evaluationTree(git, requested);
+  assert([candidate, candidateTree, currentCandidateTree].every(sha => /^[a-f0-9]{40}$/.test(sha)), 'E_F_SUBSTRATE_IDENTITY');
+  const artifacts = new Map(e.admittedPaths.map(relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_F_SUBSTRATE_ARTIFACT_MISSING', relative); }
+    return [relative, { bytes, digest: h(bytes) }];
+  }));
+  for (const [relative, digest] of Object.entries(e.semanticDigests)) assert(artifacts.get(relative).digest === digest, 'E_F_SUBSTRATE_ARTIFACT_DIGEST', relative);
+  const inventory = JSON.parse(artifacts.get(e.inventoryPath).bytes);
+  assert(inventory.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.totals?.all === 1471
+    && inventory.totals?.requiredSkips === 0 && inventory.totals?.unexplainedSkips === 0, 'E_F_SUBSTRATE_INVENTORY');
+  for (const relative of e.testPaths) {
+    const entry = inventory.entries.find(row => row.path === relative);
+    assert(entry?.sha256 === artifacts.get(relative).digest && entry.required === true
+      && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_F_SUBSTRATE_INVENTORY_BINDING', relative);
+  }
+  const approvals = JSON.parse(artifacts.get(e.approvalsPath).bytes);
+  assert(approvals.version === 'v1.0' && Array.isArray(approvals.approvals), 'E_F_SUBSTRATE_APPROVALS');
+  const interopApprovals = JSON.parse(artifacts.get(e.interopApprovalsPath).bytes);
+  assert(interopApprovals.version === 'v1.0' && Array.isArray(interopApprovals.approvals), 'E_F_SUBSTRATE_INTEROP_APPROVALS');
+  const originalInterop = JSON.parse(objectBytes(git, e.baseSha, e.interopApprovalsPath));
+  const pathSet = rows => rows.map(row => row.filePath).sort();
+  assert(JSON.stringify(pathSet(interopApprovals.approvals)) === JSON.stringify(pathSet(originalInterop.approvals)), 'E_F_SUBSTRATE_SECONDARY_PATH_SET');
+  const shared = new Set([e.inventoryPath, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs', 'test/contracts/r24-post-audit-certification-set.contract.test.mjs']);
+  for (const row of interopApprovals.approvals) {
+    if (shared.has(row.filePath)) assert(row.sha256 === artifacts.get(row.filePath).digest && row.approved === true
+      && approvalMatchesApprovedBy(row, e.approvedBy), 'E_F_SUBSTRATE_SECONDARY_BINDING', row.filePath);
+    else assert(h(canonicalBytes(row)) === h(canonicalBytes(originalInterop.approvals.find(original => original.filePath === row.filePath))), 'E_F_SUBSTRATE_SECONDARY_PRESERVATION', row.filePath);
+  }
+  const { approvals: ignoredCurrent, ...currentMetadata } = interopApprovals;
+  const { approvals: ignoredOriginal, ...originalMetadata } = originalInterop;
+  assert(h(canonicalBytes(currentMetadata)) === h(canonicalBytes(originalMetadata)), 'E_F_SUBSTRATE_SECONDARY_METADATA');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath && item !== e.interopApprovalsPath)) {
+    assert(approvals.approvals.some(row => row.filePath === relative && row.sha256 === artifacts.get(relative).digest
+      && row.approved === true && approvalMatchesApprovedBy(row, e.approvedBy)), 'E_F_SUBSTRATE_APPROVAL_BINDING', relative);
+  }
+  return { schemaVersion: 'R24_F_SUBSTRATE_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree, currentCandidateSha: requested, currentCandidateTree,
+    closedCandidateOnly: candidate !== requested, admittedPaths: e.admittedPaths, admittedPathDenominator: e.admittedPaths.length,
+    artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    evidenceScope: 'SUBSTRATE_DELTA_ONLY_NOT_REAL_HOST_OPERATION_OR_F_CLOSURE', planPredecessorCredit: false,
+    missingAcceptance: ['CONCRETE_NON_TEST_TRUSTED_REPOSITORY_HOST', 'REAL_ADMITTED_CONTOUR_DELIVERY_AND_RESTART_PROOF'],
+    programDone: false, productionReleaseReady: false, mutationAllowed: false, graphIncrement: 0 };
+}
+
 export const R24_E_PLAN_PREDECESSOR_EXPECTATION = Object.freeze({
   baseSha: '8689932119712ca6b82cb2072456a229c79515d2',
   baseTree: 'c67e054a56fe28d021755dd4f6772bbcdbefa81e',
@@ -6729,6 +6815,16 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const ePlanPredecessorException = ePlanPredecessorEnabled ? verifyEPlanPredecessorPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (ePlanPredecessorException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let fSubstrateEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_F_SUBSTRATE_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', R24_F_SUBSTRATE_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, 'scripts/ops/r24/corrective/rcv00f-resumable-executor.mjs');
+      fSubstrateEnabled = true;
+    } catch {}
+  }
+  const fSubstrateException = fSubstrateEnabled ? verifyFSubstratePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (fSubstrateException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -6740,6 +6836,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
   verificationResult.ePlanPredecessorPostEvaluationException = ePlanPredecessorException;
+  verificationResult.fSubstratePostEvaluationException = fSubstrateException;
   verificationResult.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException=rcv00aCurrentHeadExactToolchainEntryPointException;
   verificationResult.r24Rcv00bCurrentHeadEffectiveStateCompilerPostEvaluationException=rcv00bCurrentHeadEffectiveStateCompilerException;
   verificationResult.r24ObsExportDocxCommandBridgeOuterFailPostEvaluationException=r24ObsExportDocxCommandBridgeOuterFailException;
