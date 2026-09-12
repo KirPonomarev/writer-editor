@@ -363,12 +363,37 @@ test('PR1888 DOCX import current-main reconciliation path set is exactly bounded
     'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
     'src/io/revisionBridge/index.mjs',
     'src/utils/docxImportSafeCreate.js',
+    'test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js',
     'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-data-descriptor.contract.test.js',
     'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js',
     'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js',
     'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
-    'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js'
+    'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
+    'test/contracts/rtk-generic01-create-only-import.contract.test.js'
   ]);
+});
+test('PR1888 DOCX import current-main reconciliation admits command-surface preview test bytes only within the exact bounded path set',()=>{
+  const file=load(),commandSurfacePath='test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js';
+  assert(R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS.includes(commandSurfacePath));
+  assert(!R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS.includes('package.json'));
+  const git=(args,options={})=>{
+    if(args[0]==='diff'&&args[1]==='--name-only'&&String(args[2]).startsWith(`${file.value.evaluationSha}..`))return options.encoding==='utf8'?`${commandSurfacePath}\n`:Buffer.from(`${commandSurfacePath}\n`);
+    return execFileSync('git',args,{encoding:options.encoding,maxBuffer:64*1024*1024});
+  };
+  const result=verifyCertificationSet({value:file.value,fileDigest:file.fileDigest,candidateSha:'HEAD',git,allowAuditCycle2Admission:true,allowMainProductWp401Admission:true});
+  assert.equal(result.status,'PASS');
+  assert.deepEqual(result.postEvaluationChangedPaths,[commandSurfacePath]);
+});
+test('PR1888 DOCX import current-main reconciliation rejects unrelated post-evaluation path mutants',()=>{
+  const file=load(),mutantPath='unrelated/post-evaluation-mutant.txt';
+  const git=(args,options={})=>{
+    if(args[0]==='diff'&&args[1]==='--name-only'&&String(args[2]).startsWith(`${file.value.evaluationSha}..`))return options.encoding==='utf8'?`${mutantPath}\n`:Buffer.from(`${mutantPath}\n`);
+    return execFileSync('git',args,{encoding:options.encoding,maxBuffer:64*1024*1024});
+  };
+  assert.throws(()=>verifyCertificationSet({value:file.value,fileDigest:file.fileDigest,candidateSha:'HEAD',git,allowAuditCycle2Admission:true,allowMainProductWp401Admission:true}),/E_POST_EVALUATION_PATH/);
 });
 test('post-evaluation bytes require the exact chained audit-cycle-two WP401 WP402 WP403 WP404 WP500 WP501 WP502 and WP503 admissions',()=>{
   const file=load();

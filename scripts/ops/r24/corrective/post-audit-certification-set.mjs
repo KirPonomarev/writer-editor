@@ -144,11 +144,16 @@ export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.fre
   'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   'src/io/revisionBridge/index.mjs',
   'src/utils/docxImportSafeCreate.js',
+  'test/contracts/revision-bridge-docx-content-preview-command-surface.contract.test.js',
   'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+  'test/contracts/revision-bridge-docx-data-descriptor.contract.test.js',
   'test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js',
   'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js',
+  'test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js',
+  'test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js',
   'test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js',
-  'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js'
+  'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
+  'test/contracts/rtk-generic01-create-only-import.contract.test.js'
 ]);
 export const PRE00B_LIFECYCLE_RECONCILIATION_ADMITTED_PATHS=Object.freeze([
   PRE00B_PATHS.testInventory,

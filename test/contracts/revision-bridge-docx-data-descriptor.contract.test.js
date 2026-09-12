@@ -29,7 +29,14 @@ function crc32Bytes(input) {
 
 function documentXml(text = 'Descriptor') {
   return Buffer.from(
-    `<w:document><w:body><w:p><w:r><w:t>${text}</w:t></w:r></w:p></w:body></w:document>`,
+    `<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body><w:p><w:r><w:t>${text}</w:t></w:r></w:p></w:body></w:document>`,
+    'utf8',
+  );
+}
+
+function stylesXml() {
+  return Buffer.from(
+    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"/>',
     'utf8',
   );
 }
@@ -180,7 +187,7 @@ test('signed data descriptors pass hostile gate, content preview, and review-tra
   const bridge = await loadBridge();
   const bytes = zipFixture([
     { name: 'word/document.xml', body: documentXml('Signed') },
-    { name: 'word/styles.xml', body: '<w:styles/>', signed: false },
+    { name: 'word/styles.xml', body: stylesXml(), signed: false },
   ]);
 
   const gate = bridge.inspectDocxHostileFileGateFromZipBytes(bytes);
@@ -336,7 +343,7 @@ test('unsigned signature-valued CRC is rejected as ambiguous rather than reinter
 test('multi-entry boundaries are derived by local offset, and duplicate offsets are rejected', async () => {
   const bridge = await loadBridge();
   const entries = [
-    { name: 'word/styles.xml', body: '<w:styles/>', signed: false },
+    { name: 'word/styles.xml', body: stylesXml(), signed: false },
     { name: 'word/document.xml', body: documentXml('Multi'), signed: true },
   ];
   const accepted = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture(entries, { centralOrder: [1, 0] }));

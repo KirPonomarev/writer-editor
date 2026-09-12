@@ -22,6 +22,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V38,
   HISTORICAL_INVENTORY_CLAIM_PINS_V39,
   HISTORICAL_INVENTORY_CLAIM_PINS_V40,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V41,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -627,6 +628,32 @@ test('PR1892 merge-forward retains refreshed RCV00B current-head effective-state
   );
 });
 
+test('R02 inventory refresh retains RCV00D current-identity binding as historical bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V41.find(
+    (item) => item.stampId === 'ES-R24-RCV00D-CURRENT-IDENTITY-BINDING'
+      && item.evaluationSha === '430d8dbb',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationTree, '084c100262cb3c909c3f4575006939b2ac849e5d');
+  assert.equal(pin.stampSha256, '130de422076af98f97996f7eaaef5e40ec73213b7ca5286294b591f8f3fadd65');
+  assert.equal(pin.targetSha256, 'd48a33c61c747c4541c78cb5ceb55fc0143f324636795d1a48730a21c04147f1');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
@@ -653,5 +680,8 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-RCV00A-CURRENT-HEAD-EXACT-TOOLCHAIN-ENTRYPOINT',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-RCV00D-CURRENT-IDENTITY-BINDING',
   ));
 });

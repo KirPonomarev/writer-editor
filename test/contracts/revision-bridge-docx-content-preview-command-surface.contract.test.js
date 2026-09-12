@@ -11,6 +11,7 @@ const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
 const SECTION_START = '// DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START';
 const SECTION_END = '// DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_END';
+const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 function readMainSource() {
   return fs.readFileSync(MAIN_PATH, 'utf8');
@@ -153,7 +154,7 @@ function zipFixture(entries) {
 }
 
 function documentXml(body) {
-  return `<w:document><w:body>${body}</w:body></w:document>`;
+  return `<w:document xmlns:w="${WORDPROCESSINGML_NS}"><w:body>${body}</w:body></w:document>`;
 }
 
 function paragraphXml(text) {
@@ -166,6 +167,16 @@ function cleanDocxZip(body = '<w:p/>') {
       name: 'word/document.xml',
       method: 8,
       body: documentXml(body),
+    },
+  ]);
+}
+
+function rawStoredDocxZip(body) {
+  return zipFixture([
+    {
+      name: 'word/document.xml',
+      method: 0,
+      body,
     },
   ]);
 }
@@ -239,6 +250,7 @@ test('DOCX content preview command surface: clean container returns wrapped prev
   const port = instantiateDocxContentPreviewPort();
   const result = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip([
     paragraphXml('Alpha'),
+    paragraphXml('A<?audit <!FOO>?>B'),
     paragraphXml('Bravo'),
   ].join(''))));
 
@@ -253,6 +265,7 @@ test('DOCX content preview command surface: clean container returns wrapped prev
   assert.equal(result.docxContentPreviewReport.type, 'docxContentPreviewReport');
   assert.deepEqual(result.docxContentPreviewReport.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
     'Alpha',
+    'AB',
     'Bravo',
   ]);
   assertNoForbiddenResultFields(result);
@@ -267,8 +280,19 @@ test('DOCX content preview command surface: blocked and malformed reports do not
   const malformedXml = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip(
     '<w:p><w:r><w:t>Leaked</w:p></w:r>',
   )));
+  const invalidEntity = await port.handleDocxContentPreviewCommandSurface(toPayload(cleanDocxZip(
+    paragraphXml('A &bogus; B'),
+  )));
+  const invalidUtf8 = await port.handleDocxContentPreviewCommandSurface(toPayload(rawStoredDocxZip(Buffer.concat([
+    Buffer.from(documentXml('<w:p><w:r><w:t>A '), 'utf8'),
+    Buffer.from([0xc3, 0x28]),
+    Buffer.from(' B</w:t></w:r></w:p>', 'utf8'),
+  ]))));
+  const invalidDeclaration = await port.handleDocxContentPreviewCommandSurface(toPayload(rawStoredDocxZip(
+    documentXml(`<!ELEMENT w:t ANY>${paragraphXml('A')}`),
+  )));
 
-  for (const result of [duplicate, malformedXml]) {
+  for (const result of [duplicate, malformedXml, invalidEntity, invalidUtf8, invalidDeclaration]) {
     assert.equal(result.ok, true);
     assert.equal(result.previewOk, false);
     assert.equal(result.docxContentPreviewReport.ok, false);
@@ -280,6 +304,19 @@ test('DOCX content preview command surface: blocked and malformed reports do not
   assert.equal(duplicate.previewReason, 'STAGE02_DUPLICATE_ENTRY_NAME');
   assert.equal(malformedXml.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
   assert.equal(malformedXml.docxContentPreviewReport.parse.attempted, true);
+  assert.equal(invalidEntity.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(invalidEntity.docxContentPreviewReport.parse.attempted, true);
+  assert.equal(invalidEntity.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_ENTITY_INVALID'
+  )), true);
+  assert.equal(invalidUtf8.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(invalidUtf8.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_UTF8_MALFORMED'
+  )), true);
+  assert.equal(invalidDeclaration.previewCode, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(invalidDeclaration.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_DECLARATION_UNSUPPORTED'
+  )), true);
 });
 
 test('DOCX content preview command surface: malformed payloads fail as typed command errors', async () => {

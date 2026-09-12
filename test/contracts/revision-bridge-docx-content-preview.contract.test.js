@@ -133,7 +133,14 @@ function zipFixture(entries) {
 }
 
 function documentXml(body) {
-  return `<w:document><w:body>${body}</w:body></w:document>`;
+  return [
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}"`,
+    ' xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"',
+    ' xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"',
+    ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"',
+    ' xmlns:w99="urn:yalken:legacy-unsupported-wordprocessingml-choice">',
+    `<w:body>${body}</w:body></w:document>`,
+  ].join('');
 }
 
 const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
@@ -421,6 +428,173 @@ test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are
     && item.sourceCode === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'
     && item.tagName === 'w:br'
   )), true);
+});
+
+test('DOCX content preview: XML character data follows parser legality and preserves CDATA text', async (t) => {
+  const bridge = await loadBridge();
+  const assertMalformedNoWrite = (result) => {
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, false);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+    assert.equal(result.parse.attempted, true);
+    assert.equal(result.parse.completed, false);
+    assert.equal(result.contentPreview, null);
+    assert.equal(importPreview.ok, false);
+    assert.notEqual(importPreview.writeEffects, true);
+  };
+
+  const positives = [
+    ['valid-baseline', cleanDocxZip(paragraphXml('Alpha')), 'Alpha'],
+    [
+      'valid-xml-declaration',
+      rawStoredDocxZip(`<?xml version = "1.0" encoding = "UTF-8" standalone = "yes"?>${documentXml(paragraphXml('Alpha'))}`),
+      'Alpha',
+    ],
+    [
+      'valid-bom-xml-declaration',
+      rawStoredDocxZip(`\ufeff<?xml version="1.0"?>${documentXml(paragraphXml('Alpha'))}`),
+      'Alpha',
+    ],
+    [
+      'valid-generic-pi-before-root',
+      rawStoredDocxZip(`<?yalken-preview ok?>${documentXml(paragraphXml('Alpha'))}`),
+      'Alpha',
+    ],
+    [
+      'valid-generic-pi-inside-root',
+      rawStoredDocxZip(documentXml(`<?yalken-preview ok?>${paragraphXml('Alpha')}`)),
+      'Alpha',
+    ],
+    [
+      'valid-pi-with-gt-data-inside-text',
+      cleanDocxZip(paragraphXml('A<?audit <!FOO>?>B')),
+      'AB',
+    ],
+    ['valid-gt-text', cleanDocxZip(paragraphXml('A > B')), 'A > B'],
+    [
+      'valid-predefined-entities',
+      cleanDocxZip(paragraphXml('A &amp; &lt; &gt; &quot; &apos; B')),
+      'A & < > " \' B',
+    ],
+    ['valid-numeric-entity', cleanDocxZip(paragraphXml('A &#65; &#x41; B')), 'A A A B'],
+    ['valid-numeric-whitespace', cleanDocxZip(paragraphXml('A &#x9;&#xA;&#xD; B')), 'A \t\n\r B', false],
+    [
+      'valid-numeric-xml-char-edges',
+      cleanDocxZip(paragraphXml('A &#x7F; &#xD7FF; &#xE000; &#xFDD0; &#xFFFD; &#x10000; B')),
+      `A ${String.fromCodePoint(0x7f)} ${String.fromCodePoint(0xd7ff)} ${String.fromCodePoint(0xe000)} ${String.fromCodePoint(0xfdd0)} ${String.fromCodePoint(0xfffd)} ${String.fromCodePoint(0x10000)} B`,
+    ],
+    [
+      'valid-encoded-replacement-character',
+      cleanDocxZip(paragraphXml(`A ${String.fromCodePoint(0xfffd)} B`)),
+      `A ${String.fromCodePoint(0xfffd)} B`,
+    ],
+    ['valid-cdata', cleanDocxZip('<w:p><w:r><w:t>A <![CDATA[< & >]]> B</w:t></w:r></w:p>'), 'A < & > B'],
+    [
+      'valid-adjacent-cdata',
+      cleanDocxZip('<w:p><w:r><w:t>A<![CDATA[ <]]><![CDATA[&> ]]>&#66;</w:t></w:r></w:p>'),
+      'A <&> B',
+    ],
+  ];
+
+  for (const [name, bytes, expectedText, expectedImportOk = true] of positives) {
+    await t.test(name, () => {
+      const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+      assertContentPreviewShell(result);
+      assert.equal(result.ok, true);
+      assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+      assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [expectedText]);
+      assert.equal(importPreview.ok, expectedImportOk);
+      assert.notEqual(importPreview.writeEffects, true);
+    });
+  }
+
+  const negatives = [
+    ['unknown-entity-text', cleanDocxZip(paragraphXml('A &bogus; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['bare-amp-text', cleanDocxZip(paragraphXml('A & B')), 'DOCX_XML_ENTITY_UNTERMINATED'],
+    ['numeric-null', cleanDocxZip(paragraphXml('A &#0; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['numeric-control-1', cleanDocxZip(paragraphXml('A &#1; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['numeric-surrogate', cleanDocxZip(paragraphXml('A &#xD800; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['numeric-ffff', cleanDocxZip(paragraphXml('A &#xFFFF; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['uppercase-x-numeric-entity', cleanDocxZip(paragraphXml('A &#X41; B')), 'DOCX_XML_ENTITY_INVALID'],
+    ['cdata-closing-sequence-in-text', cleanDocxZip(paragraphXml('A ]]> B')), 'DOCX_XML_CDATA_CLOSING_SEQUENCE_IN_TEXT'],
+    [
+      'xml-declaration-inside-root',
+      cleanDocxZip('<w:p><w:r><w:t>A</w:t><?xml version="1.0"?><w:t>B</w:t></w:r></w:p>'),
+      'DOCX_XML_RESERVED_DECLARATION_POSITION',
+    ],
+    [
+      'xml-declaration-after-leading-space',
+      rawStoredDocxZip(` <?xml version="1.0"?>${documentXml(paragraphXml('Alpha'))}`),
+      'DOCX_XML_RESERVED_DECLARATION_POSITION',
+    ],
+    [
+      'uppercase-xml-declaration-at-start',
+      rawStoredDocxZip(`<?XML version="1.0"?>${documentXml(paragraphXml('Alpha'))}`),
+      'DOCX_XML_DECLARATION_MALFORMED',
+    ],
+    [
+      'malformed-xml-declaration-at-start',
+      rawStoredDocxZip(`<?xml fake?>${documentXml(paragraphXml('Alpha'))}`),
+      'DOCX_XML_DECLARATION_MALFORMED',
+    ],
+    [
+      'cdata-outside-root',
+      rawStoredDocxZip(`<![CDATA[Alpha]]>${documentXml(paragraphXml('Beta'))}`),
+      'DOCX_XML_MARKUP_OUTSIDE_ROOT',
+    ],
+    [
+      'invalid-utf8-main-document',
+      rawStoredDocxZip(Buffer.concat([
+        Buffer.from(documentXml('<w:p><w:r><w:t>A '), 'utf8'),
+        Buffer.from([0xc3, 0x28]),
+        Buffer.from(' B</w:t></w:r></w:p>', 'utf8'),
+      ])),
+      'DOCX_XML_UTF8_MALFORMED',
+    ],
+    [
+      'unsupported-uppercase-declaration',
+      rawStoredDocxZip(documentXml(`<!FOO>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-lowercase-declaration',
+      rawStoredDocxZip(documentXml(`<!foo>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-element-declaration',
+      rawStoredDocxZip(documentXml(`<!ELEMENT w:t ANY>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-attlist-declaration',
+      rawStoredDocxZip(documentXml(`<!ATTLIST w:t id ID #IMPLIED>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-notation-declaration',
+      rawStoredDocxZip(documentXml(`<!NOTATION gif SYSTEM "image/gif">${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+    [
+      'unsupported-ignore-section-declaration',
+      rawStoredDocxZip(documentXml(`<![IGNORE[hidden]]>${paragraphXml('Alpha')}`)),
+      'DOCX_XML_DECLARATION_UNSUPPORTED',
+    ],
+  ];
+
+  for (const [name, bytes, sourceCode] of negatives) {
+    await t.test(name, () => {
+      const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      assertMalformedNoWrite(result);
+      assert.equal(result.diagnostics.some((item) => (
+        item.code === 'DOCX_CONTENT_PREVIEW_XML_MALFORMED'
+        && item.sourceCode === sourceCode
+      )), true);
+    });
+  }
 });
 
 test('DOCX content preview: typed breaks and section types have exact plain text loss items', async () => {
@@ -926,6 +1100,553 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
   )), true);
 });
 
+test('DOCX content preview: Google Docs tab structure preserves labels in import candidate with explicit diagnostic', async () => {
+  const bridge = await loadBridge();
+  const tabTitle = (id, label, withSectionType = true) => [
+    '<w:p><w:pPr><w:pStyle w:val="Title"/><w:sectPr>',
+    withSectionType ? '<w:type w:val="nextPage"/>' : '',
+    '</w:sectPr></w:pPr>',
+    `<w:bookmarkStart w:name="_tab${id}" w:id="${id}"/>`,
+    `<w:bookmarkEnd w:id="${id}"/>`,
+    `<w:r><w:t xml:space="preserve">${label}</w:t></w:r>`,
+    '</w:p>',
+  ].join('');
+  const tabSeparator = (withSectionType = true) => [
+    '<w:p><w:pPr><w:rPr/>',
+    withSectionType ? '<w:sectPr><w:type w:val="nextPage"/></w:sectPr>' : '',
+    '</w:pPr></w:p>',
+  ].join('');
+  const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
+    tabTitle(0, 'Tab 1', false),
+    '<w:p><w:r><w:t xml:space="preserve">T02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end</w:t></w:r></w:p>',
+    tabSeparator(),
+    tabTitle(1, 'T02 G03 tab B'),
+    '<w:p><w:r><w:t xml:space="preserve">T02_TAB_B prefix 👩‍💻 combining:é NFC:café </w:t></w:r>',
+    '<w:hyperlink r:id="rIdGDoc"><w:r><w:t>SAME_TARGET</w:t></w:r></w:hyperlink>',
+    '<w:r><w:t xml:space="preserve"> end</w:t></w:r></w:p>',
+    tabSeparator(false),
+  ].join(''), [
+    {
+      name: 'word/_rels/document.xml.rels',
+      method: 8,
+      body: '<Relationships><Relationship Id="rIdGDoc" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
+    },
+  ]));
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+
+  assertContentPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Tab 1',
+    'T02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end',
+    '',
+    'T02 G03 tab B',
+    'T02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end',
+    '',
+  ]);
+  assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+  assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[0], 'sectionBreakType'), false);
+  assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
+  assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'nextPage');
+  assert.equal(result.contentPreview.paragraphs[3].zeroLengthBookmarkCount, 1);
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[5], 'sectionBreakType'), false);
+  assert.equal(importPreview.ok, true);
+  assert.equal(importPreview.writeEffects, false);
+  assert.equal(importPreview.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
+  assert.equal(
+    importPreview.candidateCreatePlan.entries[0].content,
+    'Tab 1\n\nT02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\n\n\nT02 G03 tab B\n\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\n',
+  );
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Tab 1'), true);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('T02 G03 tab B'), true);
+  assert.deepEqual(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.tabLabels, [
+    'Tab 1',
+    'T02 G03 tab B',
+  ]);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.detectedParagraphCount, 4);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].source.googleDocsTabs.excludedParagraphCount, 0);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED'
+    && item.category === 'googleDocsTabs'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE'
+    && item.originAuthoritative === false
+    && item.tabCount === 2
+    && item.detectedParagraphCount === 4
+    && item.excludedParagraphCount === 0
+    && item.tabLabels.includes('T02 G03 tab B')
+  )), true);
+  assert.equal(importPreview.lossReport.items.some((item) => item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'), true);
+});
+
+test('DOCX content preview: field hyperlink instructions produce explicit link loss only for Word field frames', async () => {
+  const bridge = await loadBridge();
+  const docxWithNamespaces = (body, prefix = 'w') => rawStoredDocxZip([
+    `<${prefix}:document xmlns:${prefix}="${WORDPROCESSINGML_NS}" xmlns:x="urn:yalken:foreign-field-instruction">`,
+    `<${prefix}:body>${body}</${prefix}:body>`,
+    `</${prefix}:document>`,
+  ].join(''));
+  const run = (prefix = 'w') => `<${prefix}:r><${prefix}:t>LABEL</${prefix}:t></${prefix}:r>`;
+  const simpleField = (prefix, attributes) => [
+    `<${prefix}:p>`,
+    `<${prefix}:fldSimple ${attributes}>`,
+    run(prefix),
+    `</${prefix}:fldSimple>`,
+    `</${prefix}:p>`,
+  ].join('');
+  const complexField = [
+    '<w:p>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText xml:space="preserve"> HYPERLINK &quot;https://target.example/complex&quot; </w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="separate"/></w:r>',
+    run('w'),
+    '<w:r><w:fldChar w:fldCharType="end"/></w:r>',
+    '</w:p>',
+  ].join('');
+  const isolatedInstrText = [
+    '<w:p>',
+    '<w:r><w:instrText xml:space="preserve"> HYPERLINK &quot;https://target.example/isolated&quot; </w:instrText></w:r>',
+    run('w'),
+    '</w:p>',
+  ].join('');
+  const cases = [
+    [
+      'valid-word-instr',
+      docxWithNamespaces(simpleField('w', 'w:instr="HYPERLINK &quot;https://target.example/word&quot;"')),
+      true,
+    ],
+    [
+      'valid-alias-instr',
+      docxWithNamespaces(simpleField('q', 'q:instr="HYPERLINK &quot;https://target.example/alias&quot;"'), 'q'),
+      true,
+    ],
+    [
+      'valid-foreign-before-word-hyperlink',
+      docxWithNamespaces(simpleField('w', 'x:instr="DOCPROPERTY SAFE" w:instr="HYPERLINK &quot;https://target.example/before&quot;"')),
+      true,
+    ],
+    [
+      'valid-word-hyperlink-before-foreign',
+      docxWithNamespaces(simpleField('w', 'w:instr="HYPERLINK &quot;https://target.example/after&quot;" x:instr="DOCPROPERTY SAFE"')),
+      true,
+    ],
+    ['valid-complex-field-control', docxWithNamespaces(complexField), true],
+    [
+      'foreign-only-hyperlink-attribute',
+      docxWithNamespaces(simpleField('w', 'x:instr="HYPERLINK &quot;https://target.example/foreign-only&quot;"')),
+      false,
+    ],
+    [
+      'unqualified-only-hyperlink-attribute',
+      docxWithNamespaces(simpleField('w', 'instr="HYPERLINK &quot;https://target.example/unqualified&quot;"')),
+      false,
+    ],
+    [
+      'foreign-hyperlink-before-word-nonhyperlink',
+      docxWithNamespaces(simpleField('w', 'x:instr="HYPERLINK &quot;https://target.example/foreign-before&quot;" w:instr="DOCPROPERTY SAFE"')),
+      false,
+    ],
+    [
+      'word-nonhyperlink-before-foreign-hyperlink',
+      docxWithNamespaces(simpleField('w', 'w:instr="DOCPROPERTY SAFE" x:instr="HYPERLINK &quot;https://target.example/foreign-after&quot;"')),
+      false,
+    ],
+    ['isolated-instrtext-without-complex-field', docxWithNamespaces(isolatedInstrText), false],
+  ];
+
+  for (const [name, bytes, expectedLoss] of cases) {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    const content = importPreview?.candidateCreatePlan?.entries?.[0]?.content || '';
+    const hasDiagnostic = result.diagnostics.some((item) => (
+      item.code === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC'
+      && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+    ));
+    const hasLoss = importPreview.lossReport.items.some((item) => (
+      item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
+      && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+    ));
+
+    assert.equal(result.ok, true, `${name}: content preview must be ready`);
+    assert.equal(importPreview.ok, true, `${name}: import preview must be ready`);
+    assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), ['LABEL'], `${name}: visible label`);
+    assert.equal(content.includes('target.example'), false, `${name}: field target must not leak into candidate text`);
+    assert.equal(hasDiagnostic, expectedLoss, `${name}: content diagnostic`);
+    assert.equal(hasLoss, expectedLoss, `${name}: import loss`);
+  }
+});
+
+test('DOCX content preview: Google tab metadata uses only WordprocessingML attributes', async (t) => {
+  const bridge = await loadBridge();
+  const docxWithNamespaces = (body) => rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}" xmlns:x="urn:foreign">`,
+    `<w:body>${body}</w:body>`,
+    '</w:document>',
+  ].join(''));
+  const tabTitle = ({
+    id,
+    label,
+    styleAttrs = 'w:val="Title"',
+    sectionTypeAttrs = 'w:val="nextPage"',
+    bookmarkStartAttrs = `w:name="_tab${id}" w:id="${id}"`,
+    bookmarkEndAttrs = `w:id="${id}"`,
+    withSectionType = true,
+  }) => [
+    '<w:p><w:pPr>',
+    `<w:pStyle ${styleAttrs}/>`,
+    '<w:sectPr>',
+    withSectionType ? `<w:type ${sectionTypeAttrs}/>` : '',
+    '</w:sectPr></w:pPr>',
+    `<w:bookmarkStart ${bookmarkStartAttrs}/>`,
+    `<w:bookmarkEnd ${bookmarkEndAttrs}/>`,
+    `<w:r><w:t>${label}</w:t></w:r>`,
+    '</w:p>',
+  ].join('');
+  const separator = (sectionTypeAttrs = 'w:val="nextPage"') => [
+    '<w:p><w:pPr><w:sectPr>',
+    `<w:type ${sectionTypeAttrs}/>`,
+    '</w:sectPr></w:pPr></w:p>',
+  ].join('');
+  const bodyFor = (firstTitleOptions, secondTitleOptions, separatorTypeAttrs = 'w:val="nextPage"') => [
+    tabTitle({ id: 1, label: 'Tab A', withSectionType: false, ...firstTitleOptions }),
+    '<w:p><w:r><w:t>Body A</w:t></w:r></w:p>',
+    separator(separatorTypeAttrs),
+    tabTitle({ id: 2, label: 'Tab B', ...secondTitleOptions }),
+    '<w:p><w:r><w:t>Body B</w:t></w:r></w:p>',
+    '<w:p/>',
+  ].join('');
+  const hasGoogleTabsDiagnostic = (plan) => plan.lossReport.items.some((item) => item.category === 'googleDocsTabs');
+
+  await t.test('foreign pStyle val before semantic Normal cannot spoof Google tab header', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      { styleAttrs: 'x:val="Title" w:val="Normal"' },
+      { styleAttrs: 'x:val="Title" w:val="Normal"' },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Normal');
+    assert.equal(result.contentPreview.paragraphs[3].paragraphStyleId, 'Normal');
+    assert.equal(hasGoogleTabsDiagnostic(plan), false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign section val before semantic continuous cannot spoof next-page tab header', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {},
+      { sectionTypeAttrs: 'x:val="nextPage" w:val="continuous"' },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'continuous');
+    assert.equal(hasGoogleTabsDiagnostic(plan), false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign bookmark id pairs before nonmatching semantic ids cannot spoof zero-length anchors', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {
+        bookmarkStartAttrs: 'w:name="_tab1" x:id="1" w:id="11"',
+        bookmarkEndAttrs: 'x:id="1" w:id="12"',
+      },
+      {
+        bookmarkStartAttrs: 'w:name="_tab2" x:id="2" w:id="21"',
+        bookmarkEndAttrs: 'x:id="2" w:id="22"',
+      },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[0], 'zeroLengthBookmarkCount'), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[3], 'zeroLengthBookmarkCount'), false);
+    assert.equal(hasGoogleTabsDiagnostic(plan), false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+  });
+
+  await t.test('foreign pStyle val before semantic Title still admits valid tab diagnostic', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      { styleAttrs: 'x:val="Normal" w:val="Title"' },
+      { styleAttrs: 'x:val="Normal" w:val="Title"' },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+    assert.equal(result.contentPreview.paragraphs[3].paragraphStyleId, 'Title');
+    assert.equal(hasGoogleTabsDiagnostic(plan), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign bookmark ids before matching semantic ids still admit valid tab diagnostic', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {
+        bookmarkStartAttrs: 'w:name="_tab1" x:id="101" w:id="1"',
+        bookmarkEndAttrs: 'x:id="102" w:id="1"',
+      },
+      {
+        bookmarkStartAttrs: 'w:name="_tab2" x:id="201" w:id="2"',
+        bookmarkEndAttrs: 'x:id="202" w:id="2"',
+      },
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
+    assert.equal(result.contentPreview.paragraphs[3].zeroLengthBookmarkCount, 1);
+    assert.equal(hasGoogleTabsDiagnostic(plan), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.sourceCode, 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE');
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab A'), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+
+  await t.test('foreign separator val before semantic next-page still admits valid tab diagnostic', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces(bodyFor(
+      {},
+      {},
+      'x:val="continuous" w:val="nextPage"',
+    )));
+    const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
+    assert.equal(hasGoogleTabsDiagnostic(plan), true);
+    assert.equal(plan.candidateCreatePlan.entries[0].source.googleDocsTabs.originAuthoritative, false);
+    assert.equal(plan.candidateCreatePlan.entries[0].content.includes('Tab B'), true);
+  });
+});
+
+test('DOCX content preview: malformed namespace attributes block before semantic preview', async (t) => {
+  const bridge = await loadBridge();
+  const docxWithNamespaces = (body, extraRootAttrs = '') => rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}"${extraRootAttrs}>`,
+    `<w:body>${body}</w:body>`,
+    '</w:document>',
+  ].join(''));
+  const packageWith = (pStyleAttrs, bookmarkStartAttrs, bookmarkEndAttrs, sectionTypeAttrs, extraRootAttrs = '') => docxWithNamespaces([
+    '<w:p><w:pPr>',
+    `<w:pStyle ${pStyleAttrs}/>`,
+    '<w:sectPr>',
+    `<w:type ${sectionTypeAttrs}/>`,
+    '</w:sectPr></w:pPr>',
+    `<w:bookmarkStart ${bookmarkStartAttrs}/>`,
+    `<w:bookmarkEnd ${bookmarkEndAttrs}/>`,
+    '<w:r><w:t>Attribute guard body</w:t></w:r>',
+    '</w:p>',
+  ].join(''), extraRootAttrs);
+  const mcePackage = (choiceRequires, choiceBody, fallbackBody) => docxWithNamespaces([
+    '<mc:AlternateContent>',
+    `<mc:Choice Requires="${choiceRequires}">${choiceBody}</mc:Choice>`,
+    `<mc:Fallback>${fallbackBody}</mc:Fallback>`,
+    '</mc:AlternateContent>',
+  ].join(''), [
+    ' xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"',
+    ' xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"',
+    ' xmlns:w99="urn:yalken:legacy-unsupported-wordprocessingml-choice"',
+  ].join(''));
+  const hostileCases = [
+    [
+      'duplicate-xmlns-prefix',
+      docxWithNamespaces(
+        '<w:p><w:r><w:t>duplicate xmlns</w:t></w:r></w:p>',
+        ' xmlns:dup="urn:a" xmlns:dup="urn:b"',
+      ),
+    ],
+    [
+      'duplicate-qualified-pstyle-val',
+      packageWith(
+        'w:val="Title" w:val="Normal"',
+        'w:name="_tab1" w:id="1"',
+        'w:id="1"',
+        'w:val="nextPage"',
+      ),
+    ],
+    [
+      'duplicate-expanded-pstyle-alias-val',
+      packageWith(
+        'w:val="Title" wx:val="Normal"',
+        'w:name="_tab1" w:id="1"',
+        'w:id="1"',
+        'w:val="nextPage"',
+        ` xmlns:wx="${WORDPROCESSINGML_NS}"`,
+      ),
+    ],
+    [
+      'duplicate-expanded-pstyle-two-alias-val',
+      packageWith(
+        'wa:val="Title" wb:val="Normal"',
+        'w:name="_tab1" w:id="1"',
+        'w:id="1"',
+        'w:val="nextPage"',
+        ` xmlns:wa="${WORDPROCESSINGML_NS}" xmlns:wb="${WORDPROCESSINGML_NS}"`,
+      ),
+    ],
+    [
+      'undeclared-prefix-pstyle-val',
+      packageWith(
+        'x:val="Title"',
+        'w:name="_tab1" w:id="1"',
+        'w:id="1"',
+        'w:val="nextPage"',
+      ),
+    ],
+    [
+      'duplicate-qualified-bookmark-id',
+      packageWith(
+        'w:val="Title"',
+        'w:name="_tab1" w:id="1" w:id="2"',
+        'w:id="1"',
+        'w:val="nextPage"',
+      ),
+    ],
+    [
+      'duplicate-qualified-section-val',
+      packageWith(
+        'w:val="Title"',
+        'w:name="_tab1" w:id="1"',
+        'w:id="1"',
+        'w:val="nextPage" w:val="continuous"',
+      ),
+    ],
+    [
+      'undeclared-element-prefix-inside-unselected-choice',
+      mcePackage(
+        'w99',
+        '<x:p><w:r><w:t>blocked</w:t></w:r></x:p>',
+        '<w:p><w:r><w:t>fallback</w:t></w:r></w:p>',
+      ),
+    ],
+    [
+      'undeclared-attribute-prefix-inside-unselected-choice',
+      mcePackage(
+        'w99',
+        '<w:p><w:pPr><w:pStyle x:val="Title"/></w:pPr><w:r><w:t>blocked</w:t></w:r></w:p>',
+        '<w:p><w:r><w:t>fallback</w:t></w:r></w:p>',
+      ),
+    ],
+    [
+      'undeclared-element-prefix-inside-unselected-fallback',
+      mcePackage(
+        'w14',
+        '<w:p><w:r><w:t>choice</w:t></w:r></w:p>',
+        '<x:p><w:r><w:t>blocked</w:t></w:r></x:p>',
+      ),
+    ],
+    [
+      'undeclared-attribute-prefix-inside-unselected-fallback',
+      mcePackage(
+        'w14',
+        '<w:p><w:r><w:t>choice</w:t></w:r></w:p>',
+        '<w:p><w:pPr><w:pStyle x:val="Title"/></w:pPr><w:r><w:t>blocked</w:t></w:r></w:p>',
+      ),
+    ],
+    [
+      'duplicate-pstyle-val-inside-unselected-choice',
+      mcePackage(
+        'w99',
+        '<w:p><w:pPr><w:pStyle w:val="Title" w:val="Normal"/></w:pPr><w:r><w:t>blocked</w:t></w:r></w:p>',
+        '<w:p><w:r><w:t>fallback</w:t></w:r></w:p>',
+      ),
+    ],
+    [
+      'duplicate-pstyle-val-inside-unselected-fallback',
+      mcePackage(
+        'w14',
+        '<w:p><w:r><w:t>choice</w:t></w:r></w:p>',
+        '<w:p><w:pPr><w:pStyle w:val="Title" w:val="Normal"/></w:pPr><w:r><w:t>blocked</w:t></w:r></w:p>',
+      ),
+    ],
+  ];
+
+  for (const [label, bytes] of hostileCases) {
+    await t.test(label, () => {
+      const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+      assertContentPreviewShell(result);
+      assert.equal(result.ok, false);
+      assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+      assert.equal(result.reason, 'DOCX_XML_ATTRIBUTE_MALFORMED');
+      assert.equal(result.parse.completed, false);
+    });
+  }
+
+  await t.test('valid unqualified val noise does not collide with semantic w:val', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(packageWith(
+      'val="Noise" w:val="Title"',
+      'w:name="_tab1" w:id="1"',
+      'w:id="1"',
+      'val="Noise" w:val="nextPage"',
+    ));
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+    assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
+    assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
+    assert.equal(result.contentPreview.paragraphs[0].text, 'Attribute guard body');
+  });
+
+  await t.test('valid alias prefix for Word attributes preserves semantics', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(packageWith(
+      'wx:val="Title"',
+      'wx:name="_tab1" wx:id="1"',
+      'wx:id="1"',
+      'wx:val="nextPage"',
+      ` xmlns:wx="${WORDPROCESSINGML_NS}"`,
+    ));
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+    assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
+    assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
+    assert.equal(result.contentPreview.paragraphs[0].text, 'Attribute guard body');
+  });
+
+  await t.test('valid same-element namespace declaration order preserves Word attribute semantics', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(packageWith(
+      `wx:val="Title" xmlns:wx="${WORDPROCESSINGML_NS}"`,
+      'w:name="_tab1" w:id="1"',
+      'w:id="1"',
+      `sx:val="nextPage" xmlns:sx="${WORDPROCESSINGML_NS}"`,
+    ));
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+    assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
+    assert.equal(result.contentPreview.paragraphs[0].text, 'Attribute guard body');
+  });
+
+  await t.test('valid scoped rebind from foreign to Word namespace preserves local semantics', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(packageWith(
+      `wx:val="Title" xmlns:wx="${WORDPROCESSINGML_NS}"`,
+      'w:name="_tab1" w:id="1"',
+      'w:id="1"',
+      `wx:val="nextPage" xmlns:wx="${WORDPROCESSINGML_NS}"`,
+      ' xmlns:wx="urn:yalken:foreign-prefix"',
+    ));
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+    assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
+    assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
+    assert.equal(result.contentPreview.paragraphs[0].text, 'Attribute guard body');
+  });
+
+  await t.test('valid implicit xml prefix and quoted gt attributes remain admissible', () => {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docxWithNamespaces([
+      '<w:p data-probe="quoted > marker">',
+      '<w:r><w:t xml:space="preserve">  xml implicit  </w:t></w:r>',
+      '</w:p>',
+    ].join('')));
+    assertContentPreviewShell(result);
+    assert.equal(result.ok, true);
+    assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
+    assert.equal(result.contentPreview.paragraphs[0].text, '  xml implicit  ');
+  });
+});
+
 test('DOCX content preview: hyperlink visible text survives split runs anchors and Unicode', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
@@ -1259,7 +1980,7 @@ test('DOCX content preview: unsupported encoding and wrong namespace prefix do n
 
   assertContentPreviewShell(unsupportedPrefix);
   assert.equal(unsupportedPrefix.ok, false);
-  assert.equal(unsupportedPrefix.code, 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_XML_PREFIX');
+  assert.equal(unsupportedPrefix.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
   assert.equal(unsupportedPrefix.parse.attempted, true);
   assert.equal(unsupportedPrefix.parse.completed, false);
   assert.equal(unsupportedPrefix.contentPreview, null);
@@ -1287,8 +2008,8 @@ test('DOCX content preview: trailing XML garbage and multiple roots never return
     assert.equal(result.parse.completed, false);
     assert.equal(result.contentPreview, null);
   }
-  assert.equal(trailingBareLessThan.diagnostics.some((item) => item.sourceCode === 'DOCX_XML_TOKEN_GAP'), true);
-  assert.equal(trailingTextAfterRoot.diagnostics.some((item) => item.sourceCode === 'DOCX_XML_TEXT_OUTSIDE_ROOT'), true);
+  assert.equal(trailingBareLessThan.diagnostics.some((item) => item.sourceCode === 'DOCX_XML_TAG_MALFORMED'), true);
+  assert.equal(trailingTextAfterRoot.diagnostics.some((item) => item.sourceCode === 'DOCX_XML_TOKEN_GAP'), true);
   assert.equal(secondRoot.diagnostics.some((item) => item.sourceCode === 'DOCX_XML_MULTIPLE_ROOTS'), true);
 });
 

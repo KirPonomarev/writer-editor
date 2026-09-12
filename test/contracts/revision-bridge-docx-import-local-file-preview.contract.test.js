@@ -9,6 +9,7 @@ const { pathToFileURL } = require('node:url');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MODULE_PATH = path.join(REPO_ROOT, 'src', 'utils', 'docxImportLocalFilePreview.js');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
+const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_SCHEMA,
@@ -112,7 +113,7 @@ function zipFixture(entries) {
 }
 
 function documentXml(body) {
-  return `<w:document><w:body>${body}</w:body></w:document>`;
+  return `<w:document xmlns:w="${WORDPROCESSINGML_NS}"><w:body>${body}</w:body></w:document>`;
 }
 
 function paragraphXml(text) {
@@ -125,6 +126,16 @@ function cleanDocxZip(body = '<w:p/>') {
       name: 'word/document.xml',
       method: 8,
       body: documentXml(body),
+    },
+  ]);
+}
+
+function rawStoredDocxZip(body) {
+  return zipFixture([
+    {
+      name: 'word/document.xml',
+      method: 0,
+      body,
     },
   ]);
 }
@@ -212,6 +223,7 @@ test('DOCX local file preview adapter: clean local DOCX becomes pathless preview
       pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'Preview.docx') }),
       readLocalFileBytes: async () => cleanDocxZip([
         paragraphXml('Alpha'),
+        paragraphXml('A<?audit <!FOO>?>B'),
         paragraphXml('Bravo'),
       ].join('')),
       loadRevisionBridgeModule: loadBridge,
@@ -231,11 +243,12 @@ test('DOCX local file preview adapter: clean local DOCX becomes pathless preview
   assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_READY');
   assert.deepEqual(result.docxContentPreviewReport.contentPreview.paragraphs.map((entry) => entry.text), [
     'Alpha',
+    'AB',
     'Bravo',
   ]);
   assert.equal(result.docxImportPreviewPlan.code, 'DOCX_IMPORT_PREVIEW_READY');
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.mode, 'create-only');
-  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nAB\n\nBravo');
   assert.equal(result.docxImportPreviewPlan.lossReport.mode, 'plain-text-only');
   assertNoForbiddenPublicFields(result);
 });
@@ -289,6 +302,67 @@ test('DOCX local file preview adapter: malformed XML fails closed and does not b
   assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
   assert.equal(result.docxImportPreviewPlan, null);
   assertNoForbiddenPublicFields(result);
+});
+
+test('DOCX local file preview adapter: invalid XML text entities fail before import planning', async () => {
+  const result = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-invalid-entity' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'InvalidEntity.docx') }),
+      readLocalFileBytes: async () => cleanDocxZip(paragraphXml('A &bogus; B')),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, 'blocked');
+  assert.equal(result.importPreviewOk, false);
+  assert.equal(result.docxContentPreviewReport.ok, false);
+  assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+  assert.equal(result.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_ENTITY_INVALID'
+  )), true);
+  assert.equal(result.docxImportPreviewPlan, null);
+  assertNoForbiddenPublicFields(result);
+});
+
+test('DOCX local file preview adapter: malformed UTF-8 and declaration markup fail before import planning', async () => {
+  const invalidUtf8 = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-invalid-utf8' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'InvalidUtf8.docx') }),
+      readLocalFileBytes: async () => rawStoredDocxZip(Buffer.concat([
+        Buffer.from(documentXml('<w:p><w:r><w:t>A '), 'utf8'),
+        Buffer.from([0xc3, 0x28]),
+        Buffer.from(' B</w:t></w:r></w:p>', 'utf8'),
+      ])),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+  const invalidDeclaration = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-invalid-declaration' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'InvalidDeclaration.docx') }),
+      readLocalFileBytes: async () => rawStoredDocxZip(documentXml(`<!NOTATION gif SYSTEM "image/gif">${paragraphXml('A')}`)),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+
+  for (const result of [invalidUtf8, invalidDeclaration]) {
+    assert.equal(result.ok, true);
+    assert.equal(result.status, 'blocked');
+    assert.equal(result.importPreviewOk, false);
+    assert.equal(result.docxContentPreviewReport.ok, false);
+    assert.equal(result.docxContentPreviewReport.code, 'DOCX_CONTENT_PREVIEW_XML_MALFORMED');
+    assert.equal(result.docxImportPreviewPlan, null);
+    assertNoForbiddenPublicFields(result);
+  }
+  assert.equal(invalidUtf8.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_UTF8_MALFORMED'
+  )), true);
+  assert.equal(invalidDeclaration.docxContentPreviewReport.diagnostics.some((item) => (
+    item.sourceCode === 'DOCX_XML_DECLARATION_UNSUPPORTED'
+  )), true);
 });
 
 test('DOCX local file preview adapter: unsupported extension and oversized bytes fail closed before preview helpers', async () => {

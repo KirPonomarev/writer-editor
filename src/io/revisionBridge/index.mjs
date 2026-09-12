@@ -5046,13 +5046,27 @@ function docxReviewPreviewSessionSafeId(value, fallback) {
 function docxReviewPreviewSessionTextFromXml(xmlText, maxChars) {
   const parts = [];
   let total = 0;
+  const paragraphSegments = String(xmlText || '').split(
+    /<\s*\/\s*(?:[A-Za-z_][\w.-]*:)?p\s*>\s*<\s*(?:[A-Za-z_][\w.-]*:)?p\b[^>]*>/giu,
+  );
   const textPattern = /<\s*(?:[A-Za-z_][\w.-]*:)?t\b[^>]*>([\s\S]*?)<\s*\/\s*(?:[A-Za-z_][\w.-]*:)?t\s*>/giu;
-  let match;
-  while ((match = textPattern.exec(String(xmlText || ''))) !== null) {
-    const decoded = docxContentPreviewDecodeText(match[1] || '');
-    if (!decoded) continue;
-    parts.push(decoded);
-    total += decoded.length;
+  for (const [segmentIndex, segment] of paragraphSegments.entries()) {
+    const segmentParts = [];
+    textPattern.lastIndex = 0;
+    let match;
+    while ((match = textPattern.exec(segment)) !== null) {
+      const decoded = docxContentPreviewDecodeText(match[1] || '');
+      if (!decoded) continue;
+      segmentParts.push(decoded);
+    }
+    if (segmentParts.length === 0) continue;
+    if (parts.length > 0 && segmentIndex > 0) {
+      parts.push('\n');
+      total += 1;
+    }
+    const segmentText = segmentParts.join('');
+    parts.push(segmentText);
+    total += segmentText.length;
     if (total > maxChars) {
       return {
         text: parts.join('').slice(0, maxChars),
@@ -6693,6 +6707,8 @@ const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS,
 ]);
 const DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC';
+const DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION';
 const DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC';
 const DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC = 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC';
@@ -6720,6 +6736,34 @@ const DOCX_WORDPROCESSINGML_MAIN_NAMESPACE = [
   'h',
   'ttp://schemas.openxmlformats.org/wordprocessingml/2006/main',
 ].join('');
+const DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE = [
+  'h',
+  'ttp://schemas.openxmlformats.org/officeDocument/2006/relationships',
+].join('');
+const DOCX_MARKUP_COMPATIBILITY_NAMESPACE = [
+  'h',
+  'ttp://schemas.openxmlformats.org/markup-compatibility/2006',
+].join('');
+const DOCX_WORDPROCESSINGML_W14_NAMESPACE = [
+  'h',
+  'ttp://schemas.microsoft.com/office/word/2010/wordml',
+].join('');
+const DOCX_XML_NAMESPACE = [
+  'h',
+  'ttp://www.w3.org/XML/1998/namespace',
+].join('');
+const DOCX_XMLNS_NAMESPACE = [
+  'h',
+  'ttp://www.w3.org/2000/xmlns/',
+].join('');
+const DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES = new Map([
+  ['xml', DOCX_XML_NAMESPACE],
+  ['w', DOCX_WORDPROCESSINGML_MAIN_NAMESPACE],
+  ['r', DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE],
+  ['mc', DOCX_MARKUP_COMPATIBILITY_NAMESPACE],
+  ['w14', DOCX_WORDPROCESSINGML_W14_NAMESPACE],
+  ['w99', 'urn:yalken:legacy-unsupported-wordprocessingml-choice'],
+]);
 const DOCX_CONTENT_PREVIEW_WORDPROCESSINGML_GUARD_LOCAL_NAMES = new Set([
   'body',
   'bookmarkEnd',
@@ -7035,8 +7079,73 @@ function docxContentPreviewDecodeEntity(entity) {
   return `&${entity};`;
 }
 
+function docxContentPreviewIsValidXmlCharCode(codePoint) {
+  return (
+    codePoint === 0x09
+    || codePoint === 0x0a
+    || codePoint === 0x0d
+    || (codePoint >= 0x20 && codePoint <= 0xd7ff)
+    || (codePoint >= 0xe000 && codePoint <= 0xfffd)
+    || (codePoint >= 0x10000 && codePoint <= 0x10ffff)
+  );
+}
+
+function docxContentPreviewDecodeEntityStrict(entity) {
+  const named = {
+    amp: '&',
+    apos: "'",
+    gt: '>',
+    lt: '<',
+    quot: '"',
+  };
+  if (Object.prototype.hasOwnProperty.call(named, entity)) return { ok: true, value: named[entity] };
+  if (/^#x[0-9a-fA-F]+$/u.test(entity)) {
+    const value = Number.parseInt(entity.slice(2), 16);
+    return Number.isSafeInteger(value) && docxContentPreviewIsValidXmlCharCode(value)
+      ? { ok: true, value: String.fromCodePoint(value) }
+      : { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+  }
+  if (/^#[0-9]+$/u.test(entity)) {
+    const value = Number.parseInt(entity.slice(1), 10);
+    return Number.isSafeInteger(value) && docxContentPreviewIsValidXmlCharCode(value)
+      ? { ok: true, value: String.fromCodePoint(value) }
+      : { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+  }
+  return { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+}
+
+function docxContentPreviewDecodeTextStrict(text) {
+  const input = String(text || '');
+  if (input.includes(']]>')) return { ok: false, sourceCode: 'DOCX_XML_CDATA_CLOSING_SEQUENCE_IN_TEXT' };
+  let output = '';
+  let cursor = 0;
+  while (cursor < input.length) {
+    const amp = input.indexOf('&', cursor);
+    if (amp === -1) {
+      output += input.slice(cursor);
+      break;
+    }
+    output += input.slice(cursor, amp);
+    const end = input.indexOf(';', amp + 1);
+    if (end === -1) return { ok: false, sourceCode: 'DOCX_XML_ENTITY_UNTERMINATED' };
+    const entity = input.slice(amp + 1, end);
+    if (entity === '' || /[\s<>&]/u.test(entity)) {
+      return { ok: false, sourceCode: 'DOCX_XML_ENTITY_INVALID' };
+    }
+    const decoded = docxContentPreviewDecodeEntityStrict(entity);
+    if (!decoded.ok) return decoded;
+    output += decoded.value;
+    cursor = end + 1;
+  }
+  return { ok: true, value: output };
+}
+
 function docxContentPreviewDecodeText(text) {
   return String(text).replace(/&([^;\s<>&]+);/gu, (_match, entity) => docxContentPreviewDecodeEntity(entity));
+}
+
+function docxContentPreviewIsValidXmlDeclaration(instruction) {
+  return /^xml[ \t\r\n]+version[ \t\r\n]*=[ \t\r\n]*(?:"1\.[0-9]+"|'1\.[0-9]+')(?:[ \t\r\n]+encoding[ \t\r\n]*=[ \t\r\n]*(?:"[A-Za-z][A-Za-z0-9._-]*"|'[A-Za-z][A-Za-z0-9._-]*'))?(?:[ \t\r\n]+standalone[ \t\r\n]*=[ \t\r\n]*(?:"(?:yes|no)"|'(?:yes|no)'))?[ \t\r\n]*$/u.test(String(instruction || ''));
 }
 
 function docxContentPreviewTagName(token) {
@@ -7049,6 +7158,29 @@ function docxContentPreviewAttributeValue(token, localName) {
   let match;
   while ((match = pattern.exec(String(token || ''))) !== null) {
     if (docxContentPreviewLocalName(match[1]) === localName) {
+      return docxContentPreviewDecodeText(match[3]);
+    }
+  }
+  return '';
+}
+
+function docxContentPreviewAttributeNamespaceUri(attributeName, namespaceMap) {
+  const prefix = docxContentPreviewPrefixName(attributeName);
+  if (prefix && (!(namespaceMap instanceof Map) || !namespaceMap.has(prefix))) {
+    return DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES.get(prefix) || '';
+  }
+  if (!prefix) return '';
+  return namespaceMap instanceof Map ? namespaceMap.get(prefix) || '' : '';
+}
+
+function docxContentPreviewWordAttributeValue(token, namespaceMap, localName) {
+  const pattern = /\s([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)\s*=\s*(["'])([\s\S]*?)\2/gu;
+  let match;
+  while ((match = pattern.exec(String(token || ''))) !== null) {
+    if (
+      docxContentPreviewLocalName(match[1]) === localName
+      && docxContentPreviewAttributeNamespaceUri(match[1], namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
+    ) {
       return docxContentPreviewDecodeText(match[3]);
     }
   }
@@ -7077,11 +7209,44 @@ function docxContentPreviewNamespaceMapForToken(parentMap, token) {
 
 function docxContentPreviewNamespaceUriForTagName(tagName, namespaceMap) {
   const prefix = docxContentPreviewPrefixName(tagName);
-  if (prefix === 'w' && (!(namespaceMap instanceof Map) || !namespaceMap.has('w'))) {
-    return DOCX_WORDPROCESSINGML_MAIN_NAMESPACE;
+  if (prefix && (!(namespaceMap instanceof Map) || !namespaceMap.has(prefix))) {
+    return DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES.get(prefix) || '';
   }
   if (prefix) return namespaceMap instanceof Map ? namespaceMap.get(prefix) || '' : '';
   return namespaceMap instanceof Map ? namespaceMap.get('') || '' : '';
+}
+
+function docxContentPreviewResolveQName(nameParts, namespaceMap, { allowLegacy = false, attribute = false } = {}) {
+  if (!nameParts) return null;
+  if (!nameParts.prefix) {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: attribute ? '' : (namespaceMap.get('') || ''),
+      qName: nameParts.qName,
+    };
+  }
+  if (nameParts.prefix === 'xml') {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: DOCX_XML_NAMESPACE,
+      qName: nameParts.qName,
+    };
+  }
+  if (namespaceMap.has(nameParts.prefix)) {
+    return {
+      localName: nameParts.localName,
+      namespaceUri: namespaceMap.get(nameParts.prefix) || '',
+      qName: nameParts.qName,
+    };
+  }
+  if (!allowLegacy) return null;
+  const legacyNamespace = DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES.get(nameParts.prefix);
+  if (!legacyNamespace) return null;
+  return {
+    localName: nameParts.localName,
+    namespaceUri: legacyNamespace,
+    qName: nameParts.qName,
+  };
 }
 
 function docxContentPreviewCanonicalTagName(tagName, namespaceMap) {
@@ -7098,6 +7263,185 @@ function docxContentPreviewUnsupportedNamespacePrefix(tagName, namespaceMap) {
   if (docxContentPreviewNamespaceUriForTagName(tagName, namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) return '';
   const prefix = docxContentPreviewPrefixName(tagName);
   return prefix || 'default';
+}
+
+function docxContentPreviewParseStrictAttributes(attributeText) {
+  const attributes = [];
+  const namespaces = [];
+  const seenQNames = new Set();
+  let cursor = 0;
+  while (cursor < attributeText.length) {
+    if (!/[ \t\r\n]/u.test(attributeText[cursor])) return null;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    if (cursor >= attributeText.length) break;
+    const nameMatch = /^[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?/u.exec(attributeText.slice(cursor));
+    if (!nameMatch) return null;
+    const rawName = nameMatch[0];
+    if (seenQNames.has(rawName)) return null;
+    seenQNames.add(rawName);
+    cursor += rawName.length;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    if (attributeText[cursor] !== '=') return null;
+    cursor += 1;
+    while (cursor < attributeText.length && /[ \t\r\n]/u.test(attributeText[cursor])) cursor += 1;
+    const quote = attributeText[cursor];
+    if (quote !== '"' && quote !== "'") return null;
+    cursor += 1;
+    const valueEnd = attributeText.indexOf(quote, cursor);
+    if (valueEnd === -1) return null;
+    const value = docxZipXmlDecodeAttribute(attributeText.slice(cursor, valueEnd));
+    if (value === null) return null;
+    cursor = valueEnd + 1;
+    const nameParts = docxZipXmlNameParts(rawName);
+    if (!nameParts) return null;
+    if (rawName === 'xmlns') {
+      namespaces.push({ prefix: '', value });
+    } else if (nameParts.prefix === 'xmlns') {
+      namespaces.push({ prefix: nameParts.localName, value });
+    } else {
+      attributes.push({ nameParts, value });
+    }
+  }
+  return { attributes, namespaces };
+}
+
+function docxContentPreviewScopedNamespaceMap(parentNamespaceMap, namespaces) {
+  const namespaceMap = new Map(parentNamespaceMap instanceof Map ? parentNamespaceMap : []);
+  const seenNamespacePrefixes = new Set();
+  for (const namespace of namespaces) {
+    if (!namespace || typeof namespace.prefix !== 'string') return null;
+    if (seenNamespacePrefixes.has(namespace.prefix)) return null;
+    seenNamespacePrefixes.add(namespace.prefix);
+    if (
+      namespace.prefix === 'xmlns'
+      || (namespace.prefix && !namespace.value)
+      || namespace.value === DOCX_XMLNS_NAMESPACE
+      || (namespace.prefix === 'xml') !== (namespace.value === DOCX_XML_NAMESPACE)
+    ) {
+      return null;
+    }
+    namespaceMap.set(namespace.prefix, namespace.value);
+  }
+  return namespaceMap;
+}
+
+function docxContentPreviewParseStrictStartTag(rawTag, parentNamespaceMap) {
+  const trimmed = rawTag.replace(/[ \t\r\n]+$/u, '');
+  if (!trimmed) return null;
+  const selfClosing = /\/$/u.test(trimmed);
+  const body = selfClosing ? trimmed.slice(0, -1) : trimmed;
+  const nameMatch = /^([A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)(?=\s|$)/u.exec(body);
+  if (!nameMatch) return null;
+  const parsedAttributes = docxContentPreviewParseStrictAttributes(body.slice(nameMatch[0].length));
+  if (!parsedAttributes) return null;
+  const namespaceMap = docxContentPreviewScopedNamespaceMap(parentNamespaceMap, parsedAttributes.namespaces);
+  if (!namespaceMap) return null;
+  const resolvedName = docxContentPreviewResolveQName(docxZipXmlNameParts(nameMatch[0]), namespaceMap);
+  if (!resolvedName) return null;
+  const seenExpandedAttributes = new Set();
+  for (const attribute of parsedAttributes.attributes) {
+    const resolvedAttribute = docxContentPreviewResolveQName(attribute.nameParts, namespaceMap, { attribute: true });
+    if (!resolvedAttribute) return null;
+    const expandedKey = `${resolvedAttribute.namespaceUri}\u0000${resolvedAttribute.localName}`;
+    if (seenExpandedAttributes.has(expandedKey)) return null;
+    seenExpandedAttributes.add(expandedKey);
+  }
+  return {
+    ...resolvedName,
+    rawTagName: nameMatch[0],
+    namespaceMap,
+    selfClosing,
+  };
+}
+
+function docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText) {
+  const text = String(xmlText || '').replace(/^\ufeff/u, '');
+  if (/[^\u0009\u000a\u000d\u0020-\ud7ff\ue000-\ufffd\u{10000}-\u{10ffff}]/u.test(text)) {
+    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_INVALID_CHARACTER') };
+  }
+  const stack = [];
+  let cursor = 0;
+  while (cursor < text.length) {
+    const open = text.indexOf('<', cursor);
+    if (open === -1) break;
+    const characterData = text.slice(cursor, open);
+    const decodedCharacterData = docxContentPreviewDecodeTextStrict(characterData);
+    if (!decodedCharacterData.ok) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic(decodedCharacterData.sourceCode) };
+    }
+    cursor = open;
+    if (text.startsWith('<!--', open)) {
+      const end = text.indexOf('-->', open + 4);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_COMMENT_MALFORMED') };
+      const body = text.slice(open + 4, end);
+      if (body.includes('--') || body.endsWith('-')) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_COMMENT_MALFORMED') };
+      }
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<?', open)) {
+      const end = text.indexOf('?>', open + 2);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+      const instruction = text.slice(open + 2, end);
+      const target = /^([A-Za-z_][\w.-]*)(?=[ \t\r\n]|$)/u.exec(instruction)?.[1];
+      if (!target) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+      if (target.toLowerCase() === 'xml' && open !== 0) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_RESERVED_DECLARATION_POSITION') };
+      }
+      if (target.toLowerCase() === 'xml' && (target !== 'xml' || !docxContentPreviewIsValidXmlDeclaration(instruction))) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_MALFORMED') };
+      }
+      cursor = end + 2;
+      continue;
+    }
+    if (text.startsWith('<![CDATA[', open)) {
+      const end = text.indexOf(']]>', open + 9);
+      if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_CDATA_MALFORMED') };
+      if (stack.length === 0) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };
+      cursor = end + 3;
+      continue;
+    }
+    if (text.startsWith('<!', open)) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_UNSUPPORTED') };
+    }
+    const close = docxZipXmlFindTagEnd(text, open + 1);
+    if (close === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MALFORMED') };
+    const rawTag = text.slice(open + 1, close);
+    if (rawTag.startsWith('/')) {
+      const rawCloseName = rawTag.slice(1).replace(/[ \t\r\n]+$/u, '');
+      const closeNameParts = docxZipXmlNameParts(rawCloseName);
+      const parentNamespaceMap = stack.length > 0 ? stack[stack.length - 1].namespaceMap : new Map();
+      const resolvedCloseName = docxContentPreviewResolveQName(closeNameParts, parentNamespaceMap);
+      const openTag = stack.pop();
+      if (!resolvedCloseName || !openTag || openTag.rawTagName !== resolvedCloseName.qName) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MISMATCH', rawCloseName) };
+      }
+      cursor = close + 1;
+      continue;
+    }
+    const parentNamespaceMap = stack.length > 0 ? stack[stack.length - 1].namespaceMap : new Map();
+    const parsedTag = docxContentPreviewParseStrictStartTag(rawTag, parentNamespaceMap);
+    if (!parsedTag) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_ATTRIBUTE_MALFORMED') };
+    }
+    if (!parsedTag.selfClosing) stack.push(parsedTag);
+    cursor = close + 1;
+  }
+  if (cursor !== text.length) {
+    const trailingData = text.slice(cursor);
+    const decodedTrailingData = docxContentPreviewDecodeTextStrict(trailingData);
+    if (!decodedTrailingData.ok) {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic(decodedTrailingData.sourceCode) };
+    }
+    if (trailingData.trim() !== '') {
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+    }
+  }
+  if (stack.length > 0) {
+    return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_UNCLOSED_TAG', stack[stack.length - 1].rawTagName) };
+  }
+  return { ok: true };
 }
 
 function docxContentPreviewRootElement(xmlText) {
@@ -7160,8 +7504,8 @@ function docxContentPreviewAddUnsupportedDiagnostic(diagnostics, seenTags, tagNa
   }));
 }
 
-function docxContentPreviewListNumberingValue(token, localName) {
-  return docxContentPreviewAttributeValue(token, localName).trim();
+function docxContentPreviewListNumberingValue(token, namespaceMap, localName) {
+  return docxContentPreviewWordAttributeValue(token, namespaceMap, localName).trim();
 }
 
 function docxContentPreviewListNumberingKey(numId, ilvl) {
@@ -7187,8 +7531,8 @@ function docxContentPreviewAddListNumberingDiagnostic(diagnostics, numberingCont
   }));
 }
 
-function docxContentPreviewNormalizeTypedBreakType(token) {
-  const rawType = docxContentPreviewAttributeValue(token, 'type').trim();
+function docxContentPreviewNormalizeTypedBreakType(token, namespaceMap) {
+  const rawType = docxContentPreviewWordAttributeValue(token, namespaceMap, 'type').trim();
   if (rawType === 'page') return 'page';
   if (rawType === 'column') return 'column';
   return 'line';
@@ -7208,8 +7552,8 @@ function docxContentPreviewAddTypedBreakDiagnostic(diagnostics, seenKinds, break
   }));
 }
 
-function docxContentPreviewNormalizeSectionBreakType(token) {
-  const rawValue = docxContentPreviewAttributeValue(token, 'val').trim();
+function docxContentPreviewNormalizeSectionBreakType(token, namespaceMap) {
+  const rawValue = docxContentPreviewWordAttributeValue(token, namespaceMap, 'val').trim();
   if (rawValue === 'nextPage') return 'nextPage';
   if (rawValue === 'continuous') return 'continuous';
   return '';
@@ -7239,6 +7583,23 @@ function docxContentPreviewAddMarkupCompatibilityDiagnostic(diagnostics, seenKin
     sourceCode,
     tagName: 'mc:AlternateContent',
     message,
+  }));
+}
+
+function docxContentPreviewFieldInstructionHasHyperlink(value) {
+  return /\bHYPERLINK\b/iu.test(String(value || ''));
+}
+
+function docxContentPreviewAddFieldHyperlinkDiagnostic(diagnostics, seenKinds, sourceCode, tagName) {
+  if (!sourceCode || seenKinds.has(sourceCode)) return;
+  seenKinds.add(sourceCode);
+  if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) return;
+  diagnostics.push(docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC, {
+    severity: 'warning',
+    sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    sourceCode,
+    tagName,
+    message: 'DOCX field hyperlink instruction is retained as explicit link loss only',
   }));
 }
 
@@ -7275,6 +7636,33 @@ function docxContentPreviewMarkupCompatibilityMarkEmission(frames, token) {
   }
 }
 
+function docxContentPreviewNextXmlToken(text, cursor) {
+  if (cursor >= text.length) return null;
+  if (text[cursor] !== '<') {
+    const nextOpen = text.indexOf('<', cursor);
+    const end = nextOpen === -1 ? text.length : nextOpen;
+    return { token: text.slice(cursor, end), nextCursor: end };
+  }
+  if (text.startsWith('<!--', cursor)) {
+    const end = text.indexOf('-->', cursor + 4);
+    if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_COMMENT_MALFORMED') };
+    return { token: text.slice(cursor, end + 3), nextCursor: end + 3 };
+  }
+  if (text.startsWith('<?', cursor)) {
+    const end = text.indexOf('?>', cursor + 2);
+    if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_PI_MALFORMED') };
+    return { token: text.slice(cursor, end + 2), nextCursor: end + 2 };
+  }
+  if (text.startsWith('<![CDATA[', cursor)) {
+    const end = text.indexOf(']]>', cursor + 9);
+    if (end === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_CDATA_MALFORMED') };
+    return { token: text.slice(cursor, end + 3), nextCursor: end + 3 };
+  }
+  const close = docxZipXmlFindTagEnd(text, cursor + 1);
+  if (close === -1) return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TAG_MALFORMED') };
+  return { token: text.slice(cursor, close + 1), nextCursor: close + 1 };
+}
+
 function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   const diagnostics = [];
   const seenKinds = new Set();
@@ -7282,8 +7670,6 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   const elementStack = [];
   const frames = [];
   const text = String(xmlText || '');
-  const tokenPattern = new RegExp('<!--[\\s\\S]*?-->|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>|<[^>]+>|[^<]+', 'gu');
-  let match;
   let cursor = 0;
 
   function topFrame() {
@@ -7314,12 +7700,13 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
     }
   }
 
-  while ((match = tokenPattern.exec(text)) !== null) {
-    if (match.index !== cursor) {
-      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  while (cursor < text.length) {
+    const nextToken = docxContentPreviewNextXmlToken(text, cursor);
+    if (!nextToken || nextToken.failure) {
+      return { failure: nextToken?.failure || docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
     }
-    cursor = tokenPattern.lastIndex;
-    const token = match[0];
+    cursor = nextToken.nextCursor;
+    const token = nextToken.token;
     if (!token.startsWith('<')) {
       if (frames.length === 0 || docxContentPreviewMarkupCompatibilityShouldEmit(frames)) {
         output.push(token);
@@ -7436,17 +7823,27 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   return { xmlText: output.join(''), diagnostics };
 }
 
-function docxContentPreviewBuildParagraph(order, text) {
-  return {
+function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
+  const paragraph = {
     order,
     sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
     text,
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
+  if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
+    paragraph.paragraphStyleId = metadata.paragraphStyleId;
+  }
+  if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
+    paragraph.sectionBreakType = metadata.sectionBreakType;
+  }
+  if (Number.isInteger(metadata.zeroLengthBookmarkCount) && metadata.zeroLengthBookmarkCount > 0) {
+    paragraph.zeroLengthBookmarkCount = metadata.zeroLengthBookmarkCount;
+  }
+  return paragraph;
 }
 
-function docxContentPreviewPushParagraph(paragraphs, text) {
+function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}) {
   const nextCount = paragraphs.length + 1;
   if (nextCount > DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs) {
     return {
@@ -7457,7 +7854,7 @@ function docxContentPreviewPushParagraph(paragraphs, text) {
       }),
     };
   }
-  paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text));
+  paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
   return { ok: true };
 }
 
@@ -7481,6 +7878,8 @@ function docxContentPreviewUnsupportedEncoding(xmlText) {
 }
 
 function docxContentPreviewParseMainDocumentXml(xmlText) {
+  const xmlValidation = docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText);
+  if (xmlValidation.failure) return { failure: xmlValidation.failure };
   const mceSelection = docxContentPreviewSelectMarkupCompatibilityXml(xmlText);
   if (mceSelection.failure) return { failure: mceSelection.failure };
   const xmlTextForPreview = mceSelection.xmlText;
@@ -7488,6 +7887,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   const seenUnsupportedTags = new Set();
   const seenTypedBreakKinds = new Set();
   const seenSectionBreakKinds = new Set();
+  const seenFieldHyperlinkKinds = new Set();
   const paragraphs = [];
   const elementStack = [];
   let rootSeen = false;
@@ -7497,20 +7897,22 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let insideParagraph = false;
   let activeParagraphIndex = -1;
   let activeListNumbering = null;
+  let activeParagraphMetadata = null;
   let sectionPropertiesDepth = 0;
   let unsupportedDepth = 0;
   let textDepth = 0;
+  let fieldInstructionTextDepth = 0;
+  const complexFieldStack = [];
   let totalTextChars = 0;
-  const tokenPattern = new RegExp('<!--[\\s\\S]*?-->|<!\\[CDATA\\[[\\s\\S]*?\\]\\]>|<[^>]+>|[^<]+', 'gu');
-  let match;
   let cursor = 0;
 
-  while ((match = tokenPattern.exec(xmlTextForPreview)) !== null) {
-    if (match.index !== cursor) {
-      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
+  while (cursor < xmlTextForPreview.length) {
+    const nextToken = docxContentPreviewNextXmlToken(xmlTextForPreview, cursor);
+    if (!nextToken || nextToken.failure) {
+      return { failure: nextToken?.failure || docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TOKEN_GAP') };
     }
-    cursor = tokenPattern.lastIndex;
-    const token = match[0];
+    cursor = nextToken.nextCursor;
+    const token = nextToken.token;
     if (!token.startsWith('<')) {
       if (elementStack.length === 0 && token.trim() !== '') {
         return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_TEXT_OUTSIDE_ROOT') };
@@ -7529,22 +7931,51 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
           };
         }
       }
+      if (
+        unsupportedDepth === 0
+        && insideParagraph
+        && fieldInstructionTextDepth > 0
+        && complexFieldStack.length > 0
+      ) {
+        complexFieldStack[complexFieldStack.length - 1].instructionText += docxContentPreviewDecodeText(token);
+      }
       continue;
     }
 
     if (token.startsWith('<!--') || token.startsWith('<?')) continue;
+    if (token.startsWith('<![CDATA[')) {
+      if (elementStack.length === 0 && rootSeen) {
+        return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };
+      }
+      if (unsupportedDepth === 0 && insideParagraph && textDepth > 0) {
+        const decoded = token.slice(9, -3);
+        paragraphText += decoded;
+        totalTextChars += decoded.length;
+        if (totalTextChars > DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars) {
+          return {
+            failure: docxContentPreviewDiagnostic(DOCX_CONTENT_PREVIEW_CODES.XML_PARSE_LIMIT_EXCEEDED, {
+              sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+              actual: totalTextChars,
+              limit: DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars,
+            }),
+          };
+        }
+      }
+      if (
+        unsupportedDepth === 0
+        && insideParagraph
+        && fieldInstructionTextDepth > 0
+        && complexFieldStack.length > 0
+      ) {
+        complexFieldStack[complexFieldStack.length - 1].instructionText += token.slice(9, -3);
+      }
+      continue;
+    }
     if (token.startsWith('<!')) {
       if (elementStack.length === 0 && rootSeen) {
         return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_MARKUP_OUTSIDE_ROOT') };
       }
-      if (diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
-        diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_MARKUP_DIAGNOSTIC', {
-          severity: 'warning',
-          sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
-          message: 'unsupported XML markup retained as preview diagnostic only',
-        }));
-      }
-      continue;
+      return { failure: docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_DECLARATION_UNSUPPORTED') };
     }
 
     const rawTagName = docxContentPreviewTagName(token);
@@ -7604,6 +8035,44 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     }
     if (unsupportedDepth > 0) continue;
 
+    if (insideParagraph && !closing && tagName === 'w:fldSimple') {
+      const instruction = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'instr');
+      if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
+        docxContentPreviewAddFieldHyperlinkDiagnostic(
+          diagnostics,
+          seenFieldHyperlinkKinds,
+          DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE,
+          'w:fldSimple',
+        );
+      }
+    } else if (insideParagraph && !closing && tagName === 'w:fldChar') {
+      const fldCharType = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'fldCharType').trim();
+      if (fldCharType === 'begin') {
+        complexFieldStack.push({ instructionText: '', sawSeparate: false });
+      } else if (fldCharType === 'separate' && complexFieldStack.length > 0) {
+        complexFieldStack[complexFieldStack.length - 1].sawSeparate = true;
+      } else if (fldCharType === 'end' && complexFieldStack.length > 0) {
+        const fieldFrame = complexFieldStack.pop();
+        if (
+          fieldFrame.sawSeparate
+          && docxContentPreviewFieldInstructionHasHyperlink(fieldFrame.instructionText)
+        ) {
+          docxContentPreviewAddFieldHyperlinkDiagnostic(
+            diagnostics,
+            seenFieldHyperlinkKinds,
+            DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE,
+            'w:instrText',
+          );
+        }
+      }
+    } else if (insideParagraph && tagName === 'w:instrText') {
+      if (closing) {
+        fieldInstructionTextDepth = Math.max(0, fieldInstructionTextDepth - 1);
+      } else if (!selfClosing && complexFieldStack.length > 0 && !complexFieldStack[complexFieldStack.length - 1].sawSeparate) {
+        fieldInstructionTextDepth += 1;
+      }
+    }
+
     if (tagName === 'w:sectPr') {
       if (closing) {
         sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
@@ -7612,11 +8081,11 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         if (selfClosing) sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
       }
     } else if (sectionPropertiesDepth > 0 && tagName === 'w:type' && !closing) {
-      docxContentPreviewAddSectionBreakDiagnostic(
-        diagnostics,
-        seenSectionBreakKinds,
-        docxContentPreviewNormalizeSectionBreakType(token),
-      );
+      const sectionBreakType = docxContentPreviewNormalizeSectionBreakType(token, tokenNamespaceMap);
+      if (insideParagraph && activeParagraphMetadata && sectionBreakType) {
+        activeParagraphMetadata.sectionBreakType = sectionBreakType;
+      }
+      docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
     }
 
     if (tagName === 'w:p' && !closing) {
@@ -7625,23 +8094,31 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         paragraphText = '';
         activeParagraphIndex = paragraphs.length;
         activeListNumbering = null;
+        activeParagraphMetadata = {
+          bookmarkStartIds: new Set(),
+          zeroLengthBookmarkCount: 0,
+        };
       }
       if (selfClosing) {
-        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
+        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
         if (pushed.failure) return pushed;
         insideParagraph = false;
         paragraphText = '';
         activeParagraphIndex = -1;
         activeListNumbering = null;
+        activeParagraphMetadata = null;
       }
     } else if (tagName === 'w:p' && closing && insideParagraph) {
-      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
+      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
       if (pushed.failure) return pushed;
       insideParagraph = false;
       paragraphText = '';
       activeParagraphIndex = -1;
       activeListNumbering = null;
+      activeParagraphMetadata = null;
       textDepth = 0;
+      fieldInstructionTextDepth = 0;
+      complexFieldStack.length = 0;
     } else if (insideParagraph && tagName === 'w:numPr' && !closing) {
       activeListNumbering = {
         paragraphIndex: activeParagraphIndex,
@@ -7653,12 +8130,22 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         activeListNumbering = null;
       }
     } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:numId') {
-      activeListNumbering.numId = docxContentPreviewListNumberingValue(token, 'val');
+      activeListNumbering.numId = docxContentPreviewListNumberingValue(token, tokenNamespaceMap, 'val');
     } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:ilvl') {
-      activeListNumbering.ilvl = docxContentPreviewListNumberingValue(token, 'val');
+      activeListNumbering.ilvl = docxContentPreviewListNumberingValue(token, tokenNamespaceMap, 'val');
     } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering) {
       docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
       activeListNumbering = null;
+    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:pStyle') {
+      activeParagraphMetadata.paragraphStyleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val').trim();
+    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkStart') {
+      const bookmarkId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'id').trim();
+      if (bookmarkId) activeParagraphMetadata.bookmarkStartIds.add(bookmarkId);
+    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkEnd') {
+      const bookmarkId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'id').trim();
+      if (bookmarkId && activeParagraphMetadata.bookmarkStartIds.has(bookmarkId) && paragraphText.length === 0) {
+        activeParagraphMetadata.zeroLengthBookmarkCount += 1;
+      }
     } else if (insideParagraph && tagName === 'w:t') {
       if (closing) {
         textDepth = Math.max(0, textDepth - 1);
@@ -7671,7 +8158,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         docxContentPreviewAddTypedBreakDiagnostic(
           diagnostics,
           seenTypedBreakKinds,
-          docxContentPreviewNormalizeTypedBreakType(token),
+          docxContentPreviewNormalizeTypedBreakType(token, tokenNamespaceMap),
         );
       }
       paragraphText += marker;
@@ -7704,7 +8191,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   }
 
   if (insideParagraph) {
-    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText);
+    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
     if (pushed.failure) return pushed;
   }
 
@@ -7781,7 +8268,30 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     });
   }
 
-  const xmlText = Buffer.from(extraction.bytes).toString('utf8');
+  const xmlText = docxZipDecodeUtf8Xml(extraction.bytes);
+  if (xmlText === null) {
+    return docxContentPreviewResult({
+      ok: false,
+      status: 'blocked',
+      code: DOCX_CONTENT_PREVIEW_CODES.XML_MALFORMED,
+      reason: 'DOCX_XML_UTF8_MALFORMED',
+      decision: 'blocked',
+      preflightSummary,
+      parseAttempted: true,
+      parseCompleted: false,
+      diagnostics: [
+        docxContentPreviewMalformedXmlDiagnostic('DOCX_XML_UTF8_MALFORMED'),
+      ],
+      evidence: [
+        docxContentPreviewEvidence('mainDocument', {
+          sourcePart: extraction.entry.entryId,
+          byteSize: extraction.entry.byteSize,
+        }),
+      ],
+      sourceArtifactSha256,
+      carrierIgnored,
+    });
+  }
   const unsupportedEncoding = docxContentPreviewUnsupportedEncoding(xmlText);
   if (unsupportedEncoding) {
     return docxContentPreviewResult({
@@ -7909,6 +8419,7 @@ const DOCX_IMPORT_PREVIEW_CODES = Object.freeze({
   INPUT_LAYER_LEAK: 'DOCX_IMPORT_PREVIEW_INPUT_LAYER_LEAK',
   BUDGET_EXCEEDED: 'DOCX_IMPORT_PREVIEW_BUDGET_EXCEEDED',
 });
+const DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE';
 const DOCX_IMPORT_PREVIEW_BOUNDS = Object.freeze({
   maxCandidateScenes: 1,
   maxParagraphs: DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs,
@@ -8001,6 +8512,11 @@ function docxImportPreviewLossItem(code, options = {}) {
   if (options.numId !== undefined) item.numId = options.numId;
   if (options.ilvl !== undefined) item.ilvl = options.ilvl;
   if (options.listKey !== undefined) item.listKey = options.listKey;
+  if (options.tabCount !== undefined) item.tabCount = options.tabCount;
+  if (options.detectedParagraphCount !== undefined) item.detectedParagraphCount = options.detectedParagraphCount;
+  if (options.excludedParagraphCount !== undefined) item.excludedParagraphCount = options.excludedParagraphCount;
+  if (options.originAuthoritative !== undefined) item.originAuthoritative = options.originAuthoritative;
+  if (Array.isArray(options.tabLabels)) item.tabLabels = options.tabLabels.slice();
   return item;
 }
 
@@ -8278,6 +8794,71 @@ function docxImportPreviewValidateParagraphs(contentPreview) {
   return { ok: true, texts, joinedPreviewText };
 }
 
+function docxImportPreviewParagraphStyleId(paragraph) {
+  return typeof paragraph?.paragraphStyleId === 'string' ? paragraph.paragraphStyleId.trim() : '';
+}
+
+function docxImportPreviewParagraphSectionBreakType(paragraph) {
+  return typeof paragraph?.sectionBreakType === 'string' ? paragraph.sectionBreakType.trim() : '';
+}
+
+function docxImportPreviewParagraphZeroLengthBookmarkCount(paragraph) {
+  return Number.isInteger(paragraph?.zeroLengthBookmarkCount) ? paragraph.zeroLengthBookmarkCount : 0;
+}
+
+function docxImportPreviewIsGoogleDocsTabHeader(paragraph, index) {
+  return docxImportPreviewParagraphStyleId(paragraph) === 'Title'
+    && docxImportPreviewParagraphZeroLengthBookmarkCount(paragraph) > 0
+    && (index === 0 || docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage')
+    && typeof paragraph.text === 'string'
+    && paragraph.text.trim() !== '';
+}
+
+function docxImportPreviewIsGoogleDocsTabSeparator(paragraph) {
+  return typeof paragraph?.text === 'string'
+    && paragraph.text === ''
+    && docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage';
+}
+
+function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
+  if (!Array.isArray(paragraphs) || paragraphs.length < 5) return null;
+  const headerIndexes = [];
+  for (let index = 0; index < paragraphs.length; index += 1) {
+    if (docxImportPreviewIsGoogleDocsTabHeader(paragraphs[index], index)) headerIndexes.push(index);
+  }
+  if (headerIndexes.length < 2 || headerIndexes[0] !== 0) return null;
+
+  const tabLabels = [];
+  const diagnosticParagraphIndexes = [];
+  for (let headerOrdinal = 0; headerOrdinal < headerIndexes.length; headerOrdinal += 1) {
+    const headerIndex = headerIndexes[headerOrdinal];
+    const nextHeaderIndex = headerIndexes[headerOrdinal + 1] ?? paragraphs.length;
+    const segmentIndexes = [];
+    for (let index = headerIndex + 1; index < nextHeaderIndex; index += 1) segmentIndexes.push(index);
+    if (segmentIndexes.length < 2) return null;
+    const separatorIndex = segmentIndexes[segmentIndexes.length - 1];
+    const lastSegmentTrailingBlank = headerOrdinal === headerIndexes.length - 1
+      && separatorIndex === paragraphs.length - 1
+      && paragraphs[separatorIndex]?.text === '';
+    if (!docxImportPreviewIsGoogleDocsTabSeparator(paragraphs[separatorIndex]) && !lastSegmentTrailingBlank) return null;
+    const bodyIndexes = segmentIndexes.slice(0, -1);
+    if (!bodyIndexes.some((index) => String(paragraphs[index]?.text ?? '').trim() !== '')) return null;
+    tabLabels.push(paragraphs[headerIndex].text);
+    diagnosticParagraphIndexes.push(headerIndex, separatorIndex);
+  }
+
+  return {
+    tabCount: headerIndexes.length,
+    tabLabels,
+    originAuthoritative: false,
+    diagnosticParagraphIndexes,
+    detectedParagraphCount: diagnosticParagraphIndexes.length,
+    excludedParagraphIndexes: [],
+    excludedParagraphCount: 0,
+    importParagraphIndexes: paragraphs.map((_paragraph, index) => index),
+  };
+}
+
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
   const sourceCode = typeof diagnostic.sourceCode === 'string' ? diagnostic.sourceCode : '';
@@ -8349,6 +8930,16 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
       };
     }
   }
+  if (
+    diagnosticCode === DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC
+    && sourceCode === DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE
+  ) {
+    return {
+      code: 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED',
+      category: 'link',
+      message: 'DOCX field hyperlink instruction is retained as explicit link loss only',
+    };
+  }
   if (diagnosticCode === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
     return { code: 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED', category: 'relationship' };
   }
@@ -8385,13 +8976,28 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   return { code: 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED', category: 'structure' };
 }
 
-function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText) {
+function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText, googleDocsTabs = null) {
   const items = [
     docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY', {
       category: 'formatting',
       message: 'DOCX import preview candidate is limited to plain text scene content',
     }),
   ];
+  if (googleDocsTabs) {
+    items.push(docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_FLATTENED', {
+      category: 'googleDocsTabs',
+      severity: 'warning',
+      sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
+      sourcePart: contentPreview.sourcePart,
+      tagName: 'w:p',
+      tabCount: googleDocsTabs.tabCount,
+      tabLabels: googleDocsTabs.tabLabels,
+      originAuthoritative: googleDocsTabs.originAuthoritative,
+      detectedParagraphCount: googleDocsTabs.detectedParagraphCount,
+      excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
+      message: 'Possible Google Docs tab structure was detected, but all paragraph text is retained in the plain text candidate because package origin is not authoritative',
+    }));
+  }
   if (importedText.length === 0) {
     items.push(docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_EMPTY_CONTENT_DIAGNOSTIC', {
       category: 'content',
@@ -8416,6 +9022,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_MARKUP_COMPATIBILITY_DIAGNOSTIC,
+      DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC,
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
@@ -8444,7 +9051,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
   };
 }
 
-function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview, importedText) {
+function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview, importedText, options = {}) {
   const contentTextHash = docxContentPreviewStableHash(importedText);
   const sourceTextHash = typeof contentPreview.textHash === 'string' ? contentPreview.textHash : '';
   // GENERIC-01 (G1): sceneId derives from the full artifact SHA-256, not the
@@ -8465,9 +9072,41 @@ function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview,
   } catch {
     candidateContentSha256 = null;
   }
+  const googleDocsTabs = isPlainObject(options.googleDocsTabs) ? options.googleDocsTabs : null;
+  const importParagraphIndexes = Array.isArray(options.importParagraphIndexes)
+    ? options.importParagraphIndexes.filter((index) => Number.isInteger(index) && index >= 0)
+    : [];
+  const paragraphRangeStart = importParagraphIndexes.length > 0
+    ? Math.min(...importParagraphIndexes)
+    : (contentPreview.paragraphCount > 0 ? 0 : -1);
+  const paragraphRangeEnd = importParagraphIndexes.length > 0
+    ? Math.max(...importParagraphIndexes)
+    : (contentPreview.paragraphCount > 0 ? contentPreview.paragraphCount - 1 : -1);
+  const source = {
+    schemaVersion: sourceReport.schemaVersion,
+    type: sourceReport.type,
+    sourcePart: contentPreview.sourcePart,
+    paragraphRange: {
+      start: paragraphRangeStart,
+      end: paragraphRangeEnd,
+    },
+    paragraphCount: contentPreview.paragraphCount,
+    textHash: sourceTextHash,
+  };
+  if (googleDocsTabs) {
+    source.googleDocsTabs = {
+      sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
+      tabCount: googleDocsTabs.tabCount,
+      tabLabels: googleDocsTabs.tabLabels.slice(),
+      originAuthoritative: googleDocsTabs.originAuthoritative,
+      detectedParagraphCount: googleDocsTabs.detectedParagraphCount,
+      excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
+      importedParagraphCount: importParagraphIndexes.length,
+    };
+  }
   return {
     mode: 'create-only',
-    sceneStrategy: 'single-scene',
+    sceneStrategy: googleDocsTabs ? 'google-docs-tabs-flattened-single-scene' : 'single-scene',
     entryCount: 1,
     entries: [
       {
@@ -8477,17 +9116,7 @@ function docxImportPreviewBuildCandidateCreatePlan(sourceReport, contentPreview,
         content: importedText,
         contentTextHash,
         candidateContentSha256,
-        source: {
-          schemaVersion: sourceReport.schemaVersion,
-          type: sourceReport.type,
-          sourcePart: contentPreview.sourcePart,
-          paragraphRange: {
-            start: contentPreview.paragraphCount > 0 ? 0 : -1,
-            end: contentPreview.paragraphCount > 0 ? contentPreview.paragraphCount - 1 : -1,
-          },
-          paragraphCount: contentPreview.paragraphCount,
-          textHash: sourceTextHash,
-        },
+        source,
       },
     ],
   };
@@ -8512,10 +9141,17 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     });
   }
 
-  const importedText = paragraphValidation.texts.join('\n\n');
+  const googleDocsTabs = docxImportPreviewDetectGoogleDocsTabs(contentPreview.paragraphs);
+  const importParagraphIndexes = googleDocsTabs
+    ? googleDocsTabs.importParagraphIndexes
+    : paragraphValidation.texts.map((_text, index) => index);
+  const importedText = importParagraphIndexes.map((index) => paragraphValidation.texts[index]).join('\n\n');
   const sourceHash = docxImportPreviewStableHash(input);
-  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText);
-  const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText);
+  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText, {
+    googleDocsTabs,
+    importParagraphIndexes,
+  });
+  const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText, googleDocsTabs);
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview
   // report into the preview plan source. This is the identity thread: raw
   // artifact bytes -> content preview -> preview plan source -> receipt.
@@ -8568,10 +9204,19 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
         entryCount: candidateCreatePlan.entryCount,
         contentTextHash: candidateCreatePlan.entries[0].contentTextHash,
       }),
+      googleDocsTabs
+        ? docxImportPreviewEvidence('googleDocsTabs', {
+          sourceCode: DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE,
+          tabCount: googleDocsTabs.tabCount,
+          originAuthoritative: googleDocsTabs.originAuthoritative,
+          detectedParagraphCount: googleDocsTabs.detectedParagraphCount,
+          excludedParagraphCount: googleDocsTabs.excludedParagraphCount,
+        })
+        : null,
       docxImportPreviewEvidence('lossReport', {
         itemCount: lossReport.itemCount,
       }),
-    ],
+    ].filter(Boolean),
     candidateCreatePlan,
     lossReport,
   });
