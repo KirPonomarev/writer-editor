@@ -2,15 +2,6 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T19:47:42.866Z",
-      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
-      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
-      "sha256": "ab557a1f02ad68724383325694d56c391e93b66e4414bf180da1656a6ba14765"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-12T14:14:08.789Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
       "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
@@ -47,38 +38,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T20:49:34.882Z",
-      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
-      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
-      "rationale": "Existing Cell001 metadata-only rebind to independently audited exact81edb707 physical Word evidence; zero numerator delta and no F closure or admission expansion. All other rows and metadata preserved.",
-      "sha256": "78ee133442847f378dde3fc81d6d0a984139c039be5685300feb9b1b89ac6675"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
       "filePath": "scripts/ops/governance-change-detection.mjs",
       "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "sha256": "bb08e2bb7fc1a4a582864a2b7d650b7b5c8ab7f21515aa365ea8064b92de5f71"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-12T19:47:42.869Z",
-      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
-      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
-      "sha256": "c67398e8b5c197a202aef2b4aabe5b518e26f742e012dfa935445b873e163f89"
     },
     {
       "approved": true,
@@ -97,15 +62,6 @@
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
       "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
       "sha256": "cf35a36472e16831b1284a2adb0c91000e5d470791a3ec441895e172916495bc"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-12T15:37:08Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
-      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "rationale": "Approve exact bounded PR1905 CI repair bytes: validator promotion allowlist admits the already-scoped post-audit contract carrier as metadata/test-only so the one physical Word C1 source-runtime cell remains valid across non-product governance/test repairs. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
-      "sha256": "08a77898b8e649c56292b58fc25e26c9784ff1a26ccb466e378fed42bf5d2914"
     },
     {
       "approved": true,
@@ -140,23 +96,6 @@
       "filePath": "test/contracts/governance-change-detection.contract.test.js",
       "rationale": "Approve exact current interop governance bytes after PR1857 merge-forward onto current main: admits only U+000C DOCX page-break serializer/profile regression coverage and claim-binding/certification-set pin repairs already present in this branch. No dependency, runtime network, UI, user-document access, release-publication, broad C1-C8 portability PASS, denominator promotion, Google native claim, or program-done authority is added.",
       "sha256": "1c04984f3790ecd744653a2f0a55aed7ccb765de0d81a507803075d603aa8782"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-12T19:27:47.219Z",
-      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
-      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-        "ES-R24-OPS03-RCV00G-SEMANTIC-E0-CLASSIFIER-CLAIM-BINDINGS",
-        "ES-R24-RCV00F-DELIVERY-RECONCILIATION-CLAIM-BINDINGS",
-        "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-        "ES-R24-W0-CURRENT-STATE-CLOSURE"
-      ],
-      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Exact shared carrier hash refresh for F substrate only; no F closure, graph promotion, new physical evidence, source-head relabeling or supported-cell increase. All other secondary rows preserved.",
-      "sha256": "df34493269689ff1a8bfb3a3023cdb1e4e2134cb2fed95a9cf6f42344664e958"
     },
     {
       "approved": true,
@@ -259,15 +198,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T15:37:08Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
-      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Approve exact bounded PR1905 CI repair bytes: denominator contract preserves the one physical Word C1 source-runtime cell and adds a negative mutant proving only the exact post-audit certification-set carrier is admitted as metadata/test promotion drift while adjacent post-audit paths still fail closed. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
-      "sha256": "f831e29bdd286b50c6a838d6020a35051809f0d5a87de7a8bc5f35aa27de5088"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-11T03:05:00Z",
       "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
       "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
@@ -278,6 +208,69 @@
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
       "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721",
       "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "9e876a9bc403f05a0f2e003b7bc6cb3e9b29c59ddbaf1ca474e9b3bedc9531b9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "edce537a910d0d17e5396a73d446c8c35ae8f6cd8caa3cf528f5893305b0482f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "a6af8e77dcecca72386b2a0ec30916de7fb7b5a312b5074594aa16a2035fa209"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "feb8392721125665a82ec5a7cc27a51c343c22afc8166ae598b2f54fe0d05fa9"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "48afcad9149bf65f5fa70539d4f1fd9f88f080c678d806c846799d53e0dacaac"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "644aad0b1b831425acf7631a6851e92e56a73c799d1c2632ffff5b633a775a83"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
+      "sha256": "51d1372746c18744ea86595277e54b058061ad786436a9e694fd9808d3ea54ad"
     }
   ],
   "version": "v1.0",

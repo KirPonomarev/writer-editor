@@ -184,11 +184,11 @@ const ROOT_DURABLE_PACKAGE_MUTATION_IDS = Object.freeze([
 const CELL001_EXTERNAL_PACKAGE_TRUST = Object.freeze({
   cellId: 'TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME',
   packageId: 'cell001-source-package-v1',
-  manifestSha256: 'sha256:ff3a612c1c87cf51a107019aa8e71709160214b047f14e3c85bc5cc1d2f7a62a',
-  verifierSha256: 'sha256:1ba6ecf6c0ecc95148dd73aec15afba983c1420b237e5591461a3657ddef079d',
-  reportSha256: 'sha256:0dd5b424590aeaced185ddcf3ebf9f063b26076bc3289116296c0e379bd24054',
-  mutationAuditorSha256: 'sha256:1ac983f44987c28569efc7205d2980dbfcabff397ea02d9fa34284a773f34ba6',
-  mutationReportSha256: 'sha256:79eb7e2a1592e6bb2f76193014aa20e869d51277e5ddaddba6da48734a6215e8',
+  manifestSha256: 'sha256:2a207473ddbebefa48bc1c7c42e80eb3c178867d7c01e6481d2000253fe8f1b6',
+  verifierSha256: 'sha256:97167b7e50053773213e00188e2b206d5a222d204e94b6915fcf4ff8ff3c1130',
+  reportSha256: 'sha256:46076b4f7901baec8c94cef56c08b193fcb460b1a09c4f1f502553edd2306507',
+  mutationAuditorSha256: 'sha256:bdbff44aa9adf963a3a54e65b1583018f7ff096aef3c753049e6ae9f45ca1b09',
+  mutationReportSha256: 'sha256:66561c61aa480e607306ac8ad84607d9c9d157d31ad67eaa151650def7a22144',
 });
 
 function repoRootFromHere() {
