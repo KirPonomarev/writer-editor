@@ -18,6 +18,7 @@ export const CELL_EVIDENCE_PROMOTION_METADATA_PATHS = Object.freeze([
   LEDGER_PATH,
   GOVERNANCE_APPROVALS_PATH,
   'scripts/ops/rtk-interop-100-denominator-v1.mjs',
+  'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
   `test/contracts/${CONTRACT_BASENAME}`,
 ]);
 

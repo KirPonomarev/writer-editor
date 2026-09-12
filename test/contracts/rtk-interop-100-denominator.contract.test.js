@@ -1,5 +1,8 @@
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const { test } = require('node:test');
 
 const validatorPath = '../../scripts/ops/rtk-interop-100-denominator-v1.mjs';
@@ -14,6 +17,47 @@ function clone(value) {
 
 function currentHead() {
   return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+}
+
+function git(cwd, args) {
+  return execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
+}
+
+function withGitDiffFixture(changedPaths, fn) {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-interop100-promotion-'));
+  try {
+    git(repoRoot, ['init', '-q']);
+    git(repoRoot, ['config', 'user.email', 'interop100@example.invalid']);
+    git(repoRoot, ['config', 'user.name', 'Interop 100 Test']);
+    fs.writeFileSync(path.join(repoRoot, 'base.txt'), 'base\n');
+    git(repoRoot, ['add', 'base.txt']);
+    git(repoRoot, ['commit', '-q', '-m', 'base']);
+    const baseSha = git(repoRoot, ['rev-parse', 'HEAD']);
+
+    for (const relativePath of changedPaths) {
+      const absolutePath = path.join(repoRoot, relativePath);
+      fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+      fs.writeFileSync(absolutePath, `${relativePath}\n`);
+    }
+    git(repoRoot, ['add', '.']);
+    git(repoRoot, ['commit', '-q', '-m', 'candidate']);
+    const currentSha = git(repoRoot, ['rev-parse', 'HEAD']);
+
+    return fn({ repoRoot, baseSha, currentSha });
+  } finally {
+    fs.rmSync(repoRoot, { recursive: true, force: true });
+  }
+}
+
+function bindPassEntryToSourceRevision(ledger, sourceRevision) {
+  ledger.entries[0].sourceRevision = sourceRevision;
+  ledger.entries[0].exactHeadSha = sourceRevision;
+  for (const item of ledger.entries[0].providerEvidence || []) {
+    item.exactHeadSha = sourceRevision;
+  }
+  if (ledger.entries[0].packagedBuildEvidence) {
+    ledger.entries[0].packagedBuildEvidence.exactHeadSha = sourceRevision;
+  }
 }
 
 function expectInvalid(report, codeFragment) {
@@ -153,4 +197,42 @@ test('validator rejects attempts to count route qualification, direct local path
     spec.currentGap.exactHeadPassedNumerator = 2;
     expectInvalid(validator.validateInterop100({ spec, ledger: clone(baseLedger), currentHead: head }), 'CURRENT_GAP_ROLLUP_MISMATCH');
   }
+});
+
+test('validator admits only exact interop metadata carriers for descendant evidence promotion', async () => {
+  const validator = await loadValidator();
+  const baseSpec = validator.readInterop100Denominator();
+  const baseLedger = validator.readInterop100EvidenceLedger();
+  const allowedPostAuditCarrier = 'test/contracts/r24-post-audit-certification-set.contract.test.mjs';
+  const adjacentPostAuditCarrier = 'test/contracts/r24-post-audit-corrections.contract.test.mjs';
+
+  withGitDiffFixture([allowedPostAuditCarrier], ({ repoRoot, baseSha, currentSha }) => {
+    const ledger = clone(baseLedger);
+    bindPassEntryToSourceRevision(ledger, baseSha);
+    const report = validator.validateInterop100({
+      spec: clone(baseSpec),
+      ledger,
+      currentHead: currentSha,
+      repoRoot,
+    });
+
+    assert.equal(report.ok, true);
+    assert.equal(report.passedRequiredCells, 1);
+  });
+
+  withGitDiffFixture([allowedPostAuditCarrier, adjacentPostAuditCarrier], ({ repoRoot, baseSha, currentSha }) => {
+    const ledger = clone(baseLedger);
+    bindPassEntryToSourceRevision(ledger, baseSha);
+    const report = validator.validateInterop100({
+      spec: clone(baseSpec),
+      ledger,
+      currentHead: currentSha,
+      repoRoot,
+    });
+    const joinedErrors = report.errors.join('\n');
+
+    expectInvalid(report, `CELL_EXECUTION_PROMOTION_PATHS_OUTSIDE_ALLOWLIST:${adjacentPostAuditCarrier}`);
+    assert.match(joinedErrors, new RegExp(`PROVIDER_WORD_DESKTOP_PROMOTION_PATHS_OUTSIDE_ALLOWLIST:${adjacentPostAuditCarrier}`));
+    assert.equal(joinedErrors.includes(`OUTSIDE_ALLOWLIST:${allowedPostAuditCarrier}`), false);
+  });
 });

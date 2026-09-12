@@ -2,12 +2,12 @@
   "approvals": [
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T15:14:00.749Z",
+      "approvedAtUtc": "2026-09-12T15:37:08Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
       "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact bounded PR1905 CI repair bytes: safe-link historical negative fixture reads immutable historical ledger bytes before mutating its non-cell evidence into a denominator-promotion identity mutant, so zero-pass rollup and evidence-identity invariants are both preserved; C1B inventory is re-bound to that test hash. No product runtime behavior, UI, dependency, network truth, Word or Google denominator closure, additional cell PASS, release readiness, PROGRAM_DONE, or 100 percent portability claim.",
-      "sha256": "81109f276f2d0a7401f941af0e51b86b1f261b6cfd4292e02cc8e55c0db6927e"
+      "rationale": "Approve exact bounded PR1905 CI repair bytes: safe-link historical negative fixture reads immutable historical ledger bytes before mutating its non-cell evidence into a denominator-promotion identity mutant, and the denominator contract now proves the post-audit promotion allowlist remains exact-path bounded. C1B inventory is re-bound to that test hash. No product runtime behavior, UI, dependency, network truth, Word or Google denominator closure, additional cell PASS, release readiness, PROGRAM_DONE, or 100 percent portability claim.",
+      "sha256": "f8889bdc67078570d31740f3eedfefdbf843f930451627951b34a4c2b1265679"
     },
     {
       "approved": true,
@@ -100,12 +100,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:19:44.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SINGLE_CELL_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-12T15:37:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "rationale": "Approve exact bounded interop 100 one-cell evidence promotion: TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME is counted from fresh exact-head physical Microsoft Word C1 source-runtime evidence under Node 22.12.0 with semantic/order preservation, independent readback, zero silent drops, and explicit outside-contract loss reporting. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
-      "sha256": "2de1f54ef3143491f93fc0c3460d8982a591cf6f18750947f9abbcf09666170a"
+      "rationale": "Approve exact bounded PR1905 CI repair bytes: validator promotion allowlist admits the already-scoped post-audit contract carrier as metadata/test-only so the one physical Word C1 source-runtime cell remains valid across non-product governance/test repairs. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
+      "sha256": "08a77898b8e649c56292b58fc25e26c9784ff1a26ccb466e378fed42bf5d2914"
     },
     {
       "approved": true,
@@ -259,12 +259,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:19:44.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SINGLE_CELL_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-12T15:37:08Z",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_PR1905_CI_SAFE_LINK_NEGATIVE_EXPECTATION_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_PR1905_CI_REPAIR",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Approve exact bounded interop 100 one-cell evidence promotion: TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME is counted from fresh exact-head physical Microsoft Word C1 source-runtime evidence under Node 22.12.0 with semantic/order preservation, independent readback, zero silent drops, and explicit outside-contract loss reporting. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
-      "sha256": "2c7bcc1f035f7de1c3209496bedcd71a1ee89c5ea66ab62ca4af2d9b8eba0897"
+      "rationale": "Approve exact bounded PR1905 CI repair bytes: denominator contract preserves the one physical Word C1 source-runtime cell and adds a negative mutant proving only the exact post-audit certification-set carrier is admitted as metadata/test promotion drift while adjacent post-audit paths still fail closed. Denominator remains 1120, broadPassClaim remains false, verdict remains NEEDS_MORE_EVIDENCE, and no product runtime behavior, UI, dependency, runtime network, Google route closure, packaged runtime closure, release readiness, full user-flow closure, 100 percent portability, or PROGRAM_DONE claim is added.",
+      "sha256": "f831e29bdd286b50c6a838d6020a35051809f0d5a87de7a8bc5f35aa27de5088"
     },
     {
       "approved": true,
