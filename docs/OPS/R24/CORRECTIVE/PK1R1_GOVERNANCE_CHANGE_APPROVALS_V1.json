@@ -1085,15 +1085,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T17:50:00Z",
-      "approvedBy": "owner-directive:YALKEN_PR1888_CURRENT_MAIN_RECONCILIATION_2026_09_11",
+      "approvedAtUtc": "2026-09-12T01:32:35Z",
+      "approvedBy": "owner-directive:R24_DOCX_E2E_VALID_FIXTURE_REPAIR_7E765913_2026_09_12",
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-      "rationale": "Approve exact current-byte governance and contract carriers for PR1888 current-main reconciliation: refresh stale approval hashes after merging origin/main, admit the PR1888 DOCX import approval carrier as a post-evaluation carrier, and refresh C1B inventory for current DOCX contract digests. No product scope expansion, no UI, dependency, runtime network, Google/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "adfb39ffd9c13397a0fbe8748eb8f9c4050b89dc5072372e305fd512c0a1317d",
+      "rationale": "Approve exact current-byte DOCX e2e command-chain test fixture repair: bind valid WordprocessingML namespace declarations so the clean positive fixture is legal under the strict XML preview parser, preserve S21 idempotent receipt integrity regressions, and refresh C1B inventory for the changed contract digest. No product runtime change, UI change, dependency, runtime network, Word/Google physical claim, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "fca15324181725a278b5ed040a01e9478d8921dd078e3027035b6944a470af1a",
       "evidenceStampIds": [
-        "ES-R24-PR1888-CURRENT-MAIN-RECONCILIATION-V1"
+        "ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1"
       ],
-      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_CURRENT_MAIN_RECONCILIATION"
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_E2E_VALID_FIXTURE_REPAIR_7E765913"
     },
     {
       "approved": true,
@@ -1205,15 +1205,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T00:59:32Z",
-      "approvedBy": "owner-directive:R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89",
+      "approvedAtUtc": "2026-09-12T01:32:35Z",
+      "approvedBy": "owner-directive:R24_DOCX_E2E_VALID_FIXTURE_REPAIR_7E765913_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_E2E_VALID_FIXTURE_REPAIR_7E765913",
       "evidenceStampIds": [
-        "ES-R24-POST-AUDIT-COMMAND-SURFACE-ADMISSION-D1F0DC89-V1"
+        "ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current-byte bounded post-audit verifier repair: admit already approved DOCX XML preview hardening contract paths in the PR1888 DOCX current-main path set, add positive and unrelated-path negative admission contracts, and refresh C1B inventory for these bytes. No product import/export runtime change, UI change, dependency, runtime network, Google source-of-truth, release readiness, full portability, or PROGRAM_DONE claim.",
-      "sha256": "9aecd045d6fe5a765826c084ba82599f59767324fed47b8e158e4a2c54b76936"
+      "rationale": "Approve exact current-byte DOCX e2e command-chain test fixture repair: bind valid WordprocessingML namespace declarations so the clean positive fixture is legal under the strict XML preview parser, preserve S21 idempotent receipt integrity regressions, and refresh C1B inventory for the changed contract digest. No product runtime change, UI change, dependency, runtime network, Word/Google physical claim, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "f9b86954a75445edda058b936168484b66ba589294e7dd7bf745989025857f7a"
     }
   ],
   "evidenceStampIds": [
@@ -1235,7 +1235,8 @@
     "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
     "ES-R24-W0-CURRENT-STATE-CLOSURE",
     "ES-R24-WP-709-MIXED-CHAINS-CLAIM-BINDINGS",
-    "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+    "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1",
+    "ES-R24-DOCX-E2E-VALID-FIXTURE-REPAIR-7E765913-V1"
   ],
   "sourcePlanRoles": {
     "compiledProgramFileDigest": "da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a",
