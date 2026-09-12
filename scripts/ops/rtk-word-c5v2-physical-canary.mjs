@@ -7110,26 +7110,48 @@ export function buildExpectedSceneParagraphs(baselineScene, operations) {
   return { ok: true, reason: 'EXPECTED_SCENE_PARAGRAPHS_COMPUTED', paragraphs };
 }
 
+function semanticIntentForOracle(operation, formalFamily = operation?.formalFamily || operation?.family || '') {
+  const intent = operation?.semanticIntent && typeof operation.semanticIntent === 'object' && !Array.isArray(operation.semanticIntent)
+    ? { ...operation.semanticIntent }
+    : {};
+  if (formalFamily === 'root_comment') {
+    intent.commentText = `C5V2 root ${operation.id}`;
+  }
+  return intent;
+}
+
 function oracleSemantics(operation, commentThreadId = '') {
+  const semanticIntent = semanticIntentForOracle(operation);
   if (operation.formalFamily === 'tracked_text_edit') {
-    return { textSemantics: { kind: operation.semanticIntent?.kind || '', replacementText: operation.replacementText || '' } };
+    return { textSemantics: { kind: semanticIntent.kind || '', replacementText: operation.replacementText || '' } };
   }
   if (['root_comment', 'reply', 'comment_state'].includes(operation.formalFamily)) {
     return {
       commentSemantics: {
         threadId: commentThreadId || operation.targetRootOperationId || '',
         state: operation.formalFamily === 'root_comment' ? 'open' : 'typed-limit-no-native-mutation',
+        ...(semanticIntent.commentText ? { commentText: semanticIntent.commentText } : {}),
+        ...(semanticIntent.authorDisplayName ? { authorDisplayName: semanticIntent.authorDisplayName } : {}),
+        ...(semanticIntent.resolved !== undefined ? { resolved: semanticIntent.resolved } : {}),
       },
     };
   }
   if (operation.formalFamily === 'formatting') {
-    return { formattingSemantics: { kind: operation.formattingKind || operation.semanticIntent?.kind || '', effective: true } };
+    return {
+      formattingSemantics: {
+        kind: operation.formattingKind || semanticIntent.kind || '',
+        ...(semanticIntent.spanType ? { spanType: semanticIntent.spanType } : {}),
+        effective: true,
+      },
+    };
   }
   if (operation.formalFamily === 'structural') {
     return {
-      structuralSemantics: { kind: operation.semanticIntent.kind,
+      structuralSemantics: { kind: semanticIntent.kind,
         nodeType: 'heading',
         headingLevel: Number(operation.headingLevel || 2),
+        ...(semanticIntent.heading ? { heading: semanticIntent.heading } : {}),
+        ...(semanticIntent.ordinal !== undefined ? { ordinal: semanticIntent.ordinal } : {}),
       },
     };
   }
@@ -7455,12 +7477,13 @@ export function buildOracleProbe({
     const expectedOutcome = operation.expectedOutcome || 'SAFE_APPLY';
     const anchor = operation.masterAnchor || {};
     const formalFamily = operation.formalFamily || operation.family;
+    const semanticIntent = semanticIntentForOracle(operation, formalFamily);
     const formalOperation = {
       id: operation.id,
       family: formalFamily,
       expectedOutcome,
       anchor,
-      semanticIntent: operation.semanticIntent || {},
+      semanticIntent,
     };
     const reportedStatus = statusById.get(operation.id) || '';
     const nativeReadback = readbackById.get(operation.id) || null;

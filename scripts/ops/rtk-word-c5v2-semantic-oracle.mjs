@@ -46,7 +46,18 @@ function sha256Text(value) {
 }
 
 function stableJson(value) {
-  return JSON.stringify(value, Object.keys(value || {}).sort());
+  const sortValue = (input) => {
+    if (Array.isArray(input)) return input.map(sortValue);
+    if (input && typeof input === 'object') {
+      const sorted = {};
+      for (const key of Object.keys(input).sort()) {
+        sorted[key] = sortValue(input[key]);
+      }
+      return sorted;
+    }
+    return input;
+  };
+  return JSON.stringify(sortValue(value));
 }
 
 function normalizeString(value) {
@@ -124,7 +135,11 @@ export function buildC5V2MultilingualQaLayer({ scenes = [], roundCount = 5 } = {
         semanticIntent: family === 'tracked_text_edit'
           ? { kind: 'replace', replacementText: `${category.category} replacement ${index + 1}` }
           : family === 'root_comment'
-            ? { kind: 'root-comment', commentText: `${category.category} comment ${index + 1}` }
+            ? {
+                kind: 'root-comment',
+                commentText: `${category.category} comment ${index + 1}`,
+                authorDisplayName: 'C5V2 QA Author',
+              }
             : { kind: index % 2 === 0 ? 'bold' : 'highlight', spanType: 'inline' },
         expectedOutcome: 'SAFE_APPLY',
       });
@@ -157,6 +172,19 @@ function requireOracleMap(source, field, failures) {
   return map;
 }
 
+function compareOperationIdSet(sourceMap, sourceName, expectedOperationIds, failures) {
+  const actualIds = new Set(Object.keys(sourceMap || {}).map((id) => normalizeString(id)).filter(Boolean));
+  for (const actualId of actualIds) {
+    if (!expectedOperationIds.has(actualId)) {
+      failures.push({
+        code: 'C5V2_ORACLE_UNEXPECTED_OPERATION',
+        source: sourceName,
+        operationId: actualId,
+      });
+    }
+  }
+}
+
 function compareAnchor(operation, record, sourceName, failures) {
   const expected = operation.anchor || {};
   const actual = record.anchor || {};
@@ -179,6 +207,74 @@ function compareAnchor(operation, record, sourceName, failures) {
         field,
       });
     }
+  }
+}
+
+function hasOwn(value, field) {
+  return Object.prototype.hasOwnProperty.call(value || {}, field);
+}
+
+function canonicalSemanticValue(value) {
+  if (typeof value === 'string') return value.trim();
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+  if (typeof value === 'boolean') return value ? 'true' : 'false';
+  if (value === null || value === undefined) return '';
+  return JSON.stringify(value);
+}
+
+function normalizeDocumentBlocks(value) {
+  if (!Array.isArray(value)) return null;
+  return value.map((block, index) => ({
+    ordinal: Number.isInteger(block?.ordinal) ? block.ordinal : index + 1,
+    sceneId: normalizeString(block?.sceneId),
+    blockId: normalizeString(block?.blockId),
+    kind: normalizeString(block?.kind || block?.type),
+    text: typeof block?.text === 'string' ? block.text : '',
+  }));
+}
+
+function compareDocumentBlocks(input, wordReadback, yalkenTruth, failures) {
+  const expectedBlocks = normalizeDocumentBlocks(input.expectedDocumentBlocks);
+  const wordBlocks = normalizeDocumentBlocks(wordReadback.documentBlocks);
+  const yalkenBlocks = normalizeDocumentBlocks(yalkenTruth.documentBlocks);
+  if (!expectedBlocks && !wordBlocks && !yalkenBlocks) return;
+  if (!expectedBlocks) {
+    failures.push({ code: 'C5V2_ORACLE_DOCUMENT_BLOCK_EXPECTATION_REQUIRED' });
+    return;
+  }
+  for (const [source, blocks] of [['word', wordBlocks], ['yalken', yalkenBlocks]]) {
+    if (!blocks) {
+      failures.push({ code: 'C5V2_ORACLE_DOCUMENT_BLOCKS_REQUIRED', source });
+      continue;
+    }
+    if (JSON.stringify(blocks) !== JSON.stringify(expectedBlocks)) {
+      failures.push({ code: 'C5V2_ORACLE_DOCUMENT_BLOCK_MISMATCH', source });
+    }
+  }
+}
+
+function compareSemanticField(operation, wordSemantics, yalkenSemantics, field, expectedValue, failureCode, failures) {
+  const expectedPresent = expectedValue !== undefined;
+  const wordPresent = hasOwn(wordSemantics, field);
+  const yalkenPresent = hasOwn(yalkenSemantics, field);
+  if (!expectedPresent && !wordPresent && !yalkenPresent) return;
+
+  const expected = expectedPresent ? canonicalSemanticValue(expectedValue) : canonicalSemanticValue(wordSemantics[field]);
+  if (!wordPresent || canonicalSemanticValue(wordSemantics[field]) !== expected) {
+    failures.push({
+      code: failureCode,
+      operationId: operation.id,
+      source: 'word',
+      field,
+    });
+  }
+  if (!yalkenPresent || canonicalSemanticValue(yalkenSemantics[field]) !== expected) {
+    failures.push({
+      code: failureCode,
+      operationId: operation.id,
+      source: 'yalken',
+      field,
+    });
   }
 }
 
@@ -210,14 +306,25 @@ function verifyFamilySemantics(operation, wordRecord, yalkenRecord, failures) {
         failures.push({ code: 'C5V2_ORACLE_COMMENT_GRAPH_MISMATCH', operationId: operation.id, field });
       }
     }
+    compareSemanticField(operation, wordRecord.commentSemantics, yalkenRecord.commentSemantics, 'commentText', operation.semanticIntent?.commentText, 'C5V2_ORACLE_COMMENT_BODY_MISMATCH', failures);
+    compareSemanticField(operation, wordRecord.commentSemantics, yalkenRecord.commentSemantics, 'authorDisplayName', operation.semanticIntent?.authorDisplayName, 'C5V2_ORACLE_COMMENT_AUTHOR_MISMATCH', failures);
+    compareSemanticField(operation, wordRecord.commentSemantics, yalkenRecord.commentSemantics, 'resolved', operation.semanticIntent?.resolved, 'C5V2_ORACLE_COMMENT_RESOLVED_MISMATCH', failures);
   } else if (FORMAT_FAMILIES.has(family)) {
     if (!isPlainObject(wordRecord.formattingSemantics) || !isPlainObject(yalkenRecord.formattingSemantics)) {
       failures.push({ code: 'C5V2_ORACLE_FORMATTING_SEMANTICS_REQUIRED', operationId: operation.id });
+      return;
     }
+    compareSemanticField(operation, wordRecord.formattingSemantics, yalkenRecord.formattingSemantics, 'kind', operation.semanticIntent?.kind, 'C5V2_ORACLE_FORMATTING_KIND_MISMATCH', failures);
+    compareSemanticField(operation, wordRecord.formattingSemantics, yalkenRecord.formattingSemantics, 'spanType', operation.semanticIntent?.spanType, 'C5V2_ORACLE_FORMATTING_SPAN_MISMATCH', failures);
+    compareSemanticField(operation, wordRecord.formattingSemantics, yalkenRecord.formattingSemantics, 'effective', operation.semanticIntent?.effective, 'C5V2_ORACLE_FORMATTING_EFFECTIVE_MISMATCH', failures);
   } else if (STRUCTURAL_FAMILIES.has(family)) {
     if (!isPlainObject(wordRecord.structuralSemantics) || !isPlainObject(yalkenRecord.structuralSemantics)) {
       failures.push({ code: 'C5V2_ORACLE_STRUCTURAL_SEMANTICS_REQUIRED', operationId: operation.id });
+      return;
     }
+    compareSemanticField(operation, wordRecord.structuralSemantics, yalkenRecord.structuralSemantics, 'kind', operation.semanticIntent?.kind, 'C5V2_ORACLE_STRUCTURAL_KIND_MISMATCH', failures);
+    compareSemanticField(operation, wordRecord.structuralSemantics, yalkenRecord.structuralSemantics, 'heading', operation.semanticIntent?.heading, 'C5V2_ORACLE_STRUCTURAL_HEADING_MISMATCH', failures);
+    compareSemanticField(operation, wordRecord.structuralSemantics, yalkenRecord.structuralSemantics, 'ordinal', operation.semanticIntent?.ordinal, 'C5V2_ORACLE_STRUCTURAL_ORDINAL_MISMATCH', failures);
   }
 }
 
@@ -255,8 +362,17 @@ function expectedOutcomesFor(operation, sourceName) {
 export function validateC5V2SemanticOracle(input = {}) {
   const operations = list(input.operations);
   const failures = [];
+  const expectedOperationIds = new Set();
   if (operations.length === 0) {
     failures.push({ code: 'C5V2_ORACLE_OPERATIONS_REQUIRED' });
+  }
+  for (const operation of operations) {
+    const opId = normalizeString(operation?.id);
+    if (!opId) continue;
+    if (expectedOperationIds.has(opId)) {
+      failures.push({ code: 'C5V2_ORACLE_OPERATION_ID_DUPLICATE', operationId: opId });
+    }
+    expectedOperationIds.add(opId);
   }
   const wordReadback = isPlainObject(input.wordReadback) ? input.wordReadback : {};
   const yalkenTruth = isPlainObject(input.yalkenTruth) ? input.yalkenTruth : {};
@@ -271,6 +387,9 @@ export function validateC5V2SemanticOracle(input = {}) {
   }
   const wordOps = requireOracleMap(wordReadback, 'wordReadback.operationsById', failures);
   const yalkenOps = requireOracleMap(yalkenTruth, 'yalkenTruth.operationsById', failures);
+  compareOperationIdSet(wordOps, 'word', expectedOperationIds, failures);
+  compareOperationIdSet(yalkenOps, 'yalken', expectedOperationIds, failures);
+  compareDocumentBlocks(input, wordReadback, yalkenTruth, failures);
   for (const operation of operations) {
     const opId = normalizeString(operation?.id);
     if (!opId) {

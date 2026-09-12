@@ -53,6 +53,7 @@ import {
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
   R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,
   R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,
+  R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
@@ -104,6 +105,7 @@ import {
   verifyR24ObsExportDocxCommandBridgeOuterFailPostEvaluationException,
   verifyR24ReviewPreviewCommentTopologyPostEvaluationException,
   verifyR24EmbeddedFontAdmissionPostEvaluationException,
+  verifyR24O01O08SemanticOracleHardeningPostEvaluationException,
   verifyR24Rcv00eLeaseFencingCasPostEvaluationException,
   verifyR24Rcv00fDeliveryReconciliationPostEvaluationException,
   verifyR24P03RelationshipGraphValidationPostEvaluationException,
@@ -1608,6 +1610,82 @@ test('R24 embedded font admission exception rejects missing diagnostics-loss tok
   const e=R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,source=objectFromCommit(PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION.baseSha,e.sourcePath).toString('utf8').replace('DOCX_IMPORT_PREVIEW_EMBEDDED_FONTS_NOT_IMPORTED','DOCX_IMPORT_PREVIEW_FONT_ADVISORY');
   const fixture=embeddedFontAdmissionGitFixture({sourceBytes:Buffer.from(source)});
   assert.throws(()=>verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_EMBEDDED_FONT_ARTIFACT_DIGEST/);
+});
+function o01O08SemanticOracleHardeningGitFixture({changedPaths,oracleBytes,physicalCanaryBytes,oracleTestBytes,n4StructuralReturnTestBytes,claimLintBytes,claimLintTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='4'.repeat(40),candidateTree='5'.repeat(40)}={}){
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION;
+  const bytesByPath=new Map([
+    [e.inventoryPath,inventoryBytes??fs.readFileSync(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??fs.readFileSync(e.approvalsPath)],
+    [e.oraclePath,oracleBytes??fs.readFileSync(e.oraclePath)],
+    [e.physicalCanaryPath,physicalCanaryBytes??fs.readFileSync(e.physicalCanaryPath)],
+    [e.oracleTestPath,oracleTestBytes??fs.readFileSync(e.oracleTestPath)],
+    [e.n4StructuralReturnTestPath,n4StructuralReturnTestBytes??fs.readFileSync(e.n4StructuralReturnTestPath)],
+    [e.claimLintPath,claimLintBytes??fs.readFileSync(e.claimLintPath)],
+    [e.claimLintTestPath,claimLintTestBytes??fs.readFileSync(e.claimLintTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??fs.readFileSync(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??fs.readFileSync(e.postAuditTestPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='rev-list')value=candidateSha;
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 O01-O08 semantic oracle hardening exception accepts exact current delta',()=>{
+  const fixture=o01O08SemanticOracleHardeningGitFixture(),result=verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,10);
+  assert.equal(result.changedPathDenominator,10);
+  assert.ok(result.admittedPaths.includes(R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.claimLintPath));
+  assert.ok(result.admittedPaths.includes(R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.claimLintTestPath));
+  assert.ok(result.admittedPaths.includes(R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.physicalCanaryPath));
+  assert.ok(result.admittedPaths.includes(R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.n4StructuralReturnTestPath));
+  assert.equal(result.semanticOracleHardening,'FAIL_CLOSED_ON_RECORDED_SOURCE_RUNTIME_FALSE_GREEN_MUTANTS');
+  assert.equal(result.wordPhysicalRouteClaim,false);
+  assert.equal(result.googleNativeRouteClaim,false);
+  assert.equal(result.packagedUiRouteClaim,false);
+  assert.equal(result.supportedDenominatorPromotion,false);
+});
+test('R24 O01-O08 semantic oracle hardening exception rejects an unadmitted future path',()=>{
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,fixture=o01O08SemanticOracleHardeningGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_CANDIDATE_NOT_FOUND|E_R24_O01_O08_EXACT_ADMITTED_DELTA/);
+});
+test('R24 O01-O08 semantic oracle hardening exception rejects missing oracle mismatch token',()=>{
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,oracle=fs.readFileSync(e.oraclePath,'utf8').replace('C5V2_ORACLE_COMMENT_BODY_MISMATCH','C5V2_ORACLE_COMMENT_TEXT_MISSING');
+  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  const oracleDigest=h(Buffer.from(oracle));
+  for(const entry of approvals.approvals)if(entry.filePath===e.oraclePath)entry.sha256=oracleDigest;
+  const fixture=o01O08SemanticOracleHardeningGitFixture({oracleBytes:Buffer.from(oracle),approvalsBytes:Buffer.from(`${JSON.stringify(approvals,null,2)}\n`)});
+  assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_ORACLE_TOKEN/);
+});
+test('R24 O01-O08 semantic oracle hardening exception rejects missing physical canary semantic intent token',()=>{
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,physicalCanary=fs.readFileSync(e.physicalCanaryPath,'utf8').replace('spanType: semanticIntent.spanType','spanType: semanticIntent.formatSpanType');
+  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  const physicalCanaryDigest=h(Buffer.from(physicalCanary));
+  for(const entry of approvals.approvals)if(entry.filePath===e.physicalCanaryPath)entry.sha256=physicalCanaryDigest;
+  const fixture=o01O08SemanticOracleHardeningGitFixture({physicalCanaryBytes:Buffer.from(physicalCanary),approvalsBytes:Buffer.from(`${JSON.stringify(approvals,null,2)}\n`)});
+  assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_PHYSICAL_CANARY_TOKEN/);
+});
+test('R24 O01-O08 semantic oracle hardening exception rejects missing N4 structural-return source contract token',()=>{
+  const e=R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,n4StructuralReturnTest=fs.readFileSync(e.n4StructuralReturnTestPath,'utf8').replace('structuralSemantics:\\s*\\{ kind:\\s*semanticIntent\\.kind','structuralSemantics:\\s*\\{ kind:\\s*operation\\.semanticIntent\\.kind');
+  const approvals=JSON.parse(fs.readFileSync(e.approvalsPath,'utf8'));
+  const n4StructuralReturnTestDigest=h(Buffer.from(n4StructuralReturnTest));
+  for(const entry of approvals.approvals)if(entry.filePath===e.n4StructuralReturnTestPath)entry.sha256=n4StructuralReturnTestDigest;
+  const fixture=o01O08SemanticOracleHardeningGitFixture({n4StructuralReturnTestBytes:Buffer.from(n4StructuralReturnTest),approvalsBytes:Buffer.from(`${JSON.stringify(approvals,null,2)}\n`)});
+  assert.throws(()=>verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_O01_O08_N4_TEST_TOKEN/);
 });
 function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,canonicalJsonBytes,leaseBytes,mutantBytes,canonicalJsonTestBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION;

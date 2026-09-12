@@ -499,7 +499,8 @@ test('N4 product source and physical canary route structural return through ship
   assert.match(canarySource, /family === 'structural'[\s\S]*structuralPhrasesByScene/u);
   assert.match(canarySource, /C5V2_CANARY_DUPLICATE_STRUCTURAL_PARAGRAPH_SCOPE/u);
   assert.match(canarySource, /structural ledger expected \$\{expectedStructuralCount\} operations/u);
-  assert.match(canarySource, /structuralSemantics:\s*\{ kind:\s*operation\.semanticIntent\.kind/u);
+  assert.match(canarySource, /function semanticIntentForOracle/u);
+  assert.match(canarySource, /structuralSemantics:\s*\{ kind:\s*semanticIntent\.kind/u);
   assert.match(canarySource, /summary\.oracleProbe\?\.ok === true/u);
 
   assert.match(canarySource, /Number\(activationSummary\?\.structuralProductPath\?\.candidateCount \|\| 0\)/u);
