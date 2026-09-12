@@ -47,12 +47,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T17:15:02.161Z",
-      "approvedBy": "owner-directive:R24_RCV00E_COMMIT_B_METADATA_C_2026_09_12",
-      "authority": "ROOT_AUTHORIZED_EXACT_TWO_FILE_C_AFTER_INDEPENDENT_NODE22_AUDIT",
+      "approvedAtUtc": "2026-09-12T20:49:34.882Z",
+      "approvedBy": "owner-directive:R24_RCV00F_EXECUTOR_SUBSTRATE_2026_09_12",
+      "authority": "OWNER_ORDERED_R24_CONTINUATION_ROOT_BOUNDED_F_SUBSTRATE_ONLY",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
-      "rationale": "Rebind only existing Cell001 to clean immutable B732a83fa and independently audited exact Node22.12.0/npm10.9.0 physical Word receipt. Raw text, paragraph vector and codepoint equality plus five rejected mutants; audit134 of134. Numerator remains1 of1120, delta0, broadPassClaimfalse; no product, packaged UI, Google, rich-field, release or program completion claim.",
-      "sha256": "b30bda4482451f0f72696ede29c340dfc2dc9044f93554321ecfb66b3f897579"
+      "rationale": "Existing Cell001 metadata-only rebind to independently audited exact81edb707 physical Word evidence; zero numerator delta and no F closure or admission expansion. All other rows and metadata preserved.",
+      "sha256": "78ee133442847f378dde3fc81d6d0a984139c039be5685300feb9b1b89ac6675"
     },
     {
       "approved": true,
