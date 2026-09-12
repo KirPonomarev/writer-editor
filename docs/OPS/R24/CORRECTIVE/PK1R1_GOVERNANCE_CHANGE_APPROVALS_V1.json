@@ -1181,15 +1181,39 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T00:21:08Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_DOCX_XML_PREVIEW_HARDENING_ROOT_REPLAY",
+      "approvedAtUtc": "2026-09-12T00:59:32Z",
+      "approvedBy": "owner-directive:R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89",
       "evidenceStampIds": [
-        "ES-R24-DOCX-XML-PREVIEW-HARDENING-ROOT-REPLAY-V1"
+        "ES-R24-POST-AUDIT-COMMAND-SURFACE-ADMISSION-D1F0DC89-V1"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Approve exact current-byte bounded post-audit verifier repair: admit already approved DOCX XML preview hardening contract paths in the PR1888 DOCX current-main path set, add positive and unrelated-path negative admission contracts, and refresh C1B inventory for these bytes. No product import/export runtime change, UI change, dependency, runtime network, Google source-of-truth, release readiness, full portability, or PROGRAM_DONE claim.",
+      "sha256": "146f6dead0c531efe3c88af3f9fcac9f041974e13e79d28fdc9eab193d521682"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:59:32Z",
+      "approvedBy": "owner-directive:R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89",
+      "evidenceStampIds": [
+        "ES-R24-POST-AUDIT-COMMAND-SURFACE-ADMISSION-D1F0DC89-V1"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve exact current-byte bounded post-audit verifier repair: admit already approved DOCX XML preview hardening contract paths in the PR1888 DOCX current-main path set, add positive and unrelated-path negative admission contracts, and refresh C1B inventory for these bytes. No product import/export runtime change, UI change, dependency, runtime network, Google source-of-truth, release readiness, full portability, or PROGRAM_DONE claim.",
+      "sha256": "3a036f40c88f27efc807e9b71ceb118ae71ea44e733388ce879d68cbb7cf7c2a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-12T00:59:32Z",
+      "approvedBy": "owner-directive:R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_POST_AUDIT_COMMAND_SURFACE_ADMISSION_D1F0DC89",
+      "evidenceStampIds": [
+        "ES-R24-POST-AUDIT-COMMAND-SURFACE-ADMISSION-D1F0DC89-V1"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact current-byte DOCX XML content-preview hardening after root independent replay: hidden second-order 466/466, property differential 1598/1598, sealed boundary 81/81, and maintained affected suite 168/168. Binds only source/test bytes plus C1B inventory for UTF-8, unsupported declaration, and PI tokenization repairs. No UI, dependency, runtime network, Google source-of-truth, product apply/write expansion, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "ebc59db0bfbf48e1c3e6bf92a928a9e26345d34876ead4f3f43c80cbcdbb6aa9"
+      "rationale": "Approve exact current-byte bounded post-audit verifier repair: admit already approved DOCX XML preview hardening contract paths in the PR1888 DOCX current-main path set, add positive and unrelated-path negative admission contracts, and refresh C1B inventory for these bytes. No product import/export runtime change, UI change, dependency, runtime network, Google source-of-truth, release readiness, full portability, or PROGRAM_DONE claim.",
+      "sha256": "9aecd045d6fe5a765826c084ba82599f59767324fed47b8e158e4a2c54b76936"
     }
   ],
   "evidenceStampIds": [
