@@ -784,6 +784,24 @@ export const R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION = Object.freeze({
     'test/unit/docx-export-notification-outcome.test.js',
   ].sort()),
 });
+export const R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION = Object.freeze({
+  baseSha: '22d02b7dee226eaa35756705901fcbaf690c40f3',
+  baseTree: 'f360771818751680bece9ec7734eeafa9561f8c2',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  contractPath: 'test/contracts/collab-eventlog-idempotency.contract.test.js',
+  inventoryFileDenominator: 1469,
+  approvedBy: 'owner-directive:NONSTOP_SUPERVISOR_RESUME_CARRIER_RELEASE_2026_09_12',
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'test/contracts/collab-eventlog-idempotency.contract.test.js',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  ].sort()),
+});
 export const R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION=Object.freeze({
   baseSha:'071daa0fa544accd0d1f038175780036145372aa',
   baseTree:'244712adbbe7bfe745f5df38900b776b2ca9b0aa',
@@ -5032,6 +5050,59 @@ function resolveDocxNotificationCandidate(git, requested, e) {
   fail('E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA');
 }
 
+function resolveR24X01IdempotentContractRecoveryCandidate(git, requested, e) {
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  if (exact(requested)) return requested;
+  const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+  for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
+  fail('E_R24_X01_IDEMPOTENT_EXACT_ADMITTED_DELTA');
+}
+
+export function verifyR24X01IdempotentContractRecoveryPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_R24_X01_IDEMPOTENT_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_R24_X01_IDEMPOTENT_BASE_ANCESTRY'); }
+  const candidate = resolveR24X01IdempotentContractRecoveryCandidate(git, requested, e);
+  const changed = gitText(git, ['diff', '--name-only', `${e.baseSha}..${candidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed) === JSON.stringify(e.admittedPaths), 'E_R24_X01_IDEMPOTENT_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  const readText = relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_R24_X01_IDEMPOTENT_ARTIFACT_MISSING', relative); }
+    assert(bytes.at(-1) === 0x0a, 'E_R24_X01_IDEMPOTENT_CANONICAL_LF', relative);
+    return { bytes, text: bytes.toString('utf8'), digest: h(bytes) };
+  };
+  const inventory = { ...readText(e.inventoryPath) };
+  inventory.value = JSON.parse(inventory.text);
+  const approvals = { ...readText(e.approvalsPath) };
+  approvals.value = JSON.parse(approvals.text);
+  const verifier = readText(e.verifierPath), postAuditTest = readText(e.postAuditTestPath), contract = readText(e.contractPath);
+  assert(inventory.value.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.value.totals?.all === e.inventoryFileDenominator && inventory.value.totals?.requiredSkips === 0 && inventory.value.totals?.unexplainedSkips === 0, 'E_R24_X01_IDEMPOTENT_INVENTORY');
+  for (const relative of [e.contractPath, e.postAuditTestPath]) {
+    const entry = inventory.value.entries.find(item => item.path === relative);
+    const digest = relative === e.contractPath ? contract.digest : postAuditTest.digest;
+    assert(entry?.sha256 === digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_R24_X01_IDEMPOTENT_INVENTORY_DIGEST', relative);
+  }
+  assert(approvals.value.version === 'v1.0' && Array.isArray(approvals.value.approvals), 'E_R24_X01_IDEMPOTENT_APPROVALS');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    const digest = h(objectBytes(git, candidate, relative));
+    assert(approvals.value.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy)), 'E_R24_X01_IDEMPOTENT_APPROVAL_DIGEST', relative);
+  }
+  for (const token of ["eventId: 'event-1'", "eventId: 'event-2'", 'E_COLLAB_EVENTLOG_OPID_DUPLICATE']) assert(contract.text.includes(token), 'E_R24_X01_IDEMPOTENT_CONTRACT_TOKEN', token);
+  for (const token of ['R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION', 'verifyR24X01IdempotentContractRecoveryPostEvaluationException', 'E_R24_X01_IDEMPOTENT_EXACT_ADMITTED_DELTA']) assert(verifier.text.includes(token), 'E_R24_X01_IDEMPOTENT_VERIFIER_TOKEN', token);
+  for (const token of ['R24 X01 idempotent contract recovery exception accepts the exact recovery delta', 'R24 X01 idempotent contract recovery exception rejects an unadmitted future path', 'R24 X01 idempotent contract recovery exception rejects missing explicit eventId evidence']) assert(postAuditTest.text.includes(token), 'E_R24_X01_IDEMPOTENT_POST_AUDIT_TEST_TOKEN', token);
+  return {
+    schemaVersion: 'R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree,
+    currentCandidateSha: requested, currentCandidateTree: requestedTree, admittedPaths: e.admittedPaths,
+    changedPaths: changed, admittedPathDenominator: e.admittedPaths.length, inventoryDigest: inventory.digest,
+    approvalsDigest: approvals.digest, verifierDigest: verifier.digest, postAuditTestDigest: postAuditTest.digest,
+    contractDigest: contract.digest, recoveryScope: 'TEST_FIXTURE_AND_POST_AUDIT_ADMISSION_ONLY',
+    productRuntimeChange: false, wordOrGoogleFidelityClaim: false, programDone: false, productionReleaseReady: false,
+  };
+}
+
 export function verifyDocxNotificationOutcomePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
   const e = R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION;
   const requested = gitText(git, ['rev-parse', candidateSha]);
@@ -6486,6 +6557,16 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const docxNotificationOutcomeException = docxNotificationOutcomeEnabled ? verifyDocxNotificationOutcomePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (docxNotificationOutcomeException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let r24X01IdempotentContractRecoveryEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.contractPath);
+      r24X01IdempotentContractRecoveryEnabled = true;
+    } catch {}
+  }
+  const r24X01IdempotentContractRecoveryException = r24X01IdempotentContractRecoveryEnabled ? verifyR24X01IdempotentContractRecoveryPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (r24X01IdempotentContractRecoveryException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -6494,6 +6575,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24Interop100U000cPagebreakReexportPostEvaluationException=r24Interop100U000cPagebreakReexportException;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
+  verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException=rcv00aCurrentHeadExactToolchainEntryPointException;
   verificationResult.r24Rcv00bCurrentHeadEffectiveStateCompilerPostEvaluationException=rcv00bCurrentHeadEffectiveStateCompilerException;
   verificationResult.r24ObsExportDocxCommandBridgeOuterFailPostEvaluationException=r24ObsExportDocxCommandBridgeOuterFailException;

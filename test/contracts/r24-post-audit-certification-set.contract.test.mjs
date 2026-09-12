@@ -55,7 +55,9 @@ import {
   R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,
   R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,
   R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION,
+  R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION,
   verifyDocxNotificationOutcomePostEvaluationException,
+  verifyR24X01IdempotentContractRecoveryPostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
@@ -1764,6 +1766,68 @@ for (const [name, mutate, signal] of [
   ['stale approvals', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals[0].sha256 = '0'.repeat(64); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
   ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(entry => { entry.approvedBy = 'not-authority'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
 ]) test(`DOCX notification admission rejects ${name}`, () => assert.throws(() => verifyDocxFixture(docxNotificationFixture({ mutate })), signal));
+
+function x01IdempotentFixture({ changedPaths, baseTree, mutate = () => {} } = {}) {
+  const e = R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION, candidate = 'c'.repeat(40), candidateTree = 'd'.repeat(40);
+  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  mutate(files, e);
+  const inventory = JSON.parse(files.get(e.inventoryPath));
+  for (const relative of [e.contractPath, e.postAuditTestPath]) {
+    const entry = inventory.entries.find(item => item.path === relative);
+    entry.sha256 = h(files.get(relative));
+    entry.required = true;
+    entry.executionStatus = 'DECLARED_EXECUTABLE';
+  }
+  files.set(e.inventoryPath, canonicalBytes(inventory));
+  const approvals = JSON.parse(files.get(e.approvalsPath));
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    const digest = h(files.get(relative));
+    const existing = approvals.approvals.find(entry => entry.filePath === relative);
+    const approval = {
+      filePath: relative,
+      sha256: digest,
+      approvedBy: e.approvedBy,
+      approvedAtUtc: '2026-09-12T08:55:00.000Z',
+      approved: true,
+      rationale: 'Bounded X01 idempotent contract recovery fixture admission; no product runtime, Word or Google route, denominator completion or program-done claim.',
+    };
+    if (existing) Object.assign(existing, approval);
+    else approvals.approvals.push(approval);
+  }
+  files.set(e.approvalsPath, canonicalBytes(approvals));
+  return { candidate, git: (args, options = {}) => {
+    let value = '';
+    if (args[0] === 'rev-parse' && args[1] === candidate) value = candidate;
+    else if (args[0] === 'rev-parse' && args[1] === `${e.baseSha}^{tree}`) value = baseTree ?? e.baseTree;
+    else if (args[0] === 'rev-parse' && args[1] === `${candidate}^{tree}`) value = candidateTree;
+    else if (args[0] === 'merge-base') value = '';
+    else if (args[0] === 'rev-list') value = `${candidate}\n`;
+    else if (args[0] === 'diff') value = (changedPaths ?? e.admittedPaths).join('\n') + '\n';
+    else if (args[0] === 'show') {
+      const repoPath = String(args[1]).slice(String(args[1]).indexOf(':') + 1);
+      const bytes = files.get(repoPath);
+      if (bytes) return options.encoding === 'utf8' ? bytes.toString('utf8') : Buffer.from(bytes);
+      return execFileSync('git', args, options);
+    } else return execFileSync('git', args, options);
+    return options.encoding === 'utf8' ? `${value}\n` : Buffer.from(`${value}\n`);
+  } };
+}
+test('R24 X01 idempotent contract recovery exception accepts the exact recovery delta', () => {
+  const fixture = x01IdempotentFixture(), result = verifyR24X01IdempotentContractRecoveryPostEvaluationException({ candidateSha: fixture.candidate, git: fixture.git });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.baseSha, R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha);
+  assert.equal(result.admittedPathDenominator, R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.admittedPaths.length);
+  assert.equal(result.productRuntimeChange, false);
+  assert.equal(result.wordOrGoogleFidelityClaim, false);
+});
+test('R24 X01 idempotent contract recovery exception rejects an unadmitted future path', () => {
+  const e = R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION, fixture = x01IdempotentFixture({ changedPaths: [...e.admittedPaths, 'README.md'].sort() });
+  assert.throws(() => verifyR24X01IdempotentContractRecoveryPostEvaluationException({ candidateSha: fixture.candidate, git: fixture.git }), /E_R24_X01_IDEMPOTENT_EXACT_ADMITTED_DELTA/);
+});
+test('R24 X01 idempotent contract recovery exception rejects missing explicit eventId evidence', () => {
+  const e = R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION, fixture = x01IdempotentFixture({ mutate: files => files.set(e.contractPath, Buffer.from(files.get(e.contractPath).toString('utf8').replace("eventId: 'event-1',", "eventKey: 'event-1',"))) });
+  assert.throws(() => verifyR24X01IdempotentContractRecoveryPostEvaluationException({ candidateSha: fixture.candidate, git: fixture.git }), /E_R24_X01_IDEMPOTENT_CONTRACT_TOKEN/);
+});
 
 function rcv00eLeaseFencingCasGitFixture({changedPaths,inventoryBytes,approvalsBytes,evidenceBytes,verifierBytes,canonicalJsonBytes,leaseBytes,mutantBytes,canonicalJsonTestBytes,leaseTestBytes,planStateTestBytes,contractTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='9'.repeat(40),candidateTree='a'.repeat(40)}={}){
   const e=R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION;
