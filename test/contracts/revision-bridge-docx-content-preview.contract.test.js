@@ -1278,6 +1278,180 @@ test('DOCX content preview: field hyperlink instructions produce explicit link l
   }
 });
 
+test('DOCX content preview: nested field instruction text does not leak into visible import text', async () => {
+  const bridge = await loadBridge();
+  const docx = (body) => rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}">`,
+    `<w:body><w:p>${body}</w:p></w:body>`,
+    '</w:document>',
+  ].join(''));
+  const runText = (text) => `<w:r><w:t xml:space="preserve">${text}</w:t></w:r>`;
+  const fldChar = (type) => `<w:r><w:fldChar w:fldCharType="${type}"/></w:r>`;
+  const instr = (text) => `<w:r><w:instrText xml:space="preserve">${text}</w:instrText></w:r>`;
+  const nestedSimple = docx([
+    runText('Before '),
+    fldChar('begin'),
+    instr(' IF &quot;'),
+    runText('HIDDEN_ARGUMENT'),
+    instr('&quot; = &quot;HIDDEN_ARGUMENT&quot; &quot;VISIBLE_RESULT&quot; &quot;OTHER&quot; '),
+    fldChar('separate'),
+    runText('VISIBLE_RESULT'),
+    fldChar('end'),
+    runText(' After'),
+  ].join(''));
+  const nestedComplex = docx([
+    runText('Before '),
+    fldChar('begin'),
+    instr(' IF &quot;'),
+    fldChar('begin'),
+    instr(' REF FIELD_ARG_ANCHOR '),
+    fldChar('separate'),
+    runText('HIDDEN_ARGUMENT'),
+    fldChar('end'),
+    instr('&quot; = &quot;HIDDEN_ARGUMENT&quot; &quot;VISIBLE_RESULT&quot; &quot;OTHER&quot; '),
+    fldChar('separate'),
+    runText('VISIBLE_RESULT'),
+    fldChar('end'),
+    runText(' After'),
+  ].join(''));
+
+  for (const bytes of [nestedSimple, nestedComplex]) {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    const content = importPreview?.candidateCreatePlan?.entries?.[0]?.content || '';
+    assert.equal(result.ok, true);
+    assert.equal(importPreview.ok, true);
+    assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+      'Before VISIBLE_RESULT After',
+    ]);
+    assert.equal(content, 'Before VISIBLE_RESULT After');
+    assert.equal(content.includes('HIDDEN_ARGUMENT'), false);
+  }
+});
+
+test('DOCX content preview: unclosed field fallback keeps readable text but reports explicit loss', async () => {
+  const bridge = await loadBridge();
+  const document = (fieldBody) => rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}">`,
+    '<w:body>',
+    '<w:p>',
+    '<w:r><w:t xml:space="preserve">Before </w:t></w:r>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText>HYPERLINK \\l &quot;INERT_TARGET&quot;</w:instrText></w:r>',
+    fieldBody,
+    '</w:p>',
+    '<w:p><w:r><w:t>Next paragraph</w:t></w:r></w:p>',
+    '</w:body>',
+    '</w:document>',
+  ].join(''));
+  const cases = [
+    [
+      document('<w:r><w:t xml:space="preserve">Literal retained</w:t></w:r>'),
+      ['Before Literal retained', 'Next paragraph'],
+      'Before Literal retained\n\nNext paragraph',
+    ],
+    [
+      document([
+        '<w:r><w:fldChar w:fldCharType="separate"/></w:r>',
+        '<w:r><w:t xml:space="preserve">Cached result</w:t></w:r>',
+      ].join('')),
+      ['Before Cached result', 'Next paragraph'],
+      'Before Cached result\n\nNext paragraph',
+    ],
+  ];
+  for (const [docx, paragraphs, content] of cases) {
+    const result = bridge.buildDocxContentPreviewFromZipBytes(docx);
+    const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+    assert.equal(result.ok, true);
+    assert.equal(importPreview.ok, true);
+    assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), paragraphs);
+    assert.equal(importPreview.candidateCreatePlan.entries[0].content, content);
+    assert.equal(importPreview.lossReport.items.some((item) => (
+      item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
+      && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+    )), true);
+    assert.equal(importPreview.lossReport.items.some((item) => (
+      item.code === 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED'
+      && item.sourceCode === 'DOCX_CONTENT_PREVIEW_COMPLEX_FIELD_STRUCTURE'
+    )), true);
+  }
+});
+
+test('DOCX content preview: field hyperlinks inside parent instructions do not create visible link loss', async () => {
+  const bridge = await loadBridge();
+  const docx = rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}">`,
+    '<w:body><w:p>',
+    '<w:r><w:t xml:space="preserve">Before </w:t></w:r>',
+    '<w:bookmarkStart w:id="1" w:name="INNER_ANCHOR"/>',
+    '<w:bookmarkEnd w:id="1"/>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText> IF </w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText>HYPERLINK \\l &quot;INNER_ANCHOR&quot;</w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="separate"/></w:r>',
+    '<w:r><w:t xml:space="preserve">Visible inner link</w:t></w:r>',
+    '<w:r><w:fldChar w:fldCharType="end"/></w:r>',
+    '<w:r><w:instrText> = 1 &quot;Outer&quot; &quot;Other&quot; </w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="separate"/></w:r>',
+    '<w:r><w:t xml:space="preserve">Outer result</w:t></w:r>',
+    '<w:r><w:fldChar w:fldCharType="end"/></w:r>',
+    '<w:r><w:t xml:space="preserve"> After</w:t></w:r>',
+    '</w:p></w:body>',
+    '</w:document>',
+  ].join(''));
+  const result = bridge.buildDocxContentPreviewFromZipBytes(docx);
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+  const content = importPreview?.candidateCreatePlan?.entries?.[0]?.content || '';
+  assert.equal(result.ok, true);
+  assert.equal(importPreview.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Before Outer result After',
+  ]);
+  assert.equal(content.includes('Visible inner link'), false);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+  )), false);
+});
+
+test('DOCX content preview: unclosed parent field reports nested visible hyperlink loss', async () => {
+  const bridge = await loadBridge();
+  const docx = rawStoredDocxZip([
+    `<w:document xmlns:w="${WORDPROCESSINGML_NS}">`,
+    '<w:body><w:p>',
+    '<w:r><w:t xml:space="preserve">Before </w:t></w:r>',
+    '<w:bookmarkStart w:id="1" w:name="INNER_ANCHOR"/>',
+    '<w:bookmarkEnd w:id="1"/>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText> IF </w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r>',
+    '<w:r><w:instrText>HYPERLINK \\l &quot;INNER_ANCHOR&quot;</w:instrText></w:r>',
+    '<w:r><w:fldChar w:fldCharType="separate"/></w:r>',
+    '<w:r><w:t xml:space="preserve">Visible inner link</w:t></w:r>',
+    '<w:r><w:fldChar w:fldCharType="end"/></w:r>',
+    '<w:r><w:t xml:space="preserve"> After</w:t></w:r>',
+    '</w:p></w:body>',
+    '</w:document>',
+  ].join(''));
+  const result = bridge.buildDocxContentPreviewFromZipBytes(docx);
+  const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
+  assert.equal(result.ok, true);
+  assert.equal(importPreview.ok, true);
+  assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), [
+    'Before Visible inner link After',
+  ]);
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'Before Visible inner link After');
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_INSTRUCTION'
+  )), true);
+  assert.equal(importPreview.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED'
+    && item.sourceCode === 'DOCX_CONTENT_PREVIEW_COMPLEX_FIELD_STRUCTURE'
+  )), true);
+});
+
 test('DOCX content preview: Google tab metadata uses only WordprocessingML attributes', async (t) => {
   const bridge = await loadBridge();
   const docxWithNamespaces = (body) => rawStoredDocxZip([
