@@ -23,6 +23,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V39,
   HISTORICAL_INVENTORY_CLAIM_PINS_V40,
   HISTORICAL_INVENTORY_CLAIM_PINS_V41,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V42,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -654,9 +655,39 @@ test('R02 inventory refresh retains RCV00D current-identity binding as historica
   );
 });
 
+test('O01-O08 inventory refresh retains interop-100 current claim binding as historical bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V42.find(
+    (item) => item.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS'
+      && item.evaluationSha === '071daa0fa544accd0d1f038175780036145372aa',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationTree, '244712adbbe7bfe745f5df38900b776b2ca9b0aa');
+  assert.equal(pin.stampSha256, 'bc26e4f5907c1142e667f2385641116ba5079b442ae614ed5fe135be914106c6');
+  assert.equal(pin.targetSha256, '8ddbb2c40b70b74fa6251bd89d59967cd2014c3c5698d8ab6be3d812a93545ec');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-INTEROP-100-C1B-CURRENT-CLAIM-BINDINGS'
+      && binding.evaluationSha === '071daa0fa544accd0d1f038175780036145372aa',
+  ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-WP-603-WSE-STATE-EVIDENCE-CLAIM-BINDINGS',
   ));
