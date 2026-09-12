@@ -139,12 +139,6 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
       }
       return writeBufferAtomic(outPath, documentBuffer);
     }, 'export docx min');
-    updateStatus('DOCX MIN экспортирован');
-    return {
-      ok: 1,
-      outPath,
-      bytesWritten: documentBuffer.length,
-    };
   } catch (error) {
     if (typeof error?.reason === 'string' && error.reason.startsWith('EXTERNAL_TARGET_')) {
       return makeTypedExportError('E_EXPORT_TARGET_FORBIDDEN', error.reason);
@@ -154,6 +148,31 @@ async function runDocxMinExport(payloadRaw, deps = {}) {
       outPath,
     });
   }
+
+  const result = {
+    ok: 1,
+    outPath,
+    bytesWritten: documentBuffer.length,
+  };
+  // Notification failure cannot undo a successfully resolved export write.
+  let notificationFailed = false;
+  try {
+    const notification = updateStatus('DOCX MIN экспортирован');
+    if (notification != null && typeof notification.then === 'function') {
+      // Status is synchronous; observe async rejection without holding the export open.
+      notificationFailed = true;
+      Promise.resolve(notification).catch(() => {});
+    }
+  } catch {
+    notificationFailed = true;
+  }
+  if (notificationFailed) {
+    result.warnings = [{
+      code: 'W_EXPORT_STATUS_NOTIFICATION_FAILED',
+      reason: 'STATUS_NOTIFICATION_FAILED',
+    }];
+  }
+  return result;
 }
 
 module.exports = {
