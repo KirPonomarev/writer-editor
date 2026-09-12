@@ -516,6 +516,172 @@ export function validateRcv00dSelectorReceipt(receipt, context = null) {
   };
 }
 
+export const CURRENT_CORRECTIVE_CLOSURES_PATH = 'docs/OPS/R24/EVIDENCE/RCV00D_CURRENT_CORRECTIVE_CLOSURES_V1.json';
+const CURRENT_CLOSURE_CARRIER_DIGEST = '367795f8baa1c5f1f60c0e729bb70147261a738ee78b749767ed2f17d8f1c556';
+const ACCEPTED_CLOSURE_RECEIPT_DIGEST = '029adc338ef8b51510eadd82b4405c5dc9ae23e11fc392891c956b2a3322e5ce';
+
+// Preserve the independently accepted terminal bytes. Embedded provenance paths
+// are opaque evidence, not filesystem inputs or fresh test-execution claims.
+export function loadCurrentCorrectiveClosureStore({ repoRoot = REPO_ROOT } = {}) {
+  const file = repoPath(repoRoot, CURRENT_CORRECTIVE_CLOSURES_PATH);
+  const stat = fs.lstatSync(file);
+  if (!stat.isFile() || stat.size > 32768) throw new R24Error('E_CURRENT_CLOSURE_CARRIER_BOUNDS');
+  const carrierBytes = fs.readFileSync(file);
+  if (sha256hex(carrierBytes) !== CURRENT_CLOSURE_CARRIER_DIGEST) throw new R24Error('E_CURRENT_CLOSURE_CARRIER_DIGEST');
+  const carrier = JSON.parse(carrierBytes.toString('utf8'));
+  if (carrier.schemaVersion !== 'R24_CURRENT_CORRECTIVE_CLOSURES_V1' || carrier.receipts?.length !== 1) {
+    throw new R24Error('E_CURRENT_CLOSURE_CARRIER_SCHEMA');
+  }
+  const row = carrier.receipts[0];
+  if (row.receiptDigest !== ACCEPTED_CLOSURE_RECEIPT_DIGEST || typeof row.rawBase64 !== 'string'
+      || !/^[A-Za-z0-9+/]+={0,2}$/u.test(row.rawBase64)) throw new R24Error('E_CURRENT_CLOSURE_CARRIER_ENTRY');
+  const bytes = Buffer.from(row.rawBase64, 'base64');
+  if (bytes.length > 16384 || bytes.toString('base64') !== row.rawBase64
+      || sha256hex(bytes) !== row.receiptDigest) throw new R24Error('E_CURRENT_CLOSURE_DIGEST');
+  const receipt = JSON.parse(bytes.toString('utf8'));
+  return {
+    carrierDigest: sha256hex(carrierBytes),
+    closureReferences: [{
+      kind: receipt.observationId ? 'CURRENT_OBSERVATION' : 'FINDING',
+      id: receipt.observationId || receipt.findingId, contourId: receipt.contourId,
+      sourceCommit: receipt.head, mergeSha: receipt.merged, mergeTree: receipt.tree, receiptDigest: row.receiptDigest,
+    }],
+    readClosureReceipt(digest) {
+      if (digest !== row.receiptDigest) throw new R24Error('E_CURRENT_CLOSURE_UNTRUSTED_RECEIPT');
+      return Buffer.from(bytes);
+    },
+  };
+}
+
+// Test seams accept resolvers, not status booleans. The native CLI always uses
+// the fixed, digest-bound repository carrier and actual Git object identities.
+export function verifyCurrentCorrectiveClosures({ context, closureReferences, readClosureReceipt, gitEvidence }) {
+  assertArray(closureReferences, 'E_CURRENT_CLOSURE_REFERENCE_SHAPE');
+  const candidates = [
+    ...context.register.currentObservations.map(row => ({ kind: 'CURRENT_OBSERVATION', id: row.observationId, contourId: row.primaryContourId })),
+    ...context.register.findings.map(row => ({ kind: 'FINDING', id: row.findingId, contourId: row.primaryContourId })),
+  ];
+  const seen = new Set();
+  const verified = [];
+  for (const ref of closureReferences) {
+    if (!ref || !['CURRENT_OBSERVATION', 'FINDING'].includes(ref.kind)
+        || typeof ref.id !== 'string' || typeof ref.contourId !== 'string'
+        || !HEX40_RE.test(String(ref.sourceCommit)) || !HEX40_RE.test(String(ref.mergeSha))
+        || !HEX40_RE.test(String(ref.mergeTree)) || !HEX64_RE.test(String(ref.receiptDigest))) {
+      throw new R24Error('E_CURRENT_CLOSURE_REFERENCE_SHAPE');
+    }
+    const key = `${ref.kind}:${ref.id}`;
+    if (seen.has(key)) throw new R24Error('E_CURRENT_CLOSURE_DUPLICATE_OR_CONFLICT', key);
+    seen.add(key);
+    if (!candidates.some(row => row.kind === ref.kind && row.id === ref.id && row.contourId === ref.contourId)) {
+      throw new R24Error('E_CURRENT_CLOSURE_SUBJECT_UNKNOWN', key);
+    }
+    const bytes = readClosureReceipt(ref.receiptDigest);
+    if (sha256hex(bytes) !== ref.receiptDigest) throw new R24Error('E_CURRENT_CLOSURE_DIGEST');
+    const receipt = JSON.parse(bytes.toString('utf8'));
+    const receiptKind = receipt.observationId ? 'CURRENT_OBSERVATION' : 'FINDING';
+    const receiptId = receipt.observationId || receipt.findingId;
+    if (receiptKind !== ref.kind || receiptId !== ref.id || receipt.contourId !== ref.contourId) {
+      throw new R24Error('E_CURRENT_CLOSURE_SUBJECT_BINDING');
+    }
+    if (receipt.status !== 'FULL_DELIVERY_CLOSED_EXACT_MERGED_HEAD'
+        || receipt.head !== ref.sourceCommit || receipt.merged !== ref.mergeSha || receipt.tree !== ref.mergeTree
+        || receipt.pr?.state !== 'MERGED' || receipt.pr?.headRefOid !== ref.sourceCommit
+        || receipt.pr?.mergeCommit?.oid !== ref.mergeSha) {
+      throw new R24Error('E_CURRENT_CLOSURE_DELIVERY_BINDING');
+    }
+    if (gitEvidence.tree(ref.mergeSha) !== ref.mergeTree) throw new R24Error('E_CURRENT_CLOSURE_MERGE_TREE');
+    if (!gitEvidence.isAncestor(ref.sourceCommit, ref.mergeSha)) throw new R24Error('E_CURRENT_CLOSURE_SOURCE_NOT_ANCESTOR');
+    if (!gitEvidence.isAncestor(ref.mergeSha, context.identity.headSha)) throw new R24Error('E_CURRENT_CLOSURE_MERGE_NOT_ANCESTOR');
+    verified.push({ ...ref });
+  }
+  return verified;
+}
+
+export function deriveCurrentCorrectiveSelection({ context, closureReferences = [], readClosureReceipt, gitEvidence }) {
+  validateCorrectiveRegister(context.register, { repoRoot: context.repoRoot });
+  assertSelectorIdentity(context.effectiveStateProjection, context.graphSelectionReceipt, context.identity);
+  if (context.graphSelectionReceipt.stateDigest !== context.effectiveStateProjection.schedulerProjection.stateDigest
+      || context.graphSelectionReceipt.contourStatesDigest !== context.effectiveStateProjection.schedulerProjection.contourStatesDigest) {
+    throw new R24Error('E_CURRENT_SELECTION_GRAPH_BINDING');
+  }
+  if (context.graphSelectionReceipt.selectedId !== null || context.graphSelectionReceipt.readySet.length !== 0) {
+    throw new R24Error('E_CURRENT_SELECTION_REQUIRES_NO_READY_GRAPH_NODE');
+  }
+  const verifiedClosures = verifyCurrentCorrectiveClosures({ context, closureReferences, readClosureReceipt, gitEvidence });
+  const closed = new Set(verifiedClosures.map(ref => `${ref.kind}:${ref.id}`));
+  const candidates = [
+    ...context.register.currentObservations.map(currentObservationCandidate),
+    ...context.register.findings.map(finding => findingCandidate(finding, {
+      readySet: new Set(context.graphSelectionReceipt.readySet),
+      contourStates: context.effectiveStateProjection.schedulerProjection.contourStates,
+      deliveredContourIds: new Set(RCV00D_DELIVERED_CONTOUR_IDS),
+    })),
+  ].map(candidate => {
+    if (!closed.has(`${candidate.kind}:${candidate.id}`)) return candidate;
+    return { ...candidate, eligible: false, ineligibilityReasons: [...candidate.ineligibilityReasons, 'VERIFIED_TERMINAL_DELIVERY_CLOSURE'] };
+  });
+  const eligible = candidates.filter(candidate => candidate.eligible)
+    .sort((left, right) => compareKey(selectionKey(left), selectionKey(right)));
+  const selected = eligible[0] || null;
+  return {
+    schemaVersion: 'R24_CURRENT_CORRECTIVE_SELECTION_V1',
+    verdict: selected ? 'CORRECTIVE_CANDIDATE_RANKED_NOT_ADMITTED' : 'NO_ELIGIBLE',
+    selected, candidates, verifiedClosures,
+    identity: { ...context.identity }, graphSchedulerSelectedId: null,
+    candidateSetDigest: canonicalDigest(candidates),
+    closureSetDigest: canonicalDigest(verifiedClosures),
+  };
+}
+
+export function buildCurrentCorrectivePlanOutcome(options) {
+  const ranked = deriveCurrentCorrectiveSelection(options);
+  const { context } = options;
+  const committedPlanDigest = sha256hex(execFileSync('git', ['-C', context.repoRoot, 'show', `${context.identity.headSha}:${RCV00D_PLAN_PATH}`]));
+  if (sha256hex(Buffer.from(context.planText)) !== context.inputDigests.planTextFile
+      || context.inputDigests.planTextFile !== committedPlanDigest) {
+    throw new R24Error('E_CURRENT_SELECTION_PLAN_DIGEST');
+  }
+  const strictPath = context.planText.match(/The strict path is:\s*([\s\S]*?)\n\n/u)?.[1];
+  if (!strictPath) throw new R24Error('E_CURRENT_SELECTION_PLAN_PATH_MISSING');
+  const phaseZero = strictPath.split('->').map(id => id.trim())
+    .filter(id => /^00[A-H]$/u.test(id)).map(id => `R24-RCV-${id}`);
+  if (phaseZero.length !== 8 || new Set(phaseZero).size !== 8) throw new R24Error('E_CURRENT_SELECTION_PLAN_PATH_SHAPE');
+  const selectedIndex = phaseZero.indexOf(ranked.selected?.contourId);
+  // Preserve the existing historical baseline; new closure comes only from
+  // verified receipts. No added contour constant may stand in for a receipt.
+  const delivered = new Set([...RCV00D_DELIVERED_CONTOUR_IDS, ...ranked.verifiedClosures.map(ref => ref.contourId)]);
+  const missing = selectedIndex < 0 ? phaseZero.filter(id => !delivered.has(id))
+    : phaseZero.slice(0, selectedIndex).filter(id => !delivered.has(id));
+  if (!ranked.selected || missing.length > 0) {
+    return { ...ranked, verdict: 'NO_ELIGIBLE', selected: null, rankedCandidateId: ranked.selected?.id || null,
+      reason: missing.length ? 'PLAN_PREDECESSOR_CLOSURE_UNRESOLVED' : 'NO_ELIGIBLE_CORRECTIVE_ITEM',
+      unresolvedPredecessors: missing, mutationAllowed: false };
+  }
+  return { ...ranked, verdict: 'NEXT_CORRECTIVE_CANDIDATE', mutationAllowed: false };
+}
+
+export function buildCurrentCorrectiveSelectorReceipt({ repoRoot = REPO_ROOT, now = new Date().toISOString() } = {}) {
+  const context = buildRcv00dSelectorContext({ repoRoot, now });
+  const store = loadCurrentCorrectiveClosureStore({ repoRoot: context.repoRoot });
+  const outcome = buildCurrentCorrectivePlanOutcome({ context, ...store, gitEvidence: {
+    tree: sha => gitText(context.repoRoot, ['rev-parse', `${sha}^{tree}`]),
+    isAncestor(left, right) {
+      try {
+        execFileSync('git', ['-C', context.repoRoot, 'merge-base', '--is-ancestor', left, right], { stdio: 'ignore' });
+        return true;
+      } catch (error) {
+        if (error.status === 1) return false;
+        throw new R24Error('E_CURRENT_CLOSURE_GIT_EVIDENCE');
+      }
+    },
+  } });
+  return { ...outcome, generatedAtUtc: now, carrierDigest: store.carrierDigest,
+    worktreeDirty: gitText(context.repoRoot, ['status', '--porcelain=v1']) !== '',
+    evidenceScope: 'ACCEPTED_CLOSURE_IDENTITY_AND_CURRENT_PLAN_SELECTION_NOT_FRESH_RUNTIME_PROOF',
+    historicalV1ReceiptVerificationUnchanged: true, programDone: false, productionReleaseReady: false, graphIncrement: 0 };
+}
+
 function parseArgs(argv) {
   const args = new Map();
   for (let index = 0; index < argv.length; index += 1) {
@@ -534,11 +700,20 @@ function parseArgs(argv) {
 
 export function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
+  for (const key of args.keys()) {
+    if (!['--repo-root', '--now', '--json', '--historical-v1'].includes(key)) throw new R24Error('E_RCV00D_CLI_ARGUMENT', key);
+  }
   const repoRoot = path.resolve(args.get('--repo-root') || process.cwd());
   const options = {
     repoRoot,
-    now: args.get('--now') || '2026-09-09T00:00:00.000Z',
+    now: args.get('--now') || (args.has('--historical-v1') ? '2026-09-09T00:00:00.000Z' : new Date().toISOString()),
   };
+  if (!args.has('--historical-v1')) {
+    const receipt = buildCurrentCorrectiveSelectorReceipt(options);
+    process.stdout.write(args.has('--json') ? `${JSON.stringify(receipt, null, 2)}\n`
+      : `R24_RCV00D_CURRENT_CORRECTIVE_SELECTION=${JSON.stringify(receipt)}\n`);
+    return receipt;
+  }
   const receipt = buildRcv00dSelectorReceipt(options);
   const result = validateRcv00dSelectorReceipt(receipt, buildRcv00dSelectorContext(options));
   if (args.has('--json')) {
