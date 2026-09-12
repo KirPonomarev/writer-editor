@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
+import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
 import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
 import { RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs';
@@ -1772,7 +1773,7 @@ for (const [name, mutate, signal] of [
 function currentClosureSelectorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
   const e = R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION;
   const candidate = 'c'.repeat(40), requested = successor ? 'd'.repeat(40) : candidate;
-  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const files = new Map(e.admittedPaths.map(relative => [relative, objectFromCommit('442bdbef6a153b14fec5c2d354bccd8f97a62809', relative)]));
   const inventory = JSON.parse(files.get(e.inventoryPath));
   for (const relative of [e.selectorTestPath, e.contractPath]) {
     const entry = inventory.entries.find(item => item.path === relative);
@@ -1840,9 +1841,80 @@ for (const [name, mutate, signal] of [
   ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(row => { row.approvedBy = 'NOT_AUTHORITY'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_CURRENT_SELECTOR_APPROVAL_DIGEST/],
 ]) test(`Current closure selector admission rejects ${name}`, () => assert.throws(() => verifyCurrentSelectorFixture(currentClosureSelectorFixture({ mutate })), signal));
 
+function ePlanPredecessorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
+  const e = R24_E_PLAN_PREDECESSOR_EXPECTATION;
+  const candidate = 'c'.repeat(40), requested = successor ? 'd'.repeat(40) : candidate;
+  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const inventory = JSON.parse(files.get(e.inventoryPath));
+  for (const relative of e.testPaths) {
+    const entry = inventory.entries.find(item => item.path === relative);
+    Object.assign(entry, { sha256: h(files.get(relative)), required: true, executionStatus: 'DECLARED_EXECUTABLE' });
+  }
+  files.set(e.inventoryPath, canonicalBytes(inventory));
+  const approvals = JSON.parse(files.get(e.approvalsPath));
+  approvals.approvals = e.admittedPaths.filter(relative => relative !== e.approvalsPath).map(relative => ({
+    filePath: relative, sha256: h(files.get(relative)), approved: true, approvedBy: e.approvedBy,
+  }));
+  files.set(e.approvalsPath, canonicalBytes(approvals));
+  mutate(files, e);
+  const git = (args, options = {}) => {
+    let value = '';
+    if (args[0] === 'rev-parse' && args[1] === `${e.baseSha}^{tree}`) value = baseTree ?? e.baseTree;
+    else if (args[0] === 'rev-parse' && args[1] === `${candidate}^{tree}`) value = 'e'.repeat(40);
+    else if (args[0] === 'rev-parse' && args[1] === `${requested}^{tree}`) value = 'f'.repeat(40);
+    else if (args[0] === 'rev-parse') value = args[1];
+    else if (args[0] === 'merge-base') { if (unrelatedBase) throw new Error('NOT_ANCESTOR'); }
+    else if (args[0] === 'rev-list') value = candidate;
+    else if (args[0] === 'diff') value = (successor && args.at(-1).endsWith(requested)
+      ? [...e.admittedPaths, 'future.txt'] : changedPaths ?? e.admittedPaths).join('\n');
+    else if (args[0] === 'show') {
+      const bytes = files.get(args[1].slice(args[1].indexOf(':') + 1));
+      if (!bytes) throw new Error('MISSING_FIXTURE_ARTIFACT');
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : Buffer.from(bytes);
+    } else throw new Error(`UNEXPECTED_FIXTURE_GIT:${args[0]}`);
+    return options.encoding === 'utf8' ? value + '\n' : Buffer.from(value + '\n');
+  };
+  return { candidate, requested, git };
+}
+const verifyEPlanFixture = fixture => verifyEPlanPredecessorPostEvaluationException({ candidateSha: fixture.requested, git: fixture.git });
+test('E plan predecessor admission accepts only the exact nine-path correction', () => {
+  const fixture = ePlanPredecessorFixture(), result = verifyEPlanFixture(fixture);
+  assert.equal(result.admittedPathDenominator, 9);
+  assert.equal(result.candidateSha, fixture.requested);
+  assert.equal(result.mutationAllowed, false);
+  assert.equal(result.programDone, false);
+});
+test('E plan predecessor admission preserves distinct closed candidate and different current head', () => {
+  const fixture = ePlanPredecessorFixture({ successor: true }), result = verifyEPlanFixture(fixture);
+  assert.equal(result.candidateSha, fixture.candidate);
+  assert.equal(result.currentCandidateSha, fixture.requested);
+  assert.equal(result.closedCandidateOnly, true);
+  assert(!result.admittedPaths.includes('future.txt'));
+});
+for (const [name, options, signal] of [
+  ['base tree', { baseTree: '0'.repeat(40) }, /E_PLAN_PREDECESSOR_BASE_TREE/],
+  ['base ancestry', { unrelatedBase: true }, /E_PLAN_PREDECESSOR_BASE_ANCESTRY/],
+  ['missing path', { changedPaths: R24_E_PLAN_PREDECESSOR_EXPECTATION.admittedPaths.slice(1) }, /E_PLAN_PREDECESSOR_EXACT_ADMITTED_DELTA/],
+  ['extra path', { changedPaths: [...R24_E_PLAN_PREDECESSOR_EXPECTATION.admittedPaths, 'future.txt'] }, /E_PLAN_PREDECESSOR_EXACT_ADMITTED_DELTA/],
+]) test(`E plan predecessor admission rejects ${name}`, () => assert.throws(() => verifyEPlanFixture(ePlanPredecessorFixture(options)), signal));
+for (const relative of Object.keys(R24_E_PLAN_PREDECESSOR_EXPECTATION.semanticDigests)) {
+  test(`E plan predecessor admission rejects changed ${relative}`, () => {
+    const fixture = ePlanPredecessorFixture({ mutate: files => files.set(relative, Buffer.concat([files.get(relative), Buffer.from('\n')])) });
+    assert.throws(() => verifyEPlanFixture(fixture), /E_PLAN_PREDECESSOR_ARTIFACT_DIGEST/);
+  });
+}
+for (const [name, mutate, signal] of [
+  ['missing artifact', (files, e) => files.delete(e.selectorTestPath), /E_PLAN_PREDECESSOR_ARTIFACT_MISSING/],
+  ['wrong denominator', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.totals.all = 0; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_PLAN_PREDECESSOR_INVENTORY/],
+  ['stale test binding', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(row => row.path === e.selectorTestPath).sha256 = '0'.repeat(64); files.set(e.inventoryPath, canonicalBytes(value)); }, /E_PLAN_PREDECESSOR_INVENTORY_DIGEST/],
+  ['optional test downgrade', (files, e) => { const value = JSON.parse(files.get(e.inventoryPath)); value.entries.find(row => row.path === e.selectorTestPath).required = false; files.set(e.inventoryPath, canonicalBytes(value)); }, /E_PLAN_PREDECESSOR_INVENTORY_DIGEST/],
+  ['stale approval', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals[0].sha256 = '0'.repeat(64); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_PLAN_PREDECESSOR_APPROVAL_DIGEST/],
+  ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(row => { row.approvedBy = 'NOT_AUTHORITY'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_PLAN_PREDECESSOR_APPROVAL_DIGEST/],
+]) test(`E plan predecessor admission rejects ${name}`, () => assert.throws(() => verifyEPlanFixture(ePlanPredecessorFixture({ mutate })), signal));
+
 function x01IdempotentFixture({ changedPaths, baseTree, mutate = () => {} } = {}) {
   const e = R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION, candidate = 'c'.repeat(40), candidateTree = 'd'.repeat(40);
-  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const files = new Map(e.admittedPaths.map(relative => [relative, objectFromCommit(R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION.baseSha, relative)]));
   mutate(files, e);
   const inventory = JSON.parse(files.get(e.inventoryPath));
   for (const relative of [e.contractPath, e.postAuditTestPath]) {
