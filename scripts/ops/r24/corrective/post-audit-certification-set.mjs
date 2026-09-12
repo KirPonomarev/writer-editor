@@ -5128,6 +5128,86 @@ export function verifyR24X01IdempotentContractRecoveryPostEvaluationException({ 
   };
 }
 
+export const R24_E_PLAN_PREDECESSOR_EXPECTATION = Object.freeze({
+  baseSha: '8689932119712ca6b82cb2072456a229c79515d2',
+  baseTree: 'c67e054a56fe28d021755dd4f6772bbcdbefa81e',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  contractPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  selectorTestPath: 'test/contracts/r24-rcv00e-plan-predecessor-closure.contract.test.mjs',
+  testPaths: Object.freeze([
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
+    'test/contracts/r24-rcv00e-plan-predecessor-closure.contract.test.mjs',
+  ]),
+  inventoryFileDenominator: 1470,
+  approvedBy: 'owner-directive:R24_RCV00E_PLAN_PREDECESSOR_CLOSURE_2026_09_12',
+  semanticDigests: Object.freeze({
+    'scripts/ops/r24/corrective/rcv00e-plan-predecessor-closure.mjs': 'f9b13a9649f3a409f165178d67084594c4cdf60d9f4a6f1655d426d53ff88b85',
+    'test/contracts/r24-rcv00e-plan-predecessor-closure.contract.test.mjs': 'b3e42362d0ae075e018c24470bc15090168bad992d6759e5af970bb43543b629',
+    'docs/OPS/R24/EVIDENCE/RCV00E_PLAN_PREDECESSOR_CLOSURE_V1.json': 'f07505fde02102b39e7aa04ba7f33480f25833ff0967d1e72b88206c28de32a1',
+    'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs': '21d9d8c6e0e214d3142f0d0b5f7f7f9e42ad23858adacb8519aacdea7b415504',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs': '3487e2568b68b353d32e7dcd736a6f2e854038f6dfca1b97429f6a4d7ab0cb61',
+  }),
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/EVIDENCE/RCV00E_PLAN_PREDECESSOR_CLOSURE_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/r24/corrective/rcv00d-graph-derived-selector.mjs',
+    'scripts/ops/r24/corrective/rcv00e-plan-predecessor-closure.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/r24-rcv00d-graph-derived-selector.contract.test.mjs',
+    'test/contracts/r24-rcv00e-plan-predecessor-closure.contract.test.mjs',
+  ].sort()),
+});
+
+export function verifyEPlanPredecessorPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_E_PLAN_PREDECESSOR_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_PLAN_PREDECESSOR_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_PLAN_PREDECESSOR_BASE_ANCESTRY'); }
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  let candidate = exact(requested) ? requested : null;
+  if (!candidate) {
+    const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+    for (const sha of ancestors.reverse()) if (exact(sha)) { candidate = sha; break; }
+  }
+  assert(candidate, 'E_PLAN_PREDECESSOR_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_PLAN_PREDECESSOR_IDENTITY');
+  const artifacts = new Map(e.admittedPaths.map(relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_PLAN_PREDECESSOR_ARTIFACT_MISSING', relative); }
+    return [relative, { bytes, digest: h(bytes) }];
+  }));
+  for (const [relative, digest] of Object.entries(e.semanticDigests)) {
+    assert(artifacts.get(relative).digest === digest, 'E_PLAN_PREDECESSOR_ARTIFACT_DIGEST', relative);
+  }
+  const inventory = JSON.parse(artifacts.get(e.inventoryPath).bytes);
+  assert(inventory.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.totals?.all === e.inventoryFileDenominator
+    && inventory.totals?.requiredSkips === 0 && inventory.totals?.unexplainedSkips === 0, 'E_PLAN_PREDECESSOR_INVENTORY');
+  for (const relative of e.testPaths) {
+    const entry = inventory.entries.find(item => item.path === relative);
+    assert(entry?.sha256 === artifacts.get(relative).digest && entry.required === true
+      && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_PLAN_PREDECESSOR_INVENTORY_DIGEST', relative);
+  }
+  const approvals = JSON.parse(artifacts.get(e.approvalsPath).bytes);
+  assert(approvals.version === 'v1.0' && Array.isArray(approvals.approvals), 'E_PLAN_PREDECESSOR_APPROVALS');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    assert(approvals.approvals.some(entry => entry.filePath === relative && entry.sha256 === artifacts.get(relative).digest
+      && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy)), 'E_PLAN_PREDECESSOR_APPROVAL_DIGEST', relative);
+  }
+  return { schemaVersion: 'R24_E_PLAN_PREDECESSOR_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree,
+    currentCandidateSha: requested, currentCandidateTree: requestedTree, closedCandidateOnly: candidate !== requested,
+    admittedPaths: e.admittedPaths, admittedPathDenominator: e.admittedPaths.length,
+    semanticDigests: e.semanticDigests, artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    evidenceScope: 'EXACT_CANDIDATE_ARTIFACT_BINDINGS_NOT_EXECUTED_RUNTIME_PROOF_OR_SELECTION_AUTHORITY',
+    programDone: false, productionReleaseReady: false, graphIncrement: 0, mutationAllowed: false };
+}
+
 export function verifyCurrentClosureSelectorPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
   const e = R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION;
   const requested = gitText(git, ['rev-parse', candidateSha]);
@@ -6643,6 +6723,12 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const currentClosureSelectorException = currentClosureSelectorEnabled ? verifyCurrentClosureSelectorPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (currentClosureSelectorException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let ePlanPredecessorEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_E_PLAN_PREDECESSOR_EXPECTATION.baseSha) {
+    try { git(['merge-base', '--is-ancestor', R24_E_PLAN_PREDECESSOR_EXPECTATION.baseSha, resolvedCandidate], { encoding: null }); ePlanPredecessorEnabled = true; } catch {}
+  }
+  const ePlanPredecessorException = ePlanPredecessorEnabled ? verifyEPlanPredecessorPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (ePlanPredecessorException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -6653,6 +6739,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
+  verificationResult.ePlanPredecessorPostEvaluationException = ePlanPredecessorException;
   verificationResult.r24Rcv00aCurrentHeadExactToolchainEntryPointPostEvaluationException=rcv00aCurrentHeadExactToolchainEntryPointException;
   verificationResult.r24Rcv00bCurrentHeadEffectiveStateCompilerPostEvaluationException=rcv00bCurrentHeadEffectiveStateCompilerException;
   verificationResult.r24ObsExportDocxCommandBridgeOuterFailPostEvaluationException=r24ObsExportDocxCommandBridgeOuterFailException;

@@ -3,6 +3,7 @@
 // state plus the corrective severity policy. This is read-only ops selection;
 // it does not create or transition graph nodes.
 import fs from 'node:fs';
+import { verifyRcv00ePlanPredecessorClosure } from './rcv00e-plan-predecessor-closure.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
@@ -636,7 +637,7 @@ export function deriveCurrentCorrectiveSelection({ context, closureReferences = 
 
 export function buildCurrentCorrectivePlanOutcome(options) {
   const ranked = deriveCurrentCorrectiveSelection(options);
-  const { context } = options;
+  const { context, readPlanPredecessorCarrier } = options;
   const committedPlanDigest = sha256hex(execFileSync('git', ['-C', context.repoRoot, 'show', `${context.identity.headSha}:${RCV00D_PLAN_PATH}`]));
   if (sha256hex(Buffer.from(context.planText)) !== context.inputDigests.planTextFile
       || context.inputDigests.planTextFile !== committedPlanDigest) {
@@ -647,18 +648,24 @@ export function buildCurrentCorrectivePlanOutcome(options) {
   const phaseZero = strictPath.split('->').map(id => id.trim())
     .filter(id => /^00[A-H]$/u.test(id)).map(id => `R24-RCV-${id}`);
   if (phaseZero.length !== 8 || new Set(phaseZero).size !== 8) throw new R24Error('E_CURRENT_SELECTION_PLAN_PATH_SHAPE');
+  const verifiedPlanPredecessors = [verifyRcv00ePlanPredecessorClosure({
+    repoRoot: context.repoRoot, identity: context.identity, planText: context.planText,
+    planDigest: context.inputDigests.planTextFile, readCarrier: readPlanPredecessorCarrier,
+  })];
   const selectedIndex = phaseZero.indexOf(ranked.selected?.contourId);
   // Preserve the existing historical baseline; new closure comes only from
   // verified receipts. No added contour constant may stand in for a receipt.
-  const delivered = new Set([...RCV00D_DELIVERED_CONTOUR_IDS, ...ranked.verifiedClosures.map(ref => ref.contourId)]);
+  const delivered = new Set([...RCV00D_DELIVERED_CONTOUR_IDS,
+    ...ranked.verifiedClosures.map(ref => ref.contourId),
+    ...verifiedPlanPredecessors.map(ref => ref.contourId)]);
   const missing = selectedIndex < 0 ? phaseZero.filter(id => !delivered.has(id))
     : phaseZero.slice(0, selectedIndex).filter(id => !delivered.has(id));
   if (!ranked.selected || missing.length > 0) {
-    return { ...ranked, verdict: 'NO_ELIGIBLE', selected: null, rankedCandidateId: ranked.selected?.id || null,
+    return { ...ranked, verifiedPlanPredecessors, verdict: 'NO_ELIGIBLE', selected: null, rankedCandidateId: ranked.selected?.id || null,
       reason: missing.length ? 'PLAN_PREDECESSOR_CLOSURE_UNRESOLVED' : 'NO_ELIGIBLE_CORRECTIVE_ITEM',
       unresolvedPredecessors: missing, mutationAllowed: false };
   }
-  return { ...ranked, verdict: 'NEXT_CORRECTIVE_CANDIDATE', mutationAllowed: false };
+  return { ...ranked, verifiedPlanPredecessors, verdict: 'NEXT_CORRECTIVE_CANDIDATE', mutationAllowed: false };
 }
 
 export function buildCurrentCorrectiveSelectorReceipt({ repoRoot = REPO_ROOT, now = new Date().toISOString() } = {}) {

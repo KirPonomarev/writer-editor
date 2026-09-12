@@ -479,14 +479,14 @@ test('RCV00D current closure: synthetic valid finding closure is applied as well
   assert.equal(result.selected.id, 'DATA-09');
 });
 
-test('RCV00D current closure: empty graph yields typed NO_ELIGIBLE while plan predecessors E and F lack closure', () => {
+test('RCV00D current closure: verified E leaves typed NO_ELIGIBLE while F lacks closure', () => {
   const result = api.buildCurrentCorrectivePlanOutcome(options());
   assert.equal(result.graphSchedulerSelectedId, null);
   assert.equal(result.rankedCandidateId, 'OPS-03');
   assert.equal(result.verdict, 'NO_ELIGIBLE');
   assert.equal(result.selected, null);
   assert.equal(result.reason, 'PLAN_PREDECESSOR_CLOSURE_UNRESOLVED');
-  assert.deepEqual(result.unresolvedPredecessors, ['R24-RCV-00E', 'R24-RCV-00F']);
+  assert.deepEqual(result.unresolvedPredecessors, ['R24-RCV-00F']);
   assert.equal(result.mutationAllowed, false);
 });
 
@@ -561,7 +561,7 @@ test('RCV00D current closure: default CLI selects the native current typed outco
   finally { process.stdout.write = originalWrite; }
   assert.equal(JSON.parse(output).verdict, 'NO_ELIGIBLE');
   assert.equal(result.selected, null);
-  assert.deepEqual(result.unresolvedPredecessors, ['R24-RCV-00E', 'R24-RCV-00F']);
+  assert.deepEqual(result.unresolvedPredecessors, ['R24-RCV-00F']);
   assert.equal(result.identity.headSha, head);
   assert.equal(result.programDone, false);
   assert.equal(result.mutationAllowed, false);
