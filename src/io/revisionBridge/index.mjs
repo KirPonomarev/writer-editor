@@ -5046,13 +5046,27 @@ function docxReviewPreviewSessionSafeId(value, fallback) {
 function docxReviewPreviewSessionTextFromXml(xmlText, maxChars) {
   const parts = [];
   let total = 0;
+  const paragraphSegments = String(xmlText || '').split(
+    /<\s*\/\s*(?:[A-Za-z_][\w.-]*:)?p\s*>\s*<\s*(?:[A-Za-z_][\w.-]*:)?p\b[^>]*>/giu,
+  );
   const textPattern = /<\s*(?:[A-Za-z_][\w.-]*:)?t\b[^>]*>([\s\S]*?)<\s*\/\s*(?:[A-Za-z_][\w.-]*:)?t\s*>/giu;
-  let match;
-  while ((match = textPattern.exec(String(xmlText || ''))) !== null) {
-    const decoded = docxContentPreviewDecodeText(match[1] || '');
-    if (!decoded) continue;
-    parts.push(decoded);
-    total += decoded.length;
+  for (const [segmentIndex, segment] of paragraphSegments.entries()) {
+    const segmentParts = [];
+    textPattern.lastIndex = 0;
+    let match;
+    while ((match = textPattern.exec(segment)) !== null) {
+      const decoded = docxContentPreviewDecodeText(match[1] || '');
+      if (!decoded) continue;
+      segmentParts.push(decoded);
+    }
+    if (segmentParts.length === 0) continue;
+    if (parts.length > 0 && segmentIndex > 0) {
+      parts.push('\n');
+      total += 1;
+    }
+    const segmentText = segmentParts.join('');
+    parts.push(segmentText);
+    total += segmentText.length;
     if (total > maxChars) {
       return {
         text: parts.join('').slice(0, maxChars),

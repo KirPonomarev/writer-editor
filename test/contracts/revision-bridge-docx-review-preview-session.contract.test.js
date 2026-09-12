@@ -240,6 +240,37 @@ test('DOCX review preview session candidate: comments become review packet witho
   assertNoStorageOrApplyAuthority(result);
 });
 
+test('DOCX review preview session candidate: cross-paragraph comment anchor preserves quote boundary', async () => {
+  const bridge = await loadBridge();
+  const input = docxWithCommentAndBody([
+    '<w:p>',
+    '<w:commentRangeStart w:id="0"/>',
+    '<w:r><w:t>First paragraph</w:t></w:r>',
+    '</w:p>',
+    '<w:p>',
+    '<w:r><w:t>Second paragraph</w:t></w:r>',
+    '<w:commentRangeEnd w:id="0"/>',
+    '<w:r><w:commentReference w:id="0"/></w:r>',
+    '</w:p>',
+  ].join(''), 'Cross paragraph body.');
+
+  const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(input, {
+    targetScope: TARGET_SCOPE,
+    createdAt: '2026-04-24T08:00:00.000Z',
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.status, 'ready');
+  assert.equal(result.canOpenReviewSession, true);
+  assert.equal(result.reviewPacket.commentThreads.length, 1);
+  assert.equal(result.reviewPacket.commentThreads[0].messages[0].body, 'Cross paragraph body.');
+  assert.equal(result.reviewPacket.commentPlacements.length, 1);
+  assert.equal(result.reviewPacket.commentPlacements[0].sourceCommentId, '0');
+  assert.equal(result.reviewPacket.commentPlacements[0].quote, 'First paragraph\nSecond paragraph');
+  assert.equal(result.reviewPacket.commentPlacements[0].targetScope.id, TARGET_SCOPE.id);
+  assertNoStorageOrApplyAuthority(result);
+});
+
 test('DOCX review preview session candidate: structurally complex tracked changes stay manual-only', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(cleanDocxZip([
