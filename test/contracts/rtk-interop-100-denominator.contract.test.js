@@ -1,6 +1,6 @@
 const assert = require('node:assert/strict');
 const { createHash } = require('node:crypto');
-const { execFileSync } = require('node:child_process');
+const { execFileSync, spawnSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -19,6 +19,7 @@ const ROOT_DURABLE_PACKAGE_MUTATION_IDS = Object.freeze([
   'root-audit-manifest-coherently-updated',
   'manifested-file-replaced-by-symlink',
 ]);
+const PRODUCER_MARKERS = Object.freeze(['CREATE_AND_VERIFY_EXECUTED', 'MUTATION_AUDIT_EXECUTED']);
 
 async function loadValidator() {
   return import(validatorPath);
@@ -30,6 +31,28 @@ function clone(value) {
 
 function currentHead() {
   return execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+}
+
+function runDenominatorCli(args, env = {}) {
+  return spawnSync(process.execPath, [path.resolve(__dirname, '../../scripts/ops/rtk-interop-100-denominator-v1.mjs'), ...args], {
+    cwd: path.resolve(__dirname, '../..'),
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      ...env,
+    },
+  });
+}
+
+function parseCliJson(result) {
+  assert.equal(result.error, undefined);
+  return JSON.parse(result.stdout);
+}
+
+function assertNoProducerMarkers(root) {
+  for (const marker of PRODUCER_MARKERS) {
+    assert.equal(fs.existsSync(path.join(root, marker)), false, marker);
+  }
 }
 
 function git(cwd, args) {
@@ -635,6 +658,46 @@ test('strict external package mode rejects unknown package identity without prod
     assert.equal(fs.existsSync(path.join(packageRoot, 'MUTATION_AUDIT_EXECUTED')), false);
   } finally {
     fs.rmSync(packageRoot, { recursive: true, force: true });
+  }
+});
+
+test('CLI external package root authority requires explicit root flag and ignores legacy env', () => {
+  const legacyRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-interop100-cli-legacy-root-'));
+  const missingRootParent = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-interop100-cli-missing-root-'));
+  const missingRoot = path.join(missingRootParent, 'missing-package-root');
+  const legacyEnv = {
+    YALKEN_INTEROP_100_EXTERNAL_EVIDENCE_PACKAGE_ROOT: legacyRoot,
+  };
+  try {
+    const diagnostic = runDenominatorCli([], legacyEnv);
+    const diagnosticReport = parseCliJson(diagnostic);
+    assert.equal(diagnostic.status, 0);
+    assert.equal(diagnosticReport.authoritativeAdmission, false);
+    assert.equal(diagnosticReport.diagnosticPassedRequiredCells, 1);
+    assert.equal(diagnosticReport.passedRequiredCells, 0);
+    assertNoProducerMarkers(legacyRoot);
+
+    const requiredWithoutArg = runDenominatorCli(['--require-external-evidence-package'], legacyEnv);
+    const requiredOutput = `${requiredWithoutArg.stdout}\n${requiredWithoutArg.stderr}`;
+    assert.notEqual(requiredWithoutArg.status, 0);
+    assert.match(requiredOutput, /EXTERNAL_EVIDENCE_PACKAGE_ROOT_REQUIRED/u);
+    assert.doesNotMatch(requiredOutput, /EXTERNAL_EVIDENCE_PACKAGE_ROOT_MISSING/u);
+    assertNoProducerMarkers(legacyRoot);
+
+    const explicitMissingRoot = runDenominatorCli([
+      '--require-external-evidence-package',
+      '--external-evidence-package-root',
+      missingRoot,
+    ], legacyEnv);
+    const missingOutput = `${explicitMissingRoot.stdout}\n${explicitMissingRoot.stderr}`;
+    assert.notEqual(explicitMissingRoot.status, 0);
+    assert.match(missingOutput, /EXTERNAL_EVIDENCE_PACKAGE_ROOT_MISSING/u);
+    assert.doesNotMatch(missingOutput, /EXTERNAL_EVIDENCE_PACKAGE_ROOT_REQUIRED/u);
+    assertNoProducerMarkers(legacyRoot);
+    assert.equal(fs.existsSync(missingRoot), false);
+  } finally {
+    fs.rmSync(legacyRoot, { recursive: true, force: true });
+    fs.rmSync(missingRootParent, { recursive: true, force: true });
   }
 });
 

@@ -211,12 +211,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "approvedAtUtc": "2026-09-13T06:38:00.000Z",
+      "approvedBy": "owner-directive:PR1908_FINAL_CLI_BOUNDARY_REGRESSION_TEST_ONLY_2026_09_13",
+      "authority": "SUPERVISOR_DIRECTIVE_PR1908_FINAL_BOUNDED_SCOPE_CLI_BOUNDARY_REGRESSION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
-      "sha256": "9e876a9bc403f05a0f2e003b7bc6cb3e9b29c59ddbaf1ca474e9b3bedc9531b9"
+      "rationale": "Approve exact final PR1908 process-only CLI boundary regression bytes and resulting C1B inventory digest. Test/governance metadata only; no runtime behavior, evidence package, Word/Google/UI route, denominator numerator increase, 100 percent portability claim, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "acdcdc1015c5f87e42a69e37f6965a23c14780cf925f2aa5c933be0056778b4c"
     },
     {
       "approved": true,
@@ -265,12 +265,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "approvedAtUtc": "2026-09-13T06:38:00.000Z",
+      "approvedBy": "owner-directive:PR1908_FINAL_CLI_BOUNDARY_REGRESSION_TEST_ONLY_2026_09_13",
+      "authority": "SUPERVISOR_DIRECTIVE_PR1908_FINAL_BOUNDED_SCOPE_CLI_BOUNDARY_REGRESSION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
-      "sha256": "51d1372746c18744ea86595277e54b058061ad786436a9e694fd9808d3ea54ad"
+      "rationale": "Approve exact final PR1908 process-only CLI boundary regression bytes and resulting C1B inventory digest. Test/governance metadata only; no runtime behavior, evidence package, Word/Google/UI route, denominator numerator increase, 100 percent portability claim, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "1ca582038d4a120b6dc6f129eb4d5a100f025f30e7a7eb78f07a34582c009f81"
     }
   ],
   "version": "v1.0",
