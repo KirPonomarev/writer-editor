@@ -211,12 +211,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-13T06:38:00.000Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "approvedAtUtc": "2026-09-13T08:28:00.000Z",
+      "approvedBy": "owner-directive:PR1909_CONTINUE_AND_PROCESS_LENS_2026_09_13",
+      "authority": "DIRECT_OWNER_REQUEST_PR1909_COMPLETE_ROUTINE_REVERSIBLE_DELIVERY",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve exact final PR1908 process-only CLI boundary regression bytes and resulting C1B inventory digest. Test/governance metadata only; no runtime behavior, evidence package, Word/Google/UI route, denominator numerator increase, 100 percent portability claim, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "acdcdc1015c5f87e42a69e37f6965a23c14780cf925f2aa5c933be0056778b4c"
+      "rationale": "Approve the exact PR1909 inventory bytes generated from the bounded archived-evidence RTK contract correction. Test/governance metadata only; no validator, evidence package, denominator numerator, Word/Google support claim, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "640139fea996ef5837a39379207e35ab4e658f20def9a1704732d77f952f9afa"
     },
     {
       "approved": true,
@@ -265,12 +265,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-13T06:38:00.000Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "approvedAtUtc": "2026-09-13T08:28:00.000Z",
+      "approvedBy": "owner-directive:PR1909_CONTINUE_AND_PROCESS_LENS_2026_09_13",
+      "authority": "DIRECT_OWNER_REQUEST_PR1909_COMPLETE_ROUTINE_REVERSIBLE_DELIVERY",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Approve exact final PR1908 process-only CLI boundary regression bytes and resulting C1B inventory digest. Test/governance metadata only; no runtime behavior, evidence package, Word/Google/UI route, denominator numerator increase, 100 percent portability claim, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "1ca582038d4a120b6dc6f129eb4d5a100f025f30e7a7eb78f07a34582c009f81"
+      "rationale": "Approve the exact PR1909 contract bytes that validate archived Cell001 fixtures at their bound source revision while preserving current-head stale-evidence rejection and zero numerator. Test/governance metadata only; no validator, evidence package, Word/Google support claim, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "d2eec634e893ade786a238f6688857dcf6071c3397650bdab1235f1ece1ded35"
     }
   ],
   "version": "v1.0",

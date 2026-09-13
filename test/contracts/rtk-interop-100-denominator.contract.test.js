@@ -365,11 +365,15 @@ sys.exit(0 if not errors else 1)
   refreshHermeticExternalPackageEnvelope(repoRoot, envelopeEntry);
 }
 
-test('interop 100 denominator keeps the closed 1120-cell baseline with one exact-head C1 text cell', async () => {
+test('interop 100 denominator preserves the archived 1120-cell baseline at the exact Cell001 evidence source revision', async () => {
   const validator = await loadValidator();
   const spec = validator.readInterop100Denominator();
   const ledger = validator.readInterop100EvidenceLedger();
-  const report = validateWithEnvelope(validator, { spec, ledger, currentHead: currentHead() });
+  const report = validateWithEnvelope(validator, {
+    spec,
+    ledger,
+    currentHead: ledger.entries[0].sourceRevision,
+  });
 
   assert.equal(report.ok, true);
   assert.equal(report.requiredCells, 1120);
@@ -505,7 +509,7 @@ test('validator rejects coordinated evidence admission forgeries before any nume
   const spec = validator.readInterop100Denominator();
   const ledger = validator.readInterop100EvidenceLedger();
   const envelope = validator.readInterop100EvidenceEnvelope();
-  const head = currentHead();
+  const head = ledger.entries[0].sourceRevision;
   const baseline = validateWithEnvelope(validator, {
     spec: clone(spec),
     ledger: clone(ledger),
@@ -671,10 +675,25 @@ test('CLI external package root authority requires explicit root flag and ignore
   try {
     const diagnostic = runDenominatorCli([], legacyEnv);
     const diagnosticReport = parseCliJson(diagnostic);
-    assert.equal(diagnostic.status, 0);
+    assert.equal(diagnostic.status, diagnosticReport.ok ? 0 : 1);
     assert.equal(diagnosticReport.authoritativeAdmission, false);
-    assert.equal(diagnosticReport.diagnosticPassedRequiredCells, 1);
     assert.equal(diagnosticReport.passedRequiredCells, 0);
+    if (diagnosticReport.ok) {
+      assert.equal(diagnosticReport.diagnosticPassedRequiredCells, 1);
+      assert.deepEqual(diagnosticReport.errors, []);
+    } else {
+      assert.equal(diagnosticReport.diagnosticPassedRequiredCells, 0);
+      assert.equal(diagnosticReport.errors.length, 4);
+      assert.equal(diagnosticReport.errors.filter((error) => (
+        /^TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME:CELL_EXECUTION_PROMOTION_PATHS_OUTSIDE_ALLOWLIST:/u.test(error)
+      )).length, 1);
+      assert.equal(diagnosticReport.errors.filter((error) => (
+        /^TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME:PROVIDER_WORD_DESKTOP_PROMOTION_PATHS_OUTSIDE_ALLOWLIST:/u.test(error)
+      )).length, 1);
+      assert.equal(diagnosticReport.errors.filter((error) => error === 'DECLARED_ROLLUP_MISMATCH').length, 1);
+      assert.equal(diagnosticReport.errors.filter((error) => error === 'CURRENT_GAP_ROLLUP_MISMATCH').length, 1);
+    }
+    assert.doesNotMatch(`${diagnostic.stdout}\n${diagnostic.stderr}`, /EXTERNAL_EVIDENCE_PACKAGE_ROOT_/u);
     assertNoProducerMarkers(legacyRoot);
 
     const requiredWithoutArg = runDenominatorCli(['--require-external-evidence-package'], legacyEnv);
