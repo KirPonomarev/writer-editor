@@ -22743,7 +22743,7 @@ async function resolveDocxExportPath(payload) {
   const defaultPath = normalizeDocxExportPath(defaultBase);
 
   const result = await dialog.showSaveDialog(mainWindow, {
-    title: 'Экспорт DOCX (MIN)',
+    title: 'Экспорт текущей сцены в DOCX',
     defaultPath,
     filters: [{ name: 'DOCX', extensions: ['docx'] }],
   });
