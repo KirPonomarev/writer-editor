@@ -212,8 +212,8 @@
     {
       "approved": true,
       "approvedAtUtc": "2026-09-13T06:38:00.000Z",
-      "approvedBy": "owner-directive:PR1908_FINAL_CLI_BOUNDARY_REGRESSION_TEST_ONLY_2026_09_13",
-      "authority": "SUPERVISOR_DIRECTIVE_PR1908_FINAL_BOUNDED_SCOPE_CLI_BOUNDARY_REGRESSION",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Approve exact final PR1908 process-only CLI boundary regression bytes and resulting C1B inventory digest. Test/governance metadata only; no runtime behavior, evidence package, Word/Google/UI route, denominator numerator increase, 100 percent portability claim, release readiness, or PROGRAM_DONE claim.",
       "sha256": "acdcdc1015c5f87e42a69e37f6965a23c14780cf925f2aa5c933be0056778b4c"
@@ -266,8 +266,8 @@
     {
       "approved": true,
       "approvedAtUtc": "2026-09-13T06:38:00.000Z",
-      "approvedBy": "owner-directive:PR1908_FINAL_CLI_BOUNDARY_REGRESSION_TEST_ONLY_2026_09_13",
-      "authority": "SUPERVISOR_DIRECTIVE_PR1908_FINAL_BOUNDED_SCOPE_CLI_BOUNDARY_REGRESSION",
+      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
+      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "rationale": "Approve exact final PR1908 process-only CLI boundary regression bytes and resulting C1B inventory digest. Test/governance metadata only; no runtime behavior, evidence package, Word/Google/UI route, denominator numerator increase, 100 percent portability claim, release readiness, or PROGRAM_DONE claim.",
       "sha256": "1ca582038d4a120b6dc6f129eb4d5a100f025f30e7a7eb78f07a34582c009f81"
