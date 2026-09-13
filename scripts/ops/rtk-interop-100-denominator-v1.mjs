@@ -2,19 +2,23 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 export const DENOMINATOR_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
+export const EVIDENCE_ENVELOPE_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json';
 export const LEDGER_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json';
 export const GOVERNANCE_APPROVALS_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json';
 export const C1B_INVENTORY_PATH = 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
 export const CONTRACT_BASENAME = 'rtk-interop-100-denominator.contract.test.js';
 export const CONTRACT_ID = 'YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1';
 export const SPEC_SCHEMA = 'yalken.interop100.denominator.v1';
+export const EVIDENCE_ENVELOPE_SCHEMA = 'yalken.interop100.evidenceEnvelope.v1';
 export const LEDGER_SCHEMA = 'yalken.interop100.evidenceLedger.v1';
 export const CELL_EVIDENCE_PROMOTION_METADATA_PATHS = Object.freeze([
   C1B_INVENTORY_PATH,
   DENOMINATOR_PATH,
+  EVIDENCE_ENVELOPE_PATH,
   LEDGER_PATH,
   GOVERNANCE_APPROVALS_PATH,
   'scripts/ops/rtk-interop-100-denominator-v1.mjs',
@@ -86,8 +90,106 @@ export const ROUTE_QUALIFICATION_STATUS = 'PASS_NON_CELL_ROUTE_QUALIFICATION';
 
 const SHA256_RE = /^(?:sha256:)?[0-9a-f]{64}$/u;
 const COMMIT_RE = /^[0-9a-f]{40}$/u;
+const SEMVER_RE = /^v?[0-9]+(?:\.[0-9]+){2}(?:[-+][0-9A-Za-z.-]+)?$/u;
+const SAFE_BASENAME_RE = /^[A-Za-z0-9._-]+$/u;
+const WORD_DESKTOP_BUILD_IDENTITY_RE = /^Microsoft Word [0-9]+(?:\.[0-9]+)* com\.microsoft\.Word [A-Z0-9]+$/u;
 const ALLOWED_OUTSIDE_DISPOSITIONS = new Set(['OPAQUE_PRESERVED', 'EXPLICIT_LOSS', 'MANUAL', 'UNSUPPORTED']);
 const ALLOWED_STATUSES = new Set([COUNTED_STATUS, ...NON_COUNTED_STATUSES]);
+const ORACLE_ALLOWED_AUTHORITIES = Object.freeze({
+  SEMANTIC: 'RAW_AND_NORMALIZED_FULL_CANDIDATE_TEXT_AND_CODEPOINT_EQUALITY',
+  STRUCTURE: 'INDEPENDENT_OOXML_PARAGRAPH_VECTOR_EQUALITY_SOURCE_SAVED_REOPENED',
+  ORDER: 'RAW_FULL_PARAGRAPH_VECTOR_AND_CODEPOINT_EQUALITY_WITH_ORDER_MUTANT_REJECTION',
+  LOSS: 'EXPLICIT_LOSS_REPORT_NON_SILENT',
+  PROVENANCE: 'RUN_RECEIPT_HASH_CHAIN',
+  INDEPENDENT_READBACK: 'INDEPENDENT_ZIP_CRC_OOXML_RAW_TEXT_AND_CODEPOINT_READBACK',
+  CLEANUP: 'WORD_DOCUMENT_COUNT_AFTER_RUN',
+});
+const PASS_ENTRY_KEYS = Object.freeze([
+  'artifactSha256',
+  'cellId',
+  'cycles',
+  'evidenceClass',
+  'evidenceReceipt',
+  'exactHeadSha',
+  'fixture',
+  'generationId',
+  'hopEvidence',
+  'oracles',
+  'outcome',
+  'outsideContractLedger',
+  'providerEvidence',
+  'sourceRevision',
+  'sourceTree',
+  'status',
+  'targetRevision',
+  'typedResult',
+]);
+const EVIDENCE_RECEIPT_KEYS = Object.freeze([
+  'broadPassClaim',
+  'checkpointBasename',
+  'independentAuditSha256',
+  'independentAuditorSha256',
+  'limitations',
+  'nodeVersion',
+  'npmVersion',
+  'numeratorDelta',
+  'receiptSha256',
+  'runId',
+  'runnerSha256',
+  'schemaVersion',
+  'sealSha256',
+  'status',
+  'wordRootKind',
+]);
+const ROOT_DURABLE_PACKAGE_AUDIT_SCHEMA = 'yalken.interop100.rootDurableCell001PackageAudit.v1';
+const ROOT_DURABLE_PACKAGE_AUDIT_CLAIM_BOUNDARY = 'Preserves the physical and independent evidence basis for existing Cell001 only; numerator stays 1/1120.';
+const ROOT_DURABLE_PACKAGE_AUDIT_KEYS = Object.freeze([
+  'checks',
+  'checksFailed',
+  'checksPassed',
+  'claimBoundary',
+  'errors',
+  'manifestSha256',
+  'schemaVersion',
+  'status',
+  'verifierSha256',
+]);
+const ROOT_DURABLE_PACKAGE_AUDIT_CHECK_KEYS = Object.freeze(['actual', 'expected', 'name', 'pass']);
+const ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_SCHEMA = 'yalken.interop100.rootDurableCell001PackageMutationAudit.v1';
+const ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_CLAIM_BOUNDARY = 'Mutants cover the durable Cell001 snapshot verifier only; they do not increase the portability numerator.';
+const ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_KEYS = Object.freeze([
+  'claimBoundary',
+  'killedCount',
+  'mutantCount',
+  'rows',
+  'schemaVersion',
+  'status',
+  'survivors',
+]);
+const ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_ROW_KEYS = Object.freeze([
+  'exitCode',
+  'id',
+  'killed',
+  'stderrTail',
+  'stdoutTail',
+]);
+const ROOT_DURABLE_PACKAGE_MUTATION_IDS = Object.freeze([
+  'docx-byte-manifest-unchanged',
+  'docx-byte-manifest-coherently-updated',
+  'generation-ledger-manifest-coherently-updated',
+  'receipt-seal-ledger-manifest-coherently-updated',
+  'root-audit-manifest-coherently-updated',
+  'manifested-file-replaced-by-symlink',
+]);
+const CELL001_EXTERNAL_PACKAGE_TRUST = Object.freeze({
+  cellId: 'TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME',
+  packageId: 'cell001-source-package-v1',
+  manifestSha256: 'sha256:2a207473ddbebefa48bc1c7c42e80eb3c178867d7c01e6481d2000253fe8f1b6',
+  verifierSha256: 'sha256:97167b7e50053773213e00188e2b206d5a222d204e94b6915fcf4ff8ff3c1130',
+  reportSha256: 'sha256:46076b4f7901baec8c94cef56c08b193fcb460b1a09c4f1f502553edd2306507',
+  mutationAuditorSha256: 'sha256:bdbff44aa9adf963a3a54e65b1583018f7ff096aef3c753049e6ae9f45ca1b09',
+  mutationReportSha256: 'sha256:66561c61aa480e607306ac8ad84607d9c9d157d31ad67eaa151650def7a22144',
+});
 
 function repoRootFromHere() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -109,12 +211,39 @@ function sameArray(actual, expected) {
   return JSON.stringify(actual) === JSON.stringify(expected);
 }
 
+function stableJsonValue(value) {
+  if (Array.isArray(value)) return value.map(stableJsonValue);
+  if (isObject(value)) {
+    return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stableJsonValue(value[key])]));
+  }
+  return value;
+}
+
+function stableJsonString(value) {
+  return JSON.stringify(stableJsonValue(value));
+}
+
 function unique(values) {
   return new Set(values).size === values.length;
 }
 
+function sameKeySet(value, expectedKeys) {
+  return isObject(value) && sameArray(Object.keys(value).sort(), [...expectedKeys].sort());
+}
+
 function sha256(value) {
   return typeof value === 'string' && SHA256_RE.test(value);
+}
+
+function normalizedSha256(value) {
+  if (!sha256(value)) return '';
+  return String(value).replace(/^sha256:/u, '').toLowerCase();
+}
+
+function sameSha256(left, right) {
+  const normalizedLeft = normalizedSha256(left);
+  const normalizedRight = normalizedSha256(right);
+  return Boolean(normalizedLeft) && normalizedLeft === normalizedRight;
 }
 
 function commitSha(value) {
@@ -125,8 +254,35 @@ function positiveInteger(value) {
   return Number.isSafeInteger(value) && value > 0;
 }
 
+function safeBasename(value) {
+  return typeof value === 'string'
+    && value.length > 0
+    && value === path.basename(value)
+    && SAFE_BASENAME_RE.test(value);
+}
+
+function sha256File(filePath) {
+  const data = fs.readFileSync(filePath);
+  return `sha256:${cryptoHash(data)}`;
+}
+
+function sha256StableJson(value) {
+  return `sha256:${cryptoHash(stableJsonString(value))}`;
+}
+
+function cryptoHash(data) {
+  return createHash('sha256').update(data).digest('hex');
+}
+
 function currentGitHead(repoRoot) {
   const result = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repoRoot, encoding: 'utf8' });
+  if (result.status !== 0) return '';
+  return String(result.stdout || '').trim();
+}
+
+function gitTreeSha(repoRoot, commit) {
+  if (!commitSha(commit)) return '';
+  const result = spawnSync('git', ['rev-parse', `${commit}^{tree}`], { cwd: repoRoot, encoding: 'utf8' });
   if (result.status !== 0) return '';
   return String(result.stdout || '').trim();
 }
@@ -171,6 +327,10 @@ function validateEvidenceHeadBinding({ cellId, exactHeadSha, sourceRevision, cur
 
 export function readInterop100Denominator(repoRoot = repoRootFromHere()) {
   return readJson(repoRoot, DENOMINATOR_PATH);
+}
+
+export function readInterop100EvidenceEnvelope(repoRoot = repoRootFromHere()) {
+  return readJson(repoRoot, EVIDENCE_ENVELOPE_PATH);
 }
 
 export function readInterop100EvidenceLedger(repoRoot = repoRootFromHere()) {
@@ -325,6 +485,637 @@ function validateFixture(entry, errors) {
   }
 }
 
+function buildEvidenceEnvelopeEntryMap(envelope, spec, ledger, errors) {
+  const empty = new Map();
+  if (!isObject(envelope)) {
+    errors.push('EVIDENCE_ENVELOPE_REQUIRED');
+    return empty;
+  }
+  if (envelope.schemaVersion !== EVIDENCE_ENVELOPE_SCHEMA) errors.push('EVIDENCE_ENVELOPE_SCHEMA_INVALID');
+  if (envelope.contractId !== CONTRACT_ID) errors.push('EVIDENCE_ENVELOPE_CONTRACT_ID_INVALID');
+  if (spec?.bindingBaseSha !== envelope.bindingBaseSha) errors.push('SPEC_ENVELOPE_BASE_SHA_MISMATCH');
+  if (ledger?.bindingBaseSha !== envelope.bindingBaseSha) errors.push('LEDGER_ENVELOPE_BASE_SHA_MISMATCH');
+  if (!Array.isArray(envelope.entries)) {
+    errors.push('EVIDENCE_ENVELOPE_ENTRIES_NOT_ARRAY');
+    return empty;
+  }
+  const envelopeByCellId = new Map();
+  for (const envelopeEntry of envelope.entries) {
+    if (!isObject(envelopeEntry) || typeof envelopeEntry.cellId !== 'string' || envelopeEntry.cellId.length === 0) {
+      errors.push('EVIDENCE_ENVELOPE_ENTRY_INVALID');
+      continue;
+    }
+    if (envelopeByCellId.has(envelopeEntry.cellId)) {
+      errors.push(`EVIDENCE_ENVELOPE_DUPLICATE_CELL_ID:${envelopeEntry.cellId}`);
+      continue;
+    }
+    envelopeByCellId.set(envelopeEntry.cellId, envelopeEntry);
+  }
+  return envelopeByCellId;
+}
+
+function compareShaField(entry, envelopeEntry, fieldName, errors) {
+  if (!sameSha256(entry?.[fieldName], envelopeEntry?.[fieldName])) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_${fieldName.toUpperCase()}_MISMATCH`);
+  }
+}
+
+function compareStringField(entry, envelopeEntry, fieldName, errors) {
+  if (entry?.[fieldName] !== envelopeEntry?.[fieldName]) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_${fieldName.toUpperCase()}_MISMATCH`);
+  }
+}
+
+function compareReceiptField(entry, envelopeEntry, fieldName, errors) {
+  const actual = entry?.evidenceReceipt?.[fieldName];
+  const expected = envelopeEntry?.evidenceReceipt?.[fieldName];
+  const matches = sha256(actual) || sha256(expected)
+    ? sameSha256(actual, expected)
+    : JSON.stringify(actual) === JSON.stringify(expected);
+  if (!matches) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_${fieldName.toUpperCase()}_MISMATCH`);
+}
+
+function validateEvidenceReceiptBinding(entry, envelopeEntry, errors) {
+  const receipt = entry.evidenceReceipt;
+  if (!isObject(receipt)) {
+    errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_REQUIRED`);
+    return;
+  }
+  if (!sameKeySet(receipt, EVIDENCE_RECEIPT_KEYS)) {
+    errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_SCHEMA_CLOSED_SET_MISMATCH`);
+  }
+  const envelopeReceipt = envelopeEntry?.evidenceReceipt;
+  if (!isObject(envelopeReceipt)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_RECEIPT_REQUIRED`);
+    return;
+  }
+  if (!sameKeySet(envelopeReceipt, EVIDENCE_RECEIPT_KEYS)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_RECEIPT_SCHEMA_CLOSED_SET_MISMATCH`);
+  }
+  const requiredStringFields = ['schemaVersion', 'status', 'runId', 'nodeVersion', 'npmVersion', 'checkpointBasename', 'wordRootKind'];
+  for (const fieldName of requiredStringFields) {
+    if (typeof receipt[fieldName] !== 'string' || receipt[fieldName].length === 0) {
+      errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_${fieldName.toUpperCase()}_INVALID`);
+    }
+  }
+  for (const fieldName of ['receiptSha256', 'sealSha256', 'runnerSha256', 'independentAuditSha256', 'independentAuditorSha256']) {
+    if (!sha256(receipt[fieldName])) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_${fieldName.toUpperCase()}_INVALID`);
+  }
+  if (!SEMVER_RE.test(receipt.nodeVersion || '')) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_NODE_VERSION_INVALID`);
+  if (!SEMVER_RE.test(receipt.npmVersion || '')) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_NPM_VERSION_INVALID`);
+  if (!safeBasename(receipt.checkpointBasename)) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_CHECKPOINT_BASENAME_INVALID`);
+  if (receipt.runId !== entry.generationId) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_RUN_ID_MISMATCH`);
+  if (!sameSha256(receipt.receiptSha256, entry.artifactSha256)) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_HASH_MISMATCH`);
+  if (receipt.numeratorDelta !== 0) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_NUMERATOR_DELTA_INVALID`);
+  if (receipt.broadPassClaim !== false) errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_BROAD_PASS_CLAIM_INVALID`);
+  if (!Array.isArray(receipt.limitations) || receipt.limitations.length === 0) {
+    errors.push(`${entry.cellId}:EVIDENCE_RECEIPT_LIMITATIONS_REQUIRED`);
+  }
+  for (const fieldName of ['schemaVersion', 'status', 'runId', 'nodeVersion', 'npmVersion', 'receiptSha256', 'sealSha256', 'checkpointBasename', 'runnerSha256', 'independentAuditSha256', 'independentAuditorSha256', 'wordRootKind', 'numeratorDelta', 'broadPassClaim', 'limitations']) {
+    compareReceiptField(entry, envelopeEntry, fieldName, errors);
+  }
+}
+
+function validateOracleAuthorityBinding(entry, envelopeEntry, errors) {
+  if (!isObject(envelopeEntry?.oracles)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_ORACLES_REQUIRED`);
+    return;
+  }
+  for (const oracleId of REQUIRED_ORACLES) {
+    const oracle = entry.oracles?.[oracleId];
+    const envelopeOracle = envelopeEntry.oracles?.[oracleId];
+    const allowedAuthority = ORACLE_ALLOWED_AUTHORITIES[oracleId];
+    if (oracle?.authority !== allowedAuthority) {
+      errors.push(`${entry.cellId}:ORACLE_AUTHORITY_UNBOUND:${oracleId}`);
+    }
+    if (!isObject(envelopeOracle)) {
+      errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_ORACLE_REQUIRED:${oracleId}`);
+      continue;
+    }
+    if (!sameSha256(oracle?.artifactSha256, envelopeOracle.artifactSha256)) {
+      errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_ORACLE_HASH_MISMATCH:${oracleId}`);
+    }
+    if (oracle?.authority !== envelopeOracle.authority) {
+      errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_ORACLE_AUTHORITY_MISMATCH:${oracleId}`);
+    }
+  }
+}
+
+function validateHopGraphBinding(entry, route, envelopeEntry, errors) {
+  if (!Array.isArray(envelopeEntry?.hopEvidence) || envelopeEntry.hopEvidence.length !== route.hops.length) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_HOP_GRAPH_REQUIRED`);
+    return;
+  }
+  const lossSha = entry.oracles?.LOSS?.artifactSha256;
+  const provenanceSha = entry.oracles?.PROVENANCE?.artifactSha256;
+  const hopTargets = [];
+  const hopSources = [];
+  for (let index = 0; index < route.hops.length; index += 1) {
+    const hop = entry.hopEvidence[index];
+    const envelopeHop = envelopeEntry.hopEvidence[index];
+    if (hop?.hopId !== envelopeHop?.hopId || hop?.hopId !== route.hops[index]) {
+      errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_HOP_ID_MISMATCH:${hop?.hopId || 'UNKNOWN'}`);
+      continue;
+    }
+    for (const fieldName of ['sourceArtifactSha256', 'targetArtifactSha256', 'provenanceSha256', 'lossLedgerSha256']) {
+      if (!sameSha256(hop?.[fieldName], envelopeHop?.[fieldName])) {
+        errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_HOP_${fieldName.toUpperCase()}_MISMATCH:${hop?.hopId || 'UNKNOWN'}`);
+      }
+    }
+    if (!sameSha256(hop?.lossLedgerSha256, lossSha)) errors.push(`${entry.cellId}:HOP_LOSS_LEDGER_ORACLE_MISMATCH:${hop?.hopId || 'UNKNOWN'}`);
+    if (!sameSha256(hop?.provenanceSha256, provenanceSha)) errors.push(`${entry.cellId}:HOP_PROVENANCE_ORACLE_MISMATCH:${hop?.hopId || 'UNKNOWN'}`);
+    hopSources.push(hop?.sourceArtifactSha256);
+    hopTargets.push(hop?.targetArtifactSha256);
+  }
+  for (let index = 0; index < hopTargets.length - 1; index += 1) {
+    if (!sameSha256(hopTargets[index], hopSources[index + 1])) {
+      errors.push(`${entry.cellId}:HOP_ARTIFACT_CHAIN_BROKEN:${route.hops[index]}_TO_${route.hops[index + 1]}`);
+    }
+  }
+  if (hopTargets.length > 0 && !sameSha256(hopTargets[hopTargets.length - 1], hopSources[0])) {
+    errors.push(`${entry.cellId}:HOP_ARTIFACT_ROUNDTRIP_NOT_CLOSED`);
+  }
+  if (!hopTargets.some((targetSha) => sameSha256(targetSha, entry.targetRevision))) {
+    errors.push(`${entry.cellId}:TARGET_REVISION_NOT_IN_HOP_GRAPH`);
+  }
+}
+
+function validateProviderGraphBinding(entry, route, envelopeEntry, errors) {
+  if (!Array.isArray(envelopeEntry?.providerEvidence)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_PROVIDER_GRAPH_REQUIRED`);
+    return;
+  }
+  const envelopeByProfile = new Map(envelopeEntry.providerEvidence.map((item) => [item?.profileId, item]));
+  for (const item of entry.providerEvidence || []) {
+    const profileId = item?.profileId || 'UNKNOWN';
+    const envelopeProvider = envelopeByProfile.get(profileId);
+    if (!isObject(envelopeProvider)) {
+      errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_PROVIDER_REQUIRED:${profileId}`);
+      continue;
+    }
+    if (!route.requiredProviderProfiles.includes(profileId)) {
+      errors.push(`${entry.cellId}:PROVIDER_PROFILE_UNEXPECTED:${profileId}`);
+    }
+    if (profileId === 'WORD_DESKTOP' && !WORD_DESKTOP_BUILD_IDENTITY_RE.test(item.buildIdentity || '')) {
+      errors.push(`${entry.cellId}:PROVIDER_WORD_BUILD_IDENTITY_INVALID:${profileId}`);
+    }
+    for (const fieldName of ['exactHeadSha', 'buildIdentity', 'documentIdentity']) {
+      if (item?.[fieldName] !== envelopeProvider?.[fieldName]) {
+        errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_PROVIDER_${fieldName.toUpperCase()}_MISMATCH:${profileId}`);
+      }
+    }
+    for (const fieldName of ['revisionIdentity', 'artifactSha256']) {
+      if (!sameSha256(item?.[fieldName], envelopeProvider?.[fieldName])) {
+        errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_PROVIDER_${fieldName.toUpperCase()}_MISMATCH:${profileId}`);
+      }
+    }
+    if (item?.documentIdentity !== entry.generationId) errors.push(`${entry.cellId}:PROVIDER_DOCUMENT_GENERATION_MISMATCH:${profileId}`);
+    if (!sameSha256(item?.revisionIdentity, item?.artifactSha256)) errors.push(`${entry.cellId}:PROVIDER_REVISION_ARTIFACT_MISMATCH:${profileId}`);
+    if (!sameSha256(item?.revisionIdentity, entry.targetRevision)) errors.push(`${entry.cellId}:PROVIDER_REVISION_TARGET_MISMATCH:${profileId}`);
+  }
+}
+
+function validateCycleGraphBinding(entry, envelopeEntry, errors) {
+  if (!Array.isArray(envelopeEntry?.cycles) || !Array.isArray(entry.cycles)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_CYCLES_REQUIRED`);
+    return;
+  }
+  const lossSha = entry.oracles?.LOSS?.artifactSha256;
+  for (let index = 0; index < entry.cycles.length; index += 1) {
+    const cycle = entry.cycles[index];
+    const envelopeCycle = envelopeEntry.cycles[index];
+    const expectedRoundId = `round-${String(index + 1).padStart(3, '0')}`;
+    if (cycle?.roundId !== expectedRoundId) errors.push(`${entry.cellId}:CYCLE_ROUND_ID_INVALID:${cycle?.roundId || 'UNKNOWN'}`);
+    if (cycle?.roundId !== envelopeCycle?.roundId) errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_CYCLE_ROUND_ID_MISMATCH:${cycle?.roundId || 'UNKNOWN'}`);
+    if (!sameSha256(cycle?.lossLedgerSha256, envelopeCycle?.lossLedgerSha256)) {
+      errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_CYCLE_LOSS_LEDGER_MISMATCH:${cycle?.roundId || 'UNKNOWN'}`);
+    }
+    if (!sameSha256(cycle?.lossLedgerSha256, lossSha)) errors.push(`${entry.cellId}:CYCLE_LOSS_LEDGER_ORACLE_MISMATCH:${cycle?.roundId || 'UNKNOWN'}`);
+  }
+}
+
+function validateSourceTreeBinding(entry, repoRoot, errors) {
+  if (!commitSha(entry.sourceTree)) {
+    errors.push(`${entry.cellId}:SOURCE_TREE_INVALID`);
+    return;
+  }
+  const actualTreeSha = gitTreeSha(repoRoot, entry.sourceRevision);
+  if (!actualTreeSha || entry.sourceTree !== actualTreeSha) {
+    errors.push(`${entry.cellId}:SOURCE_TREE_BINDING_INVALID`);
+  }
+}
+
+function validatePhysicalPackageRehydration(entry, envelopeEntry, errors) {
+  const physicalPackage = envelopeEntry?.physicalPackage;
+  if (!isObject(physicalPackage)) {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ENVELOPE_REQUIRED`);
+    return;
+  }
+  if (physicalPackage.wordRootKind !== entry.evidenceReceipt?.wordRootKind) {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_WORD_ROOT_KIND_MISMATCH`);
+  }
+  if (physicalPackage.localRehydrationPolicy !== 'STRICT_LOCAL_CHECK_OPTIONAL_FOR_PORTABLE_CI') {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_LOCAL_REHYDRATION_POLICY_INVALID`);
+  }
+  if (!safeBasename(physicalPackage.runDirectoryBasename)) {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_RUN_DIRECTORY_INVALID`);
+    return;
+  }
+  const packageRoot = path.join(WORD_PHYSICAL_RUNTIME_ROOT, physicalPackage.runDirectoryBasename);
+  const wordRootReal = fs.existsSync(WORD_PHYSICAL_RUNTIME_ROOT) ? fs.realpathSync(WORD_PHYSICAL_RUNTIME_ROOT) : '';
+  if (!fs.existsSync(packageRoot) || !fs.lstatSync(packageRoot).isDirectory()) {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_MISSING`);
+    return;
+  }
+  const packageRootReal = fs.realpathSync(packageRoot);
+  const packageRootRelative = wordRootReal ? path.relative(wordRootReal, packageRootReal) : '';
+  if (!wordRootReal || packageRootRelative.startsWith('..') || path.isAbsolute(packageRootRelative)) {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ROOT_OUTSIDE_WORD_ROOT`);
+    return;
+  }
+  const expectedArtifacts = new Map([
+    ['YALKEN_EXPORT_DOCX', 'source-yalken-export.docx'],
+    ['WORD_SAVED_DOCX', 'word-saved.docx'],
+    ['WORD_REOPENED_DOCX', 'word-reopened.docx'],
+  ]);
+  if (!Array.isArray(physicalPackage.artifacts) || physicalPackage.artifacts.length !== expectedArtifacts.size) {
+    errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACTS_REQUIRED`);
+    return;
+  }
+  const seenRoles = new Set();
+  for (const artifact of physicalPackage.artifacts) {
+    if (!isObject(artifact) || !safeBasename(artifact.basename) || !sha256(artifact.sha256)) {
+      errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_INVALID:${artifact?.role || 'UNKNOWN'}`);
+      continue;
+    }
+    if (!expectedArtifacts.has(artifact.role) || expectedArtifacts.get(artifact.role) !== artifact.basename) {
+      errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_ROLE_BASENAME_INVALID:${artifact.role || 'UNKNOWN'}`);
+      continue;
+    }
+    if (seenRoles.has(artifact.role)) {
+      errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_ROLE_DUPLICATE:${artifact.role}`);
+      continue;
+    }
+    seenRoles.add(artifact.role);
+    const artifactPath = path.join(packageRoot, artifact.basename);
+    if (!fs.existsSync(artifactPath) || !fs.lstatSync(artifactPath).isFile()) {
+      errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_MISSING:${artifact.role || artifact.basename}`);
+      continue;
+    }
+    const artifactReal = fs.realpathSync(artifactPath);
+    const artifactRelative = path.relative(packageRootReal, artifactReal);
+    if (!artifactRelative || artifactRelative.startsWith('..') || path.isAbsolute(artifactRelative)) {
+      errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_OUTSIDE_ROOT:${artifact.role || artifact.basename}`);
+      continue;
+    }
+    const actualSha = sha256File(artifactPath);
+    if (!sameSha256(actualSha, artifact.sha256)) {
+      errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_HASH_MISMATCH:${artifact.role || artifact.basename}`);
+    }
+  }
+  for (const expectedRole of expectedArtifacts.keys()) {
+    if (!seenRoles.has(expectedRole)) errors.push(`${entry.cellId}:PHYSICAL_PACKAGE_ARTIFACT_ROLE_MISSING:${expectedRole}`);
+  }
+}
+
+function ensureDescendant(rootDir, relativePath) {
+  const rootAbs = path.resolve(rootDir);
+  const targetAbs = path.resolve(rootAbs, relativePath);
+  const relative = path.relative(rootAbs, targetAbs);
+  if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) return '';
+  return targetAbs;
+}
+
+function readExternalPackageJson(entry, filePath, label, errors) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_${label}_JSON_INVALID`);
+    return null;
+  }
+}
+
+function validateExternalAuditReport(entry, report, actualManifestSha, actualVerifierSha, errors) {
+  if (!isObject(report)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_OBJECT_INVALID`);
+    return;
+  }
+  if (!sameKeySet(report, ROOT_DURABLE_PACKAGE_AUDIT_KEYS)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_SCHEMA_CLOSED_SET_MISMATCH`);
+  }
+  if (report.schemaVersion !== ROOT_DURABLE_PACKAGE_AUDIT_SCHEMA) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_SCHEMA_INVALID`);
+  }
+  if (report.claimBoundary !== ROOT_DURABLE_PACKAGE_AUDIT_CLAIM_BOUNDARY) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_CLAIM_BOUNDARY_INVALID`);
+  }
+  if (report.status !== 'PASS') {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_STATUS_INVALID`);
+  }
+  if (report.checksPassed !== 100 || report.checksFailed !== 0) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_COUNTS_INVALID`);
+  }
+  if (!Array.isArray(report.errors) || report.errors.length !== 0) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_ERRORS_NOT_EMPTY`);
+  }
+  if (!sameSha256(report.manifestSha256, actualManifestSha)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_MANIFEST_HASH_MISMATCH`);
+  }
+  if (!sameSha256(report.verifierSha256, actualVerifierSha)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_VERIFIER_HASH_MISMATCH`);
+  }
+  if (!Array.isArray(report.checks) || report.checks.length !== 100) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_CHECKS_INVALID`);
+    return;
+  }
+  const checkNames = [];
+  for (const check of report.checks) {
+    if (!sameKeySet(check, ROOT_DURABLE_PACKAGE_AUDIT_CHECK_KEYS) || typeof check.name !== 'string' || check.pass !== true) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_CHECK_INVALID`);
+      return;
+    }
+    checkNames.push(check.name);
+  }
+  if (!unique(checkNames)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_AUDIT_REPORT_CHECK_NAMES_DUPLICATE`);
+  }
+}
+
+function validateExternalMutationAuditRowTail(entry, row, actualVerifierSha, errors) {
+  if (!Array.isArray(row.stdoutTail) || row.stdoutTail.length !== 1) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROW_TAIL_INVALID`);
+    return;
+  }
+  let verifierSummary;
+  try {
+    verifierSummary = JSON.parse(String(row.stdoutTail[row.stdoutTail.length - 1]));
+  } catch {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROW_TAIL_INVALID`);
+    return;
+  }
+  if (
+    !isObject(verifierSummary)
+    || verifierSummary.status !== 'FAIL'
+    || !Number.isSafeInteger(verifierSummary.checksFailed)
+    || verifierSummary.checksFailed <= 0
+    || !Number.isSafeInteger(verifierSummary.checksPassed)
+    || verifierSummary.checksPassed < 0
+    || !sha256(verifierSummary.manifestSha256)
+    || !sha256(verifierSummary.reportSha256)
+    || !sameSha256(verifierSummary.verifierSha256, actualVerifierSha)
+  ) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROW_TAIL_INVALID`);
+  }
+}
+
+function validateExternalMutationAuditReport(entry, report, actualVerifierSha, errors) {
+  if (!isObject(report)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_OBJECT_INVALID`);
+    return;
+  }
+  if (!sameKeySet(report, ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_KEYS)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_SCHEMA_CLOSED_SET_MISMATCH`);
+  }
+  if (report.schemaVersion !== ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_SCHEMA) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_SCHEMA_INVALID`);
+  }
+  if (report.claimBoundary !== ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_CLAIM_BOUNDARY) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_CLAIM_BOUNDARY_INVALID`);
+  }
+  if (report.status !== 'PASS') {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_STATUS_INVALID`);
+  }
+  if (report.mutantCount !== 6 || report.killedCount !== 6) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_COUNTS_INVALID`);
+  }
+  if (!Array.isArray(report.survivors) || report.survivors.length !== 0) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_SURVIVORS_NOT_EMPTY`);
+  }
+  if (!Array.isArray(report.rows) || report.rows.length !== ROOT_DURABLE_PACKAGE_MUTATION_IDS.length) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROWS_INVALID`);
+    return;
+  }
+  const rowIds = exactIds(report.rows);
+  if (!sameArray(rowIds, ROOT_DURABLE_PACKAGE_MUTATION_IDS)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROW_IDS_INVALID`);
+  }
+  if (!unique(rowIds)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROW_IDS_DUPLICATE`);
+  }
+  for (const row of report.rows) {
+    if (
+      !sameKeySet(row, ROOT_DURABLE_PACKAGE_MUTATION_AUDIT_ROW_KEYS)
+      || row.killed !== true
+      || !Number.isSafeInteger(row.exitCode)
+      || row.exitCode === 0
+      || !Array.isArray(row.stderrTail)
+      || !Array.isArray(row.stdoutTail)
+    ) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_AUDIT_REPORT_ROW_INVALID`);
+      return;
+    }
+    validateExternalMutationAuditRowTail(entry, row, actualVerifierSha, errors);
+  }
+}
+
+function validateCell001ExternalPackageTrust(entry, externalPackage, actuals, errors) {
+  if (entry.cellId !== CELL001_EXTERNAL_PACKAGE_TRUST.cellId || externalPackage.packageId !== CELL001_EXTERNAL_PACKAGE_TRUST.packageId) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_PINNED_TRUST_IDENTITY_MISMATCH`);
+    return false;
+  }
+  let valid = true;
+  for (const fieldName of ['manifestSha256', 'verifierSha256', 'reportSha256', 'mutationAuditorSha256', 'mutationReportSha256']) {
+    if (!sameSha256(externalPackage[fieldName], CELL001_EXTERNAL_PACKAGE_TRUST[fieldName])) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_PINNED_TRUST_ENVELOPE_MISMATCH:${fieldName}`);
+      valid = false;
+    }
+    if (!sameSha256(actuals[fieldName], CELL001_EXTERNAL_PACKAGE_TRUST[fieldName])) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_PINNED_TRUST_FILE_MISMATCH:${fieldName}`);
+      valid = false;
+    }
+  }
+  return valid;
+}
+
+function validateExternalEvidencePackage(entry, envelopeEntry, errors, externalEvidencePackageRoot) {
+  const externalPackage = envelopeEntry?.externalRehydrationPackage;
+  if (!isObject(externalPackage)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_ENVELOPE_REQUIRED`);
+    return;
+  }
+  const packageRoot = String(externalEvidencePackageRoot || '').trim();
+  if (!packageRoot) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_ROOT_REQUIRED`);
+    return;
+  }
+  if (!fs.existsSync(packageRoot) || !fs.statSync(packageRoot).isDirectory()) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_ROOT_MISSING`);
+    return;
+  }
+  if (!safeBasename(externalPackage.packageId) || externalPackage.packageId !== path.basename(packageRoot)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_ID_MISMATCH`);
+  }
+  const packageRootReal = fs.realpathSync(packageRoot);
+  const manifestPath = path.join(packageRoot, 'MANIFEST.json');
+  const verifierPath = path.join(packageRoot, 'create_and_verify.py');
+  const reportPath = path.join(packageRoot, 'ROOT_DURABLE_CELL001_PACKAGE_AUDIT.json');
+  const mutationAuditorPath = path.join(packageRoot, 'mutation_audit.py');
+  const mutationReportPath = path.join(packageRoot, 'ROOT_DURABLE_CELL001_PACKAGE_MUTATION_AUDIT.json');
+  const actuals = {
+    manifestSha256: '',
+    verifierSha256: '',
+    reportSha256: '',
+    mutationAuditorSha256: '',
+    mutationReportSha256: '',
+  };
+  for (const [label, filePath, expectedSha] of [
+    ['MANIFEST', manifestPath, externalPackage.manifestSha256],
+    ['VERIFIER', verifierPath, externalPackage.verifierSha256],
+    ['REPORT', reportPath, externalPackage.reportSha256],
+    ['MUTATION_AUDITOR', mutationAuditorPath, externalPackage.mutationAuditorSha256],
+    ['MUTATION_REPORT', mutationReportPath, externalPackage.mutationReportSha256],
+  ]) {
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_${label}_MISSING`);
+      continue;
+    }
+    if (!sameSha256(sha256File(filePath), expectedSha)) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_${label}_HASH_MISMATCH`);
+    }
+    if (label === 'MANIFEST') actuals.manifestSha256 = sha256File(filePath);
+    if (label === 'VERIFIER') actuals.verifierSha256 = sha256File(filePath);
+    if (label === 'REPORT') actuals.reportSha256 = sha256File(filePath);
+    if (label === 'MUTATION_AUDITOR') actuals.mutationAuditorSha256 = sha256File(filePath);
+    if (label === 'MUTATION_REPORT') actuals.mutationReportSha256 = sha256File(filePath);
+  }
+  if (!validateCell001ExternalPackageTrust(entry, externalPackage, actuals, errors)) return;
+  if (externalPackage.reportStatus !== 'PASS_100_OF_100_TWO_BYTE_IDENTICAL_REPORTS') {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_REPORT_STATUS_INVALID`);
+  }
+  if (externalPackage.mutationReportStatus !== 'PASS_6_OF_6_KILLED_ZERO_SURVIVORS') {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MUTATION_REPORT_STATUS_INVALID`);
+  }
+
+  if (fs.existsSync(reportPath) && fs.statSync(reportPath).isFile()) {
+    const report = readExternalPackageJson(entry, reportPath, 'AUDIT_REPORT', errors);
+    if (report) validateExternalAuditReport(entry, report, actuals.manifestSha256, actuals.verifierSha256, errors);
+  }
+  if (fs.existsSync(mutationReportPath) && fs.statSync(mutationReportPath).isFile()) {
+    const mutationReport = readExternalPackageJson(entry, mutationReportPath, 'MUTATION_AUDIT_REPORT', errors);
+    if (mutationReport) validateExternalMutationAuditReport(entry, mutationReport, actuals.verifierSha256, errors);
+  }
+
+  if (!fs.existsSync(manifestPath) || !fs.statSync(manifestPath).isFile()) return;
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  } catch {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_MANIFEST_JSON_INVALID`);
+    return;
+  }
+  if (manifest.schemaVersion !== externalPackage.schemaVersion) errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_SCHEMA_MISMATCH`);
+  if (manifest.cellId !== entry.cellId) errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_CELL_MISMATCH`);
+  if (manifest.sourceExecutionHead !== entry.sourceRevision) errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_HEAD_MISMATCH`);
+  if (manifest.sourceExecutionTree !== entry.sourceTree) errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_TREE_MISMATCH`);
+  if (manifest.fileCount !== externalPackage.fileCount) errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_COUNT_MISMATCH`);
+  if (!Array.isArray(manifest.files) || manifest.files.length !== manifest.fileCount) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILES_INVALID`);
+    return;
+  }
+  const seenPaths = new Set();
+  let packagedLedgerEntryPath = '';
+  let packagedLedgerEntrySha = '';
+  for (const fileRecord of manifest.files) {
+    if (!isObject(fileRecord) || typeof fileRecord.path !== 'string' || !sha256(fileRecord.sha256)) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_RECORD_INVALID`);
+      continue;
+    }
+    if (fileRecord.path.split('/').some((segment) => !safeBasename(segment))) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_PATH_INVALID:${fileRecord.path}`);
+      continue;
+    }
+    if (seenPaths.has(fileRecord.path)) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_PATH_DUPLICATE:${fileRecord.path}`);
+      continue;
+    }
+    seenPaths.add(fileRecord.path);
+    const filePath = ensureDescendant(packageRoot, fileRecord.path);
+    if (!filePath || !fs.existsSync(filePath) || !fs.lstatSync(filePath).isFile()) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_MISSING:${fileRecord.path}`);
+      continue;
+    }
+    const fileReal = fs.realpathSync(filePath);
+    const fileRelative = path.relative(packageRootReal, fileReal);
+    if (!fileRelative || fileRelative.startsWith('..') || path.isAbsolute(fileRelative)) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_OUTSIDE_ROOT:${fileRecord.path}`);
+      continue;
+    }
+    if (!sameSha256(sha256File(filePath), fileRecord.sha256)) {
+      errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_FILE_HASH_MISMATCH:${fileRecord.path}`);
+    }
+    if (fileRecord.path === 'ledger-entry.json') {
+      packagedLedgerEntryPath = filePath;
+      packagedLedgerEntrySha = fileRecord.sha256;
+    }
+  }
+  if (!packagedLedgerEntryPath) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_REQUIRED`);
+    return;
+  }
+  if (!sha256(externalPackage.ledgerEntryRawSha256) || !sameSha256(packagedLedgerEntrySha, externalPackage.ledgerEntryRawSha256)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_MANIFEST_HASH_UNEXPECTED`);
+  }
+  let packagedLedgerEntry;
+  try {
+    packagedLedgerEntry = JSON.parse(fs.readFileSync(packagedLedgerEntryPath, 'utf8'));
+  } catch {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_JSON_INVALID`);
+    return;
+  }
+  if (!sameKeySet(packagedLedgerEntry, PASS_ENTRY_KEYS)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_SCHEMA_CLOSED_SET_MISMATCH`);
+  }
+  if (!sameSha256(sha256StableJson(packagedLedgerEntry), envelopeEntry.canonicalPassEntrySha256)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_DIGEST_MISMATCH`);
+  }
+  if (stableJsonString(packagedLedgerEntry) !== stableJsonString(entry)) {
+    errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_CURRENT_MISMATCH`);
+  }
+}
+
+function validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, options) {
+  if (!isObject(envelopeEntry)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_ENTRY_REQUIRED`);
+    return;
+  }
+  if (!sameKeySet(entry, PASS_ENTRY_KEYS)) {
+    errors.push(`${entry.cellId}:PASS_ENTRY_SCHEMA_CLOSED_SET_MISMATCH`);
+  }
+  if (!sha256(envelopeEntry.canonicalPassEntrySha256)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_CANONICAL_PASS_ENTRY_DIGEST_REQUIRED`);
+  } else if (!sameSha256(sha256StableJson(entry), envelopeEntry.canonicalPassEntrySha256)) {
+    errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_CANONICAL_PASS_ENTRY_DIGEST_MISMATCH`);
+  }
+  for (const fieldName of ['status', 'evidenceClass', 'exactHeadSha', 'sourceRevision', 'sourceTree', 'generationId']) {
+    compareStringField(entry, envelopeEntry, fieldName, errors);
+  }
+  for (const fieldName of ['artifactSha256', 'targetRevision']) {
+    compareShaField(entry, envelopeEntry, fieldName, errors);
+  }
+  validateEvidenceReceiptBinding(entry, envelopeEntry, errors);
+  validateOracleAuthorityBinding(entry, envelopeEntry, errors);
+  validateHopGraphBinding(entry, route, envelopeEntry, errors);
+  validateProviderGraphBinding(entry, route, envelopeEntry, errors);
+  validateCycleGraphBinding(entry, envelopeEntry, errors);
+  validateSourceTreeBinding(entry, repoRoot, errors);
+  if (options?.requireLocalPhysicalPackage === true) {
+    validatePhysicalPackageRehydration(entry, envelopeEntry, errors);
+  }
+  if (options?.requireExternalEvidencePackage === true) {
+    validateExternalEvidencePackage(entry, envelopeEntry, errors, options.externalEvidencePackageRoot);
+  }
+}
+
 function validateOracles(entry, errors) {
   if (!isObject(entry.oracles)) {
     errors.push(`${entry.cellId}:ORACLES_REQUIRED`);
@@ -384,6 +1175,7 @@ function validateProviderEvidence(entry, route, currentHead, repoRoot, errors) {
     if (item?.syntheticOnly !== true || item?.lifecycle !== true || item?.reopen !== true || item?.readback !== true || item?.reexport !== true) {
       errors.push(`${entry.cellId}:PROVIDER_PHYSICAL_LIFECYCLE_INCOMPLETE:${item?.profileId || 'UNKNOWN'}`);
     }
+    if (!sha256(item?.revisionIdentity)) errors.push(`${entry.cellId}:PROVIDER_REVISION_SHA_INVALID:${item?.profileId || 'UNKNOWN'}`);
     if (!sha256(item?.artifactSha256)) errors.push(`${entry.cellId}:PROVIDER_ARTIFACT_SHA_INVALID:${item?.profileId || 'UNKNOWN'}`);
     if (item?.cleanupVerified !== true) errors.push(`${entry.cellId}:PROVIDER_CLEANUP_UNVERIFIED:${item?.profileId || 'UNKNOWN'}`);
   }
@@ -520,7 +1312,7 @@ function validateRouteQualificationEvidence(ledger, bindingBaseSha, errors) {
   }
 }
 
-function validatePassEntry(entry, cell, spec, currentHead, repoRoot, errors) {
+function validatePassEntry(entry, cell, spec, currentHead, repoRoot, envelopeEntry, errors, options) {
   const route = spec.routes.find((item) => item.id === cell.routeId);
   const hostile = cell.volumeId === 'MALFORMED_HOSTILE_INPUT';
   if (entry.evidenceClass !== 'CELL_EXECUTION_EXACT_HEAD') errors.push(`${entry.cellId}:EVIDENCE_CLASS_INVALID`);
@@ -535,6 +1327,10 @@ function validatePassEntry(entry, cell, spec, currentHead, repoRoot, errors) {
   });
   if (entry.sourceRevision !== entry.exactHeadSha) errors.push(`${entry.cellId}:SOURCE_REVISION_HEAD_MISMATCH`);
   if (!sha256(entry.artifactSha256)) errors.push(`${entry.cellId}:ARTIFACT_SHA_INVALID`);
+  if (!sha256(entry.targetRevision)) errors.push(`${entry.cellId}:TARGET_REVISION_SHA_INVALID`);
+  if (typeof entry.generationId !== 'string' || entry.generationId.length === 0 || entry.generationId.includes('/')) {
+    errors.push(`${entry.cellId}:GENERATION_ID_INVALID`);
+  }
   if (!entry.sourceRevision || !entry.targetRevision || !entry.generationId) errors.push(`${entry.cellId}:REVISION_GENERATION_IDENTITY_INCOMPLETE`);
   validateFixture(entry, errors);
   validateOracles(entry, errors);
@@ -542,6 +1338,7 @@ function validatePassEntry(entry, cell, spec, currentHead, repoRoot, errors) {
   validateProviderEvidence(entry, route, currentHead, repoRoot, errors);
   validateCycles(entry, route, errors);
   validateOutsideContract(entry, errors);
+  validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, options);
   if (cell.executionProfileId === 'PACKAGED_BUILD_RUNTIME') validatePackagedBuild(entry, currentHead, repoRoot, errors);
 
   if (!hostile) {
@@ -560,7 +1357,16 @@ function validatePassEntry(entry, cell, spec, currentHead, repoRoot, errors) {
   }
 }
 
-export function validateInterop100({ spec, ledger, currentHead, repoRoot = repoRootFromHere() }) {
+export function validateInterop100({
+  spec,
+  envelope,
+  ledger,
+  currentHead,
+  repoRoot = repoRootFromHere(),
+  requireLocalPhysicalPackage = false,
+  requireExternalEvidencePackage = false,
+  externalEvidencePackageRoot = '',
+}) {
   const errors = [];
   validateSpec(spec, errors);
   if (!commitSha(currentHead)) errors.push('CURRENT_HEAD_INVALID');
@@ -573,6 +1379,7 @@ export function validateInterop100({ spec, ledger, currentHead, repoRoot = repoR
   if (!commitSha(ledger.bindingBaseSha)) errors.push('LEDGER_BASE_SHA_INVALID');
   if (spec?.bindingBaseSha !== ledger.bindingBaseSha) errors.push('SPEC_LEDGER_BASE_SHA_MISMATCH');
   if (!Array.isArray(ledger.entries)) errors.push('LEDGER_ENTRIES_NOT_ARRAY');
+  const envelopeByCellId = buildEvidenceEnvelopeEntryMap(envelope, spec, ledger, errors);
   validateRouteQualificationEvidence(ledger, ledger.bindingBaseSha, errors);
 
   const cells = buildRequiredCells(spec || {});
@@ -580,7 +1387,9 @@ export function validateInterop100({ spec, ledger, currentHead, repoRoot = repoR
   const entries = Array.isArray(ledger.entries) ? ledger.entries : [];
   const entryIds = entries.map((entry) => entry?.cellId);
   if (!unique(entryIds)) errors.push('LEDGER_DUPLICATE_CELL_ID');
+  const authoritativeAdmission = requireExternalEvidencePackage === true;
   let passedRequiredCells = 0;
+  let diagnosticPassedRequiredCells = 0;
   const statusCounts = Object.fromEntries([COUNTED_STATUS, ...NON_COUNTED_STATUSES].map((status) => [status, 0]));
 
   for (const entry of entries) {
@@ -595,27 +1404,37 @@ export function validateInterop100({ spec, ledger, currentHead, repoRoot = repoR
     statusCounts[entry.status] += 1;
     if (entry.status === COUNTED_STATUS) {
       const before = errors.length;
-      validatePassEntry(entry, cellById.get(entry.cellId), spec, currentHead, repoRoot, errors);
-      if (errors.length === before) passedRequiredCells += 1;
+      validatePassEntry(entry, cellById.get(entry.cellId), spec, currentHead, repoRoot, envelopeByCellId.get(entry.cellId), errors, {
+        requireLocalPhysicalPackage,
+        requireExternalEvidencePackage,
+        externalEvidencePackageRoot,
+      });
+      if (errors.length === before) {
+        if (authoritativeAdmission) passedRequiredCells += 1;
+        else diagnosticPassedRequiredCells += 1;
+      }
     }
   }
 
   const unrecorded = Math.max(0, cells.length - entries.length);
   statusCounts.NOT_EXECUTED += unrecorded;
   const percentage = cells.length === 0 ? 0 : Number(((passedRequiredCells / cells.length) * 100).toFixed(6));
+  const diagnosticPercentage = cells.length === 0 ? 0 : Number(((diagnosticPassedRequiredCells / cells.length) * 100).toFixed(6));
+  const declaredPassedCells = authoritativeAdmission ? passedRequiredCells : diagnosticPassedRequiredCells;
+  const declaredPercentage = authoritativeAdmission ? percentage : diagnosticPercentage;
   const declared = ledger.declaredRollup;
   if (!isObject(declared)
     || declared.requiredCells !== cells.length
-    || declared.passedRequiredCells !== passedRequiredCells
+    || declared.passedRequiredCells !== declaredPassedCells
     || declared.notExecutedCells !== statusCounts.NOT_EXECUTED
-    || declared.percentage !== percentage
-    || declared.broadPassClaim !== (passedRequiredCells === cells.length && cells.length > 0)) {
+    || declared.percentage !== declaredPercentage
+    || declared.broadPassClaim !== (declaredPassedCells === cells.length && cells.length > 0)) {
     errors.push('DECLARED_ROLLUP_MISMATCH');
   }
   if (!isObject(spec.currentGap)
     || spec.currentGap.requiredCellDenominator !== cells.length
-    || spec.currentGap.exactHeadPassedNumerator !== passedRequiredCells
-    || spec.currentGap.percentage !== percentage) {
+    || spec.currentGap.exactHeadPassedNumerator !== declaredPassedCells
+    || spec.currentGap.percentage !== declaredPercentage) {
     errors.push('CURRENT_GAP_ROLLUP_MISMATCH');
   }
   return {
@@ -626,23 +1445,46 @@ export function validateInterop100({ spec, ledger, currentHead, repoRoot = repoR
     requiredCells: cells.length,
     recordedCells: entries.length,
     passedRequiredCells,
+    diagnosticPassedRequiredCells,
     percentage,
+    diagnosticPercentage,
+    authoritativeAdmission,
     statusCounts,
     claimVerdict: passedRequiredCells === cells.length && cells.length === EXPECTED_REQUIRED_CELLS && errors.length === 0
       ? 'PASS_100_PERCENT_SUPPORTED_CONTRACT'
-      : 'NEEDS_MORE_EVIDENCE',
+      : authoritativeAdmission
+        ? 'NEEDS_MORE_EVIDENCE'
+        : 'AUTHORITATIVE_REHYDRATION_REQUIRED',
   };
 }
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  const envelope = options.envelope || readInterop100EvidenceEnvelope(repoRoot);
   const ledger = options.ledger || readInterop100EvidenceLedger(repoRoot);
   const currentHead = options.currentHead || currentGitHead(repoRoot);
-  return validateInterop100({ spec, ledger, currentHead, repoRoot });
+  return validateInterop100({
+    spec,
+    envelope,
+    ledger,
+    currentHead,
+    repoRoot,
+    requireLocalPhysicalPackage: options.requireLocalPhysicalPackage === true,
+    requireExternalEvidencePackage: options.requireExternalEvidencePackage === true,
+    externalEvidencePackageRoot: options.externalEvidencePackageRoot || '',
+  });
 }
 
 function main() {
-  const report = verifyInterop100();
+  const externalEvidencePackageRootIndex = process.argv.indexOf('--external-evidence-package-root');
+  const externalEvidencePackageRoot = externalEvidencePackageRootIndex === -1
+    ? ''
+    : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
+  const report = verifyInterop100(repoRootFromHere(), {
+    requireLocalPhysicalPackage: process.argv.includes('--require-local-physical-package'),
+    requireExternalEvidencePackage: process.argv.includes('--require-external-evidence-package'),
+    externalEvidencePackageRoot,
+  });
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   if (!report.ok) process.exitCode = 1;
 }

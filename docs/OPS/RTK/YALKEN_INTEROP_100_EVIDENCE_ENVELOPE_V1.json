@@ -1,0 +1,146 @@
+{
+  "schemaVersion": "yalken.interop100.evidenceEnvelope.v1",
+  "contractId": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
+  "bindingBaseSha": "31d27ce0f8ef7e4e4b6f2fee33382612f07a2e18",
+  "status": "CHECKED_IN_EVIDENCE_ENVELOPE_REQUIRED_FOR_CELL_ADMISSION",
+  "entries": [
+    {
+      "cellId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "status": "PASS",
+      "evidenceClass": "CELL_EXECUTION_EXACT_HEAD",
+      "exactHeadSha": "a158e80e9d94148e910e7dc7c2bc18e105876ca3",
+      "sourceRevision": "a158e80e9d94148e910e7dc7c2bc18e105876ca3",
+      "sourceTree": "6478044afabb90d26ea50e189ed018dff0e57868",
+      "targetRevision": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
+      "generationId": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
+      "artifactSha256": "sha256:730deef2388f4faaed4ebcd3153802f0f53c552e19f76078df404aa62338a05d",
+      "canonicalPassEntrySha256": "sha256:21cc08fe7b50d42e9094c623056e8fd009d1f186544b577c0f620b1f7b614b8e",
+      "evidenceReceipt": {
+        "schemaVersion": "yalken.interop100.cell001.hardened.physical.a158e80e-node22-rerun.v1",
+        "status": "PASS_HARDENED_EXISTING_CELL_REBIND_A158E80E_NODE22_EVIDENCE_NO_NUMERATOR_DELTA",
+        "runId": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
+        "nodeVersion": "v22.12.0",
+        "npmVersion": "10.9.0",
+        "receiptSha256": "sha256:730deef2388f4faaed4ebcd3153802f0f53c552e19f76078df404aa62338a05d",
+        "sealSha256": "sha256:59f5e04ab23adb8603a2bffc87195516ba485682a550b4474ba38b74511651f3",
+        "checkpointBasename": "source-a158e80e-cell001-v1",
+        "runnerSha256": "sha256:9487459ccc6c428a3314a4f87f5a459a32672b447c0fd3405ffd227227748da7",
+        "independentAuditSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
+        "independentAuditorSha256": "sha256:6403e157f538bde02e83545bc52048d3ee9fca2215b0e853f016162df9df526d",
+        "wordRootKind": "MICROSOFT_WORD_CONTAINER_DOCUMENTS_YALKEN_R2_4",
+        "numeratorDelta": 0,
+        "broadPassClaim": false,
+        "limitations": [
+          "Rebinds only the existing TEXT/SINGLE_SCENE/C1/SOURCE_RUNTIME cell; numeratorDelta is 0.",
+          "Source runtime only; packaged app and full GUI import confirmation are not claimed.",
+          "Word rewrites DOCX package bytes; byte identity is not claimed.",
+          "No styles, comments, notes, tables, media, anchors, tracked review semantics, metadata, Google route, or full user-flow closure are claimed by this receipt."
+        ]
+      },
+      "oracles": {
+        "SEMANTIC": {
+          "artifactSha256": "sha256:294c411288568149dc38d189cbdac7074f01a81d9bc9dba5ff24a044a72fb9b5",
+          "authority": "RAW_AND_NORMALIZED_FULL_CANDIDATE_TEXT_AND_CODEPOINT_EQUALITY"
+        },
+        "STRUCTURE": {
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
+          "authority": "INDEPENDENT_OOXML_PARAGRAPH_VECTOR_EQUALITY_SOURCE_SAVED_REOPENED"
+        },
+        "ORDER": {
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
+          "authority": "RAW_FULL_PARAGRAPH_VECTOR_AND_CODEPOINT_EQUALITY_WITH_ORDER_MUTANT_REJECTION"
+        },
+        "LOSS": {
+          "artifactSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176",
+          "authority": "EXPLICIT_LOSS_REPORT_NON_SILENT"
+        },
+        "PROVENANCE": {
+          "artifactSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "authority": "RUN_RECEIPT_HASH_CHAIN"
+        },
+        "INDEPENDENT_READBACK": {
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
+          "authority": "INDEPENDENT_ZIP_CRC_OOXML_RAW_TEXT_AND_CODEPOINT_READBACK"
+        },
+        "CLEANUP": {
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
+          "authority": "WORD_DOCUMENT_COUNT_AFTER_RUN"
+        }
+      },
+      "hopEvidence": [
+        {
+          "hopId": "YALKEN_EXPORT",
+          "sourceArtifactSha256": "sha256:83e73f79608f6d8e4ae6434ffa1989e61ceda7efe89b43cc6b14bf463e24c719",
+          "targetArtifactSha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9",
+          "provenanceSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176"
+        },
+        {
+          "hopId": "WORD_LIFECYCLE",
+          "sourceArtifactSha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9",
+          "targetArtifactSha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
+          "provenanceSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176"
+        },
+        {
+          "hopId": "YALKEN_RETURN_INTAKE",
+          "sourceArtifactSha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
+          "targetArtifactSha256": "sha256:83e73f79608f6d8e4ae6434ffa1989e61ceda7efe89b43cc6b14bf463e24c719",
+          "provenanceSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176"
+        }
+      ],
+      "providerEvidence": [
+        {
+          "profileId": "WORD_DESKTOP",
+          "exactHeadSha": "a158e80e9d94148e910e7dc7c2bc18e105876ca3",
+          "buildIdentity": "Microsoft Word 16.112 com.microsoft.Word UBF8T346G9",
+          "documentIdentity": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
+          "revisionIdentity": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
+          "artifactSha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a"
+        }
+      ],
+      "cycles": [
+        {
+          "roundId": "round-001",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176"
+        }
+      ],
+      "physicalPackage": {
+        "wordRootKind": "MICROSOFT_WORD_CONTAINER_DOCUMENTS_YALKEN_R2_4",
+        "runDirectoryBasename": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
+        "localRehydrationPolicy": "STRICT_LOCAL_CHECK_OPTIONAL_FOR_PORTABLE_CI",
+        "artifacts": [
+          {
+            "role": "YALKEN_EXPORT_DOCX",
+            "basename": "source-yalken-export.docx",
+            "sha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9"
+          },
+          {
+            "role": "WORD_SAVED_DOCX",
+            "basename": "word-saved.docx",
+            "sha256": "sha256:330572f7e72db558180f0c1b57af79defa46e759b9bafac7cec547530146bba8"
+          },
+          {
+            "role": "WORD_REOPENED_DOCX",
+            "basename": "word-reopened.docx",
+            "sha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a"
+          }
+        ]
+      },
+      "externalRehydrationPackage": {
+        "schemaVersion": "yalken.interop100.rootDurableEvidencePackage.v1",
+        "packageId": "cell001-source-package-v1",
+        "manifestSha256": "sha256:2a207473ddbebefa48bc1c7c42e80eb3c178867d7c01e6481d2000253fe8f1b6",
+        "verifierSha256": "sha256:97167b7e50053773213e00188e2b206d5a222d204e94b6915fcf4ff8ff3c1130",
+        "reportSha256": "sha256:46076b4f7901baec8c94cef56c08b193fcb460b1a09c4f1f502553edd2306507",
+        "reportStatus": "PASS_100_OF_100_TWO_BYTE_IDENTICAL_REPORTS",
+        "ledgerEntryRawSha256": "sha256:e4d709e8acfbfe7d287ef16dccf510c28915e551cb67428d535858f355df9d8f",
+        "mutationAuditorSha256": "sha256:bdbff44aa9adf963a3a54e65b1583018f7ff096aef3c753049e6ae9f45ca1b09",
+        "mutationReportSha256": "sha256:66561c61aa480e607306ac8ad84607d9c9d157d31ad67eaa151650def7a22144",
+        "mutationReportStatus": "PASS_6_OF_6_KILLED_ZERO_SURVIVORS",
+        "fileCount": 18
+      }
+    }
+  ]
+}

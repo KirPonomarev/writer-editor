@@ -9,11 +9,11 @@
       "cellId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "status": "PASS",
       "evidenceClass": "CELL_EXECUTION_EXACT_HEAD",
-      "exactHeadSha": "81edb707b5a560a9d3d6cf087fe08ab089179919",
-      "artifactSha256": "sha256:d29e358ccee17ad641aa00130b59e7d52719449598f57749ff13bf28b2d9f708",
-      "sourceRevision": "81edb707b5a560a9d3d6cf087fe08ab089179919",
-      "targetRevision": "sha256:4f3103adb3340fc4abaab8a0bd22ab4ab2f7d8d8a2d697078f1ca8d360aad014",
-      "generationId": "cell001-hardened-substrateB2-node22-81edb707-20260912T204246Z-f0fb0d",
+      "exactHeadSha": "a158e80e9d94148e910e7dc7c2bc18e105876ca3",
+      "artifactSha256": "sha256:730deef2388f4faaed4ebcd3153802f0f53c552e19f76078df404aa62338a05d",
+      "sourceRevision": "a158e80e9d94148e910e7dc7c2bc18e105876ca3",
+      "targetRevision": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
+      "generationId": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
       "fixture": {
         "seeded": true,
         "synthetic": true,
@@ -28,26 +28,26 @@
           "hopId": "YALKEN_EXPORT",
           "sourceArtifactSha256": "sha256:83e73f79608f6d8e4ae6434ffa1989e61ceda7efe89b43cc6b14bf463e24c719",
           "targetArtifactSha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9",
-          "provenanceSha256": "sha256:5987d9bea43aff45c3a94c4a97f47956ef40e4ec615799a71c7354de6e1839c7",
-          "lossLedgerSha256": "sha256:f0dfdd815cd8be7f0ea76b1b470c4373b8aec89d39b977ee0117cfd542fbf970",
+          "provenanceSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176",
           "fieldOutcome": "PRESERVED",
           "silentDropCount": 0
         },
         {
           "hopId": "WORD_LIFECYCLE",
           "sourceArtifactSha256": "sha256:5e803522d09689a766f3d54b4496c13b728e2a13d09898075031a10aae9c86a9",
-          "targetArtifactSha256": "sha256:4f3103adb3340fc4abaab8a0bd22ab4ab2f7d8d8a2d697078f1ca8d360aad014",
-          "provenanceSha256": "sha256:5987d9bea43aff45c3a94c4a97f47956ef40e4ec615799a71c7354de6e1839c7",
-          "lossLedgerSha256": "sha256:f0dfdd815cd8be7f0ea76b1b470c4373b8aec89d39b977ee0117cfd542fbf970",
+          "targetArtifactSha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
+          "provenanceSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176",
           "fieldOutcome": "PRESERVED",
           "silentDropCount": 0
         },
         {
           "hopId": "YALKEN_RETURN_INTAKE",
-          "sourceArtifactSha256": "sha256:4f3103adb3340fc4abaab8a0bd22ab4ab2f7d8d8a2d697078f1ca8d360aad014",
+          "sourceArtifactSha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
           "targetArtifactSha256": "sha256:83e73f79608f6d8e4ae6434ffa1989e61ceda7efe89b43cc6b14bf463e24c719",
-          "provenanceSha256": "sha256:5987d9bea43aff45c3a94c4a97f47956ef40e4ec615799a71c7354de6e1839c7",
-          "lossLedgerSha256": "sha256:f0dfdd815cd8be7f0ea76b1b470c4373b8aec89d39b977ee0117cfd542fbf970",
+          "provenanceSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176",
           "fieldOutcome": "PRESERVED",
           "silentDropCount": 0
         }
@@ -55,60 +55,60 @@
       "providerEvidence": [
         {
           "profileId": "WORD_DESKTOP",
-          "exactHeadSha": "81edb707b5a560a9d3d6cf087fe08ab089179919",
+          "exactHeadSha": "a158e80e9d94148e910e7dc7c2bc18e105876ca3",
           "buildIdentity": "Microsoft Word 16.112 com.microsoft.Word UBF8T346G9",
-          "documentIdentity": "cell001-hardened-substrateB2-node22-81edb707-20260912T204246Z-f0fb0d",
-          "revisionIdentity": "sha256:4f3103adb3340fc4abaab8a0bd22ab4ab2f7d8d8a2d697078f1ca8d360aad014",
+          "documentIdentity": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
+          "revisionIdentity": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a",
           "syntheticOnly": true,
           "lifecycle": true,
           "reopen": true,
           "readback": true,
           "reexport": true,
           "cleanupVerified": true,
-          "artifactSha256": "sha256:4f3103adb3340fc4abaab8a0bd22ab4ab2f7d8d8a2d697078f1ca8d360aad014"
+          "artifactSha256": "sha256:36108f619a79baf6effe7a660debe7143fa70c618e557a61551a8213b353264a"
         }
       ],
       "oracles": {
         "SEMANTIC": {
           "status": "PASS",
-          "artifactSha256": "sha256:d29e358ccee17ad641aa00130b59e7d52719449598f57749ff13bf28b2d9f708",
+          "artifactSha256": "sha256:294c411288568149dc38d189cbdac7074f01a81d9bc9dba5ff24a044a72fb9b5",
           "authority": "RAW_AND_NORMALIZED_FULL_CANDIDATE_TEXT_AND_CODEPOINT_EQUALITY"
         },
         "STRUCTURE": {
           "status": "PASS",
-          "artifactSha256": "sha256:47896e27b91979a4c29b088a433a64a01158be85f1a25726bc9a3259eff91f78",
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
           "authority": "INDEPENDENT_OOXML_PARAGRAPH_VECTOR_EQUALITY_SOURCE_SAVED_REOPENED"
         },
         "ORDER": {
           "status": "PASS",
-          "artifactSha256": "sha256:47896e27b91979a4c29b088a433a64a01158be85f1a25726bc9a3259eff91f78",
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
           "authority": "RAW_FULL_PARAGRAPH_VECTOR_AND_CODEPOINT_EQUALITY_WITH_ORDER_MUTANT_REJECTION"
         },
         "LOSS": {
           "status": "PASS",
-          "artifactSha256": "sha256:f0dfdd815cd8be7f0ea76b1b470c4373b8aec89d39b977ee0117cfd542fbf970",
+          "artifactSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176",
           "authority": "EXPLICIT_LOSS_REPORT_NON_SILENT"
         },
         "PROVENANCE": {
           "status": "PASS",
-          "artifactSha256": "sha256:5987d9bea43aff45c3a94c4a97f47956ef40e4ec615799a71c7354de6e1839c7",
+          "artifactSha256": "sha256:fc651e95ccc972d46647bedc3ea5a45587f3a4eceb380bc89fd4658aaf956e3b",
           "authority": "RUN_RECEIPT_HASH_CHAIN"
         },
         "INDEPENDENT_READBACK": {
           "status": "PASS",
-          "artifactSha256": "sha256:47896e27b91979a4c29b088a433a64a01158be85f1a25726bc9a3259eff91f78",
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
           "authority": "INDEPENDENT_ZIP_CRC_OOXML_RAW_TEXT_AND_CODEPOINT_READBACK"
         },
         "CLEANUP": {
           "status": "PASS",
-          "artifactSha256": "sha256:47896e27b91979a4c29b088a433a64a01158be85f1a25726bc9a3259eff91f78",
+          "artifactSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
           "authority": "WORD_DOCUMENT_COUNT_AFTER_RUN"
         }
       },
       "cycles": [
         {
           "roundId": "round-001",
-          "lossLedgerSha256": "sha256:f0dfdd815cd8be7f0ea76b1b470c4373b8aec89d39b977ee0117cfd542fbf970",
+          "lossLedgerSha256": "sha256:2fda7099eaefd1d3ba51d4e9f634d6f67c364f2e8a06ad5ec3f32f9b83fa8176",
           "semanticPreserved": true,
           "newLossCount": 0
         }
@@ -123,28 +123,28 @@
         ]
       },
       "evidenceReceipt": {
-        "schemaVersion": "yalken.interop100.cell001.hardened.physical.substrateB2-node22-rerun.v1",
-        "status": "PASS_HARDENED_EXISTING_CELL_REBIND_SUBSTRATEB2_NODE22_EVIDENCE_NO_NUMERATOR_DELTA",
-        "runId": "cell001-hardened-substrateB2-node22-81edb707-20260912T204246Z-f0fb0d",
+        "schemaVersion": "yalken.interop100.cell001.hardened.physical.a158e80e-node22-rerun.v1",
+        "status": "PASS_HARDENED_EXISTING_CELL_REBIND_A158E80E_NODE22_EVIDENCE_NO_NUMERATOR_DELTA",
+        "runId": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
         "nodeVersion": "v22.12.0",
         "npmVersion": "10.9.0",
-        "receiptSha256": "sha256:d29e358ccee17ad641aa00130b59e7d52719449598f57749ff13bf28b2d9f708",
-        "sealSha256": "sha256:ea9b0b48ad03c4b0218acdfa8279df29031c9f7e75f5a1298e34d93389300c02",
-        "checkpointBasename": "physical-b2-81ed-cell001-v1",
-        "runnerSha256": "sha256:768601ccd5dd5ffd044f983db96c65371eed39a26b6b309deaa74b7dffe09dba",
-        "independentAuditSha256": "sha256:47896e27b91979a4c29b088a433a64a01158be85f1a25726bc9a3259eff91f78",
-        "independentAuditorSha256": "sha256:7d9a64e54522da86b952200d6057419f239227041d1f4584e30058ea9fec3113",
+        "receiptSha256": "sha256:730deef2388f4faaed4ebcd3153802f0f53c552e19f76078df404aa62338a05d",
+        "sealSha256": "sha256:59f5e04ab23adb8603a2bffc87195516ba485682a550b4474ba38b74511651f3",
+        "checkpointBasename": "source-a158e80e-cell001-v1",
+        "runnerSha256": "sha256:9487459ccc6c428a3314a4f87f5a459a32672b447c0fd3405ffd227227748da7",
+        "independentAuditSha256": "sha256:cbebe6fac40d5c760c57cc323602cdde37594aadc2ea7fe1e9018cfc0355f250",
+        "independentAuditorSha256": "sha256:6403e157f538bde02e83545bc52048d3ee9fca2215b0e853f016162df9df526d",
         "wordRootKind": "MICROSOFT_WORD_CONTAINER_DOCUMENTS_YALKEN_R2_4",
         "numeratorDelta": 0,
         "broadPassClaim": false,
         "limitations": [
-          "Only TEXT/SINGLE_SCENE/C1/SOURCE_RUNTIME is claimed.",
-          "Word rewrites package bytes; byte identity is not claimed.",
-          "Word-added package relationships and plain-text-only import are explicitly reported as outside-contract loss.",
-          "No styles, comments, notes, tables, media, sections, anchors, tracked review semantics, metadata, Google route, packaged runtime, or full user-flow closure."
+          "Rebinds only the existing TEXT/SINGLE_SCENE/C1/SOURCE_RUNTIME cell; numeratorDelta is 0.",
+          "Source runtime only; packaged app and full GUI import confirmation are not claimed.",
+          "Word rewrites DOCX package bytes; byte identity is not claimed.",
+          "No styles, comments, notes, tables, media, anchors, tracked review semantics, metadata, Google route, or full user-flow closure are claimed by this receipt."
         ]
       },
-      "sourceTree": "b857b65b580834bc45ff1169ccd019a1fa4cf460"
+      "sourceTree": "6478044afabb90d26ea50e189ed018dff0e57868"
     }
   ],
   "routeQualificationEvidence": [

@@ -75,7 +75,10 @@ import {
 } from './rcv00b-current-head-effective-state-compiler.mjs';
 import {
   CONTRACT_BASENAME as INTEROP100_CONTRACT_BASENAME,
+  CONTRACT_ID as INTEROP100_CONTRACT_ID,
   DENOMINATOR_PATH as INTEROP100_DENOMINATOR_PATH,
+  EVIDENCE_ENVELOPE_PATH as INTEROP100_EVIDENCE_ENVELOPE_PATH,
+  EVIDENCE_ENVELOPE_SCHEMA as INTEROP100_EVIDENCE_ENVELOPE_SCHEMA,
   EXPECTED_REQUIRED_CELLS as INTEROP100_EXPECTED_REQUIRED_CELLS,
   GOOGLE_DOCX_IMPORT_TRANSPORT_STEPS as INTEROP100_GOOGLE_DOCX_IMPORT_TRANSPORT_STEPS,
   GOOGLE_DOCX_IMPORT_TYPED_BLOCKER as INTEROP100_GOOGLE_DOCX_IMPORT_TYPED_BLOCKER,
@@ -751,8 +754,42 @@ export const R24_EMBEDDED_FONT_ADMISSION_EXPECTATION=Object.freeze({
     'test/contracts/revision-bridge-docx-part-policy.contract.test.js',
     'test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js',
     'test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js',
+		  ].sort(),
+		});
+export const R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION=Object.freeze({
+  baseSha:'984b12ee237a892b09443cd661176ea0515b3fe1',
+  baseTree:'f3074f6f654b9c7830681c46b6cf28b44a268130',
+  inventoryPath:'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  denominatorPath:INTEROP100_DENOMINATOR_PATH,
+  evidenceEnvelopePath:INTEROP100_EVIDENCE_ENVELOPE_PATH,
+  ledgerPath:INTEROP100_LEDGER_PATH,
+  approvalsPath:'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  validatorPath:'scripts/ops/rtk-interop-100-denominator-v1.mjs',
+  contractTestPath:`test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
+  postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  inventoryFileDenominator:1471,
+  approvedBy:'owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12',
+  authority:'SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2',
+  admittedPaths:[
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'scripts/ops/rtk-interop-100-denominator-v1.mjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    `test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
 	  ].sort(),
 	});
+function interop100EmptyEvidenceEnvelope(bindingBaseSha){
+  return {
+    schemaVersion:INTEROP100_EVIDENCE_ENVELOPE_SCHEMA,
+    contractId:INTEROP100_CONTRACT_ID,
+    bindingBaseSha,
+    entries:[],
+  };
+}
 export const R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION = Object.freeze({
   baseSha: 'd816f9cab446509c1ed84ba3c4e9d32dcf5d6fe2',
   baseTree: 'af5506cb398f799fd0817a351ca0e3c3e3b8161d',
@@ -4810,7 +4847,7 @@ export function verifyR24Interop100GoogleDocxImportRoutePostEvaluationException(
   const readText=p=>{let bytes;try{bytes=objectBytes(git,deliverySha,p);}catch{fail('E_R24_INTEROP100_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
   const denominator=readJson(e.denominatorPath),ledger=readJson(e.ledgerPath),catalog=readJson(e.catalogPath),inventory=readJson(e.inventoryPath),claimBinding=readJson(e.claimBindingPath),approvals=readJson(e.approvalsPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),governanceDetector=readText(e.governanceDetectorPath),governanceDetectorTest=readText(e.governanceDetectorTestPath),validator=readText(e.validatorPath),contractTest=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
-  const validation=validateInterop100({spec:denominator.value,ledger:ledger.value,currentHead:deliverySha});
+  const validation=validateInterop100({spec:denominator.value,envelope:interop100EmptyEvidenceEnvelope(ledger.value.bindingBaseSha),ledger:ledger.value,currentHead:deliverySha,requireExternalEvidencePackage:true});
   assert(validation.ok,'E_R24_INTEROP100_VALIDATION',(validation.errors??[]).join(',').slice(0,200));
   assert(validation.requiredCells===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.recordedCells===0&&validation.passedRequiredCells===0&&validation.percentage===0&&validation.statusCounts?.NOT_EXECUTED===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.claimVerdict==='NEEDS_MORE_EVIDENCE','E_R24_INTEROP100_ZERO_PASS_ROLLUP');
   assert(denominator.value.bindingBaseSha===e.baseSha&&ledger.value.bindingBaseSha===e.baseSha,'E_R24_INTEROP100_BASE_BINDING');
@@ -4854,7 +4891,7 @@ export function verifyR24Interop100SafeDocxHyperlinkPreviewPostEvaluationExcepti
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_INTEROP100_SAFE_LINK_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_SAFE_LINK_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
   const denominator=readJson(e.denominatorPath),ledger=readJson(e.ledgerPath),inventory=readJson(e.inventoryPath),governanceApprovals=readJson(e.governanceApprovalsPath),interopClaimBinding=readJson(e.interopClaimBindingPath),rcv00aClaimBinding=readJson(e.rcv00aClaimBindingPath),source=readText(e.sourcePath),contentPreviewTest=readText(e.contentPreviewTestPath),hostileFileGateTest=readText(e.hostileFileGateTestPath),preflightReportTest=readText(e.preflightReportTestPath),denominatorTest=readText(e.denominatorTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),claimLint=readText(e.claimLintPath),claimLintTest=readText(e.claimLintTestPath),postAuditTest=readText(e.postAuditTestPath),wp707PostAuditTest=readText(e.wp707PostAuditTestPath),wp707TerminalTest=readText(e.wp707TerminalTestPath),wp709PostAuditTest=readText(e.wp709PostAuditTestPath),wp709TerminalTest=readText(e.wp709TerminalTestPath);
-  const validation=validateInterop100({spec:denominator.value,ledger:ledger.value,currentHead:e.baseSha});
+  const validation=validateInterop100({spec:denominator.value,envelope:interop100EmptyEvidenceEnvelope(ledger.value.bindingBaseSha),ledger:ledger.value,currentHead:e.baseSha,requireExternalEvidencePackage:true});
   assert(validation.ok&&validation.requiredCells===INTEROP100_EXPECTED_REQUIRED_CELLS&&validation.passedRequiredCells===0&&validation.percentage===0&&validation.claimVerdict==='NEEDS_MORE_EVIDENCE','E_R24_INTEROP100_SAFE_LINK_ZERO_PASS_ROLLUP');
   assert(denominator.value.bindingBaseSha===R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha&&ledger.value.bindingBaseSha===R24_INTEROP_100_GOOGLE_DOCX_IMPORT_ROUTE_EXPECTATION.baseSha,'E_R24_INTEROP100_SAFE_LINK_BASE_BINDING');
   const safeEvidence=(ledger.value.implementationContourEvidence??[]).find((entry)=>entry.id===e.evidenceId);
@@ -5064,8 +5101,62 @@ export function verifyR24EmbeddedFontAdmissionPostEvaluationException({candidate
   for(const token of ['word/fonts/font1.odttf','known-unsupported-part','word/fonts/font1.ttf'])assert(parserB02Test.text.includes(token),'E_R24_EMBEDDED_FONT_B02_TEST_TOKEN',token);
   for(const token of ['R24_EMBEDDED_FONT_ADMISSION_EXPECTATION','verifyR24EmbeddedFontAdmissionPostEvaluationException','E_R24_EMBEDDED_FONT_EXACT_ADMITTED_DELTA','NO_FONT_RENDERING_OR_PRESERVATION_CLAIM'])assert(postAuditVerifier.text.includes(token),'E_R24_EMBEDDED_FONT_POST_AUDIT_VERIFIER_TOKEN',token);
   for(const token of ['R24 embedded font admission exception accepts the exact current delta','R24 embedded font admission exception rejects an unadmitted future path','R24 embedded font admission exception rejects missing diagnostics-loss token'])assert(postAuditTest.text.includes(token),'E_R24_EMBEDDED_FONT_POST_AUDIT_TEST_TOKEN',token);
-	  return{schemaVersion:'R24_EMBEDDED_FONT_ADMISSION_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,defaultApprovalsDigest:defaultApprovals.digest,pk1r1ApprovalsDigest:pk1r1Approvals.digest,interopApprovalsDigest:interopApprovals.digest,sourceDigest:source.digest,parserDigest:parser.digest,contentPreviewTestDigest:contentPreviewTest.digest,hostileFileGateTestDigest:hostileFileGateTest.digest,intakePreflightTestDigest:intakePreflightTest.digest,packageBoundaryTestDigest:packageBoundaryTest.digest,partPolicyTestDigest:partPolicyTest.digest,zipInventoryTestDigest:zipInventoryTest.digest,parserB02TestDigest:parserB02Test.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,embeddedFontDisposition:'DIAGNOSTICS_AND_EXPLICIT_LOSS_ONLY',rawFontBinaryQuarantine:true,fontRenderingPreservationClaim:false,supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0,nonClaims:['NO_FONT_RENDERING_OR_PRESERVATION_CLAIM','NO_SUPPORTED_DENOMINATOR_CELL_PASS','NO_GOOGLE_NATIVE_ROUTE_CLAIM']};
-	}
+		  return{schemaVersion:'R24_EMBEDDED_FONT_ADMISSION_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,defaultApprovalsDigest:defaultApprovals.digest,pk1r1ApprovalsDigest:pk1r1Approvals.digest,interopApprovalsDigest:interopApprovals.digest,sourceDigest:source.digest,parserDigest:parser.digest,contentPreviewTestDigest:contentPreviewTest.digest,hostileFileGateTestDigest:hostileFileGateTest.digest,intakePreflightTestDigest:intakePreflightTest.digest,packageBoundaryTestDigest:packageBoundaryTest.digest,partPolicyTestDigest:partPolicyTest.digest,zipInventoryTestDigest:zipInventoryTest.digest,parserB02TestDigest:parserB02Test.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,embeddedFontDisposition:'DIAGNOSTICS_AND_EXPLICIT_LOSS_ONLY',rawFontBinaryQuarantine:true,fontRenderingPreservationClaim:false,supportedDenominatorPromotion:false,programDone:false,productionReleaseReady:false,graphIncrement:0,nonClaims:['NO_FONT_RENDERING_OR_PRESERVATION_CLAIM','NO_SUPPORTED_DENOMINATOR_CELL_PASS','NO_GOOGLE_NATIVE_ROUTE_CLAIM']};
+		}
+
+function resolveR24Interop100DenominatorAdmissionHardeningCandidateSha(git,resolvedCandidate,e){
+  const isExact=(sha)=>{
+    try{
+      const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
+      return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
+    }catch{return false;}
+  };
+  if(isExact(resolvedCandidate))return resolvedCandidate;
+  let candidates=[];
+  try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_INTEROP100_DENOMINATOR_CANDIDATE_SEARCH');}
+  for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
+  fail('E_R24_INTEROP100_DENOMINATOR_CANDIDATE_NOT_FOUND');
+}
+
+function canResolveR24Interop100DenominatorAdmissionHardeningCandidateSha(git,resolvedCandidate,e){
+  try{return Boolean(resolveR24Interop100DenominatorAdmissionHardeningCandidateSha(git,resolvedCandidate,e));}catch{return false;}
+}
+
+export function verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException({candidateSha='HEAD',git=defaultGit,repoRoot=process.cwd()}={}){
+  const e=R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION,resolvedRequestedCandidate=gitText(git,['rev-parse',candidateSha]);
+  assert(evaluationTree(git,e.baseSha)===e.baseTree,'E_R24_INTEROP100_DENOMINATOR_BASE_TREE_DRIFT');
+  try{git(['merge-base','--is-ancestor',e.baseSha,resolvedRequestedCandidate],{encoding:null});}catch{fail('E_R24_INTEROP100_DENOMINATOR_BASE_NOT_ANCESTOR');}
+  const resolvedCandidate=resolveR24Interop100DenominatorAdmissionHardeningCandidateSha(git,resolvedRequestedCandidate,e);
+  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_R24_INTEROP100_DENOMINATOR_EXACT_ADMITTED_DELTA',`${changed.length}:${e.admittedPaths.length}`);
+  const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_INTEROP100_DENOMINATOR_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_DENOMINATOR_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
+  const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
+  const inventory=readJson(e.inventoryPath),denominator=readJson(e.denominatorPath),evidenceEnvelope=readJson(e.evidenceEnvelopePath),ledger=readJson(e.ledgerPath),approvals=readJson(e.approvalsPath),validator=readText(e.validatorPath),contract=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_INTEROP100_DENOMINATOR_INVENTORY_SHAPE');
+  for(const relative of [e.contractTestPath,e.postAuditTestPath]){
+    const file=relative===e.contractTestPath?contract:postAuditTest;
+    const entry=inventory.value.entries.find((item)=>item.path===relative);
+    assert(entry?.sha256===file.digest&&entry.required===true&&entry.executionStatus==='DECLARED_EXECUTABLE','E_R24_INTEROP100_DENOMINATOR_INVENTORY_DIGEST',relative);
+  }
+  const report=validateInterop100({spec:denominator.value,envelope:evidenceEnvelope.value,ledger:ledger.value,currentHead:resolvedCandidate,repoRoot});
+  assert(report.ok===true,`E_R24_INTEROP100_DENOMINATOR_VALIDATOR_REPORT:${report.errors.join('|')}`);
+  assert(report.requiredCells===INTEROP100_EXPECTED_REQUIRED_CELLS&&report.recordedCells===1,'E_R24_INTEROP100_DENOMINATOR_VALIDATOR_REPORT');
+  assert(report.passedRequiredCells===0&&report.diagnosticPassedRequiredCells===1&&report.percentage===0&&report.diagnosticPercentage===0.089286,'E_R24_INTEROP100_DENOMINATOR_DIAGNOSTIC_ONLY');
+  assert(report.claimVerdict==='AUTHORITATIVE_REHYDRATION_REQUIRED'&&report.statusCounts?.NOT_EXECUTED===1119,'E_R24_INTEROP100_DENOMINATOR_NO_BROAD_CLAIM');
+  assert(evidenceEnvelope.value.schemaVersion==='yalken.interop100.evidenceEnvelope.v1'&&evidenceEnvelope.value.entries?.length===1,'E_R24_INTEROP100_DENOMINATOR_ENVELOPE_SHAPE');
+  assert(evidenceEnvelope.value.entries[0]?.canonicalPassEntrySha256&&evidenceEnvelope.value.entries[0]?.externalRehydrationPackage?.packageId==='cell001-source-package-v1','E_R24_INTEROP100_DENOMINATOR_ENVELOPE_BINDING');
+  assert(approvals.value.version==='v1.0'&&Array.isArray(approvals.value.approvals),'E_R24_INTEROP100_DENOMINATOR_APPROVALS_SHAPE');
+  for(const relative of e.admittedPaths.filter((item)=>item!==e.approvalsPath)){
+    const digest=h(objectBytes(git,resolvedCandidate,relative));
+    const approved=approvals.value.approvals.some((entry)=>entry.filePath===relative&&entry.sha256===digest&&entry.approved===true&&entry.authority===e.authority&&approvalMatchesApprovedBy(entry,e.approvedBy));
+    assert(approved,'E_R24_INTEROP100_DENOMINATOR_APPROVAL_DIGEST',relative);
+  }
+  for(const token of ['EVIDENCE_ENVELOPE_PATH','CELL001_EXTERNAL_PACKAGE_TRUST','validateExternalEvidencePackage','EXTERNAL_EVIDENCE_PACKAGE_PINNED_TRUST_IDENTITY_MISMATCH','AUTHORITATIVE_REHYDRATION_REQUIRED'])assert(validator.text.includes(token),'E_R24_INTEROP100_DENOMINATOR_VALIDATOR_TOKEN',token);
+  for(const token of ['validator rejects coordinated evidence admission forgeries before any numerator promotion','strict external package mode rejects unknown package identity without producer execution','strict external package mode rejects pinned hash mismatch without producer execution','strict external package mode rejects semantic package forgery fixtures without producer execution'])assert(contract.text.includes(token),'E_R24_INTEROP100_DENOMINATOR_CONTRACT_TOKEN',token);
+  for(const token of ['R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION','verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException','E_R24_INTEROP100_DENOMINATOR_EXACT_ADMITTED_DELTA'])assert(postAuditVerifier.text.includes(token),'E_R24_INTEROP100_DENOMINATOR_POST_AUDIT_VERIFIER_TOKEN',token);
+  for(const token of ['R24 interop100 denominator hardening exception accepts exact current delta','R24 interop100 denominator hardening exception rejects an unadmitted future path','R24 interop100 denominator hardening exception rejects missing envelope binding token','R24 interop100 denominator hardening exception rejects stale approval hash','R24 interop100 denominator hardening exception rejects wrong approval authority'])assert(postAuditTest.text.includes(token),'E_R24_INTEROP100_DENOMINATOR_POST_AUDIT_TEST_TOKEN',token);
+  return{schemaVersion:'R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_POST_EVALUATION_EXCEPTION_V1',status:'PASS',baseSha:e.baseSha,baseTree:e.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),currentCandidateSha:resolvedRequestedCandidate,currentCandidateTree:evaluationTree(git,resolvedRequestedCandidate),admittedPathDenominator:e.admittedPaths.length,changedPathDenominator:changed.length,admittedPaths:e.admittedPaths,changedPaths:changed,inventoryDigest:inventory.digest,approvalsDigest:approvals.digest,denominatorDigest:denominator.digest,evidenceEnvelopeDigest:evidenceEnvelope.digest,ledgerDigest:ledger.digest,validatorDigest:validator.digest,contractDigest:contract.digest,postAuditVerifierDigest:postAuditVerifier.digest,postAuditTestDigest:postAuditTest.digest,requiredCells:report.requiredCells,passedRequiredCells:report.passedRequiredCells,diagnosticPassedRequiredCells:report.diagnosticPassedRequiredCells,claimVerdict:report.claimVerdict,supportedDenominatorPromotion:false,wordPhysicalRouteClaim:'CELL001_ONLY_REQUIRES_EXTERNAL_REHYDRATION_FOR_AUTHORITATIVE_COUNT',googleNativeRouteClaim:false,packagedUiRouteClaim:false,programDone:false,productionReleaseReady:false,graphIncrement:0};
+}
 
 function resolveDocxNotificationCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
@@ -6588,6 +6679,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   let r24EmbeddedFontAdmissionDescendant=false;
   if(resolvedCandidate!==R24_EMBEDDED_FONT_ADMISSION_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_EMBEDDED_FONT_ADMISSION_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24EmbeddedFontAdmissionDescendant=true;}catch{}}
   const r24EmbeddedFontAdmissionEnabled=allowAuditCycle2Admission&&r24EmbeddedFontAdmissionDescendant&&canResolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedCandidate,R24_EMBEDDED_FONT_ADMISSION_EXPECTATION);
+  let r24Interop100DenominatorAdmissionHardeningDescendant=false;
+  if(resolvedCandidate!==R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24Interop100DenominatorAdmissionHardeningDescendant=true;}catch{}}
+  const r24Interop100DenominatorAdmissionHardeningEnabled=allowAuditCycle2Admission&&r24Interop100DenominatorAdmissionHardeningDescendant&&canResolveR24Interop100DenominatorAdmissionHardeningCandidateSha(git,resolvedCandidate,R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION);
   let r24O01O08SemanticOracleHardeningDescendant=false;
   if(resolvedCandidate!==R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.baseSha){try{git(['merge-base','--is-ancestor',R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION.baseSha,resolvedCandidate],{encoding:null});r24O01O08SemanticOracleHardeningDescendant=true;}catch{}}
   const r24O01O08SemanticOracleHardeningEnabled=allowAuditCycle2Admission&&r24O01O08SemanticOracleHardeningDescendant&&canResolveR24O01O08SemanticOracleHardeningCandidateSha(git,resolvedCandidate,R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION);
@@ -6769,6 +6863,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const r24Rcv00eLeaseFencingCasException=r24Rcv00eLeaseFencingCasEnabled?verifyR24Rcv00eLeaseFencingCasPostEvaluationException({candidateSha:r24Rcv00eLeaseFencingCasCandidateSha,git}):null;
   const r24ReviewPreviewCommentTopologyException=r24ReviewPreviewCommentTopologyEnabled?verifyR24ReviewPreviewCommentTopologyPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24EmbeddedFontAdmissionException=r24EmbeddedFontAdmissionEnabled?verifyR24EmbeddedFontAdmissionPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
+  const r24Interop100DenominatorAdmissionHardeningException=r24Interop100DenominatorAdmissionHardeningEnabled?verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24O01O08SemanticOracleHardeningException=r24O01O08SemanticOracleHardeningEnabled?verifyR24O01O08SemanticOracleHardeningPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24Rcv00fDeliveryReconciliationException=r24Rcv00fDeliveryReconciliationEnabled?verifyR24Rcv00fDeliveryReconciliationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const r24P03RelationshipGraphValidationException=r24P03RelationshipGraphValidationEnabled?verifyR24P03RelationshipGraphValidationPostEvaluationException({candidateSha:resolvedCandidate,git}):null;
@@ -6777,6 +6872,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const r24W0CurrentStateClosureException=r24W0CurrentStateClosureEnabled?verifyR24W0CurrentStateClosurePostEvaluationException({candidateSha:resolvedCandidate,git}):null;
   const allowedPaths=new Set([...ALLOWED_POST_EVALUATION_CARRIERS,...R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS,...(cycle2Exception?.admittedPaths??[]),...(wp401Exception?.admittedPaths??[]),...(wp402Exception?.admittedPaths??[]),...(wp403Exception?.admittedPaths??[]),...(wp404Exception?.admittedPaths??[]),...(wp500Exception?.admittedPaths??[]),...(wp501Exception?.admittedPaths??[]),...(wp501GateException?.admittedPaths??[]),...(wp501PerformanceException?.admittedPaths??[]),...(wp501AuditR2Exception?.admittedPaths??[]),...(wp501InventoryException?.admittedPaths??[]),...(wp501TerminalException?.admittedPaths??[]),...(wp502Exception?.admittedPaths??[]),...(wp503Exception?.admittedPaths??[]),...(wp504Exception?.admittedPaths??[]),...(wp505Exception?.admittedPaths??[]),...(wp506Exception?.admittedPaths??[]),...(wp700Exception?.admittedPaths??[]),...(wp700CiRepairException?.admittedPaths??[]),...(wp700CiInventoryException?.admittedPaths??[]),...(wp700CiTemporalException?.admittedPaths??[]),...(wp507Exception?.admittedPaths??[]),...(wp701Exception?.admittedPaths??[]),...(wp702Exception?.admittedPaths??[]),...(wp702CiCompatibilityException?.admittedPaths??[]),...(wp702TestInventoryException?.admittedPaths??[]),...(wp702EvidenceStampException?.admittedPaths??[]),...(wp702DependencyAuditException?.admittedPaths??[]),...(wp702Release01RebindException?.admittedPaths??[]),...(wp702RendererBundleRebindException?.admittedPaths??[]),...(wp702Pk0SecurityException?.admittedPaths??[]),...(wp702Pk0InventoryRefreshException?.admittedPaths??[]),...(wp702CiMergeRefTestBindingException?.admittedPaths??[]),...(wp702Wp504HistoricalSurfaceException?.admittedPaths??[]),...(wp600Exception?.admittedPaths??[]),...(wp703Exception?.admittedPaths??[]),...(wp601Exception?.admittedPaths??[]),...(wp601HistoricalException?.admittedPaths??[]),...(wp601AnchorRepairException?.admittedPaths??[]),...(wp704Exception?.admittedPaths??[]),...(wp704EnvException?.admittedPaths??[]),...(wp705Exception?.admittedPaths??[]),...(wp705HistoricalException?.admittedPaths??[]),...(wp602Exception?.admittedPaths??[]),...(p01Exception?.admittedPaths??[]),...(p03Exception?.admittedPaths??[]),...(wp603Exception?.admittedPaths??[]),...(wp604Exception?.admittedPaths??[]),...(wp605Exception?.admittedPaths??[]),...(wp710Exception?.admittedPaths??[]),...(wp606Exception?.admittedPaths??[]),...(wp607Exception?.admittedPaths??[]),...(wp800Exception?.admittedPaths??[]),...(wp801Exception?.admittedPaths??[]),...(wp802Exception?.admittedPaths??[]),...(wp803Exception?.admittedPaths??[]),...(wp804Exception?.admittedPaths??[]),...(wp805Exception?.admittedPaths??[]),...(wp806Exception?.admittedPaths??[]),...(wp708Exception?.admittedPaths??[]),...(v2Exception?.admittedPaths??[]),...(wp706Exception?.admittedPaths??[]),...(wp707Exception?.admittedPaths??[]),...(wp709Exception?.admittedPaths??[]),...(pk1r1Exception?.admittedPaths??[]),...(pre00bException?.admittedPaths??[]),...(pre00cException?.admittedPaths??[]),...(pre00cClosedStageCandidateVerifierRepairException?.admittedPaths??[]),...(pre00dFreshSuccessorAdmissionLeaseHandoffException?.admittedPaths??[]),...(pre00eRecoveryCiExternalConfirmationException?.admittedPaths??[]),...(pre00fPlanDeliveryException?.admittedPaths??[]),...(pre00fCurrentHeadPlanDeliveryReconciliationException?.admittedPaths??[]),...(r24Rcv00aExactToolchainEntryPointException?.admittedPaths??[]),...(rcv00aCurrentHeadExactToolchainEntryPointException?.admittedPaths??[]),...(rcv00bCurrentHeadEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bEffectiveStateCompilerException?.admittedPaths??[]),...(r24Rcv00bSuccessorAdmissionsException?.admittedPaths??[]),...(r24Rcv00cCorrectiveRegisterCrosswalkException?.admittedPaths??[]),...(r24DocxLinebreakSourceExportException?.admittedPaths??[]),...(r24Rcv00dGraphDerivedSelectorException?.admittedPaths??[]),...(r24Interop100GoogleDocxImportRouteException?.admittedPaths??[]),...(r24Interop100SafeDocxHyperlinkPreviewException?.admittedPaths??[]),...(r24ObsExportDocxCommandBridgeOuterFailException?.admittedPaths??[]),...(r24ImportPreviewBookmarkMetadataExplicitLossException?.admittedPaths??[]),...(r24Rcv00eLeaseFencingCasException?.admittedPaths??[]),...(r24ReviewPreviewCommentTopologyException?.admittedPaths??[]),...(r24EmbeddedFontAdmissionException?.admittedPaths??[]),...(r24O01O08SemanticOracleHardeningException?.admittedPaths??[]),...(r24Rcv00fDeliveryReconciliationException?.admittedPaths??[]),...(r24P03RelationshipGraphValidationException?.admittedPaths??[]),...(r24Ops03SemanticE0ClassifierException?.admittedPaths??[]),...(r24Rcv00hMinimalE0ParserPurityException?.admittedPaths??[]),...(r24W0CurrentStateClosureException?.admittedPaths??[])]);
   for(const admittedPath of (r24Interop100U000cPagebreakReexportException?.admittedPaths??[]))allowedPaths.add(admittedPath);
+  for(const admittedPath of (r24Interop100DenominatorAdmissionHardeningException?.admittedPaths??[]))allowedPaths.add(admittedPath);
   let rcv00dCurrentIdentityBindingEnabled = false;
   if (allowAuditCycle2Admission && resolvedCandidate !== RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.repairSha) {
     try { git(['merge-base', '--is-ancestor', RCV00D_CURRENT_IDENTITY_BINDING_EXPECTATION.repairSha, resolvedCandidate], { encoding: null }); rcv00dCurrentIdentityBindingEnabled = true; } catch {}
@@ -6844,6 +6940,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24Rcv00eLeaseFencingCasPostEvaluationException=r24Rcv00eLeaseFencingCasException;
   verificationResult.r24ReviewPreviewCommentTopologyPostEvaluationException=r24ReviewPreviewCommentTopologyException;
   verificationResult.r24EmbeddedFontAdmissionPostEvaluationException=r24EmbeddedFontAdmissionException;
+  verificationResult.r24Interop100DenominatorAdmissionHardeningPostEvaluationException=r24Interop100DenominatorAdmissionHardeningException;
   verificationResult.r24O01O08SemanticOracleHardeningPostEvaluationException=r24O01O08SemanticOracleHardeningException;
   verificationResult.r24Rcv00fDeliveryReconciliationPostEvaluationException=r24Rcv00fDeliveryReconciliationException;
   verificationResult.r24P03RelationshipGraphValidationPostEvaluationException=r24P03RelationshipGraphValidationException;
