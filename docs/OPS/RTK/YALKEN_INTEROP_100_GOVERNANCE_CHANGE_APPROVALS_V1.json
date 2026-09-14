@@ -415,6 +415,15 @@
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "c17757480b83d380d3f00b4e789a026c3dfc6cce9b8a349d73027a4ecfba9e41"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T15:33:34.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_C2A_CARRIER_REBIND",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Approve exact deterministic C2A governance approval carrier rebind caused only by the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME C1B inventory byte update. This adds no product runtime, UI, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, Program DONE, or cell acceptance authority.",
+      "sha256": "b8a334de92677b768a244f6817e2b04248e05aba50414676b81e301f2e375455"
     }
   ],
   "version": "v1.0",
