@@ -247,15 +247,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:48:00.000Z",
+      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_INVENTORY_REBIND",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Bounded Release01 successor-chain CI repair updates the maintained C1B inventory hash after admitting the Release01 contract guard. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "cbfdbad543de30e26304a5e823f6e7fe37f40b4d805ee6a8aad11e43c1b8ea47"
+      "rationale": "Bounded Release01 successor-chain CI repair updates the maintained C1B inventory hash after admitting the Release01 contract guard and C2A carrier into the exact repair delta. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
+      "sha256": "d5d7e234aba58aa0e325e62fbb94f77592210cdcfdb47e8c465527d3b4d7d1dc"
     },
     {
       "approved": true,
@@ -277,15 +277,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:48:00.000Z",
+      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_POST_AUDIT_VERIFIER_ADMISSION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Bounded verifier update admits the Release01 contract guard into the exact TEXT_SINGLE_SCENE repair delta so the post-audit oracle binds the same CI repair bytes. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "7f61274dd87931835a9824e06d87a83bcb4b665e6b88bd61537de3c9005776dc"
+      "rationale": "Bounded verifier update admits the Release01 contract guard and C2A carrier into the exact TEXT_SINGLE_SCENE repair delta so the post-audit oracle binds the same CI repair bytes. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
+      "sha256": "ed2d38c4dd542df929ead11ead52425a50670c20c51dfef946698a2237fa44d9"
     },
     {
       "approved": true,
@@ -298,15 +298,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:48:00.000Z",
+      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_POST_AUDIT_CONTRACT_ADMISSION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Bounded contract update raises the TEXT_SINGLE_SCENE admitted-path denominator for the newly admitted Release01 contract guard. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "0014abaff269b46320ac3b9eb4b998d601b9c4ecd85e2fe063c35ce9162eb0a3"
+      "rationale": "Bounded contract update raises the TEXT_SINGLE_SCENE admitted-path denominator for the newly admitted Release01 contract guard and C2A carrier. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
+      "sha256": "98f81e0bfaf1314fc291b5b06bfb726f423385aba6a47e9a4170f2dc57b72640"
     },
     {
       "approved": true,
@@ -427,7 +427,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:48:00.000Z",
+      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_C2A_CARRIER_REBIND",
       "evidenceStampIds": [
@@ -435,18 +435,18 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Deterministic C2A carrier rebind caused only by the maintained C1B inventory byte update for the bounded Release01 successor-chain CI repair. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "bb7a7761623845581b0e9709fe336e39b857e7e9667c6ba2b002f2cc93e39622"
+      "sha256": "c05dca54b6d99fdbea40fa4661b68aca797dfaeea4601792dfe23eb4342a1ab1"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:48:00.000Z",
+      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_SUCCESSOR_CHAIN_CONTRACT_REPAIR",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
       ],
       "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
-      "rationale": "Release01 current wording registry compilation now follows the admitted TEXT_SINGLE_SCENE append-only successor after verifying its CORE_A4 predecessor hash and predecessor editor override, so the registry binds the current editor wording bytes. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
+      "rationale": "Release01 current wording registry compilation follows the admitted TEXT_SINGLE_SCENE append-only successor after verifying its CORE_A4 predecessor hash and predecessor editor override, so the registry binds the current editor wording bytes. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
       "sha256": "1ad3e1ec82b7dac4b711b80b595e6319e5ef6f58f6397bbabe06bcbe48cf11ae"
     }
   ],
