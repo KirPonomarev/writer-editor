@@ -921,6 +921,7 @@ export const C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION = O
   successorPath: 'docs/OPS/R24/CORRECTIVE/C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1.json',
   inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
   approvalsPath: 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  pk1r1ApprovalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   profilePath: 'src/core/writer-local-profile-v1.cjs',
   verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
@@ -943,6 +944,7 @@ export const C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION = O
   admittedPaths: Object.freeze([
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
     'docs/OPS/R24/CORRECTIVE/C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'src/core/writer-local-profile-v1.cjs',
@@ -5453,6 +5455,7 @@ export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluatio
   const artifacts = new Map(e.admittedPaths.map(relative => [relative, readText(relative)]));
   const inventory = readJson(e.inventoryPath);
   const approvals = readJson(e.approvalsPath);
+  const pk1r1Approvals = readJson(e.pk1r1ApprovalsPath);
   const successor = readJson(e.successorPath);
   assert(inventory.value.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.value.totals?.all === e.inventoryFileDenominator && inventory.value.totals?.requiredSkips === 0 && inventory.value.totals?.unexplainedSkips === 0, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_INVENTORY');
   for (const relative of [e.postAuditTestPath, e.profileUnitTestPath, e.profileIntegrationTestPath, e.profileMutantsTestPath]) {
@@ -5460,10 +5463,16 @@ export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluatio
     assert(entry?.sha256 === artifacts.get(relative)?.digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_INVENTORY_DIGEST', relative);
   }
   assert(approvals.value.version === 'v1.0' && Array.isArray(approvals.value.approvals), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_APPROVALS');
-  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath && item !== e.pk1r1ApprovalsPath)) {
     const digest = artifacts.get(relative)?.digest;
     const approved = approvals.value.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy));
     assert(approved, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_APPROVAL_DIGEST', relative);
+  }
+  assert(pk1r1Approvals.value.version === 'v1.0' && Array.isArray(pk1r1Approvals.value.approvals), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PK1R1_APPROVALS');
+  for (const relative of [e.inventoryPath, e.successorPath, e.approvalsPath, e.verifierPath, e.postAuditTestPath]) {
+    const digest = artifacts.get(relative)?.digest;
+    const approved = pk1r1Approvals.value.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy));
+    assert(approved, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PK1R1_APPROVAL_DIGEST', relative);
   }
   assert(successor.value.schemaVersion === 'C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1' && successor.value.taskId === e.taskId && successor.value.programDone === false, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_SUCCESSOR');
   assert(successor.value.evaluationBase?.sha === e.baseSha && successor.value.authority?.approvedBy === e.approvedBy, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_SUCCESSOR_AUTHORITY');
@@ -5480,7 +5489,7 @@ export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluatio
   const postAuditVerifier = artifacts.get(e.verifierPath).text;
   const postAuditTest = artifacts.get(e.postAuditTestPath).text;
   for (const token of ['C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION', 'verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException', 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA']) assert(postAuditVerifier.includes(token), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_VERIFIER_TOKEN', token);
-  for (const token of ['C2 packaged DOCX review roundtrip profile expansion accepts exact repair delta', 'C2 packaged DOCX review roundtrip profile expansion rejects an unadmitted future path', 'C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier rename', 'C2 packaged DOCX review roundtrip profile expansion rejects stale inventory binding', 'C2 packaged DOCX review roundtrip profile expansion rejects stale approval hash']) assert(postAuditTest.includes(token), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_POST_AUDIT_TEST_TOKEN', token);
+  for (const token of ['C2 packaged DOCX review roundtrip profile expansion accepts exact repair delta', 'C2 packaged DOCX review roundtrip profile expansion rejects an unadmitted future path', 'C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier rename', 'C2 packaged DOCX review roundtrip profile expansion rejects stale inventory binding', 'C2 packaged DOCX review roundtrip profile expansion rejects stale approval hash', 'C2 packaged DOCX review roundtrip profile expansion rejects stale PK1R1 approval hash']) assert(postAuditTest.includes(token), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_POST_AUDIT_TEST_TOKEN', token);
   return {
     schemaVersion: 'C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_EXCEPTION_V1',
     status: 'PASS',
@@ -5498,6 +5507,7 @@ export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluatio
     deniedReviewCommandIds: e.deniedReviewCommandIds,
     inventoryDigest: inventory.digest,
     approvalsDigest: approvals.digest,
+    pk1r1ApprovalsDigest: pk1r1Approvals.digest,
     successorDigest: successor.digest,
     artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
     wp305RegistryUnchanged: true,

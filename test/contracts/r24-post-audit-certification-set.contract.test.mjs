@@ -2107,9 +2107,10 @@ test('C2 packaged DOCX review roundtrip profile expansion accepts exact repair d
   assert.equal(result.baseSha, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.baseSha);
   assert.equal(result.baseTree, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.baseTree);
   assert.deepEqual(result.changedPaths, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.admittedPaths);
-  assert.equal(result.admittedPathDenominator, 9);
+  assert.equal(result.admittedPathDenominator, 10);
   assert.deepEqual(result.commandIds, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.commandIds);
   assert.ok(result.changedPaths.includes('src/core/writer-local-profile-v1.cjs'));
+  assert.ok(result.changedPaths.includes('docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json'));
   assert.ok(result.changedPaths.includes('test/unit/r24-wp307-writer-local-profile-mutants.test.js'));
   assert.equal(result.wp305RegistryUnchanged, true);
   assert.equal(result.optionalReviewSystemsStillDenied, true);
@@ -2132,14 +2133,22 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier 
   const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
   const mutated = Buffer.from(objectFromCommit('HEAD', e.profilePath).toString('utf8').replaceAll('WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP', 'WRITER_LOCAL_MINIMUM_INTERCHANGE'));
   const mutatedDigest = h(mutated);
+  const mutatedApprovals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+  const mutatedApprovalsRow = mutatedApprovals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
+  mutatedApprovalsRow.sha256 = mutatedDigest;
+  const mutatedApprovalsBytes = canonicalBytes(mutatedApprovals);
+  const mutatedApprovalsDigest = h(mutatedApprovalsBytes);
   const hostileGit = (args, options = {}) => {
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.profilePath}`)) {
       return options.encoding === 'utf8' ? mutated.toString('utf8') : mutated;
     }
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
-      const row = approvals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
-      row.sha256 = mutatedDigest;
+      return options.encoding === 'utf8' ? mutatedApprovalsBytes.toString('utf8') : mutatedApprovalsBytes;
+    }
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = mutatedApprovalsDigest;
       const bytes = canonicalBytes(approvals);
       return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
     }
@@ -2163,17 +2172,39 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects stale inventor
 });
 test('C2 packaged DOCX review roundtrip profile expansion rejects stale approval hash', () => {
   const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const mutatedApprovals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+  const mutatedApprovalsRow = mutatedApprovals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
+  mutatedApprovalsRow.sha256 = '0'.repeat(64);
+  const mutatedApprovalsBytes = canonicalBytes(mutatedApprovals);
+  const mutatedApprovalsDigest = h(mutatedApprovalsBytes);
   const hostileGit = (args, options = {}) => {
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
-      const row = approvals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
-      row.sha256 = '0'.repeat(64);
+      return options.encoding === 'utf8' ? mutatedApprovalsBytes.toString('utf8') : mutatedApprovalsBytes;
+    }
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = mutatedApprovalsDigest;
       const bytes = canonicalBytes(approvals);
       return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
     }
     return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
   };
   assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_APPROVAL_DIGEST/);
+});
+test('C2 packaged DOCX review roundtrip profile expansion rejects stale PK1R1 approval hash', () => {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = '0'.repeat(64);
+      const bytes = canonicalBytes(approvals);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PK1R1_APPROVAL_DIGEST/);
 });
 
 function currentClosureSelectorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
