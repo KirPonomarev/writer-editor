@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1",
+  "createdAtUtc": "2026-09-15T00:00:00.000Z",
+  "taskId": "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION",
+  "status": "CURRENT_APPEND_ONLY_SUCCESSOR",
+  "programDone": false,
+  "evaluationBase": {
+    "sha": "f7df7f0902821b88c1ee6c80856b3c9adc1092a2",
+    "role": "OWNER_DELEGATED_BINDING_BASE"
+  },
+  "authority": {
+    "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+    "scope": "Admit exactly the owner-authorized packaged Word V4 review roundtrip survivor commands in the WRITER_LOCAL_V1 profile while keeping optional Review, Plan, and Atlas systems disabled.",
+    "nonClaims": [
+      "no minimum interchange reclassification",
+      "no WP305 registry change",
+      "no broad review command admission",
+      "no plan command admission",
+      "no atlas command admission",
+      "no new dependency",
+      "no runtime network",
+      "no cloud truth",
+      "no word physical route claim",
+      "no denominator promotion",
+      "no cell acceptance",
+      "no program done"
+    ]
+  },
+  "delta": {
+    "outcome": "The packaged local profile admits only exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch as DOCX review roundtrip survivors required by the C2 packaged physical cell; near-match review commands remain denied.",
+    "stateClasses": [
+      "PROJECT_STATE",
+      "DERIVED_STATE"
+    ],
+    "commandIds": [
+      "cmd.project.review.exportDocxReviewPacket",
+      "cmd.project.review.activateDocxReviewPreviewSession",
+      "cmd.project.review.applyExactTextChangesBatch"
+    ],
+    "forbiddenCarrierNames": [
+      "WRITER_LOCAL_MINIMUM_INTERCHANGE_COMMAND_IDS",
+      "WP305",
+      "minimumInterchange"
+    ]
+  }
+}

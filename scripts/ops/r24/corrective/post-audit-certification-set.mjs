@@ -914,6 +914,44 @@ export const TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION = Object.freeze({
     'test/unit/sector-m-preload-workspace-query-bridge.test.js',
   ].sort()),
 });
+export const C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION = Object.freeze({
+  baseSha: 'f7df7f0902821b88c1ee6c80856b3c9adc1092a2',
+  baseTree: '484fb0a7ea77f76c6ac540d9d6ec8a58ad66ec72',
+  taskId: 'C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION',
+  successorPath: 'docs/OPS/R24/CORRECTIVE/C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1.json',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  profilePath: 'src/core/writer-local-profile-v1.cjs',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  profileUnitTestPath: 'test/unit/r24-wp307-writer-local-profile.test.js',
+  profileIntegrationTestPath: 'test/unit/r24-wp307-writer-local-profile-integration.test.js',
+  profileMutantsTestPath: 'test/unit/r24-wp307-writer-local-profile-mutants.test.js',
+  inventoryFileDenominator: 1471,
+  approvedBy: 'owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15',
+  commandIds: Object.freeze([
+    'cmd.project.review.exportDocxReviewPacket',
+    'cmd.project.review.activateDocxReviewPreviewSession',
+    'cmd.project.review.applyExactTextChangesBatch',
+  ]),
+  deniedReviewCommandIds: Object.freeze([
+    'cmd.project.review.exportLocalPacket',
+    'cmd.project.review.openDocxReviewPreviewSession',
+    'cmd.project.review.applyFullManuscriptExactTextReturn',
+    'cmd.project.review.clearSession',
+  ]),
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'src/core/writer-local-profile-v1.cjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/unit/r24-wp307-writer-local-profile-integration.test.js',
+    'test/unit/r24-wp307-writer-local-profile-mutants.test.js',
+    'test/unit/r24-wp307-writer-local-profile.test.js',
+  ].sort()),
+});
 export const R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION = Object.freeze({
   baseSha: '22d02b7dee226eaa35756705901fcbaf690c40f3',
   baseTree: 'f360771818751680bece9ec7734eeafa9561f8c2',
@@ -5384,6 +5422,96 @@ function resolveTextSingleSceneC1SourceRuntimeCandidate(git, requested, e) {
   fail('E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA');
 }
 
+function resolveC2PackagedDocxReviewRoundtripProfileExpansionCandidate(git, requested, e) {
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  if (exact(requested)) return requested;
+  const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+  for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
+  fail('E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA');
+}
+
+export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_BASE_ANCESTRY'); }
+  const candidate = resolveC2PackagedDocxReviewRoundtripProfileExpansionCandidate(git, requested, e);
+  const changed = gitText(git, ['diff', '--name-only', `${e.baseSha}..${candidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed) === JSON.stringify(e.admittedPaths), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_IDENTITY');
+  const readText = relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_ARTIFACT_MISSING', relative); }
+    assert(bytes.at(-1) === 0x0a, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_CANONICAL_LF', relative);
+    return { bytes, text: bytes.toString('utf8'), digest: h(bytes) };
+  };
+  const readJson = relative => {
+    const file = readText(relative);
+    return { ...file, value: JSON.parse(file.text) };
+  };
+  const artifacts = new Map(e.admittedPaths.map(relative => [relative, readText(relative)]));
+  const inventory = readJson(e.inventoryPath);
+  const approvals = readJson(e.approvalsPath);
+  const successor = readJson(e.successorPath);
+  assert(inventory.value.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.value.totals?.all === e.inventoryFileDenominator && inventory.value.totals?.requiredSkips === 0 && inventory.value.totals?.unexplainedSkips === 0, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_INVENTORY');
+  for (const relative of [e.postAuditTestPath, e.profileUnitTestPath, e.profileIntegrationTestPath, e.profileMutantsTestPath]) {
+    const entry = inventory.value.entries.find(item => item.path === relative);
+    assert(entry?.sha256 === artifacts.get(relative)?.digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_INVENTORY_DIGEST', relative);
+  }
+  assert(approvals.value.version === 'v1.0' && Array.isArray(approvals.value.approvals), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_APPROVALS');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    const digest = artifacts.get(relative)?.digest;
+    const approved = approvals.value.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy));
+    assert(approved, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_APPROVAL_DIGEST', relative);
+  }
+  assert(successor.value.schemaVersion === 'C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1' && successor.value.taskId === e.taskId && successor.value.programDone === false, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_SUCCESSOR');
+  assert(successor.value.evaluationBase?.sha === e.baseSha && successor.value.authority?.approvedBy === e.approvedBy, 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_SUCCESSOR_AUTHORITY');
+  for (const token of ['no minimum interchange reclassification', 'no WP305 registry change', 'no broad review command admission', 'no word physical route claim', 'no denominator promotion', 'no cell acceptance', 'no program done']) {
+    assert(successor.value.authority?.nonClaims?.includes(token), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_SUCCESSOR_NONCLAIM', token);
+  }
+  for (const commandId of e.commandIds) assert(successor.value.delta?.commandIds?.includes(commandId), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_SUCCESSOR_COMMAND', commandId);
+  const profile = artifacts.get(e.profilePath).text;
+  assert(profile.includes('WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS') && profile.includes('WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_ID_SET'), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_TOKEN');
+  for (const commandId of e.commandIds) assert(profile.includes(commandId), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_COMMAND', commandId);
+  for (const commandId of e.deniedReviewCommandIds) assert(!profile.includes(commandId), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_NEAR_MATCH', commandId);
+  assert(!profile.includes('process.env'), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_ENV');
+  assert(!profile.includes('WRITER_LOCAL_MINIMUM_INTERCHANGE_COMMAND_IDS') && !profile.includes('minimumInterchange'), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_WRONG_CARRIER');
+  const postAuditVerifier = artifacts.get(e.verifierPath).text;
+  const postAuditTest = artifacts.get(e.postAuditTestPath).text;
+  for (const token of ['C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION', 'verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException', 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA']) assert(postAuditVerifier.includes(token), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_VERIFIER_TOKEN', token);
+  for (const token of ['C2 packaged DOCX review roundtrip profile expansion accepts exact repair delta', 'C2 packaged DOCX review roundtrip profile expansion rejects an unadmitted future path', 'C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier rename', 'C2 packaged DOCX review roundtrip profile expansion rejects stale inventory binding', 'C2 packaged DOCX review roundtrip profile expansion rejects stale approval hash']) assert(postAuditTest.includes(token), 'E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_POST_AUDIT_TEST_TOKEN', token);
+  return {
+    schemaVersion: 'C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_EXCEPTION_V1',
+    status: 'PASS',
+    baseSha: e.baseSha,
+    baseTree: e.baseTree,
+    candidateSha: candidate,
+    candidateTree,
+    currentCandidateSha: requested,
+    currentCandidateTree: requestedTree,
+    admittedPaths: e.admittedPaths,
+    changedPaths: changed,
+    admittedPathDenominator: e.admittedPaths.length,
+    changedPathDenominator: changed.length,
+    commandIds: e.commandIds,
+    deniedReviewCommandIds: e.deniedReviewCommandIds,
+    inventoryDigest: inventory.digest,
+    approvalsDigest: approvals.digest,
+    successorDigest: successor.digest,
+    artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    wp305RegistryUnchanged: true,
+    optionalReviewSystemsStillDenied: true,
+    supportedDenominatorPromotion: false,
+    wordPhysicalRouteClaim: false,
+    googleNativeRouteClaim: false,
+    cellAcceptanceAuthority: false,
+    programDone: false,
+    productionReleaseReady: false,
+    graphIncrement: 0,
+  };
+}
+
 function resolveR24X01IdempotentContractRecoveryCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
@@ -7319,6 +7447,18 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const textSingleSceneC1SourceRuntimeException = textSingleSceneC1SourceRuntimeEnabled ? verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (textSingleSceneC1SourceRuntimeException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let c2PackagedDocxReviewRoundtripProfileExpansionEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.successorPath);
+      c2PackagedDocxReviewRoundtripProfileExpansionEnabled = true;
+    } catch {}
+  }
+  const c2PackagedDocxReviewRoundtripProfileExpansionException = c2PackagedDocxReviewRoundtripProfileExpansionEnabled
+    ? verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: resolvedCandidate, git })
+    : null;
+  for (const admittedPath of (c2PackagedDocxReviewRoundtripProfileExpansionException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   let r24X01IdempotentContractRecoveryEnabled = false;
   if (allowAuditCycle2Admission && resolvedCandidate !== R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha) {
     try {
@@ -7361,6 +7501,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;
   verificationResult.textSingleSceneC1SourceRuntimePostEvaluationException = textSingleSceneC1SourceRuntimeException;
+  verificationResult.c2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException = c2PackagedDocxReviewRoundtripProfileExpansionException;
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
   verificationResult.ePlanPredecessorPostEvaluationException = ePlanPredecessorException;

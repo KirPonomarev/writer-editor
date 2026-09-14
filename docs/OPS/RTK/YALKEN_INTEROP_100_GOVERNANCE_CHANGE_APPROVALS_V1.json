@@ -493,6 +493,102 @@
       ],
       "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
       "sha256": "1dda8cb9610e6b5fd702275890188b5afed65eb13607f29bf520183abc20b800"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "6c57bfec5a585f4f152bc52ccffdd0b063770573bd85e4160446246b4ee809e8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_V1.json",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "262c4920758217e7c3be92507e3803fabd6d5eb0bb839fefeb5baf095f9348fe"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "1c219d139a95a7e6832eec4a484c5b7f01e12da09fe698c02f96f3f7b2928202"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "src/core/writer-local-profile-v1.cjs",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "9253ceae1056de0c62b77502bcca9a2aeac344ac44b0cd43328f46ea522c3128"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "dcbd4a9b5961bf94c640841e0822f4b4f9a03226fdde3e48c54bd1620684f37f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "d5377a43329a8efcba83be90cad9a577624cf822084c18a3f516312997e89b30"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "730ab92a95c47c4c8815e26a8680a0c6dae42b2249a5cbf73dd1697024d9f1e2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T22:52:38.000Z",
+      "approvedBy": "owner-delegated-task:C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_2026_09_15",
+      "authority": "OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "test/unit/r24-wp307-writer-local-profile.test.js",
+      "rationale": "Approve exact current bytes for the bounded C2 packaged DOCX review roundtrip profile expansion and its required post-evaluation CI admission witness. Scope is limited to admitting exportDocxReviewPacket, activateDocxReviewPreviewSession, and applyExactTextChangesBatch under WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS in the WRITER_LOCAL_V1 packaged local profile while keeping optional Review, Plan, and Atlas systems disabled. No minimum interchange reclassification, WP305 registry change, broad review command admission, dependency, runtime network, cloud truth, Word physical route claim, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "8bcefafdf187469352d8bb79f016002d187f4000577a75b36c4ccb4d81112cf2"
     }
   ],
   "version": "v1.0",
@@ -502,6 +598,7 @@
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
     "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
     "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
-    "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
+    "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
+    "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
   ]
 }
