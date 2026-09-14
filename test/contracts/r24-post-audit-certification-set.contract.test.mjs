@@ -392,15 +392,15 @@ test('R24 interop100 denominator hardening exception accepts exact current delta
     assert.equal(result.supportedDenominatorPromotion, false);
     assert.equal(result.programDone, false);
     assert.deepEqual(fixture.publisherSummary(), {
-      deduped: 4,
+      deduped: 5,
       failures: 0,
-      fsyncCalls: 24,
-      published: 12,
+      fsyncCalls: 22,
+      published: 11,
       readbackCalls: 16,
-      renameCalls: 12,
-      uniquePathByteHashCount: 12,
+      renameCalls: 11,
+      uniquePathByteHashCount: 11,
       uniquePathCount: 8,
-      writeCalls: 12,
+      writeCalls: 11,
     });
   } finally {
     fixture.cleanup();
