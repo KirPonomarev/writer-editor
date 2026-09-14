@@ -61,6 +61,7 @@ const MODULE_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'rtk-interop-terminal
 const REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'YALKEN_INTEROP_TERMINAL_CLAIM_REGISTRY_V1.json');
 const WORDING_PREDECESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'WP805_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json');
 const WORDING_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json');
+const COMMAND_PALETTE_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json');
 const WORD_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'WORD_BUILD_PROFILE_REGISTRY_V1.json');
 const GOOGLE_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'GOOGLE_BUILD_PROFILE_REGISTRY_V1.json');
 const CAPABILITY_MATRIX_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'CAPABILITY_MATRIX.json');
@@ -102,6 +103,14 @@ function stableJson(value) {
 
 function sha256Text(text) {
   return `sha256:${crypto.createHash('sha256').update(Buffer.from(text, 'utf8')).digest('hex')}`;
+}
+
+function sha256RawBytes(bytes) {
+  return crypto.createHash('sha256').update(bytes).digest('hex');
+}
+
+function sha256RawFile(absPath) {
+  return sha256RawBytes(fs.readFileSync(absPath));
 }
 
 function sha256File(absPath) {
@@ -185,6 +194,122 @@ function stripDigest(claim) {
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+const RELEASE01_SUCCESSOR_CHAIN_CODES = Object.freeze({
+  HISTORICAL_REGISTRY_HASH_MISMATCH: 'RTK_RELEASE01_WORDING_SUCCESSOR_HISTORICAL_REGISTRY_HASH_MISMATCH',
+  PREDECESSOR_HASH_MISMATCH: 'RTK_RELEASE01_WORDING_SUCCESSOR_PREDECESSOR_HASH_MISMATCH',
+  PREDECESSOR_OVERRIDE_MISMATCH: 'RTK_RELEASE01_WORDING_SUCCESSOR_PREDECESSOR_OVERRIDE_MISMATCH',
+  SURFACE_OVERRIDE_MISSING: 'RTK_RELEASE01_WORDING_SUCCESSOR_SURFACE_OVERRIDE_MISSING',
+  CURRENT_OVERRIDE_MISSING: 'RTK_RELEASE01_WORDING_SUCCESSOR_CURRENT_OVERRIDE_MISSING',
+});
+
+function failSuccessorChain(code, message) {
+  const error = new Error(`${code}: ${message}`);
+  error.code = code;
+  throw error;
+}
+
+function loadJsonWithBytes(absPath) {
+  const bytes = fs.readFileSync(absPath);
+  return {
+    bytes,
+    digest: sha256RawBytes(bytes),
+    value: JSON.parse(bytes.toString('utf8')),
+  };
+}
+
+function assertExactSurfaceOverridePaths(successor, expectedPaths, code) {
+  const actual = (successor.surfaceOverrides || []).map((surface) => surface.path);
+  if (actual.length !== expectedPaths.length || actual.some((value, index) => value !== expectedPaths[index])) {
+    failSuccessorChain(code, `surface override paths ${JSON.stringify(actual)} != ${JSON.stringify(expectedPaths)}`);
+  }
+  for (const expectedPath of expectedPaths) {
+    const override = (successor.surfaceOverrides || []).find((surface) => surface.path === expectedPath);
+    if (!override || typeof override.surfaceId !== 'string' || typeof override.sha256 !== 'string') {
+      failSuccessorChain(code, `missing complete override for ${expectedPath}`);
+    }
+  }
+}
+
+function applySurfaceOverrides(registry, surfaceOverrides, code) {
+  const next = registry;
+  for (const override of surfaceOverrides || []) {
+    const index = next.wordingSurfaces.findIndex((surface) => (
+      surface.surfaceId === override.surfaceId && surface.path === override.path
+    ));
+    if (index === -1) {
+      failSuccessorChain(code, `successor surface not found in registry: ${override.path}`);
+    }
+    next.wordingSurfaces[index] = {
+      surfaceId: override.surfaceId,
+      path: override.path,
+      sha256: override.sha256,
+    };
+  }
+  return next;
+}
+
+function compileRelease01CurrentWordingRegistry({
+  historicalRegistry,
+  wp806SuccessorLoad = loadJsonWithBytes(WORDING_SUCCESSOR_PATH),
+  commandPaletteSuccessorLoad = loadJsonWithBytes(COMMAND_PALETTE_SUCCESSOR_PATH),
+} = {}) {
+  const registry = clone(historicalRegistry);
+  const wp805Digest = sha256RawFile(WORDING_PREDECESSOR_PATH);
+  const registryDigest = sha256RawFile(REGISTRY_PATH);
+  const wp806 = wp806SuccessorLoad.value;
+  if (wp806.historicalRegistry?.sha256 !== registryDigest) {
+    failSuccessorChain(
+      RELEASE01_SUCCESSOR_CHAIN_CODES.HISTORICAL_REGISTRY_HASH_MISMATCH,
+      'WP806 must preserve the exact historical terminal registry bytes'
+    );
+  }
+  if (wp806.predecessorSuccessor?.sha256 !== wp805Digest) {
+    failSuccessorChain(
+      RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH,
+      'WP806 must preserve the exact WP805 predecessor successor bytes'
+    );
+  }
+  assertExactSurfaceOverridePaths(
+    wp806,
+    ['package.json', 'src/renderer/editor.js'],
+    RELEASE01_SUCCESSOR_CHAIN_CODES.SURFACE_OVERRIDE_MISSING
+  );
+  applySurfaceOverrides(
+    registry,
+    wp806.surfaceOverrides,
+    RELEASE01_SUCCESSOR_CHAIN_CODES.SURFACE_OVERRIDE_MISSING
+  );
+
+  const commandPalette = commandPaletteSuccessorLoad.value;
+  if (commandPalette.predecessorSuccessor?.path !== 'docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json'
+    || commandPalette.predecessorSuccessor?.sha256 !== wp806SuccessorLoad.digest) {
+    failSuccessorChain(
+      RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH,
+      'CORE_A4 must bind exactly to the preserved WP806 successor bytes'
+    );
+  }
+  const wp806Editor = (wp806.surfaceOverrides || []).find((entry) => entry.path === 'src/renderer/editor.js');
+  const predecessorEditor = (commandPalette.predecessorSurfaceOverrides || []).find((entry) => entry.path === 'src/renderer/editor.js');
+  if (!wp806Editor || !predecessorEditor || predecessorEditor.sha256 !== wp806Editor.sha256) {
+    failSuccessorChain(
+      RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_OVERRIDE_MISMATCH,
+      'CORE_A4 must preserve the WP806 editor override as its predecessor surface'
+    );
+  }
+  assertExactSurfaceOverridePaths(
+    commandPalette,
+    ['src/renderer/editor.js'],
+    RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING
+  );
+  applySurfaceOverrides(
+    registry,
+    commandPalette.surfaceOverrides,
+    RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING
+  );
+
+  return registry;
 }
 
 function firstCode(result) {
@@ -622,17 +747,7 @@ test('RELEASE01-14-integration-real-registry-binds-all-wording-and-rolls-up', as
   assert.equal(loaded.ok, true, 'real terminal-claim registry must load');
   const historicalRegistry = loaded.registry || loaded.claims ? loaded.registry : null;
   assert.ok(historicalRegistry, 'loaded registry must expose the registry object');
-  const successor = JSON.parse(fs.readFileSync(WORDING_SUCCESSOR_PATH, 'utf8'));
-  assert.equal(successor.historicalRegistry.sha256, crypto.createHash('sha256').update(fs.readFileSync(REGISTRY_PATH)).digest('hex'));
-  assert.equal(successor.predecessorSuccessor.sha256, crypto.createHash('sha256').update(fs.readFileSync(WORDING_PREDECESSOR_PATH)).digest('hex'));
-  assert.deepEqual(successor.surfaceOverrides.map((surface) => surface.path), ['package.json', 'src/renderer/editor.js']);
-  const registry = JSON.parse(JSON.stringify(historicalRegistry));
-  for (const override of successor.surfaceOverrides) {
-    const index = registry.wordingSurfaces.findIndex((surface) => surface.surfaceId === override.surfaceId && surface.path === override.path);
-    assert.notEqual(index, -1, `successor surface must exist historically: ${override.path}`);
-    assert.equal(override.sha256, sha256File(path.join(REPO_ROOT, override.path)), `successor surface sha256 must match: ${override.path}`);
-    registry.wordingSurfaces[index] = { surfaceId: override.surfaceId, path: override.path, sha256: override.sha256 };
-  }
+  const registry = compileRelease01CurrentWordingRegistry({ historicalRegistry });
 
   // (a) Every wordingSurface path must exist with a matching sha256.
   for (const surface of registry.wordingSurfaces || []) {
@@ -715,6 +830,36 @@ test('RELEASE01-14-integration-real-registry-binds-all-wording-and-rolls-up', as
   assert.equal(rollup.terminalClaim, 'NOT_MADE_WORD_TERMINAL_PASS_REQUIRED',
     'terminal roll-up must stay at NOT_MADE_WORD_TERMINAL_PASS_REQUIRED');
   assert.equal(rollup.ok, true, 'roll-up must agree with registry.terminalRollup.state');
+});
+
+test('RELEASE01-14a-successor-chain-rejects-broken-WP806-predecessor-hash', async () => {
+  const module = await loadModule();
+  const loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true, 'real terminal-claim registry must load before hostile chain test');
+
+  const wp806Load = loadJsonWithBytes(WORDING_SUCCESSOR_PATH);
+  const mutated = clone(wp806Load.value);
+  mutated.predecessorSuccessor.sha256 = '0'.repeat(64);
+
+  assert.throws(() => compileRelease01CurrentWordingRegistry({
+    historicalRegistry: loaded.registry,
+    wp806SuccessorLoad: { ...wp806Load, value: mutated },
+  }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH);
+});
+
+test('RELEASE01-14b-successor-chain-rejects-missing-CORE-A4-current-editor-override', async () => {
+  const module = await loadModule();
+  const loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true, 'real terminal-claim registry must load before hostile chain test');
+
+  const commandPaletteLoad = loadJsonWithBytes(COMMAND_PALETTE_SUCCESSOR_PATH);
+  const mutated = clone(commandPaletteLoad.value);
+  mutated.surfaceOverrides = [];
+
+  assert.throws(() => compileRelease01CurrentWordingRegistry({
+    historicalRegistry: loaded.registry,
+    commandPaletteSuccessorLoad: { ...commandPaletteLoad, value: mutated },
+  }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
 });
 
 // ===========================================================================
