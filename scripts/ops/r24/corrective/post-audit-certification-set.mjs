@@ -899,6 +899,7 @@ export const TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION = Object.freeze({
     'test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js',
     'test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js',
     'test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js',
+    'test/contracts/rtk-release01-terminal-claims.contract.test.js',
     'test/contracts/rtk-generic01-create-only-import.contract.test.js',
     'test/unit/docx-import-preview-ui-flow.test.js',
     'test/unit/docx-import-safe-create.test.js',

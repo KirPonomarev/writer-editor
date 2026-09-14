@@ -2051,7 +2051,7 @@ test('TEXT SINGLE_SCENE C1 source-runtime exception accepts exact repair delta',
   assert.equal(result.baseSha, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseSha);
   assert.equal(result.baseTree, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseTree);
   assert.deepEqual(result.changedPaths, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.admittedPaths);
-  assert.equal(result.admittedPathDenominator, 24);
+  assert.equal(result.admittedPathDenominator, 25);
   assert.deepEqual(result.defectRepairs, [
     'DOCX_MIN_EXPORT_DOC_PRESERVED',
     'COLLAB_SCOPE_LOCAL_QUERY_ENVELOPE',
