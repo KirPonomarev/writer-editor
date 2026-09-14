@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 export const REQUIRED_DEPENDENCIES = Object.freeze([
   'actual-renderer-build-rtk',
   'c1a-hermetic',
+  'c1c-contract-shard',
   'e0-mutants',
   'inventory-baseline',
   'live-ruleset-oracle',
@@ -32,7 +33,7 @@ const AUTHORITY_RULESET_CARRIER_DIGEST = '867f06a203b0e1aeb688aa7a25479b0a102ba5
 export function verifyDependencyResults(results) {
   assert(results && typeof results === 'object' && !Array.isArray(results), 'E_RESULTS_OBJECT');
   const keys = Object.keys(results).sort();
-  assert(JSON.stringify(keys) === JSON.stringify([...REQUIRED_DEPENDENCIES]), 'E_DEPENDENCY_SET', keys.join(','));
+  assert(JSON.stringify(keys) === JSON.stringify([...REQUIRED_DEPENDENCIES].sort()), 'E_DEPENDENCY_SET', keys.join(','));
   for (const key of REQUIRED_DEPENDENCIES) assert(results[key] === 'success', 'E_DEPENDENCY_NOT_SUCCESS', `${key}:${results[key]}`);
   return { schemaVersion: 'POST_AUDIT_MERGE_GATE_RESULT_V1', status: 'PASS', dependencies: keys };
 }
