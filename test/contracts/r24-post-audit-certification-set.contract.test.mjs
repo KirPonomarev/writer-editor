@@ -8,10 +8,11 @@ import test from 'node:test';
 import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { R24_F_SUBSTRATE_EXPECTATION, verifyFSubstratePostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
+import { createFixturePublicationCache } from '../fixtures/r24-fixture-publication-cache.mjs';
 import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
 import { RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs';
 import { RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs';
-import { verifyRuleset } from '../../scripts/ops/r24/corrective/post-audit-merge-gate.mjs';
+import { verifyDependencyResults, verifyRuleset } from '../../scripts/ops/r24/corrective/post-audit-merge-gate.mjs';
 import {
   AUDIT_CYCLE_1_DURABLE_EXPECTATION,
   AUDIT_CYCLE_2_ADMISSION_EXPECTATION,
@@ -266,6 +267,7 @@ function sha256StableJson(value) {
 function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSeal, mutateAfterSeal } = {}) {
   const e = R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION;
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-interop100-post-audit-'));
+  const publisher = createFixturePublicationCache({ identity: { fixture: 'R24_INTEROP_100_DENOMINATOR_ADMISSION', repoRoot } });
   git(repoRoot, ['init', '-q']);
   git(repoRoot, ['config', 'user.email', 'interop100-post-audit@example.invalid']);
   git(repoRoot, ['config', 'user.name', 'Interop 100 Post Audit']);
@@ -279,7 +281,7 @@ function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSe
     for (const relative of e.admittedPaths) {
       const absolutePath = path.join(repoRoot, relative);
       fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-      fs.writeFileSync(absolutePath, files.get(relative));
+      publisher.publish(absolutePath, files.get(relative));
     }
   };
   let sourceSha;
@@ -368,7 +370,7 @@ function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSe
     } else throw new Error(`Unexpected fixture Git command: ${args.join(' ')}`);
     return options.encoding === 'utf8' ? String(result) : Buffer.from(result);
   };
-  return { e, files, read, put, git: fixtureGit, repoRoot, candidateSha, candidateTree, sourceSha, sourceTree, cleanup: () => fs.rmSync(repoRoot, { recursive: true, force: true }) };
+  return { e, files, read, put, git: fixtureGit, repoRoot, candidateSha, candidateTree, sourceSha, sourceTree, publisherSummary: publisher.summary, cleanup: () => fs.rmSync(repoRoot, { recursive: true, force: true }) };
 }
 
 const verifyInterop100DenominatorAdmissionFixture = (fixture) => verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException({
@@ -389,6 +391,17 @@ test('R24 interop100 denominator hardening exception accepts exact current delta
     assert.equal(result.claimVerdict, 'AUTHORITATIVE_REHYDRATION_REQUIRED');
     assert.equal(result.supportedDenominatorPromotion, false);
     assert.equal(result.programDone, false);
+    assert.deepEqual(fixture.publisherSummary(), {
+      deduped: 5,
+      failures: 0,
+      fsyncCalls: 22,
+      published: 11,
+      readbackCalls: 16,
+      renameCalls: 11,
+      uniquePathByteHashCount: 11,
+      uniquePathCount: 8,
+      writeCalls: 11,
+    });
   } finally {
     fixture.cleanup();
   }
@@ -522,6 +535,9 @@ const CRC_TABLE=new Uint32Array(256).map((_,i)=>{let v=i;for(let b=0;b<8;b+=1)v=
 const crc32=(bytes)=>{let v=0xffffffff;for(const byte of bytes)v=CRC_TABLE[(v^byte)&0xff]^(v>>>8);return(v^0xffffffff)>>>0;};
 function zip(entries){const locals=[],centrals=[];let offset=0;for(const entry of entries){const name=Buffer.from(entry.name),bytes=Buffer.from(entry.bytes),crc=crc32(bytes);const local=Buffer.alloc(30);local.writeUInt32LE(0x04034b50,0);local.writeUInt16LE(20,4);local.writeUInt32LE(crc,14);local.writeUInt32LE(bytes.length,18);local.writeUInt32LE(bytes.length,22);local.writeUInt16LE(name.length,26);locals.push(local,name,bytes);const central=Buffer.alloc(46);central.writeUInt32LE(0x02014b50,0);central.writeUInt16LE((3<<8)|20,4);central.writeUInt16LE(20,6);central.writeUInt32LE(crc,16);central.writeUInt32LE(bytes.length,20);central.writeUInt32LE(bytes.length,24);central.writeUInt16LE(name.length,28);central.writeUInt32LE((0o100644<<16)>>>0,38);central.writeUInt32LE(offset,42);centrals.push(central,name);offset+=local.length+name.length+bytes.length;}const centralBytes=Buffer.concat(centrals),eocd=Buffer.alloc(22);eocd.writeUInt32LE(0x06054b50,0);eocd.writeUInt16LE(entries.length,8);eocd.writeUInt16LE(entries.length,10);eocd.writeUInt32LE(centralBytes.length,12);eocd.writeUInt32LE(offset,16);return Buffer.concat([...locals,centralBytes,eocd]);}
 function rulesetEnvelope({currentUserCanBypass}={}){return{_links:{html:{href:'https://github.com/KirPonomarev/writer-editor/rules/12270444'},self:{href:'https://api.github.com/repos/KirPonomarev/writer-editor/rulesets/12270444'}},bypass_actors:[],conditions:{ref_name:{exclude:[],include:['~DEFAULT_BRANCH']}},created_at:'2026-01-29T21:32:32.106+02:00',...(currentUserCanBypass===undefined?{}:{current_user_can_bypass:currentUserCanBypass}),enforcement:'active',id:12270444,name:'protect-main',node_id:'RRS_lACqUmVwb3NpdG9yec5DfP9IzgC7O2w',rules:[{type:'deletion'},{type:'non_fast_forward'},{type:'pull_request',parameters:{allowed_merge_methods:['merge','squash','rebase'],dismiss_stale_reviews_on_push:true,require_code_owner_review:false,require_extra_approval_for_unattributed_changes:true,require_last_push_approval:false,required_approving_review_count:0,required_review_thread_resolution:true,required_reviewers:[]}},{type:'required_status_checks',parameters:{do_not_enforce_on_create:false,required_status_checks:[{context:'merge-gate',integration_id:15368}],strict_required_status_checks_policy:false}}],source:'KirPonomarev/writer-editor',source_type:'Repository',target:'branch',updated_at:'2026-08-31T04:53:57.083+03:00'};}
+function successfulMergeGateDependencyResults(){return{'actual-renderer-build-rtk':'success','c1c-contract-shard':'success','c1a-hermetic':'success','e0-mutants':'success','inventory-baseline':'success','live-ruleset-oracle':'success','ops-vector':'success','oss-policy-core':'success','privacy-negative':'success','rtk-required':'success','static-security-sast':'success','x1-runtime-parity':'success'};}
+test('post-audit merge gate accepts the workflow dependency set including c1c-contract-shard',()=>{const result=verifyDependencyResults(successfulMergeGateDependencyResults());assert.equal(result.status,'PASS');assert(result.dependencies.includes('c1c-contract-shard'));assert.equal(result.dependencies.length,12);});
+test('post-audit merge gate rejects missing or failed c1c-contract-shard dependency evidence',()=>{const missing=successfulMergeGateDependencyResults();delete missing['c1c-contract-shard'];assert.throws(()=>verifyDependencyResults(missing),/E_DEPENDENCY_SET/);const failed=successfulMergeGateDependencyResults();failed['c1c-contract-shard']='failure';assert.throws(()=>verifyDependencyResults(failed),/E_DEPENDENCY_NOT_SUCCESS:c1c-contract-shard:failure/);});
 function durableFile(carrier){const bytes=canonicalBytes(carrier);return{bytes,digest:h(bytes),value:carrier};}
 function durableExpectation(file){const carrier=file.value;return{carrierDigest:file.digest,schemaVersion:carrier.schemaVersion,provider:carrier.provenance.provider,repository:carrier.provenance.repository,workflowPath:carrier.provenance.workflowPath,runId:carrier.provenance.runId,runAttempt:carrier.provenance.runAttempt,headSha:carrier.provenance.headSha,artifactId:carrier.provenance.artifactId,artifactName:carrier.provenance.artifactName,memberPath:carrier.member.path,archiveSha256:carrier.archive.sha256,archiveSizeBytes:carrier.archive.sizeBytes,memberSha256:carrier.member.sha256,memberSizeBytes:carrier.member.sizeBytes};}
 
@@ -581,8 +597,8 @@ test('RCV00B current-head effective-state compiler is admitted as a post-evaluat
 });
 test('historical false-green is reproduced as exactly nine Git-object mismatches',()=>{const value=JSON.parse(fs.readFileSync(OLD));let denominator=0,mismatches=0;for(const stage of value.stages)for(const binding of stage.artifactBindings){denominator+=1;const bytes=execFileSync('git',['show',`${value.evaluationSha}:${binding.path}`]);if(h(bytes)!==binding.sha256)mismatches+=1;}assert.equal(denominator,137);assert.equal(mismatches,9);});
 test('declared artifact mismatch fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].sha256='0'.repeat(64);assert.throws(()=>verify(mutant),/E_ARTIFACT_DIGEST_MISMATCH/);});
-test('missing artifact fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].path='missing/audit-cycle-one-artifact.json';assert.throws(()=>verify(mutant),/E_ARTIFACT_MISSING/);});
-test('missing binding cannot shrink the complete denominator',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings.pop();assert.throws(()=>verify(mutant),/E_ARTIFACT_DENOMINATOR/);});
+test('missing artifact fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].path='missing/audit-cycle-one-artifact.json';assert.throws(()=>verify(mutant),/E_CERTIFICATION_BINDING_SET|E_ARTIFACT_MISSING/);});
+test('missing binding cannot shrink the complete denominator',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings.pop();assert.throws(()=>verify(mutant),/E_CERTIFICATION_BINDING_SET|E_ARTIFACT_DENOMINATOR/);});
 test('stale tree identity fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.evaluationTreeSha='0'.repeat(40);assert.throws(()=>verify(mutant),/E_EVALUATION_TREE/);});
 test('future top-level evaluation cannot retain stale per-stage identities',()=>{const file=load(),mutant=clone(file.value);mutant.evaluationSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();mutant.evaluationTreeSha=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();assert.throws(()=>verify(mutant),/E_STAGE_EVALUATION/);});
 test('post-evaluation exception is exact and machine checked',()=>{const file=load(),mutant=clone(file.value);mutant.postEvaluationCarrierException.allowedPaths=[];assert.throws(()=>verify(mutant),/E_CARRIER_EXCEPTION_PATHS/);});

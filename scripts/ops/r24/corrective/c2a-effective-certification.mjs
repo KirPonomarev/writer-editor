@@ -73,6 +73,22 @@ function readJsonBytes(repoRoot, relativePath) {
   return { bytes, value: JSON.parse(bytes.toString('utf8')), digest: rawSha256(bytes) };
 }
 
+function readGitJsonBytes(repoRoot, gitOracle, sha, relativePath) {
+  const bytes = typeof gitOracle.readFileAtCommit === 'function'
+    ? gitOracle.readFileAtCommit(sha, relativePath)
+    : execFileSync('git', ['show', `${sha}:${relativePath}`], { cwd: repoRoot, stdio: ['ignore', 'pipe', 'pipe'] });
+  return { bytes, value: JSON.parse(bytes.toString('utf8')), digest: rawSha256(bytes) };
+}
+
+function listGitFiles(repoRoot, gitOracle, sha, rootPath) {
+  if (typeof gitOracle.listFilesAtCommit === 'function') return gitOracle.listFilesAtCommit(sha, rootPath);
+  return execFileSync('git', ['ls-tree', '-r', '--name-only', sha, rootPath], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).trim().split('\n').filter(Boolean);
+}
+
 function sortedUnique(values, field) {
   assert(Array.isArray(values), 'E_SCHEMA', field);
   const sorted = [...values].sort(lexical);
@@ -103,6 +119,15 @@ export function createGitOracle(repoRoot = process.cwd()) {
     isAncestor(ancestor, descendant) {
       const result = spawnSync('git', ['merge-base', '--is-ancestor', ancestor, descendant], { cwd: repoRoot, stdio: 'ignore' });
       return result.status === 0;
+    },
+    listFilesAtCommit(sha, rootPath) {
+      return run(['ls-tree', '-r', '--name-only', sha, rootPath]).split('\n').filter(Boolean);
+    },
+    readFileAtCommit(sha, relativePath) {
+      return execFileSync('git', ['show', `${sha}:${relativePath}`], {
+        cwd: repoRoot,
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
     }
   };
 }
@@ -245,13 +270,11 @@ export function buildLedger() {
 }
 
 export function buildHistoricalManifest(repoRoot = process.cwd(), gitOracle = createGitOracle(repoRoot)) {
-  const opsRoot = path.join(repoRoot, 'docs/OPS/R24');
-  const receiptPaths = fs.readdirSync(opsRoot)
-    .filter((name) => /^CTR-R24-.*\.json$/u.test(name))
-    .map((name) => `docs/OPS/R24/${name}`)
+  const receiptPaths = listGitFiles(repoRoot, gitOracle, PRODUCTION_HEAD_SHA, 'docs/OPS/R24')
+    .filter((name) => /^docs\/OPS\/R24\/CTR-R24-.*\.json$/u.test(name))
     .sort(lexical);
   const receipts = receiptPaths.map((receiptPath) => {
-    const source = readJsonBytes(repoRoot, receiptPath);
+    const source = readGitJsonBytes(repoRoot, gitOracle, PRODUCTION_HEAD_SHA, receiptPath);
     const value = source.value;
     hex(value.exactHeadSha, 40, `${receiptPath}:exactHeadSha`);
     assert(gitOracle.commitExists(value.exactHeadSha), 'E_GIT_OBJECT_MISSING', value.exactHeadSha);
@@ -272,7 +295,7 @@ export function buildHistoricalManifest(repoRoot = process.cwd(), gitOracle = cr
       sourceSha256: source.digest
     };
   });
-  const plan = readJsonBytes(repoRoot, PATHS.planState);
+  const plan = readGitJsonBytes(repoRoot, gitOracle, PRODUCTION_HEAD_SHA, PATHS.planState);
   const stateCounts = Object.values(plan.value.contours).reduce((counts, contour) => {
     counts[contour.state] = (counts[contour.state] ?? 0) + 1;
     return counts;
@@ -475,7 +498,7 @@ export function validateHistoricalManifest(historical, repoRoot, gitOracle) {
   assert(canonicalize(historical.sourceEvidenceStampIds) === canonicalize(expectedSourceEvidenceStampIds), 'E_SOURCE_EVIDENCE_STAMP_SET', 'history');
   for (const entry of historical.receipts) {
     for (const forbidden of FORBIDDEN_HISTORICAL_FIELDS) assert(!(forbidden in entry), 'E_HISTORY_CURRENT_CONFLATION', `${entry.receiptId}:${forbidden}`);
-    const source = readJsonBytes(repoRoot, entry.repoRelativePath);
+    const source = readGitJsonBytes(repoRoot, gitOracle, historical.productionSnapshot.headSha, entry.repoRelativePath);
     assert(source.digest === entry.sourceSha256 && source.bytes.length === entry.sourceByteLength, 'E_RAW_RECEIPT_BYTES_CHANGED', entry.receiptId);
     assert(source.value.receiptId === entry.receiptId, 'E_RAW_RECEIPT_FIELD_MISMATCH', `${entry.receiptId}:receiptId`);
     assert(source.value.contourId === entry.contourId, 'E_RAW_RECEIPT_FIELD_MISMATCH', `${entry.receiptId}:contourId`);
@@ -489,7 +512,7 @@ export function validateHistoricalManifest(historical, repoRoot, gitOracle) {
     assert(entry.productionReachable === true, 'E_GIT_REACHABILITY_FLAG', entry.receiptId);
     rawLifecycleState(entry);
   }
-  const plan = readJsonBytes(repoRoot, historical.immutablePlanState.repoRelativePath);
+  const plan = readGitJsonBytes(repoRoot, gitOracle, historical.productionSnapshot.headSha, historical.immutablePlanState.repoRelativePath);
   assert(plan.digest === historical.immutablePlanState.sourceSha256 && plan.bytes.length === historical.immutablePlanState.sourceByteLength, 'E_RAW_PLAN_STATE_BYTES_CHANGED', PATHS.planState);
   assert(historical.immutablePlanState.replayBaseline.classification === 'ADOPTED_PRE_V2_UNREPLAYABLE_HISTORY', 'E_REPLAY_BASELINE_CLASSIFICATION', 'plan state');
   assert(historical.immutablePlanState.activeLeaseCount === 0, 'E_RAW_PLAN_ACTIVE_LEASE', 'plan state');

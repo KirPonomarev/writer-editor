@@ -1,15 +1,20 @@
 #!/usr/bin/env node
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { canonicalBytes, sha256 } from './canonical-json.mjs';
 
 export const RCV01A_SCHEMA_VERSION = 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1';
-export const RCV01A_CLAIM_BINDING_SCHEMA_VERSION = 'ClaimBindingV1';
+export const RCV01A_CLAIM_BINDING_SCHEMA_VERSION = 'R24_RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDINGS_V1';
 export const RCV01A_CONTOUR_ID = 'R24-RCV-01A';
 export const RCV01A_TASK_ID = 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_20260911';
 export const EXPECTED_BASE_SHA = 'ba9e9772f7e6c4c53e182247bb3ad3ff2a456cfb';
 export const EXPECTED_BASE_TREE = '8ef67d790cf3d9ec5f5f0e0e054084cf7c7c110e';
+export const WORKTREE_CANDIDATE_IDENTITY_MODE = 'WORKTREE_CANDIDATE_NON_CURRENT';
+export const GIT_HEAD_IDENTITY_MODE = 'GIT_HEAD';
+export const CURRENT_CANDIDATE_BASE_SHA = '1188e1af22c89a2da12613c8b6aa1abbf21500f7';
+export const CURRENT_CANDIDATE_BASE_TREE = '047de7709c395023c5ea38b02348acf7f768a82d';
 
 export const PATHS = Object.freeze({
   claimRegistry: 'docs/OPS/R24/CLAIM_REGISTRY_R2_4.json',
@@ -33,6 +38,18 @@ const REQUIRED_PROOF_CLASSES = Object.freeze([
   'ADVERSARIAL',
 ]);
 
+const C1C_CONTRACT_SHARD_COMMAND = 'npm run -s r24:toolchain && node scripts/ops/r24/run-c1c-contract-shard.mjs test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs test/contracts/r24-c2a-effective-certification.contract.test.mjs test/contracts/r24-c2b3a-e0-q0-recertification.contract.test.mjs test/contracts/r24-post-audit-certification-set.contract.test.mjs';
+const INDEPENDENT_GATE_A_REVIEW_PACKET = Object.freeze({
+  packetId: 'INDEPENDENT_GATE_A_REVIEW_PACKET_V1',
+  schemaVersion: 'yalken.r24.independent-gate-a-review-packet.v1',
+  generatedAtUtc: '2026-09-13T23:03:24.082Z',
+  packetSha256: '49e37e53e0dfd1aade44504d742a9a81ccc3593388a462d7b2b3813053132ea1',
+  reviewedDiffSha256: '2c19d523743fb91d4f0f46ef75d4c9127ccda2e8d22ecd6b2122d582c65f6c68',
+  verdict: 'FAIL',
+  findingIds: ['GATE_A_STALE_EVIDENCE_STAMP_IDENTITY'],
+  remediationBinding: 'RCV01A_WORKTREE_CANDIDATE_IDENTITY_AND_REACHABILITY_VALIDATOR',
+});
+
 const CLAIM_REQUIREMENTS = Object.freeze({
   R24_SEMANTIC_PACKAGE_ORACLE: Object.freeze({
     invariant: 'R2.4 executable program, effective-state projection, certification state and post-audit carrier bytes remain deterministic and fail closed.',
@@ -44,6 +61,7 @@ const CLAIM_REQUIREMENTS = Object.freeze({
       'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     ]),
     requiredCiLaneIds: Object.freeze([
+      'c1c-contract-shard',
       'inventory-baseline',
       'merge-gate',
       'ops-vector',
@@ -67,6 +85,7 @@ const CLAIM_REQUIREMENTS = Object.freeze({
       'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     ]),
     requiredCiLaneIds: Object.freeze([
+      'c1c-contract-shard',
       'e0-mutants',
       'merge-gate',
       'ops-vector',
@@ -86,6 +105,7 @@ const CLAIM_REQUIREMENTS = Object.freeze({
       'test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs',
     ]),
     requiredCiLaneIds: Object.freeze([
+      'c1c-contract-shard',
       'inventory-baseline',
       'merge-gate',
     ]),
@@ -146,6 +166,61 @@ function implementationBinding(repoRoot, relativePath, terms) {
     sha256: sha256(fs.readFileSync(absolutePath)),
     terms: [...terms],
   };
+}
+
+function gitText(repoRoot, args) {
+  return execFileSync('git', args, {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+}
+
+function gitBytes(repoRoot, args) {
+  return execFileSync('git', args, {
+    cwd: repoRoot,
+    encoding: null,
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  });
+}
+
+function bindingEntries(value) {
+  return [
+    ...assertArray(value.claimBindings, 'E_RCV01A_BINDING_CLAIM_BINDINGS').map((entry) => ({
+      section: 'claimBindings',
+      path: entry.filePath,
+      sha256: entry.sha256,
+    })),
+    ...assertArray(value.implementationArtifactDigests, 'E_RCV01A_BINDING_IMPLEMENTATION_DIGESTS').map((entry) => ({
+      section: 'implementationArtifactDigests',
+      path: entry.path,
+      sha256: entry.sha256,
+    })),
+  ];
+}
+
+function boundFileSetDigest(entries) {
+  return sha256(canonicalBytes(entries.map((entry) => ({
+    path: entry.path,
+    section: entry.section,
+    sha256: entry.sha256,
+  }))));
+}
+
+function gitObjectDigest(repoRoot, sha, relativePath) {
+  try {
+    return {
+      exists: true,
+      sha256: sha256(gitBytes(repoRoot, ['show', `${sha}:${relativePath}`])),
+    };
+  } catch (error) {
+    return {
+      exists: false,
+      error: String(error.stderr || error.message || error),
+    };
+  }
 }
 
 function assertObject(value, code, detail = '') {
@@ -241,6 +316,11 @@ export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
     },
     ciLanes: [
       {
+        laneId: 'c1c-contract-shard',
+        command: C1C_CONTRACT_SHARD_COMMAND,
+        parser: 'NODE_TAP_ZERO_FAIL',
+      },
+      {
         laneId: 'inventory-baseline',
         command: 'npm run r24:test-inventory',
         parser: 'R24_C1B_TEST_INVENTORY_VALID',
@@ -273,9 +353,17 @@ export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
       schemaVersion: 'R24_RCV01A_EXECUTION_EVIDENCE_SAMPLE_V1',
       laneResults: [
         {
+          laneId: 'c1c-contract-shard',
+          tests: 302,
+          pass: 302,
+          fail: 0,
+          skipped: 0,
+          todo: 0,
+        },
+        {
           laneId: 'inventory-baseline',
-          tests: 1465,
-          pass: 1465,
+          tests: 1471,
+          pass: 1471,
           fail: 0,
           skipped: 0,
           todo: 0,
@@ -290,8 +378,8 @@ export function buildManifest({ repoRoot = REPO_ROOT } = {}) {
         },
         {
           laneId: 'e0-mutants',
-          tests: 155,
-          pass: 155,
+          tests: 163,
+          pass: 163,
           fail: 0,
           skipped: 0,
           todo: 0,
@@ -409,7 +497,14 @@ export function validateManifest(manifest, {
     if (!value.denominatorPolicy?.requiredProofClasses?.includes(proofClass)) fail('E_RCV01A_REQUIRED_PROOF_CLASS', proofClass);
   }
 
-  const laneIds = new Set(assertArray(value.ciLanes, 'E_RCV01A_CI_LANES').map((lane) => lane.laneId));
+  const ciLanes = assertArray(value.ciLanes, 'E_RCV01A_CI_LANES');
+  const laneIds = new Set(ciLanes.map((lane) => lane.laneId));
+  if (laneIds.size !== ciLanes.length) fail('E_RCV01A_DUPLICATE_CI_LANE');
+  for (const lane of ciLanes) {
+    if (typeof lane.laneId !== 'string' || lane.laneId.length === 0) fail('E_RCV01A_CI_LANE_ID');
+    if (typeof lane.command !== 'string' || lane.command.trim().length === 0) fail('E_RCV01A_CI_LANE_COMMAND', lane.laneId);
+    if (typeof lane.parser !== 'string' || lane.parser.trim().length === 0) fail('E_RCV01A_CI_LANE_PARSER', lane.laneId);
+  }
   const manifestClaims = assertArray(value.claims, 'E_RCV01A_CLAIMS');
   const byClaim = new Map(manifestClaims.map((claim) => [claim.claimId, claim]));
   if (byClaim.size !== manifestClaims.length) fail('E_RCV01A_DUPLICATE_CLAIM');
@@ -451,6 +546,8 @@ export function validateManifest(manifest, {
       if (!inventoryEntry) fail('E_RCV01A_REQUIRED_TEST_INVENTORY_MISSING', `${claim.claimId}:${test.testId}`);
       if (inventoryEntry.required !== true) fail('E_RCV01A_REQUIRED_TEST_NOT_REQUIRED', `${claim.claimId}:${test.testId}`);
       if (!inventoryEntry.lane || inventoryEntry.lane !== test.inventoryLaneId) fail('E_RCV01A_TEST_LANE_MISMATCH', `${claim.claimId}:${test.testId}`);
+      if (test.required === true && !laneIds.has(test.inventoryLaneId)) fail('E_RCV01A_REQUIRED_TEST_LANE_UNKNOWN', `${claim.claimId}:${test.testId}:${test.inventoryLaneId}`);
+      if (test.required === true && !claim.requiredCiLaneIds?.includes(test.inventoryLaneId)) fail('E_RCV01A_REQUIRED_TEST_LANE_NOT_REQUIRED', `${claim.claimId}:${test.testId}:${test.inventoryLaneId}`);
       if (digest(test.testId) !== test.sha256 || inventoryEntry.sha256 !== test.sha256) fail('E_RCV01A_TEST_DIGEST_MISMATCH', `${claim.claimId}:${test.testId}`);
     }
   }
@@ -470,42 +567,83 @@ export function buildClaimBindings({ repoRoot = REPO_ROOT, manifest = null } = {
   const root = path.resolve(repoRoot);
   const actualManifest = manifest || readJson(root, PATHS.manifest);
   validateManifest(actualManifest, { repoRoot: root });
+  const claimBindings = [
+    claimBinding(root, PATHS.manifest, ['PASS', 'READY', 'SAFE']),
+    claimBinding(root, PATHS.inventory, ['PASS']),
+  ];
+  const implementationArtifactDigests = [
+    implementationBinding(root, PATHS.verifier, ['RCV01A_VERIFIER']),
+    implementationBinding(root, PATHS.contractTest, ['RCV01A_NEGATIVE_TESTS']),
+  ];
+  const boundEntries = [
+    ...claimBindings.map((entry) => ({ section: 'claimBindings', path: entry.filePath, sha256: entry.sha256 })),
+    ...implementationArtifactDigests.map((entry) => ({ section: 'implementationArtifactDigests', path: entry.path, sha256: entry.sha256 })),
+  ];
   return {
     schemaVersion: RCV01A_CLAIM_BINDING_SCHEMA_VERSION,
     stampId: 'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS',
     contourId: RCV01A_CONTOUR_ID,
     evidenceClass: 'CONTRACT',
-    verdict: 'PASS',
-    headSha: EXPECTED_BASE_SHA,
-    originMainSha: EXPECTED_BASE_SHA,
+    verdict: 'BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE',
+    identityMode: WORKTREE_CANDIDATE_IDENTITY_MODE,
+    headSha: null,
+    originMainSha: null,
+    candidateIdentity: {
+      boundByteSource: 'CURRENT_WORKTREE',
+      baseSha: CURRENT_CANDIDATE_BASE_SHA,
+      baseTree: CURRENT_CANDIDATE_BASE_TREE,
+      declaredGitHeadReachability: 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES',
+      boundFileSetDigest: boundFileSetDigest(boundEntries),
+    },
     generatedAtUtc: '2026-09-11T00:00:00.000Z',
     oracle: 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST',
-    claimBindings: [
-      claimBinding(root, PATHS.manifest, ['PASS', 'READY', 'SAFE']),
-      claimBinding(root, PATHS.inventory, ['PASS']),
-    ],
-    implementationArtifactDigests: [
-      implementationBinding(root, PATHS.verifier, ['RCV01A_VERIFIER']),
-      implementationBinding(root, PATHS.contractTest, ['RCV01A_NEGATIVE_TESTS']),
-    ],
+    independentReviewEvidence: [INDEPENDENT_GATE_A_REVIEW_PACKET],
+    claimBindings,
+    implementationArtifactDigests,
     executedEvidence: [
       {
         command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs',
         verdict: 'PASS',
         tests: {
-          pass: 10,
+          pass: 25,
           fail: 0,
         },
       },
       {
-        command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run test:r24-e0',
-        verdict: 'PENDING_UNTIL_EXECUTED',
+        command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node scripts/ops/r24/run-c1c-contract-shard.mjs test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs test/contracts/r24-c2a-effective-certification.contract.test.mjs test/contracts/r24-c2b3a-e0-q0-recertification.contract.test.mjs test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+        verdict: 'INCOMPLETE_CODEX_HARNESS_TERMINATED_AFTER_KEEPALIVE',
+        observed: {
+          firstSubtestsPassed: 25,
+          keepaliveObservedMs: 540049,
+          finalTapSummaryObserved: false,
+        },
       },
       {
-        command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run r24:test-inventory',
+        command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run -s test:r24-e0',
         verdict: 'PASS',
         tests: {
-          pass: 1466,
+          pass: 163,
+          fail: 0,
+        },
+        mutants: {
+          total: 40,
+          killed: 40,
+          survived: 0,
+        },
+      },
+      {
+        command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run -s test:r24-post-audit',
+        verdict: 'PASS',
+        tests: {
+          pass: 63,
+          fail: 0,
+        },
+      },
+      {
+        command: 'npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run -s r24:test-inventory',
+        verdict: 'PASS',
+        tests: {
+          pass: 1471,
           fail: 0,
         },
       },
@@ -514,17 +652,71 @@ export function buildClaimBindings({ repoRoot = REPO_ROOT, manifest = null } = {
   };
 }
 
+export function validateClaimBindingEvidence(bindings, { repoRoot = REPO_ROOT } = {}) {
+  const root = path.resolve(repoRoot);
+  const value = assertObject(bindings, 'E_RCV01A_BINDING_OBJECT');
+  if (value.schemaVersion !== RCV01A_CLAIM_BINDING_SCHEMA_VERSION || value.contourId !== RCV01A_CONTOUR_ID) fail('E_RCV01A_BINDING_IDENTITY');
+  const entries = bindingEntries(value);
+  for (const entry of entries) {
+    if (typeof entry.path !== 'string' || entry.path.length === 0) fail('E_RCV01A_BINDING_PATH');
+    assertSha(entry.sha256, 'E_RCV01A_BINDING_DIGEST', entry.path);
+  }
+
+  const mode = value.identityMode || GIT_HEAD_IDENTITY_MODE;
+  if (mode === GIT_HEAD_IDENTITY_MODE) {
+    if (!HEX40_RE.test(String(value.headSha || ''))) fail('E_RCV01A_BINDING_HEAD_SHA');
+    for (const entry of entries) {
+      const object = gitObjectDigest(root, value.headSha, entry.path);
+      if (!object.exists) fail('E_RCV01A_BOUND_ARTIFACT_UNREACHABLE', `${entry.section}:${entry.path}`);
+      if (object.sha256 !== entry.sha256) fail('E_RCV01A_BOUND_ARTIFACT_DIGEST_MISMATCH', `${entry.section}:${entry.path}`);
+    }
+    return {
+      status: 'PASS',
+      identityMode: mode,
+      reachableGitBindingCount: entries.length,
+    };
+  }
+
+  if (mode !== WORKTREE_CANDIDATE_IDENTITY_MODE) fail('E_RCV01A_BINDING_IDENTITY_MODE', mode);
+  if (value.headSha !== null || value.originMainSha !== null) fail('E_RCV01A_WORKTREE_STAMP_HEAD_CLAIM');
+  const candidate = assertObject(value.candidateIdentity, 'E_RCV01A_CANDIDATE_IDENTITY');
+  if (candidate.boundByteSource !== 'CURRENT_WORKTREE') fail('E_RCV01A_CANDIDATE_BYTE_SOURCE');
+  if (candidate.declaredGitHeadReachability !== 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES') fail('E_RCV01A_CANDIDATE_REACHABILITY_DECLARATION');
+  if (candidate.baseSha !== CURRENT_CANDIDATE_BASE_SHA || candidate.baseTree !== CURRENT_CANDIDATE_BASE_TREE) fail('E_RCV01A_CANDIDATE_BASE_IDENTITY');
+  for (const entry of entries) {
+    const filePath = repoPath(root, entry.path);
+    if (!fs.existsSync(filePath)) fail('E_RCV01A_BOUND_ARTIFACT_UNREACHABLE', `${entry.section}:${entry.path}`);
+    if (sha256(fs.readFileSync(filePath)) !== entry.sha256) {
+      fail('E_RCV01A_BOUND_ARTIFACT_DIGEST_MISMATCH', `${entry.section}:${entry.path}`);
+    }
+  }
+  if (candidate.boundFileSetDigest !== boundFileSetDigest(entries)) fail('E_RCV01A_CANDIDATE_BOUND_FILE_SET');
+  const review = assertArray(value.independentReviewEvidence, 'E_RCV01A_INDEPENDENT_REVIEW_EVIDENCE')
+    .find((entry) => entry.packetId === INDEPENDENT_GATE_A_REVIEW_PACKET.packetId);
+  if (!review || review.packetSha256 !== INDEPENDENT_GATE_A_REVIEW_PACKET.packetSha256 || review.reviewedDiffSha256 !== INDEPENDENT_GATE_A_REVIEW_PACKET.reviewedDiffSha256) {
+    fail('E_RCV01A_INDEPENDENT_REVIEW_BINDING');
+  }
+  return {
+    status: 'PASS',
+    identityMode: mode,
+    reachableGitBindingCount: 0,
+    worktreeBindingCount: entries.length,
+  };
+}
+
 export function checkArtifacts(repoRoot = REPO_ROOT) {
   const manifest = readJson(repoRoot, PATHS.manifest);
   const manifestValidation = validateManifest(manifest, { repoRoot });
   const bindings = readJson(repoRoot, PATHS.claimBindings);
-  if (bindings.schemaVersion !== RCV01A_CLAIM_BINDING_SCHEMA_VERSION || bindings.verdict !== 'PASS') fail('E_RCV01A_BINDING_IDENTITY');
+  const bindingValidation = validateClaimBindingEvidence(bindings, { repoRoot });
+  if (!['PASS', 'BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE'].includes(bindings.verdict)) fail('E_RCV01A_BINDING_IDENTITY');
   const expectedManifestDigest = sha256(fs.readFileSync(repoPath(repoRoot, PATHS.manifest)));
   const manifestBinding = bindings.claimBindings?.find((entry) => entry.filePath === PATHS.manifest);
   if (!manifestBinding || manifestBinding.sha256 !== expectedManifestDigest) fail('E_RCV01A_BINDING_MANIFEST_DIGEST');
   return {
     status: 'PASS',
     manifestValidation,
+    bindingValidation,
     bindingCount: bindings.claimBindings.length,
     implementationBindingCount: bindings.implementationArtifactDigests.length,
   };

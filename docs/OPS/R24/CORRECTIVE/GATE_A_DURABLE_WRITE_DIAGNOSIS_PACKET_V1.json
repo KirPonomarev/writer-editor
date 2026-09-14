@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "YALKEN_R24_GATE_A_DURABLE_WRITE_DIAGNOSIS_PACKET_V1",
+  "status": "DIAGNOSIS_RECORDED_REVALIDATION_REPAIR_READY_FOR_INDEPENDENT_RECHECK",
+  "generatedAtUtc": "2026-09-14T00:00:00.000Z",
+  "binding": {
+    "headSha": "1188e1af22c89a2da12613c8b6aa1abbf21500f7",
+    "trackedDiffSha256": "355d959fd12b9b12f2835ff25a72f523fbdb8dc7177e220267249491a6f55d92",
+    "workingSetSha256": "919993dba576839f3da05f4dd89aa282559ceb4eaee77342cf79dcf396529641",
+    "unsafeFixtureCacheReviewTrackedDiffSha256": "355d959fd12b9b12f2835ff25a72f523fbdb8dc7177e220267249491a6f55d92",
+    "unsafeFixtureCacheReviewWorkingSetSha256": "e9d4ad0b2d9d90e6e910fd1e85c15bd61f7f562bec2ab7e382b10724a95d1fa5",
+    "unsafeFixtureCacheReviewHelperSha256": "b5c9e87568677b64998b9cad594dd757eeb3a0d573511ea45e01da7765dbd5da",
+    "unsafeFixtureCacheReviewCounterexamplePacketSha256": "55fc336fd96e700e22b00b901e81cff5fa5c6bdb95bdcbb04e36c7c061bca35f",
+    "preFixtureScopedRepairTrackedDiffSha256": "ff39b0668f20cc553196ce38d1fe12011d4d15b1b5bbf470943e10b3f93081b6",
+    "preFixtureScopedRepairWorkingSetSha256": "9341794d19dd58f08faf83742672e092daee783a38e6dff3475008b01bdaed52",
+    "previousUnsafeMemoTrackedDiffSha256": "53addb7909803c905942c734cbd049c5236f397dfc2911f0c8a4f60cf35be408",
+    "previousUnsafeMemoWorkingSetSha256": "e195260812ead4c8f6d728151a85a8f45390b1c29bf059536efa8981fb1f67d1"
+  },
+  "independentReviewCounterexample": {
+    "verdict": "UNSAFE_STALE_NO",
+    "expected": "cache hit revalidates target existence exact bytes and required mode; changed or missing target forces real publication",
+    "actual": "mode drift 0600 to 0755 stayed 0755 after deduped publish; after unlink second publish deduped and target remained absent",
+    "hypothesis": "published key membership was trusted without target readback or stat validation"
+  },
+  "observedFailure": {
+    "signature": "FULL_C1C_NO_FINAL_TAP_FOOTER",
+    "repeatOrdinal": 3,
+    "firstSubtestsPassed": 25,
+    "keepaliveObservedMs": 260025,
+    "wrapperExit": "TERMINATED_FOR_DIAGNOSIS",
+    "logBasename": "yalken-r24-c1c-fixture-cache-20260914.log",
+    "sampleBasename": "yalken-r24-c1c-fixture-cache-post-audit-sample.txt"
+  },
+  "sampleSummary": {
+    "totalSamples": 737,
+    "fsyncSamples": 549,
+    "fsyncShare": 0.744912,
+    "writeFileSamples": 30,
+    "renameSamples": 17,
+    "openSamples": 19,
+    "spawnSamples": 85,
+    "dominantHotPath": "node::fs::Fsync"
+  },
+  "exactCallSites": [
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "lines": "267-286",
+      "function": "interop100DenominatorAdmissionGitFixture/writeRepoFilesFromMap",
+      "role": "publishes admitted fixture files into a temporary Git repository"
+    },
+    {
+      "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "lines": "338-346",
+      "function": "interop100DenominatorAdmissionGitFixture source and candidate commits",
+      "role": "invokes writeRepoFilesFromMap twice around source and candidate metadata sealing"
+    },
+    {
+      "path": "test/fixtures/r24-fixture-publication-cache.mjs",
+      "lines": "1-112",
+      "function": "createFixturePublicationCache",
+      "role": "test-harness-only helper: one publication for each unique fixture identity path bytes hash"
+    }
+  ],
+  "preRepairCounterModel": {
+    "admittedPathCount": 8,
+    "writeRepoFilesFromMapInvocationsPerFixture": 2,
+    "pathWritesPerFixture": 16,
+    "uniqueFinalPaths": 8,
+    "uniquePathByteHashesAfterSeal": 11,
+    "duplicatePathByteWritesPerFixture": 5,
+    "localPublisherFsyncCalls": 0,
+    "localPublisherRenameCalls": 0
+  },
+  "repairCounterModel": {
+    "dedupeKey": [
+      "fixture identity",
+      "target path",
+      "payload sha256",
+      "required mode"
+    ],
+    "publishedPathByteHashesPerPositiveFixture": 11,
+    "dedupedPathByteHashesPerPositiveFixture": 5,
+    "uniquePathsPerPositiveFixture": 8,
+    "writeCallsPerPositiveFixture": 11,
+    "fsyncCallsPerPositiveFixture": 22,
+    "renameCallsPerPositiveFixture": 11,
+    "readbackCallsPerPositiveFixture": 16,
+    "cachedHitPolicy": "lstat target, require regular file, require required mode, read exact bytes hash, otherwise evict and atomically republish",
+    "failureCoalescingAllowed": false
+  },
+  "requiredNegativeProofs": [
+    "equal path and bytes dedupe",
+    "different bytes separation",
+    "different path separation",
+    "different mode ref head worktree env identity separation",
+    "write failure propagates",
+    "fsync failure propagates",
+    "rename failure propagates",
+    "no partial target or temp artifact remains before rename",
+    "failed write fsync or rename does not seed cache",
+    "mode drift forces republish",
+    "missing target forces republish",
+    "tampered bytes force republish",
+    "phase lifecycle ref head worktree env identity separation",
+    "test isolation clear removes cache state"
+  ],
+  "postRevalidationRepairProofs": [
+    {
+      "command": "node --check test/fixtures/r24-fixture-publication-cache.mjs",
+      "verdict": "PASS"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test --test-name-pattern test fixture publication cache revalidates cached target mode existence and bytes before dedupe test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs",
+      "tests": {
+        "pass": 1,
+        "fail": 0
+      },
+      "verdict": "PASS"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs",
+      "tests": {
+        "pass": 25,
+        "fail": 0
+      },
+      "verdict": "PASS"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test --test-name-pattern R24 interop100 denominator hardening exception accepts exact current delta test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+      "tests": {
+        "pass": 1,
+        "fail": 0
+      },
+      "verdict": "PASS"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run -s r24:test-inventory",
+      "tests": {
+        "pass": 1471,
+        "fail": 0
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "independentRevalidationReview": {
+    "verdict": "PASS",
+    "oraclePacketSha256": "0ee910b27146e723272c3d261257d5f733a1f3f8fd779e8f60e4b6b1963d5d6b",
+    "matchedTrackedDiffSha256": "e7544a69037f032b85a9b920c2e94d6ad7d6669c0e1ef02c43b072f9da2b62ef",
+    "matchedWorkingSetSha256": "5ed126cc5f06da83aed7b498d10aeb7e2b87a9e0a3434f2097747a3e59cdaf3f",
+    "matchedHelperSha256": "b11f0e338fa6854dbb6fde36439b0c5b5fb566869918951098fd49464cd50857",
+    "matchedDiagnosisPacketSha256": "cf24ad02b69bf41fd3e5f326d922133fe6f2d5d5a94f373402280e3337e5065e"
+  },
+  "fullC1cAttemptAfterIndependentRevalidation": {
+    "verdict": "FAIL_CONCRETE_GENERATED_ARTIFACT_DRIFT",
+    "startTrackedDiffSha256": "e7544a69037f032b85a9b920c2e94d6ad7d6669c0e1ef02c43b072f9da2b62ef",
+    "startWorkingSetSha256": "5ed126cc5f06da83aed7b498d10aeb7e2b87a9e0a3434f2097747a3e59cdaf3f",
+    "endTrackedDiffSha256": "e7544a69037f032b85a9b920c2e94d6ad7d6669c0e1ef02c43b072f9da2b62ef",
+    "endWorkingSetSha256": "5ed126cc5f06da83aed7b498d10aeb7e2b87a9e0a3434f2097747a3e59cdaf3f",
+    "logBasename": "yalken-r24-c1c-review-freeze-20260914.log",
+    "tests": {
+      "total": 302,
+      "pass": 301,
+      "fail": 1,
+      "skipped": 0,
+      "todo": 0
+    },
+    "failure": "E_GENERATED_ARTIFACT_DRIFT:C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "noFooterSignatureRecurred": false,
+    "wrapperExit": {
+      "code": 1
+    }
+  },
+  "postC2aDriftRepairProofs": [
+    {
+      "command": "node scripts/ops/r24/corrective/c2a-effective-certification.mjs --write",
+      "verdict": "PASS"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- node --test test/contracts/r24-c2a-effective-certification.contract.test.mjs",
+      "tests": {
+        "pass": 13,
+        "fail": 0
+      },
+      "verdict": "PASS"
+    },
+    {
+      "command": "npm exec --yes --package=node@22.12.0 --package=npm@10.9.0 -- npm run -s r24:test-inventory",
+      "tests": {
+        "pass": 1471,
+        "fail": 0
+      },
+      "verdict": "PASS"
+    }
+  ],
+  "nonClaims": [
+    "NO_GATE_A_PASS",
+    "NO_PROGRAM_DONE",
+    "NO_FULL_C1C_PASS",
+    "NO_INDEPENDENT_EXACT_HASH_PASS",
+    "NO_COMMIT_PUSH_PR_MERGE",
+    "NO_PRODUCTION_VERIFIER_DEDUPE"
+  ],
+  "evidenceStampIds": [
+    "ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS"
+  ]
+}

@@ -154,6 +154,23 @@ jobs:
       - name: Verify PK1 evaluator evidence reachability without release effects
         run: node scripts/ops/r24/corrective/pk1r1-evaluator-reachability.mjs --check
 
+  c1c-contract-shard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci --engine-strict
+      - name: Run exact R24 C1C contract shard
+        run: |
+          npm run -s r24:toolchain
+          node scripts/ops/r24/run-c1c-contract-shard.mjs test/contracts/r24-rcv00b-effective-state-compiler.contract.test.mjs test/contracts/r24-c2a-effective-certification.contract.test.mjs test/contracts/r24-c2b3a-e0-q0-recertification.contract.test.mjs test/contracts/r24-post-audit-certification-set.contract.test.mjs
+
   e0-mutants:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -304,6 +321,7 @@ jobs:
     if: ${{ always() }}
     needs:
       - actual-renderer-build-rtk
+      - c1c-contract-shard
       - c1a-hermetic
       - e0-mutants
       - inventory-baseline
@@ -318,7 +336,7 @@ jobs:
     timeout-minutes: 5
     env:
       REQUIRED_DEPENDENCY_RESULTS: >-
-        {"actual-renderer-build-rtk":"${{ needs.actual-renderer-build-rtk.result }}","c1a-hermetic":"${{ needs.c1a-hermetic.result }}","e0-mutants":"${{ needs.e0-mutants.result }}","inventory-baseline":"${{ needs.inventory-baseline.result }}","live-ruleset-oracle":"${{ needs.live-ruleset-oracle.result }}","ops-vector":"${{ needs.ops-vector.result }}","oss-policy-core":"${{ needs.oss-policy-core.result }}","privacy-negative":"${{ needs.privacy-negative.result }}","rtk-required":"${{ needs.rtk-required.result }}","static-security-sast":"${{ needs.static-security-sast.result }}","x1-runtime-parity":"${{ needs.x1-runtime-parity.result }}"}
+        {"actual-renderer-build-rtk":"${{ needs.actual-renderer-build-rtk.result }}","c1c-contract-shard":"${{ needs.c1c-contract-shard.result }}","c1a-hermetic":"${{ needs.c1a-hermetic.result }}","e0-mutants":"${{ needs.e0-mutants.result }}","inventory-baseline":"${{ needs.inventory-baseline.result }}","live-ruleset-oracle":"${{ needs.live-ruleset-oracle.result }}","ops-vector":"${{ needs.ops-vector.result }}","oss-policy-core":"${{ needs.oss-policy-core.result }}","privacy-negative":"${{ needs.privacy-negative.result }}","rtk-required":"${{ needs.rtk-required.result }}","static-security-sast":"${{ needs.static-security-sast.result }}","x1-runtime-parity":"${{ needs.x1-runtime-parity.result }}"}
     steps:
       - uses: actions/checkout@v4
       - name: Fail closed on failed cancelled or unexplained skipped dependencies
