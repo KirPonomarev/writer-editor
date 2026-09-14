@@ -24,6 +24,7 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V40,
   HISTORICAL_INVENTORY_CLAIM_PINS_V41,
   HISTORICAL_INVENTORY_CLAIM_PINS_V42,
+  HISTORICAL_INVENTORY_CLAIM_PINS_V43,
   RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION,
   RCV01A_WORKTREE_CANDIDATE_STAMP_ID,
   lintDocsClaims,
@@ -871,6 +872,32 @@ test('O01-O08 inventory refresh retains interop-100 current claim binding as his
   );
 });
 
+test('merge-gate dependency repair retains RCV01A worktree-candidate inventory binding as historical bytes', () => {
+  const pin = HISTORICAL_INVENTORY_CLAIM_PINS_V43.find(
+    (item) => item.stampId === 'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS'
+      && item.evaluationSha === 'd5d7ed98095d1f396d7e0f8336ad19eb8c6fc05b',
+  );
+  assert.ok(pin);
+  assert.equal(pin.evaluationTree, 'a4008a86dee5ea098bf53b84003c8b42d34fc464');
+  assert.equal(pin.stampSha256, 'fba98b6adb7dc866dc77f6e8134495d46d7b72ca926fbdeaf5fa997e4c927b64');
+  assert.equal(pin.targetSha256, '56f3789e6d70721413811c0e9d76971133768eec6b57e5eb12f2f1f4ab4971a2');
+  const stampPath = `docs/OPS/R24/EVIDENCE/${pin.stampId}.json`;
+  const stampBytes = execFileSync('git', ['show', `${pin.evaluationSha}:${stampPath}`], {
+    cwd: REPO_ROOT,
+    encoding: null,
+  });
+  const stamp = JSON.parse(stampBytes);
+  const binding = stamp.claimBindings.find((entry) => entry.filePath === INVENTORY_PATH);
+  const result = verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding });
+  assert.equal(result.status, 'VERIFIED_HISTORICAL_BYTES');
+  assert.equal(result.currentFileCoverage, false);
+  assert.equal(result.evaluationSha, pin.evaluationSha);
+  assert.throws(
+    () => verifyHistoricalInventoryClaim({ rootDir: REPO_ROOT, stamp, stampBytes, binding: { ...binding, sha256: '0'.repeat(64) } }),
+    /E_HISTORICAL_INVENTORY_BINDING/,
+  );
+});
+
 test('repository claim surface keeps current and historical C1B inventory bindings', () => {
   const result = lintDocsClaims(REPO_ROOT);
   assert.equal(result.ok, true, result.failures.join('\n'));
@@ -904,5 +931,9 @@ test('repository claim surface keeps current and historical C1B inventory bindin
   ));
   assert.ok(result.historicalBindings.some(
     (binding) => binding.stampId === 'ES-R24-RCV00D-CURRENT-IDENTITY-BINDING',
+  ));
+  assert.ok(result.historicalBindings.some(
+    (binding) => binding.stampId === 'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS'
+      && binding.evaluationSha === 'd5d7ed98095d1f396d7e0f8336ad19eb8c6fc05b',
   ));
 });
