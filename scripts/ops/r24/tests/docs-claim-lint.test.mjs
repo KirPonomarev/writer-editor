@@ -24,6 +24,8 @@ import {
   HISTORICAL_INVENTORY_CLAIM_PINS_V40,
   HISTORICAL_INVENTORY_CLAIM_PINS_V41,
   HISTORICAL_INVENTORY_CLAIM_PINS_V42,
+  RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION,
+  RCV01A_WORKTREE_CANDIDATE_STAMP_ID,
   lintDocsClaims,
   verifyHistoricalInventoryClaim,
 } from '../docs-claim-lint.mjs';
@@ -216,6 +218,74 @@ test('sha-bound evidence binding fails closed when target digest changes', () =>
   const result = lintDocsClaims(dir);
   assert.equal(result.ok, false);
   assert.ok(result.failures.includes('E_CLAIM_BINDING_DIGEST_MISMATCH:docs/OPS/R24/SEALED.json'));
+});
+
+test('RCV01A worktree candidate binding resolves exact non-current claim bytes', () => {
+  const manifestPath = 'CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json';
+  const inventoryPath = 'CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
+  const manifestContent = '{"status":"READY","result":"SAFE"}';
+  const inventoryContent = '{"summary":"PASS"}';
+  const dir = makeDocs({
+    docs: {
+      [manifestPath]: manifestContent,
+      [inventoryPath]: inventoryContent,
+    },
+  });
+  const stamp = {
+    schemaVersion: RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION,
+    stampId: RCV01A_WORKTREE_CANDIDATE_STAMP_ID,
+    contourId: 'R24-RCV-01A',
+    evidenceClass: 'CONTRACT',
+    verdict: 'BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE',
+    identityMode: 'WORKTREE_CANDIDATE_NON_CURRENT',
+    headSha: null,
+    originMainSha: null,
+    candidateIdentity: {
+      boundByteSource: 'CURRENT_WORKTREE',
+      baseSha: HEAD,
+      baseTree: TREE,
+      declaredGitHeadReachability: 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES',
+      boundFileSetDigest: 'c'.repeat(64),
+    },
+    generatedAtUtc: NOW,
+    oracle: 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST',
+    independentReviewEvidence: [],
+    claimBindings: [
+      {
+        filePath: `docs/OPS/R24/${manifestPath}`,
+        sha256: sha256(manifestContent),
+        claimTerms: ['READY', 'SAFE'],
+      },
+      {
+        filePath: `docs/OPS/R24/${inventoryPath}`,
+        sha256: sha256(inventoryContent),
+        claimTerms: ['PASS'],
+      },
+    ],
+    implementationArtifactDigests: [
+      {
+        path: 'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs',
+        sha256: 'd'.repeat(64),
+        terms: ['RCV01A_VERIFIER'],
+      },
+    ],
+    executedEvidence: [
+      {
+        command: 'node --test test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs',
+        verdict: 'PASS',
+        tests: { pass: 25, fail: 0 },
+      },
+    ],
+    nonClaims: ['NO_PROGRAM_DONE', 'NO_RELEASE_READINESS'],
+  };
+  fs.writeFileSync(
+    path.join(dir, 'docs', 'OPS', 'R24', 'EVIDENCE', `${RCV01A_WORKTREE_CANDIDATE_STAMP_ID}.json`),
+    JSON.stringify(stamp),
+  );
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, true);
+  assert.equal(result.filesWithClaims, 2);
+  assert.equal(result.stampCount, 1);
 });
 
 test('WP603 original inventory binding is accepted only at its exact merged bytes', () => {

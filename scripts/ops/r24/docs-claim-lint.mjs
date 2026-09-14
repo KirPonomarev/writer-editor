@@ -13,6 +13,15 @@ import { buildClaimBinding } from './claim-binding.mjs';
 
 const CLAIM_TERMS = ['PASS', 'DONE', 'READY', 'CLOSED', 'SAFE', 'COMPLETE'];
 const CLAIM_RE = new RegExp(`\\b(${CLAIM_TERMS.join('|')})\\b`);
+export const RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION =
+  'R24_RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDINGS_V1';
+export const RCV01A_WORKTREE_CANDIDATE_STAMP_ID =
+  'ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS';
+const RCV01A_WORKTREE_CANDIDATE_IDENTITY_MODE = 'WORKTREE_CANDIDATE_NON_CURRENT';
+const RCV01A_WORKTREE_CANDIDATE_CONTOUR_ID = 'R24-RCV-01A';
+const RCV01A_WORKTREE_CANDIDATE_VERDICT = 'BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE';
+const HEX40_RE = /^[a-f0-9]{40}$/u;
+const HEX64_RE = /^[a-f0-9]{64}$/u;
 
 // Immutable node carriers that included the mutable inventory remain exact
 // historical evidence, never coverage of today's inventory. No arbitrary
@@ -366,6 +375,54 @@ function safeSurfaceRelative(value) {
     && /\.(md|json)$/.test(normalized);
 }
 
+function lintSchemaError(code) {
+  const error = new Error(code);
+  error.code = code;
+  return error;
+}
+
+function isObjectRecord(value) {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function buildRcv01aWorktreeCandidateClaimBinding(artifact) {
+  const fail = (code) => { throw lintSchemaError(code); };
+  if (!isObjectRecord(artifact)) fail('E_RCV01A_WORKTREE_CANDIDATE_SCHEMA');
+  if (artifact.schemaVersion !== RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION) {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_SCHEMA_VERSION');
+  }
+  if (artifact.stampId !== RCV01A_WORKTREE_CANDIDATE_STAMP_ID) fail('E_RCV01A_WORKTREE_CANDIDATE_STAMP_ID');
+  if (artifact.contourId !== RCV01A_WORKTREE_CANDIDATE_CONTOUR_ID) fail('E_RCV01A_WORKTREE_CANDIDATE_CONTOUR');
+  if (artifact.evidenceClass !== 'CONTRACT') fail('E_RCV01A_WORKTREE_CANDIDATE_EVIDENCE_CLASS');
+  if (artifact.verdict !== RCV01A_WORKTREE_CANDIDATE_VERDICT) fail('E_RCV01A_WORKTREE_CANDIDATE_VERDICT');
+  if (artifact.identityMode !== RCV01A_WORKTREE_CANDIDATE_IDENTITY_MODE) fail('E_RCV01A_WORKTREE_CANDIDATE_IDENTITY_MODE');
+  if (artifact.headSha !== null || artifact.originMainSha !== null) fail('E_RCV01A_WORKTREE_CANDIDATE_HEAD_CLAIM');
+  const candidate = artifact.candidateIdentity;
+  if (!isObjectRecord(candidate)) fail('E_RCV01A_WORKTREE_CANDIDATE_IDENTITY');
+  if (candidate.boundByteSource !== 'CURRENT_WORKTREE') fail('E_RCV01A_WORKTREE_CANDIDATE_BYTE_SOURCE');
+  if (candidate.declaredGitHeadReachability !== 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES') {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_REACHABILITY');
+  }
+  if (!HEX40_RE.test(String(candidate.baseSha || ''))) fail('E_RCV01A_WORKTREE_CANDIDATE_BASE_SHA');
+  if (!HEX40_RE.test(String(candidate.baseTree || ''))) fail('E_RCV01A_WORKTREE_CANDIDATE_BASE_TREE');
+  if (!HEX64_RE.test(String(candidate.boundFileSetDigest || ''))) fail('E_RCV01A_WORKTREE_CANDIDATE_FILE_SET');
+  if (!Array.isArray(artifact.claimBindings) || artifact.claimBindings.length === 0) {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDINGS');
+  }
+  if (!Array.isArray(artifact.implementationArtifactDigests) || artifact.implementationArtifactDigests.length === 0) {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_BINDINGS');
+  }
+  if (!Array.isArray(artifact.executedEvidence) || artifact.executedEvidence.length === 0) {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_EXECUTED_EVIDENCE');
+  }
+  if (!Array.isArray(artifact.nonClaims)
+    || !artifact.nonClaims.includes('NO_PROGRAM_DONE')
+    || !artifact.nonClaims.includes('NO_RELEASE_READINESS')) {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_NON_CLAIMS');
+  }
+  return artifact;
+}
+
 function addBinding({ rootDir, evidenceDir, stamp, file, bindingsByFile, historicalBindings, failures }) {
   if (!Array.isArray(stamp.claimBindings)) return;
   for (const binding of stamp.claimBindings) {
@@ -430,6 +487,10 @@ export function lintDocsClaims(rootDir) {
         stampIds.add(stamp.stampId);
       } else if (artifact?.schemaVersion === 'ClaimBindingV1') {
         const binding = buildClaimBinding(artifact);
+        stampIds.add(binding.stampId);
+        addBinding({ rootDir, evidenceDir, stamp: binding, file, bindingsByFile, historicalBindings, failures });
+      } else if (artifact?.schemaVersion === RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION) {
+        const binding = buildRcv01aWorktreeCandidateClaimBinding(artifact);
         stampIds.add(binding.stampId);
         addBinding({ rootDir, evidenceDir, stamp: binding, file, bindingsByFile, historicalBindings, failures });
       } else if (artifact && (Object.hasOwn(artifact, 'stampId') || Object.hasOwn(artifact, 'claimBindings'))) {

@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { canonicalBytes, sha256 } from './canonical-json.mjs';
 
 export const RCV01A_SCHEMA_VERSION = 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1';
-export const RCV01A_CLAIM_BINDING_SCHEMA_VERSION = 'ClaimBindingV1';
+export const RCV01A_CLAIM_BINDING_SCHEMA_VERSION = 'R24_RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDINGS_V1';
 export const RCV01A_CONTOUR_ID = 'R24-RCV-01A';
 export const RCV01A_TASK_ID = 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_20260911';
 export const EXPECTED_BASE_SHA = 'ba9e9772f7e6c4c53e182247bb3ad3ff2a456cfb';
@@ -683,8 +683,13 @@ export function validateClaimBindingEvidence(bindings, { repoRoot = REPO_ROOT } 
   if (candidate.boundByteSource !== 'CURRENT_WORKTREE') fail('E_RCV01A_CANDIDATE_BYTE_SOURCE');
   if (candidate.declaredGitHeadReachability !== 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES') fail('E_RCV01A_CANDIDATE_REACHABILITY_DECLARATION');
   if (candidate.baseSha !== CURRENT_CANDIDATE_BASE_SHA || candidate.baseTree !== CURRENT_CANDIDATE_BASE_TREE) fail('E_RCV01A_CANDIDATE_BASE_IDENTITY');
-  if (gitText(root, ['rev-parse', 'HEAD']) !== candidate.baseSha) fail('E_RCV01A_CANDIDATE_HEAD_DRIFT');
-  if (gitText(root, ['rev-parse', 'HEAD^{tree}']) !== candidate.baseTree) fail('E_RCV01A_CANDIDATE_TREE_DRIFT');
+  for (const entry of entries) {
+    const filePath = repoPath(root, entry.path);
+    if (!fs.existsSync(filePath)) fail('E_RCV01A_BOUND_ARTIFACT_UNREACHABLE', `${entry.section}:${entry.path}`);
+    if (sha256(fs.readFileSync(filePath)) !== entry.sha256) {
+      fail('E_RCV01A_BOUND_ARTIFACT_DIGEST_MISMATCH', `${entry.section}:${entry.path}`);
+    }
+  }
   if (candidate.boundFileSetDigest !== boundFileSetDigest(entries)) fail('E_RCV01A_CANDIDATE_BOUND_FILE_SET');
   const review = assertArray(value.independentReviewEvidence, 'E_RCV01A_INDEPENDENT_REVIEW_EVIDENCE')
     .find((entry) => entry.packetId === INDEPENDENT_GATE_A_REVIEW_PACKET.packetId);
