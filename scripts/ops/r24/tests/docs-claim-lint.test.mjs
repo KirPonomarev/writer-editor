@@ -85,6 +85,106 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
+function canonicalizeForTest(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalizeForTest).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalizeForTest(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function boundFileSetDigest(entries) {
+  return sha256(`${canonicalizeForTest(entries.map((entry) => ({
+    path: entry.path,
+    section: entry.section,
+    sha256: entry.sha256,
+  })))}\n`);
+}
+
+function writeRootFile(rootDir, relativePath, content) {
+  const file = path.join(rootDir, relativePath);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, content);
+}
+
+function makeRcv01aWorktreeCandidateFixture({
+  boundFileSetDigestOverride = null,
+  evidenceBasename = `${RCV01A_WORKTREE_CANDIDATE_STAMP_ID}.json`,
+  implementationSha256Override = null,
+} = {}) {
+  const manifestPath = 'CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json';
+  const inventoryPath = 'CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
+  const manifestContent = '{"status":"READY","result":"SAFE"}';
+  const inventoryContent = '{"summary":"PASS"}';
+  const implementationPath = 'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs';
+  const implementationContent = 'export const RCV01A_VERIFIER = true;\n';
+  const dir = makeDocs({
+    docs: {
+      [manifestPath]: manifestContent,
+      [inventoryPath]: inventoryContent,
+    },
+  });
+  writeRootFile(dir, implementationPath, implementationContent);
+  const claimBindings = [
+    {
+      filePath: `docs/OPS/R24/${manifestPath}`,
+      sha256: sha256(manifestContent),
+      claimTerms: ['READY', 'SAFE'],
+    },
+    {
+      filePath: `docs/OPS/R24/${inventoryPath}`,
+      sha256: sha256(inventoryContent),
+      claimTerms: ['PASS'],
+    },
+  ];
+  const implementationArtifactDigests = [
+    {
+      path: implementationPath,
+      sha256: implementationSha256Override || sha256(implementationContent),
+      terms: ['RCV01A_VERIFIER'],
+    },
+  ];
+  const boundEntries = [
+    ...claimBindings.map((entry) => ({ section: 'claimBindings', path: entry.filePath, sha256: entry.sha256 })),
+    ...implementationArtifactDigests.map((entry) => ({ section: 'implementationArtifactDigests', path: entry.path, sha256: entry.sha256 })),
+  ];
+  const stamp = {
+    schemaVersion: RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION,
+    stampId: RCV01A_WORKTREE_CANDIDATE_STAMP_ID,
+    contourId: 'R24-RCV-01A',
+    evidenceClass: 'CONTRACT',
+    verdict: 'BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE',
+    identityMode: 'WORKTREE_CANDIDATE_NON_CURRENT',
+    headSha: null,
+    originMainSha: null,
+    candidateIdentity: {
+      boundByteSource: 'CURRENT_WORKTREE',
+      baseSha: HEAD,
+      baseTree: TREE,
+      declaredGitHeadReachability: 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES',
+      boundFileSetDigest: boundFileSetDigestOverride || boundFileSetDigest(boundEntries),
+    },
+    generatedAtUtc: NOW,
+    oracle: 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST',
+    independentReviewEvidence: [],
+    claimBindings,
+    implementationArtifactDigests,
+    executedEvidence: [
+      {
+        command: 'node --test test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs',
+        verdict: 'PASS',
+        tests: { pass: 25, fail: 0 },
+      },
+    ],
+    nonClaims: ['NO_PROGRAM_DONE', 'NO_RELEASE_READINESS'],
+  };
+  fs.writeFileSync(
+    path.join(dir, 'docs', 'OPS', 'R24', 'EVIDENCE', evidenceBasename),
+    JSON.stringify(stamp),
+  );
+  return { dir, implementationContent, implementationPath, stamp };
+}
+
 test('claim term without resolvable stamp fails closed', () => {
   const dir = makeDocs({ docs: { 'STATUS.json': '{"status":"READY"}' } });
   const result = lintDocsClaims(dir);
@@ -221,71 +321,91 @@ test('sha-bound evidence binding fails closed when target digest changes', () =>
 });
 
 test('RCV01A worktree candidate binding resolves exact non-current claim bytes', () => {
-  const manifestPath = 'CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json';
-  const inventoryPath = 'CORRECTIVE/C1B_TEST_INVENTORY_V1.json';
-  const manifestContent = '{"status":"READY","result":"SAFE"}';
-  const inventoryContent = '{"summary":"PASS"}';
-  const dir = makeDocs({
-    docs: {
-      [manifestPath]: manifestContent,
-      [inventoryPath]: inventoryContent,
-    },
-  });
-  const stamp = {
-    schemaVersion: RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION,
-    stampId: RCV01A_WORKTREE_CANDIDATE_STAMP_ID,
-    contourId: 'R24-RCV-01A',
-    evidenceClass: 'CONTRACT',
-    verdict: 'BLOCKED_REQUIRED_C1C_SHARD_INCOMPLETE',
-    identityMode: 'WORKTREE_CANDIDATE_NON_CURRENT',
-    headSha: null,
-    originMainSha: null,
-    candidateIdentity: {
-      boundByteSource: 'CURRENT_WORKTREE',
-      baseSha: HEAD,
-      baseTree: TREE,
-      declaredGitHeadReachability: 'NOT_CLAIMED_UNCOMMITTED_CANDIDATE_BYTES',
-      boundFileSetDigest: 'c'.repeat(64),
-    },
-    generatedAtUtc: NOW,
-    oracle: 'R24_RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST',
-    independentReviewEvidence: [],
-    claimBindings: [
-      {
-        filePath: `docs/OPS/R24/${manifestPath}`,
-        sha256: sha256(manifestContent),
-        claimTerms: ['READY', 'SAFE'],
-      },
-      {
-        filePath: `docs/OPS/R24/${inventoryPath}`,
-        sha256: sha256(inventoryContent),
-        claimTerms: ['PASS'],
-      },
-    ],
-    implementationArtifactDigests: [
-      {
-        path: 'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs',
-        sha256: 'd'.repeat(64),
-        terms: ['RCV01A_VERIFIER'],
-      },
-    ],
-    executedEvidence: [
-      {
-        command: 'node --test test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs',
-        verdict: 'PASS',
-        tests: { pass: 25, fail: 0 },
-      },
-    ],
-    nonClaims: ['NO_PROGRAM_DONE', 'NO_RELEASE_READINESS'],
-  };
-  fs.writeFileSync(
-    path.join(dir, 'docs', 'OPS', 'R24', 'EVIDENCE', `${RCV01A_WORKTREE_CANDIDATE_STAMP_ID}.json`),
-    JSON.stringify(stamp),
-  );
+  const { dir } = makeRcv01aWorktreeCandidateFixture();
   const result = lintDocsClaims(dir);
   assert.equal(result.ok, true);
   assert.equal(result.filesWithClaims, 2);
   assert.equal(result.stampCount, 1);
+});
+
+test('RCV01A worktree candidate binding rejects stale bound file-set digest', () => {
+  const { dir } = makeRcv01aWorktreeCandidateFixture({ boundFileSetDigestOverride: 'c'.repeat(64) });
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_FILE_SET_MISMATCH')));
+});
+
+test('RCV01A worktree candidate binding rejects bad implementation artifact digest', () => {
+  const { dir } = makeRcv01aWorktreeCandidateFixture({ implementationSha256Override: 'd'.repeat(64) });
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_DIGEST_MISMATCH')));
+});
+
+test('RCV01A worktree candidate binding rejects wrong evidence basename', () => {
+  const { dir } = makeRcv01aWorktreeCandidateFixture({ evidenceBasename: 'wrong-basename.json' });
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_BASENAME')));
+});
+
+test('RCV01A worktree candidate binding rejects matching-byte implementation symlink', (t) => {
+  const { dir, implementationContent, implementationPath } = makeRcv01aWorktreeCandidateFixture();
+  const implementationFile = path.join(dir, implementationPath);
+  const target = path.join(dir, 'matching-target.mjs');
+  fs.writeFileSync(target, implementationContent);
+  fs.unlinkSync(implementationFile);
+  try {
+    fs.symlinkSync(target, implementationFile);
+  } catch (error) {
+    if (['EPERM', 'ENOTSUP', 'EACCES'].includes(error?.code)) {
+      t.skip(`symlink unsupported: ${error.code}`);
+      return;
+    }
+    throw error;
+  }
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_NOT_FILE')));
+});
+
+test('RCV01A worktree candidate binding rejects implementation symlink outside root', (t) => {
+  const { dir, implementationContent, implementationPath } = makeRcv01aWorktreeCandidateFixture();
+  const implementationFile = path.join(dir, implementationPath);
+  const outsideDir = fs.mkdtempSync(path.join(os.tmpdir(), 'r24-claim-outside-'));
+  const outsideTarget = path.join(outsideDir, 'outside-target.mjs');
+  fs.writeFileSync(outsideTarget, implementationContent);
+  fs.unlinkSync(implementationFile);
+  try {
+    fs.symlinkSync(outsideTarget, implementationFile);
+  } catch (error) {
+    if (['EPERM', 'ENOTSUP', 'EACCES'].includes(error?.code)) {
+      t.skip(`symlink unsupported: ${error.code}`);
+      return;
+    }
+    throw error;
+  }
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_NOT_FILE')));
+});
+
+test('RCV01A worktree candidate binding rejects implementation directory as typed non-file', () => {
+  const { dir, implementationPath } = makeRcv01aWorktreeCandidateFixture();
+  const implementationFile = path.join(dir, implementationPath);
+  fs.rmSync(implementationFile);
+  fs.mkdirSync(implementationFile);
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_NOT_FILE')));
+});
+
+test('RCV01A worktree candidate binding rejects missing implementation artifact with typed failure', () => {
+  const { dir, implementationPath } = makeRcv01aWorktreeCandidateFixture();
+  fs.unlinkSync(path.join(dir, implementationPath));
+  const result = lintDocsClaims(dir);
+  assert.equal(result.ok, false);
+  assert.ok(result.failures.some((failure) => failure.includes('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_MISSING')));
 });
 
 test('WP603 original inventory binding is accepted only at its exact merged bytes', () => {

@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { readJsonBounded, sha256hex } from './canonical-json.mjs';
+import { canonicalize, readJsonBounded, sha256hex } from './canonical-json.mjs';
 import { buildEvidenceStamp } from './terminal-receipt.mjs';
 import { buildClaimBinding } from './claim-binding.mjs';
 
@@ -375,6 +375,29 @@ function safeSurfaceRelative(value) {
     && /\.(md|json)$/.test(normalized);
 }
 
+function safeRepoRelative(value) {
+  if (typeof value !== 'string' || value.length === 0) return false;
+  if (path.isAbsolute(value)) return false;
+  const normalized = value.replaceAll('\\', '/');
+  return !normalized.includes('../') && !normalized.startsWith('../') && !normalized.startsWith('/');
+}
+
+function rcv01aBoundFileSetDigest(entries) {
+  return sha256hex(`${canonicalize(entries.map((entry) => ({
+    path: entry.path,
+    section: entry.section,
+    sha256: entry.sha256,
+  })))}\n`);
+}
+
+function sameFileIdentity(before, after) {
+  return before.dev === after.dev
+    && before.ino === after.ino
+    && before.mode === after.mode
+    && before.size === after.size
+    && before.mtimeNs === after.mtimeNs;
+}
+
 function lintSchemaError(code) {
   const error = new Error(code);
   error.code = code;
@@ -385,13 +408,53 @@ function isObjectRecord(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
-function buildRcv01aWorktreeCandidateClaimBinding(artifact) {
+function validateRcv01aImplementationBindings(rootDir, implementationArtifactDigests, fail) {
+  const entries = [];
+  for (const entry of implementationArtifactDigests) {
+    if (!isObjectRecord(entry)) fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_ENTRY');
+    if (!safeRepoRelative(entry.path)) fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_PATH');
+    if (!HEX64_RE.test(String(entry.sha256 || ''))) fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_DIGEST');
+    const fullPath = path.resolve(rootDir, entry.path);
+    const rootPath = path.resolve(rootDir);
+    if (!fullPath.startsWith(rootPath + path.sep)) {
+      fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_OUTSIDE_ROOT');
+    }
+    let before;
+    try {
+      before = fs.lstatSync(fullPath, { bigint: true });
+    } catch {
+      fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_MISSING');
+    }
+    if (!before.isFile()) fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_NOT_FILE');
+    let realPath;
+    try {
+      realPath = fs.realpathSync.native(fullPath);
+    } catch {
+      fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_REALPATH');
+    }
+    const rootRealPath = fs.realpathSync.native(rootPath);
+    if (realPath !== rootRealPath && !realPath.startsWith(rootRealPath + path.sep)) {
+      fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_OUTSIDE_ROOT');
+    }
+    const bytes = fs.readFileSync(fullPath);
+    const after = fs.lstatSync(fullPath, { bigint: true });
+    if (!sameFileIdentity(before, after)) fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_UNSTABLE');
+    if (sha256hex(bytes) !== entry.sha256) {
+      fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_DIGEST_MISMATCH');
+    }
+    entries.push({ section: 'implementationArtifactDigests', path: entry.path, sha256: entry.sha256 });
+  }
+  return entries;
+}
+
+function buildRcv01aWorktreeCandidateClaimBinding(artifact, { rootDir, file }) {
   const fail = (code) => { throw lintSchemaError(code); };
   if (!isObjectRecord(artifact)) fail('E_RCV01A_WORKTREE_CANDIDATE_SCHEMA');
   if (artifact.schemaVersion !== RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION) {
     fail('E_RCV01A_WORKTREE_CANDIDATE_SCHEMA_VERSION');
   }
   if (artifact.stampId !== RCV01A_WORKTREE_CANDIDATE_STAMP_ID) fail('E_RCV01A_WORKTREE_CANDIDATE_STAMP_ID');
+  if (path.basename(file) !== `${artifact.stampId}.json`) fail('E_RCV01A_WORKTREE_CANDIDATE_BASENAME');
   if (artifact.contourId !== RCV01A_WORKTREE_CANDIDATE_CONTOUR_ID) fail('E_RCV01A_WORKTREE_CANDIDATE_CONTOUR');
   if (artifact.evidenceClass !== 'CONTRACT') fail('E_RCV01A_WORKTREE_CANDIDATE_EVIDENCE_CLASS');
   if (artifact.verdict !== RCV01A_WORKTREE_CANDIDATE_VERDICT) fail('E_RCV01A_WORKTREE_CANDIDATE_VERDICT');
@@ -411,6 +474,16 @@ function buildRcv01aWorktreeCandidateClaimBinding(artifact) {
   }
   if (!Array.isArray(artifact.implementationArtifactDigests) || artifact.implementationArtifactDigests.length === 0) {
     fail('E_RCV01A_WORKTREE_CANDIDATE_IMPLEMENTATION_BINDINGS');
+  }
+  const claimEntries = artifact.claimBindings.map((entry) => {
+    if (!isObjectRecord(entry)) fail('E_RCV01A_WORKTREE_CANDIDATE_CLAIM_ENTRY');
+    if (!safeSurfaceRelative(entry.filePath)) fail('E_RCV01A_WORKTREE_CANDIDATE_CLAIM_PATH');
+    if (!HEX64_RE.test(String(entry.sha256 || ''))) fail('E_RCV01A_WORKTREE_CANDIDATE_CLAIM_DIGEST');
+    return { section: 'claimBindings', path: entry.filePath, sha256: entry.sha256 };
+  });
+  const implementationEntries = validateRcv01aImplementationBindings(rootDir, artifact.implementationArtifactDigests, fail);
+  if (candidate.boundFileSetDigest !== rcv01aBoundFileSetDigest([...claimEntries, ...implementationEntries])) {
+    fail('E_RCV01A_WORKTREE_CANDIDATE_FILE_SET_MISMATCH');
   }
   if (!Array.isArray(artifact.executedEvidence) || artifact.executedEvidence.length === 0) {
     fail('E_RCV01A_WORKTREE_CANDIDATE_EXECUTED_EVIDENCE');
@@ -490,7 +563,7 @@ export function lintDocsClaims(rootDir) {
         stampIds.add(binding.stampId);
         addBinding({ rootDir, evidenceDir, stamp: binding, file, bindingsByFile, historicalBindings, failures });
       } else if (artifact?.schemaVersion === RCV01A_WORKTREE_CANDIDATE_CLAIM_BINDING_SCHEMA_VERSION) {
-        const binding = buildRcv01aWorktreeCandidateClaimBinding(artifact);
+        const binding = buildRcv01aWorktreeCandidateClaimBinding(artifact, { rootDir, file });
         stampIds.add(binding.stampId);
         addBinding({ rootDir, evidenceDir, stamp: binding, file, bindingsByFile, historicalBindings, failures });
       } else if (artifact && (Object.hasOwn(artifact, 'stampId') || Object.hasOwn(artifact, 'claimBindings'))) {
