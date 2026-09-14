@@ -8,6 +8,7 @@ import test from 'node:test';
 import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { R24_F_SUBSTRATE_EXPECTATION, verifyFSubstratePostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
+import { createFixturePublicationCache } from '../fixtures/r24-fixture-publication-cache.mjs';
 import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
 import { RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs';
 import { RCV00B_CURRENT_HEAD_EFFECTIVE_STATE_COMPILER_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00b-current-head-effective-state-compiler.mjs';
@@ -266,6 +267,7 @@ function sha256StableJson(value) {
 function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSeal, mutateAfterSeal } = {}) {
   const e = R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION;
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-interop100-post-audit-'));
+  const publisher = createFixturePublicationCache({ identity: { fixture: 'R24_INTEROP_100_DENOMINATOR_ADMISSION', repoRoot } });
   git(repoRoot, ['init', '-q']);
   git(repoRoot, ['config', 'user.email', 'interop100-post-audit@example.invalid']);
   git(repoRoot, ['config', 'user.name', 'Interop 100 Post Audit']);
@@ -279,7 +281,7 @@ function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSe
     for (const relative of e.admittedPaths) {
       const absolutePath = path.join(repoRoot, relative);
       fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-      fs.writeFileSync(absolutePath, files.get(relative));
+      publisher.publish(absolutePath, files.get(relative));
     }
   };
   let sourceSha;
@@ -368,7 +370,7 @@ function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSe
     } else throw new Error(`Unexpected fixture Git command: ${args.join(' ')}`);
     return options.encoding === 'utf8' ? String(result) : Buffer.from(result);
   };
-  return { e, files, read, put, git: fixtureGit, repoRoot, candidateSha, candidateTree, sourceSha, sourceTree, cleanup: () => fs.rmSync(repoRoot, { recursive: true, force: true }) };
+  return { e, files, read, put, git: fixtureGit, repoRoot, candidateSha, candidateTree, sourceSha, sourceTree, publisherSummary: publisher.summary, cleanup: () => fs.rmSync(repoRoot, { recursive: true, force: true }) };
 }
 
 const verifyInterop100DenominatorAdmissionFixture = (fixture) => verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationException({
@@ -389,6 +391,17 @@ test('R24 interop100 denominator hardening exception accepts exact current delta
     assert.equal(result.claimVerdict, 'AUTHORITATIVE_REHYDRATION_REQUIRED');
     assert.equal(result.supportedDenominatorPromotion, false);
     assert.equal(result.programDone, false);
+    assert.deepEqual(fixture.publisherSummary(), {
+      deduped: 5,
+      failures: 0,
+      fsyncCalls: 22,
+      published: 11,
+      readbackCalls: 16,
+      renameCalls: 11,
+      uniquePathByteHashCount: 11,
+      uniquePathCount: 8,
+      writeCalls: 11,
+    });
   } finally {
     fixture.cleanup();
   }
@@ -581,8 +594,8 @@ test('RCV00B current-head effective-state compiler is admitted as a post-evaluat
 });
 test('historical false-green is reproduced as exactly nine Git-object mismatches',()=>{const value=JSON.parse(fs.readFileSync(OLD));let denominator=0,mismatches=0;for(const stage of value.stages)for(const binding of stage.artifactBindings){denominator+=1;const bytes=execFileSync('git',['show',`${value.evaluationSha}:${binding.path}`]);if(h(bytes)!==binding.sha256)mismatches+=1;}assert.equal(denominator,137);assert.equal(mismatches,9);});
 test('declared artifact mismatch fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].sha256='0'.repeat(64);assert.throws(()=>verify(mutant),/E_ARTIFACT_DIGEST_MISMATCH/);});
-test('missing artifact fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].path='missing/audit-cycle-one-artifact.json';assert.throws(()=>verify(mutant),/E_ARTIFACT_MISSING/);});
-test('missing binding cannot shrink the complete denominator',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings.pop();assert.throws(()=>verify(mutant),/E_ARTIFACT_DENOMINATOR/);});
+test('missing artifact fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings[0].path='missing/audit-cycle-one-artifact.json';assert.throws(()=>verify(mutant),/E_CERTIFICATION_BINDING_SET|E_ARTIFACT_MISSING/);});
+test('missing binding cannot shrink the complete denominator',()=>{const file=load(),mutant=clone(file.value);mutant.stages[0].artifactBindings.pop();assert.throws(()=>verify(mutant),/E_CERTIFICATION_BINDING_SET|E_ARTIFACT_DENOMINATOR/);});
 test('stale tree identity fails closed',()=>{const file=load(),mutant=clone(file.value);mutant.evaluationTreeSha='0'.repeat(40);assert.throws(()=>verify(mutant),/E_EVALUATION_TREE/);});
 test('future top-level evaluation cannot retain stale per-stage identities',()=>{const file=load(),mutant=clone(file.value);mutant.evaluationSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();mutant.evaluationTreeSha=execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim();assert.throws(()=>verify(mutant),/E_STAGE_EVALUATION/);});
 test('post-evaluation exception is exact and machine checked',()=>{const file=load(),mutant=clone(file.value);mutant.postEvaluationCarrierException.allowedPaths=[];assert.throws(()=>verify(mutant),/E_CARRIER_EXCEPTION_PATHS/);});

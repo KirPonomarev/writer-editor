@@ -125,7 +125,9 @@ export const EXTERNAL_SOURCE_PLAN_DIGEST='1f5b5b7b63a9f7806db1ecbcd8fa5f16484a73
 export const COMPILED_PROGRAM_FILE_DIGEST='da754a8a0e2c09014f342b908502e83ab975488ab665feb2a8a66d0b0d46ae0a';
 export const EXPECTED_STAGE_COUNT=33;
 export const EXPECTED_ARTIFACT_BINDING_DENOMINATOR=137;
+export const POST_AUDIT_CERTIFICATION_SOURCE_PATH='docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V1.json';
 export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
+  '.github/workflows/oss-policy.yml',
   'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_CORRECTIONS_FINAL_ACCEPTANCE_MATRIX_V1.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_CORRECTIONS_FINAL_EFFECTIVE_STATE_V1.json',
@@ -136,11 +138,17 @@ export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_PROTECTED_WIP_AFTER_V1.json',
   'docs/OPS/R24/CORRECTIVE/AUDIT_CYCLE_1_TERMINAL_ATTESTATION_DURABLE_CARRIER_V1.json',
   'docs/OPS/R24/CORRECTIVE/C1C_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/R24/CORRECTIVE/GATE_A_DURABLE_WRITE_DIAGNOSIS_PACKET_V1.json',
   'docs/OPS/R24/CORRECTIVE/POST_AUDIT_CURRENT_CERTIFICATION_SET_V2.json',
   'docs/OPS/R24/CORRECTIVE/RCV01A_NORMATIVE_CLAIM_TEST_LANE_MANIFEST_V1.json',
   'docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json',
+  'scripts/ops/r24/corrective/c2a-effective-certification.mjs',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs',
+  'scripts/ops/r24/run-c1c-contract-shard.mjs',
+  'test/fixtures/r24-fixture-publication-cache.mjs',
+  'test/contracts/review-bridge-product-discoverability-labels.contract.test.js',
   'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs'
 ]);
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([
@@ -1768,7 +1776,116 @@ const approvalMatchesApprovedBy=(entry,approvedBy)=>{
 const hex=(value,size,label)=>assert(typeof value==='string'&&new RegExp(`^[0-9a-f]{${size}}$`).test(value),'E_HEX',label);
 const validatePath=(value)=>{assert(typeof value==='string'&&value.length>0&&value===value.normalize('NFC')&&!value.includes('\\')&&!value.startsWith('/')&&!value.split('/').some((part)=>!part||part==='.'||part==='..'),'E_ARTIFACT_PATH',String(value));return value;};
 const readJsonFile=(file)=>{const bytes=fs.readFileSync(file);assert(bytes.at(-1)===0x0a,'E_CANONICAL_LF',file);return{bytes,digest:h(bytes),value:JSON.parse(bytes)}};
-const defaultGit=(args,options={})=>execFileSync('git',args,{encoding:options.encoding??null,maxBuffer:64*1024*1024});
+const rawDefaultGit=(args,options={})=>execFileSync('git',args,{cwd:options.cwd,encoding:options.encoding??null,maxBuffer:64*1024*1024});
+const CACHEABLE_GIT_COMMANDS=new Set(['diff','ls-tree','merge-base','rev-list','rev-parse','show']);
+const FULL_SHA_RE=/^[0-9a-f]{40}$/u;
+const SHA_TREE_RE=/^[0-9a-f]{40}\^\{tree\}$/u;
+const SHA_RANGE_RE=/^[0-9a-f]{40}\.\.[0-9a-f]{40}$/u;
+const SHA_PATH_RE=/^[0-9a-f]{40}:.+$/u;
+const GIT_MEMO_ENV_KEYS=Object.freeze([
+  'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+  'GIT_CEILING_DIRECTORIES',
+  'GIT_CONFIG_GLOBAL',
+  'GIT_CONFIG_NOSYSTEM',
+  'GIT_CONFIG_SYSTEM',
+  'GIT_DIR',
+  'GIT_DISCOVERY_ACROSS_FILESYSTEM',
+  'GIT_INDEX_FILE',
+  'GIT_NAMESPACE',
+  'GIT_OBJECT_DIRECTORY',
+  'GIT_WORK_TREE',
+  'HOME',
+  'PATH'
+]);
+const gitMemoValue=(value)=>Buffer.isBuffer(value)?Buffer.from(value):value;
+const memoCanonicalPath=(value)=>{
+  const resolved=path.resolve(String(value));
+  try{return fs.realpathSync.native(resolved);}catch{return resolved;}
+};
+const memoStableValue=(value)=>{
+  if(value===undefined)return null;
+  if(Buffer.isBuffer(value))return{type:'Buffer',sha256:h(value),byteLength:value.length};
+  if(Array.isArray(value))return value.map((entry)=>memoStableValue(entry));
+  if(value&&typeof value==='object')return Object.fromEntries(Object.keys(value).sort().map((key)=>[key,memoStableValue(value[key])]));
+  return value;
+};
+const memoStableStringify=(value)=>JSON.stringify(memoStableValue(value));
+const relevantGitEnv=(env=process.env)=>Object.fromEntries(GIT_MEMO_ENV_KEYS.map((key)=>[key,env[key]??null]));
+const resolveGitExecutable=()=>{
+  try{
+    const executable=String(execFileSync('which',['git'],{encoding:'utf8'})).trim();
+    return executable?memoCanonicalPath(executable):'git';
+  }catch{return 'git';}
+};
+const resolveGitRepoIdentity=(cwd)=>{
+  const effectiveCwd=memoCanonicalPath(cwd);
+  const gitDir=String(rawDefaultGit(['rev-parse','--path-format=absolute','--git-dir'],{cwd:effectiveCwd,encoding:'utf8'})).trim();
+  const commonDir=String(rawDefaultGit(['rev-parse','--path-format=absolute','--git-common-dir'],{cwd:effectiveCwd,encoding:'utf8'})).trim();
+  const worktree=String(rawDefaultGit(['rev-parse','--show-toplevel'],{cwd:effectiveCwd,encoding:'utf8'})).trim();
+  return{
+    effectiveCwd,
+    gitDir:memoCanonicalPath(gitDir),
+    commonDir:memoCanonicalPath(commonDir),
+    worktree:worktree?memoCanonicalPath(worktree):null
+  };
+};
+function createDefaultGitIdentityProvider(){
+  const executable=resolveGitExecutable();
+  const defaultCwd=memoCanonicalPath(process.cwd());
+  const gitEnv=relevantGitEnv();
+  const repoByCwd=new Map();
+  return (options={})=>{
+    const explicitCwd=options.cwd?memoCanonicalPath(options.cwd):null;
+    const effectiveCwd=explicitCwd??defaultCwd;
+    if(!repoByCwd.has(effectiveCwd))repoByCwd.set(effectiveCwd,resolveGitRepoIdentity(effectiveCwd));
+    return{executable,defaultCwd,explicitCwd,gitEnv,...repoByCwd.get(effectiveCwd)};
+  };
+}
+const immutableGitMemoCall=(argv)=>{
+  if(!CACHEABLE_GIT_COMMANDS.has(argv[0]))return false;
+  if(argv[0]==='diff')return argv.length===3&&argv[1]==='--name-only'&&SHA_RANGE_RE.test(argv[2]);
+  if(argv[0]==='ls-tree')return argv.length===5&&argv[1]==='-r'&&argv[2]==='--name-only'&&argv[3]==='--full-tree'&&FULL_SHA_RE.test(argv[4]);
+  if(argv[0]==='merge-base')return argv.length===4&&argv[1]==='--is-ancestor'&&FULL_SHA_RE.test(argv[2])&&FULL_SHA_RE.test(argv[3]);
+  if(argv[0]==='rev-list')return argv.length===4&&argv[1]==='--ancestry-path'&&argv[2]==='--reverse'&&SHA_RANGE_RE.test(argv[3]);
+  if(argv[0]==='rev-parse')return argv.length===2&&(FULL_SHA_RE.test(argv[1])||SHA_TREE_RE.test(argv[1]));
+  if(argv[0]==='show')return argv.length===2&&SHA_PATH_RE.test(argv[1]);
+  return false;
+};
+export function gitMemoKey(args,options={},identity={}){
+  return memoStableStringify({
+    args:args.map((arg)=>String(arg)),
+    identity,
+    options
+  });
+}
+export function createMemoizedGit(git,{requireImmutable=false,identityProvider=()=>({})}={}){
+  const cache=new Map(),stats={hits:0,misses:0,stores:0,failures:0,bypassed:0};
+  const memoized=(args,options={})=>{
+    const argv=args.map((arg)=>String(arg));
+    if(!CACHEABLE_GIT_COMMANDS.has(argv[0])||(requireImmutable&&!immutableGitMemoCall(argv))){stats.bypassed+=1;return git(args,options);}
+    const key=gitMemoKey(argv,options,identityProvider(options));
+    if(cache.has(key)){
+      stats.hits+=1;
+      const entry=cache.get(key);
+      return gitMemoValue(entry.value);
+    }
+    stats.misses+=1;
+    try{
+      const value=git(args,options);
+      cache.set(key,{value:gitMemoValue(value)});
+      stats.stores+=1;
+      return gitMemoValue(value);
+    }catch(error){
+      stats.failures+=1;
+      throw error;
+    }
+  };
+  memoized.stats=stats;
+  memoized.cache=cache;
+  return memoized;
+}
+let activeDefaultGitMemo=null;
+const defaultGit=(args,options={})=>activeDefaultGitMemo?activeDefaultGitMemo(args,options):rawDefaultGit(args,options);
 const gitText=(git,args)=>String(git(args,{encoding:'utf8'})).trim();
 const objectBytes=(git,sha,artifactPath)=>git(['show',`${sha}:${validatePath(artifactPath)}`],{encoding:null});
 const evaluationTree=(git,sha)=>gitText(git,['rev-parse',`${sha}^{tree}`]);
@@ -6442,12 +6559,64 @@ export function verifyWp700CiRepairTemporalSuccessor({candidateSha='HEAD',git=de
   return{schemaVersion:'WP700_CI_REPAIR_TEMPORAL_SUCCESSOR_VERIFICATION_V1',status:'PASS',baseSha:expectation.baseSha,baseTree:expectation.baseTree,candidateSha:resolvedCandidate,candidateTree:evaluationTree(git,resolvedCandidate),admissionDenominator:1,admittedPathDenominator:admitted.length,changedPathDenominator:changed.length,inventoryFileDenominator:inventory.entries.length,requiredSkips:inventory.totals.requiredSkips,unexplainedSkips:inventory.totals.unexplainedSkips,admittedPaths:admitted,changedPaths:changed,failureDigest:failure.digest,successorDigest:successor.digest,admission:{authorityDigest:authority.digest,stageInstanceDigest:instance.digest,stageAdmissionDigest:admission.digest,writeSetDigest:expectation.writeSetDigest,commandScopeDigest:expectation.commandScopeDigest,acceptanceSignalsDigest:expectation.acceptanceSignalsDigest},sourcePlanRoles:{externalSourcePlanDigest:EXTERNAL_SOURCE_PLAN_DIGEST,compiledProgramFileDigest:COMPILED_PROGRAM_FILE_DIGEST,rolesDistinct:true}};
 }
 
+function parseGitJson(bytes,code,detail){
+  try{return JSON.parse(Buffer.from(bytes).toString('utf8'));}
+  catch{fail(code,detail);}
+}
+
+function certificationBindingKey(stageId,bindingPath){
+  return `${stageId}\u0000${bindingPath}`;
+}
+
+function certificationShapeFromStages(stages){
+  const stageIds=[];
+  const bindingKeys=[];
+  for(const stage of stages){
+    stageIds.push(stage.stageId);
+    assert(Array.isArray(stage.artifactBindings)&&stage.artifactBindings.length>0,'E_STAGE_ARTIFACTS',stage.stageId);
+    for(const binding of stage.artifactBindings){
+      const bindingPath=validatePath(binding.path);
+      bindingKeys.push(certificationBindingKey(stage.stageId,bindingPath));
+    }
+  }
+  return{stageIds,bindingKeys};
+}
+
+function assertUnique(values,code,detail){
+  assert(new Set(values).size===values.length,code,detail);
+}
+
+function assertExactCurrentCertificationShape({value,git}){
+  let sourceBytes;
+  try{sourceBytes=objectBytes(git,value.evaluationSha,POST_AUDIT_CERTIFICATION_SOURCE_PATH);}
+  catch{fail('E_CERTIFICATION_SOURCE_MISSING',POST_AUDIT_CERTIFICATION_SOURCE_PATH);}
+  const source=parseGitJson(sourceBytes,'E_CERTIFICATION_SOURCE_JSON',POST_AUDIT_CERTIFICATION_SOURCE_PATH);
+  assert(source.schemaVersion==='POST_AUDIT_CURRENT_CERTIFICATION_SET_V1','E_CERTIFICATION_SOURCE_SCHEMA',POST_AUDIT_CERTIFICATION_SOURCE_PATH);
+  assert(Array.isArray(source.stages)&&source.stages.length===EXPECTED_STAGE_COUNT,'E_CERTIFICATION_SOURCE_STAGE_DENOMINATOR',String(source.stages?.length));
+  const expected=certificationShapeFromStages(source.stages);
+  const actual=certificationShapeFromStages(value.stages);
+  assertUnique(expected.stageIds,'E_CERTIFICATION_SOURCE_DUPLICATE_STAGE','source');
+  assertUnique(actual.stageIds,'E_CERTIFICATION_STAGE_DUPLICATE','current');
+  assertUnique(expected.bindingKeys,'E_CERTIFICATION_SOURCE_DUPLICATE_BINDING','source');
+  assertUnique(actual.bindingKeys,'E_CERTIFICATION_BINDING_DUPLICATE','current');
+  assert(JSON.stringify(actual.stageIds)===JSON.stringify(expected.stageIds),'E_CERTIFICATION_STAGE_SET',actual.stageIds.join(','));
+  assert(JSON.stringify(actual.bindingKeys)===JSON.stringify(expected.bindingKeys),'E_CERTIFICATION_BINDING_SET',String(actual.bindingKeys.length));
+}
+
 export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git=defaultGit,allowAuditCycle2Admission=false,allowMainProductWp401Admission=false,allowMainProductWp402Admission=false,allowMainProductWp403Admission=false,allowMainProductWp404Admission=false,allowMainProductWp500Admission=false,allowMainProductWp501Admission=false,allowWp501GateIntegrationAdmission=false,allowWp501PerformanceIntegrationAdmission=false,allowWp501AuditR2CompatibilityAdmission=false,allowWp501InventoryFinalizationAdmission=false,allowWp501TerminalExceptionAdmission=false,allowMainProductWp502Admission=false,allowMainProductWp503Admission=false,allowMainProductWp504Admission=false,allowMainProductWp505Admission=false,allowMainProductWp506Admission=false,allowMainProductWp700Admission=false,allowMainProductWp507Admission=false,allowMainProductWp701Admission=false,allowMainProductWp702Admission=false,allowWp702CiCompatibilityAdmission=false,allowWp702TestInventoryAdmission=false,allowWp702EvidenceStampAdmission=false,allowWp702DependencyAuditAdmission=false,allowWp702Release01RebindAdmission=false,allowWp702RendererBundleRebindAdmission=false,allowWp702Pk0SecurityAdmission=false,allowWp702Pk0InventoryRefreshAdmission=false,allowWp702CiMergeRefTestBindingAdmission=false,allowWp702Wp504HistoricalSurfaceAdmission=false,allowMainProductWp600Admission=false,allowMainProductWp703Admission=false,allowMainProductWp601Admission=false,allowWp601HistoricalInventoryAdmission=false,allowWp601HistoricalInventoryAnchorRepairAdmission=false,allowMainProductWp705Admission=false,allowMainProductWp704Admission=false,allowWp704EnvironmentRegistrationAdmission=false,allowMainProductWp602Admission=false,allowMainProductWp604Admission=false,allowMainProductWp605Admission=false,allowMainProductWp710Admission=false,allowMainProductWp606Admission=false,allowMainProductWp607Admission=false,allowMainProductWp800Admission=false,allowMainProductWp801Admission=false,allowMainProductWp802Admission=false,allowMainProductWp803Admission=false,allowMainProductWp804Admission=false,allowMainProductWp805Admission=false,allowMainProductWp806Admission=false,allowMainProductWp708Admission=false,allowMainProductV2Admission=false,allowMainProductWp706Admission=false,allowMainProductWp707Admission=false,allowMainProductWp709Admission=false,allowPk1r1Admission=false,allowR24Rcv00eLeaseFencingCasAdmission=false}){
+  const previousDefaultGitMemo=activeDefaultGitMemo;
+  let scopedGit=git;
+  const identityProvider=createDefaultGitIdentityProvider();
+  if(git===defaultGit)activeDefaultGitMemo=createMemoizedGit(rawDefaultGit,{requireImmutable:true,identityProvider});
+  else scopedGit=createMemoizedGit(git,{requireImmutable:true,identityProvider});
+  git=scopedGit;
+  try{
   assert(value?.schemaVersion==='POST_AUDIT_CURRENT_CERTIFICATION_SET_V2'&&value.status==='CERTIFIED_DONE','E_SCHEMA_OR_STATUS');
   assert(value.externalSourcePlanDigest===EXTERNAL_SOURCE_PLAN_DIGEST&&value.compiledProgramFileDigest===COMPILED_PROGRAM_FILE_DIGEST&&value.externalSourcePlanDigest!==value.compiledProgramFileDigest,'E_SOURCE_PLAN_ROLE_BINDING');
   hex(value.evaluationSha,40,'evaluationSha');hex(value.evaluationTreeSha,40,'evaluationTreeSha');hex(fileDigest,64,'fileDigest');
   assert(ensureEvaluationObject(git,value.evaluationSha)===value.evaluationTreeSha,'E_EVALUATION_TREE');
   assert(Array.isArray(value.stages)&&value.stages.length===EXPECTED_STAGE_COUNT&&value.stageCount===EXPECTED_STAGE_COUNT,'E_STAGE_DENOMINATOR');
+  assertExactCurrentCertificationShape({value,git});
   let denominator=0;
   for(const [stageIndex,stage] of value.stages.entries()){
     assert(stage.effectiveState==='CERTIFIED_DONE'&&stage.evaluationSha===value.evaluationSha&&stage.evaluationTreeSha===value.evaluationTreeSha,'E_STAGE_EVALUATION',String(stageIndex));
@@ -6948,6 +7117,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24Rcv00hMinimalE0ParserPurityPostEvaluationException=r24Rcv00hMinimalE0ParserPurityException;
   verificationResult.r24W0CurrentStateClosurePostEvaluationException=r24W0CurrentStateClosureException;
   return verificationResult;
+  }finally{
+    activeDefaultGitMemo=previousDefaultGitMemo;
+  }
 }
 
 const ghRaw=(endpoint)=>execFileSync('gh',['api',endpoint],{encoding:null,maxBuffer:128*1024*1024});

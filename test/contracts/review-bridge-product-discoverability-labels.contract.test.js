@@ -94,10 +94,14 @@ test('Phase 05 native menu intents open the existing renderer preview flows', ()
   ]) {
     assert.ok(main.includes(marker), marker);
   }
-  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_IMPORT_DOCX_V1[\s\S]*openDocxImportPreviewFlow\(\)/u);
-  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_IMPORT_TXT_V1[\s\S]*openTxtImportPreviewFlow\(\)/u);
-  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1[\s\S]*handleMarkdownImportUiPath\(\)/u);
-  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1[\s\S]*handleMarkdownExportUiPath\(\)/u);
+  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_IMPORT_DOCX_V1[\s\S]*openImportSurfaceModal\(commandId\)/u);
+  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_IMPORT_TXT_V1[\s\S]*openImportSurfaceModal\(commandId\)/u);
+  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_IMPORT_MARKDOWN_V1[\s\S]*openImportSurfaceModal\(commandId\)/u);
+  assert.match(renderer, /commandId === COMMAND_IDS\.PROJECT_EXPORT_MARKDOWN_V1[\s\S]*openExportSurfaceModal\(commandId\)/u);
+  assert.match(renderer, /normalizedFormat === 'docx'[\s\S]*openDocxImportPreviewFlow\(\)/u);
+  assert.match(renderer, /normalizedFormat === 'txt'[\s\S]*openTxtImportPreviewFlow\(\)/u);
+  assert.match(renderer, /normalizedFormat === 'markdown'[\s\S]*handleMarkdownImportUiPath\(\)/u);
+  assert.match(renderer, /normalizedFormat === 'markdown'[\s\S]*handleMarkdownExportUiPath\(\)/u);
 });
 
 test('current normalized artifact and historical Phase 05 status remain explicitly separated', () => {
@@ -106,7 +110,7 @@ test('current normalized artifact and historical Phase 05 status remain explicit
   const fileMenu = artifact.menus.find((menu) => menu.id === 'file');
   const reviewMenu = artifact.menus.find((menu) => menu.id === 'review');
 
-  assert.equal(artifact.normalizedHashSha256, 'e442a34f5e27d8d7fb9ac2b1eea92153a1bc187e214d6776d317ed249b2c476c');
+  assert.equal(artifact.normalizedHashSha256, 'cd9ecb9dbc6f2a7d1a6f42b6fcfc4dcabc6c2688e4a893193a1d20940b5f6569');
   assert.ok(fileMenu.items.some(
     (item) => item.id === 'file-import-docx-content' && item.visibilityPolicy === 'visible_enabled',
   ));
