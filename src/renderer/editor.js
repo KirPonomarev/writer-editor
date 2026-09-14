@@ -114,14 +114,18 @@ import {
 import { buildLargePayloadLineSafeRows } from './largePayloadLineWrap.mjs';
 import {
   createRepoGroundedDesignOsBrowserRuntime,
+  createDesignOsPorts,
   applyAtlasFeatureSurfaceBinding,
   ATLAS_DESIGN_OS_SLOT_CATALOG_V1,
   buildLayoutPatchFromSpatialState,
   buildSidebarLayoutModel,
   buildSpatialStateFromLayoutSnapshot,
+  deriveAccessibilityId,
+  deriveRuntimePlatformId,
   deriveSidebarViewportMode,
   getAtlasFeatureSurfaceBinding,
   LEFT_RAIL_COLLAPSED_WIDTH,
+  mapEditorModeToWorkspace,
   RIGHT_RAIL_COLLAPSED_WIDTH,
   resolveAtlasFeatureDesignOsSlots,
   YALKEN_ATLAS_FEATURE_INTEGRATION_MANIFEST_V1,
@@ -1210,6 +1214,15 @@ const TOOLBAR_CONFIGURATOR_CANONICAL_LIVE_IDS = Object.freeze(
 );
 const Y4_RENDERER_LIVE_WIRING_ACTIVE = 'Y4_RENDERER_LIVE_WIRING_ACTIVE';
 let designOsRuntimeBootstrap = null;
+let designOsDormantRuntimeMount = null;
+let designOsDormantVisibleCommandIds = null;
+const catalogManagedProjectCommandIds = new Set(listCommandCatalog().map((entry) => entry.id));
+let designOsDormantCommandVisibilityDiagnostic = Object.freeze({
+  schemaVersion: 'yalken.designOs.dormantCommandVisibilityDiagnostic.v1',
+  status: 'not-synced',
+  reason: 'NOT_SYNCED',
+  visibleCommandCount: null,
+});
 
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -3059,6 +3072,191 @@ function applyDesignOsRuntimeWiring() {
     }
     return null;
   }
+}
+
+function resolveDormantDesignOsProfileFromStyleValue(styleValue) {
+  const normalized = typeof styleValue === 'string' ? styleValue.trim().toLowerCase() : '';
+  if (normalized === 'focus') return 'FOCUS';
+  return 'BASELINE';
+}
+
+function resolveDormantDesignOsShellModeFromLayoutMode(layoutMode) {
+  const normalized = typeof layoutMode === 'string' ? layoutMode.trim().toLowerCase() : '';
+  if (normalized === 'compact' || normalized === 'mobile') return 'COMPACT_DOCKED';
+  return 'CALM_DOCKED';
+}
+
+function normalizeDormantDesignOsError(error) {
+  if (!error) return { name: '', message: '' };
+  const name = typeof error.name === 'string' ? error.name.slice(0, 64) : '';
+  const message = typeof error.message === 'string' ? error.message.slice(0, 160) : String(error).slice(0, 160);
+  return { name, message };
+}
+
+function recordDesignOsDormantCommandVisibilityDiagnostic(status, reason, detail = {}) {
+  const visibleCommandCount = designOsDormantVisibleCommandIds instanceof Set
+    ? designOsDormantVisibleCommandIds.size
+    : null;
+  designOsDormantCommandVisibilityDiagnostic = Object.freeze({
+    schemaVersion: 'yalken.designOs.dormantCommandVisibilityDiagnostic.v1',
+    status,
+    reason,
+    visibleCommandCount,
+    ...detail,
+  });
+  if (typeof window !== 'undefined') {
+    window.__DESIGN_OS_DORMANT_COMMAND_VISIBILITY_DIAGNOSTIC_V1__ = designOsDormantCommandVisibilityDiagnostic;
+  }
+  return designOsDormantCommandVisibilityDiagnostic;
+}
+
+function buildDesignOsDormantContext() {
+  const styleValue = styleSelect && typeof styleSelect.value === 'string' ? styleSelect.value : '';
+  const viewportMode = spatialLayoutState && typeof spatialLayoutState.viewportMode === 'string'
+    ? spatialLayoutState.viewportMode
+    : deriveSidebarViewportMode(getSpatialLayoutViewportWidth());
+  return {
+    shell_mode: resolveDormantDesignOsShellModeFromLayoutMode(viewportMode),
+    profile: resolveDormantDesignOsProfileFromStyleValue(styleValue),
+    workspace: mapEditorModeToWorkspace(currentMode),
+    platform: deriveRuntimePlatformId(),
+    accessibility: deriveAccessibilityId(),
+  };
+}
+
+function buildDesignOsDormantProductTruth() {
+  const projectId = normalizeProjectId(currentProjectId) || 'local-project';
+  const fallbackSceneId = currentDocumentId || 'scene-local';
+  const buildSingleSceneFallbackTruth = () => ({
+    project_id: projectId,
+    scenes: {
+      [fallbackSceneId]: getPlainText(),
+    },
+    active_scene_id: fallbackSceneId,
+  });
+
+  if (flowModeState.active) {
+    const payload = buildFlowSavePayload(getPlainText(), flowModeState.scenes);
+    if (payload.ok && Array.isArray(payload.scenes) && payload.scenes.length > 0) {
+      const scenes = {};
+      for (const scene of payload.scenes) {
+        const sceneId = typeof scene?.path === 'string' && scene.path.trim()
+          ? scene.path.trim()
+          : '';
+        if (!sceneId) continue;
+        scenes[sceneId] = typeof scene.content === 'string' ? scene.content : '';
+      }
+      const activeSceneId = payload.scenes.find((scene) => scene && typeof scene.path === 'string' && scene.path.trim())
+        ?.path?.trim();
+      if (activeSceneId && Object.keys(scenes).length > 0) {
+        return {
+          project_id: projectId,
+          scenes,
+          active_scene_id: activeSceneId,
+        };
+      }
+    }
+  }
+
+  return buildSingleSceneFallbackTruth();
+}
+
+function remountDesignOsDormantRuntimeForCurrentDocumentContext() {
+  try {
+    const bootstrap = createRepoGroundedDesignOsBrowserRuntime({
+      productTruth: buildDesignOsDormantProductTruth(),
+    });
+    const ports = createDesignOsPorts({
+      runtime: bootstrap.runtime,
+      defaultContext: buildDesignOsDormantContext(),
+    });
+    designOsDormantRuntimeMount = { bootstrap, ports };
+    syncDesignOsDormantContext();
+    return designOsDormantRuntimeMount;
+  } catch (error) {
+    designOsDormantRuntimeMount = null;
+    designOsDormantVisibleCommandIds = null;
+    recordDesignOsDormantCommandVisibilityDiagnostic('fallback-open', 'MOUNT_THROW', {
+      error: normalizeDormantDesignOsError(error),
+    });
+    return null;
+  }
+}
+
+function mountDesignOsDormantRuntime() {
+  if (designOsDormantRuntimeMount) return designOsDormantRuntimeMount;
+  return remountDesignOsDormantRuntimeForCurrentDocumentContext();
+}
+
+function normalizeDormantVisibleCommandIds(value) {
+  if (!Array.isArray(value)) return null;
+  const ids = value
+    .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
+    .filter((entry, index, source) => entry.length > 0 && source.indexOf(entry) === index)
+    .sort();
+  return new Set(ids);
+}
+
+function syncDesignOsDormantContext() {
+  const mount = mountDesignOsDormantRuntime();
+  if (!mount?.ports || typeof mount.ports.previewDesign !== 'function') {
+    designOsDormantVisibleCommandIds = null;
+    recordDesignOsDormantCommandVisibilityDiagnostic('fallback-open', 'PREVIEW_PORT_UNAVAILABLE');
+    return;
+  }
+  try {
+    const preview = mount.ports.previewDesign({
+      context: buildDesignOsDormantContext(),
+    });
+    const nextVisibleCommandIds = normalizeDormantVisibleCommandIds(preview?.visible_commands);
+    designOsDormantVisibleCommandIds = nextVisibleCommandIds;
+    recordDesignOsDormantCommandVisibilityDiagnostic(
+      nextVisibleCommandIds instanceof Set ? 'runtime-bound' : 'fallback-open',
+      nextVisibleCommandIds instanceof Set ? 'VISIBLE_COMMANDS_CAPTURED' : 'VISIBLE_COMMANDS_UNAVAILABLE'
+    );
+  } catch (error) {
+    designOsDormantVisibleCommandIds = null;
+    recordDesignOsDormantCommandVisibilityDiagnostic('fallback-open', 'PREVIEW_THROW', {
+      error: normalizeDormantDesignOsError(error),
+    });
+  }
+}
+
+function filterPaletteCommandEntries(entries) {
+  if (!Array.isArray(entries)) return [];
+  return entries.filter((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false;
+    if (!catalogManagedProjectCommandIds.has(entry.id)) return true;
+    if (!(designOsDormantVisibleCommandIds instanceof Set)) return true;
+    return designOsDormantVisibleCommandIds.has(entry.id);
+  });
+}
+
+function createDormantAwarePaletteDataProvider(baseProvider) {
+  return {
+    listAll() {
+      return filterPaletteCommandEntries(
+        baseProvider && typeof baseProvider.listAll === 'function' ? baseProvider.listAll() : []
+      );
+    },
+    listBySurface(surface) {
+      return filterPaletteCommandEntries(
+        baseProvider && typeof baseProvider.listBySurface === 'function' ? baseProvider.listBySurface(surface) : []
+      );
+    },
+    listByGroup(surface) {
+      const groups = baseProvider && typeof baseProvider.listByGroup === 'function'
+        ? baseProvider.listByGroup(surface)
+        : [];
+      if (!Array.isArray(groups)) return [];
+      return groups
+        .map((group) => ({
+          ...group,
+          commands: filterPaletteCommandEntries(group?.commands),
+        }))
+        .filter((group) => group.commands.length > 0);
+    },
+  };
 }
 
 function normalizeToolbarConfiguratorProfileName(profileName) {
@@ -7274,6 +7472,12 @@ const commandPaletteDataProvider = createPaletteDataProvider(commandRegistry, {
   defaultSurface: 'palette',
   entitlementTier: 'free',
 });
+const commandPaletteDataProviderBase = Object.freeze({
+  listAll: commandPaletteDataProvider.listAll.bind(commandPaletteDataProvider),
+  listBySurface: commandPaletteDataProvider.listBySurface.bind(commandPaletteDataProvider),
+  listByGroup: commandPaletteDataProvider.listByGroup.bind(commandPaletteDataProvider),
+});
+Object.assign(commandPaletteDataProvider, createDormantAwarePaletteDataProvider(commandPaletteDataProviderBase));
 window.__COMMAND_PALETTE_DATA_PROVIDER_V1__ = commandPaletteDataProvider;
 const MARKDOWN_IMPORT_STATUS_MESSAGE = 'Imported Markdown v1';
 const MARKDOWN_EXPORT_STATUS_MESSAGE = 'Exported Markdown v1';
@@ -18853,6 +19057,7 @@ function filterCommandPaletteEntries(entries, rawQuery) {
 
 function renderCommandPaletteList(rawQuery = '') {
   if (!commandPaletteList || typeof document === 'undefined') return;
+  syncDesignOsDormantContext();
   const sourceEntries =
     commandPaletteDataProvider && typeof commandPaletteDataProvider.listAll === 'function'
       ? commandPaletteDataProvider.listAll()
@@ -23161,6 +23366,7 @@ if (window.electronAPI) {
 
 setCurrentFontSize(currentFontSizePx);
 applyDesignOsRuntimeWiring();
+mountDesignOsDormantRuntime();
 updateWordCount();
 if (isTiptapMode) {
   scheduleCentralSheetStripProofRefresh();

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1",
+  "createdAtUtc": "2026-09-14T10:09:10Z",
+  "taskId": "CORE-A4-YALKEN-PHASE02-RENDERER-COMMAND-PALETTE-VISIBILITY-001",
+  "status": "CURRENT_APPEND_ONLY_SUCCESSOR",
+  "programDone": false,
+  "historicalPredecessorPreserved": true,
+  "predecessorSuccessor": {
+    "path": "docs/OPS/R24/CORRECTIVE/WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json",
+    "sha256": "4ade89239fd394817167f5e1a9a5db853fb5f68a358ab11901a27e2d0c5181d6",
+    "status": "PRESERVED_HISTORICAL_BYTES"
+  },
+  "predecessorSurfaceOverrides": [
+    {
+      "surfaceId": "surface-editor-js",
+      "path": "src/renderer/editor.js",
+      "sha256": "sha256:655f95584fbd2c96ee99e92cd404e9599666db98eb5107d1e2ebd660777dd13a"
+    }
+  ],
+  "evaluationBase": {
+    "sha": "7aefe4d8fa020291faa8957ae8c0f5b4a7e6b869",
+    "role": "OWNER_DIRECTIVE_BINDING_BASE"
+  },
+  "surfaceOverrides": [
+    {
+      "surfaceId": "surface-editor-js",
+      "path": "src/renderer/editor.js",
+      "sha256": "sha256:c6fe78e4fccd35cd9c75daedc026632f11cf2006ad0bddd0c7902b7d4a5052e6"
+    }
+  ],
+  "generatedRuntimeArtifact": {
+    "path": "src/renderer/editor.bundle.js",
+    "sha256": "sha256:d59652569748627b1b9fefdaf0e54815c37ecbcd76dca1fd809cf2ac683d91d1",
+    "binding": "DETERMINISTIC_BUILD_RENDERER_SOURCE_DIST_EQUALITY"
+  },
+  "authority": {
+    "approvedBy": "owner-directive:COMMAND_PALETTE_VISIBLE_COMMANDS_APPEND_ONLY_SUCCESSOR_2026_09_14",
+    "scope": "Bind the current editor wording surface to the Design OS command palette visible_commands delta without rewriting WP806 historical bytes.",
+    "nonClaims": [
+      "NO_WP806_HISTORICAL_REWRITE",
+      "NO_DOCX_COMMAND_BRIDGE_CHANGE",
+      "NO_IMPORT_EXPORT_CHANGE",
+      "NO_PORTABILITY_LAB_CHANGE",
+      "NO_PRODUCT_TRUTH_WRITE",
+      "NO_COMMAND_MEANING_CHANGE",
+      "NO_RUNTIME_NETWORK",
+      "NO_DEPENDENCY_CHANGE",
+      "NO_PROGRAM_DONE"
+    ]
+  },
+  "delta": {
+    "outcome": "Existing command palette consumes Design OS preview.visible_commands for catalog-managed commands and falls back open when the dormant preview path is unavailable, invalid, or throws.",
+    "stateClasses": [
+      "SHELL_STATE",
+      "TRANSIENT_STATE"
+    ],
+    "readProjections": [
+      "preview.visible_commands",
+      "commandPaletteDataProvider.listAll",
+      "commandPaletteDataProvider.listBySurface",
+      "commandPaletteDataProvider.listByGroup"
+    ]
+  },
+  "evidence": [
+    {
+      "kind": "FOCUSED_UNIT",
+      "receipt": "sector-m-design-os-command-palette-visibility.test.js",
+      "verdict": "PASS"
+    },
+    {
+      "kind": "RUNTIME_NORMAL",
+      "receipt": "command-palette-visible-commands-final.png",
+      "verdict": "PASS"
+    },
+    {
+      "kind": "RUNTIME_FAULT_INJECTION",
+      "receipt": "command-palette-visible-commands-fallback-throw.png",
+      "verdict": "PASS"
+    },
+    {
+      "kind": "BASELINE_BLOCKER_REPRODUCTION",
+      "receipt": "r24-wp307-writer-local-profile-integration.test.js",
+      "verdict": "FAIL_BEFORE_SUCCESSOR"
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "ClaimBindingV1",
+  "stampId": "CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_20260914",
+  "contourId": "CORE-A4-YALKEN-PHASE02-RENDERER-COMMAND-PALETTE-VISIBILITY-001",
+  "evidenceClass": "CONTRACT",
+  "verdict": "PASS",
+  "headSha": "7aefe4d8fa020291faa8957ae8c0f5b4a7e6b869",
+  "originMainSha": "7aefe4d8fa020291faa8957ae8c0f5b4a7e6b869",
+  "generatedAtUtc": "2026-09-14T10:22:50.000Z",
+  "oracle": "FOCUSED_UNIT_WP307_SUCCESSOR_AND_SOURCE_RUNTIME_SCREENSHOT_PROOFS",
+  "claimBindings": [
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json",
+      "sha256": "a947306fbb65f07bae5bca5df052d359d47bc591854027f81028d5c2ba0f2acb",
+      "claimTerms": [
+        "PASS"
+      ]
+    }
+  ],
+  "executedEvidence": [
+    {
+      "command": "node --test test/unit/sector-m-design-os-command-palette-visibility.test.js",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 6,
+        "fail": 0
+      }
+    },
+    {
+      "command": "node --test test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "verdict": "PASS",
+      "tests": {
+        "pass": 5,
+        "fail": 0
+      }
+    },
+    {
+      "command": "hidden Electron source-runtime command palette normal and fallback screenshot proofs",
+      "verdict": "PASS",
+      "requiredDisposition": "External screenshot artifacts retained outside the product repo for owner visual inspection; product repo evidence records artifact identity only, not host absolute paths or binary PNG bytes."
+    },
+    {
+      "command": "external Codex artifact binding storageClass=EXTERNAL_CODEX_ARTIFACT artifactId=yalken-command-palette-visible-commands-20260914:command-palette-visible-commands-final.png basename=command-palette-visible-commands-final.png sha256=350b12dc5c69970b278543f6d37be3a761e1ec579be5b9469ffa2f5e2452f1e0 bytes=571366",
+      "verdict": "PASS"
+    },
+    {
+      "command": "external Codex artifact binding storageClass=EXTERNAL_CODEX_ARTIFACT artifactId=yalken-command-palette-visible-commands-20260914:command-palette-visible-commands-fallback-throw.png basename=command-palette-visible-commands-fallback-throw.png sha256=2a5c5acaa5efe67884518a8056c82290c41ff51a7350afa6f7dd80f80fc645d8 bytes=520395",
+      "verdict": "PASS"
+    },
+    {
+      "command": "external supervisor visual observation externalSupervisorObservation=PASS_55_FILTERED_98_FALLBACK_OPEN storageClass=EXTERNAL_CODEX_ARTIFACT artifacts=command-palette-visible-commands-final.png,command-palette-visible-commands-fallback-throw.png",
+      "verdict": "PASS",
+      "requiredDisposition": "Independent supervisor visual oracle observed filtered normal palette at Commands available: 55 and injected preview failure fallback-open palette at Commands available: 98, with same palette surface, no crash and no unrelated desktop-content leak."
+    }
+  ],
+  "nonClaims": [
+    "NO_WP806_HISTORICAL_REWRITE",
+    "NO_DOCX_COMMAND_BRIDGE_CHANGE",
+    "NO_IMPORT_EXPORT_CHANGE",
+    "NO_PORTABILITY_LAB_CHANGE",
+    "NO_PRODUCT_TRUTH_WRITE",
+    "NO_COMMAND_MEANING_CHANGE",
+    "NO_RUNTIME_NETWORK",
+    "NO_DEPENDENCY_CHANGE",
+    "NO_RELEASE_READINESS",
+    "NO_PROGRAM_DONE"
+  ]
+}

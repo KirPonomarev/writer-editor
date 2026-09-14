@@ -94,3 +94,13 @@
 - Риск: если этот порядок считать нормой, future contours могут расширять scope после mutation и создавать false authority для admission, verifier или carrier edits.
 - Rollback: откатить только эту запись, если owner отдельно решит не фиксировать процесс-дефект; R24-RCV-00B commits, PR merge, admission logic и evidence carriers не изменяются этой записью.
 - План удаления исключения: исключение не переносится в future contours; после merge этой записи оно закрывает только исторический процесс-дефект R24-RCV-00B. Любое дальнейшее scope expansion требует fresh declaration и preflight на clean worktree перед первым edit расширенного scope.
+
+## 2026-09-14 — R24 Command Palette Visible Commands Successor Preflight Deviation
+
+- Контекст: initial declaration и clean preflight прошли до первого edit для Design OS command palette visible_commands slice. После focused/source-runtime proof mandatory exact baseline выявил единственный blocker: WP307 требовал, чтобы current editor digest следовал через latest wording-surface successor, но исторический WP806 successor должен остаться immutable. Owner разрешил продолжить без rollback и закрыть blocker через append-only current-editor successor.
+- Что нарушаем: expanded write scope получил declaration update после появления self-authored dirty state, поэтому `agent:preflight` для полного фактического scope нельзя честно переисполнить как pre-edit gate.
+- Причина: blocker обнаружился только после product slice и exact baseline; переписывать WP806 historical carrier запрещено, а остановка без append-only successor оставляла бы required baseline red.
+- Approval source: governance change detection and CI use task-local `PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json` for this R24 lane; only the three approvals created by this delta are recorded there: current `editor.bundle.js` generated-runtime hash, the new command-palette successor JSON hash and the claim-binding evidence stamp required by docs claim lint. The unrelated stale global approval registry entries remain outside this task scope.
+- Риск: future agents могут принять post-edit declaration update за обычный порядок и расширять wording/evidence scope без fresh owner authority.
+- Rollback: откатить эту запись, новый command-palette successor, WP307 test update и три product slice files; WP806 historical bytes не затрагиваются.
+- План удаления исключения: запись закрывает только этот bounded current-editor successor repair. Future editor wording-surface changes должны заранее включать successor bookkeeping в clean declaration/preflight либо получать отдельный fresh contour.
