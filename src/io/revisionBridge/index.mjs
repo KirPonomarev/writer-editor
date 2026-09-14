@@ -8976,6 +8976,17 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   return { code: 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED', category: 'structure' };
 }
 
+function isDocxPackageRootRelationshipDiagnostic(diagnostic) {
+  if (!isPlainObject(diagnostic)) return false;
+  if (diagnostic.code !== DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY) {
+    return false;
+  }
+  const entryId = typeof diagnostic.entryId === 'string'
+    ? diagnostic.entryId.trim().replace(/\\/gu, '/')
+    : '';
+  return entryId === '_rels/.rels';
+}
+
 function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText, googleDocsTabs = null) {
   const items = [
     docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY', {
@@ -9008,6 +9019,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
   const diagnostics = Array.isArray(sourceReport.diagnostics) ? sourceReport.diagnostics : [];
   for (const diagnostic of diagnostics) {
     if (!isPlainObject(diagnostic)) continue;
+    if (isDocxPackageRootRelationshipDiagnostic(diagnostic)) continue;
     const knownIgnoredPart = [
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
@@ -9145,7 +9157,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   const importParagraphIndexes = googleDocsTabs
     ? googleDocsTabs.importParagraphIndexes
     : paragraphValidation.texts.map((_text, index) => index);
-  const importedText = importParagraphIndexes.map((index) => paragraphValidation.texts[index]).join('\n\n');
+  const importedText = importParagraphIndexes.map((index) => paragraphValidation.texts[index]).join('\n');
   const sourceHash = docxImportPreviewStableHash(input);
   const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText, {
     googleDocsTabs,

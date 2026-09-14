@@ -19,6 +19,7 @@ function loadDocxImportResolverHelpers() {
   const section = editor.slice(start, end);
   return vm.runInNewContext(`${section}
 ({
+  getDocxImportPublicSceneLocatorsFromValue,
   getDocxImportSceneLocatorsFromPlan,
   findDocxImportSceneNode,
 })`, {
@@ -52,7 +53,7 @@ test('DOCX import preview UI flow: existing modal surface exposes preview and ac
   assert.ok(editor.includes('docxContentPreviewReport: previewValue?.docxContentPreviewReport'));
   assert.ok(editor.includes('docxImportPreviewPlan: plan,'));
   assert.ok(editor.includes('await loadTree();'));
-  assert.ok(editor.includes('await openImportedDocxSceneAfterAccept(plan, createdSceneIds);'));
+  assert.ok(editor.includes('await openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue);'));
 });
 
 test('DOCX import preview UI flow: no editor-surface mutation is introduced by import accept', () => {
@@ -77,10 +78,13 @@ test('DOCX import preview UI flow: accepted import opens only a plan-matched sce
   const editor = read('src/renderer/editor.js');
 
   for (const marker of [
+    'function normalizeDocxImportPublicSceneLocator(value)',
+    'function getDocxImportPublicSceneLocatorsFromValue(value)',
     'function getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds)',
     'function findDocxImportSceneNode(root, locators)',
-    'async function openImportedDocxSceneAfterAccept(plan, createdSceneIds)',
+    'async function openImportedDocxSceneAfterAccept(plan, createdSceneIds, acceptedValue = null)',
     'const createdSet = new Set(createdIds);',
+    "source: 'public-scene-locator'",
     'expectedLabel: `${sanitizeDocxImportSceneLabelPart(title)} ${contentTextHash}`',
     "return { opened: false, reason: 'imported-scene-not-found' };",
     'const opened = await openDocumentNode(node);',
@@ -89,7 +93,7 @@ test('DOCX import preview UI flow: accepted import opens only a plan-matched sce
     assert.ok(editor.includes(marker), marker);
   }
 
-  const helperStart = editor.indexOf('async function openImportedDocxSceneAfterAccept(plan, createdSceneIds)');
+  const helperStart = editor.indexOf('async function openImportedDocxSceneAfterAccept(plan, createdSceneIds, acceptedValue = null)');
   const helperEnd = editor.indexOf('function summarizeDocxImportPreview(value)', helperStart);
   assert.notEqual(helperStart, -1);
   assert.notEqual(helperEnd, -1);
@@ -100,6 +104,7 @@ test('DOCX import preview UI flow: accepted import opens only a plan-matched sce
 
 test('DOCX import preview UI flow: scene resolver executes exact match and fail-closed ambiguity', () => {
   const {
+    getDocxImportPublicSceneLocatorsFromValue,
     getDocxImportSceneLocatorsFromPlan,
     findDocxImportSceneNode,
   } = loadDocxImportResolverHelpers();
@@ -128,11 +133,54 @@ test('DOCX import preview UI flow: scene resolver executes exact match and fail-
     },
   ]);
 
+  const publicLocator = {
+    nodeId: 'tree-node-11111111111111111111111111111111',
+    label: 'Imported DOCX 11111111',
+    bindingKey: 'file:roman/Imported/Imported DOCX 11111111.txt',
+    relativeFile: 'roman/Imported/Imported DOCX 11111111.txt',
+    kind: 'scene',
+  };
+  const publicLocators = getDocxImportPublicSceneLocatorsFromValue({
+    publicSceneLocators: [publicLocator, publicLocator],
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(publicLocators)), [
+    {
+      nodeId: 'tree-node-11111111111111111111111111111111',
+      expectedLabel: 'Imported DOCX 11111111',
+      source: 'public-scene-locator',
+    },
+  ]);
+  assert.deepEqual(JSON.parse(JSON.stringify(getDocxImportPublicSceneLocatorsFromValue({
+    publicSceneLocator: {
+      nodeId: 'tree-node-22222222222222222222222222222222',
+      label: 'Imported DOCX 22222222',
+      kind: 'scene',
+    },
+  }))), []);
+
   const exactNode = {
     kind: 'scene',
     label: 'Imported DOCX 11111111',
     nodeId: 'tree-node-11111111111111111111111111111111',
   };
+  assert.equal(findDocxImportSceneNode({ children: [exactNode] }, publicLocators), exactNode);
+  assert.equal(
+    findDocxImportSceneNode({
+      children: [{ ...exactNode, label: 'Imported DOCX stale label' }],
+    }, publicLocators),
+    null,
+  );
+  assert.equal(
+    findDocxImportSceneNode({
+      children: [
+        {
+          ...exactNode,
+          nodeId: 'tree-node-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+        },
+      ],
+    }, publicLocators),
+    null,
+  );
   assert.equal(findDocxImportSceneNode({ children: [exactNode] }, locators), exactNode);
   assert.equal(
     findDocxImportSceneNode({

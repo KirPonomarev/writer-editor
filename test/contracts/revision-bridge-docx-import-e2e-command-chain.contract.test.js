@@ -570,7 +570,7 @@ test('DOCX import e2e command chain: clean DOCX creates one local scene with pat
   assert.deepEqual(result.safeCreate.createdSceneIds, [
     result.preview.docxImportPreviewPlan.candidateCreatePlan.entries[0].sceneId,
   ]);
-  assert.equal(readOnlyCreatedScene(result.romanRoot), 'Alpha\n\nBravo');
+  assert.equal(readOnlyCreatedScene(result.romanRoot), 'Alpha\nBravo');
   assert.deepEqual(fs.readdirSync(path.join(result.projectRoot, '.flow-batch')), []);
   assert.equal(result.safeCreate.receipt.atomicEvidence.sceneCount, 1);
   assert.equal(result.safeCreate.receipt.atomicEvidence.markerCleared, true);

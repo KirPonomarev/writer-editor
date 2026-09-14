@@ -403,7 +403,7 @@ test('GENERIC01-X02-intentional-second-import: same request nonce is idempotent 
   const createdNames = readCreatedSceneFiles(romanRoot);
   assert.equal(createdNames.length, 2, `expected two imported scene files, got ${createdNames.join(', ')}`);
   const createdTexts = createdNames.map((name) => fs.readFileSync(path.join(romanRoot, 'Imported', name), 'utf8'));
-  assert.deepEqual(createdTexts.sort(), ['Intentional\n\nSecond', 'Intentional\n\nSecond']);
+  assert.deepEqual(createdTexts.sort(), ['Intentional\nSecond', 'Intentional\nSecond']);
 });
 
 // ===========================================================================
@@ -634,7 +634,7 @@ test('GENERIC01-G8-control-preview-plan-shell: clean content preview becomes a d
   assert.equal(plan.candidateCreatePlan.sceneStrategy, 'single-scene');
   assert.equal(plan.candidateCreatePlan.entryCount, 1);
   assert.match(plan.candidateCreatePlan.entries[0].sceneId, /^docx-import-scene-[a-f0-9]{8}$/u);
-  assert.equal(plan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(plan.candidateCreatePlan.entries[0].content, 'Alpha\nBravo');
 });
 
 test('GENERIC01-G8-control-safe-create-applies-once: clean admitted plan creates one local scene (control)', async () => {
@@ -647,7 +647,7 @@ test('GENERIC01-G8-control-safe-create-applies-once: clean admitted plan creates
   assert.equal(applied.value.created, true);
   assert.equal(applied.value.safeCreate, true);
   const scene = readSingleCreatedScene(romanRoot);
-  assert.equal(scene.content, 'Alpha\n\nBravo');
+  assert.equal(scene.content, 'Alpha\nBravo');
   assert.equal(applied.value.receipt.atomicEvidence.sceneCount, 1);
   assert.equal(applied.value.receipt.atomicEvidence.markerCleared, true);
   // CONTROL: no .flow-batch markers leak (atomic write cleanup is intact).

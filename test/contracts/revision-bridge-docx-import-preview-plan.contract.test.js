@@ -161,7 +161,7 @@ test('DOCX import preview plan: clean content preview becomes deterministic sing
   assert.equal(first.candidateCreatePlan.entries.length, 1);
   assert.match(first.candidateCreatePlan.entries[0].sceneId, /^docx-import-scene-[a-f0-9]{8}$/u);
   assert.equal(first.candidateCreatePlan.entries[0].kind, 'scene');
-  assert.equal(first.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(first.candidateCreatePlan.entries[0].content, 'Alpha\nBravo');
   assert.match(first.candidateCreatePlan.entries[0].contentTextHash, /^[a-f0-9]{8}$/u);
   assert.deepEqual(first.candidateCreatePlan.entries[0].source.paragraphRange, { start: 0, end: 1 });
   assert.equal(first.lossReport.schemaVersion, 'revision-bridge.docx-import-preview.loss-report.v1');
@@ -367,7 +367,7 @@ test('DOCX import preview plan: unsupported content preview diagnostics become e
 
   assertDocxImportPreviewShell(result);
   assert.equal(result.ok, true);
-  assert.equal(result.candidateCreatePlan.entries[0].content, 'Before\n\nAfter');
+  assert.equal(result.candidateCreatePlan.entries[0].content, 'Before\nAfter');
   assert.equal(result.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
     && item.category === 'table'
@@ -378,6 +378,48 @@ test('DOCX import preview plan: unsupported content preview diagnostics become e
     && item.category === 'revisions'
     && item.tagName === 'w:ins'
   )), true);
+});
+
+test('DOCX import preview plan: explicit empty paragraphs remain single blank paragraphs', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport(['Alpha', '', 'Bravo']));
+
+  assertDocxImportPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.deepEqual(result.candidateCreatePlan.entries[0].source.paragraphRange, { start: 0, end: 2 });
+});
+
+test('DOCX import preview plan: package-root relationship diagnostic is not content loss', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport(['Linked text'], {
+    diagnostics: [
+      {
+        code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+        severity: 'warning',
+        category: 'relationship',
+        entryId: '_rels/.rels',
+        sourcePart: null,
+      },
+      {
+        code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+        severity: 'warning',
+        category: 'relationship',
+        entryId: 'word/_rels/document.xml.rels',
+        sourcePart: 'word/document.xml',
+      },
+    ],
+  }));
+
+  assertDocxImportPreviewShell(result);
+  assert.equal(result.ok, true);
+  const relationshipLossItems = result.lossReport.items.filter((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
+    && item.category === 'relationship'
+  ));
+  assert.equal(relationshipLossItems.length, 1);
+  assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
+  assert.notEqual(relationshipLossItems[0].sourcePart, '_rels/.rels');
 });
 
 test('DOCX import preview plan: bookmark identity and custom metadata diagnostics become explicit loss items', async () => {
@@ -457,7 +499,7 @@ test('DOCX import preview plan: Google Docs tab diagnostic preserves tab labels 
   assert.equal(result.candidateCreatePlan.entryCount, 1);
   assert.equal(
     result.candidateCreatePlan.entries[0].content,
-    'Tab 1\n\nG01_TOP_A sentinel α 👩‍💻 linkA\n\n\n\nG01 top two\n\nG01_TOP_B sentinel β café linkB\n\n\n\nG01 child of top two\n\nG01_CHILD_B1 sentinel γ שלום linkC\n\n',
+    'Tab 1\nG01_TOP_A sentinel α 👩‍💻 linkA\n\nG01 top two\nG01_TOP_B sentinel β café linkB\n\nG01 child of top two\nG01_CHILD_B1 sentinel γ שלום linkC\n',
   );
   assert.equal(result.candidateCreatePlan.entries[0].content.includes('Tab 1'), true);
   assert.equal(result.candidateCreatePlan.entries[0].content.includes('G01 top two'), true);
@@ -512,7 +554,7 @@ test('DOCX import preview plan: same-topology Word titles with user bookmarks re
   assert.equal(result.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
   assert.equal(
     result.candidateCreatePlan.entries[0].content,
-    'Chapter One\n\nAlpha body\n\n\n\nChapter Two\n\nBravo body\n\n\n\nChapter Three\n\nCharlie body\n\n',
+    'Chapter One\nAlpha body\n\nChapter Two\nBravo body\n\nChapter Three\nCharlie body\n',
   );
   assert.equal(result.candidateCreatePlan.entries[0].content.includes('Chapter One'), true);
   assert.equal(result.candidateCreatePlan.entries[0].content.includes('Chapter Two'), true);
@@ -551,17 +593,17 @@ test('DOCX import preview plan: ordinary title sections do not trigger Google Do
 
   assertDocxImportPreviewShell(singleTitle);
   assert.equal(singleTitle.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\n\nChapter body');
+  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\nChapter body');
   assert.equal(singleTitle.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 
   assertDocxImportPreviewShell(repeatedTitleWithoutSeparators);
   assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\n\nChapter Two\n\nBravo body');
+  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\nChapter Two\nBravo body');
   assert.equal(repeatedTitleWithoutSeparators.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 
   assertDocxImportPreviewShell(sameTopologyWithoutBookmarks);
   assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\n\n\n\nChapter Two\n\nBravo body\n\n');
+  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\n\nChapter Two\nBravo body\n');
   assert.equal(sameTopologyWithoutBookmarks.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 });
 

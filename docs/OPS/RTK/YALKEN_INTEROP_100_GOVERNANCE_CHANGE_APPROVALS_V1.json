@@ -38,6 +38,15 @@
     },
     {
       "approved": true,
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_WORDING_SUCCESSOR_SCOPE",
+      "filePath": "docs/OPS/R24/CORRECTIVE/TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json",
+      "rationale": "Approve exact append-only wording successor bytes for the bounded source-runtime repair after current editor and renderer bundle hashes changed. This binds only the successor metadata for the repair and adds no visual redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority.",
+      "sha256": "d48185d38e215b6df31423a1b972997ff3c5e048b0dae2019e0b44a96dbc4548"
+    },
+    {
+      "approved": true,
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
@@ -47,33 +56,33 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "scripts/ops/r24/docs-claim-lint.mjs",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "40146844c1293c043a5c8dd7247e70933767195b43e6ed6b889253265b64a177"
+      "rationale": "Secondary interop governance registry hygiene required so strict governance detection can validate current repository bytes while approving the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME repair. Metadata-only approval row rebind; no additional product behavior beyond the repair, UI redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "c4967c6031fb52c1a6ed8d0da24996dc31d46cff06d01ad490c36e8f6499e0a8"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "scripts/ops/r24/tests/docs-claim-lint.test.mjs",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "cf35a36472e16831b1284a2adb0c91000e5d470791a3ec441895e172916495bc"
+      "rationale": "Secondary interop governance registry hygiene required so strict governance detection can validate current repository bytes while approving the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME repair. Metadata-only approval row rebind; no additional product behavior beyond the repair, UI redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "c7119d3ea9d390b3b83ed99194ff79c2f8093093bc29bb8febe1f299cb6a4741"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_SCOPE",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "7b43f37f673358b5bb2bda0de887933c823e42191797cb75c0644d18de1dc776",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim."
+      "sha256": "ec8fbf68047fa434f4a38a6a1fbfd7d711d10884b42b6b5d61aa915e66f10a3e",
+      "rationale": "Approve exact revision bridge bytes for bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME repair: DOCX preview text preserves the paragraph vector without synthetic expansion and package-root relationship diagnostics are not misclassified as content loss. No UI redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added."
     },
     {
       "approved": true,
@@ -99,15 +108,33 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_CONTRACT_SCOPE",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "fc1d390beb41e3a7d57c39462dc69ba20879779e4ae09714f9fcf9fb7dda5f03",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim."
+      "sha256": "9d99b4ce8fce2e11c364883f9ed94e4f47264d0ab1e6ad31ebac31e77f6abe69",
+      "rationale": "Approve exact affected contract bytes for bounded source-runtime repair of DOCX min export structure preservation, collab query envelope, DOCX preview newline and relationship diagnostic classification, and safe-create public locator behavior. No feature expansion, dependency, runtime network, cloud truth, Word execution, UI redesign, Program DONE, or cell acceptance authority is added."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_CONTRACT_SCOPE",
+      "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
+      "rationale": "Approve exact affected contract bytes for bounded source-runtime repair of DOCX min export structure preservation, collab query envelope, DOCX preview newline and relationship diagnostic classification, and safe-create public locator behavior. No feature expansion, dependency, runtime network, cloud truth, Word execution, UI redesign, Program DONE, or cell acceptance authority is added.",
+      "sha256": "80008131575be92462c5bccaf7500aee4d352cb81f9c43fccea977e97dc1cc70"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_CONTRACT_SCOPE",
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
+      "rationale": "Approve exact affected contract bytes for bounded source-runtime repair of DOCX min export structure preservation, collab query envelope, DOCX preview newline and relationship diagnostic classification, and safe-create public locator behavior. No feature expansion, dependency, runtime network, cloud truth, Word execution, UI redesign, Program DONE, or cell acceptance authority is added.",
+      "sha256": "5c0365a74b4fee86cf65010a1faf190839eb10565e8d7777f020766317685aee"
     },
     {
       "approved": true,
@@ -124,12 +151,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_CONTRACT_SCOPE",
       "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "8d1162254f08e4e2ecd6ab10b06aefcc694cdcab9d333b56e9cb6250c60a423b"
+      "rationale": "Approve exact affected contract bytes for bounded source-runtime repair of DOCX min export structure preservation, collab query envelope, DOCX preview newline and relationship diagnostic classification, and safe-create public locator behavior. No feature expansion, dependency, runtime network, cloud truth, Word execution, UI redesign, Program DONE, or cell acceptance authority is added.",
+      "sha256": "fdfa893f7e755913753f3060fcc34d0737007c00db1a145abdfa6b5c4d5da5b6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_CONTRACT_SCOPE",
+      "filePath": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
+      "rationale": "Approve exact affected contract bytes for bounded source-runtime repair of DOCX min export structure preservation, collab query envelope, DOCX preview newline and relationship diagnostic classification, and safe-create public locator behavior. No feature expansion, dependency, runtime network, cloud truth, Word execution, UI redesign, Program DONE, or cell acceptance authority is added.",
+      "sha256": "9c5c2720fdde793bbd6ba9310a6be1ad165a21390ac80d5afcaebf7a57de10b2"
     },
     {
       "approved": true,
@@ -185,16 +221,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T14:14:08.789Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SECONDARY_REGISTRY_HYGIENE",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_BOUNDED_CONTRACT_SCOPE",
       "evidenceStampIds": [
         "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
         "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS"
       ],
       "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "rationale": "Secondary interop 100 governance registry hygiene required so the registry validates against current repository bytes before the one-cell evidence promotion can be gated. Metadata-only approval row rebind; no additional product behavior, UI, dependency, network truth, storage mutation outside this approval registry, Word/Google denominator closure, release readiness, 100 percent portability, or PROGRAM_DONE claim.",
-      "sha256": "10c93077a1bd750c1755b7a8aaac324a5f4d17bb6efb6902c4bd925fd1f327a2"
+      "rationale": "Approve exact affected contract bytes for bounded source-runtime repair of DOCX min export structure preservation, collab query envelope, DOCX preview newline and relationship diagnostic classification, and safe-create public locator behavior. No feature expansion, dependency, runtime network, cloud truth, Word execution, UI redesign, Program DONE, or cell acceptance authority is added.",
+      "sha256": "1e4daa4fdca904e90cc4455bba957029ca01ad877bf96e47337a3322794f0408"
     },
     {
       "approved": true,
@@ -211,12 +247,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-13T08:28:00.000Z",
-      "approvedBy": "owner-directive:PR1909_CONTINUE_AND_PROCESS_LENS_2026_09_13",
-      "authority": "DIRECT_OWNER_REQUEST_PR1909_COMPLETE_ROUTINE_REVERSIBLE_DELIVERY",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Approve the exact PR1909 inventory bytes generated from the bounded archived-evidence RTK contract correction. Test/governance metadata only; no validator, evidence package, denominator numerator, Word/Google support claim, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "640139fea996ef5837a39379207e35ab4e658f20def9a1704732d77f952f9afa"
+      "rationale": "Secondary interop governance registry hygiene required so strict governance detection can validate current repository bytes while approving the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME repair. Metadata-only approval row rebind; no additional product behavior beyond the repair, UI redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "a7842ab558406fee60d0db06562a1239a66fba3e3ccaa6e97366a716af399d94"
     },
     {
       "approved": true,
@@ -238,12 +274,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
-      "sha256": "feb8392721125665a82ec5a7cc27a51c343c22afc8166ae598b2f54fe0d05fa9"
+      "rationale": "Secondary interop governance registry hygiene required so strict governance detection can validate current repository bytes while approving the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME repair. Metadata-only approval row rebind; no additional product behavior beyond the repair, UI redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "edb73b58952589d1e1dbed67ad453147c0b084a3ab5418188c61f0a79e9eb4de"
     },
     {
       "approved": true,
@@ -256,12 +292,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-12T23:03:21.647Z",
-      "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
+      "approvedAtUtc": "2026-09-14T14:06:21.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_SECONDARY_REGISTRY_HYGIENE",
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Approve exact R24 interop100 denominator admission hardening bytes after fresh a158e80e Cell001 Word physical package rebind. Metadata/trust admission only; no new denominator numerator beyond the existing single diagnostic Cell001 evidence, no 100 percent portability claim, no release readiness, and no PROGRAM_DONE claim.",
-      "sha256": "644aad0b1b831425acf7631a6851e92e56a73c799d1c2632ffff5b633a775a83"
+      "rationale": "Secondary interop governance registry hygiene required so strict governance detection can validate current repository bytes while approving the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME repair. Metadata-only approval row rebind; no additional product behavior beyond the repair, UI redesign, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "40452d63f6c1290790e93622ae5a67df28c7072efa355e31bbca5f0d0e3e5a3f"
     },
     {
       "approved": true,

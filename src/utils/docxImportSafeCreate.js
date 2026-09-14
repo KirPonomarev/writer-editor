@@ -734,7 +734,54 @@ function buildDocxImportSceneTreeIdentities(importOperationId, sceneId) {
   return { treeNodeId, treeId };
 }
 
-function buildVerifiedDocxImportScene(entry, importOperationId, content) {
+function normalizeProjectTreeBindingKey(value) {
+  const bindingKey = typeof value === 'string' ? value.trim().replace(/\\/gu, '/') : '';
+  if (!bindingKey || bindingKey.length > 1024 || /[\u0000-\u001F]/u.test(bindingKey)) {
+    return '';
+  }
+  if (!bindingKey.startsWith('file:')) return '';
+  const relativePath = bindingKey.slice('file:'.length);
+  const segments = relativePath.split('/');
+  if (
+    !relativePath
+    || relativePath.startsWith('/')
+    || segments.some((segment) => !segment || segment === '.' || segment === '..')
+  ) {
+    return '';
+  }
+  return bindingKey;
+}
+
+function buildDeterministicProjectTreeNodeId(projectId, bindingKey) {
+  const normalizedProjectId = typeof projectId === 'string' ? projectId.trim() : '';
+  const normalizedBindingKey = normalizeProjectTreeBindingKey(bindingKey);
+  if (!normalizedProjectId || !normalizedBindingKey) return '';
+  const digest = crypto.createHash('sha256')
+    .update(`${normalizedProjectId}\u0000${normalizedBindingKey}`, 'utf8')
+    .digest('hex');
+  return `tree-node-${digest.slice(0, 32)}`;
+}
+
+function buildDocxImportPublicSceneLocator({ projectRoot, targetPath, projectId }) {
+  const relativePath = path.relative(projectRoot, targetPath);
+  if (!relativePath || relativePath.startsWith('..') || path.isAbsolute(relativePath)) return null;
+  const relativeFile = relativePath.split(path.sep).join('/');
+  if (!relativeFile.startsWith('roman/Imported/') || !relativeFile.toLowerCase().endsWith('.txt')) {
+    return null;
+  }
+  const bindingKey = normalizeProjectTreeBindingKey(`file:${relativeFile}`);
+  const nodeId = buildDeterministicProjectTreeNodeId(projectId, bindingKey);
+  if (!bindingKey || !nodeId) return null;
+  return {
+    nodeId,
+    label: path.posix.basename(relativeFile, '.txt'),
+    bindingKey,
+    relativeFile,
+    kind: 'scene',
+  };
+}
+
+function buildVerifiedDocxImportScene(entry, importOperationId, content, publicSceneLocator = null) {
   const actualContent = normalizeText(content);
   const { treeNodeId, treeId } = buildDocxImportSceneTreeIdentities(
     importOperationId,
@@ -750,6 +797,7 @@ function buildVerifiedDocxImportScene(entry, importOperationId, content) {
     outputHash: sha256Text(actualContent),
     treeNodeId,
     treeId,
+    ...(isPlainObject(publicSceneLocator) ? { publicSceneLocator: cloneJsonSafe(publicSceneLocator) } : {}),
   };
 }
 
@@ -1133,10 +1181,21 @@ async function validateExistingDocxImportReceipt(options) {
   }
 
   const expectedContent = normalizeText(entry.content);
+  const expectedPublicSceneLocator = buildDocxImportPublicSceneLocator({
+    projectRoot,
+    targetPath,
+    projectId,
+  });
+  const expectedVerifiedSceneWithoutLocator = buildVerifiedDocxImportScene(
+    entry,
+    importOperationId,
+    expectedContent,
+  );
   const expectedVerifiedScene = buildVerifiedDocxImportScene(
     entry,
     importOperationId,
     expectedContent,
+    expectedPublicSceneLocator,
   );
   if (actualContent !== expectedContent) {
     return fail(
@@ -1145,7 +1204,9 @@ async function validateExistingDocxImportReceipt(options) {
       expectedVerifiedScene.outputHash,
     );
   }
-  if (!jsonStableEqual(receipt.createdScenes[0], expectedVerifiedScene)) {
+  const createdSceneMatches = jsonStableEqual(receipt.createdScenes[0], expectedVerifiedScene)
+    || jsonStableEqual(receipt.createdScenes[0], expectedVerifiedSceneWithoutLocator);
+  if (!createdSceneMatches) {
     return fail(
       'createdScenes.0',
       'created_scene_receipt_mismatch',
@@ -1159,7 +1220,19 @@ async function validateExistingDocxImportReceipt(options) {
   }
 
   const outputHash = sha256Text(stableStringify({ createdScenes: [expectedVerifiedScene] }));
-  if (receipt.outputHash !== outputHash) return fail('outputHash', 'output_hash_mismatch', outputHash);
+  const legacyOutputHash = sha256Text(stableStringify({ createdScenes: [expectedVerifiedSceneWithoutLocator] }));
+  if (receipt.outputHash !== outputHash && receipt.outputHash !== legacyOutputHash) {
+    return fail('outputHash', 'output_hash_mismatch', outputHash);
+  }
+  if (receipt.publicSceneLocators !== undefined) {
+    const expectedPublicSceneLocators = expectedPublicSceneLocator ? [expectedPublicSceneLocator] : [];
+    if (!jsonStableEqual(receipt.publicSceneLocators, expectedPublicSceneLocators)) {
+      return fail('publicSceneLocators', 'public_scene_locators_mismatch');
+    }
+  }
+  if (receipt.publicSceneLocator !== undefined && !jsonStableEqual(receipt.publicSceneLocator, expectedPublicSceneLocator)) {
+    return fail('publicSceneLocator', 'public_scene_locator_mismatch');
+  }
 
   const expectedLossReportSummary = {
     schemaVersion: validated.value.lossReport.schemaVersion,
@@ -1193,7 +1266,12 @@ async function validateExistingDocxImportReceipt(options) {
     );
   }
 
-  return { ok: true, receipt: trustedReplayAuthorityValidation.receipt };
+  return {
+    ok: true,
+    receipt: trustedReplayAuthorityValidation.receipt,
+    publicSceneLocator: expectedPublicSceneLocator,
+    publicSceneLocators: expectedPublicSceneLocator ? [expectedPublicSceneLocator] : [],
+  };
 }
 
 async function applyDocxImportSafeCreate(input = {}, options = {}) {
@@ -1268,6 +1346,8 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
         safeCreate: true,
         idempotent: true,
         createdSceneIds: receiptValidation.receipt.createdSceneIds || [],
+        publicSceneLocators: receiptValidation.publicSceneLocators || [],
+        publicSceneLocator: receiptValidation.publicSceneLocator || null,
         receipt: receiptValidation.receipt,
         receiptStore: { dir: buildReceiptStoreDir(projectRoot) },
         lookupReceipt: async (opId) => readDurableReceipt(projectRoot, opId || importOperationId),
@@ -1400,9 +1480,20 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   // allocated atomically within the same transaction scope (algorithmic donor
   // when no transactionAuthority port is wired).
   const verifiedScene = buildVerifiedDocxImportScene(normalizedEntry, importOperationId, actualContent);
+  const publicSceneLocator = buildDocxImportPublicSceneLocator({
+    projectRoot,
+    targetPath: normalizedEntry.path,
+    projectId,
+  });
+  const verifiedSceneWithPublicLocator = buildVerifiedDocxImportScene(
+    normalizedEntry,
+    importOperationId,
+    actualContent,
+    publicSceneLocator,
+  );
   const sceneTreeIdentities = buildDocxImportSceneTreeIdentityList(verifiedScene);
   const inputHash = sha256Text(stableStringify(plan));
-  const outputHash = sha256Text(stableStringify({ createdScenes: [verifiedScene] }));
+  const outputHash = sha256Text(stableStringify({ createdScenes: [verifiedSceneWithPublicLocator] }));
 
   // GENERIC-01 (G7): typed lossReport persists in the receipt. The summary is
   // kept for backwards compatibility, but the typed items survive the apply
@@ -1433,8 +1524,12 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     inputHash,
     outputHash,
     createdSceneIds: [verifiedScene.sceneId],
-    createdScenes: [verifiedScene],
+    createdScenes: [verifiedSceneWithPublicLocator],
     sceneTreeIdentities,
+    ...(publicSceneLocator ? {
+      publicSceneLocators: [publicSceneLocator],
+      publicSceneLocator,
+    } : {}),
     lossReport: lossReportForReceipt,
     lossReportSummary,
     manifestAuthority: manifestEvidence,
@@ -1462,6 +1557,8 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       created: true,
       safeCreate: true,
       createdSceneIds: receipt.createdSceneIds,
+      publicSceneLocators: publicSceneLocator ? [publicSceneLocator] : [],
+      publicSceneLocator,
       receipt,
       receiptStore: { dir: buildReceiptStoreDir(projectRoot) },
       lookupReceipt: async (opId) => readDurableReceipt(projectRoot, opId || importOperationId),

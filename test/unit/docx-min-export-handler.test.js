@@ -39,6 +39,13 @@ test('docx min export handler uses canonical export snapshot and injected write 
   const canonicalSnapshot = {
     content: 'Saved canonical text',
     plainText: 'Saved canonical text',
+    doc: {
+      type: 'doc',
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: 'Saved canonical text' }] },
+        { type: 'paragraph' },
+      ],
+    },
     bookProfile: { formatId: 'A4' },
   };
 

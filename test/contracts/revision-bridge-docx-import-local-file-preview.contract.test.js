@@ -248,7 +248,7 @@ test('DOCX local file preview adapter: clean local DOCX becomes pathless preview
   ]);
   assert.equal(result.docxImportPreviewPlan.code, 'DOCX_IMPORT_PREVIEW_READY');
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.mode, 'create-only');
-  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nAB\n\nBravo');
+  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\nAB\nBravo');
   assert.equal(result.docxImportPreviewPlan.lossReport.mode, 'plain-text-only');
   assertNoForbiddenPublicFields(result);
 });

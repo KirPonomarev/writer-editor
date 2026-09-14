@@ -31,6 +31,15 @@ function isPlainObjectValue(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
 
+function copyDocxImportPreviewAllowedFields(source, allowedKeys) {
+  if (!isPlainObjectValue(source)) return null;
+  const out = {};
+  for (const key of allowedKeys) {
+    if (source[key] !== undefined) out[key] = cloneJsonSafe(source[key]);
+  }
+  return out;
+}
+
 function instantiateDocxImportSafeCreatePort(options = {}) {
   const mainSource = readMainSource();
   const section = extractMarkedSection(mainSource, SECTION_START, SECTION_END);
@@ -44,6 +53,7 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
     calls,
     cloneJsonSafe,
     isPlainObjectValue,
+    copyDocxImportPreviewAllowedFields,
     isDocxImportPreviewPlanAdmitted: typeof options.isDocxImportPreviewPlanAdmitted === 'function'
       ? (plan) => {
           calls.admission.push(cloneJsonSafe(plan));
@@ -66,11 +76,20 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
             hasTransactionAuthority: helperOptions.transactionAuthority !== null
               && typeof helperOptions.transactionAuthority === 'object',
           }) });
+          const publicSceneLocator = {
+            nodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
+            label: 'Imported DOCX 11111111',
+            bindingKey: 'file:roman/Imported/Imported DOCX 11111111.txt',
+            relativeFile: 'roman/Imported/Imported DOCX 11111111.txt',
+            kind: 'scene',
+          };
           return {
             ok: true,
             value: {
               created: true,
               createdSceneIds: ['docx-import-scene-1234abcd'],
+              publicSceneLocators: [publicSceneLocator],
+              publicSceneLocator,
               importOperationId: 'docx-import-op-teststub0001',
               receipt: {
                 // GENERIC-01 (G8 amendment): receipt schema bumped to v2.
@@ -87,15 +106,18 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
                 outputHash: 'b'.repeat(64),
                 createdSceneIds: ['docx-import-scene-1234abcd'],
                 createdScenes: [
-                  {
-                    sceneId: 'docx-import-scene-1234abcd',
-                    kind: 'scene',
-                    bytesWritten: 5,
-                    outputHash: 'c'.repeat(64),
-                    treeNodeId: 'yalken.scene.tree.stubtree0001',
-                    treeId: 'yalken.scene.tree.root.stubroot01',
-                  },
-                ],
+	                  {
+	                    sceneId: 'docx-import-scene-1234abcd',
+	                    kind: 'scene',
+	                    bytesWritten: 5,
+	                    outputHash: 'c'.repeat(64),
+	                    treeNodeId: 'yalken.scene.tree.stubtree0001',
+	                    treeId: 'yalken.scene.tree.root.stubroot01',
+	                    publicSceneLocator,
+	                  },
+	                ],
+	                publicSceneLocators: [publicSceneLocator],
+	                publicSceneLocator,
                 sceneTreeIdentities: [
                   {
                     sceneId: 'docx-import-scene-1234abcd',
@@ -261,6 +283,16 @@ test('DOCX import safe create command surface: clean plan delegates with trusted
   assert.equal(result.safeCreateOk, true);
   assert.equal(result.created, true);
   assert.deepEqual(result.createdSceneIds, ['docx-import-scene-1234abcd']);
+  const publicSceneLocator = JSON.parse(JSON.stringify(result.publicSceneLocator));
+  assert.deepEqual(publicSceneLocator, {
+    nodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
+    label: 'Imported DOCX 11111111',
+    bindingKey: 'file:roman/Imported/Imported DOCX 11111111.txt',
+    relativeFile: 'roman/Imported/Imported DOCX 11111111.txt',
+    kind: 'scene',
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(result.publicSceneLocators)), [publicSceneLocator]);
+  assert.deepEqual(JSON.parse(JSON.stringify(result.receipt.publicSceneLocator)), publicSceneLocator);
   assert.equal(port.calls.admission.length, 1);
   assert.equal(port.calls.admission[0].previewHash, payload().docxImportPreviewPlan.previewHash);
   assert.equal(result.receipt.projectId, 'trusted-project-id');
