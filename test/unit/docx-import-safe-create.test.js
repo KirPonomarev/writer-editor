@@ -176,17 +176,16 @@ function expectedScenePath(romanRoot, plan, projectId = '') {
   );
 }
 
-function expectedPublicSceneLocator(projectRoot, scenePath, projectId) {
+function expectedPublicSceneLocator(projectRoot, scenePath, projectId, sceneId) {
   const relativeFile = path.relative(projectRoot, scenePath).split(path.sep).join('/');
   const bindingKey = `file:${relativeFile}`;
   const digest = crypto.createHash('sha256')
     .update(`${projectId}\u0000${bindingKey}`, 'utf8')
     .digest('hex');
   return {
+    sceneId,
     nodeId: `tree-node-${digest.slice(0, 32)}`,
     label: path.posix.basename(relativeFile, '.txt'),
-    bindingKey,
-    relativeFile,
     kind: 'scene',
   };
 }
@@ -258,7 +257,12 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
   assert.deepEqual(fs.readdirSync(path.join(projectRoot, '.flow-batch')), []);
 
   const receipt = result.value.receipt;
-  const publicSceneLocator = expectedPublicSceneLocator(projectRoot, scenePath, 'project-docx-safe-create');
+  const publicSceneLocator = expectedPublicSceneLocator(
+    projectRoot,
+    scenePath,
+    'project-docx-safe-create',
+    plan.candidateCreatePlan.entries[0].sceneId,
+  );
   assert.equal(receipt.schemaVersion, DOCX_IMPORT_RECEIPT_V2_SCHEMA);
   assert.equal(receipt.reason, DOCX_IMPORT_SAFE_CREATE_READY_REASON);
   assert.equal(receipt.projectId, 'project-docx-safe-create');
@@ -275,12 +279,16 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
   assert.deepEqual(receipt.publicSceneLocator, publicSceneLocator);
   assert.deepEqual(receipt.publicSceneLocators, [publicSceneLocator]);
   assert.deepEqual(receipt.createdScenes[0].publicSceneLocator, publicSceneLocator);
+  assert.equal(receipt.sceneTreeIdentities[0].treeNodeId, publicSceneLocator.nodeId);
+  assert.equal(receipt.createdScenes[0].treeNodeId, publicSceneLocator.nodeId);
   assert.equal(JSON.stringify(result.value.publicSceneLocator).includes(projectRoot), false);
   assert.equal(JSON.stringify(receipt.publicSceneLocator).includes(projectRoot), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(publicSceneLocator, 'bindingKey'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(publicSceneLocator, 'relativeFile'), false);
   assert.equal(receipt.lossReportSummary.itemCount, plan.lossReport.itemCount);
 
   const receiptKeys = collectKeys(receipt);
-  for (const forbidden of ['path', 'filePath', 'projectRoot', 'rawBytes', 'bufferSource', 'importReceipt', 'exportReceipt']) {
+  for (const forbidden of ['path', 'filePath', 'projectRoot', 'rawBytes', 'bufferSource', 'bindingKey', 'relativeFile', 'importReceipt', 'exportReceipt']) {
     assert.equal(receiptKeys.some((key) => key === forbidden || key.endsWith(`.${forbidden}`)), false, forbidden);
   }
 });

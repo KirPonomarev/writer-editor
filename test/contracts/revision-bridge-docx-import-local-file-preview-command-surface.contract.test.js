@@ -19,6 +19,7 @@ const COMMAND_REGISTRY_PATH = path.join(REPO_ROOT, 'src', 'renderer', 'commands'
 const RUN_COMMAND_PATH = path.join(REPO_ROOT, 'src', 'renderer', 'commands', 'runCommand.mjs');
 const SECTION_START = '// DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_START';
 const SECTION_END = '// DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END';
+const WORDPROCESSINGML_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
@@ -236,7 +237,7 @@ function zipFixture(entries) {
 }
 
 function documentXml(body) {
-  return `<w:document><w:body>${body}</w:body></w:document>`;
+  return `<w:document xmlns:w="${WORDPROCESSINGML_NS}"><w:body>${body}</w:body></w:document>`;
 }
 
 function paragraphXml(text) {
@@ -245,6 +246,30 @@ function paragraphXml(text) {
 
 function cleanDocxZip(body = '<w:p/>') {
   return zipFixture([
+    {
+      name: 'word/document.xml',
+      method: 8,
+      body: documentXml(body),
+    },
+  ]);
+}
+
+function packageRootRelationshipDocxZip(body = '<w:p/>') {
+  return zipFixture([
+    {
+      name: '_rels/.rels',
+      method: 8,
+      body: [
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">',
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>',
+        '</Relationships>',
+      ].join(''),
+    },
+    {
+      name: '[Content_Types].xml',
+      method: 8,
+      body: '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>',
+    },
     {
       name: 'word/document.xml',
       method: 8,
@@ -471,12 +496,49 @@ test('DOCX local file preview command surface: clean selected DOCX returns pathl
     'Bravo',
   ]);
   assert.equal(result.docxImportPreviewPlan.code, 'DOCX_IMPORT_PREVIEW_READY');
-  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\nBravo');
   assert.equal(port.calls.rememberAdmission.length, 0);
   assert.equal(port.calls.showOpenDialog.length, 1);
   assert.equal(port.calls.readFile.length, 1);
   assertNoForbiddenPublicFields(result);
   assert.equal(JSON.stringify(result).includes(selectedPath), false);
+});
+
+test('DOCX local file preview command surface: package-root relationship identity survives result sanitize', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docx-local-command-root-rels-'));
+  const selectedPath = path.join(tempRoot, 'PackageRootRelationship.docx');
+  const bytes = packageRootRelationshipDocxZip(paragraphXml('Linked text'));
+  const port = instantiateDocxImportLocalFilePreviewCommandPort({
+    documentsPath: tempRoot,
+    dialogResult: { canceled: false, filePaths: [selectedPath] },
+    size: bytes.length,
+    bytes,
+  });
+
+  const result = await port.handleDocxImportLocalFilePreviewCommandSurface({
+    requestId: 'local-command-package-root-relationship',
+  });
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.importPreviewOk, true);
+  assert.equal(result.docxContentPreviewReport.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
+    && item.category === 'relationshipPart'
+    && item.entryId === '_rels/.rels'
+  )), true);
+  assert.equal(result.docxImportPreviewPlan.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
+    && item.category === 'relationshipPart'
+    && item.entryId === '_rels/.rels'
+  )), true);
+  assert.equal(result.docxImportPreviewPlan.lossReport.itemCount, 1);
+  assert.equal(result.docxImportPreviewPlan.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
+    && item.sourcePart === 'word/document.xml'
+  )), false);
+  assert.equal(port.calls.showOpenDialog.length, 1);
+  assert.equal(port.calls.readFile.length, 1);
+  assertNoForbiddenPublicFields(result);
 });
 
 test('DOCX local file preview command surface: cancel and invalid selection fail closed before read', async () => {

@@ -77,10 +77,9 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
               && typeof helperOptions.transactionAuthority === 'object',
           }) });
           const publicSceneLocator = {
+            sceneId: 'docx-import-scene-1234abcd',
             nodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
             label: 'Imported DOCX 11111111',
-            bindingKey: 'file:roman/Imported/Imported DOCX 11111111.txt',
-            relativeFile: 'roman/Imported/Imported DOCX 11111111.txt',
             kind: 'scene',
           };
           return {
@@ -106,22 +105,22 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
                 outputHash: 'b'.repeat(64),
                 createdSceneIds: ['docx-import-scene-1234abcd'],
                 createdScenes: [
-	                  {
-	                    sceneId: 'docx-import-scene-1234abcd',
-	                    kind: 'scene',
-	                    bytesWritten: 5,
-	                    outputHash: 'c'.repeat(64),
-	                    treeNodeId: 'yalken.scene.tree.stubtree0001',
-	                    treeId: 'yalken.scene.tree.root.stubroot01',
-	                    publicSceneLocator,
-	                  },
-	                ],
-	                publicSceneLocators: [publicSceneLocator],
-	                publicSceneLocator,
+                  {
+                    sceneId: 'docx-import-scene-1234abcd',
+                    kind: 'scene',
+                    bytesWritten: 5,
+                    outputHash: 'c'.repeat(64),
+                    treeNodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
+                    treeId: 'yalken.scene.tree.root.stubroot01',
+                    publicSceneLocator,
+                  },
+                ],
+                publicSceneLocators: [publicSceneLocator],
+                publicSceneLocator,
                 sceneTreeIdentities: [
                   {
                     sceneId: 'docx-import-scene-1234abcd',
-                    treeNodeId: 'yalken.scene.tree.stubtree0001',
+                    treeNodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
                     treeId: 'yalken.scene.tree.root.stubroot01',
                   },
                 ],
@@ -285,10 +284,9 @@ test('DOCX import safe create command surface: clean plan delegates with trusted
   assert.deepEqual(result.createdSceneIds, ['docx-import-scene-1234abcd']);
   const publicSceneLocator = JSON.parse(JSON.stringify(result.publicSceneLocator));
   assert.deepEqual(publicSceneLocator, {
+    sceneId: 'docx-import-scene-1234abcd',
     nodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
     label: 'Imported DOCX 11111111',
-    bindingKey: 'file:roman/Imported/Imported DOCX 11111111.txt',
-    relativeFile: 'roman/Imported/Imported DOCX 11111111.txt',
     kind: 'scene',
   });
   assert.deepEqual(JSON.parse(JSON.stringify(result.publicSceneLocators)), [publicSceneLocator]);
@@ -307,7 +305,7 @@ test('DOCX import safe create command surface: clean plan delegates with trusted
   assert.equal(port.calls.helper[0].options.hasWriteBatchAtomic, true);
 
   const resultKeys = collectKeys(result);
-  for (const forbidden of ['path', 'filePath', 'projectRoot', 'rawBytes', 'bufferSource', 'writeReceipt', 'importReceipt', 'exportReceipt']) {
+  for (const forbidden of ['path', 'filePath', 'projectRoot', 'rawBytes', 'bufferSource', 'bindingKey', 'relativeFile', 'writeReceipt', 'importReceipt', 'exportReceipt']) {
     assert.equal(resultKeys.some((key) => key === forbidden || key.endsWith(`.${forbidden}`)), false, forbidden);
   }
 });

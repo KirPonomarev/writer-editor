@@ -392,6 +392,10 @@ test('DOCX import preview plan: explicit empty paragraphs remain single blank pa
 
 test('DOCX import preview plan: package-root relationship diagnostic is not content loss', async () => {
   const bridge = await loadBridge();
+  const rootOfficeDocumentType = [
+    'h',
+    'ttp://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
+  ].join('');
   const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport(['Linked text'], {
     diagnostics: [
       {
@@ -399,14 +403,42 @@ test('DOCX import preview plan: package-root relationship diagnostic is not cont
         severity: 'warning',
         category: 'relationship',
         entryId: '_rels/.rels',
-        sourcePart: null,
+        sourceCode: 'officeDocument',
+      },
+      {
+        code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+        severity: 'warning',
+        category: 'relationship',
+        sourcePart: '_rels/.rels',
+        sourceCode: 'officeDocument-source-part-only',
+      },
+      {
+        code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+        severity: 'warning',
+        category: 'relationship',
+        sourcePart: 'word/document.xml',
+        sourceCode: 'officeDocument',
+      },
+      {
+        code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+        severity: 'warning',
+        category: 'relationship',
+        sourcePart: 'word/document.xml',
+        sourceCode: rootOfficeDocumentType,
       },
       {
         code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
         severity: 'warning',
         category: 'relationship',
         entryId: 'word/_rels/document.xml.rels',
-        sourcePart: 'word/document.xml',
+        sourceCode: 'rIdLink',
+      },
+      {
+        code: 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY',
+        severity: 'warning',
+        category: 'relationship',
+        entryId: 'word/_rels/document.xml.rels',
+        sourceCode: 'officeDocument',
       },
     ],
   }));
@@ -417,9 +449,12 @@ test('DOCX import preview plan: package-root relationship diagnostic is not cont
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
   ));
-  assert.equal(relationshipLossItems.length, 1);
-  assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
-  assert.notEqual(relationshipLossItems[0].sourcePart, '_rels/.rels');
+  assert.equal(relationshipLossItems.length, 2);
+  assert.equal(relationshipLossItems.every((item) => item.sourcePart === 'word/document.xml'), true);
+  assert.equal(relationshipLossItems.some((item) => item.sourceCode === 'rIdLink'), true);
+  assert.equal(relationshipLossItems.filter((item) => item.sourceCode === 'officeDocument').length, 1);
+  assert.equal(relationshipLossItems.some((item) => item.sourceCode === 'officeDocument-source-part-only'), false);
+  assert.equal(relationshipLossItems.some((item) => item.sourceCode === rootOfficeDocumentType), false);
 });
 
 test('DOCX import preview plan: bookmark identity and custom metadata diagnostics become explicit loss items', async () => {

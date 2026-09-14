@@ -19707,23 +19707,22 @@ function sanitizeDocxImportSceneLabelPart(value) {
 
 function normalizeDocxImportPublicSceneLocator(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const sceneId = typeof value.sceneId === 'string' ? value.sceneId.trim() : '';
   const nodeId = typeof value.nodeId === 'string' ? value.nodeId.trim() : '';
   const expectedLabel = typeof value.label === 'string' ? value.label.trim() : '';
-  const bindingKey = typeof value.bindingKey === 'string' ? value.bindingKey.trim().replace(/\\/gu, '/') : '';
-  const relativeFile = typeof value.relativeFile === 'string' ? value.relativeFile.trim().replace(/\\/gu, '/') : '';
   if (
-    !/^tree-node-[a-f0-9]{32}$/u.test(nodeId)
+    !/^docx-import-scene-[a-f0-9]{8}$/u.test(sceneId)
+    || !/^tree-node-[a-f0-9]{32}$/u.test(nodeId)
     || !expectedLabel
     || value.kind !== 'scene'
-    || !bindingKey.startsWith('file:')
-    || bindingKey.slice('file:'.length) !== relativeFile
-    || !relativeFile.startsWith('roman/Imported/')
-    || !relativeFile.toLowerCase().endsWith('.txt')
-    || relativeFile.split('/').some((segment) => !segment || segment === '.' || segment === '..')
+    || Object.prototype.hasOwnProperty.call(value, 'bindingKey')
+    || Object.prototype.hasOwnProperty.call(value, 'relativeFile')
+    || Object.prototype.hasOwnProperty.call(value, 'path')
   ) {
     return null;
   }
   return {
+    sceneId,
     nodeId,
     expectedLabel,
     source: 'public-scene-locator',
@@ -19799,7 +19798,9 @@ function findDocxImportSceneNode(root, locators) {
       if (kind === 'scene') {
         const nodeId = typeof node.nodeId === 'string'
           ? node.nodeId.trim()
-          : (typeof node.id === 'string' ? node.id.trim() : '');
+          : (typeof node.treeNodeId === 'string'
+            ? node.treeNodeId.trim()
+            : (typeof node.id === 'string' ? node.id.trim() : ''));
         const label = typeof node.label === 'string'
           ? node.label.trim()
           : (typeof node.name === 'string' ? node.name.trim() : '');

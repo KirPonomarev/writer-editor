@@ -893,18 +893,22 @@ export const TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION = Object.freeze({
     'src/renderer/commands/projectCommands.mjs',
     'src/renderer/editor.bundle.js',
     'src/renderer/editor.js',
+    'src/utils/docxImportLocalFilePreview.js',
     'src/utils/docxImportSafeCreate.js',
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
     'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js',
     'test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js',
     'test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js',
     'test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js',
     'test/contracts/rtk-release01-terminal-claims.contract.test.js',
     'test/contracts/rtk-generic01-create-only-import.contract.test.js',
     'test/unit/docx-import-preview-ui-flow.test.js',
+    'test/unit/docx-import-product-flow-command.test.js',
     'test/unit/docx-import-safe-create.test.js',
     'test/unit/docx-min-export-handler.test.js',
+    'test/unit/project-tree-identity-main.test.js',
     'test/unit/r24-wp307-writer-local-profile-integration.test.js',
     'test/unit/sector-m-command-kernel-tree-document-adoption.test.js',
     'test/unit/sector-m-preload-workspace-query-bridge.test.js',
@@ -5791,16 +5795,29 @@ export function verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ ca
   const projectCommands = artifacts.get('src/renderer/commands/projectCommands.mjs').text;
   const editor = artifacts.get('src/renderer/editor.js').text;
   const uiFlowTest = artifacts.get('test/unit/docx-import-preview-ui-flow.test.js').text;
+  const projectTreeTest = artifacts.get('test/unit/project-tree-identity-main.test.js').text;
   const safeCreateTest = artifacts.get('test/unit/docx-import-safe-create.test.js').text;
   const minExportTest = artifacts.get('test/unit/docx-min-export-handler.test.js').text;
+  const localPreview = artifacts.get('src/utils/docxImportLocalFilePreview.js').text;
+  const localPreviewTest = artifacts.get('test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js').text;
+  const localPreviewCommandSurfaceTest = artifacts.get('test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js').text;
   const previewPlanTest = artifacts.get('test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js').text;
   for (const token of ['doc: isPlainObjectValue(source.doc) ? source.doc : null', 'assert.deepEqual(calls.builderSnapshot, canonicalSnapshot)']) assert((token.startsWith('assert.') ? minExportTest : exportHandler).includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPORT_TOKEN', token);
-  for (const token of ["entryId === '_rels/.rels'", ".join('\\n')", 'RELATIONSHIP_DIAGNOSTICS_ONLY']) assert(revisionBridge.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PREVIEW_TOKEN', token);
-  for (const token of ['return { ok: true, value: resolveCollabScopeLocalState() };', 'result.ok === true && result.value === true', 'copyDocxImportSafeCreatePublicSceneLocator']) assert(main.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_MAIN_TOKEN', token);
-  for (const token of ['buildDocxImportPublicSceneLocator', 'buildDeterministicProjectTreeNodeId', 'publicSceneLocators', 'publicSceneLocator']) assert(safeCreate.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SAFE_CREATE_TOKEN', token);
-  for (const token of ['normalizeDocxImportPublicSceneLocator', "bindingKey.slice('file:'.length) !== relativeFile", 'publicSceneLocators']) assert(projectCommands.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_COMMAND_TOKEN', token);
-  for (const token of ['getDocxImportPublicSceneLocatorsFromValue', "source: 'public-scene-locator'", 'expectedByNodeId', 'openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue)']) assert(editor.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EDITOR_TOKEN', token);
-  for (const token of ['publicSceneLocators: [publicLocator, publicLocator]', "nodeId: 'tree-node-22222222222222222222222222222222'", "'Alpha\\nBravo'", 'Alpha\\n\\nBravo']) assert((token.includes('tree-node') || token.includes('publicLocator')) ? uiFlowTest.includes(token) : (safeCreateTest.includes(token) || previewPlanTest.includes(token)), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_TEST_TOKEN', token);
+  for (const token of ["entryId === '_rels/.rels'", "sourcePart === '_rels/.rels'", 'DOCX_IMPORT_PREVIEW_PACKAGE_ROOT_RELATIONSHIP_SOURCE_CODES', 'sourceCode.toLowerCase()', ".join('\\n')", 'RELATIONSHIP_DIAGNOSTICS_ONLY']) assert(revisionBridge.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PREVIEW_TOKEN', token);
+  for (const token of ['sanitizeDiagnostics', "'category'", "'entryId'", "'paragraphIndex'", "'listKey'", 'sanitizeEvidence']) assert(localPreview.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_LOCAL_PREVIEW_TOKEN', token);
+  for (const token of ['return { ok: true, value: resolveCollabScopeLocalState() };', 'result.ok === true && result.value === true', 'copyDocxImportSafeCreatePublicSceneLocator', 'manifestRaw', 'await buildRomanTree(activeProjectName)', 'await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME)']) assert(main.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_MAIN_TOKEN', token);
+  for (const token of ['buildDocxImportPublicSceneLocator', 'buildDeterministicProjectTreeNodeId', 'buildDocxImportManifestTextWithSceneTreeIdentity', 'sceneTreeIdentityDescriptor', 'manifestRaw', 'publicSceneLocators', 'publicSceneLocator']) assert(safeCreate.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SAFE_CREATE_TOKEN', token);
+  for (const token of ['normalizeDocxImportPublicSceneLocator', "Object.prototype.hasOwnProperty.call(locator, 'relativeFile')", 'publicSceneLocators']) assert(projectCommands.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_COMMAND_TOKEN', token);
+  for (const token of ['getDocxImportPublicSceneLocatorsFromValue', "source: 'public-scene-locator'", 'expectedByNodeId', 'node.treeNodeId', 'openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue)']) assert(editor.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EDITOR_TOKEN', token);
+  for (const token of ['publicSceneLocators: [publicLocator, publicLocator]', "nodeId: 'tree-node-22222222222222222222222222222222'", "treeNodeId: 'tree-node-11111111111111111111111111111111'", 'committedManifest.treeIdentity.nodes', 'Beta Book', "'Alpha\\nBravo'", 'Alpha\\n\\nBravo', 'rootOfficeDocumentType', "filter((item) => item.sourceCode === 'officeDocument').length", 'package-root relationship identity stays out of content loss', 'package-root relationship identity survives result sanitize']) {
+    let text = safeCreateTest + previewPlanTest;
+    if (token.includes('Beta Book')) text = projectTreeTest;
+    else if (token.includes('committedManifest')) text = artifacts.get('test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js').text;
+    else if (token.includes('tree-node') || token.includes('publicLocator')) text = uiFlowTest;
+    else if (token.includes('stays out of content loss')) text = localPreviewTest;
+    else if (token.includes('survives result sanitize')) text = localPreviewCommandSurfaceTest;
+    assert(text.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_TEST_TOKEN', token);
+  }
   for (const token of ['TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION', 'verifyTextSingleSceneC1SourceRuntimePostEvaluationException', 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA']) assert(artifacts.get(e.verifierPath).text.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_VERIFIER_TOKEN', token);
   for (const token of ['TEXT SINGLE_SCENE C1 source-runtime exception accepts exact repair delta', 'TEXT SINGLE_SCENE C1 source-runtime exception rejects an unadmitted future path', 'TEXT SINGLE_SCENE C1 source-runtime exception rejects missing public locator token']) assert(artifacts.get(e.postAuditTestPath).text.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_POST_AUDIT_TEST_TOKEN', token);
   return {
@@ -5810,7 +5827,7 @@ export function verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ ca
     changedPaths: changed, admittedPathDenominator: e.admittedPaths.length, changedPathDenominator: changed.length,
     inventoryDigest: inventory.digest, approvalsDigest: approvals.digest, successorDigest: successor.digest,
     artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
-    defectRepairs: ['DOCX_MIN_EXPORT_DOC_PRESERVED', 'COLLAB_SCOPE_LOCAL_QUERY_ENVELOPE', 'DOCX_IMPORT_PARAGRAPH_VECTOR_NO_SYNTHETIC_EXPANSION', 'PACKAGE_ROOT_RELS_DIAGNOSTIC_NOT_CONTENT_LOSS', 'SAFE_CREATE_PATHLESS_PUBLIC_TREE_LOCATOR'],
+    defectRepairs: ['DOCX_MIN_EXPORT_DOC_PRESERVED', 'COLLAB_SCOPE_LOCAL_QUERY_ENVELOPE', 'DOCX_IMPORT_PARAGRAPH_VECTOR_NO_SYNTHETIC_EXPANSION', 'PACKAGE_ROOT_RELS_DIAGNOSTIC_NOT_CONTENT_LOSS', 'PACKAGE_ROOT_OFFICE_DOCUMENT_RELATIONSHIP_SOURCE_CODE_NOT_CONTENT_LOSS', 'SAFE_CREATE_PATHLESS_PUBLIC_TREE_LOCATOR', 'DOCX_IMPORT_DURABLE_TREE_IDENTITY_PUBLICATION'],
     supportedDenominatorPromotion: false, wordPhysicalRouteClaim: false, googleNativeRouteClaim: false,
     programDone: false, productionReleaseReady: false, graphIncrement: 0,
   };

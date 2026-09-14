@@ -2051,13 +2051,17 @@ test('TEXT SINGLE_SCENE C1 source-runtime exception accepts exact repair delta',
   assert.equal(result.baseSha, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseSha);
   assert.equal(result.baseTree, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseTree);
   assert.deepEqual(result.changedPaths, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.admittedPaths);
-  assert.equal(result.admittedPathDenominator, 26);
+  assert.equal(result.admittedPathDenominator, 30);
+  assert.ok(result.changedPaths.includes('src/utils/docxImportLocalFilePreview.js'));
+  assert.ok(result.changedPaths.includes('test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js'));
   assert.deepEqual(result.defectRepairs, [
     'DOCX_MIN_EXPORT_DOC_PRESERVED',
     'COLLAB_SCOPE_LOCAL_QUERY_ENVELOPE',
     'DOCX_IMPORT_PARAGRAPH_VECTOR_NO_SYNTHETIC_EXPANSION',
     'PACKAGE_ROOT_RELS_DIAGNOSTIC_NOT_CONTENT_LOSS',
+    'PACKAGE_ROOT_OFFICE_DOCUMENT_RELATIONSHIP_SOURCE_CODE_NOT_CONTENT_LOSS',
     'SAFE_CREATE_PATHLESS_PUBLIC_TREE_LOCATOR',
+    'DOCX_IMPORT_DURABLE_TREE_IDENTITY_PUBLICATION',
   ]);
   assert.equal(result.supportedDenominatorPromotion, false);
   assert.equal(result.wordPhysicalRouteClaim, false);

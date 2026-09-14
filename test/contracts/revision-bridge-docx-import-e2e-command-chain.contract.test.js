@@ -139,6 +139,18 @@ function instantiateDocxImportPreviewPort(options = {}) {
 function instantiateDocxSafeCreatePort(options = {}) {
   const projectRoot = options.projectRoot;
   const romanRoot = options.romanRoot || path.join(projectRoot, 'roman');
+  const manifestPath = path.join(projectRoot, 'project.craftsman.json');
+  const manifest = {
+    schemaVersion: 'yalken.projectManifest.v1',
+    projectId: 'docx-e2e-project',
+    projectName: 'DOCX E2E Project',
+    createdAtUtc: '2026-09-14T00:00:00.000Z',
+    treeIdentity: {
+      schemaVersion: 1,
+      nodes: {},
+    },
+  };
+  const manifestRaw = `${JSON.stringify(manifest, null, 2)}\n`;
   const calls = {
     ensureProjectStructure: 0,
     resolveProjectBindingForFile: [],
@@ -169,7 +181,15 @@ function instantiateDocxSafeCreatePort(options = {}) {
       getProjectRootPath: () => projectRoot,
       resolveProjectBindingForFile: async (targetPath) => {
         calls.resolveProjectBindingForFile.push(targetPath);
-        return { projectId: 'docx-e2e-project' };
+        if (options.transactionAuthority) {
+          fs.writeFileSync(manifestPath, manifestRaw, 'utf8');
+        }
+        return {
+          projectId: 'docx-e2e-project',
+          manifestPath: options.transactionAuthority ? manifestPath : '',
+          manifestRaw: options.transactionAuthority ? manifestRaw : '',
+          manifest: cloneJsonSafe(manifest),
+        };
       },
       queueDiskOperation: async (operation, operationLabel) => {
         calls.queueDiskOperation.push(operationLabel);
@@ -322,6 +342,8 @@ function assertNoPublicAuthorityLeak(value) {
     'projectRoot',
     'rawBytes',
     'bufferSource',
+    'bindingKey',
+    'relativeFile',
     'zip',
     'storage',
     'writeReceipt',
@@ -570,6 +592,11 @@ test('DOCX import e2e command chain: clean DOCX creates one local scene with pat
   assert.deepEqual(result.safeCreate.createdSceneIds, [
     result.preview.docxImportPreviewPlan.candidateCreatePlan.entries[0].sceneId,
   ]);
+  assert.deepEqual(result.safeCreate.publicSceneLocators, [result.safeCreate.publicSceneLocator]);
+  assert.equal(result.safeCreate.publicSceneLocator.sceneId, result.safeCreate.createdSceneIds[0]);
+  assert.match(result.safeCreate.publicSceneLocator.nodeId, /^tree-node-[a-f0-9]{32}$/u);
+  assert.equal(Object.prototype.hasOwnProperty.call(result.safeCreate.publicSceneLocator, 'bindingKey'), false);
+  assert.equal(Object.prototype.hasOwnProperty.call(result.safeCreate.publicSceneLocator, 'relativeFile'), false);
   assert.equal(readOnlyCreatedScene(result.romanRoot), 'Alpha\nBravo');
   assert.deepEqual(fs.readdirSync(path.join(result.projectRoot, '.flow-batch')), []);
   assert.equal(result.safeCreate.receipt.atomicEvidence.sceneCount, 1);
@@ -581,6 +608,14 @@ test('DOCX import e2e command chain: clean DOCX creates one local scene with pat
   assert.equal(
     result.safeCreate.receipt.transactionEvidence.manifestHash,
     result.safeCreate.receipt.manifestAuthority.algorithmicHash,
+  );
+  assert.equal(
+    result.safeCreate.receipt.sceneTreeIdentities[0].treeNodeId,
+    result.safeCreate.publicSceneLocator.nodeId,
+  );
+  assert.equal(
+    result.safeCreate.receipt.createdScenes[0].treeNodeId,
+    result.safeCreate.publicSceneLocator.nodeId,
   );
   assert.equal(result.safeCreate.receipt.transactionEvidence.batchManifestHash.length, 64);
   assert.equal(result.safeCreate.receipt.projectId, 'docx-e2e-project');
@@ -850,6 +885,17 @@ test('DOCX import e2e command chain: transaction manifest authority replay binds
   assert.equal(transactionAuthority.calls[0].projectId, 'docx-e2e-project');
 
   const receipt = first.safeCreate.receipt;
+  const committedManifest = JSON.parse(transactionAuthority.calls[0].nextText);
+  const sceneRelativeFile = path.relative(first.projectRoot, readOnlyCreatedScenePath(first.romanRoot))
+    .split(path.sep)
+    .join('/');
+  assert.equal(transactionAuthority.calls[0].targetPath, path.join(first.projectRoot, 'project.craftsman.json'));
+  assert.equal(transactionAuthority.calls[0].expectedText.includes(receipt.publicSceneLocator.nodeId), false);
+  assert.deepEqual(committedManifest.treeIdentity.nodes[receipt.publicSceneLocator.nodeId], {
+    bindingKey: `file:${sceneRelativeFile}`,
+    kind: 'scene',
+    present: true,
+  });
   assert.deepEqual(receipt.manifestAuthority, {
     revision: '7',
     fencingGeneration: 7,

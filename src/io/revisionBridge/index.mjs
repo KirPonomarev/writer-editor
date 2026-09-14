@@ -8420,6 +8420,10 @@ const DOCX_IMPORT_PREVIEW_CODES = Object.freeze({
   BUDGET_EXCEEDED: 'DOCX_IMPORT_PREVIEW_BUDGET_EXCEEDED',
 });
 const DOCX_IMPORT_PREVIEW_GOOGLE_DOCS_TABS_SOURCE_CODE = 'DOCX_CONTENT_PREVIEW_GOOGLE_DOCS_TABS_POSSIBLE';
+const DOCX_IMPORT_PREVIEW_PACKAGE_ROOT_RELATIONSHIP_SOURCE_CODES = new Set([
+  'officedocument',
+  `${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE.toLowerCase()}/officedocument`,
+]);
 const DOCX_IMPORT_PREVIEW_BOUNDS = Object.freeze({
   maxCandidateScenes: 1,
   maxParagraphs: DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs,
@@ -8984,7 +8988,47 @@ function isDocxPackageRootRelationshipDiagnostic(diagnostic) {
   const entryId = typeof diagnostic.entryId === 'string'
     ? diagnostic.entryId.trim().replace(/\\/gu, '/')
     : '';
-  return entryId === '_rels/.rels';
+  const sourcePart = typeof diagnostic.sourcePart === 'string'
+    ? diagnostic.sourcePart.trim().replace(/\\/gu, '/')
+    : '';
+  if (entryId === '_rels/.rels' || sourcePart === '_rels/.rels') return true;
+  if (entryId === 'word/_rels/document.xml.rels') return false;
+  const sourceCode = typeof diagnostic.sourceCode === 'string'
+    ? diagnostic.sourceCode.trim()
+    : '';
+  const normalizedSourceCode = DOCX_IMPORT_PREVIEW_PACKAGE_ROOT_RELATIONSHIP_SOURCE_CODES.has(sourceCode.toLowerCase());
+  return (
+    normalizedSourceCode
+    && entryId === ''
+    && (sourcePart === '' || sourcePart === DOCX_CONTENT_PREVIEW_SOURCE_PART)
+  );
+}
+
+function docxImportPreviewRelationshipSourcePart(diagnostic, contentPreview) {
+  const entryId = typeof diagnostic?.entryId === 'string'
+    ? diagnostic.entryId.trim().replace(/\\/gu, '/')
+    : '';
+  if (entryId === 'word/_rels/document.xml.rels') return 'word/document.xml';
+  const relsMatch = entryId.match(/^(?:(.+)\/)?_rels\/([^/]+)\.rels$/u);
+  if (relsMatch) {
+    const baseDir = typeof relsMatch[1] === 'string' ? relsMatch[1] : '';
+    const sourceName = relsMatch[2];
+    return baseDir ? `${baseDir}/${sourceName}` : sourceName;
+  }
+  const sourcePart = typeof diagnostic?.sourcePart === 'string'
+    ? diagnostic.sourcePart.trim().replace(/\\/gu, '/')
+    : '';
+  return sourcePart || entryId || contentPreview.sourcePart;
+}
+
+function docxImportPreviewLossSourcePartForDiagnostic(diagnostic, contentPreview, knownIgnoredPart) {
+  if (
+    knownIgnoredPart
+    && diagnostic?.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY
+  ) {
+    return docxImportPreviewRelationshipSourcePart(diagnostic, contentPreview);
+  }
+  return diagnostic.sourcePart || diagnostic.entryId || contentPreview.sourcePart;
 }
 
 function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText, googleDocsTabs = null) {
@@ -9043,7 +9087,11 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
       category: mapped.category,
       severity: 'warning',
       sourceCode: diagnostic.sourceCode || diagnostic.code,
-      sourcePart: diagnostic.sourcePart || diagnostic.entryId || contentPreview.sourcePart,
+      sourcePart: docxImportPreviewLossSourcePartForDiagnostic(
+        diagnostic,
+        contentPreview,
+        knownIgnoredPart,
+      ),
       tagName: diagnostic.tagName,
       paragraphIndex: diagnostic.paragraphIndex,
       numId: diagnostic.numId,

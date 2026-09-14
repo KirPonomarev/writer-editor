@@ -387,25 +387,22 @@ function normalizeDocxImportPublicSceneLocator(value) {
   if (!locator) return null;
   const nodeId = typeof locator.nodeId === 'string' ? locator.nodeId.trim() : '';
   const label = typeof locator.label === 'string' ? locator.label.trim() : '';
-  const bindingKey = typeof locator.bindingKey === 'string' ? locator.bindingKey.trim().replace(/\\/gu, '/') : '';
-  const relativeFile = typeof locator.relativeFile === 'string' ? locator.relativeFile.trim().replace(/\\/gu, '/') : '';
+  const sceneId = typeof locator.sceneId === 'string' ? locator.sceneId.trim() : '';
   if (
     !/^tree-node-[a-f0-9]{32}$/u.test(nodeId)
     || !label
     || locator.kind !== 'scene'
-    || !bindingKey.startsWith('file:')
-    || bindingKey.slice('file:'.length) !== relativeFile
-    || !relativeFile.startsWith('roman/Imported/')
-    || !relativeFile.toLowerCase().endsWith('.txt')
-    || relativeFile.split('/').some((segment) => !segment || segment === '.' || segment === '..')
+    || !/^docx-import-scene-[a-f0-9]{8}$/u.test(sceneId)
+    || Object.prototype.hasOwnProperty.call(locator, 'bindingKey')
+    || Object.prototype.hasOwnProperty.call(locator, 'relativeFile')
+    || Object.prototype.hasOwnProperty.call(locator, 'path')
   ) {
     return null;
   }
   return {
+    sceneId,
     nodeId,
     label,
-    bindingKey,
-    relativeFile,
     kind: 'scene',
   };
 }
