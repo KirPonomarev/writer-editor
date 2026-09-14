@@ -83,6 +83,34 @@ test('WP307 independent oracles kill activation and optional-system mutants', (t
       },
     },
     {
+      id: 'docx-review-roundtrip-survivor-denied',
+      transform: (value) => value.replace(
+        "  'cmd.project.review.exportDocxReviewPacket',",
+        "  'cmd.project.review.exportDocxReviewPacket.disabled',",
+      ),
+      oracle: (module) => {
+        const profile = module.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
+        assert.equal(module.evaluateWriterLocalCommandAccess({
+          profile,
+          commandId: 'cmd.project.review.exportDocxReviewPacket',
+        }).allowed, true);
+      },
+    },
+    {
+      id: 'docx-review-roundtrip-wildcard-review-admitted',
+      transform: (value) => value.replace(
+        'WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_ID_SET.has(normalizedCommandId)',
+        "normalizedCommandId.startsWith('cmd.project.review.')",
+      ),
+      oracle: (module) => {
+        const profile = module.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
+        assert.equal(module.evaluateWriterLocalCommandAccess({
+          profile,
+          commandId: 'cmd.project.review.exportLocalPacket',
+        }).allowed, false);
+      },
+    },
+    {
       id: 'history-denied',
       transform: (value) => value.replace(
         "  'query.projectionInspector',\n]);",

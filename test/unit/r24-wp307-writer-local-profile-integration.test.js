@@ -31,6 +31,7 @@ test('WP307 optional domain and query cut remains exhaustive against live regist
 
 test('WP307 main revalidates profile before command/query dispatch and package load', () => {
   const source = read('src/main.js');
+  const profileSource = read('src/core/writer-local-profile-v1.cjs');
   for (const token of [
     "require('./core/writer-local-profile-v1.cjs')",
     'profile: getWriterLocalRuntimeProfile(),',
@@ -45,6 +46,55 @@ test('WP307 main revalidates profile before command/query dispatch and package l
     assert.equal(source.includes(token), true, token);
   }
   assert.doesNotMatch(source, /WRITER_LOCAL_V1.*process\.env/u);
+  assert.doesNotMatch(profileSource, /process\.env/u);
+  for (const commandId of [
+    'cmd.project.review.exportDocxReviewPacket',
+    'cmd.project.review.activateDocxReviewPreviewSession',
+    'cmd.project.review.applyExactTextChangesBatch',
+  ]) {
+    assert.equal(profileSource.includes(commandId), true, commandId);
+  }
+});
+
+test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near matches stay profile-denied', () => {
+  const source = read('src/main.js');
+  const survivorIds = [
+    'cmd.project.review.exportDocxReviewPacket',
+    'cmd.project.review.activateDocxReviewPreviewSession',
+    'cmd.project.review.applyExactTextChangesBatch',
+  ];
+  const allowlistStart = source.indexOf('const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([');
+  const allowlistEnd = source.indexOf(']);', allowlistStart);
+  assert.notEqual(allowlistStart, -1);
+  assert.notEqual(allowlistEnd, -1);
+  const allowlistSection = source.slice(allowlistStart, allowlistEnd);
+
+  const handlersStart = source.indexOf('const MENU_COMMAND_HANDLERS = Object.freeze({');
+  const handlersEnd = source.indexOf('function dispatchMenuCommand(commandId, payload = {}, options = {}) {', handlersStart);
+  assert.notEqual(handlersStart, -1);
+  assert.notEqual(handlersEnd, -1);
+  const handlersSection = source.slice(handlersStart, handlersEnd);
+
+  for (const commandId of survivorIds) {
+    assert.equal(allowlistSection.includes(`'${commandId}'`), true, `allowlist:${commandId}`);
+    assert.equal(handlersSection.includes(`'${commandId}':`), true, `handler:${commandId}`);
+  }
+
+  const active = profile.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
+  for (const commandId of [
+    'cmd.project.review.exportDocxReviewPacket.v2',
+    'cmd.project.review.activateDocxReviewPreviewSession.extra',
+    'cmd.project.review.applyExactTextChangesBatchAll',
+    'cmd.project.review.applyExactTextChange',
+    'cmd.project.review.exportLocalPacket',
+    'cmd.project.review.openDocxReviewPreviewSession',
+    'cmd.project.review.applyFullManuscriptExactTextReturn',
+    'cmd.project.plan.switchMode',
+  ]) {
+    const decision = profile.evaluateWriterLocalCommandAccess({ profile: active, commandId });
+    assert.equal(decision.allowed, false, commandId);
+    assert.equal(decision.reason, profile.WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED, commandId);
+  }
 });
 
 test('WP307 flags projection removes optional controls from keyboard and accessibility paths', () => {

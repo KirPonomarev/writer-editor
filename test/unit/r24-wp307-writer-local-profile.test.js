@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const {
   WRITER_LOCAL_PROFILE_ID,
   WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+  WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS,
   OPTIONAL_PRODUCT_DOMAINS,
   OPTIONAL_QUERY_IDS,
   createWriterLocalProfileProjection,
@@ -39,7 +40,7 @@ test('WP307 activates WRITER_LOCAL_V1 only for an exact packaged macOS runtime',
   }
 });
 
-test('WP307 denies every optional product domain and Review command at dispatch', () => {
+test('WP307 denies optional product domains and non-survivor Review commands at dispatch', () => {
   const profile = createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
   for (const domain of OPTIONAL_PRODUCT_DOMAINS) {
     const commandId = `fixture.${domain}.command`;
@@ -57,6 +58,22 @@ test('WP307 denies every optional product domain and Review command at dispatch'
   }).allowed, false);
   assert.equal(evaluateWriterLocalCommandAccess({
     profile,
+    commandId: 'cmd.project.review.exportLocalPacket',
+  }).allowed, false);
+  assert.equal(evaluateWriterLocalCommandAccess({
+    profile,
+    commandId: 'cmd.project.review.openDocxReviewPreviewSession',
+  }).allowed, false);
+  assert.equal(evaluateWriterLocalCommandAccess({
+    profile,
+    commandId: 'cmd.project.review.applyFullManuscriptExactTextReturn',
+  }).allowed, false);
+  assert.equal(evaluateWriterLocalCommandAccess({
+    profile,
+    commandId: 'cmd.project.review.clearSession',
+  }).allowed, false);
+  assert.equal(evaluateWriterLocalCommandAccess({
+    profile,
     commandId: 'cmd.project.plan.switchMode',
   }).allowed, false);
   assert.equal(evaluateWriterLocalCommandAccess({
@@ -67,6 +84,21 @@ test('WP307 denies every optional product domain and Review command at dispatch'
     profile: createWriterLocalProfileProjection({ isPackaged: false, platform: 'darwin' }),
     commandId: 'cmd.project.review.applyExactTextChange',
   }).allowed, true);
+});
+
+test('WP307 admits only owner-authorized DOCX review roundtrip survivors in packaged local profile', () => {
+  const profile = createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
+  assert.deepEqual(WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS, [
+    'cmd.project.review.exportDocxReviewPacket',
+    'cmd.project.review.activateDocxReviewPreviewSession',
+    'cmd.project.review.applyExactTextChangesBatch',
+  ]);
+  for (const commandId of WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS) {
+    const decision = evaluateWriterLocalCommandAccess({ profile, commandId });
+    assert.equal(decision.allowed, true, commandId);
+    assert.equal(decision.reason, '');
+    assert.equal(decision.profileId, WRITER_LOCAL_PROFILE_ID);
+  }
 });
 
 test('WP307 denies optional queries while Writer, local history and interchange survive', () => {

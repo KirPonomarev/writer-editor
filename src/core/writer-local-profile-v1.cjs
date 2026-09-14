@@ -3,6 +3,12 @@
 const WRITER_LOCAL_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v1';
 const WRITER_LOCAL_PROFILE_ID = 'WRITER_LOCAL_V1';
 const WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED = 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED';
+const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS = Object.freeze([
+  'cmd.project.review.exportDocxReviewPacket',
+  'cmd.project.review.activateDocxReviewPreviewSession',
+  'cmd.project.review.applyExactTextChangesBatch',
+]);
+const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_ID_SET = new Set(WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS);
 
 const OPTIONAL_PRODUCT_DOMAINS = Object.freeze([
   'atlas',
@@ -79,6 +85,9 @@ function isActiveWriterLocalProfile(profile) {
 function isOptionalWriterLocalCommand(commandId, productCommandRecord = null) {
   const normalizedCommandId = normalizeIdentity(commandId);
   if (!normalizedCommandId) return false;
+  if (WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_ID_SET.has(normalizedCommandId)) {
+    return false;
+  }
   if (OPTIONAL_COMMAND_PREFIXES.some((prefix) => normalizedCommandId.startsWith(prefix))) {
     return true;
   }
@@ -112,6 +121,7 @@ module.exports = Object.freeze({
   WRITER_LOCAL_PROFILE_SCHEMA_VERSION,
   WRITER_LOCAL_PROFILE_ID,
   WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED,
+  WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS,
   OPTIONAL_PRODUCT_DOMAINS,
   OPTIONAL_COMMAND_PREFIXES,
   OPTIONAL_QUERY_IDS,
