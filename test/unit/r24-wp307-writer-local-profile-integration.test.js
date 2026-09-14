@@ -82,11 +82,14 @@ test('WP307 preserves its historical wording hash and follows admitted append-on
   const wp806Successor = JSON.parse(wp806SuccessorBytes);
   const commandPaletteSuccessorBytes = read('docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json');
   const commandPaletteSuccessor = JSON.parse(commandPaletteSuccessorBytes);
+  const textSingleSceneSuccessorBytes = read('docs/OPS/R24/CORRECTIVE/TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json');
+  const textSingleSceneSuccessor = JSON.parse(textSingleSceneSuccessorBytes);
   const wp307Successor = JSON.parse(wp307SuccessorBytes);
   const wp503Successor = JSON.parse(wp503SuccessorBytes);
   const surface = registry.wordingSurfaces.find((entry) => entry.path === 'src/renderer/editor.js');
   assert.ok(surface);
   const digest = `sha256:${crypto.createHash('sha256').update(editor).digest('hex')}`;
+  const bundleDigest = `sha256:${crypto.createHash('sha256').update(read('src/renderer/editor.bundle.js')).digest('hex')}`;
   assert.equal(surface.sha256, 'sha256:5d443aca3c441c831ee9a47a3e7445a836730d0c602cf95136afc76ce47af320');
   assert.equal(wp307Successor.historicalRegistry.sha256, crypto.createHash('sha256').update(read('docs/OPS/RTK/YALKEN_INTEROP_TERMINAL_CLAIM_REGISTRY_V1.json')).digest('hex'));
   assert.equal(wp307Successor.historicalRegistry.editorSourceSha256, surface.sha256);
@@ -120,13 +123,26 @@ test('WP307 preserves its historical wording hash and follows admitted append-on
   assert.equal(commandPalettePredecessorEditor.sha256, wp806Editor.sha256);
   assert.equal(commandPaletteSuccessor.taskId, 'CORE-A4-YALKEN-PHASE02-RENDERER-COMMAND-PALETTE-VISIBILITY-001');
   assert.deepEqual(commandPaletteSuccessor.surfaceOverrides.map((entry) => entry.path), ['src/renderer/editor.js']);
-  assert.equal(commandPaletteEditor.sha256, digest);
+  assert.equal(commandPaletteEditor.sha256, 'sha256:c6fe78e4fccd35cd9c75daedc026632f11cf2006ad0bddd0c7902b7d4a5052e6');
   assert.equal(commandPaletteSuccessor.generatedRuntimeArtifact.path, 'src/renderer/editor.bundle.js');
   assert.match(commandPaletteSuccessor.generatedRuntimeArtifact.sha256, /^sha256:[a-f0-9]{64}$/u);
   assert.equal(commandPaletteSuccessor.authority.nonClaims.includes('NO_WP806_HISTORICAL_REWRITE'), true);
   assert.equal(commandPaletteSuccessor.authority.nonClaims.includes('NO_DOCX_COMMAND_BRIDGE_CHANGE'), true);
   assert.equal(commandPaletteSuccessor.authority.nonClaims.includes('NO_IMPORT_EXPORT_CHANGE'), true);
   assert.equal(commandPaletteSuccessor.authority.nonClaims.includes('NO_PORTABILITY_LAB_CHANGE'), true);
+  assert.equal(textSingleSceneSuccessor.schemaVersion, 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1');
+  assert.equal(textSingleSceneSuccessor.status, 'CURRENT_APPEND_ONLY_SUCCESSOR');
+  assert.equal(textSingleSceneSuccessor.taskId, 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR');
+  assert.equal(textSingleSceneSuccessor.predecessorSuccessor.path, 'docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json');
+  assert.equal(textSingleSceneSuccessor.predecessorSuccessor.sha256, crypto.createHash('sha256').update(commandPaletteSuccessorBytes).digest('hex'));
+  const textSingleScenePredecessorEditor = textSingleSceneSuccessor.predecessorSurfaceOverrides.find((entry) => entry.path === 'src/renderer/editor.js');
+  const textSingleSceneEditor = textSingleSceneSuccessor.surfaceOverrides.find((entry) => entry.path === 'src/renderer/editor.js');
+  assert.equal(textSingleScenePredecessorEditor.sha256, commandPaletteEditor.sha256);
+  assert.deepEqual(textSingleSceneSuccessor.surfaceOverrides.map((entry) => entry.path), ['src/renderer/editor.js']);
+  assert.equal(textSingleSceneEditor.sha256, digest);
+  assert.equal(textSingleSceneSuccessor.generatedRuntimeArtifact.path, 'src/renderer/editor.bundle.js');
+  assert.equal(textSingleSceneSuccessor.generatedRuntimeArtifact.sha256, bundleDigest);
+  assert.equal(textSingleSceneSuccessor.authority.nonClaims.includes('no cell acceptance'), true);
   assert.equal(wp307Successor.programDone, false);
   assert.equal(wp503Successor.programDone, false);
   assert.equal(wp504Successor.programDone, false);
@@ -136,6 +152,7 @@ test('WP307 preserves its historical wording hash and follows admitted append-on
   assert.equal(wp607Successor.programDone, false);
   assert.equal(wp806Successor.programDone, false);
   assert.equal(commandPaletteSuccessor.programDone, false);
+  assert.equal(textSingleSceneSuccessor.programDone, false);
 });
 
 test('WP307 profile contract carries no persistence, network or external authority', () => {

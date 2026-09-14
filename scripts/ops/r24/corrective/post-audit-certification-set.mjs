@@ -870,6 +870,46 @@ export const R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION = Object.freeze({
     'test/unit/sector-m-design-os-command-palette-visibility.test.js',
   ].sort()),
 });
+export const TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION = Object.freeze({
+  baseSha: '152c3edb56e303790f78fad6949c1adf20581bf5',
+  baseTree: 'e5e1d066b400fb61b12158ada42a7f748d5759fe',
+  taskId: 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR',
+  successorPath: 'docs/OPS/R24/CORRECTIVE/TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  approvalsPath: 'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  postAuditTestPath: 'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  inventoryFileDenominator: 1471,
+  approvedBy: 'owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14',
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/CORRECTIVE/TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'src/export/docx/docxMinExportHandler.js',
+    'src/io/revisionBridge/index.mjs',
+    'src/main.js',
+    'src/renderer/commands/projectCommands.mjs',
+    'src/renderer/editor.bundle.js',
+    'src/renderer/editor.js',
+    'src/utils/docxImportSafeCreate.js',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+    'test/contracts/revision-bridge-docx-content-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js',
+    'test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js',
+    'test/contracts/rtk-release01-terminal-claims.contract.test.js',
+    'test/contracts/rtk-generic01-create-only-import.contract.test.js',
+    'test/unit/docx-import-preview-ui-flow.test.js',
+    'test/unit/docx-import-safe-create.test.js',
+    'test/unit/docx-min-export-handler.test.js',
+    'test/unit/r24-wp307-writer-local-profile-integration.test.js',
+    'test/unit/sector-m-command-kernel-tree-document-adoption.test.js',
+    'test/unit/sector-m-preload-workspace-query-bridge.test.js',
+  ].sort()),
+});
 export const R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION = Object.freeze({
   baseSha: '22d02b7dee226eaa35756705901fcbaf690c40f3',
   baseTree: 'f360771818751680bece9ec7734eeafa9561f8c2',
@@ -5332,6 +5372,14 @@ function resolveR24CommandPaletteVisibleCommandsCandidate(git, requested, e) {
   fail('E_COMMAND_PALETTE_VISIBLE_COMMANDS_EXACT_ADMITTED_DELTA');
 }
 
+function resolveTextSingleSceneC1SourceRuntimeCandidate(git, requested, e) {
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  if (exact(requested)) return requested;
+  const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+  for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
+  fail('E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA');
+}
+
 function resolveR24X01IdempotentContractRecoveryCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
@@ -5696,6 +5744,75 @@ export function verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ 
     generatedBundleDigest: artifacts.get(e.bundlePath).digest, graphIncrement: 0,
     evidenceScope: 'EXACT_CLOSED_COMMAND_PALETTE_CANDIDATE_BYTES_NOT_RUNTIME_CARRIER_OR_RELEASE_CLAIM',
     programDone: false, productionReleaseReady: false, packagedUiRouteClaim: false,
+  };
+}
+
+export function verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_BASE_ANCESTRY'); }
+  const candidate = resolveTextSingleSceneC1SourceRuntimeCandidate(git, requested, e);
+  const changed = gitText(git, ['diff', '--name-only', `${e.baseSha}..${candidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed) === JSON.stringify(e.admittedPaths), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_IDENTITY');
+  const readText = relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_ARTIFACT_MISSING', relative); }
+    assert(bytes.at(-1) === 0x0a, 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_CANONICAL_LF', relative);
+    return { bytes, text: bytes.toString('utf8'), digest: h(bytes) };
+  };
+  const readJson = relative => {
+    const file = readText(relative);
+    return { ...file, value: JSON.parse(file.text) };
+  };
+  const artifacts = new Map(e.admittedPaths.map(relative => [relative, readText(relative)]));
+  const inventory = readJson(e.inventoryPath);
+  const approvals = readJson(e.approvalsPath);
+  const successor = readJson(e.successorPath);
+  assert(inventory.value.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.value.totals?.all === e.inventoryFileDenominator && inventory.value.totals?.requiredSkips === 0 && inventory.value.totals?.unexplainedSkips === 0, 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_INVENTORY');
+  for (const relative of e.admittedPaths.filter(item => item.endsWith('.test.js') || item.endsWith('.test.mjs'))) {
+    const entry = inventory.value.entries.find(item => item.path === relative);
+    assert(entry?.sha256 === artifacts.get(relative)?.digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_INVENTORY_DIGEST', relative);
+  }
+  assert(approvals.value.version === 'v1.0' && Array.isArray(approvals.value.approvals), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_APPROVALS');
+  for (const relative of e.admittedPaths.filter(item => item !== e.approvalsPath)) {
+    const digest = artifacts.get(relative)?.digest;
+    const approved = approvals.value.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy));
+    assert(approved, 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_APPROVAL_DIGEST', relative);
+  }
+  assert(successor.value.schemaVersion === 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1' && successor.value.taskId === e.taskId && successor.value.programDone === false, 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SUCCESSOR');
+  assert(successor.value.evaluationBase?.sha === e.baseSha && successor.value.authority?.nonClaims?.includes('no cell acceptance') && successor.value.authority?.nonClaims?.includes('no program done'), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SUCCESSOR_NONCLAIMS');
+  const exportHandler = artifacts.get('src/export/docx/docxMinExportHandler.js').text;
+  const revisionBridge = artifacts.get('src/io/revisionBridge/index.mjs').text;
+  const main = artifacts.get('src/main.js').text;
+  const safeCreate = artifacts.get('src/utils/docxImportSafeCreate.js').text;
+  const projectCommands = artifacts.get('src/renderer/commands/projectCommands.mjs').text;
+  const editor = artifacts.get('src/renderer/editor.js').text;
+  const uiFlowTest = artifacts.get('test/unit/docx-import-preview-ui-flow.test.js').text;
+  const safeCreateTest = artifacts.get('test/unit/docx-import-safe-create.test.js').text;
+  const minExportTest = artifacts.get('test/unit/docx-min-export-handler.test.js').text;
+  const previewPlanTest = artifacts.get('test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js').text;
+  for (const token of ['doc: isPlainObjectValue(source.doc) ? source.doc : null', 'assert.deepEqual(calls.builderSnapshot, canonicalSnapshot)']) assert((token.startsWith('assert.') ? minExportTest : exportHandler).includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPORT_TOKEN', token);
+  for (const token of ["entryId === '_rels/.rels'", ".join('\\n')", 'RELATIONSHIP_DIAGNOSTICS_ONLY']) assert(revisionBridge.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PREVIEW_TOKEN', token);
+  for (const token of ['return { ok: true, value: resolveCollabScopeLocalState() };', 'result.ok === true && result.value === true', 'copyDocxImportSafeCreatePublicSceneLocator']) assert(main.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_MAIN_TOKEN', token);
+  for (const token of ['buildDocxImportPublicSceneLocator', 'buildDeterministicProjectTreeNodeId', 'publicSceneLocators', 'publicSceneLocator']) assert(safeCreate.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SAFE_CREATE_TOKEN', token);
+  for (const token of ['normalizeDocxImportPublicSceneLocator', "bindingKey.slice('file:'.length) !== relativeFile", 'publicSceneLocators']) assert(projectCommands.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_COMMAND_TOKEN', token);
+  for (const token of ['getDocxImportPublicSceneLocatorsFromValue', "source: 'public-scene-locator'", 'expectedByNodeId', 'openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue)']) assert(editor.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EDITOR_TOKEN', token);
+  for (const token of ['publicSceneLocators: [publicLocator, publicLocator]', "nodeId: 'tree-node-22222222222222222222222222222222'", "'Alpha\\nBravo'", 'Alpha\\n\\nBravo']) assert((token.includes('tree-node') || token.includes('publicLocator')) ? uiFlowTest.includes(token) : (safeCreateTest.includes(token) || previewPlanTest.includes(token)), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_TEST_TOKEN', token);
+  for (const token of ['TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION', 'verifyTextSingleSceneC1SourceRuntimePostEvaluationException', 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA']) assert(artifacts.get(e.verifierPath).text.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_VERIFIER_TOKEN', token);
+  for (const token of ['TEXT SINGLE_SCENE C1 source-runtime exception accepts exact repair delta', 'TEXT SINGLE_SCENE C1 source-runtime exception rejects an unadmitted future path', 'TEXT SINGLE_SCENE C1 source-runtime exception rejects missing public locator token']) assert(artifacts.get(e.postAuditTestPath).text.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_POST_AUDIT_TEST_TOKEN', token);
+  return {
+    schemaVersion: 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree,
+    currentCandidateSha: requested, currentCandidateTree: requestedTree, admittedPaths: e.admittedPaths,
+    changedPaths: changed, admittedPathDenominator: e.admittedPaths.length, changedPathDenominator: changed.length,
+    inventoryDigest: inventory.digest, approvalsDigest: approvals.digest, successorDigest: successor.digest,
+    artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    defectRepairs: ['DOCX_MIN_EXPORT_DOC_PRESERVED', 'COLLAB_SCOPE_LOCAL_QUERY_ENVELOPE', 'DOCX_IMPORT_PARAGRAPH_VECTOR_NO_SYNTHETIC_EXPANSION', 'PACKAGE_ROOT_RELS_DIAGNOSTIC_NOT_CONTENT_LOSS', 'SAFE_CREATE_PATHLESS_PUBLIC_TREE_LOCATOR'],
+    supportedDenominatorPromotion: false, wordPhysicalRouteClaim: false, googleNativeRouteClaim: false,
+    programDone: false, productionReleaseReady: false, graphIncrement: 0,
   };
 }
 
@@ -7175,6 +7292,16 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const r24CommandPaletteVisibleCommandsException = r24CommandPaletteVisibleCommandsEnabled ? verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (r24CommandPaletteVisibleCommandsException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let textSingleSceneC1SourceRuntimeEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.successorPath);
+      textSingleSceneC1SourceRuntimeEnabled = true;
+    } catch {}
+  }
+  const textSingleSceneC1SourceRuntimeException = textSingleSceneC1SourceRuntimeEnabled ? verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (textSingleSceneC1SourceRuntimeException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   let r24X01IdempotentContractRecoveryEnabled = false;
   if (allowAuditCycle2Admission && resolvedCandidate !== R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha) {
     try {
@@ -7216,6 +7343,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;
+  verificationResult.textSingleSceneC1SourceRuntimePostEvaluationException = textSingleSceneC1SourceRuntimeException;
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
   verificationResult.ePlanPredecessorPostEvaluationException = ePlanPredecessorException;

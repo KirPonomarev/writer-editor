@@ -19705,6 +19705,54 @@ function sanitizeDocxImportSceneLabelPart(value) {
   return safe.slice(0, 80) || 'Untitled';
 }
 
+function normalizeDocxImportPublicSceneLocator(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const nodeId = typeof value.nodeId === 'string' ? value.nodeId.trim() : '';
+  const expectedLabel = typeof value.label === 'string' ? value.label.trim() : '';
+  const bindingKey = typeof value.bindingKey === 'string' ? value.bindingKey.trim().replace(/\\/gu, '/') : '';
+  const relativeFile = typeof value.relativeFile === 'string' ? value.relativeFile.trim().replace(/\\/gu, '/') : '';
+  if (
+    !/^tree-node-[a-f0-9]{32}$/u.test(nodeId)
+    || !expectedLabel
+    || value.kind !== 'scene'
+    || !bindingKey.startsWith('file:')
+    || bindingKey.slice('file:'.length) !== relativeFile
+    || !relativeFile.startsWith('roman/Imported/')
+    || !relativeFile.toLowerCase().endsWith('.txt')
+    || relativeFile.split('/').some((segment) => !segment || segment === '.' || segment === '..')
+  ) {
+    return null;
+  }
+  return {
+    nodeId,
+    expectedLabel,
+    source: 'public-scene-locator',
+  };
+}
+
+function getDocxImportPublicSceneLocatorsFromValue(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+  const candidates = [];
+  candidates.push(value.publicSceneLocator);
+  if (Array.isArray(value.publicSceneLocators)) candidates.push(...value.publicSceneLocators);
+  const receipt = value.receipt && typeof value.receipt === 'object' && !Array.isArray(value.receipt)
+    ? value.receipt
+    : null;
+  if (receipt) {
+    candidates.push(receipt.publicSceneLocator);
+    if (Array.isArray(receipt.publicSceneLocators)) candidates.push(...receipt.publicSceneLocators);
+  }
+
+  const seen = new Set();
+  return candidates
+    .map(normalizeDocxImportPublicSceneLocator)
+    .filter((locator) => {
+      if (!locator || seen.has(locator.nodeId)) return false;
+      seen.add(locator.nodeId);
+      return true;
+    });
+}
+
 function getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds) {
   const createdIds = normalizeDocxImportCreatedSceneIds(createdSceneIds);
   if (createdIds.length === 0) return [];
@@ -19736,6 +19784,38 @@ function getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds) {
 
 function findDocxImportSceneNode(root, locators) {
   if (!root || !Array.isArray(locators) || locators.length === 0) return null;
+  const publicLocators = locators.filter((item) => (
+    item
+    && item.source === 'public-scene-locator'
+    && typeof item.nodeId === 'string'
+    && item.nodeId
+  ));
+  if (publicLocators.length > 0) {
+    const expectedByNodeId = new Map(publicLocators.map((item) => [item.nodeId, item.expectedLabel || '']));
+    const matches = [];
+    const visit = (node) => {
+      if (!node || typeof node !== 'object' || Array.isArray(node)) return;
+      const kind = getEffectiveDocumentKind(node);
+      if (kind === 'scene') {
+        const nodeId = typeof node.nodeId === 'string'
+          ? node.nodeId.trim()
+          : (typeof node.id === 'string' ? node.id.trim() : '');
+        const label = typeof node.label === 'string'
+          ? node.label.trim()
+          : (typeof node.name === 'string' ? node.name.trim() : '');
+        if (expectedByNodeId.has(nodeId)) {
+          const expectedLabel = expectedByNodeId.get(nodeId);
+          if (!expectedLabel || label === expectedLabel) matches.push(node);
+        }
+      }
+      if (Array.isArray(node.children)) {
+        node.children.forEach(visit);
+      }
+    };
+    visit(root);
+    return matches.length === 1 ? matches[0] : null;
+  }
+
   const sceneIds = new Set(locators.map((item) => item.sceneId).filter(Boolean));
   const expectedLabels = new Set(locators.map((item) => item.expectedLabel).filter(Boolean));
   const matches = [];
@@ -19770,8 +19850,11 @@ function findDocxImportSceneNode(root, locators) {
   return matches.length === 1 ? matches[0] : null;
 }
 
-async function openImportedDocxSceneAfterAccept(plan, createdSceneIds) {
-  const locators = getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds);
+async function openImportedDocxSceneAfterAccept(plan, createdSceneIds, acceptedValue = null) {
+  const publicLocators = getDocxImportPublicSceneLocatorsFromValue(acceptedValue);
+  const locators = publicLocators.length > 0
+    ? publicLocators
+    : getDocxImportSceneLocatorsFromPlan(plan, createdSceneIds);
   if (locators.length === 0) {
     return { opened: false, reason: 'no-created-scene-locator' };
   }
@@ -19982,7 +20065,7 @@ async function confirmDocxImportPreviewAndRun() {
     ? resultValue.visibleCreatedSceneIds
     : (Array.isArray(resultValue.createdSceneIds) ? resultValue.createdSceneIds : []);
   await loadTree();
-  const openResult = await openImportedDocxSceneAfterAccept(plan, createdSceneIds);
+  const openResult = await openImportedDocxSceneAfterAccept(plan, createdSceneIds, resultValue);
   const openSuffix = openResult.opened
     ? '; opened imported scene'
     : (createdSceneIds.length > 0 ? `; ${openResult.reason}` : '');
@@ -20071,7 +20154,14 @@ function applyCollabGate() {
 async function initializeCollabScopeLocal() {
   try {
     if (window.electronAPI && typeof window.electronAPI.invokeWorkspaceQueryBridge === 'function') {
-      collabScopeLocal = (await invokeWorkspaceQueryBridge(COLLAB_SCOPE_LOCAL_QUERY_ID)) === true;
+      const result = await invokeWorkspaceQueryBridge(COLLAB_SCOPE_LOCAL_QUERY_ID);
+      collabScopeLocal = Boolean(
+        result
+        && typeof result === 'object'
+        && !Array.isArray(result)
+        && result.ok === true
+        && result.value === true,
+      );
     } else {
       collabScopeLocal = localStorage.getItem('COLLAB_SCOPE_LOCAL') === 'true';
     }

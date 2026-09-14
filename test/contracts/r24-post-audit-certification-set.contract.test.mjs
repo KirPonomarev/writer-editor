@@ -62,11 +62,13 @@ import {
   R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,
   R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION,
   R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION,
+  TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION,
   R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION,
   R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION,
   verifyCurrentClosureSelectorPostEvaluationException,
   verifyDocxNotificationOutcomePostEvaluationException,
   verifyR24CommandPaletteVisibleCommandsPostEvaluationException,
+  verifyTextSingleSceneC1SourceRuntimePostEvaluationException,
   verifyR24X01IdempotentContractRecoveryPostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
@@ -2041,6 +2043,56 @@ test('R24 command palette visible_commands admission rejects mutated closed cand
     return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
   };
   assert.throws(() => verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_COMMAND_PALETTE_VISIBLE_COMMANDS_ARTIFACT_DIGEST/);
+});
+
+test('TEXT SINGLE_SCENE C1 source-runtime exception accepts exact repair delta', () => {
+  const result = verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: 'HEAD' });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.baseSha, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseSha);
+  assert.equal(result.baseTree, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.baseTree);
+  assert.deepEqual(result.changedPaths, TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION.admittedPaths);
+  assert.equal(result.admittedPathDenominator, 26);
+  assert.deepEqual(result.defectRepairs, [
+    'DOCX_MIN_EXPORT_DOC_PRESERVED',
+    'COLLAB_SCOPE_LOCAL_QUERY_ENVELOPE',
+    'DOCX_IMPORT_PARAGRAPH_VECTOR_NO_SYNTHETIC_EXPANSION',
+    'PACKAGE_ROOT_RELS_DIAGNOSTIC_NOT_CONTENT_LOSS',
+    'SAFE_CREATE_PATHLESS_PUBLIC_TREE_LOCATOR',
+  ]);
+  assert.equal(result.supportedDenominatorPromotion, false);
+  assert.equal(result.wordPhysicalRouteClaim, false);
+  assert.equal(result.programDone, false);
+});
+test('TEXT SINGLE_SCENE C1 source-runtime exception rejects an unadmitted future path', () => {
+  const e = TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'diff' && typeof args[2] === 'string' && args[2].startsWith(`${e.baseSha}..`)) {
+      const value = [...e.admittedPaths, 'README.md'].sort().join('\n') + '\n';
+      return options.encoding === 'utf8' ? value : Buffer.from(value);
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA/);
+});
+test('TEXT SINGLE_SCENE C1 source-runtime exception rejects missing public locator token', () => {
+  const e = TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION;
+  const targetPath = 'src/utils/docxImportSafeCreate.js';
+  const mutated = Buffer.from(objectFromCommit('HEAD', targetPath).toString('utf8').replaceAll('publicSceneLocators', 'publicLocatorSet'));
+  const mutatedDigest = h(mutated);
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${targetPath}`)) {
+      return options.encoding === 'utf8' ? mutated.toString('utf8') : mutated;
+    }
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === targetPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = mutatedDigest;
+      const bytes = canonicalBytes(approvals);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SAFE_CREATE_TOKEN/);
 });
 
 function currentClosureSelectorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {

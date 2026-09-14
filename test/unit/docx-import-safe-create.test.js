@@ -176,6 +176,21 @@ function expectedScenePath(romanRoot, plan, projectId = '') {
   );
 }
 
+function expectedPublicSceneLocator(projectRoot, scenePath, projectId) {
+  const relativeFile = path.relative(projectRoot, scenePath).split(path.sep).join('/');
+  const bindingKey = `file:${relativeFile}`;
+  const digest = crypto.createHash('sha256')
+    .update(`${projectId}\u0000${bindingKey}`, 'utf8')
+    .digest('hex');
+  return {
+    nodeId: `tree-node-${digest.slice(0, 32)}`,
+    label: path.posix.basename(relativeFile, '.txt'),
+    bindingKey,
+    relativeFile,
+    kind: 'scene',
+  };
+}
+
 function listFilesRecursive(root) {
   if (!fs.existsSync(root)) return [];
   const out = [];
@@ -238,11 +253,12 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
   );
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
-  assert.equal(fs.readFileSync(scenePath, 'utf8'), 'Alpha\n\nBravo');
+  assert.equal(fs.readFileSync(scenePath, 'utf8'), 'Alpha\nBravo');
   assert.equal(fs.existsSync(path.join(projectRoot, '.flow-batch')), true);
   assert.deepEqual(fs.readdirSync(path.join(projectRoot, '.flow-batch')), []);
 
   const receipt = result.value.receipt;
+  const publicSceneLocator = expectedPublicSceneLocator(projectRoot, scenePath, 'project-docx-safe-create');
   assert.equal(receipt.schemaVersion, DOCX_IMPORT_RECEIPT_V2_SCHEMA);
   assert.equal(receipt.reason, DOCX_IMPORT_SAFE_CREATE_READY_REASON);
   assert.equal(receipt.projectId, 'project-docx-safe-create');
@@ -252,8 +268,15 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
   assert.match(receipt.outputHash, /^[a-f0-9]{64}$/u);
   assert.deepEqual(receipt.createdSceneIds, [plan.candidateCreatePlan.entries[0].sceneId]);
   assert.equal(receipt.createdScenes.length, 1);
-  assert.equal(receipt.createdScenes[0].bytesWritten, Buffer.byteLength('Alpha\n\nBravo', 'utf8'));
+  assert.equal(receipt.createdScenes[0].bytesWritten, Buffer.byteLength('Alpha\nBravo', 'utf8'));
   assert.match(receipt.createdScenes[0].outputHash, /^[a-f0-9]{64}$/u);
+  assert.deepEqual(result.value.publicSceneLocator, publicSceneLocator);
+  assert.deepEqual(result.value.publicSceneLocators, [publicSceneLocator]);
+  assert.deepEqual(receipt.publicSceneLocator, publicSceneLocator);
+  assert.deepEqual(receipt.publicSceneLocators, [publicSceneLocator]);
+  assert.deepEqual(receipt.createdScenes[0].publicSceneLocator, publicSceneLocator);
+  assert.equal(JSON.stringify(result.value.publicSceneLocator).includes(projectRoot), false);
+  assert.equal(JSON.stringify(receipt.publicSceneLocator).includes(projectRoot), false);
   assert.equal(receipt.lossReportSummary.itemCount, plan.lossReport.itemCount);
 
   const receiptKeys = collectKeys(receipt);
@@ -265,18 +288,27 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
 test('DOCX import safe create: reapply returns durable idempotent receipt without mutation', async () => {
   const projectRoot = makeProjectRoot('docx-import-safe-create-reapply-');
   const romanRoot = path.join(projectRoot, 'roman');
+  const projectId = 'project-docx-safe-create-reapply';
   const plan = admitPreviewPlan(await buildPreviewPlan(['First']));
-  const scenePath = expectedScenePath(romanRoot, plan);
+  const scenePath = expectedScenePath(romanRoot, plan, projectId);
 
-  const first = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, { projectRoot, romanRoot });
+  const first = await applyDocxImportSafeCreate(
+    { docxImportPreviewPlan: plan },
+    { projectRoot, romanRoot, projectId },
+  );
   assert.equal(first.ok, true);
   assert.equal(fs.readFileSync(scenePath, 'utf8'), 'First');
 
-  const second = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, { projectRoot, romanRoot });
+  const second = await applyDocxImportSafeCreate(
+    { docxImportPreviewPlan: plan },
+    { projectRoot, romanRoot, projectId },
+  );
   assert.equal(second.ok, true);
   assert.equal(second.value.created, false);
   assert.equal(second.value.idempotent, true);
   assert.equal(second.value.importOperationId, first.value.importOperationId);
+  assert.deepEqual(second.value.publicSceneLocator, first.value.publicSceneLocator);
+  assert.deepEqual(second.value.publicSceneLocators, first.value.publicSceneLocators);
   assert.deepEqual(second.value.receipt, first.value.receipt);
   assert.equal(fs.readFileSync(scenePath, 'utf8'), 'First');
 });

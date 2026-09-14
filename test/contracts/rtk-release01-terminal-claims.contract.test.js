@@ -62,6 +62,7 @@ const REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'YALKEN_INTEROP
 const WORDING_PREDECESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'WP805_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json');
 const WORDING_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json');
 const COMMAND_PALETTE_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json');
+const TEXT_SINGLE_SCENE_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json');
 const WORD_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'WORD_BUILD_PROFILE_REGISTRY_V1.json');
 const GOOGLE_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'GOOGLE_BUILD_PROFILE_REGISTRY_V1.json');
 const CAPABILITY_MATRIX_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'CAPABILITY_MATRIX.json');
@@ -254,6 +255,7 @@ function compileRelease01CurrentWordingRegistry({
   historicalRegistry,
   wp806SuccessorLoad = loadJsonWithBytes(WORDING_SUCCESSOR_PATH),
   commandPaletteSuccessorLoad = loadJsonWithBytes(COMMAND_PALETTE_SUCCESSOR_PATH),
+  textSingleSceneSuccessorLoad = loadJsonWithBytes(TEXT_SINGLE_SCENE_SUCCESSOR_PATH),
 } = {}) {
   const registry = clone(historicalRegistry);
   const wp805Digest = sha256RawFile(WORDING_PREDECESSOR_PATH);
@@ -306,6 +308,33 @@ function compileRelease01CurrentWordingRegistry({
   applySurfaceOverrides(
     registry,
     commandPalette.surfaceOverrides,
+    RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING
+  );
+
+  const textSingleScene = textSingleSceneSuccessorLoad.value;
+  if (textSingleScene.predecessorSuccessor?.path !== 'docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json'
+    || textSingleScene.predecessorSuccessor?.sha256 !== commandPaletteSuccessorLoad.digest) {
+    failSuccessorChain(
+      RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH,
+      'TEXT_SINGLE_SCENE must bind exactly to the preserved CORE_A4 successor bytes'
+    );
+  }
+  const commandPaletteEditor = (commandPalette.surfaceOverrides || []).find((entry) => entry.path === 'src/renderer/editor.js');
+  const textSingleScenePredecessorEditor = (textSingleScene.predecessorSurfaceOverrides || []).find((entry) => entry.path === 'src/renderer/editor.js');
+  if (!commandPaletteEditor || !textSingleScenePredecessorEditor || textSingleScenePredecessorEditor.sha256 !== commandPaletteEditor.sha256) {
+    failSuccessorChain(
+      RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_OVERRIDE_MISMATCH,
+      'TEXT_SINGLE_SCENE must preserve the CORE_A4 editor override as its predecessor surface'
+    );
+  }
+  assertExactSurfaceOverridePaths(
+    textSingleScene,
+    ['src/renderer/editor.js'],
+    RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING
+  );
+  applySurfaceOverrides(
+    registry,
+    textSingleScene.surfaceOverrides,
     RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING
   );
 
@@ -860,6 +889,21 @@ test('RELEASE01-14b-successor-chain-rejects-missing-CORE-A4-current-editor-overr
     historicalRegistry: loaded.registry,
     commandPaletteSuccessorLoad: { ...commandPaletteLoad, value: mutated },
   }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
+});
+
+test('RELEASE01-14c-successor-chain-rejects-broken-TEXT-SINGLE-SCENE-predecessor-hash', async () => {
+  const module = await loadModule();
+  const loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true, 'real terminal-claim registry must load before hostile chain test');
+
+  const textSingleSceneLoad = loadJsonWithBytes(TEXT_SINGLE_SCENE_SUCCESSOR_PATH);
+  const mutated = clone(textSingleSceneLoad.value);
+  mutated.predecessorSuccessor.sha256 = '0'.repeat(64);
+
+  assert.throws(() => compileRelease01CurrentWordingRegistry({
+    historicalRegistry: loaded.registry,
+    textSingleSceneSuccessorLoad: { ...textSingleSceneLoad, value: mutated },
+  }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH);
 });
 
 // ===========================================================================

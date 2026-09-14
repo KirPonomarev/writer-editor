@@ -382,6 +382,46 @@ function isReadyDocxImportPreviewPlan(docxImportPreviewPlan) {
   );
 }
 
+function normalizeDocxImportPublicSceneLocator(value) {
+  const locator = getObjectOrNull(value);
+  if (!locator) return null;
+  const nodeId = typeof locator.nodeId === 'string' ? locator.nodeId.trim() : '';
+  const label = typeof locator.label === 'string' ? locator.label.trim() : '';
+  const bindingKey = typeof locator.bindingKey === 'string' ? locator.bindingKey.trim().replace(/\\/gu, '/') : '';
+  const relativeFile = typeof locator.relativeFile === 'string' ? locator.relativeFile.trim().replace(/\\/gu, '/') : '';
+  if (
+    !/^tree-node-[a-f0-9]{32}$/u.test(nodeId)
+    || !label
+    || locator.kind !== 'scene'
+    || !bindingKey.startsWith('file:')
+    || bindingKey.slice('file:'.length) !== relativeFile
+    || !relativeFile.startsWith('roman/Imported/')
+    || !relativeFile.toLowerCase().endsWith('.txt')
+    || relativeFile.split('/').some((segment) => !segment || segment === '.' || segment === '..')
+  ) {
+    return null;
+  }
+  return {
+    nodeId,
+    label,
+    bindingKey,
+    relativeFile,
+    kind: 'scene',
+  };
+}
+
+function normalizeDocxImportPublicSceneLocators(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  return value
+    .map(normalizeDocxImportPublicSceneLocator)
+    .filter((locator) => {
+      if (!locator || seen.has(locator.nodeId)) return false;
+      seen.add(locator.nodeId);
+      return true;
+    });
+}
+
 function buildDocxImportPreviewValue(localFilePreview, fallbackPlan = null) {
   const preview = getObjectOrNull(localFilePreview);
   const plan = getObjectOrNull(preview?.docxImportPreviewPlan) || getObjectOrNull(fallbackPlan);
@@ -405,6 +445,10 @@ function buildDocxImportAcceptedValue(safeCreateResult, options = {}) {
     ? safeCreate.createdSceneIds.filter((sceneId) => typeof sceneId === 'string' && sceneId.length > 0)
     : [];
   const receipt = getObjectOrNull(safeCreate?.receipt);
+  const publicSceneLocators = normalizeDocxImportPublicSceneLocators(safeCreate?.publicSceneLocators);
+  const publicSceneLocator = normalizeDocxImportPublicSceneLocator(safeCreate?.publicSceneLocator)
+    || publicSceneLocators[0]
+    || null;
   return {
     imported: true,
     preview: Boolean(options.localFilePreview),
@@ -414,6 +458,10 @@ function buildDocxImportAcceptedValue(safeCreateResult, options = {}) {
     createdSceneIds,
     userVisible: createdSceneIds.length > 0,
     visibleCreatedSceneIds: createdSceneIds,
+    publicSceneLocators: publicSceneLocators.length > 0
+      ? publicSceneLocators
+      : (publicSceneLocator ? [publicSceneLocator] : []),
+    publicSceneLocator,
     receipt,
     lossReport: getDocxImportLossReport(options.docxImportPreviewPlan, receipt),
   };

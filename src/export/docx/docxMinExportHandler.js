@@ -38,6 +38,7 @@ function normalizeCanonicalExportSnapshot(payload) {
   return {
     content,
     plainText: typeof source.plainText === 'string' ? source.plainText : content,
+    doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
   };
 }

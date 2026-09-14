@@ -9357,10 +9357,16 @@ function canonicalizeDocxImportPreviewDiagnostic(diagnostic) {
   return copyDocxImportPreviewAllowedFields(diagnostic, [
     'code',
     'severity',
+    'category',
     'message',
+    'entryId',
     'sourcePart',
     'sourceCode',
     'tagName',
+    'paragraphIndex',
+    'numId',
+    'ilvl',
+    'listKey',
     'actual',
     'limit',
   ]);
@@ -10039,8 +10045,25 @@ function validateDocxImportSafeCreatePayload(payload = {}) {
   };
 }
 
+function copyDocxImportSafeCreatePublicSceneLocator(locator) {
+  if (!isPlainObjectValue(locator)) return null;
+  const out = {};
+  for (const key of ['nodeId', 'label', 'bindingKey', 'relativeFile', 'kind']) {
+    if (locator[key] !== undefined) out[key] = cloneJsonSafe(locator[key]);
+  }
+  return out;
+}
+
 function buildDocxImportSafeCreateCommandResult(payload, safeCreateResult) {
   const receipt = cloneJsonSafe(safeCreateResult.value.receipt);
+  const publicSceneLocators = Array.isArray(safeCreateResult.value.publicSceneLocators)
+    ? safeCreateResult.value.publicSceneLocators
+      .map(copyDocxImportSafeCreatePublicSceneLocator)
+      .filter(isPlainObjectValue)
+    : [];
+  const publicSceneLocator = isPlainObjectValue(safeCreateResult.value.publicSceneLocator)
+    ? copyDocxImportSafeCreatePublicSceneLocator(safeCreateResult.value.publicSceneLocator)
+    : (publicSceneLocators[0] || null);
   return {
     ok: true,
     requestId: normalizeDocxImportSafeCreateRequestId(payload?.requestId),
@@ -10056,6 +10079,8 @@ function buildDocxImportSafeCreateCommandResult(payload, safeCreateResult) {
     createdSceneIds: Array.isArray(safeCreateResult.value.createdSceneIds)
       ? cloneJsonSafe(safeCreateResult.value.createdSceneIds)
       : [],
+    publicSceneLocators,
+    publicSceneLocator,
     receipt,
   };
 }
@@ -26474,7 +26499,8 @@ guardedHandle('ui:request-autosave', async () => {
 
 guardedHandle('ui:get-collab-scope-local', async () => {
   if (getWriterLocalRuntimeProfile().active) return false;
-  return handleWorkspaceCollabScopeLocalQuery();
+  const result = handleWorkspaceCollabScopeLocalQuery();
+  return Boolean(result && result.ok === true && result.value === true);
 });
 
 guardedProtocolHandle('ui:command-bridge', async (_, request) => {
@@ -27076,7 +27102,7 @@ async function handleWorkspaceSelectedScenesTxtExportScopeQuery() {
 }
 
 function handleWorkspaceCollabScopeLocalQuery() {
-  return resolveCollabScopeLocalState();
+  return { ok: true, value: resolveCollabScopeLocalState() };
 }
 
 const REVIEW_SURFACE_DIRECT_KEYS = Object.freeze([

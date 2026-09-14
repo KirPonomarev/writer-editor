@@ -666,7 +666,7 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     'T04_PARAGRAPH_TWO',
     'T04_SECTION_ONE',
     'T04_SECTION_TWO',
-  ].join('\n\n'));
+  ].join('\n'));
   for (const expected of [
     ['DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY', 'lineBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'],
     ['DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY', 'pageBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE'],
@@ -920,7 +920,7 @@ test('DOCX content preview: table text is preserved while unsupported structures
   ]);
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
-  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'Before\n\nTable text\n\nAfter');
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'Before\nTable text\nAfter');
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
     && item.category === 'table'
@@ -972,7 +972,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'supported choice',
       bytes: cleanDocxZip(alternateContent('w14', choice)),
       paragraphs: ['P07_ALT_BEFORE', 'P07_CHOICE_TEXT_WORD14_BRANCH', 'P07_ALT_AFTER'],
-      imported: 'P07_ALT_BEFORE\n\nP07_CHOICE_TEXT_WORD14_BRANCH\n\nP07_ALT_AFTER',
+      imported: 'P07_ALT_BEFORE\nP07_CHOICE_TEXT_WORD14_BRANCH\nP07_ALT_AFTER',
       absentText: 'P07_FALLBACK_TEXT_STANDARD_BRANCH',
       lossCode: null,
     },
@@ -980,7 +980,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'second supported choice only',
       bytes: cleanDocxZip(multiChoiceAlternateContent),
       paragraphs: ['P07_ALT_BEFORE', 'P07_CHOICE_TEXT_WORD14_BRANCH', 'P07_ALT_AFTER'],
-      imported: 'P07_ALT_BEFORE\n\nP07_CHOICE_TEXT_WORD14_BRANCH\n\nP07_ALT_AFTER',
+      imported: 'P07_ALT_BEFORE\nP07_CHOICE_TEXT_WORD14_BRANCH\nP07_ALT_AFTER',
       absentText: 'P07_UNSUPPORTED_FIRST_BRANCH',
       lossCode: null,
     },
@@ -988,7 +988,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'unsupported choice with fallback',
       bytes: cleanDocxZip(alternateContent('w99', choice)),
       paragraphs: ['P07_ALT_BEFORE', 'P07_FALLBACK_TEXT_STANDARD_BRANCH', 'P07_ALT_AFTER'],
-      imported: 'P07_ALT_BEFORE\n\nP07_FALLBACK_TEXT_STANDARD_BRANCH\n\nP07_ALT_AFTER',
+      imported: 'P07_ALT_BEFORE\nP07_FALLBACK_TEXT_STANDARD_BRANCH\nP07_ALT_AFTER',
       absentText: 'P07_CHOICE_TEXT_WORD14_BRANCH',
       lossCode: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_FALLBACK_SELECTED',
     },
@@ -996,7 +996,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'unsupported choice without fallback',
       bytes: cleanDocxZip(alternateContent('w99', choice, null)),
       paragraphs: ['P07_ALT_BEFORE', 'P07_ALT_AFTER'],
-      imported: 'P07_ALT_BEFORE\n\nP07_ALT_AFTER',
+      imported: 'P07_ALT_BEFORE\nP07_ALT_AFTER',
       absentText: 'P07_CHOICE_TEXT_WORD14_BRANCH',
       lossCode: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_BRANCH_NOT_IMPORTED',
     },
@@ -1004,7 +1004,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'empty selected branch',
       bytes: cleanDocxZip(alternateContent('w14', '', fallback)),
       paragraphs: ['P07_ALT_BEFORE', 'P07_ALT_AFTER'],
-      imported: 'P07_ALT_BEFORE\n\nP07_ALT_AFTER',
+      imported: 'P07_ALT_BEFORE\nP07_ALT_AFTER',
       absentText: 'P07_FALLBACK_TEXT_STANDARD_BRANCH',
       lossCode: 'DOCX_IMPORT_PREVIEW_MARKUP_COMPATIBILITY_SELECTED_BRANCH_EMPTY',
     },
@@ -1012,7 +1012,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'Word-normalized effective branch',
       bytes: cleanDocxZip([before, choice, after].join('')),
       paragraphs: ['P07_ALT_BEFORE', 'P07_CHOICE_TEXT_WORD14_BRANCH', 'P07_ALT_AFTER'],
-      imported: 'P07_ALT_BEFORE\n\nP07_CHOICE_TEXT_WORD14_BRANCH\n\nP07_ALT_AFTER',
+      imported: 'P07_ALT_BEFORE\nP07_CHOICE_TEXT_WORD14_BRANCH\nP07_ALT_AFTER',
       absentText: 'P07_FALLBACK_TEXT_STANDARD_BRANCH',
       lossCode: null,
     },
@@ -1020,7 +1020,7 @@ test('DOCX content preview: markup compatibility imports exactly one effective b
       label: 'plain positive control',
       bytes: cleanDocxZip([paragraphXml('P07_CONTROL_BEFORE'), paragraphXml('P07_CONTROL_AFTER')].join('')),
       paragraphs: ['P07_CONTROL_BEFORE', 'P07_CONTROL_AFTER'],
-      imported: 'P07_CONTROL_BEFORE\n\nP07_CONTROL_AFTER',
+      imported: 'P07_CONTROL_BEFORE\nP07_CONTROL_AFTER',
       absentText: 'P07_CHOICE_TEXT_WORD14_BRANCH',
       lossCode: null,
     },
@@ -1156,7 +1156,7 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
   assert.equal(importPreview.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
   assert.equal(
     importPreview.candidateCreatePlan.entries[0].content,
-    'Tab 1\n\nT02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\n\n\nT02 G03 tab B\n\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\n',
+    'Tab 1\nT02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\nT02 G03 tab B\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n',
   );
   assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Tab 1'), true);
   assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('T02 G03 tab B'), true);
@@ -1751,7 +1751,7 @@ test('DOCX content preview: paragraph numbering is explicit unsupported list los
   ]);
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
-  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'alpha\n\nbeta\n\ngamma');
+  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'alpha\nbeta\ngamma');
   const listLossItems = importPreview.lossReport.items.filter((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_LIST_NUMBERING_NOT_IMPORTED'
     && item.category === 'listNumbering'
@@ -1942,7 +1942,7 @@ test('DOCX content preview: official WordprocessingML namespace aliases preserve
   assert.equal(importPreview.writeEffects, false);
   assert.equal(
     importPreview.candidateCreatePlan.entries[0].content,
-    'Alias before\tafter\n\nAlias table text\n\nAlias bookmark',
+    'Alias before\tafter\nAlias table text\nAlias bookmark',
   );
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
