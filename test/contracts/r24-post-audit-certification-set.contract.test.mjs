@@ -61,10 +61,12 @@ import {
   R24_EMBEDDED_FONT_ADMISSION_EXPECTATION,
   R24_O01_O08_SEMANTIC_ORACLE_HARDENING_EXPECTATION,
   R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION,
+  R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION,
   R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION,
   R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION,
   verifyCurrentClosureSelectorPostEvaluationException,
   verifyDocxNotificationOutcomePostEvaluationException,
+  verifyR24CommandPaletteVisibleCommandsPostEvaluationException,
   verifyR24X01IdempotentContractRecoveryPostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
@@ -1933,7 +1935,7 @@ test('R24 O01-O08 semantic oracle hardening exception rejects missing N4 structu
 function docxNotificationFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
   const e = R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION, candidate = 'a'.repeat(40), requested = successor ? 'b'.repeat(40) : candidate;
   const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
-  const files = new Map(e.admittedPaths.map(relative => [relative, fs.readFileSync(relative)]));
+  const files = new Map(e.admittedPaths.map(relative => [relative, objectFromCommit('22d02b7dee226eaa35756705901fcbaf690c40f3', relative)]));
   const inventory = JSON.parse(files.get(e.inventoryPath));
   inventory.totals.all = e.inventoryFileDenominator;
   for (const relative of [e.contractPath, 'test/unit/docx-export-notification-outcome.test.js']) {
@@ -2004,6 +2006,42 @@ for (const [name, mutate, signal] of [
   ['stale approvals', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals[0].sha256 = '0'.repeat(64); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
   ['foreign authority', (files, e) => { const value = JSON.parse(files.get(e.approvalsPath)); value.approvals.forEach(entry => { entry.approvedBy = 'not-authority'; }); files.set(e.approvalsPath, canonicalBytes(value)); }, /E_DOCX_NOTIFICATION_APPROVAL_DIGEST/],
 ]) test(`DOCX notification admission rejects ${name}`, () => assert.throws(() => verifyDocxFixture(docxNotificationFixture({ mutate })), signal));
+
+test('R24 command palette visible_commands admission accepts the exact closed candidate without carrier reclassification', () => {
+  const result = verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha: 'HEAD' });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.baseSha, R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha, R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.issuedCandidateSha);
+  assert.equal(result.candidateTree, R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.issuedCandidateTree);
+  assert.equal(result.admittedPathDenominator, 8);
+  assert.deepEqual(result.changedPaths, result.admittedPaths);
+  assert.equal(result.generatedBundleDigest, R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.artifactDigests[R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.bundlePath]);
+  assert.equal(result.evidenceScope, 'EXACT_CLOSED_COMMAND_PALETTE_CANDIDATE_BYTES_NOT_RUNTIME_CARRIER_OR_RELEASE_CLAIM');
+  assert.equal(result.programDone, false);
+  assert.equal(result.productionReleaseReady, false);
+});
+test('R24 command palette visible_commands admission rejects an unadmitted future path', () => {
+  const e = R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'diff' && args[2] === `${e.baseSha}..${e.issuedCandidateSha}`) {
+      const value = [...e.admittedPaths, 'README.md'].sort().join('\n') + '\n';
+      return options.encoding === 'utf8' ? value : Buffer.from(value);
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_COMMAND_PALETTE_VISIBLE_COMMANDS_EXACT_ADMITTED_DELTA/);
+});
+test('R24 command palette visible_commands admission rejects mutated closed candidate bytes', () => {
+  const e = R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && args[1] === `${e.issuedCandidateSha}:${e.editorPath}`) {
+      const bytes = Buffer.concat([objectFromCommit(e.issuedCandidateSha, e.editorPath), Buffer.from('\n// mutated\n')]);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_COMMAND_PALETTE_VISIBLE_COMMANDS_ARTIFACT_DIGEST/);
+});
 
 function currentClosureSelectorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
   const e = R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION;

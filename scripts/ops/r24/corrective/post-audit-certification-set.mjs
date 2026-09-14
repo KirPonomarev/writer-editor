@@ -829,6 +829,47 @@ export const R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION = Object.freeze({
     'test/unit/docx-export-notification-outcome.test.js',
   ].sort()),
 });
+export const R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION = Object.freeze({
+  baseSha: '7aefe4d8fa020291faa8957ae8c0f5b4a7e6b869',
+  baseTree: '33749ad4929be613aba1c9f6b458614ec6a069db',
+  issuedCandidateSha: 'da44a0947a5476d367cdf53287c68ffd128202ce',
+  issuedCandidateTree: '4bd3e8cb71a675a2fe6cc653ec9be8dd0594e94d',
+  contourId: 'CORE-A4-YALKEN-PHASE02-RENDERER-COMMAND-PALETTE-VISIBILITY-001',
+  successorPath: 'docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json',
+  evidencePath: 'docs/OPS/R24/EVIDENCE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_20260914.json',
+  approvalsPath: 'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  archDiffPath: 'docs/ARCH_DIFF_LOG.md',
+  editorPath: 'src/renderer/editor.js',
+  bundlePath: 'src/renderer/editor.bundle.js',
+  wp307TestPath: 'test/unit/r24-wp307-writer-local-profile-integration.test.js',
+  sectorTestPath: 'test/unit/sector-m-design-os-command-palette-visibility.test.js',
+  approvedBy: 'owner-directive:COMMAND_PALETTE_VISIBLE_COMMANDS_APPEND_ONLY_SUCCESSOR_2026_09_14',
+  artifactDigests: Object.freeze({
+    'docs/ARCH_DIFF_LOG.md': 'f0e84d4b2c04176df4ff050bea71529f71dc337275b3afe5f729b982f92e1a1b',
+    'docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json': 'a947306fbb65f07bae5bca5df052d359d47bc591854027f81028d5c2ba0f2acb',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json': 'a47b5e58e71e9fc36b30f0ba3ba7a17c58576f7326ec8ae2e5afba97d2ea96e3',
+    'docs/OPS/R24/EVIDENCE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_20260914.json': '9d7de4bd5cda99065d93701dbdd277a0aea329abaf6a5149b3dd62242e026331',
+    'src/renderer/editor.bundle.js': 'd59652569748627b1b9fefdaf0e54815c37ecbcd76dca1fd809cf2ac683d91d1',
+    'src/renderer/editor.js': 'c6fe78e4fccd35cd9c75daedc026632f11cf2006ad0bddd0c7902b7d4a5052e6',
+    'test/unit/r24-wp307-writer-local-profile-integration.test.js': 'bcc25e1d876771ec7f73c20c5e5e6396ccb829646ff93846bd6ca1f1b3cb9987',
+    'test/unit/sector-m-design-os-command-palette-visibility.test.js': '681e6cedefbe927f954b2080755e29f5626a800ef8cb894a669384fcdbc89b56',
+  }),
+  approvedArtifactDigests: Object.freeze({
+    'docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json': 'a947306fbb65f07bae5bca5df052d359d47bc591854027f81028d5c2ba0f2acb',
+    'docs/OPS/R24/EVIDENCE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_20260914.json': '9d7de4bd5cda99065d93701dbdd277a0aea329abaf6a5149b3dd62242e026331',
+    'src/renderer/editor.bundle.js': 'd59652569748627b1b9fefdaf0e54815c37ecbcd76dca1fd809cf2ac683d91d1',
+  }),
+  admittedPaths: Object.freeze([
+    'docs/ARCH_DIFF_LOG.md',
+    'docs/OPS/R24/CORRECTIVE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/EVIDENCE/CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_20260914.json',
+    'src/renderer/editor.bundle.js',
+    'src/renderer/editor.js',
+    'test/unit/r24-wp307-writer-local-profile-integration.test.js',
+    'test/unit/sector-m-design-os-command-palette-visibility.test.js',
+  ].sort()),
+});
 export const R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION = Object.freeze({
   baseSha: '22d02b7dee226eaa35756705901fcbaf690c40f3',
   baseTree: 'f360771818751680bece9ec7734eeafa9561f8c2',
@@ -5283,6 +5324,14 @@ function resolveDocxNotificationCandidate(git, requested, e) {
   fail('E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA');
 }
 
+function resolveR24CommandPaletteVisibleCommandsCandidate(git, requested, e) {
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  if (exact(requested)) return requested;
+  const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+  for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
+  fail('E_COMMAND_PALETTE_VISIBLE_COMMANDS_EXACT_ADMITTED_DELTA');
+}
+
 function resolveR24X01IdempotentContractRecoveryCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
@@ -5588,6 +5637,64 @@ export function verifyDocxNotificationOutcomePostEvaluationException({ candidate
     contourId: e.contourId, observationId: e.observationId, graphSchedulerSelectedId: null,
     stageAdmissionAndLease: 'NOT_APPLICABLE_TO_NO_GRAPH_DIRECT_CORRECTIVE', graphIncrement: 0,
     evidenceScope: 'IMMUTABLE_CANDIDATE_BYTES_AND_DIRECT_CORRECTIVE_ADMISSION_NOT_EXECUTED_RUNTIME_PROOF',
+    programDone: false, productionReleaseReady: false, packagedUiRouteClaim: false,
+  };
+}
+
+export function verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_COMMAND_PALETTE_VISIBLE_COMMANDS_BASE_ANCESTRY'); }
+  const candidate = resolveR24CommandPaletteVisibleCommandsCandidate(git, requested, e);
+  const changed = gitText(git, ['diff', '--name-only', `${e.baseSha}..${candidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed) === JSON.stringify(e.admittedPaths), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert(candidate === e.issuedCandidateSha && candidateTree === e.issuedCandidateTree, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_CANDIDATE_IDENTITY');
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_IDENTITY');
+  const artifacts = new Map(e.admittedPaths.map(relative => {
+    let bytes;
+    try { bytes = objectBytes(git, candidate, relative); } catch { fail('E_COMMAND_PALETTE_VISIBLE_COMMANDS_ARTIFACT_MISSING', relative); }
+    return [relative, { bytes, digest: h(bytes), text: bytes.toString('utf8') }];
+  }));
+  for (const [relative, digest] of Object.entries(e.artifactDigests)) {
+    assert(artifacts.get(relative)?.digest === digest, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_ARTIFACT_DIGEST', relative);
+  }
+  const successor = JSON.parse(artifacts.get(e.successorPath).bytes);
+  assert(successor.schemaVersion === 'CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1' && successor.status === 'CURRENT_APPEND_ONLY_SUCCESSOR', 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_SUCCESSOR');
+  assert(successor.taskId === e.contourId && successor.evaluationBase?.sha === e.baseSha, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_SUCCESSOR_IDENTITY');
+  assert(successor.authority?.approvedBy === e.approvedBy && successor.programDone === false, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_SUCCESSOR_AUTHORITY');
+  for (const token of ['NO_DOCX_COMMAND_BRIDGE_CHANGE', 'NO_IMPORT_EXPORT_CHANGE', 'NO_PORTABILITY_LAB_CHANGE', 'NO_PRODUCT_TRUTH_WRITE', 'NO_COMMAND_MEANING_CHANGE', 'NO_RUNTIME_NETWORK', 'NO_PROGRAM_DONE']) {
+    assert(successor.authority?.nonClaims?.includes(token), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_SUCCESSOR_NONCLAIM', token);
+  }
+  const surface = successor.surfaceOverrides?.find(entry => entry.path === e.editorPath);
+  assert(surface?.sha256 === `sha256:${e.artifactDigests[e.editorPath]}`, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_SUCCESSOR_EDITOR_HASH');
+  assert(successor.generatedRuntimeArtifact?.path === e.bundlePath && successor.generatedRuntimeArtifact?.sha256 === `sha256:${e.artifactDigests[e.bundlePath]}`, 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_SUCCESSOR_BUNDLE_HASH');
+  const evidence = JSON.parse(artifacts.get(e.evidencePath).bytes);
+  assert(evidence.schemaVersion === 'ClaimBindingV1' && evidence.stampId === 'CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_20260914' && evidence.verdict === 'PASS', 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_EVIDENCE');
+  assert(evidence.claimBindings?.some(entry => entry.filePath === e.successorPath && entry.sha256 === e.artifactDigests[e.successorPath]), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_EVIDENCE_BINDING');
+  for (const token of ['NO_DOCX_COMMAND_BRIDGE_CHANGE', 'NO_IMPORT_EXPORT_CHANGE', 'NO_PORTABILITY_LAB_CHANGE', 'NO_PRODUCT_TRUTH_WRITE', 'NO_COMMAND_MEANING_CHANGE', 'NO_RUNTIME_NETWORK', 'NO_RELEASE_READINESS', 'NO_PROGRAM_DONE']) {
+    assert(evidence.nonClaims?.includes(token), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_EVIDENCE_NONCLAIM', token);
+  }
+  const approvals = JSON.parse(artifacts.get(e.approvalsPath).bytes);
+  assert(approvals.version === 'v1.0' && Array.isArray(approvals.approvals), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_APPROVALS');
+  for (const [relative, digest] of Object.entries(e.approvedArtifactDigests)) {
+    assert(approvals.approvals.some(entry => entry.filePath === relative && entry.sha256 === digest && entry.approved === true && approvalMatchesApprovedBy(entry, e.approvedBy)), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_APPROVAL_DIGEST', relative);
+  }
+  const editorText = artifacts.get(e.editorPath).text, sectorTestText = artifacts.get(e.sectorTestPath).text, wp307TestText = artifacts.get(e.wp307TestPath).text;
+  for (const token of ['createDesignOsPorts', 'preview?.visible_commands', 'normalizeDormantVisibleCommandIds', 'filterPaletteCommandEntries', 'createDormantAwarePaletteDataProvider', 'syncDesignOsDormantContext']) assert(editorText.includes(token), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_EDITOR_TOKEN', token);
+  for (const token of ['command palette visibility: syncDesignOsDormantContext captures preview.visible_commands and falls back open', 'command palette visibility: existing palette provider is wrapped and filtering applies to listAll listBySurface listByGroup', 'command palette visibility: baseline visible_commands semantics hide flow catalog entries and keep required core and non-catalog extras']) assert(sectorTestText.includes(token), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_TEST_TOKEN', token);
+  assert(wp307TestText.includes('follows admitted append-only successors through command palette current editor'), 'E_COMMAND_PALETTE_VISIBLE_COMMANDS_WP307_TOKEN');
+  return {
+    schemaVersion: 'R24_COMMAND_PALETTE_VISIBLE_COMMANDS_POST_EVALUATION_EXCEPTION_V1', status: 'PASS',
+    baseSha: e.baseSha, baseTree: e.baseTree, candidateSha: candidate, candidateTree,
+    currentCandidateSha: requested, currentCandidateTree: requestedTree, closedCandidateOnly: candidate !== requested,
+    admittedPaths: e.admittedPaths, changedPaths: changed, admittedPathDenominator: e.admittedPaths.length,
+    artifactDigests: [...artifacts].map(([path, artifact]) => ({ path, sha256: artifact.digest })),
+    successorDigest: artifacts.get(e.successorPath).digest, evidenceDigest: artifacts.get(e.evidencePath).digest,
+    approvalsDigest: artifacts.get(e.approvalsPath).digest, editorDigest: artifacts.get(e.editorPath).digest,
+    generatedBundleDigest: artifacts.get(e.bundlePath).digest, graphIncrement: 0,
+    evidenceScope: 'EXACT_CLOSED_COMMAND_PALETTE_CANDIDATE_BYTES_NOT_RUNTIME_CARRIER_OR_RELEASE_CLAIM',
     programDone: false, productionReleaseReady: false, packagedUiRouteClaim: false,
   };
 }
@@ -7058,6 +7165,16 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const docxNotificationOutcomeException = docxNotificationOutcomeEnabled ? verifyDocxNotificationOutcomePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (docxNotificationOutcomeException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let r24CommandPaletteVisibleCommandsEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION.successorPath);
+      r24CommandPaletteVisibleCommandsEnabled = true;
+    } catch {}
+  }
+  const r24CommandPaletteVisibleCommandsException = r24CommandPaletteVisibleCommandsEnabled ? verifyR24CommandPaletteVisibleCommandsPostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (r24CommandPaletteVisibleCommandsException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   let r24X01IdempotentContractRecoveryEnabled = false;
   if (allowAuditCycle2Admission && resolvedCandidate !== R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha) {
     try {
@@ -7098,6 +7215,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24Interop100U000cPagebreakReexportPostEvaluationException=r24Interop100U000cPagebreakReexportException;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
+  verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
   verificationResult.ePlanPredecessorPostEvaluationException = ePlanPredecessorException;
