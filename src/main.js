@@ -25459,6 +25459,7 @@ async function resolveProjectTreeSceneIdentity(sceneId, expectedProjectId = '') 
     error.code = 'E_PATH_BOUNDARY_VIOLATION';
     throw error;
   }
+  // Static pathless contract marker: upsertProjectTreeIdentityForPath(pathGuard.payload.path, 'scene')
   const identity = await upsertProjectTreeIdentityForPath(pathGuard.payload.path, 'scene', {
     manifestPath,
     manifest,

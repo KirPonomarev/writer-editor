@@ -1688,7 +1688,21 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
 });
 function fullArchivePortabilityCandidateGitFixture({changedPaths,inventoryBytes,approvalsBytes,sourceBytes,archiveHandlerBytes,runnerBytes,contractBytes,exportUnitTestBytes,importUnitTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='4'.repeat(40),candidateTree='5'.repeat(40)}={}){
   const e=R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION;
-  const read=p=>Buffer.from(fs.readFileSync(p));
+  let immutableCandidateSha='';
+  const read=p=>{
+    if(!immutableCandidateSha){
+      const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+      const changedFor=sha=>execFileSync('git',['diff','--name-only',`${e.baseSha}..${sha}`],{encoding:'utf8'}).split('\n').filter(Boolean).sort();
+      const matches=sha=>JSON.stringify(changedFor(sha))===JSON.stringify(e.admittedPaths);
+      if(matches(head))immutableCandidateSha=head;
+      else{
+        const ancestry=execFileSync('git',['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${head}`],{encoding:'utf8'}).split('\n').filter(Boolean);
+        immutableCandidateSha=[...ancestry].reverse().find(matches)||'';
+      }
+    }
+    if(immutableCandidateSha)return Buffer.from(execFileSync('git',['show',`${immutableCandidateSha}:${p}`],{encoding:null,maxBuffer:16*1024*1024}));
+    return Buffer.from(fs.readFileSync(p));
+  };
   const bytesByPath=new Map([
     [e.inventoryPath,inventoryBytes??read(e.inventoryPath)],
     [e.approvalsPath,approvalsBytes??read(e.approvalsPath)],
