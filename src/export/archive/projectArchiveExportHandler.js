@@ -8,6 +8,11 @@ const ARCHIVE_SCHEMA_VERSION = 'yalken-project-archive.v1';
 const ARCHIVE_MANIFEST_PATH = 'yalken-archive-manifest.v1.json';
 const PROJECT_ARCHIVE_ROOT = 'project';
 const PROJECT_MANIFEST_FILENAME = 'project.craftsman.json';
+const NON_PORTABLE_LOCAL_STATE_DIRS = new Set(['.stage10-local', '.yalken-recovery']);
+const NON_PORTABLE_LOCAL_STATE_FILE_SUFFIXES = [
+  '.wp201-commit.json',
+  '.wp201-transaction.json',
+];
 const ZIP_EOCD_SIGNATURE = 0x06054b50;
 const ZIP_CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
 const ZIP_LOCAL_FILE_SIGNATURE = 0x04034b50;
@@ -90,6 +95,19 @@ function compareArchiveEntries(left, right) {
   return left.archivePath.localeCompare(right.archivePath, 'en');
 }
 
+function isNonPortableProjectArchiveRelativePath(relativePathRaw) {
+  let relativePath;
+  try {
+    relativePath = normalizeArchivePath(relativePathRaw);
+  } catch {
+    return true;
+  }
+  const parts = relativePath.split('/');
+  if (NON_PORTABLE_LOCAL_STATE_DIRS.has(parts[0])) return true;
+  const basename = parts[parts.length - 1] || '';
+  return NON_PORTABLE_LOCAL_STATE_FILE_SUFFIXES.some((suffix) => basename.endsWith(suffix));
+}
+
 async function collectProjectArchiveSourceEntries(projectRootRaw) {
   const projectRoot = path.resolve(String(projectRootRaw || ''));
   if (!projectRoot || projectRoot === path.parse(projectRoot).root) {
@@ -117,6 +135,9 @@ async function collectProjectArchiveSourceEntries(projectRootRaw) {
       }
       const childPath = path.join(directoryPath, dirent.name);
       const relative = [...relativeParts, dirent.name];
+      if (isNonPortableProjectArchiveRelativePath(relative.join('/'))) {
+        continue;
+      }
       const relativePath = normalizeArchivePath(relative.join('/'));
       const archivePath = normalizeArchivePath(`${PROJECT_ARCHIVE_ROOT}/${relativePath}`);
       const stat = await fs.lstat(childPath);

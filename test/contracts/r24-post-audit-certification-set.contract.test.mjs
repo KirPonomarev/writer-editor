@@ -55,6 +55,7 @@ import {
   R24_INTEROP_100_SAFE_DOCX_HYPERLINK_PREVIEW_EXPECTATION,
   R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION,
   R24_INTEROP_100_U000C_PAGEBREAK_REEXPORT_EXPECTATION,
+  R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION,
   R24_IMPORT_PREVIEW_BOOKMARK_METADATA_EXPLICIT_LOSS_EXPECTATION,
   R24_OBS_EXPORT_DOCX_COMMAND_BRIDGE_OUTER_FAIL_EXPECTATION,
   R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION,
@@ -66,6 +67,7 @@ import {
   verifyCurrentClosureSelectorPostEvaluationException,
   verifyDocxNotificationOutcomePostEvaluationException,
   verifyR24X01IdempotentContractRecoveryPostEvaluationException,
+  verifyR24FullArchivePortabilityCandidatePostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
   R24_P03_RELATIONSHIP_GRAPH_VALIDATION_EXPECTATION,
@@ -312,6 +314,7 @@ function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSe
   const seal = () => {
     rebindEvidence(sourceSha, sourceTree);
     const inventory = read(e.inventoryPath);
+    inventory.totals.all = e.inventoryFileDenominator;
     for (const relative of [e.contractTestPath, e.postAuditTestPath]) {
       const entry = inventory.entries.find((item) => item.path === relative);
       entry.sha256 = h(files.get(relative));
@@ -392,15 +395,15 @@ test('R24 interop100 denominator hardening exception accepts exact current delta
     assert.equal(result.supportedDenominatorPromotion, false);
     assert.equal(result.programDone, false);
     assert.deepEqual(fixture.publisherSummary(), {
-      deduped: 5,
+      deduped: 4,
       failures: 0,
-      fsyncCalls: 22,
-      published: 11,
+      fsyncCalls: 24,
+      published: 12,
       readbackCalls: 16,
-      renameCalls: 11,
-      uniquePathByteHashCount: 11,
+      renameCalls: 12,
+      uniquePathByteHashCount: 12,
       uniquePathCount: 8,
-      writeCalls: 11,
+      writeCalls: 12,
     });
   } finally {
     fixture.cleanup();
@@ -1682,6 +1685,75 @@ test('R24 import preview bookmark/custom metadata explicit-loss exception reject
   inventory.entries.find((entry)=>entry.path===e.importPreviewPlanTestPath).sha256='0'.repeat(64);
   const fixture=importPreviewBookmarkMetadataGitFixture({inventoryBytes:canonicalBytes(inventory)});
   assert.throws(()=>verifyR24ImportPreviewBookmarkMetadataExplicitLossPostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_IMPORT_PREVIEW_BOOKMARK_METADATA_INVENTORY_SHAPE/);
+});
+function fullArchivePortabilityCandidateGitFixture({changedPaths,inventoryBytes,approvalsBytes,sourceBytes,archiveHandlerBytes,runnerBytes,contractBytes,exportUnitTestBytes,importUnitTestBytes,postAuditVerifierBytes,postAuditTestBytes,baseTree,candidateSha='4'.repeat(40),candidateTree='5'.repeat(40)}={}){
+  const e=R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION;
+  let immutableCandidateSha='';
+  const read=p=>{
+    if(!immutableCandidateSha){
+      const head=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+      const changedFor=sha=>execFileSync('git',['diff','--name-only',`${e.baseSha}..${sha}`],{encoding:'utf8'}).split('\n').filter(Boolean).sort();
+      const matches=sha=>JSON.stringify(changedFor(sha))===JSON.stringify(e.admittedPaths);
+      if(matches(head))immutableCandidateSha=head;
+      else{
+        const ancestry=execFileSync('git',['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${head}`],{encoding:'utf8'}).split('\n').filter(Boolean);
+        immutableCandidateSha=[...ancestry].reverse().find(matches)||'';
+      }
+    }
+    if(immutableCandidateSha)return Buffer.from(execFileSync('git',['show',`${immutableCandidateSha}:${p}`],{encoding:null,maxBuffer:16*1024*1024}));
+    return Buffer.from(fs.readFileSync(p));
+  };
+  const bytesByPath=new Map([
+    [e.inventoryPath,inventoryBytes??read(e.inventoryPath)],
+    [e.approvalsPath,approvalsBytes??read(e.approvalsPath)],
+    [e.sourcePath,sourceBytes??read(e.sourcePath)],
+    [e.archiveHandlerPath,archiveHandlerBytes??read(e.archiveHandlerPath)],
+    [e.runnerPath,runnerBytes??read(e.runnerPath)],
+    [e.contractPath,contractBytes??read(e.contractPath)],
+    [e.exportUnitTestPath,exportUnitTestBytes??read(e.exportUnitTestPath)],
+    [e.importUnitTestPath,importUnitTestBytes??read(e.importUnitTestPath)],
+    [e.postAuditVerifierPath,postAuditVerifierBytes??read(e.postAuditVerifierPath)],
+    [e.postAuditTestPath,postAuditTestBytes??read(e.postAuditTestPath)],
+  ]);
+  return{candidateSha,git:(args,options={})=>{
+    let value='';
+    if(args[0]==='rev-parse'&&args[1]===candidateSha)value=candidateSha;
+    else if(args[0]==='rev-parse'&&args[1]===`${e.baseSha}^{tree}`)value=baseTree??e.baseTree;
+    else if(args[0]==='rev-parse'&&args[1]===`${candidateSha}^{tree}`)value=candidateTree;
+    else if(args[0]==='merge-base')value='';
+    else if(args[0]==='diff')value=(changedPaths??e.admittedPaths).join('\n')+'\n';
+    else if(args[0]==='rev-list')value=candidateSha+'\n';
+    else if(args[0]==='show'){
+      const repoPath=String(args[1]).slice(String(args[1]).indexOf(':')+1);
+      const bytes=bytesByPath.get(repoPath);
+      if(bytes)return options.encoding==='utf8'?bytes.toString('utf8'):Buffer.from(bytes);
+      return execFileSync('git',args,options);
+    }else return execFileSync('git',args,options);
+    return options.encoding==='utf8'?value+'\n':Buffer.from(value+'\n');
+  }};
+}
+test('R24 full archive portability candidate exception accepts exact current delta',()=>{
+  const fixture=fullArchivePortabilityCandidateGitFixture(),result=verifyR24FullArchivePortabilityCandidatePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git});
+  assert.equal(result.status,'PASS');
+  assert.equal(result.baseSha,R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION.baseSha);
+  assert.equal(result.candidateSha,fixture.candidateSha);
+  assert.equal(result.admittedPathDenominator,10);
+  assert.equal(result.changedPathDenominator,10);
+  assert.equal(result.fullArchiveCandidate,'SOURCE_RUNTIME_ONLY_NO_DENOMINATOR_CREDIT');
+  assert.equal(result.acceptedPortabilityNumeratorDelta,0);
+  assert.equal(result.supportedDenominatorPromotion,false);
+  assert.equal(result.inventoryDigest,R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION.inventoryDigest);
+  assert.equal(result.sourceDigest,R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION.sourceDigest);
+  assert.equal(result.runnerDigest,R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION.runnerDigest);
+});
+test('R24 full archive portability candidate exception rejects an unadmitted future path',()=>{
+  const e=R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION,fixture=fullArchivePortabilityCandidateGitFixture({changedPaths:[...e.admittedPaths,'package.json'].sort()});
+  assert.throws(()=>verifyR24FullArchivePortabilityCandidatePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_FULL_ARCHIVE_CANDIDATE_NOT_FOUND/);
+});
+test('R24 full archive portability candidate exception rejects denominator-credit claims',()=>{
+  const e=R24_FULL_ARCHIVE_PORTABILITY_CANDIDATE_EXPECTATION,runner=fs.readFileSync(e.runnerPath,'utf8').replace('acceptedPortabilityNumeratorDelta: 0','acceptedPortabilityNumeratorDelta: 1');
+  const fixture=fullArchivePortabilityCandidateGitFixture({runnerBytes:Buffer.from(runner)});
+  assert.throws(()=>verifyR24FullArchivePortabilityCandidatePostEvaluationException({candidateSha:fixture.candidateSha,git:fixture.git}),/E_R24_FULL_ARCHIVE_ARTIFACT_DIGEST/);
 });
 function reviewPreviewCommentTopologyGitFixture({changedPaths,successorChangedPaths,sourceBytes,parserBytes,reviewPreviewTestBytes,modernCommentsTestBytes,inventoryBytes,approvalsBytes,postAuditVerifierBytes,postAuditTestBytes,claimLintBytes,claimLintTestBytes,baseTree,candidateSha='b'.repeat(40),candidateTree='c'.repeat(40),successorSha,successorAncestryShas,successorTree='d'.repeat(40)}={}){
   const e=R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_EXPECTATION;

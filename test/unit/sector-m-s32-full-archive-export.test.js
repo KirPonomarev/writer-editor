@@ -137,6 +137,12 @@ async function writeDefaultProject(root) {
   await fsPromises.writeFile(path.join(projectRoot, 'assets', 'image.bin'), Buffer.from([4, 5, 6]));
   await fsPromises.writeFile(path.join(projectRoot, 'backups', '01 Start.txt.bak'), 'backup text', 'utf8');
   await fsPromises.writeFile(path.join(projectRoot, 'recovery', 'snapshot.txt'), 'recovery text', 'utf8');
+  await fsPromises.mkdir(path.join(projectRoot, '.stage10-local'), { recursive: true });
+  await fsPromises.writeFile(path.join(projectRoot, '.stage10-local', 'product-session.v2.json'), '{}\n', 'utf8');
+  await fsPromises.mkdir(path.join(projectRoot, '.yalken-recovery'), { recursive: true });
+  await fsPromises.writeFile(path.join(projectRoot, '.yalken-recovery', 'wp201-deadbeef.json'), '{}\n', 'utf8');
+  await fsPromises.writeFile(path.join(projectRoot, `${PROJECT_MANIFEST_FILENAME}.wp201-transaction.json`), '{}\n', 'utf8');
+  await fsPromises.writeFile(path.join(projectRoot, 'roman', 'Imported', '01 Start.txt.wp201-commit.json'), '{}\n', 'utf8');
   return { projectRoot, manifest };
 }
 
@@ -252,6 +258,10 @@ test('S32 full archive export: main exports complete project archive without sou
   ]) {
     assert.ok(archivedPaths.includes(expectedPath), expectedPath);
   }
+  assert.equal(archivedPaths.some((archivePath) => archivePath.includes('.stage10-local')), false);
+  assert.equal(archivedPaths.some((archivePath) => archivePath.includes('.yalken-recovery')), false);
+  assert.equal(archivedPaths.some((archivePath) => archivePath.endsWith('.wp201-transaction.json')), false);
+  assert.equal(archivedPaths.some((archivePath) => archivePath.endsWith('.wp201-commit.json')), false);
 
   const after = await hashProjectFiles(projectRoot);
   assert.deepEqual([...after.entries()].sort(), [...before.entries()].sort());
