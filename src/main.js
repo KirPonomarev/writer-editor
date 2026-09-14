@@ -17894,6 +17894,18 @@ function summarizeProjectArchivePayload(payload) {
   };
 }
 
+function isNonPortableImportedProjectArchiveRelativePath(relativePathRaw) {
+  const relativePath = typeof relativePathRaw === 'string'
+    ? relativePathRaw.trim().replace(/\\/g, '/').replace(/^\/+/u, '')
+    : '';
+  if (!relativePath) return true;
+  const parts = relativePath.split('/').filter(Boolean);
+  if (parts.length === 0) return true;
+  if (parts[0] === '.stage10-local' || parts[0] === '.yalken-recovery') return true;
+  const basename = parts[parts.length - 1] || '';
+  return basename.endsWith('.wp201-commit.json') || basename.endsWith('.wp201-transaction.json');
+}
+
 async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot) {
   if (!archivePayload || !Array.isArray(archivePayload.entries) || archivePayload.entries.length === 0) {
     throw new Error('PROJECT_ARCHIVE_IMPORT_EMPTY');
@@ -17902,6 +17914,9 @@ async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot) {
   await fs.mkdir(tempRoot, { recursive: true });
   for (const entry of archivePayload.entries) {
     const relativePath = typeof entry.relativePath === 'string' ? entry.relativePath : '';
+    if (isNonPortableImportedProjectArchiveRelativePath(relativePath)) {
+      continue;
+    }
     const targetPath = joinPathSegmentsWithinRoot(tempRoot, [relativePath], { resolveSymlinks: false });
     await fs.mkdir(path.dirname(targetPath), { recursive: true });
     const writeResult = await fileManager.writeFileAtomic(targetPath, entry.buffer);
@@ -17909,6 +17924,14 @@ async function writeProjectArchivePayloadToTempRoot(archivePayload, tempRoot) {
       throw new Error(writeResult?.error || 'PROJECT_ARCHIVE_IMPORT_ENTRY_WRITE_FAILED');
     }
   }
+  await fs.rm(joinPathSegmentsWithinRoot(tempRoot, ['.stage10-local'], { resolveSymlinks: false }), {
+    recursive: true,
+    force: true,
+  });
+  await fs.rm(joinPathSegmentsWithinRoot(tempRoot, ['.yalken-recovery'], { resolveSymlinks: false }), {
+    recursive: true,
+    force: true,
+  });
 }
 
 function normalizeProjectArchiveImportMode(value) {
@@ -23664,15 +23687,32 @@ async function handleImportProjectArchive(payloadRaw = {}, options = {}) {
       if (normalizeStableProjectId(publishedManifestRecord.manifest?.projectId) !== newProjectId) {
         throw new Error('PROJECT_ARCHIVE_IMPORT_MANIFEST_READBACK_MISMATCH');
       }
+      const importedProjectName = path.basename(targetRoot);
+      let manifestForBinding;
+      try {
+        await buildProjectTreeRootsWithIdentities(importedProjectName, { lease });
+        const reconciledManifestRecord = await readProjectManifest(importedProjectName);
+        manifestForBinding = reconciledManifestRecord?.manifest || null;
+        if (!manifestForBinding || normalizeStableProjectId(manifestForBinding.projectId) !== newProjectId) {
+          const error = new Error('PROJECT_ARCHIVE_IMPORT_TREE_IDENTITY_READBACK_MISMATCH');
+          error.code = 'E_PROJECT_ARCHIVE_IMPORT_TREE_IDENTITY_BOOTSTRAP_FAILED';
+          error.reason = 'project_archive_import_tree_identity_bootstrap_failed';
+          throw error;
+        }
+      } catch (error) {
+        if (!error.code) error.code = 'E_PROJECT_ARCHIVE_IMPORT_TREE_IDENTITY_BOOTSTRAP_FAILED';
+        if (!error.reason) error.reason = 'project_archive_import_tree_identity_bootstrap_failed';
+        throw error;
+      }
       await lease.assertOwned();
       await clearProjectLifecycleJournal();
-      const normalizedManifest = await normalizeProjectManifest(nextManifest, preferredName);
+      const normalizedManifest = await normalizeProjectManifest(manifestForBinding, importedProjectName);
       const projectBinding = {
         projectId: newProjectId,
         projectRoot: targetRoot,
         manifestPath,
         manifest: normalizedManifest,
-        sourceSchemaVersion: Number(nextManifest?.schemaVersion),
+        sourceSchemaVersion: Number(manifestForBinding?.schemaVersion),
       };
       await replaceProjectLibraryIndexBinding('', projectBinding, {
         status: 'available',
@@ -24867,8 +24907,10 @@ function makePathBoundaryViolationResult(pathGuard) {
   };
 }
 
-function sanitizePayloadWithinProjectRoot(payload, pathFieldNames) {
-  const projectRoot = getProjectRootPath();
+function sanitizePayloadWithinProjectRoot(payload, pathFieldNames, projectRootOverride = '') {
+  const projectRoot = typeof projectRootOverride === 'string' && projectRootOverride.trim()
+    ? projectRootOverride
+    : getProjectRootPath();
   const pathGuard = sanitizePathFieldsWithinRoot(payload, pathFieldNames, projectRoot, {
     mode: 'any',
     resolveSymlinks: true,
@@ -25031,13 +25073,14 @@ function annotateProjectTreeIdentities(roots, projectRoot, bindings) {
   roots.forEach(visit);
 }
 
-async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest) {
+async function persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, manifest, options = {}) {
   const backupResult = await backupManager.createBackup(manifestPath, sourceText, { basePath: projectRoot });
   if (!backupResult || backupResult.success !== true) {
     throw new Error(backupResult?.error || 'PROJECT_TREE_IDENTITY_BACKUP_FAILED');
   }
   await persistProjectManifestAtPath(manifestPath, manifest, 'save project tree identity registry', {
     expectedText: sourceText,
+    ...(options.lease ? { lease: options.lease } : {}),
   });
 }
 
@@ -25085,7 +25128,7 @@ async function createProjectTreeMoveRecovery(manifestPath, projectRoot, sourceTe
   return recovery;
 }
 
-async function reconcileProjectTreeIdentities(roots, projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
+async function reconcileProjectTreeIdentities(roots, projectName = currentProjectName || DEFAULT_PROJECT_NAME, options = {}) {
   const { manifestPath, manifest } = await ensureProjectManifest(projectName);
   const projectRoot = path.dirname(manifestPath);
   const descriptors = collectProjectTreeIdentityDescriptors(roots, projectRoot);
@@ -25107,7 +25150,9 @@ async function reconcileProjectTreeIdentities(roots, projectName = currentProjec
       ...manifest,
       treeIdentity: result.value,
     };
-    await persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, nextManifest);
+    await persistProjectTreeIdentityMigration(manifestPath, projectRoot, sourceText, nextManifest, {
+      ...(options.lease ? { lease: options.lease } : {}),
+    });
   }
   annotateProjectTreeIdentities(Object.values(roots), projectRoot, result.bindings);
   return {
@@ -25204,7 +25249,7 @@ function serializeProjectTreeNode(node) {
   };
 }
 
-async function buildProjectTreeRootsWithIdentities(projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
+async function buildProjectTreeRootsWithIdentities(projectName = currentProjectName || DEFAULT_PROJECT_NAME, options = {}) {
   const romanRoot = await buildRomanTree(projectName);
   const mindmapRoot = await buildMindMapTree(projectName);
   const printRoot = await buildPrintTree(projectName);
@@ -25219,7 +25264,7 @@ async function buildProjectTreeRootsWithIdentities(projectName = currentProjectN
     materials: await buildMaterialsTree(projectName),
     reference: await buildReferenceTree(projectName),
   };
-  const identity = await reconcileProjectTreeIdentities(Object.values(roots), projectName);
+  const identity = await reconcileProjectTreeIdentities(Object.values(roots), projectName, options);
   await annotateProjectTreeDerivedCounters(Object.values(roots), projectName);
   return {
     projectId: identity.projectId,
@@ -25227,8 +25272,8 @@ async function buildProjectTreeRootsWithIdentities(projectName = currentProjectN
   };
 }
 
-async function buildProjectTreeRootsWithIdentitiesReadOnly() {
-  const activeProjectName = currentProjectName || DEFAULT_PROJECT_NAME;
+async function buildProjectTreeRootsWithIdentitiesReadOnly(projectName = currentProjectName || DEFAULT_PROJECT_NAME) {
+  const activeProjectName = projectName || currentProjectName || DEFAULT_PROJECT_NAME;
   const manifestRecord = await readProjectManifest(activeProjectName);
   if (!manifestRecord || !manifestRecord.manifest) {
     const error = new Error('PROJECT_MANIFEST_UNAVAILABLE');
@@ -25238,19 +25283,19 @@ async function buildProjectTreeRootsWithIdentitiesReadOnly() {
   const manifestPath = getProjectManifestPath(activeProjectName);
   const projectRoot = path.dirname(manifestPath);
   const manifest = manifestRecord.manifest;
-  const romanRoot = await buildRomanTree();
-  const mindmapRoot = await buildMindMapTree();
-  const printRoot = await buildPrintTree();
+  const romanRoot = await buildRomanTree(activeProjectName);
+  const mindmapRoot = await buildMindMapTree(activeProjectName);
+  const printRoot = await buildPrintTree(activeProjectName);
   const roots = {
     roman: buildNode({
       name: 'Roman tab',
       label: 'Roman',
       kind: 'roman-tab-root',
-      nodePath: getProjectRootPath(),
+      nodePath: getProjectRootPath(activeProjectName),
       children: [romanRoot, mindmapRoot, printRoot],
     }),
-    materials: await buildMaterialsTree(),
-    reference: await buildReferenceTree(),
+    materials: await buildMaterialsTree(activeProjectName),
+    reference: await buildReferenceTree(activeProjectName),
   };
   const descriptors = collectProjectTreeIdentityDescriptors(Object.values(roots), projectRoot);
   const identityModule = await loadProjectTreeIdentityModule();
@@ -25268,7 +25313,7 @@ async function buildProjectTreeRootsWithIdentitiesReadOnly() {
     ? { ...manifest, treeIdentity: result.value }
     : manifest;
   annotateProjectTreeIdentities(Object.values(roots), projectRoot, result.bindings);
-  await annotateProjectTreeDerivedCounters(Object.values(roots));
+  await annotateProjectTreeDerivedCounters(Object.values(roots), activeProjectName);
   return {
     projectId: manifest.projectId,
     roots,
@@ -25279,6 +25324,31 @@ async function buildProjectTreeRootsWithIdentitiesReadOnly() {
   };
 }
 
+async function resolveProjectTreeIdentityContext(expectedProjectId = '') {
+  const normalizedExpectedProjectId = typeof expectedProjectId === 'string' ? expectedProjectId.trim() : '';
+  if (normalizedExpectedProjectId) {
+    const binding = await findProjectBindingByProjectId(normalizedExpectedProjectId);
+    if (!binding || !binding.manifestPath || !binding.projectRoot || !binding.manifest) {
+      const error = new Error('TREE_NODE_PROJECT_MISMATCH');
+      error.code = 'E_TREE_NODE_PROJECT_MISMATCH';
+      throw error;
+    }
+    return {
+      manifestPath: binding.manifestPath,
+      manifest: binding.manifest,
+      manifestRaw: typeof binding.manifestRaw === 'string' ? binding.manifestRaw : '',
+      projectRoot: binding.projectRoot,
+    };
+  }
+  const record = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
+  return {
+    manifestPath: record.manifestPath,
+    manifest: record.manifest,
+    manifestRaw: record.manifestRaw,
+    projectRoot: path.dirname(record.manifestPath),
+  };
+}
+
 async function resolveProjectTreeNodeIdentity(nodeId, expectedProjectId = '') {
   const normalizedNodeId = typeof nodeId === 'string' ? nodeId.trim() : '';
   if (!/^tree-node-[a-f0-9]{32}$/u.test(normalizedNodeId)) {
@@ -25286,7 +25356,12 @@ async function resolveProjectTreeNodeIdentity(nodeId, expectedProjectId = '') {
     error.code = 'E_TREE_NODE_ID_INVALID';
     throw error;
   }
-  const { manifestPath, manifest, manifestRaw } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const {
+    manifestPath,
+    manifest,
+    manifestRaw,
+    projectRoot,
+  } = await resolveProjectTreeIdentityContext(expectedProjectId);
   const normalizedExpectedProjectId = typeof expectedProjectId === 'string' ? expectedProjectId.trim() : '';
   if (normalizedExpectedProjectId && normalizedExpectedProjectId !== manifest.projectId) {
     const error = new Error('TREE_NODE_PROJECT_MISMATCH');
@@ -25306,7 +25381,6 @@ async function resolveProjectTreeNodeIdentity(nodeId, expectedProjectId = '') {
     error.code = 'E_TREE_NODE_NOT_FOUND';
     throw error;
   }
-  const projectRoot = path.dirname(manifestPath);
   const relativePath = record.bindingKey.slice('file:'.length);
   const nodePath = joinPathSegmentsWithinRoot(projectRoot, relativePath.split('/'), {
     resolveSymlinks: false,
@@ -25362,14 +25436,17 @@ async function resolveProjectTreeSceneIdentity(sceneId, expectedProjectId = '') 
     error.code = 'E_TREE_SCENE_ID_INVALID';
     throw error;
   }
-  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
+  const {
+    manifestPath,
+    manifest,
+    projectRoot,
+  } = await resolveProjectTreeIdentityContext(expectedProjectId);
   const normalizedExpectedProjectId = typeof expectedProjectId === 'string' ? expectedProjectId.trim() : '';
   if (normalizedExpectedProjectId && normalizedExpectedProjectId !== manifest.projectId) {
     const error = new Error('TREE_NODE_PROJECT_MISMATCH');
     error.code = 'E_TREE_NODE_PROJECT_MISMATCH';
     throw error;
   }
-  const projectRoot = path.dirname(manifestPath);
   const nodePath = joinPathSegmentsWithinRoot(projectRoot, normalizedSceneId.split('/'), {
     resolveSymlinks: false,
   });
@@ -25382,7 +25459,11 @@ async function resolveProjectTreeSceneIdentity(sceneId, expectedProjectId = '') 
     error.code = 'E_PATH_BOUNDARY_VIOLATION';
     throw error;
   }
-  const identity = await upsertProjectTreeIdentityForPath(pathGuard.payload.path, 'scene');
+  const identity = await upsertProjectTreeIdentityForPath(pathGuard.payload.path, 'scene', {
+    manifestPath,
+    manifest,
+    projectRoot,
+  });
   return {
     projectId: manifest.projectId,
     projectRoot,
@@ -25480,9 +25561,20 @@ function getResolvedTreeDocumentTarget(resolvedNode) {
   return { filePath: resolvedNode.nodePath, kind };
 }
 
-async function upsertProjectTreeIdentityForPath(candidatePath, kind) {
-  const { manifestPath, manifest } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
-  const projectRoot = path.dirname(manifestPath);
+async function upsertProjectTreeIdentityForPath(candidatePath, kind, options = {}) {
+  const optionManifestPath = typeof options.manifestPath === 'string' ? options.manifestPath : '';
+  const optionManifest = isPlainObjectValue(options.manifest) ? options.manifest : null;
+  const optionProjectRoot = typeof options.projectRoot === 'string' && options.projectRoot.trim()
+    ? options.projectRoot
+    : '';
+  const record = optionManifestPath && optionManifest
+    ? {
+      manifestPath: optionManifestPath,
+      manifest: optionManifest,
+    }
+    : await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest } = record;
+  const projectRoot = optionProjectRoot || path.dirname(manifestPath);
   const identityModule = await loadProjectTreeIdentityModule();
   const result = identityModule.upsertProjectTreeIdentityNode({
     projectId: manifest.projectId,
@@ -26080,6 +26172,15 @@ async function openLastFile() {
   const lastFilePath = await resolveLastOpenedFilePath(settings);
   if (!lastFilePath) return 'noFile';
   if (!isAllowedFilePath(lastFilePath)) return 'noFile';
+  const continuityProjectId = normalizeStableProjectId(
+    continuity.ok ? continuity.record?.projectId || continuity.projectId : '',
+  );
+  const projectBinding = continuityProjectId
+    ? await findProjectBindingByProjectId(continuityProjectId)
+    : null;
+  if (projectBinding?.projectRoot && isPathInside(projectBinding.projectRoot, lastFilePath)) {
+    setActiveProjectNameFromRoot(projectBinding.projectRoot);
+  }
   
   const exists = await fileExists(lastFilePath);
   if (!exists) return 'noFile';
@@ -26099,7 +26200,10 @@ async function openLastFile() {
         continuity.ok ? continuity.record?.selectionRange || null : null,
         fileResult.content,
       );
-      const continuityCommit = await saveLastFile({ selectionRange });
+      const continuityCommit = await saveLastFile({
+        selectionRange,
+        ...(projectBinding ? { projectBinding } : {}),
+      });
       if (!continuityCommit.ok) {
         currentFilePath = previousFilePath;
         updateStatus('Ошибка');
@@ -26836,7 +26940,11 @@ async function handleWorkspaceMetadataInspectorQuery(payload = {}) {
     };
   }
 
-  const guard = sanitizePayloadWithinProjectRoot({ path: documentTarget.filePath }, ['path']);
+  const guard = sanitizePayloadWithinProjectRoot(
+    { path: documentTarget.filePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
   if (!guard.ok || !guard.payload) {
     return {
       ok: true,
@@ -27257,7 +27365,11 @@ async function handleUiOpenDocumentCommand(payload) {
       error: error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
     };
   }
-  const documentPathGuard = sanitizePayloadWithinProjectRoot({ path: documentTarget.filePath }, ['path']);
+  const documentPathGuard = sanitizePayloadWithinProjectRoot(
+    { path: documentTarget.filePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
   if (!documentPathGuard.ok || !documentPathGuard.payload) return documentPathGuard.error;
   const filePath = documentPathGuard.payload.path;
 
@@ -27300,7 +27412,14 @@ async function handleUiOpenDocumentCommand(payload) {
   };
 
   currentFilePath = filePath;
-  await saveLastFile();
+  await saveLastFile({
+    projectBinding: {
+      projectId: resolvedNode.projectId,
+      projectRoot: resolvedNode.projectRoot,
+      manifestPath: resolvedNode.manifestPath,
+      manifest: resolvedNode.manifest,
+    },
+  });
   sendEditorText(await attachProjectIdToEditorPayload({
     content,
     title: context.title,
@@ -27370,7 +27489,11 @@ async function handleUiCreateNodeCommand(payload) {
       error: error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
     };
   }
-  const parentPathGuard = sanitizePayloadWithinProjectRoot({ path: parentNode.nodePath }, ['path']);
+  const parentPathGuard = sanitizePayloadWithinProjectRoot(
+    { path: parentNode.nodePath },
+    ['path'],
+    parentNode.projectRoot,
+  );
   if (!parentPathGuard.ok || !parentPathGuard.payload) return parentPathGuard.error;
   const parentPath = parentPathGuard.payload.path;
   const kind = safePayload.kind;
@@ -27432,7 +27555,11 @@ async function handleUiCreateNodeCommand(payload) {
   }
   if (!createResult || createResult.ok !== true || !createResult.targetPath) return createResult;
   try {
-    const identity = await upsertProjectTreeIdentityForPath(createResult.targetPath, kind);
+    const identity = await upsertProjectTreeIdentityForPath(createResult.targetPath, kind, {
+      manifestPath: parentNode.manifestPath,
+      manifest: parentNode.manifest,
+      projectRoot: parentNode.projectRoot,
+    });
     return { ok: true, nodeId: identity.nodeId };
   } catch (error) {
     try {
@@ -27467,7 +27594,11 @@ async function handleUiRenameNodeCommand(payload) {
       error: error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
     };
   }
-  const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
+  const nodePathGuard = sanitizePayloadWithinProjectRoot(
+    { path: resolvedNode.nodePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
   if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
   const nodePath = nodePathGuard.payload.path;
   const newName = sanitizeFilename(safePayload.name);
@@ -27534,7 +27665,11 @@ async function handleUiDeleteNodeCommand(payload) {
       error: error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
     };
   }
-  const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
+  const nodePathGuard = sanitizePayloadWithinProjectRoot(
+    { path: resolvedNode.nodePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
   if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
   const nodePath = nodePathGuard.payload.path;
   let deletedSceneIds = [];
@@ -27544,7 +27679,9 @@ async function handleUiDeleteNodeCommand(payload) {
     logDevError('delete node collect pro data invalidation', error);
   }
 
-  const trashPath = getProjectSectionPath('trash');
+  const trashPath = joinPathSegmentsWithinRoot(resolvedNode.projectRoot, [PROJECT_SUBFOLDERS.trash], {
+    resolveSymlinks: false,
+  });
   await fs.mkdir(trashPath, { recursive: true });
   const baseName = path.basename(nodePath);
   let targetPath = joinPathSegmentsWithinRoot(trashPath, [baseName], { resolveSymlinks: false });
@@ -27619,13 +27756,23 @@ async function handleUiMoveNodeCommand(payload, options = {}) {
     });
   }
 
-  const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
+  const nodePathGuard = sanitizePayloadWithinProjectRoot(
+    { path: resolvedNode.nodePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
   if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
-  const parentPathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedParent.nodePath }, ['path']);
+  const parentPathGuard = sanitizePayloadWithinProjectRoot(
+    { path: resolvedParent.nodePath },
+    ['path'],
+    resolvedParent.projectRoot,
+  );
   if (!parentPathGuard.ok || !parentPathGuard.payload) return parentPathGuard.error;
   const nodePath = nodePathGuard.payload.path;
   const targetParentPath = parentPathGuard.payload.path;
-  const romanRoot = getProjectSectionPath('roman');
+  const romanRoot = joinPathSegmentsWithinRoot(resolvedNode.projectRoot, [PROJECT_SUBFOLDERS.roman], {
+    resolveSymlinks: false,
+  });
 
   if (!isPathInside(romanRoot, nodePath) || !isPathInside(romanRoot, targetParentPath)) {
     return makeTreeMoveError('E_TREE_MOVE_SCOPE_BLOCKED', 'TREE_MOVE_ONLY_SUPPORTED_IN_ROMAN');
@@ -27769,11 +27916,17 @@ async function handleUiReorderNodeCommand(payload) {
       error: error && typeof error.code === 'string' ? error.code : 'E_TREE_NODE_RESOLUTION_FAILED',
     };
   }
-  const nodePathGuard = sanitizePayloadWithinProjectRoot({ path: resolvedNode.nodePath }, ['path']);
+  const nodePathGuard = sanitizePayloadWithinProjectRoot(
+    { path: resolvedNode.nodePath },
+    ['path'],
+    resolvedNode.projectRoot,
+  );
   if (!nodePathGuard.ok || !nodePathGuard.payload) return nodePathGuard.error;
   const nodePath = nodePathGuard.payload.path;
   const direction = safePayload.direction;
-  const romanRoot = getProjectSectionPath('roman');
+  const romanRoot = joinPathSegmentsWithinRoot(resolvedNode.projectRoot, [PROJECT_SUBFOLDERS.roman], {
+    resolveSymlinks: false,
+  });
 
   if (!isPathInside(romanRoot, nodePath)) {
     return { ok: false, error: 'Reorder only supported in roman' };
@@ -27799,7 +27952,8 @@ async function handleUiReorderNodeCommand(payload) {
     targetIndex,
   });
   if (!moveResult || moveResult.ok !== true) return moveResult;
-  const { manifest } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const manifestRecord = await readProjectManifest(path.basename(resolvedNode.projectRoot));
+  const manifest = manifestRecord?.manifest || resolvedNode.manifest;
   const entriesAfter = await readDirectoryEntries(parentPath);
   const sceneIdsAfter = getTreeNodeIdsForOrderedEntries(parentPath, entriesAfter, manifest);
   if (sceneIdsAfter.length > 0) {

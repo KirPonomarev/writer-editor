@@ -213,7 +213,7 @@ test('S33 full archive import: restore preserves projectId, unknown fields, back
     mode: 'restore',
   });
 
-  assert.equal(restored.ok, true);
+  assert.equal(restored.ok, true, JSON.stringify(restored));
   assert.equal(restored.imported, true);
   assert.equal(restored.mode, 'restore');
   assert.equal(restored.projectId, manifest.projectId);
@@ -230,6 +230,33 @@ test('S33 full archive import: restore preserves projectId, unknown fields, back
   assertPathless(library, harness.tempRoot);
 });
 
+test('S33 full archive import: open-after-restore exposes restored project tree identity', async (t) => {
+  const harness = await createHarness(t);
+  const { archivePath, manifest } = await writeArchiveFile(t);
+
+  const restored = await harness.main.handleImportProjectArchive({
+    confirmed: true,
+    requestId: 's33-open-after-restore',
+    archivePath,
+    mode: 'restore',
+    openAfterImport: true,
+  });
+
+  assert.equal(restored.ok, true, JSON.stringify(restored));
+  assert.equal(restored.imported, true);
+  const tree = await harness.main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
+  assert.equal(tree.ok, true);
+  assert.equal(tree.projectId, manifest.projectId);
+  assert.equal(tree.root.kind, 'roman-tab-root');
+  assert.equal(JSON.stringify(tree).includes('01 Start'), true);
+  const restoredRoot = path.join(harness.documentsRoot, manifest.projectName);
+  const restoredManifest = await readManifest(restoredRoot);
+  assert.equal(restoredManifest.treeIdentity?.schemaVersion, 1);
+  assert.equal(Object.keys(restoredManifest.treeIdentity?.nodes || {}).length > 0, true);
+  assertPathless(restored, harness.tempRoot);
+  assertPathless(tree, harness.tempRoot);
+});
+
 test('S33 full archive import: restore collision fails and copy creates a new projectId', async (t) => {
   const harness = await createHarness(t);
   const { archivePath, manifest } = await writeArchiveFile(t);
@@ -240,7 +267,7 @@ test('S33 full archive import: restore collision fails and copy creates a new pr
     archivePath,
     mode: 'restore',
   });
-  assert.equal(restored.ok, true);
+  assert.equal(restored.ok, true, JSON.stringify(restored));
 
   const collision = await harness.main.handleImportProjectArchive({
     confirmed: true,
@@ -266,7 +293,8 @@ test('S33 full archive import: restore collision fails and copy creates a new pr
   const copiedManifest = await readManifest(copyRoot);
   assert.equal(copiedManifest.projectId, copied.projectId);
   assert.equal(copiedManifest.copiedFromProjectId, manifest.projectId);
-  assert.equal(Object.prototype.hasOwnProperty.call(copiedManifest, 'treeIdentity'), false);
+  assert.equal(copiedManifest.treeIdentity?.schemaVersion, 1);
+  assert.equal(Object.keys(copiedManifest.treeIdentity?.nodes || {}).length > 0, true);
   assert.deepEqual(copiedManifest.proUnknown, manifest.proUnknown);
   const library = await harness.main.handleWorkspaceProjectLibraryQuery({});
   assert.equal(library.counts.duplicateProjectIds, 0);
