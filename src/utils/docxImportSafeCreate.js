@@ -726,8 +726,13 @@ function buildImportOperationId(options) {
   return `docx-import-op-${operationHash.slice(0, 12)}`;
 }
 
-function buildDocxImportSceneTreeIdentities(importOperationId, sceneId) {
-  const treeNodeId = `yalken.scene.tree.${crypto.createHash('sha256')
+function buildDocxImportSceneTreeIdentities(importOperationId, sceneId, publicSceneLocator = null) {
+  const publicTreeNodeId = isPlainObject(publicSceneLocator)
+    && typeof publicSceneLocator.nodeId === 'string'
+    && /^tree-node-[a-f0-9]{32}$/u.test(publicSceneLocator.nodeId)
+    ? publicSceneLocator.nodeId
+    : '';
+  const treeNodeId = publicTreeNodeId || `yalken.scene.tree.${crypto.createHash('sha256')
     .update(`${importOperationId}:${sceneId}`, 'utf8').digest('hex').slice(0, 16)}`;
   const treeId = `yalken.scene.tree.root.${crypto.createHash('sha256')
     .update(`root:${importOperationId}`, 'utf8').digest('hex').slice(0, 16)}`;
@@ -762,7 +767,7 @@ function buildDeterministicProjectTreeNodeId(projectId, bindingKey) {
   return `tree-node-${digest.slice(0, 32)}`;
 }
 
-function buildDocxImportPublicSceneLocator({ projectRoot, targetPath, projectId }) {
+function buildDocxImportSceneTreeIdentityDescriptor({ projectRoot, targetPath, projectId }) {
   const relativePath = path.relative(projectRoot, targetPath);
   if (!relativePath || relativePath.startsWith('..') || path.isAbsolute(relativePath)) return null;
   const relativeFile = relativePath.split(path.sep).join('/');
@@ -773,11 +778,24 @@ function buildDocxImportPublicSceneLocator({ projectRoot, targetPath, projectId 
   const nodeId = buildDeterministicProjectTreeNodeId(projectId, bindingKey);
   if (!bindingKey || !nodeId) return null;
   return {
-    nodeId,
-    label: path.posix.basename(relativeFile, '.txt'),
     bindingKey,
-    relativeFile,
     kind: 'scene',
+    nodeId,
+    present: true,
+    relativeFile,
+  };
+}
+
+function buildDocxImportPublicSceneLocator({ projectRoot, targetPath, projectId, sceneId }) {
+  const normalizedSceneId = typeof sceneId === 'string' ? sceneId.trim() : '';
+  if (!/^docx-import-scene-[a-f0-9]{8}$/u.test(normalizedSceneId)) return null;
+  const descriptor = buildDocxImportSceneTreeIdentityDescriptor({ projectRoot, targetPath, projectId });
+  if (!descriptor) return null;
+  return {
+    sceneId: normalizedSceneId,
+    nodeId: descriptor.nodeId,
+    label: path.posix.basename(descriptor.relativeFile, '.txt'),
+    kind: descriptor.kind,
   };
 }
 
@@ -786,6 +804,7 @@ function buildVerifiedDocxImportScene(entry, importOperationId, content, publicS
   const { treeNodeId, treeId } = buildDocxImportSceneTreeIdentities(
     importOperationId,
     entry.sceneId,
+    publicSceneLocator,
   );
   return {
     sceneId: entry.sceneId,
@@ -844,6 +863,71 @@ function buildDocxImportTransactionEvidence(manifestEvidence, batchId) {
       ? sha256Text(batchId)
       : '',
   };
+}
+
+function normalizeDocxImportManifestTreeNodeId(value) {
+  const nodeId = typeof value === 'string' ? value.trim() : '';
+  return /^tree-node-[a-f0-9]{32}$/u.test(nodeId) ? nodeId : '';
+}
+
+function buildDocxImportManifestTextWithSceneTreeIdentity({
+  manifestText,
+  projectId,
+  sceneTreeIdentityDescriptor,
+}) {
+  if (typeof manifestText !== 'string' || !manifestText.trim()) return '';
+  if (!isPlainObject(sceneTreeIdentityDescriptor)) return '';
+  const nodeId = normalizeDocxImportManifestTreeNodeId(sceneTreeIdentityDescriptor.nodeId);
+  const bindingKey = normalizeProjectTreeBindingKey(sceneTreeIdentityDescriptor.bindingKey);
+  const kind = typeof sceneTreeIdentityDescriptor.kind === 'string'
+    ? sceneTreeIdentityDescriptor.kind.trim()
+    : '';
+  if (!nodeId || !bindingKey || !/^[A-Za-z0-9._:-]{1,96}$/u.test(kind)) return '';
+  let manifest;
+  try {
+    manifest = JSON.parse(manifestText);
+  } catch {
+    return '';
+  }
+  if (!isPlainObject(manifest) || typeof manifest.projectId !== 'string' || manifest.projectId.trim() !== projectId) {
+    return '';
+  }
+  const sourceTreeIdentity = isPlainObject(manifest.treeIdentity) ? manifest.treeIdentity : {};
+  const sourceNodes = isPlainObject(sourceTreeIdentity.nodes) ? sourceTreeIdentity.nodes : {};
+  for (const [existingNodeId, existingNode] of Object.entries(sourceNodes)) {
+    if (
+      existingNodeId !== nodeId
+      && isPlainObject(existingNode)
+      && existingNode.present !== false
+      && existingNode.bindingKey === bindingKey
+    ) {
+      return '';
+    }
+  }
+  const nextNodes = {
+    ...sourceNodes,
+    [nodeId]: {
+      ...(isPlainObject(sourceNodes[nodeId]) ? sourceNodes[nodeId] : {}),
+      bindingKey,
+      kind,
+      present: true,
+    },
+  };
+  const nextTreeIdentity = {
+    ...sourceTreeIdentity,
+    schemaVersion: 1,
+    nodes: Object.fromEntries(Object.entries(nextNodes).sort(([left], [right]) => left.localeCompare(right))),
+  };
+  const currentLastCommandId = Number(manifest.lastCommandId);
+  const nextLastCommandId = Number.isSafeInteger(currentLastCommandId) && currentLastCommandId >= 0
+    ? currentLastCommandId + 1
+    : 1;
+  const nextManifest = {
+    ...manifest,
+    treeIdentity: nextTreeIdentity,
+    lastCommandId: nextLastCommandId,
+  };
+  return `${JSON.stringify(nextManifest, null, 2)}\n`;
 }
 
 function validateDocxImportManifestAuthority(manifestAuthority, importOperationId) {
@@ -1185,6 +1269,7 @@ async function validateExistingDocxImportReceipt(options) {
     projectRoot,
     targetPath,
     projectId,
+    sceneId: entry.sceneId,
   });
   const expectedVerifiedSceneWithoutLocator = buildVerifiedDocxImportScene(
     entry,
@@ -1387,6 +1472,17 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   const writeBatchAtomic = typeof options.writeBatchAtomic === 'function'
     ? options.writeBatchAtomic
     : writeFlowSceneBatchAtomic;
+  const sceneTreeIdentityDescriptor = buildDocxImportSceneTreeIdentityDescriptor({
+    projectRoot,
+    targetPath: normalizedEntry.path,
+    projectId,
+  });
+  const publicSceneLocator = buildDocxImportPublicSceneLocator({
+    projectRoot,
+    targetPath: normalizedEntry.path,
+    projectId,
+    sceneId: normalizedEntry.sceneId,
+  });
 
   // GENERIC-01 (G3): manifest-authority transaction. The flow batch journal
   // runs inside one lease/publish scope; the manifest revision bump (if a
@@ -1429,6 +1525,9 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
         {
           projectId,
           importOperationId,
+          manifestPath: typeof options.manifestPath === 'string' ? options.manifestPath : null,
+          manifestText: typeof options.manifestRaw === 'string' ? options.manifestRaw : '',
+          sceneTreeIdentityDescriptor,
           lease: typeof options.lease === 'object' ? options.lease : null,
         },
       );
@@ -1479,12 +1578,12 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   // GENERIC-01 (G3): Core-allocated tree-node identity. The tree identity is
   // allocated atomically within the same transaction scope (algorithmic donor
   // when no transactionAuthority port is wired).
-  const verifiedScene = buildVerifiedDocxImportScene(normalizedEntry, importOperationId, actualContent);
-  const publicSceneLocator = buildDocxImportPublicSceneLocator({
-    projectRoot,
-    targetPath: normalizedEntry.path,
-    projectId,
-  });
+  const verifiedScene = buildVerifiedDocxImportScene(
+    normalizedEntry,
+    importOperationId,
+    actualContent,
+    publicSceneLocator,
+  );
   const verifiedSceneWithPublicLocator = buildVerifiedDocxImportScene(
     normalizedEntry,
     importOperationId,
@@ -1574,17 +1673,25 @@ async function commitManifestRevisionForImport(authority, context) {
   const projectId = typeof context.projectId === 'string' && context.projectId.trim()
     ? context.projectId.trim()
     : 'docx-import-generic';
-  const nextText = JSON.stringify({
-    schemaVersion: 'yalken.projectManifest.v1',
+  const manifestPath = typeof context.manifestPath === 'string' && context.manifestPath.trim()
+    ? context.manifestPath.trim()
+    : '';
+  const expectedText = typeof context.manifestText === 'string' && context.manifestText.trim()
+    ? context.manifestText
+    : '';
+  const nextText = buildDocxImportManifestTextWithSceneTreeIdentity({
+    manifestText: expectedText,
     projectId,
-    docxImportOperationId: context.importOperationId,
-    revisionBumpedAt: new Date().toISOString(),
+    sceneTreeIdentityDescriptor: context.sceneTreeIdentityDescriptor,
   });
+  if (!manifestPath || !expectedText || !nextText) {
+    throw new Error('DOCX_SAFE_CREATE_MANIFEST_TREE_IDENTITY_INVALID');
+  }
   try {
     const result = await authority.commitManifestText({
       projectId,
-      targetPath: context.manifestPath || null,
-      expectedText: null,
+      targetPath: manifestPath,
+      expectedText,
       nextText,
       lease: context.lease || null,
       label: 'docxImportSafeCreate',
@@ -1598,8 +1705,11 @@ async function commitManifestRevisionForImport(authority, context) {
       previousHash: typeof result.previousHash === 'string' ? result.previousHash : '',
       durablePublication: result.durablePublication === true,
     };
-  } catch {
-    return buildAlgorithmicManifestEvidence(context.importOperationId);
+  } catch (error) {
+    if (error && typeof error.message === 'string' && DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE.test(error.message)) {
+      throw error;
+    }
+    throw new Error('DOCX_SAFE_CREATE_MANIFEST_COMMIT_FAILED');
   }
 }
 

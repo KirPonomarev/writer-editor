@@ -134,10 +134,9 @@ test('DOCX import preview UI flow: scene resolver executes exact match and fail-
   ]);
 
   const publicLocator = {
+    sceneId: 'docx-import-scene-abcd1234',
     nodeId: 'tree-node-11111111111111111111111111111111',
     label: 'Imported DOCX 11111111',
-    bindingKey: 'file:roman/Imported/Imported DOCX 11111111.txt',
-    relativeFile: 'roman/Imported/Imported DOCX 11111111.txt',
     kind: 'scene',
   };
   const publicLocators = getDocxImportPublicSceneLocatorsFromValue({
@@ -145,6 +144,7 @@ test('DOCX import preview UI flow: scene resolver executes exact match and fail-
   });
   assert.deepEqual(JSON.parse(JSON.stringify(publicLocators)), [
     {
+      sceneId: 'docx-import-scene-abcd1234',
       nodeId: 'tree-node-11111111111111111111111111111111',
       expectedLabel: 'Imported DOCX 11111111',
       source: 'public-scene-locator',
@@ -152,8 +152,10 @@ test('DOCX import preview UI flow: scene resolver executes exact match and fail-
   ]);
   assert.deepEqual(JSON.parse(JSON.stringify(getDocxImportPublicSceneLocatorsFromValue({
     publicSceneLocator: {
+      sceneId: 'docx-import-scene-abcd1234',
       nodeId: 'tree-node-22222222222222222222222222222222',
       label: 'Imported DOCX 22222222',
+      relativeFile: 'roman/Imported/Imported DOCX 22222222.txt',
       kind: 'scene',
     },
   }))), []);
@@ -164,6 +166,12 @@ test('DOCX import preview UI flow: scene resolver executes exact match and fail-
     nodeId: 'tree-node-11111111111111111111111111111111',
   };
   assert.equal(findDocxImportSceneNode({ children: [exactNode] }, publicLocators), exactNode);
+  const treeNodeOnly = {
+    kind: 'scene',
+    label: 'Imported DOCX 11111111',
+    treeNodeId: 'tree-node-11111111111111111111111111111111',
+  };
+  assert.equal(findDocxImportSceneNode({ children: [treeNodeOnly] }, publicLocators), treeNodeOnly);
   assert.equal(
     findDocxImportSceneNode({
       children: [{ ...exactNode, label: 'Imported DOCX stale label' }],
@@ -216,6 +224,30 @@ test('DOCX import preview UI flow: project tree exposes Imported txt files as sc
   ]) {
     assert.ok(main.includes(marker), marker);
   }
+  const readOnlyStart = main.indexOf('async function buildProjectTreeRootsWithIdentitiesReadOnly()');
+  assert.notEqual(readOnlyStart, -1);
+  const readOnlyEnd = main.indexOf('async function resolveProjectTreeNodeIdentity', readOnlyStart);
+  assert.notEqual(readOnlyEnd, -1);
+  const readOnlySection = main.slice(readOnlyStart, readOnlyEnd);
+  for (const marker of [
+    'const activeProjectName = currentProjectName || DEFAULT_PROJECT_NAME;',
+    'await buildRomanTree(activeProjectName)',
+    'await buildMindMapTree(activeProjectName)',
+    'await buildPrintTree(activeProjectName)',
+    'nodePath: getProjectRootPath(activeProjectName)',
+    'await buildMaterialsTree(activeProjectName)',
+    'await buildReferenceTree(activeProjectName)',
+    'await annotateProjectTreeDerivedCounters(Object.values(roots), activeProjectName)',
+  ]) {
+    assert.ok(readOnlySection.includes(marker), marker);
+  }
+  const resolverEnd = main.indexOf('function normalizeProjectRelativeSceneId', readOnlyEnd);
+  assert.notEqual(resolverEnd, -1);
+  const resolverSection = main.slice(readOnlyEnd, resolverEnd);
+  assert.ok(
+    resolverSection.includes('await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME)'),
+    'resolveProjectTreeNodeIdentity uses active project manifest',
+  );
 });
 
 test('DOCX import preview UI flow: shell reset and restore clear pending accept state', () => {

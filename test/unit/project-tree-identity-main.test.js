@@ -8,19 +8,26 @@ const Module = require('node:module');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 
-async function loadMainWithElectronStub() {
+async function loadMainWithElectronStub(paths = null) {
   const mainPath = path.join(ROOT, 'src', 'main.js');
   const fileManagerPath = path.join(ROOT, 'src', 'utils', 'fileManager.js');
+  const fallbackRoot = paths?.tempRoot || ROOT;
   const originalLoad = Module._load;
   const electronStub = {
     app: {
-      getPath: () => ROOT,
+      getPath: (name) => {
+        if (name === 'userData' && paths?.userDataRoot) return paths.userDataRoot;
+        if (name === 'documents' && paths?.documentsParent) return paths.documentsParent;
+        if (name === 'appData' && paths?.tempRoot) return paths.tempRoot;
+        return fallbackRoot;
+      },
       setPath: () => {},
       whenReady: () => new Promise(() => {}),
       on: () => {},
       quit: () => {},
       exit: () => {},
       setName: () => {},
+      requestSingleInstanceLock: () => true,
     },
     BrowserWindow: {
       getFocusedWindow: () => null,
@@ -172,5 +179,44 @@ test('project tree identity migration is atomic, idempotent, and rename-stable',
   await assert.rejects(
     () => main.resolveProjectTreeNodeIdentity(firstScene.nodeId, first.projectId),
     (error) => error && error.code === 'E_PATH_BOUNDARY_VIOLATION',
+  );
+});
+
+test('project tree identity read-only query and resolver stay on active non-default project', async (t) => {
+  const spelledTempRoot = await fsPromises.mkdtemp(path.join(os.tmpdir(), 'tree-identity-active-'));
+  const tempRoot = await fsPromises.realpath(spelledTempRoot);
+  t.after(async () => fsPromises.rm(tempRoot, { recursive: true, force: true }));
+
+  const documentsParent = path.join(tempRoot, 'Documents');
+  const documentsRoot = path.join(documentsParent, 'craftsman');
+  const userDataRoot = path.join(tempRoot, 'userData');
+  await fsPromises.mkdir(documentsRoot, { recursive: true });
+  await fsPromises.mkdir(userDataRoot, { recursive: true });
+  const { main, fileManager } = await loadMainWithElectronStub({ tempRoot, documentsParent, userDataRoot });
+  const originalGetDocumentsPath = fileManager.getDocumentsPath;
+  fileManager.getDocumentsPath = () => documentsRoot;
+  t.after(() => { fileManager.getDocumentsPath = originalGetDocumentsPath; });
+
+  const created = await main.handleProjectLifecycleCreateCommand({ projectName: 'Beta Book' });
+  assert.equal(created.ok, true);
+  assert.equal(created.projectName, 'Beta Book');
+
+  const tree = await main.handleWorkspaceProjectTreeQuery({ tab: 'roman' });
+  assert.equal(tree.ok, true);
+  assert.equal(tree.projectId, created.projectId);
+  assertPathlessTree(tree.root);
+
+  const importedScene = findNode(tree.root, (node) => (
+    node.kind === 'scene'
+    && typeof node.label === 'string'
+    && node.label.endsWith('Начало')
+  ));
+  assert.ok(importedScene);
+  assert.match(importedScene.nodeId, /^tree-node-[a-f0-9]{32}$/u);
+
+  const resolved = await main.resolveProjectTreeNodeIdentity(importedScene.nodeId, tree.projectId);
+  assert.equal(
+    resolved.nodePath,
+    path.join(documentsRoot, 'Beta Book', 'roman', 'Imported', '01 Начало.txt'),
   );
 });

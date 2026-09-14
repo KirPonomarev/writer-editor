@@ -101,11 +101,17 @@ function sanitizeDiagnostics(items) {
     .map((item) => copyAllowedFields(item, [
       'code',
       'severity',
+      'category',
       'message',
       'field',
+      'entryId',
       'sourceCode',
       'sourcePart',
       'tagName',
+      'paragraphIndex',
+      'numId',
+      'ilvl',
+      'listKey',
       'actual',
       'limit',
     ]))
@@ -117,6 +123,7 @@ function sanitizeEvidence(items) {
   return items
     .map((item) => copyAllowedFields(item, [
       'kind',
+      'entryId',
       'sourceCode',
       'sourcePart',
       'byteSize',

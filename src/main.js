@@ -10048,7 +10048,7 @@ function validateDocxImportSafeCreatePayload(payload = {}) {
 function copyDocxImportSafeCreatePublicSceneLocator(locator) {
   if (!isPlainObjectValue(locator)) return null;
   const out = {};
-  for (const key of ['nodeId', 'label', 'bindingKey', 'relativeFile', 'kind']) {
+  for (const key of ['sceneId', 'nodeId', 'label', 'kind']) {
     if (locator[key] !== undefined) out[key] = cloneJsonSafe(locator[key]);
   }
   return out;
@@ -10146,6 +10146,12 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
         romanRoot,
         projectId: projectBinding && typeof projectBinding.projectId === 'string'
           ? projectBinding.projectId
+          : '',
+        manifestPath: projectBinding && typeof projectBinding.manifestPath === 'string'
+          ? projectBinding.manifestPath
+          : '',
+        manifestRaw: projectBinding && typeof projectBinding.manifestRaw === 'string'
+          ? projectBinding.manifestRaw
           : '',
         queueDiskOperation,
         operationLabel: 'safe create DOCX import scene batch',
@@ -25263,19 +25269,19 @@ async function buildProjectTreeRootsWithIdentitiesReadOnly() {
   const manifestPath = getProjectManifestPath(activeProjectName);
   const projectRoot = path.dirname(manifestPath);
   const manifest = manifestRecord.manifest;
-  const romanRoot = await buildRomanTree();
-  const mindmapRoot = await buildMindMapTree();
-  const printRoot = await buildPrintTree();
+  const romanRoot = await buildRomanTree(activeProjectName);
+  const mindmapRoot = await buildMindMapTree(activeProjectName);
+  const printRoot = await buildPrintTree(activeProjectName);
   const roots = {
     roman: buildNode({
       name: 'Roman tab',
       label: 'Roman',
       kind: 'roman-tab-root',
-      nodePath: getProjectRootPath(),
+      nodePath: getProjectRootPath(activeProjectName),
       children: [romanRoot, mindmapRoot, printRoot],
     }),
-    materials: await buildMaterialsTree(),
-    reference: await buildReferenceTree(),
+    materials: await buildMaterialsTree(activeProjectName),
+    reference: await buildReferenceTree(activeProjectName),
   };
   const descriptors = collectProjectTreeIdentityDescriptors(Object.values(roots), projectRoot);
   const identityModule = await loadProjectTreeIdentityModule();
@@ -25293,7 +25299,7 @@ async function buildProjectTreeRootsWithIdentitiesReadOnly() {
     ? { ...manifest, treeIdentity: result.value }
     : manifest;
   annotateProjectTreeIdentities(Object.values(roots), projectRoot, result.bindings);
-  await annotateProjectTreeDerivedCounters(Object.values(roots));
+  await annotateProjectTreeDerivedCounters(Object.values(roots), activeProjectName);
   return {
     projectId: manifest.projectId,
     roots,
@@ -25311,7 +25317,7 @@ async function resolveProjectTreeNodeIdentity(nodeId, expectedProjectId = '') {
     error.code = 'E_TREE_NODE_ID_INVALID';
     throw error;
   }
-  const { manifestPath, manifest, manifestRaw } = await ensureProjectManifest(DEFAULT_PROJECT_NAME);
+  const { manifestPath, manifest, manifestRaw } = await ensureProjectManifest(currentProjectName || DEFAULT_PROJECT_NAME);
   const normalizedExpectedProjectId = typeof expectedProjectId === 'string' ? expectedProjectId.trim() : '';
   if (normalizedExpectedProjectId && normalizedExpectedProjectId !== manifest.projectId) {
     const error = new Error('TREE_NODE_PROJECT_MISMATCH');

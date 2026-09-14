@@ -43,7 +43,7 @@
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "docs/OPS/R24/CORRECTIVE/TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "d48185d38e215b6df31423a1b972997ff3c5e048b0dae2019e0b44a96dbc4548"
+      "sha256": "4a92c7603e2ecc4a3eeb1a8fcd64ccfea642ec354c36d00fcf8302ebaf672c54"
     },
     {
       "approved": true,
@@ -81,7 +81,7 @@
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "ec8fbf68047fa434f4a38a6a1fbfd7d711d10884b42b6b5d61aa915e66f10a3e",
+      "sha256": "22a7ece0aeb33101df6d6743459d2dd915808a0d39f11bd9fbb9375d07b7337b",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added."
     },
     {
@@ -115,7 +115,7 @@
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "9d99b4ce8fce2e11c364883f9ed94e4f47264d0ab1e6ad31ebac31e77f6abe69",
+      "sha256": "1c802e3f2200476823a68ef57d4da47ca129f2e3dd2a4ed86bf06751eeb77594",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added."
     },
     {
@@ -125,16 +125,19 @@
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "80008131575be92462c5bccaf7500aee4d352cb81f9c43fccea977e97dc1cc70"
+      "sha256": "860fdf718ae59d2d0f4184995872645af0b4813a7507c45c0dda1f7689c60448"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T14:55:03.000Z",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
-      "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "5c0365a74b4fee86cf65010a1faf190839eb10565e8d7777f020766317685aee"
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "2e5fdec3f9e5f7ba4a91ca94552b2da2fc55053248f5e8b9856be921e005306e",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
+      ]
     },
     {
       "approved": true,
@@ -156,7 +159,7 @@
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "fdfa893f7e755913753f3060fcc34d0737007c00db1a145abdfa6b5c4d5da5b6"
+      "sha256": "84676fc67f47ee450791ae7f06a17e1eae5c3074cdc2301dc58c1c242d48fd06"
     },
     {
       "approved": true,
@@ -165,7 +168,7 @@
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "filePath": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "9c5c2720fdde793bbd6ba9310a6be1ad165a21390ac80d5afcaebf7a57de10b2"
+      "sha256": "bff12ba6219c9e39049fdb0fc71dcfa00e89dc8685fa37848171a3f541c12105"
     },
     {
       "approved": true,
@@ -247,15 +250,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_INVENTORY_REBIND",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Bounded Release01 successor-chain CI repair updates the maintained C1B inventory hash after admitting the Release01 contract guard and C2A carrier into the exact repair delta. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "d5d7e234aba58aa0e325e62fbb94f77592210cdcfdb47e8c465527d3b4d7d1dc"
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "bdcb2d657aaf33762554d6be9772fd3859add835eee8834b7eefb6fa66708662"
     },
     {
       "approved": true,
@@ -277,15 +280,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_POST_AUDIT_VERIFIER_ADMISSION",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Bounded verifier update admits the Release01 contract guard and C2A carrier into the exact TEXT_SINGLE_SCENE repair delta so the post-audit oracle binds the same CI repair bytes. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "ed2d38c4dd542df929ead11ead52425a50670c20c51dfef946698a2237fa44d9"
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "08e3c59108f3c2697505e3d7e9cc867c5396f6944de7c35c28e7efdb0896cb64"
     },
     {
       "approved": true,
@@ -298,15 +301,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_POST_AUDIT_CONTRACT_ADMISSION",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Bounded contract update raises the TEXT_SINGLE_SCENE admitted-path denominator for the newly admitted Release01 contract guard and C2A carrier. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "98f81e0bfaf1314fc291b5b06bfb726f423385aba6a47e9a4170f2dc57b72640"
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "2375ad8e88042abb8a3524ee9809c708a6ab8006f92be2b05c7922dbcf980041"
     },
     {
       "approved": true,
@@ -333,7 +336,7 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "6c9bf8f52609ddffdc216277f6341a5cf7180c611d79d0c21963824a07505223"
+      "sha256": "987c76848963b8d672e08d7ac604788f8891ab8abc0dd9c7f1bb77e4d61b9ce8"
     },
     {
       "approved": true,
@@ -342,7 +345,7 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "aea5a2e5dcf26dcb263a56f4275e0d362eb8ee2536fb87995c9f18f3cda26ac0"
+      "sha256": "74f9461046c9d082156276a10eea43a0ff287ee27596650aaee86377fcebaab8"
     },
     {
       "approved": true,
@@ -351,7 +354,7 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "fd1906568707e77632564e9245ea1d425eb7fdac6cf59b452be265c6f9d39466"
+      "sha256": "585ca24ab26e60e94c8402fd3f28c4ad3b08d7d7582f6da4a93f0db1552f5551"
     },
     {
       "approved": true,
@@ -360,7 +363,7 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "2b30fdf3ea543a4dc1bbd7312adec10086d9492cc6793189c411a071403ae092"
+      "sha256": "7d09958be969c60092e6dd4c4d5d97381ff8351876dae2529fe1a6a26d82fb03"
     },
     {
       "approved": true,
@@ -369,7 +372,7 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "42b77667925e3b565b437f00b57b76678eb42078e94799e9bf08b3c87b4f0870"
+      "sha256": "154803bb4aeff48edc74e80b6fe8d6350054cff83cd1f8206164b3439150abb7"
     },
     {
       "approved": true,
@@ -378,7 +381,16 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "3982a26c77c3242ffd126a582ebf3594d7706a28b7e5eb6002d06afefdc699e0"
+      "sha256": "6d70654aa0320c2d68b58f48cee2668b7330f8965481bf7df53a873ee62b427e"
+    },
+    {
+      "approved": true,
+      "filePath": "test/unit/docx-import-product-flow-command.test.js",
+      "approvedAtUtc": "2026-09-14T14:55:03.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "e4bfa57f6bcaffa35c258ed10c2f66d5f4e67f7e2b2057aa7a2a2ddb86d68234"
     },
     {
       "approved": true,
@@ -387,7 +399,7 @@
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
-      "sha256": "03246e28ec838a1a967fb107c32ef31e60493deb3910e0900d083a0e40c4aa66"
+      "sha256": "5a84483c0c84a2459f931e39dae03f6dcdf3bfefecf03f1577d110fd318e3420"
     },
     {
       "approved": true,
@@ -427,15 +439,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-14T15:55:00.000Z",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_RELEASE01_CI_REPAIR_C2A_CARRIER_REBIND",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_RELEASE01_CI_REPAIR"
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Deterministic C2A carrier rebind caused only by the maintained C1B inventory byte update for the bounded Release01 successor-chain CI repair. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
-      "sha256": "c05dca54b6d99fdbea40fa4661b68aca797dfaeea4601792dfe23eb4342a1ab1"
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "98044d4b3142fc381a6b6e689cbb9d1df83396a92e0efb37568a3109780d3054"
     },
     {
       "approved": true,
@@ -448,14 +460,48 @@
       "filePath": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
       "rationale": "Release01 current wording registry compilation follows the admitted TEXT_SINGLE_SCENE append-only successor after verifying its CORE_A4 predecessor hash and predecessor editor override, so the registry binds the current editor wording bytes. No product runtime, UI, dependency, network, cloud truth, Word execution, denominator promotion, cell acceptance, release readiness, or PROGRAM_DONE authority is added.",
       "sha256": "1ad3e1ec82b7dac4b711b80b595e6319e5ef6f58f6397bbabe06bcbe48cf11ae"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-14T15:45:00.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/project-tree-identity-main.test.js",
+      "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, active project tree resolution, durable manifest tree identity publication, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "ef021f0761e833285db9998a6ca18c2842c6c33019865a0ee801a8e6c7d09a7b"
+    },
+    {
+      "approved": true,
+      "filePath": "src/utils/docxImportLocalFilePreview.js",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
+      ],
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "4e8cc20b47e0e75ea25d99ff42167222d36a6ec050fe9ce47b4dc79be010c36f"
+    },
+    {
+      "approved": true,
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
+      "approvedAtUtc": "2026-09-14T19:45:04.000Z",
+      "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
+      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
+      ],
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "1dda8cb9610e6b5fd702275890188b5afed65eb13607f29bf520183abc20b800"
     }
   ],
   "version": "v1.0",
   "evidenceStampIds": [
+    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1",
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
     "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
     "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
-    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
+    "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
   ]
 }

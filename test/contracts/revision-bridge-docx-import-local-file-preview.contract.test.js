@@ -130,6 +130,30 @@ function cleanDocxZip(body = '<w:p/>') {
   ]);
 }
 
+function packageRootRelationshipDocxZip(body = '<w:p/>') {
+  return zipFixture([
+    {
+      name: '_rels/.rels',
+      method: 8,
+      body: [
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">',
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>',
+        '</Relationships>',
+      ].join(''),
+    },
+    {
+      name: '[Content_Types].xml',
+      method: 8,
+      body: '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>',
+    },
+    {
+      name: 'word/document.xml',
+      method: 8,
+      body: documentXml(body),
+    },
+  ]);
+}
+
 function rawStoredDocxZip(body) {
   return zipFixture([
     {
@@ -250,6 +274,36 @@ test('DOCX local file preview adapter: clean local DOCX becomes pathless preview
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.mode, 'create-only');
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\nAB\nBravo');
   assert.equal(result.docxImportPreviewPlan.lossReport.mode, 'plain-text-only');
+  assertNoForbiddenPublicFields(result);
+});
+
+test('DOCX local file preview adapter: package-root relationship identity stays out of content loss', async () => {
+  const result = await createDocxImportLocalFilePreview(
+    { requestId: 'local-preview-package-root-relationship' },
+    {
+      pickLocalFile: async () => ({ path: path.join(os.tmpdir(), 'PackageRootRelationship.docx') }),
+      readLocalFileBytes: async () => packageRootRelationshipDocxZip(paragraphXml('Linked text')),
+      loadRevisionBridgeModule: loadBridge,
+    },
+  );
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.importPreviewOk, true);
+  assert.equal(result.docxContentPreviewReport.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
+    && item.category === 'relationshipPart'
+    && item.entryId === '_rels/.rels'
+  )), true);
+  assert.equal(result.docxImportPreviewPlan.diagnostics.some((item) => (
+    item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
+    && item.category === 'relationshipPart'
+    && item.entryId === '_rels/.rels'
+  )), true);
+  assert.equal(result.docxImportPreviewPlan.lossReport.itemCount, 1);
+  assert.equal(result.docxImportPreviewPlan.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
+    && item.sourcePart === 'word/document.xml'
+  )), false);
   assertNoForbiddenPublicFields(result);
 });
 

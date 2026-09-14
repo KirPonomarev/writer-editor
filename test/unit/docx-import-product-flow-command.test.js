@@ -92,6 +92,12 @@ function localFilePreview(plan = previewPlan()) {
 }
 
 function safeCreateResult(plan = previewPlan()) {
+  const publicSceneLocator = {
+    sceneId: plan.candidateCreatePlan.entries[0].sceneId,
+    nodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
+    label: 'Imported DOCX 11111111',
+    kind: 'scene',
+  };
   return {
     ok: true,
     requestId: 'docx-product-flow',
@@ -100,6 +106,8 @@ function safeCreateResult(plan = previewPlan()) {
     safeCreateOk: true,
     created: true,
     createdSceneIds: [plan.candidateCreatePlan.entries[0].sceneId],
+    publicSceneLocators: [publicSceneLocator],
+    publicSceneLocator,
     receipt: {
       schemaVersion: 'revision-bridge.docx-import-safe-create-receipt.v1',
       type: 'docx.import.safeCreate.receipt',
@@ -116,8 +124,12 @@ function safeCreateResult(plan = previewPlan()) {
           kind: 'scene',
           bytesWritten: 12,
           outputHash: 'c'.repeat(64),
+          treeNodeId: publicSceneLocator.nodeId,
+          publicSceneLocator,
         },
       ],
+      publicSceneLocators: [publicSceneLocator],
+      publicSceneLocator,
       lossReportSummary: {
         schemaVersion: 'revision-bridge.docx-import-preview.loss-report.v1',
         mode: 'plain-text-only',
@@ -143,7 +155,7 @@ function collectKeys(value, pathParts = []) {
 
 function assertNoForbiddenPublicFields(value) {
   const keys = collectKeys(value);
-  for (const forbidden of ['rawBytes', 'bufferSource', 'filePath', 'projectRoot', 'outPath', 'outDir', 'writeReceipt', 'importReceipt', 'exportReceipt']) {
+  for (const forbidden of ['rawBytes', 'bufferSource', 'filePath', 'projectRoot', 'outPath', 'outDir', 'bindingKey', 'relativeFile', 'writeReceipt', 'importReceipt', 'exportReceipt']) {
     assert.equal(keys.some((key) => key === forbidden || key.endsWith(`.${forbidden}`)), false, forbidden);
   }
 }
@@ -230,6 +242,13 @@ test('DOCX import product flow: accept runs preview then safe-create through com
   assert.equal(result.value.userVisible, true);
   assert.deepEqual(result.value.createdSceneIds, ['docx-import-scene-abcd1234']);
   assert.deepEqual(result.value.visibleCreatedSceneIds, ['docx-import-scene-abcd1234']);
+  assert.deepEqual(result.value.publicSceneLocator, {
+    sceneId: 'docx-import-scene-abcd1234',
+    nodeId: 'tree-node-1234abcd1234abcd1234abcd1234abcd',
+    label: 'Imported DOCX 11111111',
+    kind: 'scene',
+  });
+  assert.deepEqual(result.value.publicSceneLocators, [result.value.publicSceneLocator]);
   assert.equal(result.value.receipt.reason, 'DOCX_IMPORT_SAFE_CREATE_APPLIED');
   assert.deepEqual(bridgeRequests.map((entry) => entry.commandId), [
     'cmd.project.docx.previewLocalFile',

@@ -1094,10 +1094,12 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
     && item.category === 'link'
     && item.tagName === 'w:hyperlink'
   )), true);
-  assert.equal(importPreview.lossReport.items.some((item) => (
+  const relationshipLossItems = importPreview.lossReport.items.filter((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
-  )), true);
+  ));
+  assert.equal(relationshipLossItems.length, 1);
+  assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
 });
 
 test('DOCX content preview: Google Docs tab structure preserves labels in import candidate with explicit diagnostic', async () => {
@@ -1706,10 +1708,12 @@ test('DOCX content preview: hyperlink visible text survives split runs anchors a
     item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
     && item.category === 'bookmark'
   )), true);
-  assert.equal(importPreview.lossReport.items.some((item) => (
+  const relationshipLossItems = importPreview.lossReport.items.filter((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
-  )), true);
+  ));
+  assert.equal(relationshipLossItems.length, 1);
+  assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
 });
 
 test('DOCX content preview: paragraph numbering is explicit unsupported list loss', async () => {

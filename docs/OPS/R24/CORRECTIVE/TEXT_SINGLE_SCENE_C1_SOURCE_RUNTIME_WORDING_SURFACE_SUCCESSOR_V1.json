@@ -28,12 +28,12 @@
     {
       "surfaceId": "surface-editor-js",
       "path": "src/renderer/editor.js",
-      "sha256": "sha256:2b30fdf3ea543a4dc1bbd7312adec10086d9492cc6793189c411a071403ae092"
+      "sha256": "sha256:7d09958be969c60092e6dd4c4d5d97381ff8351876dae2529fe1a6a26d82fb03"
     }
   ],
   "generatedRuntimeArtifact": {
     "path": "src/renderer/editor.bundle.js",
-    "sha256": "sha256:fd1906568707e77632564e9245ea1d425eb7fdac6cf59b452be265c6f9d39466",
+    "sha256": "sha256:585ca24ab26e60e94c8402fd3f28c4ad3b08d7d7582f6da4a93f0db1552f5551",
     "binding": "DETERMINISTIC_BUILD_RENDERER_SOURCE_DIST_EQUALITY"
   },
   "authority": {
@@ -51,7 +51,7 @@
     ]
   },
   "delta": {
-    "outcome": "Renderer opens an imported DOCX scene only through a current pathless public tree-node locator, while legacy plan locators remain a fallback when no public locator is present.",
+    "outcome": "Renderer opens an imported DOCX scene only through a current pathless public tree-node locator that is durably published into the active project tree identity before open, while legacy plan locators remain a fallback when no public locator is present.",
     "stateClasses": [
       "SHELL_STATE",
       "DERIVED_STATE"
