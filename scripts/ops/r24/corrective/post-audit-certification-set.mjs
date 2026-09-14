@@ -5792,7 +5792,7 @@ export function verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ ca
   const safeCreateTest = artifacts.get('test/unit/docx-import-safe-create.test.js').text;
   const minExportTest = artifacts.get('test/unit/docx-min-export-handler.test.js').text;
   const previewPlanTest = artifacts.get('test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js').text;
-  for (const token of ['doc: isPlainObjectValue(source.doc) ? source.doc : null', 'assert.deepEqual(calls[0].source.doc, canonicalSnapshot.doc)']) assert((token.startsWith('assert.') ? minExportTest : exportHandler).includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPORT_TOKEN', token);
+  for (const token of ['doc: isPlainObjectValue(source.doc) ? source.doc : null', 'assert.deepEqual(calls.builderSnapshot, canonicalSnapshot)']) assert((token.startsWith('assert.') ? minExportTest : exportHandler).includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPORT_TOKEN', token);
   for (const token of ["entryId === '_rels/.rels'", ".join('\\n')", 'RELATIONSHIP_DIAGNOSTICS_ONLY']) assert(revisionBridge.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PREVIEW_TOKEN', token);
   for (const token of ['return { ok: true, value: resolveCollabScopeLocalState() };', 'result.ok === true && result.value === true', 'copyDocxImportSafeCreatePublicSceneLocator']) assert(main.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_MAIN_TOKEN', token);
   for (const token of ['buildDocxImportPublicSceneLocator', 'buildDeterministicProjectTreeNodeId', 'publicSceneLocators', 'publicSceneLocator']) assert(safeCreate.includes(token), 'E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SAFE_CREATE_TOKEN', token);
