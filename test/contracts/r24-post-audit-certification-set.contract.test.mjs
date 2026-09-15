@@ -2133,9 +2133,11 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects an unadmitted 
 });
 test('C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier rename', () => {
   const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
-  const mutated = Buffer.from(objectFromCommit('HEAD', e.profilePath).toString('utf8').replaceAll('WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP', 'WRITER_LOCAL_MINIMUM_INTERCHANGE'));
+  const baseline = verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD' });
+  const resolvedCandidateSha = baseline.candidateSha;
+  const mutated = Buffer.from(objectFromCommit(resolvedCandidateSha, e.profilePath).toString('utf8').replaceAll('WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP', 'WRITER_LOCAL_MINIMUM_INTERCHANGE'));
   const mutatedDigest = h(mutated);
-  const mutatedApprovals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+  const mutatedApprovals = JSON.parse(objectFromCommit(resolvedCandidateSha, e.approvalsPath));
   const mutatedApprovalsRow = mutatedApprovals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
   mutatedApprovalsRow.sha256 = mutatedDigest;
   const mutatedApprovalsBytes = canonicalBytes(mutatedApprovals);
@@ -2148,7 +2150,7 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier 
       return options.encoding === 'utf8' ? mutatedApprovalsBytes.toString('utf8') : mutatedApprovalsBytes;
     }
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const approvals = JSON.parse(objectFromCommit(resolvedCandidateSha, e.pk1r1ApprovalsPath));
       const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
       row.sha256 = mutatedApprovalsDigest;
       const bytes = canonicalBytes(approvals);
