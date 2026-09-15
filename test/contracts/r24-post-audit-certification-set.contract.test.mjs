@@ -63,12 +63,14 @@ import {
   R24_DOCX_NOTIFICATION_OUTCOME_EXPECTATION,
   R24_COMMAND_PALETTE_VISIBLE_COMMANDS_EXPECTATION,
   TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION,
+  C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION,
   R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION,
   R24_CURRENT_CLOSURE_SELECTOR_EXPECTATION,
   verifyCurrentClosureSelectorPostEvaluationException,
   verifyDocxNotificationOutcomePostEvaluationException,
   verifyR24CommandPaletteVisibleCommandsPostEvaluationException,
   verifyTextSingleSceneC1SourceRuntimePostEvaluationException,
+  verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException,
   verifyR24X01IdempotentContractRecoveryPostEvaluationException,
   R24_RCV00E_LEASE_FENCING_CAS_EXPECTATION,
   R24_RCV00F_DELIVERY_RECONCILIATION_EXPECTATION,
@@ -2081,14 +2083,16 @@ test('TEXT SINGLE_SCENE C1 source-runtime exception rejects an unadmitted future
 test('TEXT SINGLE_SCENE C1 source-runtime exception rejects missing public locator token', () => {
   const e = TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION;
   const targetPath = 'src/utils/docxImportSafeCreate.js';
-  const mutated = Buffer.from(objectFromCommit('HEAD', targetPath).toString('utf8').replaceAll('publicSceneLocators', 'publicLocatorSet'));
+  const baseline = verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: 'HEAD' });
+  const resolvedCandidateSha = baseline.candidateSha;
+  const mutated = Buffer.from(objectFromCommit(resolvedCandidateSha, targetPath).toString('utf8').replaceAll('publicSceneLocators', 'publicLocatorSet'));
   const mutatedDigest = h(mutated);
   const hostileGit = (args, options = {}) => {
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${targetPath}`)) {
       return options.encoding === 'utf8' ? mutated.toString('utf8') : mutated;
     }
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+      const approvals = JSON.parse(objectFromCommit(resolvedCandidateSha, e.approvalsPath));
       const row = approvals.approvals.find(entry => entry.filePath === targetPath && approvalMatchesApprovedBy(entry, e.approvedBy));
       row.sha256 = mutatedDigest;
       const bytes = canonicalBytes(approvals);
@@ -2097,6 +2101,114 @@ test('TEXT SINGLE_SCENE C1 source-runtime exception rejects missing public locat
     return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
   };
   assert.throws(() => verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_SAFE_CREATE_TOKEN/);
+});
+
+test('C2 packaged DOCX review roundtrip profile expansion accepts exact repair delta', () => {
+  const result = verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD' });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.baseSha, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.baseSha);
+  assert.equal(result.baseTree, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.baseTree);
+  assert.deepEqual(result.changedPaths, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.admittedPaths);
+  assert.equal(result.admittedPathDenominator, 10);
+  assert.deepEqual(result.commandIds, C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION.commandIds);
+  assert.ok(result.changedPaths.includes('src/core/writer-local-profile-v1.cjs'));
+  assert.ok(result.changedPaths.includes('docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json'));
+  assert.ok(result.changedPaths.includes('test/unit/r24-wp307-writer-local-profile-mutants.test.js'));
+  assert.equal(result.wp305RegistryUnchanged, true);
+  assert.equal(result.optionalReviewSystemsStillDenied, true);
+  assert.equal(result.wordPhysicalRouteClaim, false);
+  assert.equal(result.cellAcceptanceAuthority, false);
+  assert.equal(result.programDone, false);
+});
+test('C2 packaged DOCX review roundtrip profile expansion rejects an unadmitted future path', () => {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'diff' && typeof args[2] === 'string' && args[2].startsWith(`${e.baseSha}..`)) {
+      const value = [...e.admittedPaths, 'README.md'].sort().join('\n') + '\n';
+      return options.encoding === 'utf8' ? value : Buffer.from(value);
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA/);
+});
+test('C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier rename', () => {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const baseline = verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD' });
+  const resolvedCandidateSha = baseline.candidateSha;
+  const mutated = Buffer.from(objectFromCommit(resolvedCandidateSha, e.profilePath).toString('utf8').replaceAll('WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP', 'WRITER_LOCAL_MINIMUM_INTERCHANGE'));
+  const mutatedDigest = h(mutated);
+  const mutatedApprovals = JSON.parse(objectFromCommit(resolvedCandidateSha, e.approvalsPath));
+  const mutatedApprovalsRow = mutatedApprovals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
+  mutatedApprovalsRow.sha256 = mutatedDigest;
+  const mutatedApprovalsBytes = canonicalBytes(mutatedApprovals);
+  const mutatedApprovalsDigest = h(mutatedApprovalsBytes);
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.profilePath}`)) {
+      return options.encoding === 'utf8' ? mutated.toString('utf8') : mutated;
+    }
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
+      return options.encoding === 'utf8' ? mutatedApprovalsBytes.toString('utf8') : mutatedApprovalsBytes;
+    }
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit(resolvedCandidateSha, e.pk1r1ApprovalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = mutatedApprovalsDigest;
+      const bytes = canonicalBytes(approvals);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_TOKEN/);
+});
+test('C2 packaged DOCX review roundtrip profile expansion rejects stale inventory binding', () => {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.inventoryPath}`)) {
+      const inventory = JSON.parse(objectFromCommit('HEAD', e.inventoryPath));
+      const entry = inventory.entries.find(item => item.path === e.profileUnitTestPath);
+      entry.sha256 = '0'.repeat(64);
+      const bytes = canonicalBytes(inventory);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_INVENTORY_DIGEST/);
+});
+test('C2 packaged DOCX review roundtrip profile expansion rejects stale approval hash', () => {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const mutatedApprovals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+  const mutatedApprovalsRow = mutatedApprovals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
+  mutatedApprovalsRow.sha256 = '0'.repeat(64);
+  const mutatedApprovalsBytes = canonicalBytes(mutatedApprovals);
+  const mutatedApprovalsDigest = h(mutatedApprovalsBytes);
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
+      return options.encoding === 'utf8' ? mutatedApprovalsBytes.toString('utf8') : mutatedApprovalsBytes;
+    }
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = mutatedApprovalsDigest;
+      const bytes = canonicalBytes(approvals);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_APPROVAL_DIGEST/);
+});
+test('C2 packaged DOCX review roundtrip profile expansion rejects stale PK1R1 approval hash', () => {
+  const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const hostileGit = (args, options = {}) => {
+    if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
+      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      row.sha256 = '0'.repeat(64);
+      const bytes = canonicalBytes(approvals);
+      return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;
+    }
+    return execFileSync('git', args, { ...options, maxBuffer: 64 * 1024 * 1024 });
+  };
+  assert.throws(() => verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD', git: hostileGit }), /E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PK1R1_APPROVAL_DIGEST/);
 });
 
 function currentClosureSelectorFixture({ changedPaths, baseTree, unrelatedBase = false, successor = false, mutate = () => {} } = {}) {
