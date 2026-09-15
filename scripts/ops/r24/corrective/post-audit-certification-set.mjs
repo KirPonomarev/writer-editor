@@ -987,6 +987,7 @@ export const R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION = Object.freeze(
     'src/io/revisionBridge/reviewTransportClassifierV2.mjs',
     'src/io/revisionBridge/reviewTransportExactApplyAdapterV2.mjs',
     'src/io/revisionBridge/reviewTransportMatchProofV1.mjs',
+    'src/io/revisionBridge/reviewTransportMultiSceneNonOverlapTrackedReplacementRuntime.mjs',
     'src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs',
     'src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs',
     'src/main.js',
