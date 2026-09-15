@@ -2162,9 +2162,10 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects wrong carrier 
 });
 test('C2 packaged DOCX review roundtrip profile expansion rejects stale inventory binding', () => {
   const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const baseline = verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD' });
   const hostileGit = (args, options = {}) => {
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.inventoryPath}`)) {
-      const inventory = JSON.parse(objectFromCommit('HEAD', e.inventoryPath));
+      const inventory = JSON.parse(objectFromCommit(baseline.candidateSha, e.inventoryPath));
       const entry = inventory.entries.find(item => item.path === e.profileUnitTestPath);
       entry.sha256 = '0'.repeat(64);
       const bytes = canonicalBytes(inventory);

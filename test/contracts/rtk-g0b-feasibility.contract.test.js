@@ -219,6 +219,7 @@ const ALLOWLIST = [
   GOVERNANCE_APPROVALS_PATH,
   SCOPE_MAP_PATH,
   // R24 RCV00D current-main verifier repair shared carriers.
+  'docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   'test/contracts/r24-post-audit-certification-set.contract.test.mjs',

@@ -776,7 +776,9 @@ export const R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION=Object.
   contractTestPath:`test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  issuedCandidateSha:'bed937e81b355b5c2faec7b5245bdc22081a7ddf',
   inventoryFileDenominator:1471,
+  currentInventoryFileDenominator:1472,
   approvedBy:'owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12',
   authority:'SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2',
   admittedPaths:[
@@ -5415,7 +5417,8 @@ export function verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationEx
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_INTEROP100_DENOMINATOR_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_DENOMINATOR_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
   const inventory=readJson(e.inventoryPath),denominator=readJson(e.denominatorPath),evidenceEnvelope=readJson(e.evidenceEnvelopePath),ledger=readJson(e.ledgerPath),approvals=readJson(e.approvalsPath),validator=readText(e.validatorPath),contract=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
-  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_INTEROP100_DENOMINATOR_INVENTORY_SHAPE');
+  const expectedInventoryFileDenominator=resolvedCandidate===e.issuedCandidateSha?e.inventoryFileDenominator:e.currentInventoryFileDenominator;
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===expectedInventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_INTEROP100_DENOMINATOR_INVENTORY_SHAPE');
   for(const relative of [e.contractTestPath,e.postAuditTestPath]){
     const file=relative===e.contractTestPath?contract:postAuditTest;
     const entry=inventory.value.entries.find((item)=>item.path===relative);
