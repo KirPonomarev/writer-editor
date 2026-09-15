@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { stableJson } from './reviewTransportCore.mjs';
 import { recomputeAuthorityFromBijection } from './reviewTransportMatchProofV1.mjs';
 
@@ -131,10 +130,6 @@ function occurrenceRanges(haystack, needle) {
   return ranges;
 }
 
-function sha256Text(value) {
-  return `sha256:${createHash('sha256').update(String(value || ''), 'utf8').digest('hex')}`;
-}
-
 function revisionParagraphIndex(value) {
   if (Number.isSafeInteger(value?.documentParagraphIndex) && value.documentParagraphIndex >= 0) {
     return value.documentParagraphIndex;
@@ -151,7 +146,7 @@ function commentParagraphIndex(thread) {
   return revisionParagraphIndex(isPlainObject(thread?.anchorLocator) ? thread.anchorLocator : {});
 }
 
-function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, groups, reviewIr) {
+function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, groups, reviewIr, cryptoPort) {
   const authority = isPlainObject(localBaseline.sceneOrdinalAuthority)
     ? localBaseline.sceneOrdinalAuthority
     : {};
@@ -233,7 +228,7 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targe
     seenBlockIndexes.add(block.documentParagraphIndex);
   }
   const currentRawSha256 = normalizeString(authority.currentRawSha256);
-  const computedRawSha256 = sha256Text(blocks.map((block) => rawString(block.text)).join('\n'));
+  const computedRawSha256 = cryptoPort.sha256Text(blocks.map((block) => rawString(block.text)).join('\n'));
   if (!currentRawSha256 || currentRawSha256 !== computedRawSha256) {
     reasons.push(reason(
       'RTK_COMMAND_ENVELOPE_TAMPERED',
@@ -578,7 +573,7 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
   // replacement pair into MANUAL_REVIEW by lying
   // (reviewTransportBlockExactAuthorityV2.mjs doctrine, M3).
   const mainOwnedOrdinalProof = localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'
-    ? mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, grouped.groups, reviewIr)
+    ? mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, grouped.groups, reviewIr, cryptoPort)
     : null;
   if (mainOwnedOrdinalProof) reasons.push(...mainOwnedOrdinalProof.reasons);
   const recomputeAuthorityCarrier = localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'

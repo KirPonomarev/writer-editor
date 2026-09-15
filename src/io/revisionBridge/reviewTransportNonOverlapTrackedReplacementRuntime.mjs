@@ -214,6 +214,11 @@ function buildSummary(binding, result = {}) {
 }
 
 export function buildNonOverlapTrackedReplacementRuntimePreview(input = {}, options = {}) {
+  const preflightPhysical = validatePhysicalScope({
+    ...input,
+    commandId: input.commandId || RTK_NON_OVERLAP_TRACKED_REPLACEMENT_COMMAND_ID,
+  });
+  if (!preflightPhysical.ok) return blockResult(preflightPhysical.reasons);
   const binding = buildReviewTransportBlockExactWriterBindingV2(input, options);
   const bindingValidation = validateBinding(binding);
   if (!bindingValidation.ok) {
