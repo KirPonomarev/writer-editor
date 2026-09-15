@@ -214,16 +214,19 @@ function buildSummary(binding, result = {}) {
 }
 
 export function buildNonOverlapTrackedReplacementRuntimePreview(input = {}, options = {}) {
-  const physical = validatePhysicalScope({
-    ...input,
-    commandId: input.commandId || RTK_NON_OVERLAP_TRACKED_REPLACEMENT_COMMAND_ID,
-  });
-  if (!physical.ok) return blockResult(physical.reasons);
   const binding = buildReviewTransportBlockExactWriterBindingV2(input, options);
   const bindingValidation = validateBinding(binding);
   if (!bindingValidation.ok) {
     return blockResult(bindingValidation.reasons, { binding });
   }
+  const physical = validatePhysicalScope({
+    ...input,
+    commandId: input.commandId || RTK_NON_OVERLAP_TRACKED_REPLACEMENT_COMMAND_ID,
+    exactAuthority: isPlainObject(binding?.blockAuthority?.exactAuthority)
+      ? binding.blockAuthority.exactAuthority
+      : input.exactAuthority,
+  });
+  if (!physical.ok) return blockResult(physical.reasons, { binding });
   return {
     ok: true,
     schemaVersion: RTK_NON_OVERLAP_TRACKED_REPLACEMENT_RUNTIME_SCHEMA,

@@ -5651,6 +5651,582 @@ function readDocxReviewPreviewSessionAuthenticatedParserResult(context) {
   return parserResult && parserResult.ok === true ? parserResult : null;
 }
 
+function docxReviewReturnIntakeSceneParagraphTexts(text) {
+  return String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+}
+
+function docxReviewReturnIntakeSceneRevisionOrdinal(revision) {
+  if (Number.isSafeInteger(revision?.documentParagraphIndex) && revision.documentParagraphIndex >= 0) {
+    return revision.documentParagraphIndex;
+  }
+  if (Number.isSafeInteger(revision?.paragraphIndex) && revision.paragraphIndex >= 0) {
+    return revision.paragraphIndex;
+  }
+  return null;
+}
+
+function docxReviewReturnIntakeSceneParagraphText(value) {
+  return typeof value === 'string' ? value : '';
+}
+
+function docxReviewReturnIntakeSceneBookmarkNames(paragraph) {
+  return Array.isArray(paragraph?.bookmarkNames)
+    ? paragraph.bookmarkNames.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+    : [];
+}
+
+function docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallback) {
+  if (Number.isSafeInteger(paragraph?.paragraphIndex) && paragraph.paragraphIndex >= 0) {
+    return paragraph.paragraphIndex;
+  }
+  if (Number.isSafeInteger(paragraph?.documentParagraphIndex) && paragraph.documentParagraphIndex >= 0) {
+    return paragraph.documentParagraphIndex;
+  }
+  return fallback;
+}
+
+function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult, paragraphTexts) {
+  const reviewIr = isPlainObjectValue(parserResult?.reviewIr) ? parserResult.reviewIr : {};
+  const paragraphs = Array.isArray(reviewIr.formattingParagraphs)
+    ? reviewIr.formattingParagraphs.filter(isPlainObjectValue)
+    : [];
+  if (paragraphs.length === 0) return { ok: true, applicable: false };
+  const expectedTexts = Array.isArray(paragraphTexts) ? paragraphTexts : [];
+  const map = new Map();
+  const blockCount = expectedTexts.length;
+  const observedIndexes = new Set();
+  for (const [fallbackIndex, paragraph] of paragraphs.entries()) {
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallbackIndex);
+    if (observedIndexes.has(paragraphIndex)) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_DUPLICATE', {
+        paragraphIndex,
+      });
+    }
+    observedIndexes.add(paragraphIndex);
+  }
+  for (let index = 0; index < paragraphs.length; index += 1) {
+    if (!observedIndexes.has(index)) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_NON_CONTIGUOUS', {
+        missingParagraphIndex: index,
+      });
+    }
+  }
+  if (paragraphs.length !== blockCount) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_BOOKMARK_CARDINALITY_MISMATCH', {
+      expectedParagraphCount: blockCount,
+      actualReturnedParagraphCount: paragraphs.length,
+    });
+  }
+  for (let blockOrdinal = 0; blockOrdinal < blockCount; blockOrdinal += 1) {
+    const paragraph = paragraphs[blockOrdinal];
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, blockOrdinal);
+    if (paragraphIndex !== blockOrdinal) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_BOOKMARK_ORDER_MISMATCH', {
+        blockOrdinal,
+        paragraphIndex,
+      });
+    }
+    map.set(paragraphIndex, blockOrdinal);
+  }
+  return {
+    ok: true,
+    applicable: true,
+    paragraphIndexToBlockOrdinal: map,
+    paragraphs,
+    returnedParagraphCount: paragraphs.length,
+    blockCount,
+    googlePrecedingBookmarkShape: false,
+    inlineBookmarkShape: true,
+  };
+}
+
+function docxReviewReturnIntakeSceneBlockDeclaredBookmarks(orderedBlocks) {
+  const result = new Map();
+  for (const [blockOrdinal, block] of orderedBlocks.entries()) {
+    const signals = Array.isArray(block?.wordSignals) ? block.wordSignals : [];
+    for (const signal of signals) {
+      if (!isPlainObjectValue(signal) || signal.kind !== 'bookmarkName') continue;
+      const name = docxReviewPreviewSessionDetailString(signal.value?.name).toLowerCase();
+      if (!name) continue;
+      const existing = result.get(name) || [];
+      existing.push(blockOrdinal);
+      result.set(name, existing);
+    }
+  }
+  return result;
+}
+
+function verifyDocxReviewReturnIntakeSceneBookmarkCollisions(parserResult, orderedBlocks, paragraphAuthority) {
+  if (paragraphAuthority?.applicable !== true) return { ok: true };
+  const declaredBookmarks = docxReviewReturnIntakeSceneBlockDeclaredBookmarks(orderedBlocks);
+  if (declaredBookmarks.size === 0) return { ok: true };
+  const paragraphs = Array.isArray(parserResult?.reviewIr?.formattingParagraphs)
+    ? parserResult.reviewIr.formattingParagraphs.filter(isPlainObjectValue)
+    : [];
+  for (const [fallbackIndex, paragraph] of paragraphs.entries()) {
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallbackIndex);
+    const mappedOrdinal = paragraphAuthority.paragraphIndexToBlockOrdinal.get(paragraphIndex);
+    const bookmarkNames = docxReviewReturnIntakeSceneBookmarkNames(paragraph);
+    for (const rawName of bookmarkNames) {
+      const name = rawName.toLowerCase();
+      const declaredOrdinals = declaredBookmarks.get(name) || [];
+      if (declaredOrdinals.length === 0) continue;
+      if (declaredOrdinals.length !== 1 || declaredOrdinals[0] !== mappedOrdinal) {
+        return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_BOOKMARK_COLLISION', {
+          paragraphIndex,
+          mappedOrdinal: Number.isSafeInteger(mappedOrdinal) ? mappedOrdinal : null,
+          declaredOrdinals,
+        });
+      }
+    }
+  }
+  return { ok: true };
+}
+
+function docxReviewReturnIntakeSceneTouchedParagraphOrdinals(parserResult, paragraphAuthority) {
+  const reviewIr = isPlainObjectValue(parserResult?.reviewIr) ? parserResult.reviewIr : {};
+  const touched = [];
+  const addTouched = (kind, id, rawOrdinal) => {
+    if (rawOrdinal === null) {
+      touched.push({ ok: false, code: 'RTK_RETURN_INTAKE_SCENE_TOUCHED_PARAGRAPH_INDEX_REQUIRED', kind, id });
+      return;
+    }
+    const mappedOrdinal = docxReviewReturnIntakeSceneMapRevisionOrdinal(rawOrdinal, paragraphAuthority);
+    if (mappedOrdinal === null) {
+      touched.push({
+        ok: false,
+        code: 'RTK_RETURN_INTAKE_SCENE_TOUCHED_PARAGRAPH_INDEX_OUT_OF_RANGE',
+        kind,
+        id,
+        rawOrdinal,
+      });
+      return;
+    }
+    touched.push({ ok: true, kind, id, rawOrdinal, mappedOrdinal });
+  };
+  for (const revision of Array.isArray(reviewIr.textRevisions) ? reviewIr.textRevisions.filter(isPlainObjectValue) : []) {
+    addTouched(
+      `textRevision:${docxReviewPreviewSessionDetailString(revision.operation)}`,
+      docxReviewPreviewSessionDetailString(revision.nativeRevisionId),
+      docxReviewReturnIntakeSceneRevisionOrdinal(revision),
+    );
+  }
+  for (const thread of Array.isArray(reviewIr.commentThreads) ? reviewIr.commentThreads.filter(isPlainObjectValue) : []) {
+    const locator = isPlainObjectValue(thread.anchorLocator) ? thread.anchorLocator : {};
+    const rawOrdinal = docxReviewReturnIntakeSceneRevisionOrdinal({
+      documentParagraphIndex: thread.documentParagraphIndex,
+      paragraphIndex: Number.isSafeInteger(thread.paragraphIndex)
+        ? thread.paragraphIndex
+        : locator.paragraphIndex,
+    });
+    addTouched(
+      'commentThread',
+      docxReviewPreviewSessionDetailString(thread.threadId || thread.commentId),
+      rawOrdinal,
+    );
+  }
+  return touched;
+}
+
+function docxReviewReturnIntakeSceneMapRevisionOrdinal(rawOrdinal, paragraphAuthority) {
+  if (rawOrdinal === null) return null;
+  if (paragraphAuthority?.applicable !== true) return rawOrdinal;
+  if (!paragraphAuthority.paragraphIndexToBlockOrdinal.has(rawOrdinal)) {
+    return null;
+  }
+  return paragraphAuthority.paragraphIndexToBlockOrdinal.get(rawOrdinal);
+}
+
+function docxReviewReturnIntakeSceneReplacementOrdinal(parserResult, paragraphAuthority = {}) {
+  const reviewIr = isPlainObjectValue(parserResult?.reviewIr) ? parserResult.reviewIr : {};
+  const revisions = Array.isArray(reviewIr.textRevisions)
+    ? reviewIr.textRevisions.filter(isPlainObjectValue)
+    : [];
+  if (revisions.length === 0) return { ok: true, ordinal: null, textRevisionCount: 0 };
+  const groups = new Map();
+  const standalone = [];
+  for (const revision of revisions) {
+    const groupId = docxReviewPreviewSessionDetailString(revision.replacementGroupId);
+    if (!groupId) {
+      standalone.push(revision);
+      continue;
+    }
+    const group = groups.get(groupId) || [];
+    group.push(revision);
+    groups.set(groupId, group);
+  }
+  if (groups.size !== 1 || standalone.length !== 0) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_SINGLE_REPLACEMENT_REQUIRED', {
+      replacementGroupCount: groups.size,
+      standaloneRevisionCount: standalone.length,
+    });
+  }
+  const ordinals = new Set();
+  const ordinalGroupCounts = new Map();
+  const addOrdinal = (ordinal) => {
+    ordinals.add(ordinal);
+    ordinalGroupCounts.set(ordinal, (ordinalGroupCounts.get(ordinal) || 0) + 1);
+  };
+  for (const [groupId, group] of groups.entries()) {
+    const deletes = group.filter((item) => item.operation === 'delete');
+    const inserts = group.filter((item) => item.operation === 'insert');
+    if (group.length !== 2 || deletes.length !== 1 || inserts.length !== 1) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARTIAL_ANCHOR', {
+        groupId,
+        revisionCount: group.length,
+        deleteCount: deletes.length,
+        insertCount: inserts.length,
+      });
+    }
+    const deleteOrdinal = docxReviewReturnIntakeSceneRevisionOrdinal(deletes[0]);
+    const insertOrdinal = docxReviewReturnIntakeSceneRevisionOrdinal(inserts[0]);
+    const mappedDeleteOrdinal = docxReviewReturnIntakeSceneMapRevisionOrdinal(deleteOrdinal, paragraphAuthority);
+    const mappedInsertOrdinal = docxReviewReturnIntakeSceneMapRevisionOrdinal(insertOrdinal, paragraphAuthority);
+    if (deleteOrdinal === null || insertOrdinal === null || mappedDeleteOrdinal === null || mappedInsertOrdinal === null || mappedDeleteOrdinal !== mappedInsertOrdinal) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_ORDINAL_REQUIRED', {
+        groupId,
+        deleteOrdinal,
+        insertOrdinal,
+        mappedDeleteOrdinal,
+        mappedInsertOrdinal,
+      });
+    }
+    addOrdinal(mappedDeleteOrdinal);
+  }
+  for (const revision of standalone) {
+    if (revision.operation !== 'delete') {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARTIAL_ANCHOR', {
+        nativeRevisionId: docxReviewPreviewSessionDetailString(revision.nativeRevisionId),
+        operation: docxReviewPreviewSessionDetailString(revision.operation),
+      });
+    }
+    const ordinal = docxReviewReturnIntakeSceneRevisionOrdinal(revision);
+    if (ordinal === null) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_ORDINAL_REQUIRED', {
+        nativeRevisionId: docxReviewPreviewSessionDetailString(revision.nativeRevisionId),
+      });
+    }
+    const mappedOrdinal = docxReviewReturnIntakeSceneMapRevisionOrdinal(ordinal, paragraphAuthority);
+    if (mappedOrdinal === null) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_ORDINAL_REQUIRED', {
+        nativeRevisionId: docxReviewPreviewSessionDetailString(revision.nativeRevisionId),
+        ordinal,
+      });
+    }
+    addOrdinal(mappedOrdinal);
+  }
+  if (ordinals.size !== 1) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_ORDINAL_AMBIGUOUS', {
+      ordinals: [...ordinals],
+    });
+  }
+  const duplicateOrdinal = [...ordinalGroupCounts.entries()].find(([, count]) => count > 1);
+  if (duplicateOrdinal) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_DUPLICATE_BLOCK_DELETION', {
+      ordinal: duplicateOrdinal[0],
+      groupCount: duplicateOrdinal[1],
+    });
+  }
+  const replacementGroup = [...groups.values()][0] || [];
+  const deleteRevision = replacementGroup.find((item) => item.operation === 'delete') || {};
+  const insertRevision = replacementGroup.find((item) => item.operation === 'insert') || {};
+  return {
+    ok: true,
+    ordinal: [...ordinals][0],
+    textRevisionCount: revisions.length,
+    deletedText: typeof deleteRevision.text === 'string' ? deleteRevision.text : '',
+    insertedText: typeof insertRevision.text === 'string' ? insertRevision.text : '',
+  };
+}
+
+function verifyDocxReviewReturnIntakeSceneReturnedParagraphTexts(paragraphAuthority, paragraphTexts, ordinalBinding) {
+  if (paragraphAuthority?.applicable !== true) return { ok: true };
+  const expectedReturnedTexts = paragraphTexts.slice();
+  if (Number.isSafeInteger(ordinalBinding?.ordinal)) {
+    const baselineText = paragraphTexts[ordinalBinding.ordinal];
+    const deletedText = typeof ordinalBinding.deletedText === 'string' ? ordinalBinding.deletedText : '';
+    const insertedText = typeof ordinalBinding.insertedText === 'string' ? ordinalBinding.insertedText : '';
+    const first = baselineText.indexOf(deletedText);
+    const last = baselineText.lastIndexOf(deletedText);
+    if (!deletedText || first < 0 || first !== last) {
+      return docxReviewReturnIntakeBlocked(
+        first !== last ? 'RTK_RETURN_INTAKE_SCENE_DUPLICATE_BLOCK_DELETION' : 'RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH',
+        {
+          documentParagraphIndex: ordinalBinding.ordinal,
+          deletedTextPresent: Boolean(deletedText),
+        },
+      );
+    }
+    expectedReturnedTexts[ordinalBinding.ordinal] = `${baselineText.slice(0, first)}${insertedText}${baselineText.slice(first + deletedText.length)}`;
+  }
+  for (const [fallbackIndex, paragraph] of paragraphAuthority.paragraphs.entries()) {
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallbackIndex);
+    const blockOrdinal = paragraphAuthority.paragraphIndexToBlockOrdinal.get(paragraphIndex);
+    if (!Number.isSafeInteger(blockOrdinal)) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_TOUCHED_PARAGRAPH_INDEX_OUT_OF_RANGE', {
+        paragraphIndex,
+      });
+    }
+    const paragraphText = docxReviewReturnIntakeSceneParagraphText(paragraph.paragraphText);
+    if (paragraphText !== expectedReturnedTexts[blockOrdinal]) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH', {
+        paragraphIndex,
+        blockOrdinal,
+      });
+    }
+  }
+  return { ok: true };
+}
+
+function buildDocxReviewReturnIntakeSceneExportMapAuthority({
+  context,
+  localAuthority,
+  parserResult,
+} = {}) {
+  const payload = isPlainObjectValue(parserResult?.authorityCarrier?.selectedCarrier?.payload)
+    ? parserResult.authorityCarrier.selectedCarrier.payload
+    : {};
+  const expectedAuthority = isPlainObjectValue(localAuthority?.expectedAuthority)
+    ? localAuthority.expectedAuthority
+    : {};
+  const exportMap = isPlainObjectValue(localAuthority?.exportMap) ? localAuthority.exportMap : {};
+  const scope = docxReviewPreviewSessionDetailString(
+    localAuthority?.scope || exportMap.scope || expectedAuthority.scope || payload.scope,
+  );
+  if (scope !== 'scene') return { ok: true, applicable: false };
+  const mapScenes = Array.isArray(exportMap.scenes) ? exportMap.scenes.filter(isPlainObjectValue) : [];
+  const sceneId = docxReviewPreviewSessionDetailString(expectedAuthority.sceneId)
+    || docxReviewPreviewSessionDetailString(payload.sceneId)
+    || docxReviewPreviewSessionDetailString(context?.targetScope?.id);
+  const contextSceneId = docxReviewPreviewSessionDetailString(context?.targetScope?.id);
+  const scenePath = docxReviewPreviewSessionDetailString(context?.scenePath)
+    || docxReviewPreviewSessionDetailString(localAuthority?.scenePath);
+  const baselineFinalText = typeof context?.sceneText === 'string'
+    ? context.sceneText
+    : (typeof localAuthority?.baselineFinalText === 'string' ? localAuthority.baselineFinalText : '');
+  if (!sceneId || !scenePath || typeof baselineFinalText !== 'string') {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_AUTHORITY_INCOMPLETE', {
+      sceneIdPresent: Boolean(sceneId),
+      scenePathPresent: Boolean(scenePath),
+      baselinePresent: typeof baselineFinalText === 'string',
+    });
+  }
+  if (contextSceneId && contextSceneId !== sceneId) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_WRONG_SCENE_ID', {
+      expectedSceneId: sceneId,
+      actualSceneId: contextSceneId,
+    });
+  }
+  const expectedRawSha256 = docxReviewPreviewSessionDetailString(expectedAuthority.rawSha256)
+    || docxReviewPreviewSessionDetailString(payload.rawSha256)
+    || docxReviewPreviewSessionDetailString(localAuthority?.rawSha256);
+  const actualRawSha256 = `sha256:${computeHash(baselineFinalText)}`;
+  if (expectedRawSha256 && expectedRawSha256 !== actualRawSha256) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_STALE_CURRENT_SCENE', {
+      expectedRawSha256,
+      actualRawSha256,
+    });
+  }
+  const scene = mapScenes.find((candidate) => docxReviewPreviewSessionDetailString(candidate.sceneId) === sceneId);
+  if (!scene) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_REQUIRED', { sceneId });
+  }
+  if (
+    docxReviewPreviewSessionDetailString(scene.rawSha256)
+    && docxReviewPreviewSessionDetailString(scene.rawSha256) !== actualRawSha256
+  ) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_STALE', {
+      expectedRawSha256: docxReviewPreviewSessionDetailString(scene.rawSha256),
+      actualRawSha256,
+    });
+  }
+  const rawBlocks = Array.isArray(scene.blocks) ? scene.blocks.filter(isPlainObjectValue) : [];
+  if (rawBlocks.length === 0) {
+    return { ok: true, applicable: false };
+  }
+  const paragraphTexts = docxReviewReturnIntakeSceneParagraphTexts(baselineFinalText);
+  if (rawBlocks.length !== paragraphTexts.length) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_PARAGRAPH_COUNT_MISMATCH', {
+      expectedBlockCount: rawBlocks.length,
+      actualParagraphCount: paragraphTexts.length,
+    });
+  }
+  const seenOrdinals = new Set();
+  const orderedBlocks = [];
+  for (const rawBlock of rawBlocks) {
+    const documentParagraphIndex = Number.isSafeInteger(rawBlock.documentParagraphIndex)
+      ? rawBlock.documentParagraphIndex
+      : null;
+    const blockId = docxReviewPreviewSessionDetailString(rawBlock.blockId);
+    if (documentParagraphIndex === null || documentParagraphIndex < 0 || documentParagraphIndex >= rawBlocks.length || seenOrdinals.has(documentParagraphIndex)) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_ORDER_MISMATCH', {
+        documentParagraphIndex,
+        blockId,
+      });
+    }
+    if (!blockId) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_BLOCK_ID_REQUIRED', {
+        documentParagraphIndex,
+      });
+    }
+    seenOrdinals.add(documentParagraphIndex);
+    orderedBlocks[documentParagraphIndex] = rawBlock;
+  }
+  for (let index = 0; index < orderedBlocks.length; index += 1) {
+    const rawBlock = orderedBlocks[index];
+    if (!rawBlock) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_ORDER_MISMATCH', {
+        missingDocumentParagraphIndex: index,
+      });
+    }
+    const actualTextSha256 = `sha256:${computeHash(paragraphTexts[index])}`;
+    const expectedTextSha256 = docxReviewPreviewSessionDetailString(rawBlock.canonicalTextSha256);
+    if (expectedTextSha256 && expectedTextSha256 !== actualTextSha256) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_BLOCK_HASH_MISMATCH', {
+        documentParagraphIndex: index,
+        blockId: docxReviewPreviewSessionDetailString(rawBlock.blockId),
+        expectedTextSha256,
+        actualTextSha256,
+      });
+    }
+  }
+  const paragraphAuthority = buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult, paragraphTexts);
+  if (paragraphAuthority.ok === false) return paragraphAuthority;
+  const bookmarkCollisions = verifyDocxReviewReturnIntakeSceneBookmarkCollisions(
+    parserResult,
+    orderedBlocks,
+    paragraphAuthority,
+  );
+  if (bookmarkCollisions.ok === false) return bookmarkCollisions;
+  const touchedParagraphs = docxReviewReturnIntakeSceneTouchedParagraphOrdinals(parserResult, paragraphAuthority);
+  const invalidTouchedParagraph = touchedParagraphs.find((item) => item.ok === false);
+  if (invalidTouchedParagraph) {
+    return docxReviewReturnIntakeBlocked(invalidTouchedParagraph.code, invalidTouchedParagraph);
+  }
+  for (const touched of touchedParagraphs.filter((item) => item.ok === true)) {
+    if (!orderedBlocks[touched.mappedOrdinal]) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_TOUCHED_BLOCK_REQUIRED', {
+        kind: touched.kind,
+        id: touched.id,
+        rawOrdinal: touched.rawOrdinal,
+        mappedOrdinal: touched.mappedOrdinal,
+      });
+    }
+  }
+  const ordinalBinding = docxReviewReturnIntakeSceneReplacementOrdinal(parserResult, paragraphAuthority);
+  if (!ordinalBinding.ok) return ordinalBinding;
+  const returnedTexts = verifyDocxReviewReturnIntakeSceneReturnedParagraphTexts(
+    paragraphAuthority,
+    paragraphTexts,
+    ordinalBinding,
+  );
+  if (returnedTexts.ok === false) return returnedTexts;
+  const targetOrdinal = ordinalBinding.ordinal;
+  const targetBlock = targetOrdinal === null
+    ? orderedBlocks.find((block) => docxReviewPreviewSessionDetailString(block.blockId)
+      === docxReviewPreviewSessionDetailString(expectedAuthority.blockId || payload.blockId))
+    : orderedBlocks[targetOrdinal];
+  if (!targetBlock) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_TARGET_BLOCK_REQUIRED', {
+      targetOrdinal,
+      targetBlockId: docxReviewPreviewSessionDetailString(expectedAuthority.blockId || payload.blockId),
+    });
+  }
+  const sceneBlocks = orderedBlocks.map((block, index) => ({
+    sceneId,
+    blockId: docxReviewPreviewSessionDetailString(block.blockId),
+    paragraphId: docxReviewPreviewSessionDetailString(block.paragraphId),
+    documentParagraphIndex: index,
+    text: paragraphTexts[index],
+    canonicalTextSha256: docxReviewPreviewSessionDetailString(block.canonicalTextSha256),
+    canonicalMarksSha256: docxReviewPreviewSessionDetailString(block.canonicalMarksSha256),
+  }));
+  const blockId = docxReviewPreviewSessionDetailString(targetBlock.blockId);
+  const projectId = docxReviewPreviewSessionDetailString(context?.projectId)
+    || docxReviewPreviewSessionDetailString(localAuthority?.projectId)
+    || docxReviewPreviewSessionDetailString(expectedAuthority.projectId);
+  const baselineHash = docxReviewPreviewSessionDetailString(context?.baselineHash)
+    || actualRawSha256.replace(/^sha256:/u, '');
+  const sceneOrdinalAuthority = {
+    schemaVersion: 'yalken.rtk.return-intake.scene-ordinal-authority.v1',
+    source: 'main-owned-local-export-map',
+    sceneId,
+    targetBlockId: blockId,
+    targetDocumentParagraphIndex: targetOrdinal,
+    blockCount: sceneBlocks.length,
+    touchedParagraphs: touchedParagraphs
+      .filter((item) => item.ok === true)
+      .map((item) => ({
+        kind: item.kind,
+        id: item.id,
+        rawReturnedParagraphIndex: item.rawOrdinal,
+        documentParagraphIndex: item.mappedOrdinal,
+        sceneId,
+        blockId: docxReviewPreviewSessionDetailString(orderedBlocks[item.mappedOrdinal]?.blockId),
+      })),
+    returnedParagraphCount: Number.isSafeInteger(paragraphAuthority.returnedParagraphCount)
+      ? paragraphAuthority.returnedParagraphCount
+      : 0,
+    googlePrecedingBookmarkShape: paragraphAuthority.googlePrecedingBookmarkShape === true,
+    inlineBookmarkShape: paragraphAuthority.inlineBookmarkShape === true,
+    currentRawSha256: actualRawSha256,
+    returnedGoogleBookmarkNamesAuthority: false,
+    globalTextSearchAuthority: false,
+    fuzzyMatchAuthority: false,
+  };
+  return {
+    ok: true,
+    applicable: true,
+    sceneId,
+    blockId,
+    scenePath,
+    baselineFinalText,
+    expectedAuthority: {
+      ...cloneJsonSafe(expectedAuthority),
+      scope: 'scene',
+      sceneId,
+      rawSha256: expectedRawSha256 || actualRawSha256,
+      blockId,
+    },
+    scenePathBySceneId: { [sceneId]: scenePath },
+    baselineFinalTextBySceneId: { [sceneId]: baselineFinalText },
+    localBaseline: {
+      sceneId,
+      blockId,
+      authorityKind: 'main-owned-scene-export-map-ordinal-v1',
+      sceneBlocks,
+      sceneOrdinalAuthority,
+    },
+    writerContext: {
+      projectRoot: docxReviewPreviewSessionDetailString(context?.projectRoot)
+        || docxReviewPreviewSessionDetailString(localAuthority?.projectRoot),
+      scenePath,
+      scenePathBySceneId: { [sceneId]: scenePath },
+      projectSnapshot: {
+        projectId,
+        baselineHash,
+        scenes: [{ sceneId, text: baselineFinalText }],
+      },
+      revisionSession: {
+        projectId,
+        sessionId: docxReviewPreviewSessionDetailString(localAuthority?.sessionId)
+          || `docx-review-preview-${docxReviewPreviewSessionDetailString(localAuthority?.roundId) || 'rtk'}`,
+        baselineHash,
+        status: 'open',
+        reviewGraph: {
+          commentThreads: [],
+          commentPlacements: [],
+          textChanges: [],
+          structuralChanges: [],
+          diagnosticItems: [],
+          decisionStates: [],
+        },
+      },
+    },
+    sceneOrdinalAuthority,
+  };
+}
+
 function buildDocxReviewPreviewSessionWriterContext(context, authorityCapsule) {
   if (isPlainObjectValue(authorityCapsule.writerContext)) {
     return cloneJsonSafe(authorityCapsule.writerContext) || {};
@@ -7606,13 +8182,30 @@ function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, parser
   if (localScope === 'full-manuscript' && !localExportMap) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_LOCAL_FULL_MANUSCRIPT_EXPORT_MAP_REQUIRED');
   }
+  const sceneAuthority = buildDocxReviewReturnIntakeSceneExportMapAuthority({
+    context: options.context,
+    localAuthority,
+    parserResult,
+  });
+  if (sceneAuthority.ok === false) return sceneAuthority;
   // ROUND-01 (V3): the session-time capsule carries the vault-resolved hmacSecret
   // so the downstream full-manuscript return-router proof binding can compute its
   // HMAC during the live session. This secret is in-memory only; the durable
   // authority store record never persists it.
   const sessionHmacSecret = docxReviewPreviewSessionDetailString(options.hmacSecret);
+  const sceneAuthorityFields = sceneAuthority.applicable === true
+    ? {
+      expectedAuthority: sceneAuthority.expectedAuthority,
+      scenePathBySceneId: sceneAuthority.scenePathBySceneId,
+      baselineFinalTextBySceneId: sceneAuthority.baselineFinalTextBySceneId,
+      localBaseline: sceneAuthority.localBaseline,
+      writerContext: sceneAuthority.writerContext,
+      sceneOrdinalAuthority: sceneAuthority.sceneOrdinalAuthority,
+    }
+    : {};
   return {
     ...cloneJsonSafe(localAuthority),
+    ...sceneAuthorityFields,
     hmacSecret: sessionHmacSecret,
     roundId: docxReviewPreviewSessionDetailString(localAuthority?.roundId)
       || docxReviewPreviewSessionDetailString(payload.roundId),
@@ -8186,7 +8779,7 @@ async function inspectDocxReviewReturnIntakeV2({
   const localAuthorityCapsule = buildDocxReviewReturnIntakeLocalAuthorityCapsule(
     localAuthority,
     verifiedParserResult,
-    { hmacSecret },
+    { hmacSecret, context },
   );
   if (localAuthorityCapsule?.ok === false) return localAuthorityCapsule;
   return {

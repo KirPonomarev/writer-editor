@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "yalken.test.fixture.provenance.v1",
+  "fixture": "google-c4-native-review-returned.docx",
+  "sha256": "0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4",
+  "source": "r24-portability-lab-v2 TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME google-native-review-provider-await",
+  "sourcePathAtCapture": "/Volumes/T7-Secure/storage/yalken/interop-lab/external-receipts/r24-portability-lab-v2/TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME__2026-09-15T02-12-59-410Z__google-native-review-provider-await/google-docs-native-export-returned.docx",
+  "capturedAt": "2026-09-15",
+  "expectedParserShape": {
+    "formattingParagraphCount": 12,
+    "paragraphIndexes": "0..11",
+    "bookmarkNames": "empty arrays",
+    "replacementParagraphIndex": 0,
+    "paragraph0ReturnedText": "[plainTextPreserved] Body text sentinel omega."
+  }
+}
