@@ -5685,22 +5685,36 @@ function docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph) {
   return null;
 }
 
+function docxReviewReturnIntakeIsProviderInsertedLeadingBlank(paragraph) {
+  if (!isPlainObjectValue(paragraph)) return false;
+  if (docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph) !== 0) return false;
+  if (docxReviewReturnIntakeSceneParagraphText(paragraph.paragraphText) !== '') return false;
+  if (docxReviewReturnIntakeSceneBookmarkNames(paragraph).length > 0) return false;
+  if (paragraph.trackedRevision === true) return false;
+  return true;
+}
+
 function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult, paragraphTexts) {
   const reviewIr = isPlainObjectValue(parserResult?.reviewIr) ? parserResult.reviewIr : {};
-  const paragraphs = Array.isArray(reviewIr.formattingParagraphs)
+  const rawParagraphs = Array.isArray(reviewIr.formattingParagraphs)
     ? reviewIr.formattingParagraphs.filter(isPlainObjectValue)
     : [];
-  if (paragraphs.length === 0) {
+  if (rawParagraphs.length === 0) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_REQUIRED');
   }
   const expectedTexts = Array.isArray(paragraphTexts) ? paragraphTexts : [];
   const map = new Map();
   const blockCount = expectedTexts.length;
+  const hasGoogleLeadingBlankPrefix = rawParagraphs.length === blockCount + 1
+    && expectedTexts[0] !== ''
+    && docxReviewReturnIntakeIsProviderInsertedLeadingBlank(rawParagraphs[0]);
+  const paragraphIndexOffset = hasGoogleLeadingBlankPrefix ? 1 : 0;
+  const paragraphs = hasGoogleLeadingBlankPrefix ? rawParagraphs.slice(1) : rawParagraphs;
   const observedIndexes = new Set();
   if (paragraphs.length !== blockCount) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_CARDINALITY_MISMATCH', {
       expectedParagraphCount: blockCount,
-      actualReturnedParagraphCount: paragraphs.length,
+      actualReturnedParagraphCount: rawParagraphs.length,
     });
   }
   for (const paragraph of paragraphs) {
@@ -5708,18 +5722,21 @@ function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult
     if (paragraphIndex === null) {
       return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_REQUIRED');
     }
-    if (paragraphIndex >= blockCount) {
+    const mappedBlockOrdinal = paragraphIndex - paragraphIndexOffset;
+    if (mappedBlockOrdinal < 0 || mappedBlockOrdinal >= blockCount) {
       return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_OUT_OF_RANGE', {
         paragraphIndex,
         blockCount,
+        paragraphIndexOffset,
       });
     }
-    if (observedIndexes.has(paragraphIndex)) {
+    if (observedIndexes.has(mappedBlockOrdinal)) {
       return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_DUPLICATE', {
         paragraphIndex,
+        mappedBlockOrdinal,
       });
     }
-    observedIndexes.add(paragraphIndex);
+    observedIndexes.add(mappedBlockOrdinal);
   }
   for (let index = 0; index < paragraphs.length; index += 1) {
     if (!observedIndexes.has(index)) {
@@ -5731,10 +5748,11 @@ function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult
   for (let blockOrdinal = 0; blockOrdinal < blockCount; blockOrdinal += 1) {
     const paragraph = paragraphs[blockOrdinal];
     const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph);
-    if (paragraphIndex !== blockOrdinal) {
+    if (paragraphIndex !== blockOrdinal + paragraphIndexOffset) {
       return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_ORDER_MISMATCH', {
         blockOrdinal,
         paragraphIndex,
+        paragraphIndexOffset,
       });
     }
     map.set(paragraphIndex, blockOrdinal);
@@ -5744,8 +5762,10 @@ function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult
     applicable: true,
     paragraphIndexToBlockOrdinal: map,
     paragraphs,
-    returnedParagraphCount: paragraphs.length,
+    returnedParagraphCount: rawParagraphs.length,
     blockCount,
+    providerLeadingBlankPrefixNormalized: hasGoogleLeadingBlankPrefix,
+    paragraphIndexOffset,
   };
 }
 
@@ -6181,6 +6201,10 @@ function buildDocxReviewReturnIntakeSceneExportMapAuthority({
       })),
     returnedParagraphCount: Number.isSafeInteger(paragraphAuthority.returnedParagraphCount)
       ? paragraphAuthority.returnedParagraphCount
+      : 0,
+    providerLeadingBlankPrefixNormalized: paragraphAuthority.providerLeadingBlankPrefixNormalized === true,
+    paragraphIndexOffset: Number.isSafeInteger(paragraphAuthority.paragraphIndexOffset)
+      ? paragraphAuthority.paragraphIndexOffset
       : 0,
     currentRawSha256: actualRawSha256,
     returnedGoogleBookmarkNamesAuthority: false,

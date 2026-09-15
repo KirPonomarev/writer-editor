@@ -163,6 +163,10 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targe
   const returnedParagraphCount = Number.isSafeInteger(authority.returnedParagraphCount)
     ? authority.returnedParagraphCount
     : null;
+  const providerLeadingBlankPrefixNormalized = authority.providerLeadingBlankPrefixNormalized === true;
+  const paragraphIndexOffset = Number.isSafeInteger(authority.paragraphIndexOffset)
+    ? authority.paragraphIndexOffset
+    : 0;
   if (authority.schemaVersion !== 'yalken.rtk.return-intake.scene-ordinal-authority.v1'
     || authority.source !== 'main-owned-local-export-map') {
     reasons.push(reason(
@@ -187,12 +191,25 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targe
       { expectedBlockId: targetBlockId, observedBlockId: normalizeString(authority.targetBlockId) },
     ));
   }
-  if (blockCount !== blocks.length || returnedParagraphCount !== blocks.length) {
+  const expectedReturnedParagraphCount = blocks.length + (providerLeadingBlankPrefixNormalized ? 1 : 0);
+  if (
+    blockCount !== blocks.length
+    || returnedParagraphCount !== expectedReturnedParagraphCount
+    || (providerLeadingBlankPrefixNormalized && paragraphIndexOffset !== 1)
+    || (!providerLeadingBlankPrefixNormalized && paragraphIndexOffset !== 0)
+  ) {
     reasons.push(reason(
       'RTK_COMMAND_ENVELOPE_TAMPERED',
       'localBaseline.sceneOrdinalAuthority.blockCount',
       'Scene ordinal authority must preserve exact local and returned paragraph cardinality.',
-      { blockCount, returnedParagraphCount, localBlockCount: blocks.length },
+      {
+        blockCount,
+        returnedParagraphCount,
+        localBlockCount: blocks.length,
+        expectedReturnedParagraphCount,
+        providerLeadingBlankPrefixNormalized,
+        paragraphIndexOffset,
+      },
     ));
   }
   const seenBlockIndexes = new Set();
@@ -301,12 +318,12 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targe
         continue;
       }
       const touchedEntry = touchedByKey.get(touchedKey(`textRevision:${operation}`, id));
-      if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== index) {
+      if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== targetOrdinal) {
         reasons.push(reason(
           'RTK_COMMAND_ENVELOPE_TAMPERED',
           `localBaseline.sceneOrdinalAuthority.touchedParagraphs.${id || operation}`,
           'Scene ordinal authority touched records must correspond to the paired text revision paragraph index.',
-          { operation, id, paragraphIndex: index },
+          { operation, id, paragraphIndex: index, targetOrdinal },
         ));
       }
     }
@@ -323,12 +340,12 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targe
       continue;
     }
     const touchedEntry = touchedByKey.get(touchedKey('commentThread', id));
-    if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== index) {
+    if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== targetOrdinal) {
       reasons.push(reason(
         'RTK_COMMAND_ENVELOPE_TAMPERED',
         `localBaseline.sceneOrdinalAuthority.touchedParagraphs.${id || 'comment'}`,
         'Scene ordinal authority touched records must correspond to the anchored comment paragraph index.',
-        { id, paragraphIndex: index },
+        { id, paragraphIndex: index, targetOrdinal },
       ));
     }
   }

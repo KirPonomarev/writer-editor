@@ -1183,7 +1183,7 @@ async function runGoogleC4SceneActivation(options = {}) {
       }),
     },
   );
-  return { result, calls, scenePath, sceneText };
+  return { result, calls, port, scenePath, sceneText };
 }
 
 function activationResultCodes(result = {}) {
@@ -2446,6 +2446,81 @@ test('DOCX review preview session command: C4 paragraph projection failures bloc
       name,
     );
   }
+});
+
+test('DOCX review preview session command: C4 product path accepts Google leading blank paragraph prefix only with shifted ordinal authority', async () => {
+  const shiftParagraphIndex = (value) => (Number.isSafeInteger(value) ? value + 1 : value);
+  const { result, calls, port, scenePath } = await runGoogleC4SceneActivation({
+    mutateReviewIr: (reviewIr) => {
+      for (const paragraph of reviewIr.formattingParagraphs) {
+        paragraph.paragraphIndex = shiftParagraphIndex(paragraph.paragraphIndex);
+        paragraph.documentParagraphIndex = shiftParagraphIndex(paragraph.documentParagraphIndex);
+      }
+      reviewIr.formattingParagraphs.unshift({
+        paragraphIndex: 0,
+        documentParagraphIndex: 0,
+        paragraphText: '',
+        trackedRevision: false,
+        bookmarkNames: [],
+        formattedRuns: [],
+      });
+      for (const revision of reviewIr.textRevisions) {
+        revision.paragraphIndex = shiftParagraphIndex(revision.paragraphIndex);
+        revision.documentParagraphIndex = shiftParagraphIndex(revision.documentParagraphIndex);
+      }
+      for (const thread of reviewIr.commentThreads) {
+        thread.paragraphIndex = shiftParagraphIndex(thread.paragraphIndex);
+        thread.documentParagraphIndex = shiftParagraphIndex(thread.documentParagraphIndex);
+        if (thread.anchorLocator) {
+          thread.anchorLocator.paragraphIndex = shiftParagraphIndex(thread.anchorLocator.paragraphIndex);
+        }
+      }
+    },
+  });
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.returnIntake.authenticated, true, JSON.stringify(result.returnIntake, null, 2));
+  assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
+  const textChanges = result.reviewSurface.revisionSession.reviewGraph.textChanges;
+  assert.equal(textChanges.length, 1);
+  assert.equal(textChanges[0].rtkProductPath, 'nonOverlapTrackedReplacement');
+  const applied = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
+    requestId: 'apply-google-leading-blank-prefix',
+    changeId: textChanges[0].changeId,
+  });
+  assert.equal(applied.ok, true, JSON.stringify(applied, null, 2));
+  assert.equal(applied.applied, true);
+  assert.equal(fs.readFileSync(scenePath, 'utf8'), [
+    'sentinel omega',
+    'context line 02',
+    'context line 03',
+    'context line 04',
+    'context line 05',
+    'context line 06',
+    'context line 07',
+    'context line 08',
+    'context line 09',
+    'context line 10',
+    'context line 11',
+    'context line 12',
+  ].join('\n'));
+  assert.equal(
+    calls.filter((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements').length,
+    1,
+  );
+  const applyCall = calls.find((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
+  assert.deepEqual(
+    applyCall.payload.localBaseline.sceneOrdinalAuthority.touchedParagraphs.map((item) => [
+      item.rawReturnedParagraphIndex,
+      item.documentParagraphIndex,
+      item.blockId,
+    ]),
+    [
+      [1, 0, 'block-c4-google-0001'],
+      [1, 0, 'block-c4-google-0001'],
+      [1, 0, 'block-c4-google-0001'],
+    ],
+  );
 });
 
 test('DOCX review preview session command: Google-rewritten scene bookmarks bind through main-owned exportMap ordinal authority', async () => {
