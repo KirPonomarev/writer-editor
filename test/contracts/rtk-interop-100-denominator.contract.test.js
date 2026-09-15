@@ -6,6 +6,122 @@ const os = require('node:os');
 const path = require('node:path');
 const { test } = require('node:test');
 
+test('fresh C1 uses fixed successor pins and preserves the archived three files', async () => {
+  const fresh = await import('../../scripts/ops/rtk-interop-c1-fresh-evidence.mjs');
+  const root = path.resolve(__dirname, '../..');
+  const bytes = fs.readFileSync(path.join(root, fresh.C1_FRESH_PATH));
+  const successor = fresh.readFreshC1Successor(bytes);
+  assert.equal(successor.requiredCells, 1120);
+  assert.equal(successor.maximumCurrentNumerator, 1);
+  assert.equal(successor.historicalNumeratorDelta, 0);
+  assert.equal(successor.cellId, successor.supersedesCellId);
+  assert.equal(successor.broadPassClaim, false);
+  for (const binding of successor.archivedFiles) {
+    assert.equal(sha256File(path.join(root, binding.path)), binding.sha256);
+  }
+  for (const mutate of [s => { s.requiredCells = 1; }, s => { s.cellId = s.cellId.replace('C1', 'C2'); },
+    s => { s.files.pop(); }, s => { s.review.reviewerIdentity = 'self'; }, s => { s.admittedPaths.push('src/main.js'); }]) {
+    const changed = clone(successor); mutate(changed);
+    assert.throws(() => fresh.readFreshC1Successor(Buffer.from(JSON.stringify(changed))), /C1_SUCCESSOR_PIN/);
+  }
+});
+
+test('fresh C1 file boundary rejects coherent path and file attacks', async () => {
+  const { readFreshC1File } = await import('../../scripts/ops/rtk-interop-c1-fresh-evidence.mjs');
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'c1-file-boundary-')));
+  try {
+    fs.mkdirSync(path.join(root, 'raw'));
+    const target = path.join(root, 'raw', 'text.txt');
+    fs.writeFileSync(target, 'Café\n');
+    const binding = { path: 'raw/text.txt', bytes: fs.statSync(target).size, sha256: sha256File(target) };
+    assert.equal(readFreshC1File(root, binding).toString(), 'Café\n');
+    fs.writeFileSync(target, 'Cafè\n');
+    assert.throws(() => readFreshC1File(root, binding), /C1_PACKAGE_HASH/);
+    fs.writeFileSync(target, 'Café\n');
+    for (const relative of ['../text.txt', '/text.txt', 'raw/../raw/text.txt', 'raw//text.txt', 'raw\\text.txt']) {
+      assert.throws(() => readFreshC1File(root, { ...binding, path: relative }), /C1_PACKAGE_PATH/);
+    }
+    assert.throws(() => readFreshC1File(root, { ...binding, bytes: 9 * 1024 * 1024 }), /C1_PACKAGE_SIZE/);
+    assert.throws(() => readFreshC1File(root, { ...binding, path: 'missing' }), /ENOENT/);
+    fs.symlinkSync('raw', path.join(root, 'alias'));
+    assert.throws(() => readFreshC1File(root, { ...binding, path: 'alias/text.txt' }), /C1_PACKAGE_SYMLINK/);
+    fs.symlinkSync('text.txt', path.join(root, 'raw', 'link'));
+    assert.throws(() => readFreshC1File(root, { ...binding, path: 'raw/link' }), /C1_PACKAGE_SYMLINK/);
+    fs.linkSync(target, path.join(root, 'hardlink'));
+    assert.throws(() => readFreshC1File(root, binding), /C1_PACKAGE_FILE_KIND/);
+  } finally { fs.rmSync(root, { recursive: true, force: true }); }
+});
+
+test('fresh mode rejects caller-supplied denominator and mixed legacy admission options', async () => {
+  const validator = await loadValidator();
+  for (const options of [
+    { spec: validator.readInterop100Denominator() },
+    { requireLocalPhysicalPackage: true },
+    { requireExternalEvidencePackage: true },
+  ]) {
+    const report = validator.verifyInterop100(undefined, { freshC1EvidenceRoot: '/missing', ...options });
+    expectInvalid(report, 'C1_FRESH_MODE_OPTIONS_CONFLICT');
+    assert.equal(report.passedRequiredCells, 0);
+    assert.equal(report.authoritativeAdmission, false);
+  }
+});
+
+test('fresh C1 raw oracle rejects semantic mutations after coherent hash updates', () => {
+  const oracle = path.resolve(__dirname, '../../scripts/ops/rtk-interop-c1-raw-readback.py');
+  const program = String.raw`
+import hashlib, importlib.util, io, json, pathlib, tempfile, zipfile
+from xml.sax.saxutils import escape
+spec = importlib.util.spec_from_file_location('c1raw', __import__('sys').argv[1])
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+# This digest was independently computed from the physically reviewed literal
+# twelve-paragraph fixture, not from the producer's expected/actual report.
+assert m.digest(json.dumps(m.EXPECTED, ensure_ascii=False, separators=(',', ':')).encode()) == '693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1'
+def archive(vector, extra=''):
+    buf=io.BytesIO()
+    xml='<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'
+    xml+=''.join('<w:p><w:r><w:t xml:space="preserve">'+escape(p)+'</w:t></w:r></w:p>' for p in vector)+extra+'</w:body></w:document>'
+    with zipfile.ZipFile(buf,'w',zipfile.ZIP_DEFLATED) as z: z.writestr('word/document.xml',xml)
+    return buf.getvalue()
+def reject(fn, fragment):
+    try: fn()
+    except Exception as e:
+        assert fragment in str(e), (fragment,str(e)); return
+    raise AssertionError('mutant survived '+fragment)
+m.paragraphs(m.docx_paragraphs(archive(m.EXPECTED)), 'CONTROL')
+m.paragraphs(m.native_paragraphs(('\r'.join(m.EXPECTED)+'\r').encode()), 'CONTROL')
+mutants=[
+    [p.replace('Café','Cafè') for p in m.EXPECTED],
+    m.EXPECTED[:1]+m.EXPECTED[2:],
+    [m.EXPECTED[2],m.EXPECTED[1],m.EXPECTED[0],*m.EXPECTED[3:]],
+    [p.strip() for p in m.EXPECTED],
+    [p.replace('\u200d','') for p in m.EXPECTED],
+]
+with tempfile.TemporaryDirectory() as tmp:
+    root=pathlib.Path(tmp).resolve()
+    for vector in mutants:
+        data=archive(vector); (root/'mutant.docx').write_bytes(data)
+        coherent={'path':'mutant.docx','bytes':len(data),'sha256':m.digest(data)}
+        reopened=m.checked_read(root,coherent)
+        reject(lambda: m.paragraphs(m.docx_paragraphs(reopened),'DOCX'), 'DOCX_PARAGRAPHS')
+        reject(lambda: m.paragraphs(m.native_paragraphs(('\r'.join(vector)+'\r').encode()),'NATIVE'), 'NATIVE_PARAGRAPHS')
+reject(lambda:m.native_paragraphs(b'missing terminal'),'WORD_NATIVE_TERMINAL_CR')
+for tag in ['br','tab','tbl','ins','del']:
+    reject(lambda:m.docx_paragraphs(archive(m.EXPECTED,'<w:'+tag+'/>')),'DOCX_UNTESTED_STRUCTURE')
+life={'runId':m.RUN,'process':{'status':0,'stdout':'WORD_STATUS=PASS\nDOCUMENTS_BEFORE=0\nDOCUMENTS_AFTER=0\nREVISION_COUNT=0\nCOMMENT_COUNT=0\nSCREENSHOT_STATUS=PASS\n'},'compileProcess':{'status':0},'cleanupOk':True}
+m.lifecycle(life)
+for old,new,key in [('DOCUMENTS_AFTER=0','DOCUMENTS_AFTER=1','DOCUMENTS_AFTER'),('DOCUMENTS_BEFORE=0\n','','DOCUMENTS_BEFORE'),('DOCUMENTS_AFTER=0','DOCUMENTS_AFTER=0\nDOCUMENTS_AFTER=0','DOCUMENTS_AFTER')]:
+    mutant=json.loads(json.dumps(life));mutant['process']['stdout']=mutant['process']['stdout'].replace(old,new)
+    reject(lambda:m.lifecycle(mutant),key)
+report={'schemaVersion':'revision-bridge.docx-import-preview.loss-report.v1','mode':'plain-text-only','itemCount':1,'items':[{'code':'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY','severity':'info','category':'formatting'}]}
+m.loss(report)
+report['items'][0]['code']='SILENT_TEXT_LOSS';reject(lambda:m.loss(report),'LOSS_UNACCOUNTED')
+print(json.dumps({'positiveControls':4,'semanticMutantsKilled':20,'admissionCredit':0}))
+`;
+  const result = spawnSync('python3', ['-I', '-B', '-c', program, oracle], { encoding: 'utf8', timeout: 10000 });
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), { positiveControls: 4, semanticMutantsKilled: 20, admissionCredit: 0 });
+});
+
 const validatorPath = '../../scripts/ops/rtk-interop-100-denominator-v1.mjs';
 const ROOT_DURABLE_PACKAGE_AUDIT_SCHEMA = 'yalken.interop100.rootDurableCell001PackageAudit.v1';
 const ROOT_DURABLE_PACKAGE_AUDIT_CLAIM_BOUNDARY = 'Preserves the physical and independent evidence basis for existing Cell001 only; numerator stays 1/1120.';

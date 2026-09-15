@@ -9,6 +9,60 @@ import { R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING, verifyR24C4ParserAssociationR
 import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { R24_F_SUBSTRATE_EXPECTATION, verifyFSubstratePostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
+import { C1_FRESH_PATH, C1_FRESH_BASE, C1_FRESH_TREE, verifyFreshC1Metadata } from '../../scripts/ops/rtk-interop-c1-fresh-evidence.mjs';
+import { verifyFreshC1PostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
+
+test('fresh C1 post-audit exception cannot authorize later proof code replacement', () => {
+  const candidate = 'e'.repeat(40), delivery = 'd'.repeat(40);
+  const successorBytes = fs.readFileSync(C1_FRESH_PATH), successor = JSON.parse(successorBytes);
+  const fakeGit = drift => args => {
+    if (args[0] === 'rev-parse') return args[1] === `${C1_FRESH_BASE}^{tree}` ? C1_FRESH_TREE : candidate;
+    if (args[0] === 'ls-tree') return C1_FRESH_PATH;
+    if (args[0] === 'log') return delivery;
+    if (args[0] === 'merge-base') return '';
+    if (args[0] === 'diff') return args[3] === C1_FRESH_BASE ? successor.admittedPaths.join('\n') : drift.join('\n');
+    if (args[0] === 'show') return fs.readFileSync(args[1].slice(41));
+    throw new Error('unexpected Git request');
+  };
+  assert.equal(verifyFreshC1PostEvaluationException({ candidateSha: candidate, git: fakeGit([]) }).status, 'PASS');
+  for (const changed of ['scripts/ops/rtk-interop-c1-raw-readback.py', 'scripts/ops/rtk-interop-c1-fresh-evidence.mjs']) {
+    assert.throws(() => verifyFreshC1PostEvaluationException({ candidateSha: candidate, git: fakeGit([changed]) }), /E_C1_SUCCESSOR_IMPLEMENTATION_DRIFT/);
+  }
+  const shared = 'scripts/ops/rtk-interop-100-denominator-v1.mjs';
+  const future = verifyFreshC1PostEvaluationException({ candidateSha: candidate, git: fakeGit([shared]) });
+  assert.equal(future.admittedPaths.includes(shared), false);
+  assert.equal(future.cellAcceptanceAuthority, false);
+});
+
+test('fresh C1 metadata promotion preserves the archive and rejects runtime inheritance', () => {
+  const candidate = 'f'.repeat(40);
+  const successorBytes = fs.readFileSync(C1_FRESH_PATH);
+  const successor = JSON.parse(successorBytes);
+  function fakeGit(delta, archiveMutation = false) {
+    return args => {
+      if (args[0] === 'merge-base') return '';
+      if (args[0] === 'rev-parse') return C1_FRESH_TREE;
+      if (args[0] === 'diff') return delta.join('\n');
+      if (args[0] === 'show' && args[1] === `${candidate}:${C1_FRESH_PATH}`) return successorBytes;
+      if (args[0] === 'show') {
+        const relative = args[1].slice(candidate.length + 1);
+        if (archiveMutation) return Buffer.from('changed');
+        return fs.readFileSync(relative);
+      }
+      throw new Error('unexpected Git request');
+    };
+  }
+  const result = verifyFreshC1Metadata({ git: fakeGit(successor.admittedPaths), candidateSha: candidate });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.baseSha, C1_FRESH_BASE);
+  assert.equal(result.successor.maximumCurrentNumerator, 1);
+  for (const delta of [['src/main.js'], ['src/renderer/editor.bundle.js'], ['package-lock.json'], ['future.txt']]) {
+    assert.throws(() => verifyFreshC1Metadata({ git: fakeGit(delta), candidateSha: candidate }), /C1_RUNTIME_OR_UNADMITTED_CHANGE/);
+  }
+  assert.throws(() => verifyFreshC1Metadata({ git: fakeGit([], true), candidateSha: candidate }), /C1_ARCHIVE_CHANGED/);
+  const wrongTree = args => args[0] === 'rev-parse' ? '0'.repeat(40) : fakeGit([])(args);
+  assert.throws(() => verifyFreshC1Metadata({ git: wrongTree, candidateSha: candidate }), /C1_BASE_TREE/);
+});
 
 test('C4 parser repair admission binds exactly the three reviewed artifacts without acceptance credit', () => {
   const result = verifyR24C4ParserAssociationRepairBinding();

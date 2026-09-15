@@ -1,0 +1,333 @@
+{
+  "schemaVersion": "YALKEN_INTEROP_C1_FRESH_EVIDENCE_SUCCESSOR_V1",
+  "taskId": "C1_FRESH_PRODUCT_ADMISSION_20260915",
+  "cellId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+  "runId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z",
+  "productHead": "f4a7d6541f5fc230f4a7a7f6dc7504eb85a615e9",
+  "productTree": "bc3cf4b4787d62c5ae8e854be791b9c0c241b681",
+  "requiredCells": 1120,
+  "supersedesCellId": "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+  "predecessorRunId": "cell001-hardened-a158e80e-node22-20260912T224556Z-19dbc4",
+  "historicalNumeratorDelta": 0,
+  "maximumCurrentNumerator": 1,
+  "broadPassClaim": false,
+  "ownerAuthority": "Direct owner approval in this task on 2026-09-15: implement fresh C1 product admission and complete normal PR delivery.",
+  "stageAdmissionV2": "NO_PROGRAM_STAGE_TRANSITION: direct owner OPS_GOVERNANCE repair; no inherited program lease or fabricated stage authority.",
+  "admittedPaths": [
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_C1_FRESH_EVIDENCE_SUCCESSOR_V1.json",
+    "docs/tasks/2026-09-15--c1-fresh-product-admission.md",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+    "scripts/ops/rtk-interop-c1-fresh-evidence.mjs",
+    "scripts/ops/rtk-interop-c1-raw-readback.py",
+    "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js"
+  ],
+  "archivedFiles": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
+      "sha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
+      "sha256": "a6af8e77dcecca72386b2a0ec30916de7fb7b5a312b5074594aa16a2035fa209"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json",
+      "sha256": "edce537a910d0d17e5396a73d446c8c35ae8f6cd8caa3cf528f5893305b0482f"
+    }
+  ],
+  "review": {
+    "path": "review/independent-review/supervisor-review-receipt-e63b9a82.json",
+    "sha256": "a48a7c91c3b019799c63308a984abf3fc1e65a8b74aeefa69a13c16c583aa6c1",
+    "reviewerIdentity": "root/c1_independent_review",
+    "role": "PROCESS_INDEPENDENCE_EVIDENCE_NOT_CRYPTOGRAPHIC_SIGNATURE"
+  },
+  "files": [
+    {
+      "path": "review/C1_REVIEW.md",
+      "sha256": "c2259e49ba0e594c82139266082c89ace46b4c7f911deb61e08c7ecd0e8e8d68",
+      "bytes": 5885
+    },
+    {
+      "path": "review/admission-packet.json",
+      "sha256": "ce0172818059553643b7d742d204a9ac064137b8d461b21b273ad83139d19e17",
+      "bytes": 10912
+    },
+    {
+      "path": "review/delivery.json",
+      "sha256": "fc0fe63ef632870b6544a93dada551b3118dd3080adef99c44d5313681d990f1",
+      "bytes": 1989
+    },
+    {
+      "path": "review/independent-review/auditor-replay-report.json",
+      "sha256": "5531c08547452e93f58ef14d08badb8c720341e77896e3960fb45230370fb361",
+      "bytes": 8674
+    },
+    {
+      "path": "review/independent-review/raw-review.json",
+      "sha256": "7f7d362f05901d3b73cac4c314750b20210e25f8677f135ff6f1ea33891f6b38",
+      "bytes": 8489
+    },
+    {
+      "path": "review/independent-review/recheck_c1.py",
+      "sha256": "bc317205ab10e3aaa02282149a66b5f8de03411e51cfbc4fb6c37f2f909c33fc",
+      "bytes": 9742
+    },
+    {
+      "path": "review/independent-review/supervisor-review-receipt-e63b9a82.json",
+      "sha256": "a48a7c91c3b019799c63308a984abf3fc1e65a8b74aeefa69a13c16c583aa6c1",
+      "bytes": 2847
+    },
+    {
+      "path": "review/negative-control-report.json",
+      "sha256": "40bf091ebdb5a90ae192689b003d247d79d58cc309bc995c100fe8a9fcae2a17",
+      "bytes": 1961
+    },
+    {
+      "path": "review/product-current-gate.json",
+      "sha256": "978368b4da7aea4f140978f7283c2d069a3fc4c81ce0901788f23dc453514a96",
+      "bytes": 10227
+    },
+    {
+      "path": "review/report.json",
+      "sha256": "77149b55db72ec8bccdf284dc7d4b0715b70bd8c7d5252347d1f31953194e8bb",
+      "bytes": 952
+    },
+    {
+      "path": "review/review-package-manifest.json",
+      "sha256": "3e222d04265bd46fbf53f232e5f5e807d6baeff1193a24d0537a972534de108d",
+      "bytes": 1116
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/applescripts/m1-word-open-save-reopen.applescript",
+      "sha256": "b728e5a1e4e211e6ffaf45f53bb9245ef221ac19de136ff7c199d76c0f79ec8d",
+      "bytes": 6246
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/applescripts/m1-word-open-save-reopen.scpt",
+      "sha256": "c4fee8574b6818c2fbcdb1e5005d4d4fdd3f361b53a17e14073527be13b8b453",
+      "bytes": 26782
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/applescripts/word-window-id.swift",
+      "sha256": "30a6f757a85795f622566e139e9b83af1800673e960f53b305f38cd31826907f",
+      "bytes": 1761
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/artifact-index-verification.json",
+      "sha256": "15431a89a22c318be538985a3aea1e22e4becb54c98434299cdb6ff06280e5c3",
+      "bytes": 292
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/defect-packet.json",
+      "sha256": "81426e9cf3b4de603e675bf57c40feb80b713169ed4c3d748b44556aedca5fe9",
+      "bytes": 17880
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/diff.json",
+      "sha256": "1c8eb864b335ef7ab4b141f354553f8f586691419e35c0599d9e8f3f4fbbc891",
+      "bytes": 22060
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-export-config.json",
+      "sha256": "fb4ecbd4301d4ae241705c4fad8b15a2e04e975de15e3fdaf032dd11f159241b",
+      "bytes": 7376
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-export-phase.json",
+      "sha256": "8c2f896fdc3fc2a6b4ee6a3d5899dd8d29417834e774d597fba219e8bcc05147",
+      "bytes": 38998
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-import-config.json",
+      "sha256": "9d155908ffbe07300897a8cc7afac4a1900180358e5457b9e9e5686d1525e828",
+      "bytes": 7376
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-import-phase.json",
+      "sha256": "6405e80b114c24015648be49c614f7b73f41c087e55987ad4bced424b6fa8a52",
+      "bytes": 67301
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-m1-child.cjs",
+      "sha256": "396296f3d014b66584e94027445894f0a058a0e2c3609a5bdbf632aea4932cba",
+      "bytes": 60618
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-reopen-config.json",
+      "sha256": "76c4eb51b28b7cc0a154fabb06020abb62bf8f676eee9720137642cc985a2607",
+      "bytes": 7516
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/electron-reopen-phase.json",
+      "sha256": "1969b3876f2420ff7ba1648272550b674673882772170c20e3721c5323f31c08",
+      "bytes": 9542
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/font-evidence.json",
+      "sha256": "5875f7d22022f86c4b875c38887577eb397d2315359265a4028e9f0242d1e4af",
+      "bytes": 433
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/independent-ooxml-readback.json",
+      "sha256": "0627d3aa4738cdd001a63213e230ba80f2e97f2f1e9f0bdf16dedcdb929abd75",
+      "bytes": 15857
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/loss-report.json",
+      "sha256": "fab6b812d54a30e68e000ce76002bfbf9be0b97ab6acd092224a81d2b5844d4b",
+      "bytes": 6107
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/observation.json",
+      "sha256": "8ada954eaa82f511420a1adbe06d05bc9a7d39d7ca04401153e79a35307d0366",
+      "bytes": 35614
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/provider-identity.json",
+      "sha256": "dc48142dd3300e809a9a633d2f5654f8c621e10afe0a7bf4df6242720f3a7a00",
+      "bytes": 245
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/reopened-yalken.png",
+      "sha256": "a44441ca8d5649c50dbe1729d3029fd121a35d8f04659640638310a0df908abc",
+      "bytes": 777256
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/returned-document.xml",
+      "sha256": "2acd00e971afdb628f52c3b09ec8df4764b12bc767b845583cb7ee11ee69bf9f",
+      "bytes": 1629
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/returned-yalken.png",
+      "sha256": "fbbfd03693221ac2b26ed10a2306e0a61dfb8f7cdc7f7fa0a126bb35689f1804",
+      "bytes": 777756
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-build.json",
+      "sha256": "42947dd013a8aa9949ea89273f9559ed75f967b510ad755d8c7a2a3075eb9312",
+      "bytes": 2363
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/.stage10-local/command-receipt-authority-store.v2.json",
+      "sha256": "17c1b9dcf6cdbc6bf52d06efc57c33cc6c1f7cf076bc16c483c637f002c14308",
+      "bytes": 2480
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/.stage10-local/product-session.v2.json",
+      "sha256": "b04cbdbc37019a59d488f69b001b69e62f04ffd221b259f4f3bd6e555018ac48",
+      "bytes": 7142
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/.yalken/docx-import/receipts/docx-import-op-7588cfbf2399.json",
+      "sha256": "8bc81f47a548d5d69a5d7cbc7db58e376ff65e95f3a0cade18fa2a91633a3835",
+      "bytes": 3459
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/backups/26c75b3be92fe73b4057c58b4c384d754c06ea1acf63a64bcb8a5fcc4bf57eb9/1789503276370_project.craftsman.json",
+      "sha256": "d2c3f99e992f63cb6c6baa90c82b7b6ac0e3e549555f651905d166d5c7c7c117",
+      "bytes": 164
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/backups/26c75b3be92fe73b4057c58b4c384d754c06ea1acf63a64bcb8a5fcc4bf57eb9/1789503282885_project.craftsman.json",
+      "sha256": "8a20f0fda5c876ac4c65bf80687f0f6bba256ba3ca174fa6f6306d78c952ec31",
+      "bytes": 5082
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/backups/26c75b3be92fe73b4057c58b4c384d754c06ea1acf63a64bcb8a5fcc4bf57eb9/meta.json",
+      "sha256": "e80be54ea22eb11dfb0caa479dc25305ee71182d60e3416843bef24146ed9eac",
+      "bytes": 213
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/project.craftsman.json",
+      "sha256": "81acc0b8108f2cd2e42900ea3d39818562d84fe784646dc7970ca536ddfe758b",
+      "bytes": 5247
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/roman/Imported/Imported DOCX preview 7588cfbf.txt",
+      "sha256": "e0112f7006179c1da82551ecdf2d33f1c0809e432f7151b25f3ecc9b701bc664",
+      "bytes": 727
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/roman/черновик.txt",
+      "sha256": "50894d68b496438da54637b5ee519aa540876bc70d587270f0371ffa9d9cc5df",
+      "bytes": 2193
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot/roman/черновик.txt.wp201-commit.json",
+      "sha256": "0677e5484b335492ffc160763d2e711d81d9ab53534e7849bac71d86439bc253",
+      "bytes": 653
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/runtime-project-snapshot.json",
+      "sha256": "35c431eddd93df1d8d007c18d0a33d3205448f080c0b82c2d686d55a7f96a77a",
+      "bytes": 3168
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/source-authoring-precondition.json",
+      "sha256": "7f400017c90fbe9bb0cd460a96a8eb6d04eb2fc1f046e7a220078762b2114ad9",
+      "bytes": 4448
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/source-document.xml",
+      "sha256": "2acd00e971afdb628f52c3b09ec8df4764b12bc767b845583cb7ee11ee69bf9f",
+      "bytes": 1629
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/source-scene-readback.json",
+      "sha256": "61eda814d394001412cada653e4845eb65a8bc303a2c9c02a917f2a0c13b91bf",
+      "bytes": 13993
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/source-yalken.png",
+      "sha256": "fc0c17c7ec456cb25e86dbe201d97b5a9f6121a85f336924b72fb9781c96afc2",
+      "bytes": 728752
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/source.txt",
+      "sha256": "17c98ce164ec8490e9941ff846df8f12230746710a8b6bd45cbe4d5ba5d170d7",
+      "bytes": 738
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/subcase-coverage.json",
+      "sha256": "e25b706b32a811c776a8fe51c652b51f404beab1d1eb08f0c50f19c7f0566ebb",
+      "bytes": 1693
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/word-after-reopen.png",
+      "sha256": "ed79ea014dec99e514b03a2d509760380d08619bab410252f47258718a5bae8d",
+      "bytes": 883565
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/word-lifecycle.json",
+      "sha256": "2bc36f2235d8fe9b8a367f85188874192581abcc2ace96fd3b7bf34b8a564af3",
+      "bytes": 4414
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/word-native-readback.txt",
+      "sha256": "5616c02504d1aaeb230ed16b615e71ae44224b9cb1c0fad5b273720d3df16016",
+      "bytes": 728
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/word-returned.docx",
+      "sha256": "3541d19fb1a2fe61a19b4f6cc074d7b6ff9b286b9eaab1cdb609b0318dde8f50",
+      "bytes": 2715
+    },
+    {
+      "path": "runs/TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-15T20-14-30-759Z/yalken-electron-source-export.docx",
+      "sha256": "3541d19fb1a2fe61a19b4f6cc074d7b6ff9b286b9eaab1cdb609b0318dde8f50",
+      "bytes": 2715
+    }
+  ],
+  "limitations": [
+    "One immutable TEXT SINGLE_SCENE C1 SOURCE_RUNTIME fixture with 12 paragraphs and seven language profiles only.",
+    "Physical run is f4a7d654; promotion requires unchanged runtime and an explicitly bounded OPS delta.",
+    "The other 1119 cells remain unproven by this successor; no full styles, soft-break, packaged, other route, release or program completion claim.",
+    "Review receipts attest an independently performed review; no cryptographic signer claim."
+  ]
+}
