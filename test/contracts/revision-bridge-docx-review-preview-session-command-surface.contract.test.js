@@ -21,6 +21,7 @@ const GOOGLE_C4_NATIVE_RETURN_FIXTURE_PATH = path.join(
   'google-c4-native-review-returned.docx',
 );
 const GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256 = '0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4';
+const CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256 = 'd922b42bb3f4cf17635d30b2b930760cfebdc396b2ab63359f429bcaa7cb9d9c';
 const MUTATE_SECTION_START = '// CONTOUR_01A_REVIEW_MUTATE_PORT_START';
 const MUTATE_SECTION_END = '// CONTOUR_01A_REVIEW_MUTATE_PORT_END';
 const INTAKE_SECTION_START = '// DOCX_INTAKE_GATE_COMMAND_SURFACE_START';
@@ -1062,7 +1063,7 @@ async function runGoogleC4SceneActivation(options = {}) {
     insertedText: 'sentinel omega',
     blockId: blocks[targetOrdinal].blockId,
   });
-  const returnedBytes = googleRewrittenBookmarkReturnBytes(docx, {
+  const returnedBytes = options.returnedBytes || googleRewrittenBookmarkReturnBytes(docx, {
     sceneText,
     targetOrdinal,
   });
@@ -1135,14 +1136,18 @@ async function runGoogleC4SceneActivation(options = {}) {
     cryptoPort: c05CryptoPort,
     now: () => 1700000000000,
   });
+  const rootHandler = bridge.createRtkRootCommentReturnCommandHandler();
+  const lifecycleHandler = bridge.createRtkCommentLifecycleReturnCommandHandler();
   const port = instantiateDocxReviewPreviewSessionPort({
     dispatchCommandSurfaceKernel: async (commandId, payload = {}) => {
       calls.push({ commandId, payload: cloneJsonSafe(payload) });
       if (commandId === 'cmd.rtk.reviewSession.importComments') {
         return { ok: true, status: 'committed', session: { summary: { threadCount: 1 } }, storageEffects: {} };
       }
-      assert.equal(commandId, 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
-      return applyHandler(payload);
+      if (commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements') return applyHandler(payload);
+      if (commandId === 'cmd.rtk.review.applyRootCommentReturn') return rootHandler(payload);
+      if (commandId === 'cmd.rtk.review.applyCommentLifecycleReturn') return lifecycleHandler(payload);
+      assert.fail(`unexpected command: ${commandId}`);
     },
   });
   const sceneHash = computeHash(sceneText);
@@ -1157,8 +1162,11 @@ async function runGoogleC4SceneActivation(options = {}) {
     }],
   };
   if (typeof options.mutateExportMap === 'function') options.mutateExportMap(exportMap);
+  const activationPayload = toPayload(returnedBytes, options.explicitCanonicalApplyConfirmed === true
+    ? { explicitCanonicalApplyConfirmed: true }
+    : {});
   const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
-    toPayload(returnedBytes),
+    activationPayload,
     {
       activeReviewDocxExportAuthorityStore: productAuthorityStoreFromDocx(docx, {
         projectRoot: tmpDir,
@@ -2532,6 +2540,50 @@ test('DOCX review preview session command: C4 product path accepts Google leadin
       [1, 0, 'block-c4-google-0001'],
     ],
   );
+});
+
+test('DOCX review preview session command: captured C4 source return applies exact text before root comment', async (t) => {
+  const capturedReturnedDocxPath = process.env.YALKEN_C4_CAPTURED_RETURNED_DOCX || '';
+  if (!capturedReturnedDocxPath) {
+    t.skip('set YALKEN_C4_CAPTURED_RETURNED_DOCX to run the captured C4 source return oracle');
+    return;
+  }
+  const returnedBytes = fs.readFileSync(capturedReturnedDocxPath);
+  assert.equal(
+    crypto.createHash('sha256').update(returnedBytes).digest('hex'),
+    CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256,
+  );
+
+  const { result, calls, scenePath } = await runGoogleC4SceneActivation({
+    returnedBytes,
+    explicitCanonicalApplyConfirmed: true,
+    mutateReviewIr: (reviewIr) => {
+      reviewIr.commentPlacements[0].quote = 'sentinel omega';
+      reviewIr.commentPlacements[0].range = { from: 0, to: 'sentinel omega'.length };
+    },
+  });
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.returnIntake.returnedArtifactSha256, `sha256:${CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256}`);
+  assert.equal(result.preCommentExactTextApplyResult.ok, true, JSON.stringify(result.preCommentExactTextApplyResult, null, 2));
+  assert.equal(result.preCommentExactTextApplyResult.applied, true);
+  assert.equal(result.commentProductPath.ok, true, JSON.stringify(result.commentProductPath, null, 2));
+  assert.equal(result.commentProductPath.status, 'applied-and-replayed');
+
+  const exactApplyIndex = calls.findIndex((call) => (
+    call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements'
+  ));
+  const rootApplyIndex = calls.findIndex((call) => (
+    call.commandId === 'cmd.rtk.review.applyRootCommentReturn'
+  ));
+  assert.ok(exactApplyIndex >= 0, JSON.stringify(calls.map((call) => call.commandId)));
+  assert.ok(rootApplyIndex > exactApplyIndex, JSON.stringify(calls.map((call) => call.commandId)));
+
+  const rootPayload = calls[rootApplyIndex].payload;
+  assert.equal(rootPayload.selectedText, 'sentinel omega');
+  assert.equal((rootPayload.sceneText.match(/sentinel omega/g) || []).length, 1);
+  assert.equal(rootPayload.sceneText.includes('sentinel alpha'), false);
+  assert.equal(fs.readFileSync(scenePath, 'utf8').startsWith('sentinel omega'), true);
 });
 
 test('DOCX review preview session command: Google-rewritten scene bookmarks bind through main-owned exportMap ordinal authority', async () => {

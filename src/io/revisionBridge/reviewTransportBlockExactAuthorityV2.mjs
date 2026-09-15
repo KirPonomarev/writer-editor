@@ -146,6 +146,11 @@ function commentParagraphIndex(thread) {
   return revisionParagraphIndex(isPlainObject(thread?.anchorLocator) ? thread.anchorLocator : {});
 }
 
+function signedSha256Text(cryptoPort, value) {
+  const digest = normalizeString(cryptoPort.sha256Text(value));
+  return digest.startsWith('sha256:') ? digest : `sha256:${digest}`;
+}
+
 function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, groups, reviewIr, cryptoPort) {
   const authority = isPlainObject(localBaseline.sceneOrdinalAuthority)
     ? localBaseline.sceneOrdinalAuthority
@@ -228,7 +233,7 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targe
     seenBlockIndexes.add(block.documentParagraphIndex);
   }
   const currentRawSha256 = normalizeString(authority.currentRawSha256);
-  const computedRawSha256 = cryptoPort.sha256Text(blocks.map((block) => rawString(block.text)).join('\n'));
+  const computedRawSha256 = signedSha256Text(cryptoPort, blocks.map((block) => rawString(block.text)).join('\n'));
   if (!currentRawSha256 || currentRawSha256 !== computedRawSha256) {
     reasons.push(reason(
       'RTK_COMMAND_ENVELOPE_TAMPERED',

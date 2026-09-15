@@ -150,6 +150,30 @@ function countOccurrences(text, needle) {
   return count;
 }
 
+function sceneTextAfterSourceTextChange(sceneText, change) {
+  const match = isPlainObject(change?.match) ? change.match : {};
+  const expectedText = typeof match.quote === 'string' ? match.quote : '';
+  const replacementText = typeof change?.replacementText === 'string' ? change.replacementText : '';
+  if (!expectedText || !replacementText) return sceneText;
+  if (isPlainObject(match.blockRange)) {
+    const range = match.blockRange;
+    if (
+      Number.isSafeInteger(range.sceneStart)
+      && Number.isSafeInteger(range.blockLocalStart)
+      && Number.isSafeInteger(range.blockLocalEnd)
+    ) {
+      const from = range.sceneStart + range.blockLocalStart;
+      const to = range.sceneStart + range.blockLocalEnd;
+      if (from >= 0 && to >= from && sceneText.slice(from, to) === expectedText) {
+        return `${sceneText.slice(0, from)}${replacementText}${sceneText.slice(to)}`;
+      }
+    }
+  }
+  const first = sceneText.indexOf(expectedText);
+  if (first < 0 || first !== sceneText.lastIndexOf(expectedText)) return sceneText;
+  return `${sceneText.slice(0, first)}${replacementText}${sceneText.slice(first + expectedText.length)}`;
+}
+
 export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
   if (input.commandId !== RTK_ROOT_COMMENT_RETURN_COMMAND_ID) return blocked('RTK_ROOT_COMMENT_COMMAND_INVALID', 'commandId');
   if (input.callerRole !== 'main' || input.commandAuthority?.issuer !== 'main'
@@ -516,15 +540,21 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
     }) || null;
     const blockId = normalizeString(placementAuthority.blockId || placement.blockId || sourceTextChange?.match?.blockId);
     const paragraphIndex = normalizeNonNegativeInteger(
-      placementAuthority.paragraphIndex ?? placement.paragraphIndex ?? sourceTextChange?.paragraphIndex,
+      placementAuthority.paragraphIndex
+        ?? placement.paragraphIndex
+        ?? sourceTextChange?.paragraphIndex
+        ?? sourceTextChange?.documentParagraphIndex,
     );
     const resolvedParagraphIndex = paragraphIndex >= 0 ? paragraphIndex : paragraphIndexFromBlockId(blockId);
     const authoritySource = normalizeString(placement.sceneAuthoritySource)
       || (sourceTextChange ? 'rtk-non-overlap-product-replacement-authority' : '');
+    const commandSceneText = sourceTextChange
+      ? sceneTextAfterSourceTextChange(sceneText, sourceTextChange)
+      : sceneText;
     commands.push({
       family: 'root_comment',
       payload: {
-        projectId, projectRoot, operationId: rootOperationId, sceneId, scenePath, sceneText, selectedText,
+        projectId, projectRoot, operationId: rootOperationId, sceneId, scenePath, sceneText: commandSceneText, selectedText,
         threadId: canonicalThreadId,
         commentId: canonicalRootCommentId,
         body: rootBody,

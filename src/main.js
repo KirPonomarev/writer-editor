@@ -5440,6 +5440,40 @@ function attachProductTextChangesToDocxCommentShadowPayload(commentShadowPayload
   return nextPayload;
 }
 
+function readRtkNonOverlapTrackedReplacementChangeIdsFromReviewSurface(reviewSurface) {
+  const textChanges = Array.isArray(reviewSurface?.revisionSession?.reviewGraph?.textChanges)
+    ? reviewSurface.revisionSession.reviewGraph.textChanges.filter(isPlainObjectValue)
+    : [];
+  return normalizeRtkNonOverlapTrackedReplacementChangeIds(textChanges
+    .filter((textChange) => (
+      rtkNonOverlapTrackedReplacementDetailString(textChange.rtkProductPath)
+        === 'nonOverlapTrackedReplacement'
+    ))
+    .map((textChange) => textChange.changeId));
+}
+
+async function applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
+  reviewSurface,
+  requestId,
+  options = {},
+} = {}) {
+  const changeIds = readRtkNonOverlapTrackedReplacementChangeIdsFromReviewSurface(reviewSurface);
+  if (changeIds.length === 0) {
+    return {
+      ok: true,
+      skipped: true,
+      reason: 'RTK_EXACT_TEXT_APPLY_BEFORE_COMMENT_RETURN_NO_CHANGES',
+    };
+  }
+  return runRtkNonOverlapTrackedReplacementProductApplyFromMainState({
+    commandId: DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID,
+    activeSession: cloneActiveReviewSessionStore(),
+    payload: { requestId },
+    changeIds,
+    options,
+  });
+}
+
 async function applyAuthenticatedDocxCommentProductPath({
   context,
   commentShadowPayload,
@@ -6742,6 +6776,8 @@ function buildPublicRtkNonOverlapTrackedReplacementRevisionSession(runtimePrevie
         blockId: docxReviewPreviewSessionDetailString(item.match?.blockId),
       },
       replacementText: typeof item.replacementText === 'string' ? item.replacementText : '',
+      paragraphIndex: Number.isSafeInteger(item.paragraphIndex) ? item.paragraphIndex : null,
+      documentParagraphIndex: Number.isSafeInteger(item.documentParagraphIndex) ? item.documentParagraphIndex : null,
       sourceRevisionIds: Array.isArray(item.sourceRevisionIds)
         ? item.sourceRevisionIds.filter((id) => typeof id === 'string')
         : [],
@@ -6779,6 +6815,8 @@ function buildPublicRtkFullManuscriptNonOverlapTrackedReplacementRevisionSession
           blockId: docxReviewPreviewSessionDetailString(item.match?.blockId),
         },
         replacementText: typeof item.replacementText === 'string' ? item.replacementText : '',
+        paragraphIndex: Number.isSafeInteger(item.paragraphIndex) ? item.paragraphIndex : null,
+        documentParagraphIndex: Number.isSafeInteger(item.documentParagraphIndex) ? item.documentParagraphIndex : null,
         sourceRevisionIds: Array.isArray(item.sourceRevisionIds)
           ? item.sourceRevisionIds.filter((id) => typeof id === 'string')
           : [],
@@ -9042,16 +9080,52 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       revisionBridge,
       options,
     });
+  const explicitCanonicalApplyConfirmed = payload?.explicitCanonicalApplyConfirmed === true;
+  let preCommentExactTextApplyResult = null;
+  if (
+    explicitCanonicalApplyConfirmed
+    && nonOverlapTrackedReplacementProductPath?.prepared === true
+    && isPlainObjectValue(nonOverlapTrackedReplacementProductPath.reviewSurface)
+  ) {
+    preCommentExactTextApplyResult = await applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
+      reviewSurface: nonOverlapTrackedReplacementProductPath.reviewSurface,
+      requestId,
+      options,
+    });
+    if (isPlainObjectValue(preCommentExactTextApplyResult) && preCommentExactTextApplyResult.ok === false) {
+      return makeDocxReviewPreviewSessionTypedError(
+        'E_DOCX_REVIEW_PREVIEW_SESSION_EXACT_TEXT_APPLY_FAILED',
+        docxReviewPreviewSessionDetailString(
+          preCommentExactTextApplyResult.error?.reason
+            || preCommentExactTextApplyResult.reason,
+        ) || 'RTK_EXACT_TEXT_APPLY_BEFORE_COMMENT_RETURN_FAILED',
+        {
+          status: docxReviewPreviewSessionDetailString(preCommentExactTextApplyResult.status),
+          code: docxReviewPreviewSessionDetailString(
+            preCommentExactTextApplyResult.error?.code
+              || preCommentExactTextApplyResult.code,
+          ),
+          reason: docxReviewPreviewSessionDetailString(
+            preCommentExactTextApplyResult.error?.reason
+              || preCommentExactTextApplyResult.reason,
+          ),
+        },
+      );
+    }
+  }
+  const reviewSurfaceForComments = isPlainObjectValue(preCommentExactTextApplyResult?.reviewSurface)
+    ? preCommentExactTextApplyResult.reviewSurface
+    : nonOverlapTrackedReplacementProductPath?.reviewSurface;
   const commentProductPath = commentShadowPayload
     ? await applyAuthenticatedDocxCommentProductPath({
       context: activeContext,
       commentShadowPayload: attachProductTextChangesToDocxCommentShadowPayload(
         commentShadowPayload,
-        nonOverlapTrackedReplacementProductPath?.reviewSurface,
+        reviewSurfaceForComments,
       ),
       requestId,
       revisionBridge,
-      explicitCanonicalApplyConfirmed: payload?.explicitCanonicalApplyConfirmed === true,
+      explicitCanonicalApplyConfirmed,
     })
     : null;
   const formattingProductPath = prepareAuthenticatedDocxFormattingReturnProductPath({
@@ -9105,6 +9179,19 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       }
       : null,
     commentProductPath: isPlainObjectValue(commentProductPath) ? cloneJsonSafe(commentProductPath) : null,
+    preCommentExactTextApplyResult: isPlainObjectValue(preCommentExactTextApplyResult)
+      ? {
+        ok: preCommentExactTextApplyResult.ok === true,
+        skipped: preCommentExactTextApplyResult.skipped === true,
+        applied: preCommentExactTextApplyResult.applied === true,
+        replay: preCommentExactTextApplyResult.replay === true,
+        status: docxReviewPreviewSessionDetailString(preCommentExactTextApplyResult.status),
+        reason: docxReviewPreviewSessionDetailString(
+          preCommentExactTextApplyResult.reason
+            || preCommentExactTextApplyResult.error?.reason,
+        ),
+      }
+      : null,
     nonOverlapTrackedReplacementProductPath: isPlainObjectValue(nonOverlapTrackedReplacementProductPath)
       ? {
         prepared: nonOverlapTrackedReplacementProductPath.prepared === true,
