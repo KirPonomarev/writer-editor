@@ -5,9 +5,42 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import test from 'node:test';
+import { R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING, verifyR24C4ParserAssociationRepairBinding } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { R24_E_PLAN_PREDECESSOR_EXPECTATION, verifyEPlanPredecessorPostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { R24_F_SUBSTRATE_EXPECTATION, verifyFSubstratePostEvaluationException } from '../../scripts/ops/r24/corrective/post-audit-certification-set.mjs';
 import { canonicalBytes } from '../../scripts/ops/r24/corrective/canonical-json.mjs';
+
+test('C4 parser repair admission binds exactly the three reviewed artifacts without acceptance credit', () => {
+  const result = verifyR24C4ParserAssociationRepairBinding();
+  assert.equal(result.status, 'PASS');
+  assert.deepEqual(result.admittedPaths, R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING.admittedPaths);
+  assert.equal(result.admittedPaths.length, 3);
+  assert.equal(result.admittedPaths.includes('future.txt'), false);
+  assert.equal(result.cellAcceptanceAuthority, false);
+  assert.equal(result.programDone, false);
+});
+
+test('C4 parser repair admission preserves historical candidates', () => {
+  assert.deepEqual(verifyR24C4ParserAssociationRepairBinding({ candidateSha: 'fd99fe11dc56bbaf60cc6b6c62c746f7fcc03ac6' }), {
+    status: 'NOT_APPLICABLE', admittedPaths: [],
+  });
+});
+
+for (const relative of R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING.admittedPaths) {
+  test(`C4 parser repair admission rejects changed artifact ${path.basename(relative)}`, () => {
+    const candidate = 'f'.repeat(40);
+    const hostileGit = (args, options = {}) => {
+      if (args[0] === 'rev-parse') return candidate + '\n';
+      if (args[0] === 'merge-base') return Buffer.alloc(0);
+      if (args[0] === 'show' && args[1] === `${candidate}:${relative}`) return Buffer.from('changed bytes');
+      const mapped = args[0] === 'show' && args[1].startsWith(candidate + ':')
+        ? ['show', R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING.baseSha + args[1].slice(candidate.length)] : args;
+      return execFileSync('git', mapped, { ...options, maxBuffer: 64 * 1024 * 1024 });
+    };
+    assert.throws(() => verifyR24C4ParserAssociationRepairBinding({ candidateSha: candidate, git: hostileGit }),
+      /E_R24_C4_PARSER_ASSOCIATION_REPAIR_ARTIFACT_DRIFT/);
+  });
+}
 import { createFixturePublicationCache } from '../fixtures/r24-fixture-publication-cache.mjs';
 import { PRE00F_CURRENT_HEAD_PLAN_DELIVERY_RECONCILIATION_EXPECTATION } from '../../scripts/ops/r24/corrective/pre00f-current-head-plan-delivery-reconciliation.mjs';
 import { RCV00A_CURRENT_HEAD_EXACT_TOOLCHAIN_ENTRYPOINT_EXPECTATION } from '../../scripts/ops/r24/corrective/rcv00a-current-head-exact-toolchain-entrypoint.mjs';
