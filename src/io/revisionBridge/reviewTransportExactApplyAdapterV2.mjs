@@ -157,6 +157,7 @@ function candidateTextEvidence(candidate, reviewIr) {
       operation: 'replacement-pair',
       expectedText: rawString(deleted.text),
       replacementText: rawString(inserted.text),
+      nativeReplacementGroupId: normalizeString(deleted.replacementGroupId || inserted.replacementGroupId),
     };
   }
   const source = selectSourceRevisions(candidate, revisions);

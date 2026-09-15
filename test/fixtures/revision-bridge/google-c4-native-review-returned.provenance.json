@@ -1,16 +1,46 @@
 {
-  "schemaVersion": "yalken.test.fixture.provenance.v1",
+  "schemaVersion": "yalken.test.fixture.provenance.v2",
   "fixture": "google-c4-native-review-returned.docx",
-  "sha256": "0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4",
+  "fixtureKind": "SANITIZED_DERIVATIVE_OF_PHYSICAL_RETURN",
+  "originalExternalArtifactSha256": "0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4",
+  "sanitizedFixtureSha256": "f1bb75df191e945aeb2be29eccc4eaf71448195322eac2b31cc5f0ecf1689515",
   "source": "r24-portability-lab-v2 TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME google-native-review-provider-await",
   "runId": "TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME__2026-09-15T02-12-59-410Z__google-native-review-provider-await",
-  "provider": "google-native-review-provider-await",
   "capturedAt": "2026-09-15",
+  "sanitization": {
+    "type": "AUTHOR_METADATA_PSEUDONYMIZATION",
+    "authorPseudonym": "Yalken Reviewer0",
+    "identityBearingAttributesSanitized": [
+      {
+        "partName": "word/document.xml",
+        "attributeLocalName": "author",
+        "count": 2
+      },
+      {
+        "partName": "word/comments.xml",
+        "attributeLocalName": "author",
+        "count": 1
+      }
+    ],
+    "documentXmlUtf16LengthPreserved": true,
+    "commentsXmlUtf16LengthPreserved": true
+  },
+  "xmlDigestBinding": {
+    "sourceDocumentXmlSha256": "9980c446eadf51d0a3b8a01700a71d781cfac45eb5306b23c21ff70b54638f5d",
+    "sanitizedDocumentXmlSha256": "59435bbba78707564ae80b12dc06e42b9906f6c1d35f446cbd5ce31f8d384b18",
+    "sourceCommentsXmlSha256": "c77346288b853eac4458c7dc431c20b97127632935c93003b00c877b9962a662",
+    "sanitizedCommentsXmlSha256": "3215b83adcc6778a6668ed24f705e4e12a4a7125cb40208f2bb8ae132ba32b2c",
+    "sourceDocumentXmlUtf16Length": 10346,
+    "sanitizedDocumentXmlUtf16Length": 10346,
+    "sourceCommentsXmlUtf16Length": 3351,
+    "sanitizedCommentsXmlUtf16Length": 3351
+  },
   "expectedParserShape": {
     "formattingParagraphCount": 12,
     "paragraphIndexes": "0..11",
     "bookmarkNames": "empty arrays",
     "replacementParagraphIndex": 0,
     "paragraph0ReturnedText": "[plainTextPreserved] Body text sentinel omega."
-  }
+  },
+  "authorityNote": "This fixture is a sanitized derivative of the external physical returned DOCX. The original external artifact remains bound by SHA only; provider document identifiers and real author metadata are not stored."
 }

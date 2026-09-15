@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
-const { deflateRawSync } = require('node:zlib');
+const { deflateRawSync, inflateRawSync } = require('node:zlib');
 const { pathToFileURL } = require('node:url');
 const { createDocxActivationRequestDigestGuard } = require('../../src/main/rtkDocxActivationGuards.cjs');
 
@@ -20,7 +20,32 @@ const GOOGLE_C4_NATIVE_RETURN_FIXTURE_PATH = path.join(
   'revision-bridge',
   'google-c4-native-review-returned.docx',
 );
-const GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256 = '0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4';
+const GOOGLE_C4_NATIVE_RETURN_FIXTURE_PROVENANCE_PATH = path.join(
+  REPO_ROOT,
+  'test',
+  'fixtures',
+  'revision-bridge',
+  'google-c4-native-review-returned.provenance.json',
+);
+const GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256 = 'f1bb75df191e945aeb2be29eccc4eaf71448195322eac2b31cc5f0ecf1689515';
+const GOOGLE_C4_NATIVE_RETURN_ORIGINAL_EXTERNAL_ARTIFACT_SHA256 = '0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4';
+const GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_PATH = path.join(
+  REPO_ROOT,
+  'test',
+  'fixtures',
+  'revision-bridge',
+  'google-c4-pr1918-sanitized-derivative-of-physical-return.docx',
+);
+const GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_PROVENANCE_PATH = path.join(
+  REPO_ROOT,
+  'test',
+  'fixtures',
+  'revision-bridge',
+  'google-c4-pr1918-sanitized-derivative-of-physical-return.docx.provenance.json',
+);
+const GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256 = '5f806e5eb0325b91e17a947c773f6ee9683dca31cd4e0831a62cd38dd52d67ba';
+const GOOGLE_C4_PR1918_EXTERNAL_PHYSICAL_ARTIFACT_SHA256 = 'caf19c22c25a8fa77c928045f40dccb86efcd9bcdfa851f205c7e58a8a6e2a7f';
+const GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM = 'Yalken Reviewer0';
 const MUTATE_SECTION_START = '// CONTOUR_01A_REVIEW_MUTATE_PORT_START';
 const MUTATE_SECTION_END = '// CONTOUR_01A_REVIEW_MUTATE_PORT_END';
 const INTAKE_SECTION_START = '// DOCX_INTAKE_GATE_COMMAND_SURFACE_START';
@@ -116,6 +141,48 @@ function hasReviewSurfacePayload(value) {
 
 function computeHash(text) {
   return crypto.createHash('sha256').update(String(text || ''), 'utf8').digest('hex');
+}
+
+function readZipEntryBytes(zipBytes, entryName) {
+  const bytes = Buffer.from(zipBytes);
+  for (let index = bytes.length - 22; index >= 0; index -= 1) {
+    if (bytes.readUInt32LE(index) !== 0x06054b50) continue;
+    const centralDirectoryOffset = bytes.readUInt32LE(index + 16);
+    const totalEntries = bytes.readUInt16LE(index + 10);
+    let offset = centralDirectoryOffset;
+    for (let entryIndex = 0; entryIndex < totalEntries; entryIndex += 1) {
+      assert.equal(bytes.readUInt32LE(offset), 0x02014b50);
+      const method = bytes.readUInt16LE(offset + 10);
+      const compressedSize = bytes.readUInt32LE(offset + 20);
+      const nameLength = bytes.readUInt16LE(offset + 28);
+      const extraLength = bytes.readUInt16LE(offset + 30);
+      const commentLength = bytes.readUInt16LE(offset + 32);
+      const localHeaderOffset = bytes.readUInt32LE(offset + 42);
+      const name = bytes.slice(offset + 46, offset + 46 + nameLength).toString('utf8');
+      if (name === entryName) {
+        assert.equal(bytes.readUInt32LE(localHeaderOffset), 0x04034b50);
+        const localNameLength = bytes.readUInt16LE(localHeaderOffset + 26);
+        const localExtraLength = bytes.readUInt16LE(localHeaderOffset + 28);
+        const dataStart = localHeaderOffset + 30 + localNameLength + localExtraLength;
+        const data = bytes.slice(dataStart, dataStart + compressedSize);
+        if (method === 0) return data;
+        if (method === 8) return inflateRawSync(data);
+        throw new Error(`UNSUPPORTED_TEST_ZIP_METHOD:${method}`);
+      }
+      offset += 46 + nameLength + extraLength + commentLength;
+    }
+    break;
+  }
+  throw new Error(`ZIP_ENTRY_NOT_FOUND:${entryName}`);
+}
+
+function readZipEntryText(zipBytes, entryName) {
+  return readZipEntryBytes(zipBytes, entryName).toString('utf8');
+}
+
+function xmlAuthorAttributeValues(xml) {
+  return [...String(xml || '').matchAll(/[A-Za-z0-9_.:-]*author="([^"]*)"/gu)]
+    .map((match) => match[1]);
 }
 
 async function loadBridge() {
@@ -876,6 +943,24 @@ function googleRewrittenBookmarkReturnBytes(docx, options = {}) {
     const bookmarkId = 700 + index;
     const prefix = `<w:bookmarkStart w:id="${bookmarkId}" w:name="${randomBookmarkName}"/><w:bookmarkEnd w:id="${bookmarkId}"/>`;
     if (index !== targetOrdinal) return `${prefix}<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;
+    if (options.physicalConcatenatedCommentAnchor === true) {
+      return [
+        prefix,
+        '<w:p>',
+        '<w:ins w:id="0" w:author="Google Reviewer" w:date="2026-09-15T02:15:37Z">',
+        `<w:r><w:t>${insertedText.replace(/omega$/u, '')}</w:t></w:r>`,
+        '<w:commentRangeStart w:id="0"/>',
+        '<w:r><w:t>omega</w:t></w:r>',
+        '</w:ins>',
+        '<w:del w:id="0" w:author="Google Reviewer" w:date="2026-09-15T02:15:37Z">',
+        '<w:r><w:delText>sentinel</w:delText></w:r>',
+        '<w:commentRangeEnd w:id="0"/>',
+        '<w:r><w:commentReference w:id="0"/></w:r>',
+        `<w:r><w:delText>${deletedText.replace(/^sentinel/u, '')}</w:delText></w:r>`,
+        '</w:del>',
+        '</w:p>',
+      ].join('');
+    }
     return [
       prefix,
       '<w:p>',
@@ -1062,9 +1147,10 @@ async function runGoogleC4SceneActivation(options = {}) {
     insertedText: 'sentinel omega',
     blockId: blocks[targetOrdinal].blockId,
   });
-  const returnedBytes = googleRewrittenBookmarkReturnBytes(docx, {
+  const returnedBytes = options.returnedBytes || googleRewrittenBookmarkReturnBytes(docx, {
     sceneText,
     targetOrdinal,
+    physicalConcatenatedCommentAnchor: options.physicalConcatenatedCommentAnchor === true,
   });
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-google-c4-negative-'));
   const scenePath = path.join(tmpDir, sceneId);
@@ -1106,11 +1192,16 @@ async function runGoogleC4SceneActivation(options = {}) {
     placementId: 'docx-comment-placement-0',
     threadId: 'rtk-comment-0',
     sourceCommentId: '0',
-    quote: 'sentinel omeg',
+    quote: typeof options.commentQuote === 'string' ? options.commentQuote : 'sentinel omeg',
     targetScope: { type: 'scene', id: sceneId },
     selector: { type: 'docx-comment-range', id: '0' },
     anchor: { kind: 'docx-comment-range', value: 'w:comment:0' },
-    range: { from: 0, to: 'sentinel omeg'.length },
+    nativeCommentId: '0',
+    relatedReplacementGroupId: 'google-c4-ordinal',
+    relatedReplacementGroupMode: 'WITHIN_INSERT',
+    range: isPlainObjectValue(options.commentRange)
+      ? cloneJsonSafe(options.commentRange)
+      : { from: 0, to: 'sentinel omeg'.length },
   }];
   if (typeof options.mutateReviewIr === 'function') options.mutateReviewIr(reviewIr);
   const parserResult = {
@@ -1135,14 +1226,18 @@ async function runGoogleC4SceneActivation(options = {}) {
     cryptoPort: c05CryptoPort,
     now: () => 1700000000000,
   });
+  const rootHandler = bridge.createRtkRootCommentReturnCommandHandler();
+  const lifecycleHandler = bridge.createRtkCommentLifecycleReturnCommandHandler();
   const port = instantiateDocxReviewPreviewSessionPort({
     dispatchCommandSurfaceKernel: async (commandId, payload = {}) => {
       calls.push({ commandId, payload: cloneJsonSafe(payload) });
       if (commandId === 'cmd.rtk.reviewSession.importComments') {
         return { ok: true, status: 'committed', session: { summary: { threadCount: 1 } }, storageEffects: {} };
       }
-      assert.equal(commandId, 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
-      return applyHandler(payload);
+      if (commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements') return applyHandler(payload);
+      if (commandId === 'cmd.rtk.review.applyRootCommentReturn') return rootHandler(payload);
+      if (commandId === 'cmd.rtk.review.applyCommentLifecycleReturn') return lifecycleHandler(payload);
+      assert.fail(`unexpected command: ${commandId}`);
     },
   });
   const sceneHash = computeHash(sceneText);
@@ -1157,31 +1252,37 @@ async function runGoogleC4SceneActivation(options = {}) {
     }],
   };
   if (typeof options.mutateExportMap === 'function') options.mutateExportMap(exportMap);
-  const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
-    toPayload(returnedBytes),
-    {
-      activeReviewDocxExportAuthorityStore: productAuthorityStoreFromDocx(docx, {
-        projectRoot: tmpDir,
-        scenePath,
-        baselineFinalText: sceneText,
-        scope: 'scene',
-        exportMap,
-      }),
-      runDocxReviewReturnIntakeInUtilityProcess: async (input) => wrapParserResultAsPacketResult(parserResult, {
+  const activationPayload = toPayload(returnedBytes, options.explicitCanonicalApplyConfirmed === true
+    ? { explicitCanonicalApplyConfirmed: true }
+    : {});
+  const activationRuntimeOptions = {
+    activeReviewDocxExportAuthorityStore: productAuthorityStoreFromDocx(docx, {
+      projectRoot: tmpDir,
+      scenePath,
+      baselineFinalText: sceneText,
+      scope: 'scene',
+      exportMap,
+    }),
+    buildMainReviewContext: async () => reviewContext({
+      projectId: 'project-google-c4-scene',
+      projectRoot: tmpDir,
+      scenePath,
+      sceneText,
+      baselineHash: sceneHash,
+      currentBaselineHash: sceneHash,
+      targetScope: { type: 'scene', id: sceneId },
+    }),
+  };
+  if (options.useRealReturnIntakeParser !== true) {
+    activationRuntimeOptions.runDocxReviewReturnIntakeInUtilityProcess = async (input) => wrapParserResultAsPacketResult(parserResult, {
         returnedArtifactSha256: input?.returnedArtifactSha256,
         yrtk2Token: docx.yrtk2.token,
         coreManifestDigest: docx.payload.coreManifestDigest,
-      }),
-      buildMainReviewContext: async () => reviewContext({
-        projectId: 'project-google-c4-scene',
-        projectRoot: tmpDir,
-        scenePath,
-        sceneText,
-        baselineHash: sceneHash,
-        currentBaselineHash: sceneHash,
-        targetScope: { type: 'scene', id: sceneId },
-      }),
-    },
+      });
+  }
+  const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
+    activationPayload,
+    activationRuntimeOptions,
   );
   return { result, calls, port, scenePath, sceneText };
 }
@@ -1203,6 +1304,120 @@ function activationResultCodes(result = {}) {
     push(item.code);
   }
   return codes;
+}
+
+function c4PhysicalCommentCommandInput(options = {}) {
+  const sceneId = 'roman/google-c4-scene.txt';
+  const scenePath = path.join(os.tmpdir(), 'yalken-c4-physical-builder', sceneId);
+  const sceneText = [
+    'sentinel alpha',
+    'context line 02',
+    'context line 03',
+  ].join('\n');
+  const blockId = 'block-c4-google-0001';
+  const sourceChange = {
+    changeId: 'docx-tracked-replace-d7c2e7a8',
+    targetScope: { type: 'scene', id: sceneId },
+    replacementText: 'sentinel omega',
+    paragraphIndex: 0,
+    documentParagraphIndex: 0,
+    nativeReplacementGroupId: 'replacement-group-c4-native-0',
+    match: {
+      quote: 'sentinel alpha',
+      blockId,
+      paragraphIndex: 0,
+      documentParagraphIndex: 0,
+      blockRange: {
+        sceneStart: 0,
+        blockLocalStart: 0,
+        blockLocalEnd: 'sentinel alpha'.length,
+        documentParagraphIndex: 0,
+      },
+    },
+  };
+  const placement = {
+    placementId: 'docx-comment-placement-0',
+    threadId: 'rtk-comment-0',
+    sourceCommentId: '0',
+    quote: 'omegasentinel',
+    targetScope: { type: 'scene', id: sceneId },
+    range: { from: 0, to: 'omegasentinel'.length },
+    nativeCommentId: '0',
+    relatedReplacementGroupId: 'replacement-group-c4-native-0',
+    relatedReplacementGroupMode: 'CROSS_REPLACEMENT',
+    sceneAuthority: {
+      blockId,
+      paragraphIndex: 0,
+      documentParagraphIndex: 0,
+    },
+    sceneAuthoritySource: 'authenticated-candidate-export-map-placement',
+  };
+  if (typeof options.mutatePlacement === 'function') options.mutatePlacement(placement);
+  const textChanges = [sourceChange];
+  if (typeof options.mutateTextChanges === 'function') options.mutateTextChanges(textChanges);
+  return {
+    authenticated: true,
+    projectId: 'project-google-c4-scene',
+    projectRoot: os.tmpdir(),
+    returnArtifactId: `sha256:${GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256}`,
+    localAuthorityCapsule: {
+      projectId: 'project-google-c4-scene',
+      projectRoot: os.tmpdir(),
+      scenePathBySceneId: { [sceneId]: scenePath },
+      baselineFinalTextBySceneId: { [sceneId]: sceneText },
+    },
+    reviewIr: {
+      schemaVersion: 'yalken.rtk.review-ir.v2',
+      textChanges,
+      commentThreads: [{
+        threadId: 'rtk-comment-0',
+        commentId: '0',
+        sourceCommentId: '0',
+        targetScope: { type: 'scene', id: sceneId },
+        messages: [{
+          messageId: 'rtk-comment-0-message-1',
+          body: 'C4 anchored review comment for sentinel omega.',
+        }],
+      }],
+      commentPlacements: [placement],
+    },
+  };
+}
+
+function capturedC4PhysicalSceneText() {
+  return [
+    '[plainTextPreserved] Body text sentinel alpha.',
+    '',
+    '[latin-basic] Plain ASCII text survives Word and Yalken return.',
+    '[latin-diacritic] Café naïve façade coöperate jalapeño résumé.',
+    '[cyrillic] Привет мир. Текст сцены сохраняется.',
+    '[greek] Καλημέρα κόσμε. Το κείμενο παραμένει.',
+    '[cjk] 中文文本保留。日本語の本文も保持。한국어 문장도 유지.',
+    '[rtl-hebrew] שלום עולם. טקסט בעברית נשמר.',
+    '[emoji-zwj] Family 👨‍👩‍👧‍👦 and technologist 🧑‍💻 stay intact.',
+    '  [whitespaceEdgesPreserved] leading and trailing spaces stay here  ',
+    '',
+    '[paragraphBoundariesPreserved] Final paragraph after an intentional empty paragraph.',
+  ].join('\n');
+}
+
+function capturedC4PhysicalExportMap() {
+  const sceneId = 'roman/черновик.txt';
+  return {
+    scope: 'scene',
+    roundId: 'round-d83254951e5382fe997303a5c8aa0e77',
+    scenes: [{
+      sceneId,
+      sceneOrdinal: 0,
+      blocks: capturedC4PhysicalSceneText().split('\n').map((text, index) => ({
+        sceneId,
+        blockId: index === 0 ? 'block-0001-257e76631298cbeb' : `block-${String(index + 1).padStart(4, '0')}-captured-c4`,
+        documentParagraphIndex: index,
+        canonicalTextSha256: c05Sha256Text(text),
+        wordSignals: [],
+      })),
+    }],
+  };
 }
 
 function c05ReviewIr({ deleted = 'beta', inserted = 'delta', groupId = 'group-c05', paragraphIndex = null } = {}) {
@@ -2130,6 +2345,27 @@ test('DOCX review preview session command: real Google C4 return parser projecti
     crypto.createHash('sha256').update(bytes).digest('hex'),
     GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256,
   );
+  const provenance = JSON.parse(fs.readFileSync(GOOGLE_C4_NATIVE_RETURN_FIXTURE_PROVENANCE_PATH, 'utf8'));
+  assert.equal(provenance.fixtureKind, 'SANITIZED_DERIVATIVE_OF_PHYSICAL_RETURN');
+  assert.equal(provenance.originalExternalArtifactSha256, GOOGLE_C4_NATIVE_RETURN_ORIGINAL_EXTERNAL_ARTIFACT_SHA256);
+  assert.equal(provenance.sanitizedFixtureSha256, GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256);
+  assert.equal(Object.hasOwn(provenance, 'nativeGoogleDocId'), false);
+  assert.equal(Object.hasOwn(provenance, 'providerDocumentIdentifier'), false);
+  assert.equal(provenance.sanitization.documentXmlUtf16LengthPreserved, true);
+  assert.equal(
+    provenance.xmlDigestBinding.sourceDocumentXmlUtf16Length,
+    provenance.xmlDigestBinding.sanitizedDocumentXmlUtf16Length,
+  );
+  const documentXml = readZipEntryText(bytes, 'word/document.xml');
+  const commentsXml = readZipEntryText(bytes, 'word/comments.xml');
+  assert.deepEqual(
+    xmlAuthorAttributeValues(documentXml),
+    [GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM, GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM],
+  );
+  assert.deepEqual(
+    xmlAuthorAttributeValues(commentsXml),
+    [GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM],
+  );
 
   const result = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: c05CryptoPort });
 
@@ -2461,7 +2697,8 @@ test('DOCX review preview session command: C4 paragraph projection failures bloc
 
 test('DOCX review preview session command: C4 product path accepts Google leading blank paragraph prefix only with shifted ordinal authority', async () => {
   const shiftParagraphIndex = (value) => (Number.isSafeInteger(value) ? value + 1 : value);
-  const { result, calls, port, scenePath } = await runGoogleC4SceneActivation({
+  const { result, calls, scenePath } = await runGoogleC4SceneActivation({
+    explicitCanonicalApplyConfirmed: true,
     mutateReviewIr: (reviewIr) => {
       for (const paragraph of reviewIr.formattingParagraphs) {
         paragraph.paragraphIndex = shiftParagraphIndex(paragraph.paragraphIndex);
@@ -2495,12 +2732,13 @@ test('DOCX review preview session command: C4 product path accepts Google leadin
   const textChanges = result.reviewSurface.revisionSession.reviewGraph.textChanges;
   assert.equal(textChanges.length, 1);
   assert.equal(textChanges[0].rtkProductPath, 'nonOverlapTrackedReplacement');
-  const applied = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
-    requestId: 'apply-google-leading-blank-prefix',
-    changeId: textChanges[0].changeId,
-  });
-  assert.equal(applied.ok, true, JSON.stringify(applied, null, 2));
-  assert.equal(applied.applied, true);
+  assert.equal(textChanges[0].match.blockId, 'block-c4-google-0001');
+  assert.equal(textChanges[0].paragraphIndex, 0);
+  assert.equal(textChanges[0].documentParagraphIndex, 0);
+  assert.equal(result.preCommentExactTextApplyResult.ok, true, JSON.stringify(result.preCommentExactTextApplyResult, null, 2));
+  assert.equal(result.preCommentExactTextApplyResult.applied, true);
+  assert.equal(result.commentProductPath.ok, true, JSON.stringify(result.commentProductPath, null, 2));
+  assert.equal(result.commentProductPath.status, 'applied-and-replayed');
   assert.equal(fs.readFileSync(scenePath, 'utf8'), [
     'sentinel omega',
     'context line 02',
@@ -2520,6 +2758,15 @@ test('DOCX review preview session command: C4 product path accepts Google leadin
     1,
   );
   const applyCall = calls.find((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
+  const rootCall = calls.find((call) => call.commandId === 'cmd.rtk.review.applyRootCommentReturn');
+  assert.ok(rootCall, JSON.stringify(calls.map((call) => call.commandId)));
+  assert.equal(rootCall.payload.anchor.blockId, 'block-c4-google-0001');
+  assert.equal(rootCall.payload.anchor.paragraphIndex, 0);
+  assert.equal(rootCall.payload.nativeOwnership.groupId, 'google-c4-ordinal');
+  assert.equal(rootCall.payload.nativeOwnership.relationMode, 'WITHIN_INSERT');
+  assert.equal(rootCall.payload.selectedText, 'sentinel omeg');
+  assert.equal(rootCall.payload.selectedTextSource, 'parser-quote-within-insert');
+  assert.equal(rootCall.payload.sceneText.startsWith('sentinel omega'), true);
   assert.deepEqual(
     applyCall.payload.localBaseline.sceneOrdinalAuthority.touchedParagraphs.map((item) => [
       item.rawReturnedParagraphIndex,
@@ -2532,6 +2779,298 @@ test('DOCX review preview session command: C4 product path accepts Google leadin
       [1, 0, 'block-c4-google-0001'],
     ],
   );
+});
+
+test('DOCX review preview session command: C4 sanitized physical derivative applies exact text before root comment', async () => {
+  const bridge = await loadBridge();
+  const returnedBytes = fs.readFileSync(GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_PATH);
+  assert.equal(
+    crypto.createHash('sha256').update(returnedBytes).digest('hex'),
+    GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256,
+  );
+  const provenance = JSON.parse(fs.readFileSync(GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_PROVENANCE_PATH, 'utf8'));
+  assert.equal(provenance.fixtureKind, 'SANITIZED_DERIVATIVE_OF_PHYSICAL_RETURN');
+  assert.equal(provenance.originalExternalArtifactSha256, GOOGLE_C4_PR1918_EXTERNAL_PHYSICAL_ARTIFACT_SHA256);
+  assert.equal(provenance.sanitizedFixtureSha256, GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256);
+  assert.equal(Object.hasOwn(provenance, 'nativeGoogleDocId'), false);
+  assert.equal(Object.hasOwn(provenance, 'providerDocumentIdentifier'), false);
+  assert.equal(provenance.sanitization.documentXmlUtf16LengthPreserved, true);
+  assert.equal(
+    provenance.xmlDigestBinding.sourceDocumentXmlUtf16Length,
+    provenance.xmlDigestBinding.sanitizedDocumentXmlUtf16Length,
+  );
+  assert.equal(provenance.parserInvariant.insertXmlRange.openStart, 2123);
+  assert.equal(provenance.parserInvariant.insertXmlRange.closeEnd, 2524);
+  assert.equal(provenance.parserInvariant.deleteXmlRange.openStart, 2524);
+  assert.equal(provenance.parserInvariant.deleteXmlRange.closeEnd, 3049);
+  const documentXml = readZipEntryText(returnedBytes, 'word/document.xml');
+  const commentsXml = readZipEntryText(returnedBytes, 'word/comments.xml');
+  assert.deepEqual(
+    xmlAuthorAttributeValues(documentXml),
+    [GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM, GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM],
+  );
+  assert.deepEqual(
+    xmlAuthorAttributeValues(commentsXml),
+    [GOOGLE_C4_PR1918_SANITIZED_AUTHOR_PSEUDONYM],
+  );
+  const parserResult = bridge.buildDocxReviewTransportAnalysisFromZipBytes({
+    bytes: returnedBytes,
+    returnedArtifactSha256: `sha256:${GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256}`,
+    requestId: 'c4-pr1918-sanitized-derivative-parser-proof',
+  }, {
+    cryptoPort: c05CryptoPort,
+  });
+  assert.equal(parserResult.ok, true, JSON.stringify(parserResult, null, 2));
+  assert.equal(parserResult.reviewIr.commentThreads[0].quotedAnchorText, 'omegasentinel');
+  assert.equal(parserResult.reviewIr.commentThreads[0].paragraphIndex, 0);
+  assert.equal(parserResult.reviewIr.commentThreads[0].relatedReplacementGroup.relationMode, 'CROSS_REPLACEMENT');
+  assert.equal(parserResult.reviewIr.commentThreads[0].relatedReplacementGroup.groupId, 'c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8');
+  assert.match(parserResult.reviewIr.commentThreads[0].relatedReplacementGroup.relationDigest, /^sha256:[0-9a-f]{64}$/u);
+  assert.equal(parserResult.reviewIr.textRevisions.length, 2);
+  assert.deepEqual(
+    parserResult.reviewIr.textRevisions.map((revision) => [
+      revision.operation,
+      revision.text,
+      revision.replacementGroupId,
+      revision.sourceXmlProvenance.openStart,
+      revision.sourceXmlProvenance.closeEnd,
+    ]),
+    [
+      ['insert', 'sentinel omega', 'c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8', 2123, 2524],
+      ['delete', 'sentinel alpha', 'c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8', 2524, 3049],
+    ],
+  );
+  const packet = bridge.buildReturnEvidencePacketV1({
+    requestId: 'c4-pr1918-sanitized-derivative-parser-proof',
+    artifactSha256: `sha256:${GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256}`,
+    effectiveBudgets: { maxWorkerOutputBytes: 16 * 1024 * 1024 },
+    effectiveBudgetDigest: c05CryptoPort.sha256Json({ maxWorkerOutputBytes: 16 * 1024 * 1024 },
+    ),
+    resourceReceipt: { parserStatus: parserResult.status, sourceMode: parserResult.sourceMode },
+    packageInventoryDigest: c05CryptoPort.sha256Json(parserResult.packageInventory || {}),
+    unverifiedCarrierEvidence: parserResult.authorityCarrier || {},
+    returnedProjection: parserResult.reviewIr,
+    projectionDigest: parserResult.supportedSemanticDigest || parserResult.analysisDigest,
+    diagnostics: parserResult.reasons || [],
+    workerBuildDigest: parserResult.parserProfileDigest,
+  });
+  const candidate = bridge.buildDocxReviewPreviewSessionCandidateFromEvidence(packet, {
+    targetScope: { type: 'scene', id: 'roman/черновик.txt' },
+    createdAt: '2026-09-15T13:52:15.466Z',
+    fullManuscriptExportMap: capturedC4PhysicalExportMap(),
+  });
+  assert.equal(candidate.status, 'ready', JSON.stringify(candidate, null, 2));
+  const rawReviewIr = cloneJsonSafe(candidate.reviewPacket);
+  const capturedBlockId = 'block-0001-257e76631298cbeb';
+  assert.equal(rawReviewIr.textChanges[0].match.blockId, capturedBlockId);
+  assert.equal(rawReviewIr.textChanges[0].paragraphIndex, 0);
+  assert.equal(rawReviewIr.textChanges[0].nativeReplacementGroupId, 'c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8');
+  assert.equal(rawReviewIr.commentPlacements[0].sceneAuthority.blockId, capturedBlockId);
+  assert.equal(rawReviewIr.commentPlacements[0].relatedReplacementGroupId, 'c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8');
+  assert.equal(rawReviewIr.commentPlacements[0].relatedReplacementGroupMode, 'CROSS_REPLACEMENT');
+  const rawReviewIrDigestBefore = computeHash(JSON.stringify(rawReviewIr));
+  const rawProjectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-c4-sanitized-derivative-command-'));
+  const rawScenePath = path.join(rawProjectRoot, 'roman', 'черновик.txt');
+  fs.mkdirSync(path.dirname(rawScenePath), { recursive: true });
+  fs.writeFileSync(rawScenePath, capturedC4PhysicalSceneText(), 'utf8');
+  const rawPlan = bridge.buildAuthenticatedCommentReturnCommands({
+    authenticated: true,
+    projectId: 'project-844fa157-ff48-4110-b928-b99be8cdf946',
+    projectRoot: rawProjectRoot,
+    returnArtifactId: `sha256:${GOOGLE_C4_PR1918_SANITIZED_DERIVATIVE_FIXTURE_SHA256}`,
+    localAuthorityCapsule: {
+      projectId: 'project-844fa157-ff48-4110-b928-b99be8cdf946',
+      projectRoot: rawProjectRoot,
+      scenePathBySceneId: { 'roman/черновик.txt': rawScenePath },
+      baselineFinalTextBySceneId: { 'roman/черновик.txt': capturedC4PhysicalSceneText() },
+    },
+    reviewIr: rawReviewIr,
+  });
+  assert.equal(computeHash(JSON.stringify(rawReviewIr)), rawReviewIrDigestBefore);
+  assert.equal(rawPlan.ok, true, JSON.stringify(rawPlan, null, 2));
+  const rawRootPayload = rawPlan.commands.find((command) => command.family === 'root_comment').payload;
+  assert.equal(rawRootPayload.selectedText, 'sentinel omega');
+  assert.equal(rawRootPayload.rawParserQuote, 'omegasentinel');
+  assert.equal(rawRootPayload.anchor.blockId, capturedBlockId);
+  assert.equal(rawRootPayload.anchor.nativeReplacementGroupId, 'c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8');
+  const rawRootHandler = bridge.createRtkRootCommentReturnCommandHandler();
+  const rawApplied = await rawRootHandler(rawRootPayload);
+  assert.equal(rawApplied.ok, true, JSON.stringify(rawApplied, null, 2));
+  assert.equal(rawApplied.status, 'applied');
+  const rawReplay = await rawRootHandler(rawRootPayload);
+  assert.equal(rawReplay.ok, true, JSON.stringify(rawReplay, null, 2));
+  assert.equal(rawReplay.status, 'replay');
+
+  const activationOptions = {
+    explicitCanonicalApplyConfirmed: true,
+    useRealReturnIntakeParser: true,
+    physicalConcatenatedCommentAnchor: true,
+  };
+
+  const { result, calls, scenePath } = await runGoogleC4SceneActivation(activationOptions);
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.match(result.returnIntake.returnedArtifactSha256, /^sha256:[0-9a-f]{64}$/u);
+  assert.equal(result.returnIntake.utilityProcess.mode, 'inline-test-fallback');
+  assert.equal(result.preCommentExactTextApplyResult.ok, true, JSON.stringify(result.preCommentExactTextApplyResult, null, 2));
+  assert.equal(result.preCommentExactTextApplyResult.applied, true);
+  assert.equal(result.commentProductPath.ok, true, JSON.stringify(result.commentProductPath, null, 2));
+  assert.equal(result.commentProductPath.status, 'applied-and-replayed');
+
+  const exactApplyIndex = calls.findIndex((call) => (
+    call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements'
+  ));
+  const rootApplyIndex = calls.findIndex((call) => (
+    call.commandId === 'cmd.rtk.review.applyRootCommentReturn'
+  ));
+  assert.ok(exactApplyIndex >= 0, JSON.stringify(calls.map((call) => call.commandId)));
+  assert.ok(rootApplyIndex > exactApplyIndex, JSON.stringify(calls.map((call) => call.commandId)));
+
+  const rootPayload = calls[rootApplyIndex].payload;
+  assert.equal(rootPayload.selectedText, 'sentinel omega');
+  assert.equal(rootPayload.rawParserQuote, 'omegasentinel');
+  assert.equal(rootPayload.selectedTextSource, 'authenticated-replacement');
+  assert.equal(rootPayload.anchor.authoritySource, 'rtk-non-overlap-product-replacement-authority');
+  assert.equal((rootPayload.sceneText.match(/sentinel omega/g) || []).length, 1);
+  assert.equal(rootPayload.sceneText.includes('sentinel alpha'), false);
+  assert.equal(fs.readFileSync(scenePath, 'utf8').startsWith('sentinel omega'), true);
+
+  const withinInsertActivation = await runGoogleC4SceneActivation({
+    explicitCanonicalApplyConfirmed: true,
+    useRealReturnIntakeParser: true,
+  });
+  assert.equal(withinInsertActivation.result.ok, true, JSON.stringify(withinInsertActivation.result, null, 2));
+  assert.equal(withinInsertActivation.result.commentProductPath.ok, true, JSON.stringify(withinInsertActivation.result.commentProductPath, null, 2));
+  const withinInsertRootApplyIndex = withinInsertActivation.calls.findIndex((call) => (
+    call.commandId === 'cmd.rtk.review.applyRootCommentReturn'
+  ));
+  assert.ok(withinInsertRootApplyIndex >= 0, JSON.stringify(withinInsertActivation.calls.map((call) => call.commandId)));
+  const withinInsertRootPayload = withinInsertActivation.calls[withinInsertRootApplyIndex].payload;
+  assert.equal(withinInsertRootPayload.selectedText, 'a');
+  assert.equal(withinInsertRootPayload.rawParserQuote, 'a');
+  assert.equal(withinInsertRootPayload.nativeOwnership.relationMode, 'WITHIN_INSERT');
+  assert.equal(withinInsertRootPayload.sceneText.startsWith('sentinel omega'), true);
+});
+
+test('DOCX review preview session command: C4 source comment anchor association fails closed on unowned replacement groups', async () => {
+  const bridge = await loadBridge();
+  const plan = (input) => bridge.buildAuthenticatedCommentReturnCommands(input);
+  const blockedCodes = (result) => (Array.isArray(result.typedBlocked) ? result.typedBlocked : [])
+    .map((item) => item.code);
+
+  const positive = plan(c4PhysicalCommentCommandInput());
+  assert.equal(positive.ok, true, JSON.stringify(positive, null, 2));
+  const rootPayload = positive.commands.find((command) => command.family === 'root_comment').payload;
+  assert.equal(rootPayload.selectedText, 'sentinel omega');
+  assert.equal(rootPayload.rawParserQuote, 'omegasentinel');
+  assert.equal(rootPayload.nativeOwnership.groupId, 'replacement-group-c4-native-0');
+
+  const ambiguous = plan(c4PhysicalCommentCommandInput({
+    mutateTextChanges: (textChanges) => {
+      textChanges.push({
+        ...cloneJsonSafe(textChanges[0]),
+        changeId: 'docx-tracked-replace-second',
+      });
+    },
+  }));
+  assert.equal(ambiguous.ok, false);
+  assert.deepEqual(blockedCodes(ambiguous), ['RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_AMBIGUOUS']);
+
+  const wrongBlock = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      placement.sceneAuthority.blockId = 'block-c4-google-9999';
+    },
+  }));
+  assert.equal(wrongBlock.ok, false);
+  assert.deepEqual(blockedCodes(wrongBlock), ['RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_UNRESOLVED']);
+
+  const wrongParagraph = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      placement.paragraphIndex = 1;
+      placement.documentParagraphIndex = 1;
+      placement.sceneAuthority.paragraphIndex = 1;
+      placement.sceneAuthority.documentParagraphIndex = 1;
+    },
+  }));
+  assert.equal(wrongParagraph.ok, false);
+  assert.deepEqual(blockedCodes(wrongParagraph), ['RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_UNRESOLVED']);
+
+  const missingNativeCommentId = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      delete placement.nativeCommentId;
+      delete placement.sourceCommentId;
+    },
+  }));
+  assert.equal(missingNativeCommentId.ok, false);
+  assert.deepEqual(blockedCodes(missingNativeCommentId), ['RTK_COMMENT_PRODUCT_RETURN_NATIVE_COMMENT_IDENTITY_INVALID']);
+
+  const staleReplacementGroup = plan(c4PhysicalCommentCommandInput({
+    mutateTextChanges: (textChanges) => {
+      textChanges[0].nativeReplacementGroupId = 'stale-group';
+    },
+  }));
+  assert.equal(staleReplacementGroup.ok, false);
+  assert.deepEqual(blockedCodes(staleReplacementGroup), ['RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_UNRESOLVED']);
+
+  const missingCrossReplacementRelation = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      delete placement.relatedReplacementGroupId;
+      delete placement.relatedReplacementGroupMode;
+    },
+  }));
+  assert.equal(missingCrossReplacementRelation.ok, false);
+  assert.deepEqual(blockedCodes(missingCrossReplacementRelation), ['RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_UNRESOLVED']);
+
+  const exactQuote = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      placement.quote = 'sentinel alpha';
+      placement.range = { from: 0, to: 'sentinel alpha'.length };
+      delete placement.relatedReplacementGroupId;
+      delete placement.relatedReplacementGroupMode;
+    },
+  }));
+  assert.equal(exactQuote.ok, true, JSON.stringify(exactQuote, null, 2));
+  const exactPayload = exactQuote.commands.find((command) => command.family === 'root_comment').payload;
+  assert.equal(exactPayload.selectedText, 'sentinel alpha');
+  assert.equal(exactPayload.selectedTextSource, 'parser-quote');
+
+  const exactQuoteMissingNativeCommentId = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      placement.quote = 'sentinel alpha';
+      placement.range = { from: 0, to: 'sentinel alpha'.length };
+      delete placement.relatedReplacementGroupId;
+      delete placement.relatedReplacementGroupMode;
+      delete placement.nativeCommentId;
+      delete placement.sourceCommentId;
+    },
+  }));
+  assert.equal(exactQuoteMissingNativeCommentId.ok, false);
+  assert.deepEqual(blockedCodes(exactQuoteMissingNativeCommentId), ['RTK_COMMENT_PRODUCT_RETURN_NATIVE_COMMENT_IDENTITY_INVALID']);
+
+  const exactQuoteMismatchedNativeCommentId = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      placement.quote = 'sentinel alpha';
+      placement.range = { from: 0, to: 'sentinel alpha'.length };
+      delete placement.relatedReplacementGroupId;
+      delete placement.relatedReplacementGroupMode;
+      placement.nativeCommentId = 'forged-comment-id';
+    },
+  }));
+  assert.equal(exactQuoteMismatchedNativeCommentId.ok, false);
+  assert.deepEqual(blockedCodes(exactQuoteMismatchedNativeCommentId), ['RTK_COMMENT_PRODUCT_RETURN_NATIVE_COMMENT_IDENTITY_INVALID']);
+
+  const withinInsert = plan(c4PhysicalCommentCommandInput({
+    mutatePlacement: (placement) => {
+      placement.quote = 'omega';
+      placement.range = { from: 0, to: 'omega'.length };
+      placement.relatedReplacementGroupMode = 'WITHIN_INSERT';
+    },
+  }));
+  assert.equal(withinInsert.ok, true, JSON.stringify(withinInsert, null, 2));
+  const withinInsertPayload = withinInsert.commands.find((command) => command.family === 'root_comment').payload;
+  assert.equal(withinInsertPayload.selectedText, 'omega');
+  assert.equal(withinInsertPayload.selectedTextSource, 'parser-quote-within-insert');
+  assert.equal(withinInsertPayload.sceneText.startsWith('sentinel omega'), true);
 });
 
 test('DOCX review preview session command: Google-rewritten scene bookmarks bind through main-owned exportMap ordinal authority', async () => {
@@ -2580,6 +3119,10 @@ test('DOCX review preview session command: Google-rewritten scene bookmarks bind
     groupId: 'google-c4-ordinal',
     paragraphIndex: returnedTargetParagraphIndex,
   });
+  reviewIr.textRevisions[0].nativeRevisionId = '0';
+  reviewIr.textRevisions[0].sourceXmlProvenance = { partName: 'word/document.xml', openStart: 180, closeEnd: 260 };
+  reviewIr.textRevisions[1].nativeRevisionId = '0';
+  reviewIr.textRevisions[1].sourceXmlProvenance = { partName: 'word/document.xml', openStart: 100, closeEnd: 180 };
   reviewIr.formattingParagraphs = googleRewrittenFormattingParagraphs(sceneText, {
     targetOrdinal,
     deletedText: 'sentinel alpha',
@@ -2590,6 +3133,8 @@ test('DOCX review preview session command: Google-rewritten scene bookmarks bind
     commentId: '0',
     authorId: 'Google Reviewer',
     status: 'ANCHORED',
+    anchorStart: 140,
+    anchorEnd: 220,
     paragraphIndex: returnedTargetParagraphIndex,
     documentParagraphIndex: returnedTargetParagraphIndex,
     anchorLocator: {
@@ -2612,9 +3157,14 @@ test('DOCX review preview session command: Google-rewritten scene bookmarks bind
     sourceCommentId: '0',
     quote: 'sentinel omeg',
     targetScope: { type: 'scene', id: sceneId },
+    paragraphIndex: returnedTargetParagraphIndex,
+    documentParagraphIndex: returnedTargetParagraphIndex,
     selector: { type: 'docx-comment-range', id: '0' },
     anchor: { kind: 'docx-comment-range', value: 'w:comment:0' },
     range: { from: 0, to: 'sentinel omeg'.length },
+    nativeCommentId: '0',
+    relatedReplacementGroupId: 'google-c4-ordinal',
+    relatedReplacementGroupMode: 'WITHIN_INSERT',
   }];
   const parserResult = {
     ok: true,

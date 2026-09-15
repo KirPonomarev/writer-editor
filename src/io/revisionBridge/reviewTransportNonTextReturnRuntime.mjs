@@ -150,6 +150,179 @@ function countOccurrences(text, needle) {
   return count;
 }
 
+function sceneTextAfterSourceTextChange(sceneText, change) {
+  const match = isPlainObject(change?.match) ? change.match : {};
+  const expectedText = typeof match.quote === 'string' ? match.quote : '';
+  const replacementText = typeof change?.replacementText === 'string' ? change.replacementText : '';
+  if (!expectedText || !replacementText) return sceneText;
+  if (isPlainObject(match.blockRange)) {
+    const range = match.blockRange;
+    if (
+      Number.isSafeInteger(range.sceneStart)
+      && Number.isSafeInteger(range.blockLocalStart)
+      && Number.isSafeInteger(range.blockLocalEnd)
+    ) {
+      const from = range.sceneStart + range.blockLocalStart;
+      const to = range.sceneStart + range.blockLocalEnd;
+      if (from >= 0 && to >= from && sceneText.slice(from, to) === expectedText) {
+        return `${sceneText.slice(0, from)}${replacementText}${sceneText.slice(to)}`;
+      }
+    }
+  }
+  const first = sceneText.indexOf(expectedText);
+  if (first < 0 || first !== sceneText.lastIndexOf(expectedText)) return sceneText;
+  return `${sceneText.slice(0, first)}${replacementText}${sceneText.slice(first + expectedText.length)}`;
+}
+
+function textChangeSceneId(change) {
+  return normalizeString(change?.targetScope?.id || change?.sceneId);
+}
+
+function textChangeBlockId(change) {
+  const match = isPlainObject(change?.match) ? change.match : {};
+  return normalizeString(change?.blockId || match.blockId);
+}
+
+function textChangeParagraphIndex(change) {
+  const match = isPlainObject(change?.match) ? change.match : {};
+  const index = normalizeNonNegativeInteger(
+    change?.paragraphIndex
+      ?? change?.documentParagraphIndex
+      ?? match.paragraphIndex
+      ?? match.documentParagraphIndex
+      ?? match.blockRange?.paragraphIndex
+      ?? match.blockRange?.documentParagraphIndex,
+  );
+  return index >= 0 ? index : paragraphIndexFromBlockId(textChangeBlockId(change));
+}
+
+function placementRelatedReplacementGroup(placement) {
+  const relation = isPlainObject(placement?.relatedReplacementGroup) ? placement.relatedReplacementGroup : {};
+  return {
+    groupId: normalizeString(placement?.relatedReplacementGroupId || relation.groupId),
+    relationMode: normalizeString(placement?.relatedReplacementGroupMode || relation.relationMode),
+  };
+}
+
+function commentNativeIdentityConsistency(placement) {
+  const placementNativeCommentId = normalizeString(placement?.nativeCommentId || placement?.sourceCommentId || placement?.commentId);
+  const selectorNativeCommentId = normalizeString(placement?.selector?.id);
+  const threadNativeCommentId = normalizeString(placement?.threadSourceCommentId);
+  const nativeCommentIds = [placementNativeCommentId, selectorNativeCommentId, threadNativeCommentId].filter(Boolean);
+  const nativeCommentId = placementNativeCommentId || threadNativeCommentId || selectorNativeCommentId;
+  const nativeCommentConsistent = Boolean(placementNativeCommentId)
+    && Boolean(threadNativeCommentId)
+    && nativeCommentIds.every((id) => id === nativeCommentId);
+  return {
+    nativeCommentId,
+    ok: nativeCommentConsistent,
+    nativeCommentConsistent,
+    hasPlacementNativeCommentId: Boolean(placementNativeCommentId),
+    hasThreadNativeCommentId: Boolean(threadNativeCommentId),
+  };
+}
+
+function resolveAuthenticatedCommentSourceTextChange(input = {}) {
+  const textChanges = Array.isArray(input.textChanges) ? input.textChanges.filter(isPlainObject) : [];
+  const sceneId = normalizeString(input.sceneId);
+  const sceneText = typeof input.sceneText === 'string' ? input.sceneText : '';
+  const placement = isPlainObject(input.placement) ? input.placement : {};
+  const placementAuthority = isPlainObject(input.placementAuthority) ? input.placementAuthority : {};
+  const rawSelectedText = typeof placement.quote === 'string' ? placement.quote : '';
+  const quoteAlreadyExact = Boolean(rawSelectedText)
+    && countOccurrences(sceneText, rawSelectedText) === 1;
+  const authorityBlockId = normalizeString(placementAuthority.blockId || placement.blockId);
+  const authorityParagraphIndex = normalizeNonNegativeInteger(
+    placementAuthority.paragraphIndex
+      ?? placementAuthority.documentParagraphIndex
+      ?? placement.paragraphIndex
+      ?? placement.documentParagraphIndex,
+  );
+  const nativeIdentity = commentNativeIdentityConsistency(placement);
+  if (nativeIdentity.ok !== true) {
+    return {
+      ok: false,
+      code: 'RTK_COMMENT_PRODUCT_RETURN_NATIVE_COMMENT_IDENTITY_INVALID',
+      details: {
+        sceneId,
+        authorityParagraphIndex,
+        nativeCommentConsistent: nativeIdentity.nativeCommentConsistent,
+        hasPlacementNativeCommentId: nativeIdentity.hasPlacementNativeCommentId,
+        hasThreadNativeCommentId: nativeIdentity.hasThreadNativeCommentId,
+      },
+    };
+  }
+  if (quoteAlreadyExact) return { ok: true, sourceTextChange: null, sceneTextChanges: 0 };
+  const sceneTextChanges = textChanges.filter((change) => textChangeSceneId(change) === sceneId);
+  if (sceneTextChanges.length === 0) return { ok: true, sourceTextChange: null, sceneTextChanges: 0 };
+  const relation = placementRelatedReplacementGroup(placement);
+  const candidateDiagnostics = sceneTextChanges.map((change) => ({
+    changeId: normalizeString(change.changeId || change.authorityCandidateId),
+    blockId: textChangeBlockId(change),
+    paragraphIndex: textChangeParagraphIndex(change),
+    nativeReplacementGroupId: normalizeString(change?.nativeReplacementGroupId || change?.replacementGroupId),
+    sourceRevisionIdCount: Array.isArray(change?.sourceRevisionIds)
+      ? change.sourceRevisionIds.map(normalizeString).filter(Boolean).length
+      : 0,
+    groupMatchesParserRelation: Boolean(relation.groupId)
+      && normalizeString(change?.nativeReplacementGroupId || change?.replacementGroupId) === relation.groupId,
+    sceneTextChanges: sceneTextAfterSourceTextChange(sceneText, change) !== sceneText,
+    replacementTextAlreadyPresent: countOccurrences(sceneText, typeof change?.replacementText === 'string' ? change.replacementText : '') === 1,
+  })).slice(0, 4);
+  const candidates = sceneTextChanges.filter((change) => {
+    const blockId = textChangeBlockId(change);
+    const paragraphIndex = textChangeParagraphIndex(change);
+    const match = isPlainObject(change?.match) ? change.match : {};
+    const expectedText = typeof match.quote === 'string' ? match.quote : '';
+    const replacementText = typeof change?.replacementText === 'string' ? change.replacementText : '';
+    if (authorityParagraphIndex < 0) return false;
+    if (!blockId || (authorityBlockId && blockId !== authorityBlockId) || paragraphIndex !== authorityParagraphIndex) return false;
+    if (!expectedText || !replacementText) return false;
+    if (!['CROSS_REPLACEMENT', 'WITHIN_INSERT'].includes(relation.relationMode) || !relation.groupId) return false;
+    if (normalizeString(change?.nativeReplacementGroupId || change?.replacementGroupId) !== relation.groupId) return false;
+    const postApplySceneText = sceneTextAfterSourceTextChange(sceneText, change);
+    if (relation.relationMode === 'WITHIN_INSERT') {
+      return countOccurrences(postApplySceneText, rawSelectedText) === 1
+        || countOccurrences(sceneText, rawSelectedText) === 1;
+    }
+    return postApplySceneText !== sceneText
+      || countOccurrences(sceneText, replacementText) === 1;
+  });
+  const sourceTextChange = textChanges.find((change) => candidates.includes(change)) || null;
+  if (candidates.length !== 1 || !sourceTextChange) {
+    return {
+      ok: false,
+      code: candidates.length > 1
+        ? 'RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_AMBIGUOUS'
+        : 'RTK_COMMENT_PRODUCT_RETURN_SOURCE_TEXT_CHANGE_UNRESOLVED',
+      details: {
+        sceneId,
+        sceneTextChangeCount: sceneTextChanges.length,
+        candidateCount: candidates.length,
+        hasAuthorityBlockId: Boolean(authorityBlockId),
+        authorityParagraphIndex,
+        relationMode: relation.relationMode,
+        relatedReplacementGroupId: relation.groupId,
+        nativeCommentConsistent: nativeIdentity.nativeCommentConsistent,
+        candidateDiagnostics,
+      },
+    };
+  }
+  return {
+    ok: true,
+    sourceTextChange,
+    sceneTextChanges: sceneTextChanges.length,
+    canonicalSelectedText: relation.relationMode === 'WITHIN_INSERT'
+      ? rawSelectedText
+      : sourceTextChange.replacementText,
+    nativeOwnership: {
+      groupId: relation.groupId,
+      relationMode: relation.relationMode,
+      nativeCommentId: nativeIdentity.nativeCommentId,
+    },
+  };
+}
+
 export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
   if (input.commandId !== RTK_ROOT_COMMENT_RETURN_COMMAND_ID) return blocked('RTK_ROOT_COMMENT_COMMAND_INVALID', 'commandId');
   if (input.callerRole !== 'main' || input.commandAuthority?.issuer !== 'main'
@@ -478,7 +651,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
       continue;
     }
     const sceneId = normalizeString(placement.targetScope?.id || thread.targetScope?.id || thread.sceneId);
-    const selectedText = typeof placement.quote === 'string'
+    const rawSelectedText = typeof placement.quote === 'string'
       ? placement.quote
       : (typeof thread.quotedAnchorText === 'string' ? thread.quotedAnchorText : '');
     const scenePath = normalizeString(scenePathBySceneId[sceneId]);
@@ -486,20 +659,45 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
     const messages = Array.isArray(thread.messages) ? thread.messages.filter(isPlainObject) : [];
     const rootMessage = messages[0] || {};
     const rootBody = typeof rootMessage.body === 'string' ? rootMessage.body : (typeof thread.body === 'string' ? thread.body : '');
-    if (!threadId || !sceneId || !scenePath || !sceneText || !selectedText || !rootBody.trim()) {
+    if (!threadId || !sceneId || !scenePath || !sceneText || !rawSelectedText || !rootBody.trim()) {
       typedBlocked.push({
         threadId,
         code: 'RTK_COMMENT_PRODUCT_RETURN_THREAD_AUTHORITY_INCOMPLETE',
         sceneId,
         hasScenePath: Boolean(scenePath),
         hasSceneText: Boolean(sceneText),
-        hasSelectedText: Boolean(selectedText),
+        hasSelectedText: Boolean(rawSelectedText),
         hasRootBody: Boolean(rootBody.trim()),
       });
       continue;
     }
+    const placementAuthority = isPlainObject(placement.sceneAuthority) ? placement.sceneAuthority : {};
+    const placementForSourceAssociation = {
+      ...placement,
+      threadSourceCommentId: normalizeString(thread.sourceCommentId || thread.commentId),
+    };
+    const sourceAssociation = resolveAuthenticatedCommentSourceTextChange({
+      textChanges,
+      sceneId,
+      sceneText,
+      placement: placementForSourceAssociation,
+      placementAuthority,
+    });
+    if (!sourceAssociation.ok) {
+      typedBlocked.push({
+        threadId,
+        code: sourceAssociation.code,
+        rawParserQuote: rawSelectedText,
+        details: sourceAssociation.details,
+      });
+      continue;
+    }
+    const sourceTextChange = sourceAssociation.sourceTextChange;
+    const selectedText = sourceTextChange
+      ? sourceAssociation.canonicalSelectedText
+      : rawSelectedText;
     const rootIdentityDigest = sha256(stableJson({
-      returnArtifactId, threadId, sceneId, selectedText, rootBody,
+      returnArtifactId, threadId, sceneId, selectedText, rawSelectedText, rootBody,
     }));
     const rootOperationId = `physical-root:${rootIdentityDigest}`;
     const canonicalThreadId = `physical-thread:${rootIdentityDigest}`;
@@ -507,24 +705,24 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
     const canonicalRootCommentId = `physical-comment:${sha256(stableJson({
       returnArtifactId, threadId, sourceCommentId: sourceRootCommentId, kind: 'root',
     }))}`;
-    const placementAuthority = isPlainObject(placement.sceneAuthority) ? placement.sceneAuthority : {};
-    const sourceTextChange = textChanges.find((change) => {
-      return normalizeString(change?.targetScope?.id) === sceneId
-        && typeof change?.replacementText === 'string'
-        && change.replacementText === selectedText
-        && normalizeString(change?.match?.blockId);
-    }) || null;
     const blockId = normalizeString(placementAuthority.blockId || placement.blockId || sourceTextChange?.match?.blockId);
     const paragraphIndex = normalizeNonNegativeInteger(
-      placementAuthority.paragraphIndex ?? placement.paragraphIndex ?? sourceTextChange?.paragraphIndex,
+      placementAuthority.paragraphIndex
+        ?? placement.paragraphIndex
+        ?? sourceTextChange?.paragraphIndex
+        ?? sourceTextChange?.documentParagraphIndex,
     );
     const resolvedParagraphIndex = paragraphIndex >= 0 ? paragraphIndex : paragraphIndexFromBlockId(blockId);
-    const authoritySource = normalizeString(placement.sceneAuthoritySource)
-      || (sourceTextChange ? 'rtk-non-overlap-product-replacement-authority' : '');
+    const authoritySource = sourceTextChange
+      ? 'rtk-non-overlap-product-replacement-authority'
+      : normalizeString(placement.sceneAuthoritySource);
+    const commandSceneText = sourceTextChange
+      ? sceneTextAfterSourceTextChange(sceneText, sourceTextChange)
+      : sceneText;
     commands.push({
       family: 'root_comment',
       payload: {
-        projectId, projectRoot, operationId: rootOperationId, sceneId, scenePath, sceneText, selectedText,
+        projectId, projectRoot, operationId: rootOperationId, sceneId, scenePath, sceneText: commandSceneText, selectedText,
         threadId: canonicalThreadId,
         commentId: canonicalRootCommentId,
         body: rootBody,
@@ -534,10 +732,18 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
           paragraphIndex: resolvedParagraphIndex,
           authoritySource,
           sourceChangeId: normalizeString(sourceTextChange?.changeId || sourceTextChange?.authorityCandidateId),
+          nativeReplacementGroupId: normalizeString(sourceAssociation.nativeOwnership?.groupId),
         },
         returnArtifactId,
         sourceThreadId: threadId,
         sourceCommentId: sourceRootCommentId,
+        rawParserQuote: rawSelectedText,
+        nativeOwnership: sourceAssociation.nativeOwnership || null,
+        selectedTextSource: sourceTextChange
+          ? (sourceAssociation.nativeOwnership?.relationMode === 'WITHIN_INSERT'
+            ? 'parser-quote-within-insert'
+            : 'authenticated-replacement')
+          : 'parser-quote',
       },
     });
     const replies = [
@@ -610,9 +816,35 @@ export function bindAuthenticatedCommentPlacementSceneAuthority(input = {}) {
   const capsule = isPlainObject(input.localAuthorityCapsule) ? input.localAuthorityCapsule : {};
   const scenePathBySceneId = isPlainObject(capsule.scenePathBySceneId) ? capsule.scenePathBySceneId : {};
   const sceneTextBySceneId = isPlainObject(capsule.baselineFinalTextBySceneId) ? capsule.baselineFinalTextBySceneId : {};
+  const sceneOrdinalAuthority = isPlainObject(capsule.sceneOrdinalAuthority) ? capsule.sceneOrdinalAuthority : {};
+  const touchedParagraphs = Array.isArray(sceneOrdinalAuthority.touchedParagraphs)
+    ? sceneOrdinalAuthority.touchedParagraphs.filter(isPlainObject)
+    : [];
   const bound = (sceneId) => Boolean(normalizeString(sceneId))
     && Boolean(normalizeString(scenePathBySceneId[sceneId]))
     && typeof sceneTextBySceneId[sceneId] === 'string';
+  const mappedCommentAuthority = (threadId, nativeCommentId) => {
+    const touched = touchedParagraphs.find((item) => (
+      normalizeString(item.kind) === 'commentThread'
+      && [threadId, nativeCommentId].map(normalizeString).filter(Boolean).includes(normalizeString(item.id))
+    ));
+    if (!touched) return null;
+    return {
+      blockId: normalizeString(touched.blockId),
+      paragraphIndex: normalizeNonNegativeInteger(touched.documentParagraphIndex),
+      documentParagraphIndex: normalizeNonNegativeInteger(touched.documentParagraphIndex),
+    };
+  };
+  const mergeMappedSceneAuthority = (authority, mapped) => {
+    const base = isPlainObject(authority) ? clone(authority) : {};
+    if (!mapped) return base;
+    return {
+      ...base,
+      blockId: mapped.blockId || normalizeString(base.blockId),
+      paragraphIndex: mapped.paragraphIndex >= 0 ? mapped.paragraphIndex : base.paragraphIndex,
+      documentParagraphIndex: mapped.documentParagraphIndex >= 0 ? mapped.documentParagraphIndex : base.documentParagraphIndex,
+    };
+  };
   const parserByThread = new Map(parserPlacements.map((placement) => [normalizeString(placement.threadId), placement]));
   const placements = [];
   const failures = [];
@@ -668,10 +900,19 @@ export function bindAuthenticatedCommentPlacementSceneAuthority(input = {}) {
       failures.push({ threadId, code: 'RTK_COMMENT_PRODUCT_RETURN_SCENE_AUTHORITY_MISMATCH', ...mismatch });
       continue;
     }
+    const mappedAuthority = mappedCommentAuthority(threadId, threadNativeCommentId);
     if (bound(parserSceneId)) {
       placements.push({
         ...clone(parser),
-        sceneAuthority: clone(authenticated?.sceneAuthority || parser.sceneAuthority || null),
+        paragraphIndex: mappedAuthority?.paragraphIndex >= 0
+          ? mappedAuthority.paragraphIndex
+          : (Number.isSafeInteger(authenticated?.paragraphIndex) ? authenticated.paragraphIndex : parser.paragraphIndex),
+        documentParagraphIndex: mappedAuthority?.documentParagraphIndex >= 0
+          ? mappedAuthority.documentParagraphIndex
+          : (Number.isSafeInteger(authenticated?.documentParagraphIndex) ? authenticated.documentParagraphIndex : parser.documentParagraphIndex),
+        relatedReplacementGroupId: normalizeString(parser.relatedReplacementGroupId || authenticated?.relatedReplacementGroupId),
+        relatedReplacementGroupMode: normalizeString(parser.relatedReplacementGroupMode || authenticated?.relatedReplacementGroupMode),
+        sceneAuthority: mergeMappedSceneAuthority(authenticated?.sceneAuthority || parser.sceneAuthority || null, mappedAuthority),
         sceneAuthoritySource: authenticated?.sceneAuthority
           ? 'authenticated-candidate-export-map-placement'
           : normalizeString(parser.sceneAuthoritySource),
@@ -684,7 +925,15 @@ export function bindAuthenticatedCommentPlacementSceneAuthority(input = {}) {
         threadId,
         sourceCommentId: threadNativeCommentId,
         targetScope: clone(authenticated.targetScope),
-        sceneAuthority: clone(authenticated.sceneAuthority || null),
+        relatedReplacementGroupId: normalizeString(parser.relatedReplacementGroupId || authenticated?.relatedReplacementGroupId),
+        relatedReplacementGroupMode: normalizeString(parser.relatedReplacementGroupMode || authenticated?.relatedReplacementGroupMode),
+        paragraphIndex: mappedAuthority?.paragraphIndex >= 0
+          ? mappedAuthority.paragraphIndex
+          : authenticated.paragraphIndex,
+        documentParagraphIndex: mappedAuthority?.documentParagraphIndex >= 0
+          ? mappedAuthority.documentParagraphIndex
+          : authenticated.documentParagraphIndex,
+        sceneAuthority: mergeMappedSceneAuthority(authenticated.sceneAuthority || null, mappedAuthority),
         sceneAuthoritySource: 'authenticated-candidate-export-map-placement',
       });
       continue;

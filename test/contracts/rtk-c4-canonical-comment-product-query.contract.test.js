@@ -36,15 +36,47 @@ test('C4 canonical comment query exposes product truth fields without becoming a
   assert.doesNotMatch(profile, /'query\.rtkNonTextReturnState'/u);
 });
 
-test('C4 activation carries text-change block authority into comment canonical apply', () => {
+test('C4 activation carries text-change block authority into comment canonical apply', async () => {
   const main = read('src/main.js');
-  const runtime = read('src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
+  const { buildAuthenticatedCommentReturnCommands } = await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
 
   assert.match(main, /textChanges:\s*Array\.isArray\(candidate\?\.reviewPacket\?\.textChanges\)/u);
   assert.match(main, /attachProductTextChangesToDocxCommentShadowPayload/u);
   assert.match(main, /commentShadowPayload:\s*attachProductTextChangesToDocxCommentShadowPayload/u);
-  assert.match(runtime, /sourceTextChange\s*=\s*textChanges\.find/u);
-  assert.match(runtime, /replacementText\s*===\s*selectedText/u);
-  assert.match(runtime, /blockId\s*=\s*normalizeString\(placementAuthority\.blockId\s*\|\|\s*placement\.blockId\s*\|\|\s*sourceTextChange\?\.match\?\.blockId\)/u);
-  assert.match(runtime, /authoritySource\s*=\s*normalizeString\(placement\.sceneAuthoritySource\)[\s\S]*'rtk-non-overlap-product-replacement-authority'/u);
+  const sceneId = 'scene-c4';
+  const input = {
+    authenticated: true, projectId: 'project-c4', projectRoot: REPO_ROOT,
+    returnArtifactId: 'sha256:' + 'a'.repeat(64),
+    localAuthorityCapsule: {
+      projectRoot: REPO_ROOT,
+      scenePathBySceneId: { [sceneId]: path.join(REPO_ROOT, 'synthetic-unused-scene.txt') },
+      baselineFinalTextBySceneId: { [sceneId]: 'sentinel alpha' },
+    },
+    reviewIr: {
+      textChanges: [{
+        changeId: 'replacement-c4', targetScope: { type: 'scene', id: sceneId },
+        replacementText: 'sentinel omega', paragraphIndex: 0, nativeReplacementGroupId: 'group-c4',
+        match: { quote: 'sentinel alpha', blockId: 'block-c4', paragraphIndex: 0 },
+      }],
+      commentThreads: [{ threadId: 'thread-c4', commentId: '0', sourceCommentId: '0',
+        messages: [{ messageId: 'root-c4', body: 'Synthetic anchored comment.' }] }],
+      commentPlacements: [{
+        threadId: 'thread-c4', sourceCommentId: '0', nativeCommentId: '0',
+        targetScope: { type: 'scene', id: sceneId }, quote: 'omegasentinel',
+        relatedReplacementGroupId: 'group-c4', relatedReplacementGroupMode: 'CROSS_REPLACEMENT',
+        sceneAuthority: { blockId: 'block-c4', paragraphIndex: 0 },
+      }],
+    },
+  };
+  const result = buildAuthenticatedCommentReturnCommands(input);
+  assert.equal(result.ok, true, JSON.stringify(result));
+  const command = result.commands.find(item => item.family === 'root_comment');
+  assert.equal(command.payload.selectedText, 'sentinel omega');
+  assert.equal(command.payload.rawParserQuote, 'omegasentinel');
+  assert.equal(command.payload.anchor.blockId, 'block-c4');
+  assert.equal(command.payload.anchor.authoritySource, 'rtk-non-overlap-product-replacement-authority');
+  input.reviewIr.commentPlacements[0].relatedReplacementGroupId = 'unrelated-group';
+  const refused = buildAuthenticatedCommentReturnCommands(input);
+  assert.equal(refused.ok, false);
+  assert.equal(refused.commands.length, 0);
 });

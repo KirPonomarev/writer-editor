@@ -2149,6 +2149,77 @@ function relatedRevisionForRange(documentScan, start, end) {
   return null;
 }
 
+function replacementGroupRelationRef(revision, cryptoPort) {
+  return {
+    operation: rawString(revision?.operation),
+    nativeRevisionId: rawString(revision?.nativeRevisionId),
+    replacementGroupId: rawString(revision?.replacementGroupId),
+    sourceXmlProvenanceDigest: cryptoPort.sha256Json({
+      partName: revision?.sourceXmlProvenance?.partName,
+      elementName: revision?.sourceXmlProvenance?.elementName,
+      namespaceUri: revision?.sourceXmlProvenance?.namespaceUri,
+      openStart: revision?.sourceXmlProvenance?.openStart,
+      closeEnd: revision?.sourceXmlProvenance?.closeEnd,
+    }),
+  };
+}
+
+function relatedReplacementGroupForCommentAnchor(anchor, textRevisions, cryptoPort) {
+  const start = anchor?.anchorStart;
+  const end = anchor?.anchorEnd;
+  if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || end <= start) return null;
+  const revisions = Array.isArray(textRevisions) ? textRevisions.filter(isPlainObject) : [];
+  const groups = new Map();
+  for (const revision of revisions) {
+    const groupId = typeof revision.replacementGroupId === 'string' ? revision.replacementGroupId : '';
+    if (!groupId) continue;
+    const provenanceItem = revision.sourceXmlProvenance || {};
+    if (rawString(provenanceItem.partName) !== 'word/document.xml') continue;
+    if (!Number.isSafeInteger(provenanceItem.openStart) || !Number.isSafeInteger(provenanceItem.closeEnd)) continue;
+    const list = groups.get(groupId) || [];
+    list.push(revision);
+    groups.set(groupId, list);
+  }
+  const candidates = [];
+  for (const [groupId, groupRevisions] of groups) {
+    const insertRevision = groupRevisions.find((revision) => revision.operation === 'insert');
+    const deleteRevision = groupRevisions.find((revision) => revision.operation === 'delete');
+    if (groupRevisions.length !== 2 || !insertRevision || !deleteRevision) continue;
+    if (!Number.isSafeInteger(insertRevision.paragraphIndex) || insertRevision.paragraphIndex !== deleteRevision.paragraphIndex) continue;
+    const insertRange = insertRevision.sourceXmlProvenance || {};
+    const deleteRange = deleteRevision.sourceXmlProvenance || {};
+    const startInInsert = start > insertRange.openStart && start < insertRange.closeEnd;
+    const endInInsert = end > insertRange.openStart && end < insertRange.closeEnd;
+    const startInDelete = start > deleteRange.openStart && start < deleteRange.closeEnd;
+    const endInDelete = end > deleteRange.openStart && end < deleteRange.closeEnd;
+    const crossesInsertToDelete = startInInsert && endInDelete;
+    const crossesDeleteToInsert = startInDelete && endInInsert;
+    const withinInsert = startInInsert && endInInsert;
+    if (!crossesInsertToDelete && !crossesDeleteToInsert && !withinInsert) continue;
+    const refs = [insertRevision, deleteRevision]
+      .sort((left, right) => rawString(left.operation).localeCompare(rawString(right.operation)))
+      .map((revision) => replacementGroupRelationRef(revision, cryptoPort));
+    const relationMode = withinInsert ? 'WITHIN_INSERT' : 'CROSS_REPLACEMENT';
+    candidates.push({
+      relationMode,
+      groupId,
+      paragraphIndex: insertRevision.paragraphIndex,
+      sourceRevisionRefs: refs,
+      relationDigest: cryptoPort.sha256Json({
+        relationMode,
+        groupId,
+        paragraphIndex: insertRevision.paragraphIndex,
+        sourceRevisionRefs: refs,
+      }),
+    });
+  }
+  return candidates.length === 1
+    ? candidates[0]
+    : (candidates.length > 1
+      ? { relationMode: 'AMBIGUOUS_REPLACEMENT_GROUP', candidateGroupIds: candidates.map((item) => item.groupId).sort() }
+      : null);
+}
+
 // PARSER-01 (P8): comment anchor validation is typed, not exact/ANCHORED.
 // Each violation (lone start, lone reference, duplicate id, crossing intervals,
 // orphan reference, cross-story) becomes a typed RTK_COMMENT_ANCHOR_* diagnostic
@@ -2183,7 +2254,7 @@ function anchorLocatorForOffset(documentScan, offset) {
   };
 }
 
-function commentAnchorMap(documentXml, documentScan, reasons) {
+function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, reasons) {
   const map = new Map();
   const ranges = [];
   const startsById = new Map();
@@ -2253,6 +2324,16 @@ function commentAnchorMap(documentXml, documentScan, reasons) {
     const quotedAnchorText = endToken
       ? stripTagsToText(documentXml.slice(startToken.closeEnd, endToken.openStart)).trim()
       : '';
+    const relatedReplacementGroup = relatedReplacementGroupForCommentAnchor({
+      anchorStart: startToken.openStart,
+      anchorEnd: endToken ? endToken.closeEnd : startToken.closeEnd,
+    }, textRevisions, cryptoPort);
+    if (relatedReplacementGroup?.relationMode === 'AMBIGUOUS_REPLACEMENT_GROUP') {
+      reasons.push(reason('RTK_COMMENT_REPLACEMENT_GROUP_RELATION_AMBIGUOUS', `comments.${id}.relatedReplacementGroup`, 'Comment anchor crosses multiple replacement groups and cannot authorize canonical replacement-text association.', {
+        commentId: id,
+        candidateGroupIds: relatedReplacementGroup.candidateGroupIds,
+      }));
+    }
     map.set(id, {
       anchorStart: startToken.openStart,
       anchorEnd: endToken ? endToken.closeEnd : startToken.closeEnd,
@@ -2272,6 +2353,7 @@ function commentAnchorMap(documentXml, documentScan, reasons) {
         startToken.openStart,
         endToken ? endToken.closeEnd : startToken.closeEnd,
       ),
+      relatedReplacementGroup,
     });
   }
   // Orphan reference: commentReference present but no commentRangeStart.
@@ -2377,9 +2459,9 @@ function expectedCommentRecords(input) {
   }));
 }
 
-function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort, budgetState) {
+function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort, budgetState, textRevisions = []) {
   const anchorReasons = [];
-  const anchors = commentAnchorMap(documentXml, documentScan, anchorReasons);
+  const anchors = commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, anchorReasons);
   const metadata = collectModernCommentMetadata(scans);
   const reasons = [...scans.comments.diagnostics, ...scans.commentsExtended.diagnostics, ...scans.commentsIds.diagnostics, ...scans.commentsExtensible.diagnostics, ...scans.people.diagnostics];
   const expected = expectedCommentRecords(input);
@@ -2578,6 +2660,14 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
       anchorEnd: record.anchor.anchorEnd ?? null,
       quotedAnchorText: record.anchor.quotedAnchorText || '',
       relatedRevision: record.anchor.relatedRevision || null,
+      relatedReplacementGroup: isPlainObject(record.anchor.relatedReplacementGroup)
+        && ['CROSS_REPLACEMENT', 'WITHIN_INSERT'].includes(record.anchor.relatedReplacementGroup.relationMode)
+        ? record.anchor.relatedReplacementGroup
+        : null,
+      relatedReplacementGroupDiagnostic: isPlainObject(record.anchor.relatedReplacementGroup)
+        && record.anchor.relatedReplacementGroup.relationMode === 'AMBIGUOUS_REPLACEMENT_GROUP'
+        ? record.anchor.relatedReplacementGroup
+        : null,
       body: record.body,
       bodyExcerpt: record.body.slice(0, 160),
       orderingKey: record.ordinal,
@@ -2986,7 +3076,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       }
     }
   }
-  const comments = parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort, budgetState);
+  const comments = parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort, budgetState, textRevisions);
   reasons.push(...comments.reasons);
   const semanticBudgetBlocked = blockingReason(reasons);
   if (semanticBudgetBlocked) {
@@ -3113,6 +3203,14 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
         ? {
           kind: thread.relatedRevision.kind,
           nativeRevisionId: thread.relatedRevision.nativeRevisionId,
+        }
+        : null,
+      relatedReplacementGroup: thread.relatedReplacementGroup
+        ? {
+          relationMode: thread.relatedReplacementGroup.relationMode,
+          groupId: thread.relatedReplacementGroup.groupId,
+          relationDigest: thread.relatedReplacementGroup.relationDigest,
+          sourceRevisionRefs: thread.relatedReplacementGroup.sourceRevisionRefs,
         }
         : null,
       replyDigests: thread.replies.map((reply) => reply.bodyDigest),

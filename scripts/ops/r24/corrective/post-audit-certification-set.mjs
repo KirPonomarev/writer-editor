@@ -5586,6 +5586,31 @@ export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluatio
   };
 }
 
+export const R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING = Object.freeze({
+  baseSha: '6eaadf83e74d2aaada34ea9e7bf5ece7466926d5',
+  admittedPaths: Object.freeze([
+    'test/contracts/rtk-word-c5v2-comment-lifecycle-return-runtime.contract.test.js',
+    'test/fixtures/revision-bridge/google-c4-pr1918-sanitized-derivative-of-physical-return.docx',
+    'test/fixtures/revision-bridge/google-c4-pr1918-sanitized-derivative-of-physical-return.docx.provenance.json',
+  ]),
+});
+
+export function verifyR24C4ParserAssociationRepairBinding({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const binding = R24_C4_PARSER_ASSOCIATION_REPAIR_BINDING;
+  const candidate = gitText(git, ['rev-parse', candidateSha]);
+  try {
+    git(['merge-base', '--is-ancestor', binding.baseSha, candidate], { encoding: null });
+  } catch {
+    return { status: 'NOT_APPLICABLE', admittedPaths: [] };
+  }
+  for (const relative of binding.admittedPaths) {
+    assert(h(objectBytes(git, candidate, relative)) === h(objectBytes(git, binding.baseSha, relative)),
+      'E_R24_C4_PARSER_ASSOCIATION_REPAIR_ARTIFACT_DRIFT', relative);
+  }
+  return { status: 'PASS', baseSha: binding.baseSha, candidateSha: candidate,
+    admittedPaths: binding.admittedPaths, cellAcceptanceAuthority: false, programDone: false };
+}
+
 export function verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
   const e = R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION;
   const requested = gitText(git, ['rev-parse', candidateSha]);
@@ -7619,6 +7644,10 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
     ? verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({ candidateSha: resolvedCandidate, git })
     : null;
   for (const admittedPath of (r24C4GoogleReviewAuthorityCapsuleException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  if (r24C4GoogleReviewAuthorityCapsuleException) {
+    const parserAssociationRepair = verifyR24C4ParserAssociationRepairBinding({ candidateSha: resolvedCandidate, git });
+    for (const admittedPath of parserAssociationRepair.admittedPaths) allowedPaths.add(admittedPath);
+  }
   let r24X01IdempotentContractRecoveryEnabled = false;
   if (allowAuditCycle2Admission && resolvedCandidate !== R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha) {
     try {
