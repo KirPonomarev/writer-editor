@@ -2083,14 +2083,16 @@ test('TEXT SINGLE_SCENE C1 source-runtime exception rejects an unadmitted future
 test('TEXT SINGLE_SCENE C1 source-runtime exception rejects missing public locator token', () => {
   const e = TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXPECTATION;
   const targetPath = 'src/utils/docxImportSafeCreate.js';
-  const mutated = Buffer.from(objectFromCommit('HEAD', targetPath).toString('utf8').replaceAll('publicSceneLocators', 'publicLocatorSet'));
+  const baseline = verifyTextSingleSceneC1SourceRuntimePostEvaluationException({ candidateSha: 'HEAD' });
+  const resolvedCandidateSha = baseline.candidateSha;
+  const mutated = Buffer.from(objectFromCommit(resolvedCandidateSha, targetPath).toString('utf8').replaceAll('publicSceneLocators', 'publicLocatorSet'));
   const mutatedDigest = h(mutated);
   const hostileGit = (args, options = {}) => {
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${targetPath}`)) {
       return options.encoding === 'utf8' ? mutated.toString('utf8') : mutated;
     }
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.approvalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+      const approvals = JSON.parse(objectFromCommit(resolvedCandidateSha, e.approvalsPath));
       const row = approvals.approvals.find(entry => entry.filePath === targetPath && approvalMatchesApprovedBy(entry, e.approvedBy));
       row.sha256 = mutatedDigest;
       const bytes = canonicalBytes(approvals);
