@@ -5675,14 +5675,14 @@ function docxReviewReturnIntakeSceneBookmarkNames(paragraph) {
     : [];
 }
 
-function docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallback) {
+function docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph) {
   if (Number.isSafeInteger(paragraph?.paragraphIndex) && paragraph.paragraphIndex >= 0) {
     return paragraph.paragraphIndex;
   }
   if (Number.isSafeInteger(paragraph?.documentParagraphIndex) && paragraph.documentParagraphIndex >= 0) {
     return paragraph.documentParagraphIndex;
   }
-  return fallback;
+  return null;
 }
 
 function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult, paragraphTexts) {
@@ -5690,13 +5690,30 @@ function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult
   const paragraphs = Array.isArray(reviewIr.formattingParagraphs)
     ? reviewIr.formattingParagraphs.filter(isPlainObjectValue)
     : [];
-  if (paragraphs.length === 0) return { ok: true, applicable: false };
+  if (paragraphs.length === 0) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_REQUIRED');
+  }
   const expectedTexts = Array.isArray(paragraphTexts) ? paragraphTexts : [];
   const map = new Map();
   const blockCount = expectedTexts.length;
   const observedIndexes = new Set();
-  for (const [fallbackIndex, paragraph] of paragraphs.entries()) {
-    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallbackIndex);
+  if (paragraphs.length !== blockCount) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_CARDINALITY_MISMATCH', {
+      expectedParagraphCount: blockCount,
+      actualReturnedParagraphCount: paragraphs.length,
+    });
+  }
+  for (const paragraph of paragraphs) {
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph);
+    if (paragraphIndex === null) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_REQUIRED');
+    }
+    if (paragraphIndex >= blockCount) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_OUT_OF_RANGE', {
+        paragraphIndex,
+        blockCount,
+      });
+    }
     if (observedIndexes.has(paragraphIndex)) {
       return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_DUPLICATE', {
         paragraphIndex,
@@ -5711,17 +5728,11 @@ function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult
       });
     }
   }
-  if (paragraphs.length !== blockCount) {
-    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_BOOKMARK_CARDINALITY_MISMATCH', {
-      expectedParagraphCount: blockCount,
-      actualReturnedParagraphCount: paragraphs.length,
-    });
-  }
   for (let blockOrdinal = 0; blockOrdinal < blockCount; blockOrdinal += 1) {
     const paragraph = paragraphs[blockOrdinal];
-    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, blockOrdinal);
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph);
     if (paragraphIndex !== blockOrdinal) {
-      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_BOOKMARK_ORDER_MISMATCH', {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_ORDER_MISMATCH', {
         blockOrdinal,
         paragraphIndex,
       });
@@ -5735,8 +5746,6 @@ function buildDocxReviewReturnIntakeSceneReturnedParagraphAuthority(parserResult
     paragraphs,
     returnedParagraphCount: paragraphs.length,
     blockCount,
-    googlePrecedingBookmarkShape: false,
-    inlineBookmarkShape: true,
   };
 }
 
@@ -5763,8 +5772,11 @@ function verifyDocxReviewReturnIntakeSceneBookmarkCollisions(parserResult, order
   const paragraphs = Array.isArray(parserResult?.reviewIr?.formattingParagraphs)
     ? parserResult.reviewIr.formattingParagraphs.filter(isPlainObjectValue)
     : [];
-  for (const [fallbackIndex, paragraph] of paragraphs.entries()) {
-    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallbackIndex);
+  for (const paragraph of paragraphs) {
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph);
+    if (paragraphIndex === null) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_REQUIRED');
+    }
     const mappedOrdinal = paragraphAuthority.paragraphIndexToBlockOrdinal.get(paragraphIndex);
     const bookmarkNames = docxReviewReturnIntakeSceneBookmarkNames(paragraph);
     for (const rawName of bookmarkNames) {
@@ -5959,8 +5971,11 @@ function verifyDocxReviewReturnIntakeSceneReturnedParagraphTexts(paragraphAuthor
     }
     expectedReturnedTexts[ordinalBinding.ordinal] = `${baselineText.slice(0, first)}${insertedText}${baselineText.slice(first + deletedText.length)}`;
   }
-  for (const [fallbackIndex, paragraph] of paragraphAuthority.paragraphs.entries()) {
-    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph, fallbackIndex);
+  for (const paragraph of paragraphAuthority.paragraphs) {
+    const paragraphIndex = docxReviewReturnIntakeSceneReturnedParagraphIndex(paragraph);
+    if (paragraphIndex === null) {
+      return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_REQUIRED');
+    }
     const blockOrdinal = paragraphAuthority.paragraphIndexToBlockOrdinal.get(paragraphIndex);
     if (!Number.isSafeInteger(blockOrdinal)) {
       return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_TOUCHED_PARAGRAPH_INDEX_OUT_OF_RANGE', {
@@ -6167,8 +6182,6 @@ function buildDocxReviewReturnIntakeSceneExportMapAuthority({
     returnedParagraphCount: Number.isSafeInteger(paragraphAuthority.returnedParagraphCount)
       ? paragraphAuthority.returnedParagraphCount
       : 0,
-    googlePrecedingBookmarkShape: paragraphAuthority.googlePrecedingBookmarkShape === true,
-    inlineBookmarkShape: paragraphAuthority.inlineBookmarkShape === true,
     currentRawSha256: actualRawSha256,
     returnedGoogleBookmarkNamesAuthority: false,
     globalTextSearchAuthority: false,

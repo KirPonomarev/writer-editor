@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { stableJson } from './reviewTransportCore.mjs';
 import { recomputeAuthorityFromBijection } from './reviewTransportMatchProofV1.mjs';
 
@@ -130,7 +131,27 @@ function occurrenceRanges(haystack, needle) {
   return ranges;
 }
 
-function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetBlockId, blocks, groups) {
+function sha256Text(value) {
+  return `sha256:${createHash('sha256').update(String(value || ''), 'utf8').digest('hex')}`;
+}
+
+function revisionParagraphIndex(value) {
+  if (Number.isSafeInteger(value?.documentParagraphIndex) && value.documentParagraphIndex >= 0) {
+    return value.documentParagraphIndex;
+  }
+  if (Number.isSafeInteger(value?.paragraphIndex) && value.paragraphIndex >= 0) {
+    return value.paragraphIndex;
+  }
+  return null;
+}
+
+function commentParagraphIndex(thread) {
+  const direct = revisionParagraphIndex(thread);
+  if (direct !== null) return direct;
+  return revisionParagraphIndex(isPlainObject(thread?.anchorLocator) ? thread.anchorLocator : {});
+}
+
+function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, groups, reviewIr) {
   const authority = isPlainObject(localBaseline.sceneOrdinalAuthority)
     ? localBaseline.sceneOrdinalAuthority
     : {};
@@ -150,6 +171,14 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetBlockId, block
       'Main-owned scene ordinal authority capsule is required for Google C4 scene export-map authority.',
     ));
   }
+  if (normalizeString(authority.sceneId) !== targetSceneId) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.sceneId',
+      'Scene ordinal authority scene id must match the selected scene.',
+      { expectedSceneId: targetSceneId, observedSceneId: normalizeString(authority.sceneId) },
+    ));
+  }
   if (normalizeString(authority.targetBlockId) !== targetBlockId) {
     reasons.push(reason(
       'RTK_COMMAND_ENVELOPE_TAMPERED',
@@ -166,6 +195,36 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetBlockId, block
       { blockCount, returnedParagraphCount, localBlockCount: blocks.length },
     ));
   }
+  const seenBlockIndexes = new Set();
+  for (const [index, block] of blocks.entries()) {
+    if (block.sceneId && block.sceneId !== targetSceneId) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `localBaseline.sceneBlocks.${index}.sceneId`,
+        'Scene ordinal authority blocks must all belong to the selected scene.',
+        { expectedSceneId: targetSceneId, observedSceneId: block.sceneId },
+      ));
+    }
+    if (block.documentParagraphIndex !== index || seenBlockIndexes.has(block.documentParagraphIndex)) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `localBaseline.sceneBlocks.${index}.documentParagraphIndex`,
+        'Scene ordinal authority blocks must preserve a contiguous document paragraph index sequence.',
+        { expectedDocumentParagraphIndex: index, observedDocumentParagraphIndex: block.documentParagraphIndex },
+      ));
+    }
+    seenBlockIndexes.add(block.documentParagraphIndex);
+  }
+  const currentRawSha256 = normalizeString(authority.currentRawSha256);
+  const computedRawSha256 = sha256Text(blocks.map((block) => rawString(block.text)).join('\n'));
+  if (!currentRawSha256 || currentRawSha256 !== computedRawSha256) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.currentRawSha256',
+      'Scene ordinal authority current raw hash must match the local scene block baseline.',
+      { expectedRawSha256: computedRawSha256, observedRawSha256: currentRawSha256 },
+    ));
+  }
   const targetBlock = targetOrdinal === null ? null : blocks[targetOrdinal];
   if (!targetBlock || targetBlock.blockId !== targetBlockId) {
     reasons.push(reason(
@@ -173,6 +232,18 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetBlockId, block
       'localBaseline.sceneOrdinalAuthority.targetDocumentParagraphIndex',
       'Scene ordinal authority target paragraph must select the target block.',
       { targetOrdinal, targetBlockId },
+    ));
+  }
+  if (targetBlock && targetBlock.documentParagraphIndex !== targetOrdinal) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.targetDocumentParagraphIndex',
+      'Scene ordinal authority target block index must match the selected block document paragraph index.',
+      {
+        targetOrdinal,
+        observedDocumentParagraphIndex: targetBlock.documentParagraphIndex,
+        targetBlockId,
+      },
     ));
   }
   if (authority.returnedGoogleBookmarkNamesAuthority !== false
@@ -206,6 +277,58 @@ function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetBlockId, block
           targetOrdinal,
           targetBlockId,
         },
+      ));
+    }
+  }
+  const touchedKey = (kind, id) => `${kind}\n${id}`;
+  const touchedByKey = new Map();
+  for (const entry of touched) {
+    const kind = normalizeString(entry.kind);
+    const id = normalizeString(entry.id);
+    if (kind && id) touchedByKey.set(touchedKey(kind, id), entry);
+  }
+  for (const group of groups) {
+    for (const revision of Array.isArray(group.revisions) ? group.revisions : []) {
+      const operation = normalizeString(revision.operation);
+      const id = normalizeString(revision.nativeRevisionId);
+      const index = revisionParagraphIndex(revision);
+      if (index === null) {
+        reasons.push(reason(
+          'RTK_COMMAND_ENVELOPE_TAMPERED',
+          `reviewIr.textRevisions.${id || operation}.paragraphIndex`,
+          'Scene ordinal authority requires explicit paragraph indexes on paired text revisions.',
+        ));
+        continue;
+      }
+      const touchedEntry = touchedByKey.get(touchedKey(`textRevision:${operation}`, id));
+      if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== index) {
+        reasons.push(reason(
+          'RTK_COMMAND_ENVELOPE_TAMPERED',
+          `localBaseline.sceneOrdinalAuthority.touchedParagraphs.${id || operation}`,
+          'Scene ordinal authority touched records must correspond to the paired text revision paragraph index.',
+          { operation, id, paragraphIndex: index },
+        ));
+      }
+    }
+  }
+  for (const thread of list(reviewIr.commentThreads)) {
+    const id = normalizeString(thread.threadId || thread.commentId);
+    const index = commentParagraphIndex(thread);
+    if (index === null) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `reviewIr.commentThreads.${id || 'comment'}.paragraphIndex`,
+        'Scene ordinal authority requires explicit paragraph indexes on anchored comment threads.',
+      ));
+      continue;
+    }
+    const touchedEntry = touchedByKey.get(touchedKey('commentThread', id));
+    if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== index) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `localBaseline.sceneOrdinalAuthority.touchedParagraphs.${id || 'comment'}`,
+        'Scene ordinal authority touched records must correspond to the anchored comment paragraph index.',
+        { id, paragraphIndex: index },
       ));
     }
   }
@@ -433,7 +556,7 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
   // replacement pair into MANUAL_REVIEW by lying
   // (reviewTransportBlockExactAuthorityV2.mjs doctrine, M3).
   const mainOwnedOrdinalProof = localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'
-    ? mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetBlockId, blocks, grouped.groups)
+    ? mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, grouped.groups, reviewIr)
     : null;
   if (mainOwnedOrdinalProof) reasons.push(...mainOwnedOrdinalProof.reasons);
   const recomputeAuthorityCarrier = localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'
