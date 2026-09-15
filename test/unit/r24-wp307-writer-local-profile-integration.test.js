@@ -23,7 +23,6 @@ test('WP307 optional domain and query cut remains exhaustive against live regist
   for (const record of workspaceRegistry.WORKSPACE_QUERY_RECORDS) {
     const optional = record.owner !== 'main'
       || record.id === workspaceRegistry.WORKSPACE_QUERY_IDS.COLLAB_SCOPE_LOCAL
-      || record.id === workspaceRegistry.WORKSPACE_QUERY_IDS.REVIEW_SURFACE
       || record.id === workspaceRegistry.WORKSPACE_QUERY_IDS.STAGE10_PRODUCT_STATE;
     assert.equal(optionalQueryIds.has(record.id), optional, record.id);
   }
@@ -48,6 +47,7 @@ test('WP307 main revalidates profile before command/query dispatch and package l
   assert.doesNotMatch(source, /WRITER_LOCAL_V1.*process\.env/u);
   assert.doesNotMatch(profileSource, /process\.env/u);
   for (const commandId of [
+    'cmd.project.review.openComments',
     'cmd.project.review.exportDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
@@ -59,6 +59,7 @@ test('WP307 main revalidates profile before command/query dispatch and package l
 test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near matches stay profile-denied', () => {
   const source = read('src/main.js');
   const survivorIds = [
+    'cmd.project.review.openComments',
     'cmd.project.review.exportDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',

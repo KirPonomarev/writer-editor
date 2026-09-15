@@ -776,7 +776,9 @@ export const R24_INTEROP_100_DENOMINATOR_ADMISSION_HARDENING_EXPECTATION=Object.
   contractTestPath:`test/contracts/${INTEROP100_CONTRACT_BASENAME}`,
   postAuditVerifierPath:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   postAuditTestPath:'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
+  issuedCandidateSha:'bed937e81b355b5c2faec7b5245bdc22081a7ddf',
   inventoryFileDenominator:1471,
+  currentInventoryFileDenominator:1472,
   approvedBy:'owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12',
   authority:'SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2',
   admittedPaths:[
@@ -951,6 +953,47 @@ export const C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION = O
     'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     'test/unit/r24-wp307-writer-local-profile-integration.test.js',
     'test/unit/r24-wp307-writer-local-profile-mutants.test.js',
+    'test/unit/r24-wp307-writer-local-profile.test.js',
+  ].sort()),
+});
+export const R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION = Object.freeze({
+  baseSha: '700722463dd5facea1a2c231796f9627f30360a5',
+  baseTree: '020a671cadb4f4e0403a67b9d6aee995df0b3bc1',
+  taskId: 'R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_V1',
+  inventoryPath: 'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  rtkCatalogPath: 'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
+  verifierPath: 'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  profilePath: 'src/core/writer-local-profile-v1.cjs',
+  workspaceQueryRegistryPath: 'src/shared/workspaceQueryRegistry.cjs',
+  mainPath: 'src/main.js',
+  nonTextRuntimePath: 'src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs',
+  c4ContractPath: 'test/contracts/rtk-c4-canonical-comment-product-query.contract.test.js',
+  reviewPreviewContractPath: 'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
+  rootCommentContractPath: 'test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js',
+  profileUnitTestPath: 'test/unit/r24-wp307-writer-local-profile.test.js',
+  profileIntegrationTestPath: 'test/unit/r24-wp307-writer-local-profile-integration.test.js',
+  inventoryFileDenominator: 1472,
+  admittedPaths: Object.freeze([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
+    'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'src/core/writer-local-profile-v1.cjs',
+    'src/io/revisionBridge/reviewTransportBlockExactAuthorityV2.mjs',
+    'src/io/revisionBridge/reviewTransportBlockExactWriterBindingV2.mjs',
+    'src/io/revisionBridge/reviewTransportClassifierV2.mjs',
+    'src/io/revisionBridge/reviewTransportExactApplyAdapterV2.mjs',
+    'src/io/revisionBridge/reviewTransportMatchProofV1.mjs',
+    'src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs',
+    'src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs',
+    'src/main.js',
+    'src/renderer/editor.bundle.js',
+    'src/shared/workspaceQueryRegistry.cjs',
+    'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
+    'test/contracts/rtk-c4-canonical-comment-product-query.contract.test.js',
+    'test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js',
+    'test/fixtures/revision-bridge/google-c4-native-review-returned.docx',
+    'test/fixtures/revision-bridge/google-c4-native-review-returned.provenance.json',
+    'test/unit/r24-wp307-writer-local-profile-integration.test.js',
     'test/unit/r24-wp307-writer-local-profile.test.js',
   ].sort()),
 });
@@ -5374,7 +5417,8 @@ export function verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationEx
   const readText=p=>{let bytes;try{bytes=objectBytes(git,resolvedCandidate,p);}catch{fail('E_R24_INTEROP100_DENOMINATOR_ARTIFACT_MISSING',p);}assert(bytes.at(-1)===0x0a,'E_R24_INTEROP100_DENOMINATOR_CANONICAL_LF',p);return{bytes,text:bytes.toString('utf8'),digest:h(bytes)};};
   const readJson=p=>{const file=readText(p);return{...file,value:JSON.parse(file.text)};};
   const inventory=readJson(e.inventoryPath),denominator=readJson(e.denominatorPath),evidenceEnvelope=readJson(e.evidenceEnvelopePath),ledger=readJson(e.ledgerPath),approvals=readJson(e.approvalsPath),validator=readText(e.validatorPath),contract=readText(e.contractTestPath),postAuditVerifier=readText(e.postAuditVerifierPath),postAuditTest=readText(e.postAuditTestPath);
-  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===e.inventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_INTEROP100_DENOMINATOR_INVENTORY_SHAPE');
+  const expectedInventoryFileDenominator=resolvedCandidate===e.issuedCandidateSha?e.inventoryFileDenominator:e.currentInventoryFileDenominator;
+  assert(inventory.value.schemaVersion==='R24_C1B_TEST_INVENTORY_V1'&&inventory.value.totals?.all===expectedInventoryFileDenominator&&inventory.value.totals?.requiredSkips===0&&inventory.value.totals?.unexplainedSkips===0,'E_R24_INTEROP100_DENOMINATOR_INVENTORY_SHAPE');
   for(const relative of [e.contractTestPath,e.postAuditTestPath]){
     const file=relative===e.contractTestPath?contract:postAuditTest;
     const entry=inventory.value.entries.find((item)=>item.path===relative);
@@ -5430,6 +5474,14 @@ function resolveC2PackagedDocxReviewRoundtripProfileExpansionCandidate(git, requ
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA');
+}
+
+function resolveR24C4GoogleReviewAuthorityCapsuleCandidate(git, requested, e) {
+  const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
+  if (exact(requested)) return requested;
+  const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
+  for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
+  fail('E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXACT_ADMITTED_DELTA');
 }
 
 export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
@@ -5519,6 +5571,78 @@ export function verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluatio
     programDone: false,
     productionReleaseReady: false,
     graphIncrement: 0,
+  };
+}
+
+export function verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({ candidateSha = 'HEAD', git = defaultGit } = {}) {
+  const e = R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION;
+  const requested = gitText(git, ['rev-parse', candidateSha]);
+  assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_BASE_TREE');
+  try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_BASE_ANCESTRY'); }
+  const candidate = resolveR24C4GoogleReviewAuthorityCapsuleCandidate(git, requested, e);
+  const changed = gitText(git, ['diff', '--name-only', `${e.baseSha}..${candidate}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed) === JSON.stringify(e.admittedPaths), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXACT_ADMITTED_DELTA');
+  const candidateTree = evaluationTree(git, candidate), requestedTree = evaluationTree(git, requested);
+  assert([candidate, requested, candidateTree, requestedTree].every(value => /^[a-f0-9]{40}$/.test(value)), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_IDENTITY');
+  const readBytes = relative => {
+    try { return objectBytes(git, candidate, relative); } catch { fail('E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_ARTIFACT_MISSING', relative); }
+  };
+  const readText = relative => {
+    const bytes = readBytes(relative);
+    assert(bytes.at(-1) === 0x0a, 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_CANONICAL_LF', relative);
+    return { bytes, text: bytes.toString('utf8'), digest: h(bytes) };
+  };
+  const readJson = relative => {
+    const file = readText(relative);
+    return { ...file, value: JSON.parse(file.text) };
+  };
+  const textArtifacts = new Map(e.admittedPaths
+    .filter(relative => !relative.endsWith('.docx'))
+    .map(relative => [relative, readText(relative)]));
+  const inventory = readJson(e.inventoryPath);
+  const rtkCatalog = readJson(e.rtkCatalogPath);
+  const returnedDocxBytes = readBytes('test/fixtures/revision-bridge/google-c4-native-review-returned.docx');
+  assert(returnedDocxBytes.subarray(0, 2).toString('utf8') === 'PK', 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_DOCX_ZIP_MAGIC');
+  assert(inventory.value.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.value.totals?.all === e.inventoryFileDenominator && inventory.value.totals?.requiredSkips === 0 && inventory.value.totals?.unexplainedSkips === 0, 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_INVENTORY');
+  for (const relative of [e.c4ContractPath, e.reviewPreviewContractPath, e.rootCommentContractPath, e.profileUnitTestPath, e.profileIntegrationTestPath]) {
+    const entry = inventory.value.entries.find(item => item.path === relative);
+    assert(entry?.sha256 === textArtifacts.get(relative)?.digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_INVENTORY_DIGEST', relative);
+  }
+  assert(rtkCatalog.value.schemaVersion === 'yalken.rtk.test-graph-catalog.v1' && rtkCatalog.value.contractBasenames?.includes('rtk-c4-canonical-comment-product-query.contract.test.js'), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_RTK_CATALOG');
+  const registry = textArtifacts.get(e.workspaceQueryRegistryPath).text;
+  const main = textArtifacts.get(e.mainPath).text;
+  const profile = textArtifacts.get(e.profilePath).text;
+  const runtime = textArtifacts.get(e.nonTextRuntimePath).text;
+  const c4Contract = textArtifacts.get(e.c4ContractPath).text;
+  const verifier = textArtifacts.get(e.verifierPath).text;
+  for (const token of ["RTK_NON_TEXT_RETURN_STATE: 'query.rtkNonTextReturnState'", "projection: 'rtk-non-text-return-state'"]) assert(registry.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_REGISTRY_TOKEN', token);
+  for (const token of ['handleWorkspaceRtkNonTextReturnStateQuery', 'buildRtkNonTextReturnReviewSurfaceProjection', 'canonicalCommentProjection', 'attachProductTextChangesToDocxCommentShadowPayload', "'cmd.project.review.openComments'"]) assert(main.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_MAIN_TOKEN', token);
+  for (const token of ["'cmd.project.review.openComments'"]) assert(profile.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_PROFILE_TOKEN', token);
+  assert(!profile.includes("'query.rtkNonTextReturnState'"), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_PROFILE_QUERY_DENIED');
+  for (const token of ['const sourceTextChange = textChanges.find', "'rtk-non-overlap-product-replacement-authority'", "'scene-block-paragraph-authority'", 'rootCommentId: normalized.commentId', 'paragraphIndex: resolvedParagraphIndex']) assert(runtime.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_RUNTIME_TOKEN', token);
+  for (const token of ['C4 activation carries text-change block authority into comment canonical apply', 'RTK_NON_TEXT_RETURN_STATE', 'rtk-non-overlap-product-replacement-authority']) assert(c4Contract.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_CONTRACT_TOKEN', token);
+  for (const token of ['R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION', 'verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException', 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXACT_ADMITTED_DELTA']) assert(verifier.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_VERIFIER_TOKEN', token);
+  return {
+    schemaVersion: 'R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_POST_EVALUATION_EXCEPTION_V1',
+    status: 'PASS',
+    taskId: e.taskId,
+    baseSha: e.baseSha,
+    baseTree: e.baseTree,
+    candidateSha: candidate,
+    candidateTree,
+    currentCandidateSha: requested,
+    currentCandidateTree: requestedTree,
+    admittedPathDenominator: e.admittedPaths.length,
+    changedPathDenominator: changed.length,
+    admittedPaths: e.admittedPaths,
+    changedPaths: changed,
+    inventoryDigest: inventory.digest,
+    rtkCatalogDigest: rtkCatalog.digest,
+    returnedDocxDigest: h(returnedDocxBytes),
+    productRuntimeClaim: 'GOOGLE_C4_ROOT_COMMENT_AUTHORITY_CAPSULE_SOURCE_RUNTIME_ONLY',
+    graphIncrement: 1,
+    programDone: false,
+    productionReleaseReady: false,
   };
 }
 
@@ -7469,6 +7593,18 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
     ? verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: resolvedCandidate, git })
     : null;
   for (const admittedPath of (c2PackagedDocxReviewRoundtripProfileExpansionException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  let r24C4GoogleReviewAuthorityCapsuleEnabled = false;
+  if (allowAuditCycle2Admission && resolvedCandidate !== R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION.baseSha) {
+    try {
+      git(['merge-base', '--is-ancestor', R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION.baseSha, resolvedCandidate], { encoding: null });
+      objectBytes(git, resolvedCandidate, R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION.c4ContractPath);
+      r24C4GoogleReviewAuthorityCapsuleEnabled = true;
+    } catch {}
+  }
+  const r24C4GoogleReviewAuthorityCapsuleException = r24C4GoogleReviewAuthorityCapsuleEnabled
+    ? verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({ candidateSha: resolvedCandidate, git })
+    : null;
+  for (const admittedPath of (r24C4GoogleReviewAuthorityCapsuleException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   let r24X01IdempotentContractRecoveryEnabled = false;
   if (allowAuditCycle2Admission && resolvedCandidate !== R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION.baseSha) {
     try {
@@ -7512,6 +7648,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;
   verificationResult.textSingleSceneC1SourceRuntimePostEvaluationException = textSingleSceneC1SourceRuntimeException;
   verificationResult.c2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException = c2PackagedDocxReviewRoundtripProfileExpansionException;
+  verificationResult.r24C4GoogleReviewAuthorityCapsulePostEvaluationException = r24C4GoogleReviewAuthorityCapsuleException;
   verificationResult.r24X01IdempotentContractRecoveryPostEvaluationException = r24X01IdempotentContractRecoveryException;
   verificationResult.currentClosureSelectorPostEvaluationException = currentClosureSelectorException;
   verificationResult.ePlanPredecessorPostEvaluationException = ePlanPredecessorException;

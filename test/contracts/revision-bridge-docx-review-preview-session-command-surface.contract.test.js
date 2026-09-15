@@ -13,6 +13,14 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
 const RETURN_INTAKE_WORKER_PATH = path.join(REPO_ROOT, 'src', 'main', 'rtkDocxReturnIntakeWorker.cjs');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
+const GOOGLE_C4_NATIVE_RETURN_FIXTURE_PATH = path.join(
+  REPO_ROOT,
+  'test',
+  'fixtures',
+  'revision-bridge',
+  'google-c4-native-review-returned.docx',
+);
+const GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256 = '0c746653efce8d874cab50b1c9089124fcd86b58edefd812eb78f0e5142387f4';
 const MUTATE_SECTION_START = '// CONTOUR_01A_REVIEW_MUTATE_PORT_START';
 const MUTATE_SECTION_END = '// CONTOUR_01A_REVIEW_MUTATE_PORT_END';
 const INTAKE_SECTION_START = '// DOCX_INTAKE_GATE_COMMAND_SURFACE_START';
@@ -838,7 +846,369 @@ function productAuthorityStoreFromDocx(docx, overrides = {}) {
   };
 }
 
-function c05ReviewIr({ deleted = 'beta', inserted = 'delta', groupId = 'group-c05' } = {}) {
+function sceneExportMapBlocks(sceneId, sceneText, options = {}) {
+  const blockPrefix = typeof options.blockPrefix === 'string' ? options.blockPrefix : 'block-c4-google';
+  return String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map((text, index) => ({
+    sceneId,
+    blockId: `${blockPrefix}-${String(index + 1).padStart(4, '0')}`,
+    paragraphId: `yrtk-c4-p-${String(index + 1).padStart(4, '0')}`,
+    documentParagraphIndex: index,
+    canonicalTextSha256: c05Sha256Text(text),
+    canonicalMarksSha256: c05CryptoPort.sha256Json({ marks: [] }),
+    wordSignals: [
+      {
+        kind: 'bookmarkName',
+        value: { name: `YRTK_SOURCE_${String(index + 1).padStart(4, '0')}` },
+        applyAuthority: false,
+      },
+    ],
+  }));
+}
+
+function googleRewrittenBookmarkReturnBytes(docx, options = {}) {
+  const sceneText = typeof options.sceneText === 'string' ? options.sceneText : docx.sceneText;
+  const deletedText = typeof options.deletedText === 'string' ? options.deletedText : docx.deletedText;
+  const insertedText = typeof options.insertedText === 'string' ? options.insertedText : docx.insertedText;
+  const targetOrdinal = Number.isSafeInteger(options.targetOrdinal) ? options.targetOrdinal : 0;
+  const paragraphs = String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+  const body = paragraphs.map((text, index) => {
+    const randomBookmarkName = `_GoBack_${crypto.createHash('sha1').update(`${index}:${text}`).digest('hex').slice(0, 12)}`;
+    const bookmarkId = 700 + index;
+    const prefix = `<w:bookmarkStart w:id="${bookmarkId}" w:name="${randomBookmarkName}"/><w:bookmarkEnd w:id="${bookmarkId}"/>`;
+    if (index !== targetOrdinal) return `${prefix}<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;
+    return [
+      prefix,
+      '<w:p>',
+      `<w:del w:id="41"><w:r><w:delText>${deletedText}</w:delText></w:r></w:del>`,
+      '<w:ins w:id="42">',
+      `<w:r><w:t>${insertedText.slice(0, -1)}</w:t></w:r>`,
+      '<w:commentRangeStart w:id="0"/>',
+      `<w:r><w:t>${insertedText.slice(-1)}</w:t></w:r>`,
+      '<w:commentRangeEnd w:id="0"/>',
+      '<w:r><w:commentReference w:id="0"/></w:r>',
+      '</w:ins>',
+      '</w:p>',
+    ].join('');
+  }).join('');
+  return cleanDocxZip(body, [
+    {
+      name: '[Content_Types].xml',
+      method: 8,
+      body: productContentTypesXml(),
+    },
+    {
+      name: '_rels/.rels',
+      method: 8,
+      body: productRootRelsXml(),
+    },
+    {
+      name: 'word/_rels/document.xml.rels',
+      method: 8,
+      body: productDocumentRelsXml(),
+    },
+    {
+      name: 'word/comments.xml',
+      method: 8,
+      body: [
+        `<w:comments xmlns:w="${W_NS}">`,
+        '<w:comment w:id="0" w:author="Google Reviewer" w:date="2026-09-15T02:15:56Z">',
+        '<w:p><w:r><w:t>C4 anchored UI comment on suggested replacement for Yalken review intake.</w:t></w:r></w:p>',
+        '</w:comment>',
+        '</w:comments>',
+      ].join(''),
+    },
+    {
+      name: 'docProps/custom.xml',
+      method: 8,
+      body: customPropertiesXml([
+        { name: 'YRTK_C01_AUTH', value: productAuthorityEnvelope(docx.payload, docx.secret) },
+        { name: 'YRTK2_TOKEN', value: docx.yrtk2.token },
+        { name: 'YRTK_CORE_DIGEST', value: docx.payload.coreManifestDigest },
+      ]),
+    },
+  ]);
+}
+
+function googleRewrittenFormattingParagraphs(sceneText, options = {}) {
+  return String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
+    .map((text, index) => {
+      const paragraphText = index === options.targetOrdinal
+        ? text.replace(options.deletedText || 'sentinel alpha', options.insertedText || 'sentinel omega')
+        : text;
+      return {
+        paragraphIndex: index,
+        documentParagraphIndex: index,
+        paragraphText,
+        trackedRevision: index === options.targetOrdinal,
+        bookmarkNames: [],
+        formattedRuns: [],
+      };
+    });
+}
+
+function googleC4BlockAuthorityInput(options = {}) {
+  const sceneId = 'roman/google-c4-direct.txt';
+  const sceneLines = [
+    '[plainTextPreserved] Body text sentinel alpha.',
+    '',
+    '[latin-basic] Plain ASCII text survives Word and Yalken return.',
+    '[latin-diacritic] Café naïve façade coöperate jalapeño résumé.',
+    '[cyrillic] Привет мир. Текст сцены сохраняется.',
+    '[greek] Καλημέρα κόσμε. Το κείμενο παραμένει.',
+    '[cjk] 中文文本保留。日本語の本文も保持。한국어 문장도 유지.',
+    '[rtl-hebrew] שלום עולם. טקסט בעברית נשמר.',
+    '[emoji-zwj] Family 👨‍👩‍👧‍👦 and technologist 🧑‍💻 stay intact.',
+    '  [whitespaceEdgesPreserved] leading and trailing spaces stay here  ',
+    '',
+    '[paragraphBoundariesPreserved] Final paragraph after an intentional empty paragraph.',
+  ];
+  const targetOrdinal = 0;
+  const blocks = sceneLines.map((text, index) => ({
+    sceneId,
+    blockId: `block-google-c4-${String(index).padStart(4, '0')}`,
+    documentParagraphIndex: index,
+    text,
+  }));
+  const targetBlockId = blocks[targetOrdinal].blockId;
+  const reviewIr = c05ReviewIr({
+    deleted: 'sentinel alpha',
+    inserted: 'sentinel omega',
+    groupId: 'google-c4-direct',
+    paragraphIndex: 0,
+  });
+  const input = {
+    commandId: 'cmd.rtk.review.applyNonOverlapTrackedReplacements',
+    callerRole: 'main',
+    commandAuthority: {
+      issuer: 'main',
+      intent: 'rtk.exactApply',
+      commandId: 'cmd.rtk.review.applyNonOverlapTrackedReplacements',
+    },
+    exactAuthority: c05ExactAuthority(),
+    authorityCarrier: c05AuthorityCarrier(sceneId, 'attacker-random-bookmark-block'),
+    reviewIr,
+    localBaseline: {
+      sceneId,
+      blockId: targetBlockId,
+      authorityKind: 'main-owned-scene-export-map-ordinal-v1',
+      sceneBlocks: blocks,
+      sceneOrdinalAuthority: {
+        schemaVersion: 'yalken.rtk.return-intake.scene-ordinal-authority.v1',
+        source: 'main-owned-local-export-map',
+        sceneId,
+        targetBlockId,
+        targetDocumentParagraphIndex: targetOrdinal,
+        blockCount: blocks.length,
+        returnedParagraphCount: blocks.length,
+        currentRawSha256: c05Sha256Text(sceneLines.join('\n')),
+        touchedParagraphs: [
+          {
+            kind: 'textRevision:delete',
+            id: 'del-google-c4-direct',
+            rawReturnedParagraphIndex: 0,
+            documentParagraphIndex: 0,
+            sceneId,
+            blockId: targetBlockId,
+          },
+          {
+            kind: 'textRevision:insert',
+            id: 'ins-google-c4-direct',
+            rawReturnedParagraphIndex: 0,
+            documentParagraphIndex: 0,
+            sceneId,
+            blockId: targetBlockId,
+          },
+        ],
+        returnedGoogleBookmarkNamesAuthority: false,
+        globalTextSearchAuthority: false,
+        fuzzyMatchAuthority: false,
+      },
+    },
+  };
+  if (typeof options.mutate === 'function') {
+    options.mutate(input, { blocks, targetBlockId, sceneLines });
+  }
+  return input;
+}
+
+async function runGoogleC4SceneActivation(options = {}) {
+  const bridge = await loadBridge();
+  const sceneId = 'roman/google-c4-scene.txt';
+  const targetOrdinal = 0;
+  const sceneLines = [
+    'sentinel alpha',
+    'context line 02',
+    'context line 03',
+    'context line 04',
+    'context line 05',
+    'context line 06',
+    'context line 07',
+    'context line 08',
+    'context line 09',
+    'context line 10',
+    'context line 11',
+    'context line 12',
+  ];
+  const sceneText = sceneLines.join('\n');
+  const blocks = sceneExportMapBlocks(sceneId, sceneText);
+  const docx = productReviewDocxWithTrackedReplacement({
+    roundId: 'round-google-c4-scene-ordinal',
+    roundIdHex: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    keyIdHex: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    exportId: 'export-google-c4-scene-ordinal',
+    sceneId,
+    sceneText,
+    deletedText: 'sentinel alpha',
+    insertedText: 'sentinel omega',
+    blockId: blocks[targetOrdinal].blockId,
+  });
+  const returnedBytes = googleRewrittenBookmarkReturnBytes(docx, {
+    sceneText,
+    targetOrdinal,
+  });
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-google-c4-negative-'));
+  const scenePath = path.join(tmpDir, sceneId);
+  fs.mkdirSync(path.dirname(scenePath), { recursive: true });
+  fs.writeFileSync(scenePath, sceneText, 'utf8');
+  const reviewIr = c05ReviewIr({
+    deleted: 'sentinel alpha',
+    inserted: 'sentinel omega',
+    groupId: 'google-c4-ordinal',
+    paragraphIndex: targetOrdinal,
+  });
+  reviewIr.formattingParagraphs = googleRewrittenFormattingParagraphs(sceneText, {
+    targetOrdinal,
+    deletedText: 'sentinel alpha',
+    insertedText: 'sentinel omega',
+  });
+  reviewIr.commentThreads = [{
+    threadId: 'rtk-comment-0',
+    commentId: '0',
+    authorId: 'Google Reviewer',
+    status: 'ANCHORED',
+    paragraphIndex: targetOrdinal,
+    documentParagraphIndex: targetOrdinal,
+    anchorLocator: {
+      paragraphIndex: targetOrdinal,
+      bookmarkNames: [],
+    },
+    createdAt: '2026-09-15T02:15:56Z',
+    updatedAt: '2026-09-15T02:15:56Z',
+    tags: ['docx-review'],
+    messages: [{
+      messageId: 'rtk-comment-0-message-1',
+      authorId: 'Google Reviewer',
+      body: 'C4 anchored UI comment on suggested replacement for Yalken review intake.',
+      createdAt: '2026-09-15T02:15:56Z',
+    }],
+  }];
+  reviewIr.commentPlacements = [{
+    placementId: 'docx-comment-placement-0',
+    threadId: 'rtk-comment-0',
+    sourceCommentId: '0',
+    quote: 'sentinel omeg',
+    targetScope: { type: 'scene', id: sceneId },
+    selector: { type: 'docx-comment-range', id: '0' },
+    anchor: { kind: 'docx-comment-range', value: 'w:comment:0' },
+    range: { from: 0, to: 'sentinel omeg'.length },
+  }];
+  if (typeof options.mutateReviewIr === 'function') options.mutateReviewIr(reviewIr);
+  const parserResult = {
+    ok: true,
+    authorityCarrier: {
+      status: 'verified-baseline-bound',
+      selectedCarrier: {
+        encoded: productAuthorityEnvelope(docx.payload, docx.secret),
+        payload: docx.payload,
+        baselineBinding: { allExpectedMatched: true },
+      },
+    },
+    exactAuthority: c05ExactAuthority(),
+    parserProfileDigest: c05Sha256Text('parser-google-c4-ordinal'),
+    analysisDigest: c05Sha256Text('analysis-google-c4-ordinal'),
+    sourceMode: 'TRACKED',
+    reviewIr,
+  };
+  if (typeof options.mutateParserResult === 'function') options.mutateParserResult(parserResult);
+  const calls = [];
+  const applyHandler = bridge.createRtkNonOverlapTrackedReplacementCommandHandler({
+    cryptoPort: c05CryptoPort,
+    now: () => 1700000000000,
+  });
+  const port = instantiateDocxReviewPreviewSessionPort({
+    dispatchCommandSurfaceKernel: async (commandId, payload = {}) => {
+      calls.push({ commandId, payload: cloneJsonSafe(payload) });
+      if (commandId === 'cmd.rtk.reviewSession.importComments') {
+        return { ok: true, status: 'committed', session: { summary: { threadCount: 1 } }, storageEffects: {} };
+      }
+      assert.equal(commandId, 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
+      return applyHandler(payload);
+    },
+  });
+  const sceneHash = computeHash(sceneText);
+  const exportMap = {
+    scope: 'scene',
+    roundId: docx.payload.roundId,
+    scenes: [{
+      sceneId,
+      sceneOrdinal: 0,
+      rawSha256: docx.payload.rawSha256,
+      blocks,
+    }],
+  };
+  if (typeof options.mutateExportMap === 'function') options.mutateExportMap(exportMap);
+  const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
+    toPayload(returnedBytes),
+    {
+      activeReviewDocxExportAuthorityStore: productAuthorityStoreFromDocx(docx, {
+        projectRoot: tmpDir,
+        scenePath,
+        baselineFinalText: sceneText,
+        scope: 'scene',
+        exportMap,
+      }),
+      runDocxReviewReturnIntakeInUtilityProcess: async (input) => wrapParserResultAsPacketResult(parserResult, {
+        returnedArtifactSha256: input?.returnedArtifactSha256,
+        yrtk2Token: docx.yrtk2.token,
+        coreManifestDigest: docx.payload.coreManifestDigest,
+      }),
+      buildMainReviewContext: async () => reviewContext({
+        projectId: 'project-google-c4-scene',
+        projectRoot: tmpDir,
+        scenePath,
+        sceneText,
+        baselineHash: sceneHash,
+        currentBaselineHash: sceneHash,
+        targetScope: { type: 'scene', id: sceneId },
+      }),
+    },
+  );
+  return { result, calls, port, scenePath, sceneText };
+}
+
+function activationResultCodes(result = {}) {
+  const codes = [];
+  const push = (value) => {
+    if (typeof value === 'string' && value) codes.push(value);
+  };
+  push(result?.error?.code);
+  push(result?.error?.reason);
+  push(result?.returnIntake?.code);
+  push(result?.returnIntake?.reason);
+  push(result?.nonOverlapTrackedReplacementProductPath?.reason);
+  push(result?.nonOverlapTrackedReplacementProductPath?.runtimePreviewCode);
+  for (const item of Array.isArray(result?.nonOverlapTrackedReplacementProductPath?.runtimePreviewReasons)
+    ? result.nonOverlapTrackedReplacementProductPath.runtimePreviewReasons
+    : []) {
+    push(item.code);
+  }
+  return codes;
+}
+
+function c05ReviewIr({ deleted = 'beta', inserted = 'delta', groupId = 'group-c05', paragraphIndex = null } = {}) {
+  const paragraphFields = Number.isSafeInteger(paragraphIndex)
+    ? { paragraphIndex, documentParagraphIndex: paragraphIndex }
+    : {};
   return {
     schemaVersion: 'yalken.rtk.review-ir.v2',
     sourceMode: 'TRACKED',
@@ -850,6 +1220,7 @@ function c05ReviewIr({ deleted = 'beta', inserted = 'delta', groupId = 'group-c0
         text: deleted,
         textDigest: c05Sha256Text(`delete:${deleted}`),
         replacementGroupId: groupId,
+        ...paragraphFields,
       },
       {
         kind: 'TextRevision',
@@ -858,6 +1229,7 @@ function c05ReviewIr({ deleted = 'beta', inserted = 'delta', groupId = 'group-c0
         text: inserted,
         textDigest: c05Sha256Text(`insert:${inserted}`),
         replacementGroupId: groupId,
+        ...paragraphFields,
       },
     ],
     moveRevisions: [],
@@ -1547,12 +1919,23 @@ test('DOCX review preview session command: full-manuscript return exposes only e
 
   const mainSource = readMainSource();
   const rendererSource = fs.readFileSync(path.join(REPO_ROOT, 'src', 'renderer', 'editor.js'), 'utf8');
-  const capabilitySource = fs.readFileSync(path.join(REPO_ROOT, 'src', 'renderer', 'commands', 'localCapabilityProvider.mjs'), 'utf8');
+  const entitlementLaw = require(path.join(REPO_ROOT, 'src', 'core', 'entitlement-law-v1.cjs'));
   assert.match(mainSource, /'cmd\.project\.review\.applyFullManuscriptExactTextReturn': async/u);
   assert.match(mainSource, /COMMAND_SURFACE_KERNEL_COMMAND_IDS\.RTK_REVIEW_APPLY_MULTI_SCENE_NON_OVERLAP_TRACKED_REPLACEMENTS/u);
   assert.match(rendererSource, /REVIEW_SURFACE_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID/u);
   assert.match(rendererSource, /data-review-apply-full-manuscript-exact/u);
-  assert.match(capabilitySource, /cmd\.project\.review\.applyFullManuscriptExactTextReturn/u);
+  assert.ok(entitlementLaw.FREE_PRO_COMPLEXITY_COMMAND_IDS.includes('cmd.project.review.applyFullManuscriptExactTextReturn'));
+  assert.deepEqual(
+    entitlementLaw.decideCommandEntitlement('cmd.project.review.applyFullManuscriptExactTextReturn'),
+    {
+      ok: false,
+      available: false,
+      visible: false,
+      access: 'pro_complexity_surface',
+      reason: 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE',
+      commandId: 'cmd.project.review.applyFullManuscriptExactTextReturn',
+    },
+  );
 });
 
 test('DOCX review preview session command: current-profile YRTK carrier authenticates full-manuscript packet and exposes exact lane', async () => {
@@ -1738,6 +2121,608 @@ test('DOCX review preview session command: authenticated return IR drives visibl
   assert.equal(replay.result.status, 'replay');
   assert.equal(fs.readFileSync(scenePath, 'utf8'), 'Alpha delta gamma.');
   assert.equal(calls.length, 2);
+});
+
+test('DOCX review preview session command: real Google C4 return parser projection is 12 physical paragraphs', async () => {
+  const bridge = await loadBridge();
+  const bytes = fs.readFileSync(GOOGLE_C4_NATIVE_RETURN_FIXTURE_PATH);
+  assert.equal(
+    crypto.createHash('sha256').update(bytes).digest('hex'),
+    GOOGLE_C4_NATIVE_RETURN_FIXTURE_SHA256,
+  );
+
+  const result = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: c05CryptoPort });
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.sourceMode, 'TRACKED');
+  assert.equal(result.reviewIr.formattingParagraphs.length, 12);
+  assert.deepEqual(
+    result.reviewIr.formattingParagraphs.map((paragraph) => paragraph.paragraphIndex),
+    Array.from({ length: 12 }, (_, index) => index),
+  );
+  assert.deepEqual(
+    result.reviewIr.formattingParagraphs.map((paragraph) => paragraph.bookmarkNames),
+    Array.from({ length: 12 }, () => []),
+  );
+  assert.equal(result.reviewIr.formattingParagraphs[0].paragraphText, '[plainTextPreserved] Body text sentinel omega.');
+  assert.equal(result.reviewIr.formattingParagraphs[0].trackedRevision, true);
+
+  const revisionsByOperation = new Map(result.reviewIr.textRevisions.map((revision) => [revision.operation, revision]));
+  assert.equal(result.reviewIr.textRevisions.length, 2);
+  assert.equal(revisionsByOperation.get('delete').text, 'sentinel alpha');
+  assert.equal(revisionsByOperation.get('insert').text, 'sentinel omega');
+  assert.equal(revisionsByOperation.get('delete').paragraphIndex, 0);
+  assert.equal(revisionsByOperation.get('insert').paragraphIndex, 0);
+
+  assert.equal(result.reviewIr.commentThreads.length, 1);
+  assert.equal(result.reviewIr.commentThreads[0].status, 'ANCHORED');
+  assert.equal(result.reviewIr.commentThreads[0].paragraphIndex, 0);
+  assert.deepEqual(result.reviewIr.commentThreads[0].anchorLocator.bookmarkNames, []);
+});
+
+test('DOCX review preview session command: C4 block authority is derived from main-owned scene ordinal capsule', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.evaluateReviewTransportBlockExactAuthorityV2(
+    googleC4BlockAuthorityInput(),
+    { cryptoPort: c05CryptoPort },
+  );
+
+  assert.equal(result.status, 'exact-authority-ready', JSON.stringify(result, null, 2));
+  assert.equal(result.targetBlockId, 'block-google-c4-0000');
+  assert.equal(result.exactAuthority.uniqueTarget, true);
+  assert.equal(result.exactAuthority.nonOverlapping, true);
+  assert.equal(result.exactTextAnchors[0].documentParagraphIndex, 0);
+  assert.equal(result.exactTextAnchors[0].start, '[plainTextPreserved] Body text '.length);
+  assert.equal(result.exactTextAnchors[0].end, '[plainTextPreserved] Body text sentinel alpha'.length);
+
+  const sameTextElsewhere = bridge.evaluateReviewTransportBlockExactAuthorityV2(
+    googleC4BlockAuthorityInput({
+      mutate: ({ localBaseline }) => {
+        localBaseline.sceneBlocks[1].text = 'another block with sentinel alpha';
+        localBaseline.sceneOrdinalAuthority.currentRawSha256 = c05Sha256Text(
+          localBaseline.sceneBlocks.map((block) => block.text).join('\n'),
+        );
+      },
+    }),
+    { cryptoPort: c05CryptoPort },
+  );
+  assert.equal(sameTextElsewhere.status, 'exact-authority-ready', JSON.stringify(sameTextElsewhere, null, 2));
+  assert.equal(sameTextElsewhere.targetBlockId, 'block-google-c4-0000');
+  assert.equal(sameTextElsewhere.exactTextAnchors[0].blockId, 'block-google-c4-0000');
+});
+
+test('DOCX review preview session command: C4 runtime admits Google replacement pair with shared native revision id', async () => {
+  const bridge = await loadBridge();
+  const input = googleC4BlockAuthorityInput({
+    mutate: ({ reviewIr, localBaseline }) => {
+      for (const revision of reviewIr.textRevisions) {
+        revision.nativeRevisionId = '0';
+      }
+      for (const touched of localBaseline.sceneOrdinalAuthority.touchedParagraphs) {
+        touched.id = '0';
+      }
+    },
+  });
+  const sceneText = input.localBaseline.sceneBlocks.map((block) => block.text).join('\n');
+  const sceneId = input.localBaseline.sceneId;
+  const sourceRevisionSha256 = c05Sha256Text(sceneText);
+  const commandId = 'cmd.rtk.review.applyNonOverlapTrackedReplacements';
+  const source = {
+    projectId: 'project-google-c4-shared-native-id',
+    rootId: 'root-google-c4-shared-native-id',
+    documentId: sceneId,
+    canonicalRevision: sourceRevisionSha256,
+    workingRevision: sourceRevisionSha256,
+    sourceDigest: sourceRevisionSha256,
+  };
+  input.returnLifecycleState = 'RETURN_ANALYZED';
+  input.roundId = 'round-google-c4-shared-native-id';
+  input.requestId = 'request-google-c4-shared-native-id';
+  input.exportIdentity = 'export-google-c4-shared-native-id';
+  input.returnArtifactSha256 = c05Sha256Text('returned-google-c4-shared-native-id');
+  input.manifestDigest = c05Sha256Text('manifest-google-c4-shared-native-id');
+  input.analysisDigest = c05Sha256Text('analysis-google-c4-shared-native-id');
+  input.sourceIdentity = {
+    sourceTokenDomain: 'SOURCE_TOKEN_DOMAIN_V1',
+    writerTextDomain: 'WRITER_TEXT_DOMAIN_V1',
+    projectId: source.projectId,
+    rootId: source.rootId,
+    documentId: source.documentId,
+    canonicalRevision: source.canonicalRevision,
+    workingRevision: source.workingRevision,
+    revisionSha256: sourceRevisionSha256,
+    rawBytesSha256: sourceRevisionSha256,
+  };
+  input.currentIdentity = {
+    projectId: source.projectId,
+    rootId: source.rootId,
+    documentId: source.documentId,
+    canonicalRevision: source.canonicalRevision,
+    workingRevision: source.workingRevision,
+    revisionSha256: sourceRevisionSha256,
+    rawBytesSha256: sourceRevisionSha256,
+  };
+  input.sourceFence = c05SourceFenceBinding({ commandId, source });
+  input.writerContext = {
+    projectRoot: '/project',
+    scenePath: '/project/roman/google-c4-direct.txt',
+    scenePathBySceneId: { [sceneId]: '/project/roman/google-c4-direct.txt' },
+    projectSnapshot: {
+      projectId: source.projectId,
+      scenes: [{ sceneId, text: sceneText }],
+    },
+    revisionSession: {
+      projectId: source.projectId,
+      sessionId: 'session-google-c4-shared-native-id',
+      reviewGraph: {},
+    },
+  };
+  input.previewConfirmed = true;
+
+  const preview = bridge.buildNonOverlapTrackedReplacementRuntimePreview(input, { cryptoPort: c05CryptoPort });
+
+  assert.equal(preview.ok, true, JSON.stringify(preview, null, 2));
+  assert.equal(preview.binding.blockAuthority.targetBlockId, 'block-google-c4-0000');
+  assert.equal(preview.binding.writerInput.reviewItems.length, 1);
+  assert.deepEqual(preview.binding.writerInput.reviewItems[0].sourceRevisionIds, ['0', '0']);
+  assert.deepEqual(
+    preview.binding.writerInput.reviewItems[0].sourceRevisionRefs
+      .map((ref) => `${ref.operation}:${ref.nativeRevisionId}`)
+      .sort(),
+    ['delete:0', 'insert:0'],
+  );
+  assert.equal(preview.binding.trustedBlockRangeDigests.length, 1);
+});
+
+test('DOCX review preview session command: C4 scene ordinal capsule rejects forged or stale authority', async () => {
+  const bridge = await loadBridge();
+  const cases = [
+    [
+      'cardinality',
+      ({ localBaseline }) => {
+        localBaseline.sceneOrdinalAuthority.returnedParagraphCount = 11;
+      },
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+    ],
+    [
+      'tampered-kind',
+      ({ localBaseline }) => {
+        localBaseline.authorityKind = 'renderer-owned-scene-export-map-ordinal-v1';
+      },
+      'RTK_BLOCKED_AUTHORITY_KIND_TAMPERED',
+    ],
+    [
+      'missing-capsule',
+      ({ localBaseline }) => {
+        delete localBaseline.sceneOrdinalAuthority;
+      },
+      'RTK_BLOCKED_AUTHORITY_KIND_TAMPERED',
+    ],
+    [
+      'duplicate-target-text',
+      ({ localBaseline }) => {
+        localBaseline.sceneBlocks[0].text = '[plainTextPreserved] Body text sentinel alpha sentinel alpha.';
+        localBaseline.sceneOrdinalAuthority.currentRawSha256 = c05Sha256Text(
+          localBaseline.sceneBlocks.map((block) => block.text).join('\n'),
+        );
+      },
+      'RTK_BLOCKED_AMBIGUOUS_TEXT',
+    ],
+    [
+      'stale-current-raw-sha',
+      ({ localBaseline }) => {
+        localBaseline.sceneOrdinalAuthority.currentRawSha256 = 'sha256:bad';
+      },
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+    ],
+    [
+      'scene-id-mismatch',
+      ({ localBaseline }) => {
+        localBaseline.sceneOrdinalAuthority.sceneId = 'roman/other-scene.txt';
+      },
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+    ],
+    [
+      'target-block-document-paragraph-index-mismatch',
+      ({ localBaseline }) => {
+        localBaseline.sceneBlocks[0].documentParagraphIndex = 1;
+      },
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+    ],
+    [
+      'index-only-without-selected-block',
+      ({ localBaseline }) => {
+        delete localBaseline.blockId;
+      },
+      'RTK_MANUAL_DEGRADED_LOCATOR',
+    ],
+  ];
+
+  for (const [name, mutate, code] of cases) {
+    const result = bridge.evaluateReviewTransportBlockExactAuthorityV2(
+      googleC4BlockAuthorityInput({ mutate }),
+      { cryptoPort: c05CryptoPort },
+    );
+    assert.equal(result.status, 'manual-or-blocked', `${name}: ${JSON.stringify(result, null, 2)}`);
+    assert.equal(result.exactAuthority.uniqueTarget, false, name);
+    assert.equal(result.reasons.some((reason) => reason.code === code), true, `${name}: ${JSON.stringify(result.reasons, null, 2)}`);
+  }
+});
+
+test('DOCX review preview session command: C4 paragraph projection failures block before writer dispatch', async () => {
+  const cases = [
+    [
+      'formattingParagraphs absent',
+      ({ mutateReviewIr: (reviewIr) => { delete reviewIr.formattingParagraphs; } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_REQUIRED',
+    ],
+    [
+      'paragraph index absent',
+      ({ mutateReviewIr: (reviewIr) => {
+        delete reviewIr.formattingParagraphs[0].paragraphIndex;
+        delete reviewIr.formattingParagraphs[0].documentParagraphIndex;
+      } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_REQUIRED',
+    ],
+    [
+      '11 paragraph cardinality',
+      ({ mutateReviewIr: (reviewIr) => { reviewIr.formattingParagraphs.pop(); } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_CARDINALITY_MISMATCH',
+    ],
+    [
+      '13 paragraph cardinality',
+      ({ mutateReviewIr: (reviewIr) => {
+        reviewIr.formattingParagraphs.push({
+          paragraphIndex: 12,
+          documentParagraphIndex: 12,
+          paragraphText: 'extra paragraph',
+          trackedRevision: false,
+          bookmarkNames: [],
+          formattedRuns: [],
+        });
+      } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_CARDINALITY_MISMATCH',
+    ],
+    [
+      'reordered array index',
+      ({ mutateReviewIr: (reviewIr) => {
+        [reviewIr.formattingParagraphs[0], reviewIr.formattingParagraphs[1]] = [
+          reviewIr.formattingParagraphs[1],
+          reviewIr.formattingParagraphs[0],
+        ];
+      } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_PROJECTION_ORDER_MISMATCH',
+    ],
+    [
+      'duplicate paragraph index',
+      ({ mutateReviewIr: (reviewIr) => { reviewIr.formattingParagraphs[1].paragraphIndex = 0; } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_DUPLICATE',
+    ],
+    [
+      'out of range paragraph index',
+      ({ mutateReviewIr: (reviewIr) => { reviewIr.formattingParagraphs[11].paragraphIndex = 99; } }),
+      'RTK_RETURN_INTAKE_SCENE_PARAGRAPH_INDEX_OUT_OF_RANGE',
+    ],
+    [
+      'untouched paragraph text changed',
+      ({ mutateReviewIr: (reviewIr) => { reviewIr.formattingParagraphs[1].paragraphText = 'changed untouched paragraph'; } }),
+      'RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH',
+    ],
+    [
+      'wrong touched replacement result',
+      ({ mutateReviewIr: (reviewIr) => { reviewIr.formattingParagraphs[0].paragraphText = 'sentinel zeta'; } }),
+      'RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH',
+    ],
+    [
+      'missing revision paragraph index',
+      ({ mutateReviewIr: (reviewIr) => {
+        delete reviewIr.textRevisions[0].paragraphIndex;
+        delete reviewIr.textRevisions[0].documentParagraphIndex;
+      } }),
+      'RTK_RETURN_INTAKE_SCENE_TOUCHED_PARAGRAPH_INDEX_REQUIRED',
+    ],
+    [
+      'missing comment paragraph index',
+      ({ mutateReviewIr: (reviewIr) => {
+        delete reviewIr.commentThreads[0].paragraphIndex;
+        delete reviewIr.commentThreads[0].documentParagraphIndex;
+        delete reviewIr.commentThreads[0].anchorLocator.paragraphIndex;
+      } }),
+      'RTK_RETURN_INTAKE_SCENE_TOUCHED_PARAGRAPH_INDEX_REQUIRED',
+    ],
+    [
+      'partial delete insert pair',
+      ({ mutateReviewIr: (reviewIr) => {
+        reviewIr.textRevisions = reviewIr.textRevisions.filter((revision) => revision.operation !== 'insert');
+      } }),
+      'RTK_RETURN_INTAKE_SCENE_PARTIAL_ANCHOR',
+    ],
+    [
+      'stale scene hash',
+      ({ mutateExportMap: (exportMap) => { exportMap.scenes[0].rawSha256 = 'sha256:bad'; } }),
+      'RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_STALE',
+    ],
+  ];
+
+  for (const [name, options, expectedCode] of cases) {
+    const { result, calls } = await runGoogleC4SceneActivation(options);
+    assert.equal(
+      activationResultCodes(result).includes(expectedCode),
+      true,
+      `${name}: ${JSON.stringify(result, null, 2)}`,
+    );
+    assert.equal(
+      calls.filter((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements').length,
+      0,
+      name,
+    );
+  }
+});
+
+test('DOCX review preview session command: C4 product path accepts Google leading blank paragraph prefix only with shifted ordinal authority', async () => {
+  const shiftParagraphIndex = (value) => (Number.isSafeInteger(value) ? value + 1 : value);
+  const { result, calls, port, scenePath } = await runGoogleC4SceneActivation({
+    mutateReviewIr: (reviewIr) => {
+      for (const paragraph of reviewIr.formattingParagraphs) {
+        paragraph.paragraphIndex = shiftParagraphIndex(paragraph.paragraphIndex);
+        paragraph.documentParagraphIndex = shiftParagraphIndex(paragraph.documentParagraphIndex);
+      }
+      reviewIr.formattingParagraphs.unshift({
+        paragraphIndex: 0,
+        documentParagraphIndex: 0,
+        paragraphText: '',
+        trackedRevision: false,
+        bookmarkNames: [],
+        formattedRuns: [],
+      });
+      for (const revision of reviewIr.textRevisions) {
+        revision.paragraphIndex = shiftParagraphIndex(revision.paragraphIndex);
+        revision.documentParagraphIndex = shiftParagraphIndex(revision.documentParagraphIndex);
+      }
+      for (const thread of reviewIr.commentThreads) {
+        thread.paragraphIndex = shiftParagraphIndex(thread.paragraphIndex);
+        thread.documentParagraphIndex = shiftParagraphIndex(thread.documentParagraphIndex);
+        if (thread.anchorLocator) {
+          thread.anchorLocator.paragraphIndex = shiftParagraphIndex(thread.anchorLocator.paragraphIndex);
+        }
+      }
+    },
+  });
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.returnIntake.authenticated, true, JSON.stringify(result.returnIntake, null, 2));
+  assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
+  const textChanges = result.reviewSurface.revisionSession.reviewGraph.textChanges;
+  assert.equal(textChanges.length, 1);
+  assert.equal(textChanges[0].rtkProductPath, 'nonOverlapTrackedReplacement');
+  const applied = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
+    requestId: 'apply-google-leading-blank-prefix',
+    changeId: textChanges[0].changeId,
+  });
+  assert.equal(applied.ok, true, JSON.stringify(applied, null, 2));
+  assert.equal(applied.applied, true);
+  assert.equal(fs.readFileSync(scenePath, 'utf8'), [
+    'sentinel omega',
+    'context line 02',
+    'context line 03',
+    'context line 04',
+    'context line 05',
+    'context line 06',
+    'context line 07',
+    'context line 08',
+    'context line 09',
+    'context line 10',
+    'context line 11',
+    'context line 12',
+  ].join('\n'));
+  assert.equal(
+    calls.filter((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements').length,
+    1,
+  );
+  const applyCall = calls.find((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
+  assert.deepEqual(
+    applyCall.payload.localBaseline.sceneOrdinalAuthority.touchedParagraphs.map((item) => [
+      item.rawReturnedParagraphIndex,
+      item.documentParagraphIndex,
+      item.blockId,
+    ]),
+    [
+      [1, 0, 'block-c4-google-0001'],
+      [1, 0, 'block-c4-google-0001'],
+      [1, 0, 'block-c4-google-0001'],
+    ],
+  );
+});
+
+test('DOCX review preview session command: Google-rewritten scene bookmarks bind through main-owned exportMap ordinal authority', async () => {
+  const bridge = await loadBridge();
+  const sceneId = 'roman/google-c4-scene.txt';
+  const targetOrdinal = 0;
+  const sceneLines = [
+    'sentinel alpha',
+    'context line 02',
+    'context line 03',
+    'context line 04',
+    'context line 05',
+    'context line 06',
+    'context line 07',
+    'context line 08',
+    'context line 09',
+    'context line 10',
+    'context line 11',
+    'context line 12',
+  ];
+  const sceneText = sceneLines.join('\n');
+  const blocks = sceneExportMapBlocks(sceneId, sceneText);
+  const docx = productReviewDocxWithTrackedReplacement({
+    roundId: 'round-google-c4-scene-ordinal',
+    roundIdHex: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+    keyIdHex: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    exportId: 'export-google-c4-scene-ordinal',
+    sceneId,
+    sceneText,
+    deletedText: 'sentinel alpha',
+    insertedText: 'sentinel omega',
+    blockId: blocks[targetOrdinal].blockId,
+  });
+  const returnedBytes = googleRewrittenBookmarkReturnBytes(docx, {
+    sceneText,
+    targetOrdinal,
+  });
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-google-c4-scene-'));
+  const scenePath = path.join(tmpDir, sceneId);
+  fs.mkdirSync(path.dirname(scenePath), { recursive: true });
+  fs.writeFileSync(scenePath, sceneText, 'utf8');
+  const returnedTargetParagraphIndex = targetOrdinal;
+  const reviewIr = c05ReviewIr({
+    deleted: 'sentinel alpha',
+    inserted: 'sentinel omega',
+    groupId: 'google-c4-ordinal',
+    paragraphIndex: returnedTargetParagraphIndex,
+  });
+  reviewIr.formattingParagraphs = googleRewrittenFormattingParagraphs(sceneText, {
+    targetOrdinal,
+    deletedText: 'sentinel alpha',
+    insertedText: 'sentinel omega',
+  });
+  reviewIr.commentThreads = [{
+    threadId: 'rtk-comment-0',
+    commentId: '0',
+    authorId: 'Google Reviewer',
+    status: 'ANCHORED',
+    paragraphIndex: returnedTargetParagraphIndex,
+    documentParagraphIndex: returnedTargetParagraphIndex,
+    anchorLocator: {
+      paragraphIndex: returnedTargetParagraphIndex,
+      bookmarkNames: [],
+    },
+    createdAt: '2026-09-15T02:15:56Z',
+    updatedAt: '2026-09-15T02:15:56Z',
+    tags: ['docx-review'],
+    messages: [{
+      messageId: 'rtk-comment-0-message-1',
+      authorId: 'Google Reviewer',
+      body: 'C4 anchored UI comment on suggested replacement for Yalken review intake.',
+      createdAt: '2026-09-15T02:15:56Z',
+    }],
+  }];
+  reviewIr.commentPlacements = [{
+    placementId: 'docx-comment-placement-0',
+    threadId: 'rtk-comment-0',
+    sourceCommentId: '0',
+    quote: 'sentinel omeg',
+    targetScope: { type: 'scene', id: sceneId },
+    selector: { type: 'docx-comment-range', id: '0' },
+    anchor: { kind: 'docx-comment-range', value: 'w:comment:0' },
+    range: { from: 0, to: 'sentinel omeg'.length },
+  }];
+  const parserResult = {
+    ok: true,
+    authorityCarrier: {
+      status: 'verified-baseline-bound',
+      selectedCarrier: {
+        encoded: productAuthorityEnvelope(docx.payload, docx.secret),
+        payload: docx.payload,
+        baselineBinding: { allExpectedMatched: true },
+      },
+    },
+    exactAuthority: c05ExactAuthority(),
+    parserProfileDigest: c05Sha256Text('parser-google-c4-ordinal'),
+    analysisDigest: c05Sha256Text('analysis-google-c4-ordinal'),
+    sourceMode: 'TRACKED',
+    reviewIr,
+  };
+  const calls = [];
+  const applyHandler = bridge.createRtkNonOverlapTrackedReplacementCommandHandler({
+    cryptoPort: c05CryptoPort,
+    now: () => 1700000000000,
+  });
+  const port = instantiateDocxReviewPreviewSessionPort({
+    dispatchCommandSurfaceKernel: async (commandId, payload = {}) => {
+      calls.push({ commandId, payload: cloneJsonSafe(payload) });
+      if (commandId === 'cmd.rtk.reviewSession.importComments') {
+        return { ok: true, status: 'committed', session: { summary: { threadCount: 1 } }, storageEffects: {} };
+      }
+      assert.equal(commandId, 'cmd.rtk.review.applyNonOverlapTrackedReplacements');
+      return applyHandler(payload);
+    },
+  });
+  const sceneHash = computeHash(sceneText);
+  const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
+    toPayload(returnedBytes),
+    {
+      activeReviewDocxExportAuthorityStore: productAuthorityStoreFromDocx(docx, {
+        projectRoot: tmpDir,
+        scenePath,
+        baselineFinalText: sceneText,
+        scope: 'scene',
+        exportMap: {
+          scope: 'scene',
+          roundId: docx.payload.roundId,
+          scenes: [{
+            sceneId,
+            sceneOrdinal: 0,
+            rawSha256: docx.payload.rawSha256,
+            blocks,
+          }],
+        },
+      }),
+      runDocxReviewReturnIntakeInUtilityProcess: async (input) => wrapParserResultAsPacketResult(parserResult, {
+        returnedArtifactSha256: input?.returnedArtifactSha256,
+        yrtk2Token: docx.yrtk2.token,
+        coreManifestDigest: docx.payload.coreManifestDigest,
+      }),
+      buildMainReviewContext: async () => reviewContext({
+        projectId: 'project-google-c4-scene',
+        projectRoot: tmpDir,
+        scenePath,
+        sceneText,
+        baselineHash: sceneHash,
+        currentBaselineHash: sceneHash,
+        targetScope: { type: 'scene', id: sceneId },
+      }),
+    },
+  );
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+  assert.equal(result.returnIntake.authenticated, true);
+  assert.equal(result.nonOverlapTrackedReplacementProductPath.prepared, true, JSON.stringify(result.nonOverlapTrackedReplacementProductPath, null, 2));
+  assert.equal(result.nonOverlapTrackedReplacementProductPath.rendererAuthority, false);
+  assert.equal(result.commentProductPath.ok, true, JSON.stringify(result.commentProductPath, null, 2));
+  assert.equal(result.commentProductPath.status, 'preview-ready');
+  assert.equal(result.commentProductPath.sceneAuthorityIdentityJoin.unjoinedPlacementCount, 0);
+  assert.equal(fs.readFileSync(scenePath, 'utf8'), sceneText);
+
+  const textChanges = result.reviewSurface.revisionSession.reviewGraph.textChanges;
+  assert.equal(textChanges.length, 1);
+  assert.equal(textChanges[0].match.quote, 'sentinel alpha');
+  assert.equal(textChanges[0].replacementText, 'sentinel omega');
+  assert.equal(textChanges[0].rtkProductPath, 'nonOverlapTrackedReplacement');
+
+  const applied = await port.handleReviewSurfaceApplyExactTextChangeCommandSurface({
+    requestId: 'apply-google-c4-scene-ordinal',
+    changeId: textChanges[0].changeId,
+  });
+  assert.equal(applied.ok, true, JSON.stringify(applied, null, 2));
+  assert.equal(applied.applied, true);
+  assert.equal(applied.result.writerCalled, true);
+  assert.equal(fs.readFileSync(scenePath, 'utf8'), sceneLines.with(targetOrdinal, 'sentinel omega').join('\n'));
+  assert.equal(calls.filter((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements').length, 1);
+  const applyPayload = calls.find((call) => call.commandId === 'cmd.rtk.review.applyNonOverlapTrackedReplacements').payload;
+  assert.equal(applyPayload.localBaseline.authorityKind, 'main-owned-scene-export-map-ordinal-v1');
+  assert.equal(applyPayload.localBaseline.blockId, blocks[targetOrdinal].blockId);
+  assert.equal(applyPayload.localBaseline.sceneBlocks[targetOrdinal].documentParagraphIndex, targetOrdinal);
+  assert.equal(applyPayload.localBaseline.sceneOrdinalAuthority.targetBlockId, blocks[targetOrdinal].blockId);
+  assert.equal(applyPayload.localBaseline.sceneOrdinalAuthority.targetDocumentParagraphIndex, targetOrdinal);
+  assert.equal(applyPayload.localBaseline.sceneOrdinalAuthority.returnedParagraphCount, sceneLines.length);
+  assert.equal(applyPayload.localBaseline.sceneOrdinalAuthority.returnedGoogleBookmarkNamesAuthority, false);
+  assert.equal(applyPayload.blockExactAuthority.targetBlockId, blocks[targetOrdinal].blockId);
+  assert.equal(applyPayload.blockExactAuthority.exactTextAnchors[0].documentParagraphIndex, targetOrdinal);
+  assert.equal(applyPayload.blockExactAuthority.exactTextAnchors[0].start, 0);
+  assert.equal(applyPayload.blockExactAuthority.exactTextAnchors[0].end, 'sentinel alpha'.length);
+  assert.equal(applyPayload.blockExactAuthority.exactTextAnchors[0].sceneId, sceneId);
+  assert.equal(applyPayload.blockExactAuthority.falseExactGuards.globalTextSearchAuthority, false);
+  assert.equal(applyPayload.blockExactAuthority.falseExactGuards.fuzzyMatchAuthority, false);
 });
 
 test('DOCX review preview session command: forged renderer fields cannot manufacture C05 product authority', async () => {
@@ -2103,6 +3088,12 @@ test('DOCX review preview session command: explicit full-manuscript comment appl
         sourceCommentId: '0',
         targetScope: { type: 'scene', id: '' },
         quote: sceneText,
+      }],
+      textChanges: [{
+        changeId: 'tracked-change-comment-explicit',
+        targetScope: { type: 'scene', id: sceneId },
+        match: { quote: 'old text', blockId: 'block-1' },
+        replacementText: sceneText,
       }],
       textRevisions: [], moveRevisions: [], propertyRevisions: [], formattingDeltas: [],
       structureChanges: [], opaqueUnsupported: [],

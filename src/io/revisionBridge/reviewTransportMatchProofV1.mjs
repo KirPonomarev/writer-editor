@@ -528,7 +528,7 @@ export function recomputeAuthorityFromBijection(input = {}) {
   }));
   const directText = normalizeString(localBaseline.blockText || localBaseline.text);
   const directBlockId = normalizeString(localBaseline.blockId);
-  if (directText || directBlockId) {
+  if (directText) {
     blocks.push({
       blockId: directBlockId || targetBlockId,
       text: directText,

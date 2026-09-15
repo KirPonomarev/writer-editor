@@ -21,6 +21,19 @@ function normalizeString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizeNonNegativeInteger(value) {
+  const number = Number(value);
+  if (!Number.isSafeInteger(number) || number < 0) return -1;
+  return number;
+}
+
+function paragraphIndexFromBlockId(blockId) {
+  const match = normalizeString(blockId).match(/^block-(\d+)/u);
+  if (!match) return -1;
+  const oneBased = normalizeNonNegativeInteger(match[1]);
+  return oneBased > 0 ? oneBased - 1 : -1;
+}
+
 function stableJson(value) {
   if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
   if (isPlainObject(value)) {
@@ -112,7 +125,16 @@ function normalizeRootCommentInput(input) {
   const body = typeof input.body === 'string' ? input.body : '';
   const selectedText = typeof input.selectedText === 'string' ? input.selectedText : '';
   const sceneText = typeof input.sceneText === 'string' ? input.sceneText : '';
-  return { projectId, projectRoot, operationId, sceneId, threadId, commentId, body, selectedText, sceneText };
+  const anchor = isPlainObject(input.anchor)
+    ? {
+      sceneId: normalizeString(input.anchor.sceneId),
+      blockId: normalizeString(input.anchor.blockId),
+      paragraphIndex: normalizeNonNegativeInteger(input.anchor.paragraphIndex),
+      authoritySource: normalizeString(input.anchor.authoritySource),
+      sourceChangeId: normalizeString(input.anchor.sourceChangeId),
+    }
+    : { sceneId: '', blockId: '', paragraphIndex: -1, authoritySource: '', sourceChangeId: '' };
+  return { projectId, projectRoot, operationId, sceneId, threadId, commentId, body, selectedText, sceneText, anchor };
 }
 
 function countOccurrences(text, needle) {
@@ -142,10 +164,14 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
   if (!normalized.body.trim() || Buffer.byteLength(normalized.body, 'utf8') > ROOT_COMMENT_BODY_LIMIT) {
     return blocked('RTK_ROOT_COMMENT_BODY_INVALID', 'body');
   }
-  if (!normalized.selectedText || countOccurrences(normalized.sceneText, normalized.selectedText) !== 1) {
+  const hasBlockParagraphAuthority = normalized.anchor.blockId && normalized.anchor.paragraphIndex >= 0;
+  if (!normalized.selectedText) {
     return blocked('RTK_ROOT_COMMENT_ANCHOR_NOT_UNIQUE', 'selectedText');
   }
-  if (normalizeString(input.anchor?.sceneId) !== normalized.sceneId) {
+  if (!hasBlockParagraphAuthority && countOccurrences(normalized.sceneText, normalized.selectedText) !== 1) {
+    return blocked('RTK_ROOT_COMMENT_ANCHOR_NOT_UNIQUE', 'selectedText');
+  }
+  if (normalized.anchor.sceneId !== normalized.sceneId) {
     return blocked('RTK_ROOT_COMMENT_WRONG_SCENE', 'anchor.sceneId');
   }
   const operationDigest = sha256(stableJson({
@@ -156,6 +182,13 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
     commentId: normalized.commentId,
     body: normalized.body,
     selectedText: normalized.selectedText,
+    anchor: {
+      sceneId: normalized.anchor.sceneId,
+      blockId: normalized.anchor.blockId,
+      paragraphIndex: normalized.anchor.paragraphIndex,
+      authoritySource: normalized.anchor.authoritySource,
+      sourceChangeId: normalized.anchor.sourceChangeId,
+    },
   }));
   const port = options.port || createRtkNonTextReturnFilePort(options);
   let before;
@@ -200,7 +233,17 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
       threadId: normalized.threadId,
       sceneId: normalized.sceneId,
       status: 'open',
-      anchor: { selectedText: normalized.selectedText, selectedTextSha256: sha256(normalized.selectedText) },
+      anchor: {
+        sceneId: normalized.sceneId,
+        blockId: normalized.anchor.blockId,
+        paragraphIndex: normalized.anchor.paragraphIndex,
+        selectedText: normalized.selectedText,
+        selectedTextSha256: sha256(normalized.selectedText),
+        authoritySource: normalized.anchor.authoritySource || (
+          hasBlockParagraphAuthority ? 'scene-block-paragraph-authority' : 'unique-selected-text'
+        ),
+        sourceChangeId: normalized.anchor.sourceChangeId,
+      },
       rootCommentId: normalized.commentId,
       messages: [{ commentId: normalized.commentId, kind: 'root', body: normalized.body }],
     }],
@@ -418,6 +461,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
   const placements = new Map((Array.isArray(reviewIr.commentPlacements) ? reviewIr.commentPlacements : [])
     .filter(isPlainObject)
     .map((placement) => [normalizeString(placement.threadId), placement]));
+  const textChanges = Array.isArray(reviewIr.textChanges) ? reviewIr.textChanges.filter(isPlainObject) : [];
   const commands = [];
   const typedBlocked = [];
   for (const [threadIndex, thread] of (Array.isArray(reviewIr.commentThreads) ? reviewIr.commentThreads : []).entries()) {
@@ -463,6 +507,20 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
     const canonicalRootCommentId = `physical-comment:${sha256(stableJson({
       returnArtifactId, threadId, sourceCommentId: sourceRootCommentId, kind: 'root',
     }))}`;
+    const placementAuthority = isPlainObject(placement.sceneAuthority) ? placement.sceneAuthority : {};
+    const sourceTextChange = textChanges.find((change) => {
+      return normalizeString(change?.targetScope?.id) === sceneId
+        && typeof change?.replacementText === 'string'
+        && change.replacementText === selectedText
+        && normalizeString(change?.match?.blockId);
+    }) || null;
+    const blockId = normalizeString(placementAuthority.blockId || placement.blockId || sourceTextChange?.match?.blockId);
+    const paragraphIndex = normalizeNonNegativeInteger(
+      placementAuthority.paragraphIndex ?? placement.paragraphIndex ?? sourceTextChange?.paragraphIndex,
+    );
+    const resolvedParagraphIndex = paragraphIndex >= 0 ? paragraphIndex : paragraphIndexFromBlockId(blockId);
+    const authoritySource = normalizeString(placement.sceneAuthoritySource)
+      || (sourceTextChange ? 'rtk-non-overlap-product-replacement-authority' : '');
     commands.push({
       family: 'root_comment',
       payload: {
@@ -470,7 +528,13 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
         threadId: canonicalThreadId,
         commentId: canonicalRootCommentId,
         body: rootBody,
-        anchor: { sceneId },
+        anchor: {
+          sceneId,
+          blockId,
+          paragraphIndex: resolvedParagraphIndex,
+          authoritySource,
+          sourceChangeId: normalizeString(sourceTextChange?.changeId || sourceTextChange?.authorityCandidateId),
+        },
         returnArtifactId,
         sourceThreadId: threadId,
         sourceCommentId: sourceRootCommentId,
@@ -605,7 +669,13 @@ export function bindAuthenticatedCommentPlacementSceneAuthority(input = {}) {
       continue;
     }
     if (bound(parserSceneId)) {
-      placements.push(clone(parser));
+      placements.push({
+        ...clone(parser),
+        sceneAuthority: clone(authenticated?.sceneAuthority || parser.sceneAuthority || null),
+        sceneAuthoritySource: authenticated?.sceneAuthority
+          ? 'authenticated-candidate-export-map-placement'
+          : normalizeString(parser.sceneAuthoritySource),
+      });
       continue;
     }
     if (bound(authenticatedSceneId)) {

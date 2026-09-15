@@ -33,7 +33,7 @@
   ],
   "generatedRuntimeArtifact": {
     "path": "src/renderer/editor.bundle.js",
-    "sha256": "sha256:585ca24ab26e60e94c8402fd3f28c4ad3b08d7d7582f6da4a93f0db1552f5551",
+    "sha256": "sha256:7afd94715444f1793f5dbe631ebce894a0b355447d8d3d7d034c05a705640947",
     "binding": "DETERMINISTIC_BUILD_RENDERER_SOURCE_DIST_EQUALITY"
   },
   "authority": {

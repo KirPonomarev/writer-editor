@@ -1,6 +1,7 @@
 'use strict';
 
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -44,6 +45,36 @@ test('N1 root comment applies through typed handler, atomic recovery, reopen rea
   assert.equal(replay.status, 'replay');
   assert.equal(replay.writerCalled, false);
   assert.equal(JSON.parse(fs.readFileSync(canonicalPath, 'utf8')).events.length, 1);
+});
+
+test('N1 root comment may bind to explicit scene block paragraph authority before returned quote is in scene text', async () => {
+  const module = await import(MODULE_PATH);
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'yalken-c5v2-n1-authority-'));
+  const handler = module.createRtkRootCommentReturnCommandHandler();
+  const applied = await handler(makeInput(projectRoot, {
+    sceneText: 'A unique physical anchor lives in this chapter.',
+    selectedText: 'future returned quote',
+    anchor: {
+      sceneId: 'scene-01',
+      blockId: 'block-0001-authenticated',
+      paragraphIndex: 0,
+      authoritySource: 'rtk-non-overlap-product-replacement-authority',
+      sourceChangeId: 'change-01',
+    },
+  }));
+  assert.equal(applied.ok, true, JSON.stringify(applied, null, 2));
+  assert.equal(applied.status, 'applied');
+  const canonicalPath = path.join(projectRoot, '.yalken', 'word-review', 'non-text-return-state.v1.json');
+  const reopened = JSON.parse(fs.readFileSync(canonicalPath, 'utf8'));
+  assert.deepEqual(reopened.threads[0].anchor, {
+    sceneId: 'scene-01',
+    blockId: 'block-0001-authenticated',
+    paragraphIndex: 0,
+    selectedText: 'future returned quote',
+    selectedTextSha256: crypto.createHash('sha256').update('future returned quote', 'utf8').digest('hex'),
+    authoritySource: 'rtk-non-overlap-product-replacement-authority',
+    sourceChangeId: 'change-01',
+  });
 });
 
 test('N1 root comment decisive negatives fail closed before canonical write', async () => {

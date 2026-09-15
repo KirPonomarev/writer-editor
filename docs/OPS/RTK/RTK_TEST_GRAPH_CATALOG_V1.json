@@ -19,6 +19,7 @@
   "contractBasenames": [
     "rtk-admit01-accountable-lanes.contract.test.js",
     "rtk-canon01-ordered-projections.contract.test.js",
+    "rtk-c4-canonical-comment-product-query.contract.test.js",
     "rtk-evid01-return-evidence-packet.contract.test.js",
     "rtk-evidence-stale-green-guard.contract.test.js",
     "rtk-export01-unified-bookmark.contract.test.js",

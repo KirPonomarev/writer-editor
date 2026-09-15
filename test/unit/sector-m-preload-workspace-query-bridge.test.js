@@ -33,7 +33,8 @@ test('preload workspace query bridge: main has one query bridge handler with str
   assert.ok(source.includes('const handler = WORKSPACE_QUERY_BRIDGE_HANDLERS.get(queryId);'))
   assert.ok(source.includes('return handler(payload);'))
   assert.ok(source.includes('function handleWorkspaceReviewSurfaceQuery() {'))
-  assert.ok(source.includes('reviewSurface: attachReviewExactTextApplyReconciliationState('))
+  assert.ok(source.includes('const activeReviewSurface = attachReviewExactTextApplyReconciliationState('))
+  assert.ok(source.includes('reviewSurface: activeReviewSurface,'))
 })
 
 test('preload workspace query bridge: editor tree collab and review surface reads use query bridge only', () => {
@@ -106,7 +107,9 @@ test('preload workspace query bridge: review surface query reads active session 
   assert.ok(source.includes("currentReviewSurfacePayloadSource = 'session';"))
   assert.ok(source.includes('function attachReviewExactTextApplyReconciliationState(reviewSurface = {}, filePath = currentFilePath) {'))
   assert.ok(source.includes('readReviewExactTextApplyReconciliationsForFile(filePath)'))
-  assert.ok(source.includes('reviewSurface: attachReviewExactTextApplyReconciliationState('))
+  assert.ok(source.includes('const activeReviewSurface = attachReviewExactTextApplyReconciliationState('))
+  assert.ok(source.includes('canonicalCommentProjection.reviewSurface'))
+  assert.ok(source.includes('reviewSurface: activeReviewSurface,'))
   assert.ok(source.includes('readActiveReviewSessionReviewSurface(),'))
   assert.equal(source.includes('const derivedPayload = await buildDerivedReviewSurfacePayload();'), false)
 })

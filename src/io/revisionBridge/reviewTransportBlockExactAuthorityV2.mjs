@@ -96,14 +96,20 @@ function baselineBlocks(localBaseline, payload) {
     blockId: normalizeString(block.blockId || block.id),
     sceneId: normalizeString(block.sceneId || localBaseline.sceneId || payload.sceneId),
     text: rawString(block.text || block.rawText || block.blockText),
+    documentParagraphIndex: Number.isSafeInteger(block.documentParagraphIndex)
+      ? block.documentParagraphIndex
+      : null,
   }));
   const directText = rawString(localBaseline.blockText || localBaseline.text);
   const directBlockId = normalizeString(localBaseline.blockId);
-  if (directText || directBlockId) {
+  if (directText) {
     blocks.push({
       blockId: directBlockId || normalizeString(payload.blockId),
       sceneId: normalizeString(localBaseline.sceneId || payload.sceneId),
       text: directText,
+      documentParagraphIndex: Number.isSafeInteger(localBaseline.documentParagraphIndex)
+        ? localBaseline.documentParagraphIndex
+        : null,
     });
   }
   return blocks.filter((block) => block.blockId || block.text);
@@ -122,6 +128,228 @@ function occurrenceRanges(haystack, needle) {
     cursor = start + 1;
   }
   return ranges;
+}
+
+function revisionParagraphIndex(value) {
+  if (Number.isSafeInteger(value?.documentParagraphIndex) && value.documentParagraphIndex >= 0) {
+    return value.documentParagraphIndex;
+  }
+  if (Number.isSafeInteger(value?.paragraphIndex) && value.paragraphIndex >= 0) {
+    return value.paragraphIndex;
+  }
+  return null;
+}
+
+function commentParagraphIndex(thread) {
+  const direct = revisionParagraphIndex(thread);
+  if (direct !== null) return direct;
+  return revisionParagraphIndex(isPlainObject(thread?.anchorLocator) ? thread.anchorLocator : {});
+}
+
+function mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, groups, reviewIr, cryptoPort) {
+  const authority = isPlainObject(localBaseline.sceneOrdinalAuthority)
+    ? localBaseline.sceneOrdinalAuthority
+    : {};
+  const reasons = [];
+  const targetOrdinal = Number.isSafeInteger(authority.targetDocumentParagraphIndex)
+    ? authority.targetDocumentParagraphIndex
+    : null;
+  const blockCount = Number.isSafeInteger(authority.blockCount) ? authority.blockCount : null;
+  const returnedParagraphCount = Number.isSafeInteger(authority.returnedParagraphCount)
+    ? authority.returnedParagraphCount
+    : null;
+  const providerLeadingBlankPrefixNormalized = authority.providerLeadingBlankPrefixNormalized === true;
+  const paragraphIndexOffset = Number.isSafeInteger(authority.paragraphIndexOffset)
+    ? authority.paragraphIndexOffset
+    : 0;
+  if (authority.schemaVersion !== 'yalken.rtk.return-intake.scene-ordinal-authority.v1'
+    || authority.source !== 'main-owned-local-export-map') {
+    reasons.push(reason(
+      'RTK_BLOCKED_AUTHORITY_KIND_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority',
+      'Main-owned scene ordinal authority capsule is required for Google C4 scene export-map authority.',
+    ));
+  }
+  if (normalizeString(authority.sceneId) !== targetSceneId) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.sceneId',
+      'Scene ordinal authority scene id must match the selected scene.',
+      { expectedSceneId: targetSceneId, observedSceneId: normalizeString(authority.sceneId) },
+    ));
+  }
+  if (normalizeString(authority.targetBlockId) !== targetBlockId) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.targetBlockId',
+      'Scene ordinal authority target block must match the local selected block.',
+      { expectedBlockId: targetBlockId, observedBlockId: normalizeString(authority.targetBlockId) },
+    ));
+  }
+  const expectedReturnedParagraphCount = blocks.length + (providerLeadingBlankPrefixNormalized ? 1 : 0);
+  if (
+    blockCount !== blocks.length
+    || returnedParagraphCount !== expectedReturnedParagraphCount
+    || (providerLeadingBlankPrefixNormalized && paragraphIndexOffset !== 1)
+    || (!providerLeadingBlankPrefixNormalized && paragraphIndexOffset !== 0)
+  ) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.blockCount',
+      'Scene ordinal authority must preserve exact local and returned paragraph cardinality.',
+      {
+        blockCount,
+        returnedParagraphCount,
+        localBlockCount: blocks.length,
+        expectedReturnedParagraphCount,
+        providerLeadingBlankPrefixNormalized,
+        paragraphIndexOffset,
+      },
+    ));
+  }
+  const seenBlockIndexes = new Set();
+  for (const [index, block] of blocks.entries()) {
+    if (block.sceneId && block.sceneId !== targetSceneId) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `localBaseline.sceneBlocks.${index}.sceneId`,
+        'Scene ordinal authority blocks must all belong to the selected scene.',
+        { expectedSceneId: targetSceneId, observedSceneId: block.sceneId },
+      ));
+    }
+    if (block.documentParagraphIndex !== index || seenBlockIndexes.has(block.documentParagraphIndex)) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `localBaseline.sceneBlocks.${index}.documentParagraphIndex`,
+        'Scene ordinal authority blocks must preserve a contiguous document paragraph index sequence.',
+        { expectedDocumentParagraphIndex: index, observedDocumentParagraphIndex: block.documentParagraphIndex },
+      ));
+    }
+    seenBlockIndexes.add(block.documentParagraphIndex);
+  }
+  const currentRawSha256 = normalizeString(authority.currentRawSha256);
+  const computedRawSha256 = cryptoPort.sha256Text(blocks.map((block) => rawString(block.text)).join('\n'));
+  if (!currentRawSha256 || currentRawSha256 !== computedRawSha256) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.currentRawSha256',
+      'Scene ordinal authority current raw hash must match the local scene block baseline.',
+      { expectedRawSha256: computedRawSha256, observedRawSha256: currentRawSha256 },
+    ));
+  }
+  const targetBlock = targetOrdinal === null ? null : blocks[targetOrdinal];
+  if (!targetBlock || targetBlock.blockId !== targetBlockId) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.targetDocumentParagraphIndex',
+      'Scene ordinal authority target paragraph must select the target block.',
+      { targetOrdinal, targetBlockId },
+    ));
+  }
+  if (targetBlock && targetBlock.documentParagraphIndex !== targetOrdinal) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.targetDocumentParagraphIndex',
+      'Scene ordinal authority target block index must match the selected block document paragraph index.',
+      {
+        targetOrdinal,
+        observedDocumentParagraphIndex: targetBlock.documentParagraphIndex,
+        targetBlockId,
+      },
+    ));
+  }
+  if (authority.returnedGoogleBookmarkNamesAuthority !== false
+    || authority.globalTextSearchAuthority !== false
+    || authority.fuzzyMatchAuthority !== false) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.falseAuthorityFlags',
+      'Returned Google bookmark names, global text search, and fuzzy matching must remain non-authoritative.',
+    ));
+  }
+  const touched = Array.isArray(authority.touchedParagraphs)
+    ? authority.touchedParagraphs.filter(isPlainObject)
+    : [];
+  if (groups.length > 0 && touched.length === 0) {
+    reasons.push(reason(
+      'RTK_COMMAND_ENVELOPE_TAMPERED',
+      'localBaseline.sceneOrdinalAuthority.touchedParagraphs',
+      'Replacement authority requires touched paragraph bindings from main intake.',
+    ));
+  }
+  for (const entry of touched) {
+    if (entry.documentParagraphIndex !== targetOrdinal || normalizeString(entry.blockId) !== targetBlockId) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        'localBaseline.sceneOrdinalAuthority.touchedParagraphs',
+        'Touched returned paragraphs must bind to the selected target block.',
+        {
+          observedParagraphIndex: entry.documentParagraphIndex,
+          observedBlockId: normalizeString(entry.blockId),
+          targetOrdinal,
+          targetBlockId,
+        },
+      ));
+    }
+  }
+  const touchedKey = (kind, id) => `${kind}\n${id}`;
+  const touchedByKey = new Map();
+  for (const entry of touched) {
+    const kind = normalizeString(entry.kind);
+    const id = normalizeString(entry.id);
+    if (kind && id) touchedByKey.set(touchedKey(kind, id), entry);
+  }
+  for (const group of groups) {
+    for (const revision of Array.isArray(group.revisions) ? group.revisions : []) {
+      const operation = normalizeString(revision.operation);
+      const id = normalizeString(revision.nativeRevisionId);
+      const index = revisionParagraphIndex(revision);
+      if (index === null) {
+        reasons.push(reason(
+          'RTK_COMMAND_ENVELOPE_TAMPERED',
+          `reviewIr.textRevisions.${id || operation}.paragraphIndex`,
+          'Scene ordinal authority requires explicit paragraph indexes on paired text revisions.',
+        ));
+        continue;
+      }
+      const touchedEntry = touchedByKey.get(touchedKey(`textRevision:${operation}`, id));
+      if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== targetOrdinal) {
+        reasons.push(reason(
+          'RTK_COMMAND_ENVELOPE_TAMPERED',
+          `localBaseline.sceneOrdinalAuthority.touchedParagraphs.${id || operation}`,
+          'Scene ordinal authority touched records must correspond to the paired text revision paragraph index.',
+          { operation, id, paragraphIndex: index, targetOrdinal },
+        ));
+      }
+    }
+  }
+  for (const thread of list(reviewIr.commentThreads)) {
+    const id = normalizeString(thread.threadId || thread.commentId);
+    const index = commentParagraphIndex(thread);
+    if (index === null) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `reviewIr.commentThreads.${id || 'comment'}.paragraphIndex`,
+        'Scene ordinal authority requires explicit paragraph indexes on anchored comment threads.',
+      ));
+      continue;
+    }
+    const touchedEntry = touchedByKey.get(touchedKey('commentThread', id));
+    if (!touchedEntry || touchedEntry.rawReturnedParagraphIndex !== index || touchedEntry.documentParagraphIndex !== targetOrdinal) {
+      reasons.push(reason(
+        'RTK_COMMAND_ENVELOPE_TAMPERED',
+        `localBaseline.sceneOrdinalAuthority.touchedParagraphs.${id || 'comment'}`,
+        'Scene ordinal authority touched records must correspond to the anchored comment paragraph index.',
+        { id, paragraphIndex: index, targetOrdinal },
+      ));
+    }
+  }
+  return {
+    ok: reasons.length === 0,
+    reasons,
+    targetOrdinal,
+    targetBlock,
+  };
 }
 
 function candidateIdForGroup(group, cryptoPort) {
@@ -153,14 +381,15 @@ function buildRevisionGroups(reviewIr, cryptoPort) {
       ));
       continue;
     }
-    if (seenRevisionIds.has(id)) {
+    const operationId = `${normalizeString(revision.operation)}\n${id}`;
+    if (seenRevisionIds.has(operationId)) {
       reasons.push(reason(
         'RTK_BLOCKED_DUPLICATE_TOKEN',
         `reviewIr.textRevisions.${id}`,
-        'Duplicate native revision ids cannot be granted exact authority.',
+        'Duplicate native revision ids within the same operation cannot be granted exact authority.',
       ));
     }
-    seenRevisionIds.add(id);
+    seenRevisionIds.add(operationId);
   }
 
   const grouped = new Map();
@@ -186,6 +415,10 @@ function buildRevisionGroups(reviewIr, cryptoPort) {
       groupId,
       revisions,
       sourceRevisionIds: revisions.map((item) => normalizeString(item.nativeRevisionId)).filter(Boolean),
+      sourceRevisionRefs: revisions.map((item) => ({
+        operation: normalizeString(item.operation),
+        nativeRevisionId: normalizeString(item.nativeRevisionId),
+      })).filter((item) => item.operation && item.nativeRevisionId),
       expectedText: rawString(deletes[0]?.text),
       replacementText: rawString(inserts[0]?.text),
       supported,
@@ -271,11 +504,25 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
   const payload = selectedPayload(authorityCarrier);
   const baseAuthority = exactAuthorityFrom(input);
   const localBaseline = localBaselineFrom(input);
-  const targetBlockId = normalizeString(payload.blockId || localBaseline.blockId);
+  const localAuthorityKind = normalizeString(localBaseline.authorityKind);
+  const targetBlockId = normalizeString(
+    localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'
+      ? localBaseline.blockId
+      : (payload.blockId || localBaseline.blockId),
+  );
   const targetSceneId = normalizeString(payload.sceneId || localBaseline.sceneId);
   const blocks = baselineBlocks(localBaseline, payload);
   const matchingBlocks = blocks.filter((block) => block.blockId === targetBlockId);
   const reasons = [];
+
+  const localAuthorityKindTampered = localAuthorityKind && localAuthorityKind !== 'main-owned-scene-export-map-ordinal-v1';
+  if (localAuthorityKindTampered) {
+    reasons.push(reason(
+      'RTK_BLOCKED_AUTHORITY_KIND_TAMPERED',
+      'localBaseline.authorityKind',
+      'Scene export-map ordinal authority kind is not the authenticated main-owned capsule kind.',
+    ));
+  }
 
   if (!baseAuthority.validSignedLocator) {
     reasons.push(reason(
@@ -325,9 +572,25 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
   // ignored for these two fields so a caller cannot force a unique-baseline
   // replacement pair into MANUAL_REVIEW by lying
   // (reviewTransportBlockExactAuthorityV2.mjs doctrine, M3).
+  const mainOwnedOrdinalProof = localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'
+    ? mainOwnedSceneOrdinalAuthorityProof(localBaseline, targetSceneId, targetBlockId, blocks, grouped.groups, reviewIr, cryptoPort)
+    : null;
+  if (mainOwnedOrdinalProof) reasons.push(...mainOwnedOrdinalProof.reasons);
+  const recomputeAuthorityCarrier = localAuthorityKind === 'main-owned-scene-export-map-ordinal-v1'
+    ? {
+      ...cloneJsonSafe(authorityCarrier),
+      selectedCarrier: {
+        ...(isPlainObject(authorityCarrier.selectedCarrier) ? cloneJsonSafe(authorityCarrier.selectedCarrier) : {}),
+        payload: {
+          ...cloneJsonSafe(payload),
+          blockId: targetBlockId,
+        },
+      },
+    }
+    : authorityCarrier;
   const recomputed = recomputeAuthorityFromBijection({
     localBaseline,
-    authorityCarrier,
+    authorityCarrier: recomputeAuthorityCarrier,
     reviewIr,
   });
   let ambiguousDuplicate = matchingBlocks.length > 1 || recomputed.ambiguousDuplicate;
@@ -367,13 +630,30 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
       kind: group.kind,
       blockId: targetBlockId,
       sceneId: targetSceneId,
+      replacementGroupId: group.groupId,
       start: range.start,
       end: range.end,
       expectedTextDigest: cryptoPort.sha256Json({
         schemaVersion: RTK_REVIEW_TRANSPORT_BLOCK_EXACT_AUTHORITY_V2_SCHEMA,
         expectedText: group.expectedText,
       }),
+      selectedTextDigest: cryptoPort.sha256Json({
+        schemaVersion: RTK_REVIEW_TRANSPORT_BLOCK_EXACT_AUTHORITY_V2_SCHEMA,
+        selectedText: group.expectedText,
+      }),
+      deletedTextDigest: cryptoPort.sha256Json({
+        schemaVersion: RTK_REVIEW_TRANSPORT_BLOCK_EXACT_AUTHORITY_V2_SCHEMA,
+        deletedText: group.expectedText,
+      }),
+      insertedTextDigest: cryptoPort.sha256Json({
+        schemaVersion: RTK_REVIEW_TRANSPORT_BLOCK_EXACT_AUTHORITY_V2_SCHEMA,
+        insertedText: group.replacementText,
+      }),
+      documentParagraphIndex: Number.isSafeInteger(targetBlock?.documentParagraphIndex)
+        ? targetBlock.documentParagraphIndex
+        : null,
       sourceRevisionIds: group.sourceRevisionIds,
+      sourceRevisionRefs: group.sourceRevisionRefs,
     });
   }
 
@@ -401,6 +681,14 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
 
   if (ambiguousDuplicate) uniqueTarget = false;
   if (!allRelevantXmlSemanticsAccounted) nonOverlapping = false;
+  if (localAuthorityKindTampered) {
+    uniqueTarget = false;
+    nonOverlapping = false;
+  }
+  if (mainOwnedOrdinalProof && !mainOwnedOrdinalProof.ok) {
+    uniqueTarget = false;
+    nonOverlapping = false;
+  }
   if (!baseAuthority.validSignedLocator || !baseAuthority.sceneRevisionUnchanged || !baseAuthority.rawSha256Unchanged) {
     uniqueTarget = false;
     nonOverlapping = false;
