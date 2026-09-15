@@ -286,9 +286,46 @@ function envelopeDigestFromPreview(preview) {
     || normalizeString(preview?.binding?.writerBindingDigest);
 }
 
+function validateSceneEnvelopeExactAuthority(input, index) {
+  const authority = isPlainObject(input.exactAuthority) ? input.exactAuthority : {};
+  if (authority.nonOverlapping === false) {
+    return reason(
+      'RTK_BLOCKED_TOKEN_CONTRADICTION',
+      `sceneCommands.${index}.input.exactAuthority.nonOverlapping`,
+      'Multi-scene parent envelopes cannot promote an explicit overlapping exact-text command.',
+      { sceneIndex: index },
+    );
+  }
+  if (authority.uniqueTarget === false || authority.ambiguousDuplicate === true) {
+    return reason(
+      'RTK_BLOCKED_AMBIGUOUS_TEXT',
+      `sceneCommands.${index}.input.exactAuthority.uniqueTarget`,
+      'Multi-scene parent envelopes require unambiguous scene-local exact text authority.',
+      { sceneIndex: index },
+    );
+  }
+  if (authority.allRelevantXmlSemanticsAccounted === false) {
+    return reason(
+      'RTK_MANUAL_DEGRADED_LOCATOR',
+      `sceneCommands.${index}.input.exactAuthority.allRelevantXmlSemanticsAccounted`,
+      'Multi-scene parent envelopes require complete XML semantic accounting before coordination.',
+      { sceneIndex: index },
+    );
+  }
+  return null;
+}
+
 function normalizeSceneCommand(command, index, cryptoPort, options) {
   const requestedSceneId = normalizeString(command?.sceneId);
   const input = isPlainObject(command?.input) ? cloneJsonSafe(command.input) : cloneJsonSafe(command || {});
+  const envelopeAuthorityReason = validateSceneEnvelopeExactAuthority(input, index);
+  if (envelopeAuthorityReason) {
+    return {
+      ok: false,
+      reason: envelopeAuthorityReason,
+      preview: null,
+    };
+  }
   const preview = buildNonOverlapTrackedReplacementRuntimePreview(input, {
     ...options,
     cryptoPort,
