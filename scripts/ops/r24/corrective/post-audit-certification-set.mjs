@@ -967,6 +967,7 @@ export const R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION = Object.freeze(
   workspaceQueryRegistryPath: 'src/shared/workspaceQueryRegistry.cjs',
   mainPath: 'src/main.js',
   nonTextRuntimePath: 'src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs',
+  c02RuntimeContractPath: 'test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js',
   c4ContractPath: 'test/contracts/rtk-c4-canonical-comment-product-query.contract.test.js',
   reviewPreviewContractPath: 'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
   rootCommentContractPath: 'test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js',
@@ -975,6 +976,9 @@ export const R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION = Object.freeze(
   inventoryFileDenominator: 1472,
   admittedPaths: Object.freeze([
     'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/CORRECTIVE/TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json',
     'docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json',
     'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
     'src/core/writer-local-profile-v1.cjs',
@@ -988,13 +992,20 @@ export const R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION = Object.freeze(
     'src/main.js',
     'src/renderer/editor.bundle.js',
     'src/shared/workspaceQueryRegistry.cjs',
+    'test/contracts/r24-post-audit-certification-set.contract.test.mjs',
     'test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js',
     'test/contracts/rtk-c4-canonical-comment-product-query.contract.test.js',
+    'test/contracts/rtk-g0b-feasibility.contract.test.js',
+    'test/contracts/rtk-w1-no-write-vertical-slice.contract.test.js',
+    'test/contracts/rtk-w2-bounded-parser-review-ir.contract.test.js',
+    'test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js',
     'test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js',
+    'test/contracts/rtk-zip01-budget-crc-evidence.contract.test.js',
     'test/fixtures/revision-bridge/google-c4-native-review-returned.docx',
     'test/fixtures/revision-bridge/google-c4-native-review-returned.provenance.json',
     'test/unit/r24-wp307-writer-local-profile-integration.test.js',
     'test/unit/r24-wp307-writer-local-profile.test.js',
+    'test/unit/sector-m-preload-workspace-query-bridge.test.js',
   ].sort()),
 });
 export const R24_X01_IDEMPOTENT_CONTRACT_RECOVERY_EXPECTATION = Object.freeze({
@@ -5604,7 +5615,7 @@ export function verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({
   const returnedDocxBytes = readBytes('test/fixtures/revision-bridge/google-c4-native-review-returned.docx');
   assert(returnedDocxBytes.subarray(0, 2).toString('utf8') === 'PK', 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_DOCX_ZIP_MAGIC');
   assert(inventory.value.schemaVersion === 'R24_C1B_TEST_INVENTORY_V1' && inventory.value.totals?.all === e.inventoryFileDenominator && inventory.value.totals?.requiredSkips === 0 && inventory.value.totals?.unexplainedSkips === 0, 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_INVENTORY');
-  for (const relative of [e.c4ContractPath, e.reviewPreviewContractPath, e.rootCommentContractPath, e.profileUnitTestPath, e.profileIntegrationTestPath]) {
+  for (const relative of [e.c02RuntimeContractPath, e.c4ContractPath, e.reviewPreviewContractPath, e.rootCommentContractPath, e.profileUnitTestPath, e.profileIntegrationTestPath]) {
     const entry = inventory.value.entries.find(item => item.path === relative);
     assert(entry?.sha256 === textArtifacts.get(relative)?.digest && entry.required === true && entry.executionStatus === 'DECLARED_EXECUTABLE', 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_INVENTORY_DIGEST', relative);
   }
@@ -5613,6 +5624,7 @@ export function verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({
   const main = textArtifacts.get(e.mainPath).text;
   const profile = textArtifacts.get(e.profilePath).text;
   const runtime = textArtifacts.get(e.nonTextRuntimePath).text;
+  const c02RuntimeContract = textArtifacts.get(e.c02RuntimeContractPath).text;
   const c4Contract = textArtifacts.get(e.c4ContractPath).text;
   const verifier = textArtifacts.get(e.verifierPath).text;
   for (const token of ["RTK_NON_TEXT_RETURN_STATE: 'query.rtkNonTextReturnState'", "projection: 'rtk-non-text-return-state'"]) assert(registry.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_REGISTRY_TOKEN', token);
@@ -5620,6 +5632,7 @@ export function verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({
   for (const token of ["'cmd.project.review.openComments'"]) assert(profile.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_PROFILE_TOKEN', token);
   assert(!profile.includes("'query.rtkNonTextReturnState'"), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_PROFILE_QUERY_DENIED');
   for (const token of ['const sourceTextChange = textChanges.find', "'rtk-non-overlap-product-replacement-authority'", "'scene-block-paragraph-authority'", 'rootCommentId: normalized.commentId', 'paragraphIndex: resolvedParagraphIndex']) assert(runtime.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_RUNTIME_TOKEN', token);
+  for (const token of ['A03 C02 defers caller exact text booleans to C04 block-authority recomputation']) assert(c02RuntimeContract.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_C02_CONTRACT_TOKEN', token);
   for (const token of ['C4 activation carries text-change block authority into comment canonical apply', 'RTK_NON_TEXT_RETURN_STATE', 'rtk-non-overlap-product-replacement-authority']) assert(c4Contract.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_CONTRACT_TOKEN', token);
   for (const token of ['R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXPECTATION', 'verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException', 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXACT_ADMITTED_DELTA']) assert(verifier.includes(token), 'E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_VERIFIER_TOKEN', token);
   return {
