@@ -2264,8 +2264,10 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects stale inventor
 });
 test('C2 packaged DOCX review roundtrip profile expansion rejects stale approval hash', () => {
   const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
-  const mutatedApprovals = JSON.parse(objectFromCommit('HEAD', e.approvalsPath));
+  const historicalSha = verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD' }).candidateSha;
+  const mutatedApprovals = JSON.parse(objectFromCommit(historicalSha, e.approvalsPath));
   const mutatedApprovalsRow = mutatedApprovals.approvals.find(entry => entry.filePath === e.profilePath && approvalMatchesApprovedBy(entry, e.approvedBy));
+  assert.ok(mutatedApprovalsRow, 'historical fixture must contain the exact C2 approval');
   mutatedApprovalsRow.sha256 = '0'.repeat(64);
   const mutatedApprovalsBytes = canonicalBytes(mutatedApprovals);
   const mutatedApprovalsDigest = h(mutatedApprovalsBytes);
@@ -2274,7 +2276,7 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects stale approval
       return options.encoding === 'utf8' ? mutatedApprovalsBytes.toString('utf8') : mutatedApprovalsBytes;
     }
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const approvals = JSON.parse(objectFromCommit(historicalSha, e.pk1r1ApprovalsPath));
       const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
       row.sha256 = mutatedApprovalsDigest;
       const bytes = canonicalBytes(approvals);
@@ -2286,10 +2288,12 @@ test('C2 packaged DOCX review roundtrip profile expansion rejects stale approval
 });
 test('C2 packaged DOCX review roundtrip profile expansion rejects stale PK1R1 approval hash', () => {
   const e = C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_EXPECTATION;
+  const historicalSha = verifyC2PackagedDocxReviewRoundtripProfileExpansionPostEvaluationException({ candidateSha: 'HEAD' }).candidateSha;
   const hostileGit = (args, options = {}) => {
     if (args[0] === 'show' && typeof args[1] === 'string' && args[1].endsWith(`:${e.pk1r1ApprovalsPath}`)) {
-      const approvals = JSON.parse(objectFromCommit('HEAD', e.pk1r1ApprovalsPath));
+      const approvals = JSON.parse(objectFromCommit(historicalSha, e.pk1r1ApprovalsPath));
       const row = approvals.approvals.find(entry => entry.filePath === e.approvalsPath && approvalMatchesApprovedBy(entry, e.approvedBy));
+      assert.ok(row, 'historical fixture must contain the exact C2 PK1R1 approval');
       row.sha256 = '0'.repeat(64);
       const bytes = canonicalBytes(approvals);
       return options.encoding === 'utf8' ? bytes.toString('utf8') : bytes;

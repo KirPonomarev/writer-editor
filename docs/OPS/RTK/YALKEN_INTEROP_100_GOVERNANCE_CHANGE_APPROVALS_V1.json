@@ -250,7 +250,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:10:49.407812Z",
+      "approvedAtUtc": "2026-09-15T21:31:06.561154Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
       "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
       "evidenceStampIds": [
@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "b919a35982d6463c4d19350ae131d602f98a3ce32e9faeb3848fbb2ed6333ec0"
+      "sha256": "d1cd9e958ecd3cba1023685dfd2c5fc1bd91ea6e15c2fa2a381cc116479b491b"
     },
     {
       "approved": true,
@@ -303,7 +303,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:10:49.407812Z",
+      "approvedAtUtc": "2026-09-15T21:31:06.561154Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
       "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
       "evidenceStampIds": [
@@ -312,7 +312,7 @@
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "cfd6bd3b31fffbf2a21a381b21efe4b60246260658a4c6671b80b2139d79478d"
+      "sha256": "2a42e597bb6e26d27ac3163a4b04422a06902b0f776afd4a8272a17d195ae3f7"
     },
     {
       "approved": true,
@@ -445,7 +445,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
+      "approvedAtUtc": "2026-09-15T21:31:06.561154Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
-      "sha256": "691afb780c02322f00fdec5b69f9d34bc9283624e43e7247869c9f1d925cb798"
+      "sha256": "dd89be1ad93324a6336c250019a9711a633367864bbc33d0416a8e471d528db8"
     },
     {
       "approved": true,
