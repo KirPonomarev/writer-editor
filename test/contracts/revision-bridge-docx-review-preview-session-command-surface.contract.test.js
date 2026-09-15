@@ -1919,12 +1919,23 @@ test('DOCX review preview session command: full-manuscript return exposes only e
 
   const mainSource = readMainSource();
   const rendererSource = fs.readFileSync(path.join(REPO_ROOT, 'src', 'renderer', 'editor.js'), 'utf8');
-  const capabilitySource = fs.readFileSync(path.join(REPO_ROOT, 'src', 'renderer', 'commands', 'localCapabilityProvider.mjs'), 'utf8');
+  const entitlementLaw = require(path.join(REPO_ROOT, 'src', 'core', 'entitlement-law-v1.cjs'));
   assert.match(mainSource, /'cmd\.project\.review\.applyFullManuscriptExactTextReturn': async/u);
   assert.match(mainSource, /COMMAND_SURFACE_KERNEL_COMMAND_IDS\.RTK_REVIEW_APPLY_MULTI_SCENE_NON_OVERLAP_TRACKED_REPLACEMENTS/u);
   assert.match(rendererSource, /REVIEW_SURFACE_FULL_MANUSCRIPT_EXACT_TEXT_APPLY_COMMAND_ID/u);
   assert.match(rendererSource, /data-review-apply-full-manuscript-exact/u);
-  assert.match(capabilitySource, /cmd\.project\.review\.applyFullManuscriptExactTextReturn/u);
+  assert.ok(entitlementLaw.FREE_PRO_COMPLEXITY_COMMAND_IDS.includes('cmd.project.review.applyFullManuscriptExactTextReturn'));
+  assert.deepEqual(
+    entitlementLaw.decideCommandEntitlement('cmd.project.review.applyFullManuscriptExactTextReturn'),
+    {
+      ok: false,
+      available: false,
+      visible: false,
+      access: 'pro_complexity_surface',
+      reason: 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE',
+      commandId: 'cmd.project.review.applyFullManuscriptExactTextReturn',
+    },
+  );
 });
 
 test('DOCX review preview session command: current-profile YRTK carrier authenticates full-manuscript packet and exposes exact lane', async () => {
