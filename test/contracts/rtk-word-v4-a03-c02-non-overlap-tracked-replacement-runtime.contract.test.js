@@ -317,8 +317,6 @@ test('A03 C02 blocks unsigned stale duplicate and unconfirmed apply before write
   const cases = [
     ['unsigned', { exactAuthority: { validSignedLocator: false } }, 'RTK_MANUAL_DEGRADED_LOCATOR'],
     ['stale', { exactAuthority: { rawSha256Unchanged: false } }, 'RTK_BLOCKED_STALE_REVISION'],
-    ['ambiguous', { exactAuthority: { uniqueTarget: false } }, 'RTK_BLOCKED_AMBIGUOUS_TEXT'],
-    ['overlap', { exactAuthority: { nonOverlapping: false } }, 'RTK_BLOCKED_TOKEN_CONTRADICTION'],
   ];
 
   for (const [label, override, reason] of cases) {
@@ -344,6 +342,25 @@ test('A03 C02 blocks unsigned stale duplicate and unconfirmed apply before write
   assert.equal(unconfirmed.reason, 'RTK_WRITE_PRECONDITION_FAILED');
   assert.equal(unconfirmed.writerCalled, false);
   assert.equal(fs.readFileSync(unconfirmedProject.scenePath, 'utf8'), unconfirmedProject.sceneText);
+});
+
+test('A03 C02 defers caller exact text booleans to C04 block-authority recomputation', async () => {
+  const mod = await loadModule();
+  const project = tmpProject();
+  const preview = mod.buildNonOverlapTrackedReplacementRuntimePreview(baseInput(project, {
+    exactAuthority: {
+      uniqueTarget: false,
+      ambiguousDuplicate: true,
+      nonOverlapping: false,
+      allRelevantXmlSemanticsAccounted: false,
+    },
+  }), { cryptoPort });
+
+  assert.equal(preview.status, 'preview-ready', JSON.stringify(preview, null, 2));
+  assert.equal(preview.binding.blockAuthority.exactAuthority.uniqueTarget, true);
+  assert.equal(preview.binding.blockAuthority.exactAuthority.ambiguousDuplicate, false);
+  assert.equal(preview.binding.blockAuthority.exactAuthority.nonOverlapping, true);
+  assert.equal(preview.binding.blockAuthority.exactAuthority.allRelevantXmlSemanticsAccounted, true);
 });
 
 test('A03 C02 blocks duplicate quote inside the trusted block and wrong-scene binding', async () => {

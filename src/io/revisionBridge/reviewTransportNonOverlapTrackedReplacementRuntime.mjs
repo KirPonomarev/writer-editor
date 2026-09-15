@@ -96,11 +96,12 @@ function groupedReplacementPairs(reviewIr) {
   };
 }
 
-function validatePhysicalScope(input = {}) {
+function validatePhysicalScope(input = {}, options = {}) {
   const reviewIr = reviewIrFrom(input);
   const reasons = [];
   const authority = isPlainObject(input.exactAuthority) ? input.exactAuthority : {};
   const commandAuthority = isPlainObject(input.commandAuthority) ? input.commandAuthority : {};
+  const deferExactTextAuthority = options.deferExactTextAuthority === true;
 
   if (normalizeString(input.commandId || RTK_NON_OVERLAP_TRACKED_REPLACEMENT_COMMAND_ID) !== RTK_NON_OVERLAP_TRACKED_REPLACEMENT_COMMAND_ID) {
     reasons.push(reason('RTK_COMMAND_AUTHORITY_BLOCKED', 'commandId', 'Unexpected A03-C02 runtime command id.'));
@@ -130,14 +131,16 @@ function validatePhysicalScope(input = {}) {
   if (authority.sceneRevisionUnchanged !== true || authority.rawSha256Unchanged !== true) {
     reasons.push(reason('RTK_BLOCKED_STALE_REVISION', 'exactAuthority.baseline', 'Scene revision and raw hash guards must be unchanged.'));
   }
-  if (authority.nonOverlapping !== true) {
-    reasons.push(reason('RTK_BLOCKED_TOKEN_CONTRADICTION', 'exactAuthority.nonOverlapping', 'A03-C02 requires non-overlapping text revisions.'));
-  }
-  if (authority.uniqueTarget !== true || authority.ambiguousDuplicate === true) {
-    reasons.push(reason('RTK_BLOCKED_AMBIGUOUS_TEXT', 'exactAuthority.uniqueTarget', 'A03-C02 requires unique scene and block mapping.'));
-  }
-  if (authority.allRelevantXmlSemanticsAccounted !== true) {
-    reasons.push(reason('RTK_MANUAL_DEGRADED_LOCATOR', 'exactAuthority.allRelevantXmlSemanticsAccounted', 'All relevant Word revision XML semantics must be accounted before apply.'));
+  if (!deferExactTextAuthority) {
+    if (authority.nonOverlapping !== true) {
+      reasons.push(reason('RTK_BLOCKED_TOKEN_CONTRADICTION', 'exactAuthority.nonOverlapping', 'A03-C02 requires non-overlapping text revisions.'));
+    }
+    if (authority.uniqueTarget !== true || authority.ambiguousDuplicate === true) {
+      reasons.push(reason('RTK_BLOCKED_AMBIGUOUS_TEXT', 'exactAuthority.uniqueTarget', 'A03-C02 requires unique scene and block mapping.'));
+    }
+    if (authority.allRelevantXmlSemanticsAccounted !== true) {
+      reasons.push(reason('RTK_MANUAL_DEGRADED_LOCATOR', 'exactAuthority.allRelevantXmlSemanticsAccounted', 'All relevant Word revision XML semantics must be accounted before apply.'));
+    }
   }
   return { ok: reasons.length === 0, reasons };
 }
@@ -217,6 +220,8 @@ export function buildNonOverlapTrackedReplacementRuntimePreview(input = {}, opti
   const preflightPhysical = validatePhysicalScope({
     ...input,
     commandId: input.commandId || RTK_NON_OVERLAP_TRACKED_REPLACEMENT_COMMAND_ID,
+  }, {
+    deferExactTextAuthority: true,
   });
   if (!preflightPhysical.ok) return blockResult(preflightPhysical.reasons);
   const binding = buildReviewTransportBlockExactWriterBindingV2(input, options);
