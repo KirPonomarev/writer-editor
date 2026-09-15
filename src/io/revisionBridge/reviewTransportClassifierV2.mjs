@@ -76,7 +76,11 @@ function hasBaselineMaterial(localBaseline, authorityCarrier) {
     ? authorityCarrier.selectedCarrier
     : {};
   const payload = isPlainObject(selected.payload) ? selected.payload : {};
-  const targetBlockId = rawString(payload.blockId || localBaseline.blockId).trim();
+  const targetBlockId = rawString(
+    rawString(localBaseline.authorityKind).trim() === 'main-owned-scene-export-map-ordinal-v1'
+      ? localBaseline.blockId
+      : (payload.blockId || localBaseline.blockId),
+  ).trim();
   return targetBlockId !== '';
 }
 
@@ -84,9 +88,25 @@ function recomputeAuthorityFields(authority, input, reviewIr) {
   const localBaseline = localBaselineFrom(input);
   const authorityCarrier = authorityCarrierFrom(input);
   if (!hasBaselineMaterial(localBaseline, authorityCarrier)) return authority;
+  const selected = isPlainObject(authorityCarrier.selectedCarrier)
+    ? authorityCarrier.selectedCarrier
+    : {};
+  const payload = isPlainObject(selected.payload) ? selected.payload : {};
+  const carrierForBijection = rawString(localBaseline.authorityKind).trim() === 'main-owned-scene-export-map-ordinal-v1'
+    ? {
+      ...cloneJsonSafe(authorityCarrier),
+      selectedCarrier: {
+        ...cloneJsonSafe(selected),
+        payload: {
+          ...cloneJsonSafe(payload),
+          blockId: rawString(localBaseline.blockId).trim(),
+        },
+      },
+    }
+    : authorityCarrier;
   const recomputed = recomputeAuthorityFromBijection({
     localBaseline,
-    authorityCarrier,
+    authorityCarrier: carrierForBijection,
     reviewIr,
   });
   return {

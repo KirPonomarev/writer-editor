@@ -2180,6 +2180,89 @@ test('DOCX review preview session command: C4 block authority is derived from ma
   assert.equal(sameTextElsewhere.exactTextAnchors[0].blockId, 'block-google-c4-0000');
 });
 
+test('DOCX review preview session command: C4 runtime admits Google replacement pair with shared native revision id', async () => {
+  const bridge = await loadBridge();
+  const input = googleC4BlockAuthorityInput({
+    mutate: ({ reviewIr, localBaseline }) => {
+      for (const revision of reviewIr.textRevisions) {
+        revision.nativeRevisionId = '0';
+      }
+      for (const touched of localBaseline.sceneOrdinalAuthority.touchedParagraphs) {
+        touched.id = '0';
+      }
+    },
+  });
+  const sceneText = input.localBaseline.sceneBlocks.map((block) => block.text).join('\n');
+  const sceneId = input.localBaseline.sceneId;
+  const sourceRevisionSha256 = c05Sha256Text(sceneText);
+  const commandId = 'cmd.rtk.review.applyNonOverlapTrackedReplacements';
+  const source = {
+    projectId: 'project-google-c4-shared-native-id',
+    rootId: 'root-google-c4-shared-native-id',
+    documentId: sceneId,
+    canonicalRevision: sourceRevisionSha256,
+    workingRevision: sourceRevisionSha256,
+    sourceDigest: sourceRevisionSha256,
+  };
+  input.returnLifecycleState = 'RETURN_ANALYZED';
+  input.roundId = 'round-google-c4-shared-native-id';
+  input.requestId = 'request-google-c4-shared-native-id';
+  input.exportIdentity = 'export-google-c4-shared-native-id';
+  input.returnArtifactSha256 = c05Sha256Text('returned-google-c4-shared-native-id');
+  input.manifestDigest = c05Sha256Text('manifest-google-c4-shared-native-id');
+  input.analysisDigest = c05Sha256Text('analysis-google-c4-shared-native-id');
+  input.sourceIdentity = {
+    sourceTokenDomain: 'SOURCE_TOKEN_DOMAIN_V1',
+    writerTextDomain: 'WRITER_TEXT_DOMAIN_V1',
+    projectId: source.projectId,
+    rootId: source.rootId,
+    documentId: source.documentId,
+    canonicalRevision: source.canonicalRevision,
+    workingRevision: source.workingRevision,
+    revisionSha256: sourceRevisionSha256,
+    rawBytesSha256: sourceRevisionSha256,
+  };
+  input.currentIdentity = {
+    projectId: source.projectId,
+    rootId: source.rootId,
+    documentId: source.documentId,
+    canonicalRevision: source.canonicalRevision,
+    workingRevision: source.workingRevision,
+    revisionSha256: sourceRevisionSha256,
+    rawBytesSha256: sourceRevisionSha256,
+  };
+  input.sourceFence = c05SourceFenceBinding({ commandId, source });
+  input.writerContext = {
+    projectRoot: '/project',
+    scenePath: '/project/roman/google-c4-direct.txt',
+    scenePathBySceneId: { [sceneId]: '/project/roman/google-c4-direct.txt' },
+    projectSnapshot: {
+      projectId: source.projectId,
+      scenes: [{ sceneId, text: sceneText }],
+    },
+    revisionSession: {
+      projectId: source.projectId,
+      sessionId: 'session-google-c4-shared-native-id',
+      reviewGraph: {},
+    },
+  };
+  input.previewConfirmed = true;
+
+  const preview = bridge.buildNonOverlapTrackedReplacementRuntimePreview(input, { cryptoPort: c05CryptoPort });
+
+  assert.equal(preview.ok, true, JSON.stringify(preview, null, 2));
+  assert.equal(preview.binding.blockAuthority.targetBlockId, 'block-google-c4-0000');
+  assert.equal(preview.binding.writerInput.reviewItems.length, 1);
+  assert.deepEqual(preview.binding.writerInput.reviewItems[0].sourceRevisionIds, ['0', '0']);
+  assert.deepEqual(
+    preview.binding.writerInput.reviewItems[0].sourceRevisionRefs
+      .map((ref) => `${ref.operation}:${ref.nativeRevisionId}`)
+      .sort(),
+    ['delete:0', 'insert:0'],
+  );
+  assert.equal(preview.binding.trustedBlockRangeDigests.length, 1);
+});
+
 test('DOCX review preview session command: C4 scene ordinal capsule rejects forged or stale authority', async () => {
   const bridge = await loadBridge();
   const cases = [

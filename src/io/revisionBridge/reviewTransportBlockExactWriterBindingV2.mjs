@@ -76,13 +76,34 @@ function reviewIrFrom(input) {
   return {};
 }
 
-function revisionMap(reviewIr) {
-  const map = new Map();
-  for (const revision of list(reviewIr.textRevisions)) {
-    const id = normalizeString(revision.nativeRevisionId);
-    if (id) map.set(id, revision);
+function revisionList(reviewIr) {
+  return list(reviewIr.textRevisions);
+}
+
+function sourceRevisionRefMatches(revision, ref) {
+  return normalizeString(revision.nativeRevisionId) === normalizeString(ref.nativeRevisionId)
+    && normalizeString(revision.operation) === normalizeString(ref.operation);
+}
+
+function selectSourceRevisions(anchor, revisions) {
+  const refs = Array.isArray(anchor.sourceRevisionRefs)
+    ? anchor.sourceRevisionRefs.filter(isPlainObject)
+    : [];
+  if (refs.length > 0) {
+    return refs
+      .map((ref) => revisions.find((revision) => sourceRevisionRefMatches(revision, ref)))
+      .filter(isPlainObject);
   }
-  return map;
+  const sourceIds = Array.isArray(anchor.sourceRevisionIds)
+    ? anchor.sourceRevisionIds.map(normalizeString).filter(Boolean)
+    : [];
+  const sourceIdSet = new Set(sourceIds);
+  if (sourceIdSet.size === 0) return [];
+  const groupId = normalizeString(anchor.replacementGroupId);
+  return revisions.filter((revision) => (
+    sourceIdSet.has(normalizeString(revision.nativeRevisionId))
+    && (!groupId || normalizeString(revision.replacementGroupId) === groupId)
+  ));
 }
 
 function commandSurfaceReasons(input) {
@@ -119,7 +140,7 @@ function sourceRevisionEvidence(anchor, revisions, cryptoPort) {
   const sourceIds = Array.isArray(anchor.sourceRevisionIds)
     ? anchor.sourceRevisionIds.map(normalizeString).filter(Boolean)
     : [];
-  const source = sourceIds.map((id) => revisions.get(id)).filter(isPlainObject);
+  const source = selectSourceRevisions(anchor, revisions);
   if (anchor.kind === 'replacement-pair') {
     const deleted = source.find((item) => item.operation === 'delete');
     const inserted = source.find((item) => item.operation === 'insert');
@@ -200,7 +221,7 @@ function validateAnchorDigest(anchor, evidence, cryptoPort) {
 
 function buildTextChangesFromAnchors({ blockAuthority, reviewIr, input, cryptoPort }) {
   const reasons = [];
-  const revisions = revisionMap(reviewIr);
+  const revisions = revisionList(reviewIr);
   const anchors = list(blockAuthority.exactTextAnchors);
   const textChanges = [];
   const bindings = [];
@@ -282,6 +303,9 @@ function buildTextChangesFromAnchors({ blockAuthority, reviewIr, input, cryptoPo
       match,
       replacementText: evidence.replacementText,
       sourceRevisionIds: evidence.sourceRevisionIds,
+      sourceRevisionRefs: Array.isArray(anchor.sourceRevisionRefs)
+        ? cloneJsonSafe(anchor.sourceRevisionRefs)
+        : [],
       bindingDigest: evidence.evidenceDigest,
       authorityCandidateId: candidateId,
     });

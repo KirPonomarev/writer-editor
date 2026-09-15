@@ -369,14 +369,15 @@ function buildRevisionGroups(reviewIr, cryptoPort) {
       ));
       continue;
     }
-    if (seenRevisionIds.has(id)) {
+    const operationId = `${normalizeString(revision.operation)}\n${id}`;
+    if (seenRevisionIds.has(operationId)) {
       reasons.push(reason(
         'RTK_BLOCKED_DUPLICATE_TOKEN',
         `reviewIr.textRevisions.${id}`,
-        'Duplicate native revision ids cannot be granted exact authority.',
+        'Duplicate native revision ids within the same operation cannot be granted exact authority.',
       ));
     }
-    seenRevisionIds.add(id);
+    seenRevisionIds.add(operationId);
   }
 
   const grouped = new Map();
@@ -402,6 +403,10 @@ function buildRevisionGroups(reviewIr, cryptoPort) {
       groupId,
       revisions,
       sourceRevisionIds: revisions.map((item) => normalizeString(item.nativeRevisionId)).filter(Boolean),
+      sourceRevisionRefs: revisions.map((item) => ({
+        operation: normalizeString(item.operation),
+        nativeRevisionId: normalizeString(item.nativeRevisionId),
+      })).filter((item) => item.operation && item.nativeRevisionId),
       expectedText: rawString(deletes[0]?.text),
       replacementText: rawString(inserts[0]?.text),
       supported,
@@ -613,6 +618,7 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
       kind: group.kind,
       blockId: targetBlockId,
       sceneId: targetSceneId,
+      replacementGroupId: group.groupId,
       start: range.start,
       end: range.end,
       expectedTextDigest: cryptoPort.sha256Json({
@@ -635,6 +641,7 @@ export function evaluateReviewTransportBlockExactAuthorityV2(input = {}, options
         ? targetBlock.documentParagraphIndex
         : null,
       sourceRevisionIds: group.sourceRevisionIds,
+      sourceRevisionRefs: group.sourceRevisionRefs,
     });
   }
 

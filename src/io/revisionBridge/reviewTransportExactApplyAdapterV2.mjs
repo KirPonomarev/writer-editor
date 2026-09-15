@@ -106,20 +106,40 @@ function reviewIrFrom(input) {
   return {};
 }
 
-function textRevisionMap(reviewIr) {
-  const map = new Map();
-  for (const revision of list(reviewIr.textRevisions)) {
-    const id = normalizeString(revision.nativeRevisionId);
-    if (id) map.set(id, revision);
+function textRevisionList(reviewIr) {
+  return list(reviewIr.textRevisions);
+}
+
+function sourceRevisionRefMatches(revision, ref) {
+  return normalizeString(revision.nativeRevisionId) === normalizeString(ref.nativeRevisionId)
+    && normalizeString(revision.operation) === normalizeString(ref.operation);
+}
+
+function selectSourceRevisions(candidate, revisions) {
+  const refs = Array.isArray(candidate.sourceRevisionRefs)
+    ? candidate.sourceRevisionRefs.filter(isPlainObject)
+    : [];
+  if (refs.length > 0) {
+    return refs
+      .map((ref) => revisions.find((revision) => sourceRevisionRefMatches(revision, ref)))
+      .filter(isPlainObject);
   }
-  return map;
+  const sourceIds = Array.isArray(candidate.sourceRevisionIds)
+    ? candidate.sourceRevisionIds.map(normalizeString).filter(Boolean)
+    : [];
+  const sourceIdSet = new Set(sourceIds);
+  if (sourceIdSet.size === 0) return [];
+  const groupId = normalizeString(candidate.replacementGroupId);
+  return revisions.filter((revision) => (
+    sourceIdSet.has(normalizeString(revision.nativeRevisionId))
+    && (!groupId || normalizeString(revision.replacementGroupId) === groupId)
+  ));
 }
 
 function candidateTextEvidence(candidate, reviewIr) {
-  const revisions = textRevisionMap(reviewIr);
+  const revisions = textRevisionList(reviewIr);
   if (candidate.kind === 'replacement-pair') {
-    const sourceIds = Array.isArray(candidate.sourceRevisionIds) ? candidate.sourceRevisionIds : [];
-    const source = list(sourceIds.map((id) => revisions.get(id)));
+    const source = selectSourceRevisions(candidate, revisions);
     const deleted = source.find((item) => item.operation === 'delete');
     const inserted = source.find((item) => item.operation === 'insert');
     if (!deleted || !inserted) {
@@ -139,7 +159,8 @@ function candidateTextEvidence(candidate, reviewIr) {
       replacementText: rawString(inserted.text),
     };
   }
-  const revision = revisions.get(normalizeString(candidate.sourceRevisionIds?.[0]));
+  const source = selectSourceRevisions(candidate, revisions);
+  const revision = source.length === 1 ? source[0] : null;
   if (!revision) {
     return {
       ok: false,
