@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { C1_FRESH_PATH, readFreshC1Successor, verifyFreshC1Metadata } from '../../rtk-interop-c1-fresh-evidence.mjs';
 import { canonicalBytes } from './canonical-json.mjs';
 import { inspectExactZip } from './terminal-attestation-verifier.mjs';
 import { verifyRuleset } from './post-audit-merge-gate.mjs';
@@ -1957,6 +1958,38 @@ const hex=(value,size,label)=>assert(typeof value==='string'&&new RegExp(`^[0-9a
 const validatePath=(value)=>{assert(typeof value==='string'&&value.length>0&&value===value.normalize('NFC')&&!value.includes('\\')&&!value.startsWith('/')&&!value.split('/').some((part)=>!part||part==='.'||part==='..'),'E_ARTIFACT_PATH',String(value));return value;};
 const readJsonFile=(file)=>{const bytes=fs.readFileSync(file);assert(bytes.at(-1)===0x0a,'E_CANONICAL_LF',file);return{bytes,digest:h(bytes),value:JSON.parse(bytes)}};
 const rawDefaultGit=(args,options={})=>execFileSync('git',args,{cwd:options.cwd,encoding:options.encoding??null,maxBuffer:64*1024*1024});
+
+export function verifyFreshC1PostEvaluationException({ candidateSha = 'HEAD', git = rawDefaultGit } = {}) {
+  const resolved = String(git(['rev-parse', candidateSha])).trim();
+  try {
+    if (!String(git(['ls-tree', '--name-only', resolved, '--', C1_FRESH_PATH])).trim()) return { status: 'NOT_APPLICABLE', admittedPaths: [] };
+  }
+  catch { return { status: 'NOT_APPLICABLE', admittedPaths: [] }; }
+  readFreshC1Successor(git(['show', `${resolved}:${C1_FRESH_PATH}`]));
+  // Preserve the bounded delivery as historical governance evidence. Future
+  // runtime changes are evaluated separately by the fresh cell verifier.
+  const deliveries = String(git(['log', '--diff-filter=A', '--format=%H', resolved, '--', C1_FRESH_PATH])).trim().split('\n').filter(Boolean);
+  assert(deliveries.length === 1, 'E_C1_SUCCESSOR_DELIVERY_IDENTITY');
+  const proof = verifyFreshC1Metadata({ git, candidateSha: deliveries[0] });
+  // Shared inventory/approval carriers have their own current-byte gates.
+  // Executable proof code must retain the reviewed delivery bytes: this
+  // exception cannot give future arbitrary replacements permanent admission.
+  const sharedMetadata = new Set([
+    'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+    'docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  ]);
+  const implementationPaths = proof.admittedPaths.filter(p => !sharedMetadata.has(p));
+  const drift = new Set(String(git(['diff', '--name-only', '--no-renames', deliveries[0], resolved, '--', ...implementationPaths])).trim().split('\n').filter(Boolean));
+  const immutablePaths = [C1_FRESH_PATH, 'scripts/ops/rtk-interop-c1-fresh-evidence.mjs',
+    'scripts/ops/rtk-interop-c1-raw-readback.py', 'docs/tasks/2026-09-15--c1-fresh-product-admission.md'];
+  assert(immutablePaths.every(p => !drift.has(p)), 'E_C1_SUCCESSOR_IMPLEMENTATION_DRIFT');
+  // A later change to a shared verifier/test needs its own existing admission;
+  // the C1 exception contributes no permission for that changed path.
+  return { status: 'PASS', admittedPaths: proof.admittedPaths.filter(p => !drift.has(p)), deliverySha: deliveries[0],
+    cellAcceptanceAuthority: false, programDone: false };
+}
 const CACHEABLE_GIT_COMMANDS=new Set(['diff','ls-tree','merge-base','rev-list','rev-parse','show']);
 const FULL_SHA_RE=/^[0-9a-f]{40}$/u;
 const SHA_TREE_RE=/^[0-9a-f]{40}\^\{tree\}$/u;
@@ -7680,12 +7713,16 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   }
   const fSubstrateException = fSubstrateEnabled ? verifyFSubstratePostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
   for (const admittedPath of (fSubstrateException?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  const freshC1Exception = allowAuditCycle2Admission
+    ? verifyFreshC1PostEvaluationException({ candidateSha: resolvedCandidate, git }) : null;
+  for (const admittedPath of (freshC1Exception?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
   assert(value.requiredOrUnexplainedSkips===0&&value.programDone===false&&value.mainProductGraphNodeStarted===false,'E_TERMINAL_SCOPE');
   const verificationResult={schemaVersion:'POST_AUDIT_CERTIFICATION_SET_VERIFICATION_V1',status:'PASS',certificationSetDigest:fileDigest,evaluationSha:value.evaluationSha,evaluationTreeSha:value.evaluationTreeSha,stageCount:value.stageCount,artifactBindingDenominator:denominator,postEvaluationChangedPaths:changed,auditCycle2PostEvaluationException:cycle2Exception,wp401MainProductPostEvaluationException:wp401Exception,wp402MainProductPostEvaluationException:wp402Exception,wp403MainProductPostEvaluationException:wp403Exception,wp404MainProductPostEvaluationException:wp404Exception,wp500MainProductPostEvaluationException:wp500Exception,wp501MainProductPostEvaluationException:wp501Exception,wp501GateIntegrationPostEvaluationException:wp501GateException,wp501PerformanceIntegrationPostEvaluationException:wp501PerformanceException,wp501AuditR2CompatibilityPostEvaluationException:wp501AuditR2Exception,wp501InventoryFinalizationPostEvaluationException:wp501InventoryException,wp501TerminalExceptionPostEvaluationException:wp501TerminalException,wp502MainProductPostEvaluationException:wp502Exception,wp503MainProductPostEvaluationException:wp503Exception,wp504MainProductPostEvaluationException:wp504Exception,wp505MainProductPostEvaluationException:wp505Exception,wp506MainProductPostEvaluationException:wp506Exception,wp700MainProductPostEvaluationException:wp700Exception,wp700CiRepairPostEvaluationException:wp700CiRepairException,wp700CiRepairInventorySuccessor:wp700CiInventoryException,wp700CiRepairTemporalSuccessor:wp700CiTemporalException,wp507MainProductPostEvaluationException:wp507Exception,wp701MainProductPostEvaluationException:wp701Exception,wp702MainProductPostEvaluationException:wp702Exception,wp702CiCompatibilityPostEvaluationException:wp702CiCompatibilityException,wp702TestInventoryPostEvaluationException:wp702TestInventoryException,wp702EvidenceStampPostEvaluationException:wp702EvidenceStampException,wp702DependencyAuditPostEvaluationException:wp702DependencyAuditException,wp702Release01RebindPostEvaluationException:wp702Release01RebindException,wp702RendererBundleRebindPostEvaluationException:wp702RendererBundleRebindException,wp702Pk0SecurityPostEvaluationException:wp702Pk0SecurityException,wp702Pk0InventoryRefreshPostEvaluationException:wp702Pk0InventoryRefreshException,wp702CiMergeRefTestBindingPostEvaluationException:wp702CiMergeRefTestBindingException,wp702Wp504HistoricalSurfacePostEvaluationException:wp702Wp504HistoricalSurfaceException,wp600MainProductPostEvaluationException:wp600Exception,wp703MainProductPostEvaluationException:wp703Exception,wp601MainProductPostEvaluationException:wp601Exception,wp601HistoricalInventoryPostEvaluationException:wp601HistoricalException,wp601HistoricalInventoryAnchorRepairPostEvaluationException:wp601AnchorRepairException,wp704MainProductPostEvaluationException:wp704Exception,wp704EnvironmentRegistrationPostEvaluationException:wp704EnvException,wp705MainProductPostEvaluationException:wp705Exception,wp705HistoricalInventoryPostEvaluationException:wp705HistoricalException,wp602MainProductPostEvaluationException:wp602Exception,p01AdmissionPreparationPostEvaluationException:p01Exception,p03ContextRestorationPostEvaluationException:p03Exception,wp603MainProductPostEvaluationException:wp603Exception,wp604MainProductPostEvaluationException:wp604Exception,wp605MainProductPostEvaluationException:wp605Exception,wp710MainProductPostEvaluationException:wp710Exception,wp606MainProductPostEvaluationException:wp606Exception,wp607MainProductPostEvaluationException:wp607Exception,wp800MainProductPostEvaluationException:wp800Exception,wp801MainProductPostEvaluationException:wp801Exception,wp802MainProductPostEvaluationException:wp802Exception,wp803MainProductPostEvaluationException:wp803Exception,wp804MainProductPostEvaluationException:wp804Exception,wp805MainProductPostEvaluationException:wp805Exception,wp806MainProductPostEvaluationException:wp806Exception,wp708MainProductPostEvaluationException:wp708Exception,wp706MainProductPostEvaluationException:wp706Exception,wp707MainProductPostEvaluationException:wp707Exception,wp709MainProductPostEvaluationException:wp709Exception,pk1r1MainProductPostEvaluationException:pk1r1Exception,pre00bLifecycleReconciliationPostEvaluationException:pre00bException,pre00cNextContourSelectionPostEvaluationException:pre00cException,pre00cClosedStageCandidateVerifierRepairPostEvaluationException:pre00cClosedStageCandidateVerifierRepairException,pre00dFreshSuccessorAdmissionLeaseHandoffPostEvaluationException:pre00dFreshSuccessorAdmissionLeaseHandoffException,pre00eRecoveryCiExternalConfirmationPostEvaluationException:pre00eRecoveryCiExternalConfirmationException,pre00fPlanDeliveryPostEvaluationException:pre00fPlanDeliveryException,pre00fCurrentHeadPlanDeliveryReconciliationPostEvaluationException:pre00fCurrentHeadPlanDeliveryReconciliationException,r24Rcv00aExactToolchainEntryPointPostEvaluationException:r24Rcv00aExactToolchainEntryPointException,r24Rcv00bEffectiveStateCompilerPostEvaluationException:r24Rcv00bEffectiveStateCompilerException,r24Rcv00bSuccessorAdmissionsPostEvaluationException:r24Rcv00bSuccessorAdmissionsException,r24Rcv00cCorrectiveRegisterCrosswalkPostEvaluationException:r24Rcv00cCorrectiveRegisterCrosswalkException,r24DocxLinebreakSourceExportPostEvaluationException:r24DocxLinebreakSourceExportException,r24Rcv00dGraphDerivedSelectorPostEvaluationException:r24Rcv00dGraphDerivedSelectorException,r24Interop100GoogleDocxImportRoutePostEvaluationException:r24Interop100GoogleDocxImportRouteException,r24Interop100SafeDocxHyperlinkPreviewPostEvaluationException:r24Interop100SafeDocxHyperlinkPreviewException};
   verificationResult.r24Interop100U000cPagebreakReexportPostEvaluationException=r24Interop100U000cPagebreakReexportException;
+  verificationResult.freshC1PostEvaluationException = freshC1Exception;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;

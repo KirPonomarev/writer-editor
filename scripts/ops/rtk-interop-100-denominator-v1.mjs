@@ -4,6 +4,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { verifyFreshC1 } from './rtk-interop-c1-fresh-evidence.mjs';
 
 export const DENOMINATOR_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 export const EVIDENCE_ENVELOPE_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json';
@@ -1460,6 +1461,14 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if (Object.hasOwn(options, 'freshC1EvidenceRoot')) {
+    const specErrors = [];
+    validateSpec(spec, specErrors);
+    if (options.spec || options.envelope || options.ledger || options.requireLocalPhysicalPackage
+      || options.requireExternalEvidencePackage || options.externalEvidencePackageRoot) specErrors.push('C1_FRESH_MODE_OPTIONS_CONFLICT');
+    return verifyFreshC1({ repoRoot, evidenceRoot: options.freshC1EvidenceRoot,
+      currentHead: options.currentHead || currentGitHead(repoRoot), requiredCells: buildRequiredCells(spec), specErrors });
+  }
   const envelope = options.envelope || readInterop100EvidenceEnvelope(repoRoot);
   const ledger = options.ledger || readInterop100EvidenceLedger(repoRoot);
   const currentHead = options.currentHead || currentGitHead(repoRoot);
@@ -1476,11 +1485,13 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 }
 
 function main() {
+  const freshIndex = process.argv.indexOf('--fresh-c1-evidence-root');
   const externalEvidencePackageRootIndex = process.argv.indexOf('--external-evidence-package-root');
   const externalEvidencePackageRoot = externalEvidencePackageRootIndex === -1
     ? ''
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
+    ...(freshIndex === -1 ? {} : { freshC1EvidenceRoot: String(process.argv[freshIndex + 1] || '').trim() }),
     requireLocalPhysicalPackage: process.argv.includes('--require-local-physical-package'),
     requireExternalEvidencePackage: process.argv.includes('--require-external-evidence-package'),
     externalEvidencePackageRoot,
