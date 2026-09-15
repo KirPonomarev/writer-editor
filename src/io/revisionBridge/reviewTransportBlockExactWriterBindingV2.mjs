@@ -159,9 +159,11 @@ function sourceRevisionEvidence(anchor, revisions, cryptoPort) {
       expectedText: rawString(deleted.text),
       replacementText: rawString(inserted.text),
       sourceRevisionIds: sourceIds,
+      nativeReplacementGroupId: normalizeString(deleted.replacementGroupId || inserted.replacementGroupId),
       evidenceDigest: cryptoPort.sha256Json({
         kind: 'replacement-pair',
         sourceRevisionIds: sourceIds,
+        nativeReplacementGroupId: normalizeString(deleted.replacementGroupId || inserted.replacementGroupId),
         deletedText: rawString(deleted.text),
         insertedText: rawString(inserted.text),
       }),
@@ -304,6 +306,7 @@ function buildTextChangesFromAnchors({ blockAuthority, reviewIr, input, cryptoPo
       replacementText: evidence.replacementText,
       paragraphIndex: Number.isSafeInteger(anchor.documentParagraphIndex) ? anchor.documentParagraphIndex : null,
       documentParagraphIndex: Number.isSafeInteger(anchor.documentParagraphIndex) ? anchor.documentParagraphIndex : null,
+      nativeReplacementGroupId: evidence.nativeReplacementGroupId,
       sourceRevisionIds: evidence.sourceRevisionIds,
       sourceRevisionRefs: Array.isArray(anchor.sourceRevisionRefs)
         ? cloneJsonSafe(anchor.sourceRevisionRefs)
@@ -488,6 +491,7 @@ export function buildReviewTransportBlockExactWriterBindingV2(input = {}, option
       paragraphIndex: Number.isSafeInteger(item.paragraphIndex) ? item.paragraphIndex : null,
       documentParagraphIndex: Number.isSafeInteger(item.documentParagraphIndex) ? item.documentParagraphIndex : null,
       sourceRevisionIds: item.sourceRevisionIds,
+      nativeReplacementGroupId: item.nativeReplacementGroupId,
       authorityCandidateId: item.authorityCandidateId,
     })),
     writerAuthority: 'main-command-kernel-only',

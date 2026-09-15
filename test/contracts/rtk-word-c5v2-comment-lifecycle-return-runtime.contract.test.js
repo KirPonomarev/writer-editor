@@ -274,14 +274,22 @@ test('N2 authenticated Word return lowers root, reply and resolved state into sh
     },
     reviewIr: {
       commentThreads: [{
-        threadId: 'word-thread-01', status: 'resolved',
+        threadId: 'word-thread-01',
+        commentId: 'word-comment-01',
+        sourceCommentId: 'word-comment-01',
+        status: 'resolved',
         messages: [
           { messageId: 'word-root-01', body: 'Root from physical Word.' },
           { messageId: 'word-reply-01', body: 'Reply from physical Word.' },
         ],
       }],
       commentPlacements: [{
-        threadId: 'word-thread-01', targetScope: { type: 'scene', id: 'scene-01' }, quote: 'physical Word anchor',
+        threadId: 'word-thread-01',
+        sourceCommentId: 'word-comment-01',
+        nativeCommentId: 'word-comment-01',
+        selector: { type: 'docx-comment-range', id: 'word-comment-01' },
+        targetScope: { type: 'scene', id: 'scene-01' },
+        quote: 'physical Word anchor',
       }],
     },
   });
@@ -351,6 +359,9 @@ test('N2 cumulative returns namespace reused native Word comment identities by a
       }],
       commentPlacements: [{
         threadId: 'rtk-comment-2034',
+        sourceCommentId: '2034',
+        nativeCommentId: '2034',
+        selector: { type: 'docx-comment-range', id: '2034' },
         targetScope: { type: 'scene', id: 'scene-01' },
         quote,
       }],

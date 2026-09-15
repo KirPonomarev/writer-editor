@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "yalken.test.fixture.provenance.v2",
+  "fixture": "google-c4-pr1918-sanitized-derivative-of-physical-return.docx",
+  "fixtureKind": "SANITIZED_DERIVATIVE_OF_PHYSICAL_RETURN",
+  "sanitizedFixtureSha256": "5f806e5eb0325b91e17a947c773f6ee9683dca31cd4e0831a62cd38dd52d67ba",
+  "originalExternalArtifactSha256": "caf19c22c25a8fa77c928045f40dccb86efcd9bcdfa851f205c7e58a8a6e2a7f",
+  "sourceDocxSha256": "0cd4ad75d3fe152d1140b1f8695dde2cfc1f0a39b1eb4f7b00a16d607746ac36",
+  "capturedAt": "2026-09-15T13:40:37Z",
+  "sourceReceipt": "YALKEN_PIPELINE_V3_PHYSICAL_C4_PROOF_PR1918_fd99fe11__2026-09-15T13-39-55Z",
+  "sanitization": {
+    "type": "AUTHOR_METADATA_PSEUDONYMIZATION",
+    "authorPseudonym": "Yalken Reviewer0",
+    "identityBearingAttributesSanitized": [
+      {
+        "partName": "word/document.xml",
+        "attributeLocalName": "author",
+        "count": 2
+      },
+      {
+        "partName": "word/comments.xml",
+        "attributeLocalName": "author",
+        "count": 1
+      }
+    ],
+    "documentXmlUtf16LengthPreserved": true
+  },
+  "xmlDigestBinding": {
+    "sourceDocumentXmlSha256": "d0b1b169289b840bdf2c3df767d5afd9826567e78b6f69f1f934b44ab4ef169a",
+    "sanitizedDocumentXmlSha256": "ab991a92e661e7bb714c5440eb7f9b2f91d61bcd4d7bec65c19d0bfe7c230bde",
+    "sourceCommentsXmlSha256": "c7ef9fb30de7d611d809c07732644908f2786964f904421bab1511519652d4ea",
+    "sanitizedCommentsXmlSha256": "0c404db0a756b0db1e0140eca965014708dd7948e5f9f19db8fffd47b25ed872",
+    "sourceDocumentXmlUtf16Length": 10496,
+    "sanitizedDocumentXmlUtf16Length": 10496
+  },
+  "parserInvariant": {
+    "commentId": "0",
+    "quotedAnchorText": "omegasentinel",
+    "paragraphIndex": 0,
+    "replacementGroupId": "c1b5771a4816c512ba2a9e2ed1c1c249e7beecee833dd32151df2e803c9411c8",
+    "insertText": "sentinel omega",
+    "deleteText": "sentinel alpha",
+    "insertXmlRange": {
+      "openStart": 2123,
+      "closeEnd": 2524
+    },
+    "deleteXmlRange": {
+      "openStart": 2524,
+      "closeEnd": 3049
+    }
+  },
+  "authorityNote": "This fixture is a sanitized derivative of the external physical returned DOCX. The original external artifact remains only in the external receipt. Its original main-process HMAC secret is intentionally not stored, so authenticated apply-path tests generate an equivalent known-secret DOCX shape in-process."
+}

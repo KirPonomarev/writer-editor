@@ -4171,7 +4171,16 @@ function docxReviewPreviewSessionBuildFullManuscriptBlockScopeResolver(exportMap
     if (!sceneId) continue;
     const blocks = Array.isArray(scene?.blocks) ? scene.blocks : [];
     for (const block of blocks) {
-      const targetScope = { type: 'scene', id: sceneId };
+      const targetScope = {
+        type: 'scene',
+        id: sceneId,
+      };
+      const blockId = normalizeString(block?.blockId);
+      if (blockId) targetScope.blockId = blockId;
+      if (Number.isSafeInteger(block?.documentParagraphIndex) && block.documentParagraphIndex >= 0) {
+        targetScope.documentParagraphIndex = block.documentParagraphIndex;
+        targetScope.paragraphIndex = block.documentParagraphIndex;
+      }
       if (Number.isSafeInteger(block?.documentParagraphIndex) && block.documentParagraphIndex >= 0) {
         byDocumentParagraphIndex.set(block.documentParagraphIndex, targetScope);
       }
@@ -6038,6 +6047,13 @@ function returnEvidenceFullManuscriptRevisionAuthority(revision, fallbackTargetS
   }
   return {
     targetScope: docxReviewPreviewSessionTargetScopeOrDefault(resolvedTargetScope),
+    blockId: normalizeString(resolvedTargetScope.blockId),
+    paragraphIndex: Number.isSafeInteger(resolvedTargetScope.paragraphIndex)
+      ? resolvedTargetScope.paragraphIndex
+      : -1,
+    documentParagraphIndex: Number.isSafeInteger(resolvedTargetScope.documentParagraphIndex)
+      ? resolvedTargetScope.documentParagraphIndex
+      : -1,
     resolved: true,
   };
 }
@@ -6158,9 +6174,26 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
       textChanges.push({
         changeId: `docx-tracked-replace-${changeHash.slice(0, 16)}`,
         targetScope,
-        match: { kind: fullManuscriptSceneBound ? 'exact' : 'manual', quote: deletedText, prefix: '', suffix: '' },
+        match: {
+          kind: fullManuscriptSceneBound ? 'exact' : 'manual',
+          quote: deletedText,
+          prefix: '',
+          suffix: '',
+          ...(currentAuthority.blockId ? { blockId: currentAuthority.blockId } : {}),
+        },
         replacementText: insertedText,
         createdAt,
+        paragraphIndex: Number.isSafeInteger(currentAuthority.paragraphIndex)
+          ? currentAuthority.paragraphIndex
+          : (Number.isSafeInteger(current?.paragraphIndex)
+            ? current.paragraphIndex
+            : (Number.isSafeInteger(next?.paragraphIndex) ? next.paragraphIndex : undefined)),
+        documentParagraphIndex: Number.isSafeInteger(currentAuthority.documentParagraphIndex)
+          ? currentAuthority.documentParagraphIndex
+          : (Number.isSafeInteger(current?.documentParagraphIndex)
+            ? current.documentParagraphIndex
+            : (Number.isSafeInteger(next?.documentParagraphIndex) ? next.documentParagraphIndex : undefined)),
+        nativeReplacementGroupId: currentReplacementGroupId,
         ...(operationId ? { operationId } : {}),
         ...(fullManuscriptSceneBound
           ? {
@@ -6474,6 +6507,9 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
           paraId: blockParaId,
           textId: blockTextId,
           bookmarkNames: blockBookmark ? [blockBookmark] : [],
+          blockId: normalizeString(block.blockId),
+          paragraphIndex: Number.isSafeInteger(block.documentParagraphIndex) ? block.documentParagraphIndex : -1,
+          documentParagraphIndex: Number.isSafeInteger(block.documentParagraphIndex) ? block.documentParagraphIndex : -1,
           authority: 'authenticated-full-manuscript-export-map-paragraph-signal',
           targetScope: { type: 'scene', id: normalizeString(scene.sceneId) },
         };
@@ -6487,6 +6523,9 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
           paraId: authority.paraId,
           textId: authority.textId,
           bookmarkNames: authority.bookmarkNames,
+          blockId: authority.blockId,
+          paragraphIndex: authority.paragraphIndex,
+          documentParagraphIndex: authority.documentParagraphIndex,
           authority: authority.authority,
         }
       : null;
@@ -6517,6 +6556,16 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
           ...placement,
           targetScope: authority?.targetScope || placement.targetScope || targetScope,
           sceneAuthority: placementSceneAuthority(authority),
+          paragraphIndex: Number.isSafeInteger(thread?.paragraphIndex) ? thread.paragraphIndex : placement.paragraphIndex,
+          documentParagraphIndex: Number.isSafeInteger(thread?.documentParagraphIndex)
+            ? thread.documentParagraphIndex
+            : (Number.isSafeInteger(thread?.anchorLocator?.paragraphIndex)
+              ? thread.anchorLocator.paragraphIndex
+              : placement.documentParagraphIndex),
+          nativeCommentId: rawId,
+          relatedRevision: cloneJsonSafe(thread?.relatedRevision || null),
+          relatedReplacementGroupId: normalizeString(thread?.relatedReplacementGroup?.groupId || placement?.relatedReplacementGroupId),
+          relatedReplacementGroupMode: normalizeString(thread?.relatedReplacementGroup?.relationMode || placement?.relatedReplacementGroupMode),
           anchor: isPlainObject(placement?.anchor)
             ? placement.anchor
             : { kind: 'docx-comment-range', value: `w:comment:${rawId}` },
@@ -6548,6 +6597,16 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
           sourceCommentId: rawId,
           targetScope: authority?.targetScope || targetScope,
           sceneAuthority: placementSceneAuthority(authority),
+          paragraphIndex: Number.isSafeInteger(thread?.paragraphIndex) ? thread.paragraphIndex : undefined,
+          documentParagraphIndex: Number.isSafeInteger(thread?.documentParagraphIndex)
+            ? thread.documentParagraphIndex
+            : (Number.isSafeInteger(thread?.anchorLocator?.paragraphIndex)
+              ? thread.anchorLocator.paragraphIndex
+              : undefined),
+          nativeCommentId: rawId,
+          relatedRevision: cloneJsonSafe(thread?.relatedRevision || null),
+          relatedReplacementGroupId: normalizeString(thread?.relatedReplacementGroup?.groupId),
+          relatedReplacementGroupMode: normalizeString(thread?.relatedReplacementGroup?.relationMode),
           anchor: {
             kind: 'docx-comment-range',
             value: `w:comment:${rawId}`,

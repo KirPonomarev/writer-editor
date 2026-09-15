@@ -6781,6 +6781,7 @@ function buildPublicRtkNonOverlapTrackedReplacementRevisionSession(runtimePrevie
       sourceRevisionIds: Array.isArray(item.sourceRevisionIds)
         ? item.sourceRevisionIds.filter((id) => typeof id === 'string')
         : [],
+      nativeReplacementGroupId: docxReviewPreviewSessionDetailString(item.nativeReplacementGroupId),
       authorityCandidateId: docxReviewPreviewSessionDetailString(item.authorityCandidateId),
       rtkProductPath: 'nonOverlapTrackedReplacement',
     }))
@@ -6820,6 +6821,7 @@ function buildPublicRtkFullManuscriptNonOverlapTrackedReplacementRevisionSession
         sourceRevisionIds: Array.isArray(item.sourceRevisionIds)
           ? item.sourceRevisionIds.filter((id) => typeof id === 'string')
           : [],
+        nativeReplacementGroupId: docxReviewPreviewSessionDetailString(item.nativeReplacementGroupId),
         authorityCandidateId: docxReviewPreviewSessionDetailString(item.authorityCandidateId),
         rtkProductPath: 'fullManuscriptNonOverlapTrackedReplacement',
       });
