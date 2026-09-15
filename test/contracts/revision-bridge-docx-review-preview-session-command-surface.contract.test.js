@@ -2542,29 +2542,32 @@ test('DOCX review preview session command: C4 product path accepts Google leadin
   );
 });
 
-test('DOCX review preview session command: captured C4 source return applies exact text before root comment', async (t) => {
+test('DOCX review preview session command: C4 source return applies exact text before root comment', async () => {
   const capturedReturnedDocxPath = process.env.YALKEN_C4_CAPTURED_RETURNED_DOCX || '';
-  if (!capturedReturnedDocxPath) {
-    t.skip('set YALKEN_C4_CAPTURED_RETURNED_DOCX to run the captured C4 source return oracle');
-    return;
-  }
-  const returnedBytes = fs.readFileSync(capturedReturnedDocxPath);
-  assert.equal(
-    crypto.createHash('sha256').update(returnedBytes).digest('hex'),
-    CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256,
-  );
-
-  const { result, calls, scenePath } = await runGoogleC4SceneActivation({
-    returnedBytes,
+  const activationOptions = {
     explicitCanonicalApplyConfirmed: true,
     mutateReviewIr: (reviewIr) => {
       reviewIr.commentPlacements[0].quote = 'sentinel omega';
       reviewIr.commentPlacements[0].range = { from: 0, to: 'sentinel omega'.length };
     },
-  });
+  };
+  if (capturedReturnedDocxPath) {
+    const returnedBytes = fs.readFileSync(capturedReturnedDocxPath);
+    assert.equal(
+      crypto.createHash('sha256').update(returnedBytes).digest('hex'),
+      CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256,
+    );
+    activationOptions.returnedBytes = returnedBytes;
+  }
+
+  const { result, calls, scenePath } = await runGoogleC4SceneActivation(activationOptions);
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
-  assert.equal(result.returnIntake.returnedArtifactSha256, `sha256:${CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256}`);
+  if (capturedReturnedDocxPath) {
+    assert.equal(result.returnIntake.returnedArtifactSha256, `sha256:${CAPTURED_C4_SOURCE_RETURNED_DOCX_SHA256}`);
+  } else {
+    assert.match(result.returnIntake.returnedArtifactSha256, /^sha256:[0-9a-f]{64}$/u);
+  }
   assert.equal(result.preCommentExactTextApplyResult.ok, true, JSON.stringify(result.preCommentExactTextApplyResult, null, 2));
   assert.equal(result.preCommentExactTextApplyResult.applied, true);
   assert.equal(result.commentProductPath.ok, true, JSON.stringify(result.commentProductPath, null, 2));
