@@ -3078,6 +3078,12 @@ test('DOCX review preview session command: explicit full-manuscript comment appl
         targetScope: { type: 'scene', id: '' },
         quote: sceneText,
       }],
+      textChanges: [{
+        changeId: 'tracked-change-comment-explicit',
+        targetScope: { type: 'scene', id: sceneId },
+        match: { quote: 'old text', blockId: 'block-1' },
+        replacementText: sceneText,
+      }],
       textRevisions: [], moveRevisions: [], propertyRevisions: [], formattingDeltas: [],
       structureChanges: [], opaqueUnsupported: [],
     },

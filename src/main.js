@@ -640,6 +640,7 @@ const PROJECT_LIFECYCLE_INTEGRITY_COMMAND_ID = 'cmd.project.lifecycle.inspectInt
 const PROJECT_LIFECYCLE_PERMANENT_DELETE_COMMAND_ID = 'cmd.project.lifecycle.permanentDelete';
 const SCENE_HISTORY_QUERY_ID = WORKSPACE_QUERY_IDS.SCENE_HISTORY;
 const STAGE10_PRODUCT_STATE_QUERY_ID = WORKSPACE_QUERY_IDS.STAGE10_PRODUCT_STATE;
+const RTK_NON_TEXT_RETURN_STATE_QUERY_ID = WORKSPACE_QUERY_IDS.RTK_NON_TEXT_RETURN_STATE;
 const ATLAS_OVERVIEW_QUERY_ID = WORKSPACE_QUERY_IDS.ATLAS_OVERVIEW;
 const ATLAS_ENTITY_DOSSIER_QUERY_ID = WORKSPACE_QUERY_IDS.ATLAS_ENTITY_DOSSIER;
 const ATLAS_RELATION_DOSSIER_QUERY_ID = WORKSPACE_QUERY_IDS.ATLAS_RELATION_DOSSIER;
@@ -5411,6 +5412,9 @@ function buildDocxReviewPreviewSessionCommentShadowPayload(context, candidate, r
       semanticReturnId: semanticReturnId || `semantic:${packetHash}`,
       commentThreads,
       commentPlacements,
+      textChanges: Array.isArray(candidate?.reviewPacket?.textChanges)
+        ? cloneJsonSafe(candidate.reviewPacket.textChanges) || []
+        : [],
       textRevisions: [],
       moveRevisions: [],
       propertyRevisions: [],
@@ -5419,6 +5423,21 @@ function buildDocxReviewPreviewSessionCommentShadowPayload(context, candidate, r
       opaqueUnsupported: [],
     },
   };
+}
+
+function attachProductTextChangesToDocxCommentShadowPayload(commentShadowPayload, reviewSurface) {
+  if (!isPlainObjectValue(commentShadowPayload)) return commentShadowPayload;
+  const textChanges = Array.isArray(reviewSurface?.revisionSession?.reviewGraph?.textChanges)
+    ? reviewSurface.revisionSession.reviewGraph.textChanges.filter(isPlainObjectValue)
+    : [];
+  if (textChanges.length === 0) return commentShadowPayload;
+  const nextPayload = cloneJsonSafe(commentShadowPayload) || {};
+  const nextReviewIr = isPlainObjectValue(nextPayload.reviewIr) ? nextPayload.reviewIr : {};
+  nextPayload.reviewIr = {
+    ...nextReviewIr,
+    textChanges: cloneJsonSafe(textChanges) || [],
+  };
+  return nextPayload;
 }
 
 async function applyAuthenticatedDocxCommentProductPath({
@@ -9014,15 +9033,6 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       commentShadowPayload,
     );
   }
-  const commentProductPath = commentShadowPayload
-    ? await applyAuthenticatedDocxCommentProductPath({
-      context: activeContext,
-      commentShadowPayload,
-      requestId,
-      revisionBridge,
-      explicitCanonicalApplyConfirmed: payload?.explicitCanonicalApplyConfirmed === true,
-    })
-    : null;
   const nonOverlapTrackedReplacementProductPath =
     await prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProductPath({
       context: activeContext,
@@ -9032,6 +9042,18 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       revisionBridge,
       options,
     });
+  const commentProductPath = commentShadowPayload
+    ? await applyAuthenticatedDocxCommentProductPath({
+      context: activeContext,
+      commentShadowPayload: attachProductTextChangesToDocxCommentShadowPayload(
+        commentShadowPayload,
+        nonOverlapTrackedReplacementProductPath?.reviewSurface,
+      ),
+      requestId,
+      revisionBridge,
+      explicitCanonicalApplyConfirmed: payload?.explicitCanonicalApplyConfirmed === true,
+    })
+    : null;
   const formattingProductPath = prepareAuthenticatedDocxFormattingReturnProductPath({
     context: activeContext,
     requestId,
@@ -12590,6 +12612,162 @@ function handleWorkspaceStage10ProductStateQuery(payload = {}) {
         collaboratorApply: pendingCollaboratorEvents.length > 0,
       },
     },
+  };
+}
+
+function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
+  const messages = Array.isArray(thread.messages)
+    ? thread.messages.filter(isPlainObjectValue).map((message) => ({
+      commentId: docxReviewPreviewSessionDetailString(message.commentId),
+      kind: docxReviewPreviewSessionDetailString(message.kind),
+      body: typeof message.body === 'string' ? message.body : '',
+    }))
+    : [];
+  const rootMessage = messages.find((message) => message.kind === 'root') || messages[0] || null;
+  const anchor = isPlainObjectValue(thread.anchor) ? thread.anchor : {};
+  return {
+    threadId: docxReviewPreviewSessionDetailString(thread.threadId),
+    sceneId: docxReviewPreviewSessionDetailString(thread.sceneId),
+    status: docxReviewPreviewSessionDetailString(thread.status),
+    rootCommentId: docxReviewPreviewSessionDetailString(thread.rootCommentId),
+    rootBody: rootMessage?.body || '',
+    rootBodySha256: rootMessage?.body ? computeHash(rootMessage.body) : '',
+    anchor: {
+      sceneId: docxReviewPreviewSessionDetailString(anchor.sceneId || thread.sceneId),
+      blockId: docxReviewPreviewSessionDetailString(anchor.blockId),
+      paragraphIndex: Number.isSafeInteger(anchor.paragraphIndex) ? anchor.paragraphIndex : -1,
+      selectedText: typeof anchor.selectedText === 'string' ? anchor.selectedText : '',
+      selectedTextSha256: docxReviewPreviewSessionDetailString(anchor.selectedTextSha256),
+      authoritySource: docxReviewPreviewSessionDetailString(anchor.authoritySource),
+      sourceChangeId: docxReviewPreviewSessionDetailString(anchor.sourceChangeId),
+    },
+    messages,
+  };
+}
+
+function buildRtkNonTextReturnReviewSurfaceProjection(projection) {
+  const source = isPlainObjectValue(projection) ? projection : {};
+  const threads = Array.isArray(source.threads) ? source.threads.filter(isPlainObjectValue) : [];
+  return {
+    revisionSession: {
+      projectId: docxReviewPreviewSessionDetailString(source.projectId),
+      sessionId: 'rtk-non-text-return-state',
+      baselineHash: docxReviewPreviewSessionDetailString(source.stateSha256),
+      status: source.present === true ? 'open' : 'empty',
+      reviewGraph: {
+        commentThreads: [],
+        commentPlacements: [],
+        textChanges: [],
+        structuralChanges: [],
+        diagnosticItems: [],
+        decisionStates: [],
+      },
+    },
+    commentSurvivalPreview: {
+      schemaVersion: 'yalken.rtk.nonTextReturnState.commentSurvivalPreview.v1',
+      totalThreads: threads.length,
+      totalPlacements: threads.length,
+      preservedThreads: threads.map((thread) => ({
+        threadId: docxReviewPreviewSessionDetailString(thread.threadId),
+        author: 'Yalken canonical return',
+        createdAt: '',
+        resolved: thread.status !== 'open',
+        messages: Array.isArray(thread.messages)
+          ? thread.messages.map((message) => ({
+            messageId: docxReviewPreviewSessionDetailString(message.commentId),
+            author: 'Yalken canonical return',
+            body: typeof message.body === 'string' ? message.body : '',
+            createdAt: '',
+          }))
+          : [],
+      })),
+      placementResults: threads.map((thread, index) => ({
+        placementId: `rtk-canonical-comment-${index + 1}`,
+        threadId: docxReviewPreviewSessionDetailString(thread.threadId),
+        status: thread.status === 'open' ? 'placed' : docxReviewPreviewSessionDetailString(thread.status),
+        outcome: thread.status === 'open' ? 'PLACED' : docxReviewPreviewSessionDetailString(thread.status).toUpperCase(),
+        sceneId: docxReviewPreviewSessionDetailString(thread.sceneId),
+        targetScope: { type: 'scene', id: docxReviewPreviewSessionDetailString(thread.sceneId) },
+        anchor: cloneJsonSafe(thread.anchor) || {},
+        evaluation: {
+          reasonCodes: [
+            'RTK_CANONICAL_COMMENT_REOPENED_FROM_PRODUCT_TRUTH',
+          ],
+        },
+      })),
+      diagnostics: [],
+    },
+  };
+}
+
+function handleWorkspaceRtkNonTextReturnStateQuery(payload = {}) {
+  const requestedProjectId = normalizeStableProjectId(payload?.projectId);
+  const projectRoot = getProjectRootPath();
+  const statePath = path.join(projectRoot, '.yalken', 'word-review', 'non-text-return-state.v1.json');
+  if (!isPathInside(projectRoot, statePath)) {
+    return {
+      ok: false,
+      error: 'RTK_NON_TEXT_RETURN_STATE_PATH_BOUNDARY_VIOLATION',
+      rtkNonTextReturnState: null,
+    };
+  }
+  if (!fsSync.existsSync(statePath)) {
+    const activeProjectId = normalizeStableProjectId(activeStage10ApplicationBootstrap?.getProjectId?.()) || requestedProjectId;
+    const emptyProjection = {
+      schemaVersion: 'yalken.rtk.nonTextReturnStateProjection.v1',
+      projectId: activeProjectId,
+      present: false,
+      stateSha256: '',
+      revision: 0,
+      threadCount: 0,
+      openRootCommentCount: 0,
+      threads: [],
+    };
+    return {
+      ok: true,
+      rtkNonTextReturnState: emptyProjection,
+      reviewSurface: buildRtkNonTextReturnReviewSurfaceProjection(emptyProjection),
+    };
+  }
+
+  let raw = '';
+  let state = null;
+  try {
+    raw = fsSync.readFileSync(statePath, 'utf8');
+    state = JSON.parse(raw);
+  } catch (error) {
+    return {
+      ok: false,
+      error: 'RTK_NON_TEXT_RETURN_STATE_READ_FAILED',
+      reason: docxReviewPreviewSessionDetailString(error?.message),
+      rtkNonTextReturnState: null,
+    };
+  }
+  const stateProjectId = normalizeStableProjectId(state?.projectId);
+  if (requestedProjectId && stateProjectId && requestedProjectId !== stateProjectId) {
+    return {
+      ok: false,
+      error: 'RTK_NON_TEXT_RETURN_STATE_PROJECT_MISMATCH',
+      rtkNonTextReturnState: null,
+    };
+  }
+  const threads = Array.isArray(state?.threads)
+    ? state.threads.filter(isPlainObjectValue).map(normalizeRtkNonTextReturnThreadProjection)
+    : [];
+  const projection = {
+    schemaVersion: 'yalken.rtk.nonTextReturnStateProjection.v1',
+    projectId: stateProjectId,
+    present: true,
+    stateSha256: computeHash(raw),
+    revision: Number.isSafeInteger(state?.revision) ? state.revision : 0,
+    threadCount: threads.length,
+    openRootCommentCount: threads.filter((thread) => thread.status === 'open' && thread.rootBody).length,
+    threads,
+  };
+  return {
+    ok: true,
+    rtkNonTextReturnState: projection,
+    reviewSurface: buildRtkNonTextReturnReviewSurfaceProjection(projection),
   };
 }
 
@@ -27197,6 +27375,7 @@ const WORKSPACE_QUERY_BRIDGE_HANDLERS = new Map([
   [PROJECT_SEARCH_QUERY_ID, handleWorkspaceProjectSearchQuery],
   [SCENE_HISTORY_QUERY_ID, handleWorkspaceSceneHistoryQuery],
   [STAGE10_PRODUCT_STATE_QUERY_ID, handleWorkspaceStage10ProductStateQuery],
+  [RTK_NON_TEXT_RETURN_STATE_QUERY_ID, handleWorkspaceRtkNonTextReturnStateQuery],
   [ATLAS_OVERVIEW_QUERY_ID, handleWorkspaceAtlasOverviewQuery],
   [ATLAS_ENTITY_DOSSIER_QUERY_ID, handleWorkspaceAtlasEntityDossierQuery],
   [ATLAS_RELATION_DOSSIER_QUERY_ID, handleWorkspaceAtlasRelationDossierQuery],
@@ -27881,12 +28060,31 @@ async function directReviewSurfacePayloadStillMatchesCurrentText() {
 
 async function handleWorkspaceReviewSurfaceQuery() {
   await refreshActiveReviewExactTextUiPlan();
+  const activeReviewSurface = attachReviewExactTextApplyReconciliationState(
+    readActiveReviewSessionReviewSurface(),
+    currentFilePath,
+  );
+  if (hasReviewSurfacePayload(activeReviewSurface)) {
+    return {
+      ok: true,
+      reviewSurface: activeReviewSurface,
+    };
+  }
+  const canonicalCommentProjection = handleWorkspaceRtkNonTextReturnStateQuery();
+  if (
+    canonicalCommentProjection?.ok === true
+    && canonicalCommentProjection.rtkNonTextReturnState?.threadCount > 0
+    && isPlainObjectValue(canonicalCommentProjection.reviewSurface)
+    && hasReviewSurfacePayload(canonicalCommentProjection.reviewSurface)
+  ) {
+    return {
+      ok: true,
+      reviewSurface: canonicalCommentProjection.reviewSurface,
+    };
+  }
   return {
     ok: true,
-    reviewSurface: attachReviewExactTextApplyReconciliationState(
-      readActiveReviewSessionReviewSurface(),
-      currentFilePath,
-    ),
+    reviewSurface: activeReviewSurface,
   };
 }
 
@@ -29355,6 +29553,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.releaseClaim.execute',
   'cmd.project.review.importLocalPacket',
   'cmd.project.review.exportLocalPacket',
+  'cmd.project.review.openComments',
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.exportFullManuscriptDocxReviewPacket',
   'cmd.project.review.clearSession',
@@ -29846,6 +30045,17 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
       'cmd.project.review.openRecovery',
       { source: 'menu' },
       'open-recovery',
+    );
+    return { ok: delivered };
+  },
+  'cmd.project.review.openComments': (payload = {}) => {
+    const delivered = sendCanonicalRuntimeCommand(
+      'cmd.project.review.openComments',
+      {
+        source: docxReviewPreviewSessionDetailString(payload?.source) || 'menu',
+        requestId: docxReviewPreviewSessionDetailString(payload?.requestId),
+      },
+      'review-comment',
     );
     return { ok: delivered };
   },

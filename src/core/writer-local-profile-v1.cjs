@@ -4,6 +4,7 @@ const WRITER_LOCAL_PROFILE_SCHEMA_VERSION = 'writer-local-profile.v1';
 const WRITER_LOCAL_PROFILE_ID = 'WRITER_LOCAL_V1';
 const WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED = 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED';
 const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS = Object.freeze([
+  'cmd.project.review.openComments',
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.activateDocxReviewPreviewSession',
   'cmd.project.review.applyExactTextChangesBatch',
@@ -25,7 +26,6 @@ const OPTIONAL_COMMAND_PREFIXES = Object.freeze([
 ]);
 const OPTIONAL_QUERY_IDS = Object.freeze([
   'query.collabScopeLocal',
-  'query.reviewSurface',
   'query.stage10ProductState',
   'query.atlasOverview',
   'query.atlasEntityDossier',

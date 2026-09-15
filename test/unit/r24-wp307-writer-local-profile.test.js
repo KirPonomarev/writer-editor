@@ -89,6 +89,7 @@ test('WP307 denies optional product domains and non-survivor Review commands at 
 test('WP307 admits only owner-authorized DOCX review roundtrip survivors in packaged local profile', () => {
   const profile = createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
   assert.deepEqual(WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS, [
+    'cmd.project.review.openComments',
     'cmd.project.review.exportDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
@@ -115,7 +116,9 @@ test('WP307 denies optional queries while Writer, local history and interchange 
     'query.metadataInspector',
     'query.projectNotes',
     'query.projectSearch',
+    'query.reviewSurface',
     'query.sceneHistory',
+    'query.rtkNonTextReturnState',
   ]) {
     assert.equal(evaluateWriterLocalQueryAccess({ profile, queryId }).allowed, true, queryId);
   }
