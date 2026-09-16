@@ -70,7 +70,9 @@
     "test/contracts/revision-bridge-docx-alignment.contract.test.js",
     "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
     "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
-    "test/contracts/rtk-release01-terminal-claims.contract.test.js"
+    "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+    "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
+    "docs/tasks/2026-09-16--docx-theme-fonts.md"
   ],
   "protectedFiles": [
     {
@@ -309,7 +311,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "12ea09a147cba61a81e179a6d3b336c63cc2f68cd7fda1edbc2d3b10b8f72432"
+        "sha256": "d986de7b6ee01990fc028aec1243e6215429eabdae1d2acfdb37a0c0e530ffb7"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -421,7 +423,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-typography.contract.test.js",
-        "sha256": "0b297fc72e4e9431351a8ff820fd7c0a0a20ff41bc6ff9dbeb344edfca325711"
+        "sha256": "e7b44b3d74e60d1d225feb74ab2818f053828658001ec72ae8b706daea3fd855"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
@@ -466,6 +468,14 @@
       {
         "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
         "sha256": "88003a56a4171d5c65e7c7dd3d916e00d54ec05c2a0e4b064b7934647eadf43a"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
+        "sha256": "f58b8e4dc179cab39508b130896b00492fd4de55858807e4071dbd53c4630423"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-theme-fonts.md",
+        "sha256": "ba41f2a9d54afd7e7cdb4924589d124d7e75875f07c13934f1fd0a4be746d7c5"
       }
     ],
     "followupRepair": {
@@ -512,6 +522,11 @@
       "id": "DOCX_PARAGRAPH_ALIGNMENT_C1_V1",
       "bindingBaseSha": "370918970bd3a9b6af4f06c4830318154499b499",
       "scope": "Product repair: preserve paragraph alignment through existing structured commands, DOCX writers and readers, Word return and admitted persisted import; keep all rich text and undo. No full-STYLES credit."
+    },
+    "themeFontRepair": {
+      "id": "DOCX_THEME_FONT_IMPORT_C1_V1",
+      "bindingBaseSha": "9c14113d4230e028161554dbd2db30fd73b96301",
+      "scope": "Product repair: resolve supported Word theme selections through bounded existing readers and admitted import; preserve text, explicit overrides and loss diagnostics. No full-STYLES credit."
     }
   }
 }
