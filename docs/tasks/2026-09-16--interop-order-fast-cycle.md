@@ -137,3 +137,18 @@ push, PR, CI, merge, exact-head proof, full timings, unique credit and next step
 ## FAIL_PROTOCOL
 Keep raw evidence and timing of failed attempts. Pending acceptance/publication
 stays pending; historical and diagnostic proof never become current credit.
+
+### Serialization compatibility repair within the same contour
+The first merged physical run passed native checks but product admission rejected
+ORDER_OBSERVATION_HASH. Lab v2 sorts observation keys with localeCompare; the new
+review index uses ordinal keys. Revision 2 reproduces the qualified en-US producer
+serialization for that existing hash and preserves ordinal independent indexes.
+Raw evidence and the failed attempt remain immutable and uncredited.
+
+A zero-credit artifact replay now executes the complete raw path before delivery,
+while the official admission wrapper retains clean-current-main, Lab source,
+provider, freshness, invalidation and exact identity gates. Historical v1 policy
+bytes remain recognizable by the historical governance verifier only. The first
+delivery of each explicitly reviewed policy digest freezes its implementation;
+ordinary later drift under the same digest remains rejected. No new field, fixture,
+route, product command or runtime change is introduced by this correction.

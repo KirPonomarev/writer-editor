@@ -118,5 +118,16 @@
     "outcome": "PRESERVED",
     "newRecipeRequiresReview": true,
     "selfAuthoredPassIsEvidence": false
+  },
+  "recipeRevision": 2,
+  "supersedesPolicySha256": "6a93f52c7575f7d7d3848b2841b1c9678ab9984f756bb002d7f06c0159cc2024",
+  "observationSerialization": "LAB_V2_EN_US_LOCALE_COMPARE_KEYS",
+  "reviewIndexSerialization": "ORDINAL_JSON_KEYS",
+  "correction": {
+    "failedProductHead": "8ddc4fca57a6f6f14afb81de83dd277f5750bfd2",
+    "failedRunId": "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME__2026-09-16T02-10-12-643Z",
+    "failure": "ORDER_OBSERVATION_HASH",
+    "acceptedCreditBeforeRepair": 0,
+    "scope": "Reproduce the pinned Lab producer serialization; preserve all raw semantic and authority checks; read-only artifact replay has zero admission credit."
   }
 }

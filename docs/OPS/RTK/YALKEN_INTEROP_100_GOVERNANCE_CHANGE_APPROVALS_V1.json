@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "877ca7565d5ee80ed4e1dee16aee9cda2468f2a67b63cb3e6729289bafb5ad97"
+      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
+      "sha256": "a575cdd650e483624efe5b75ff4ea132b1074ae1c976b18711a1ba147ba25e11"
     },
     {
       "approved": true,
@@ -316,12 +316,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "cd91eeba32378bdadf4cb66e3c3b17b9d613469f6fc578edbeda76d32dd9a9a0"
+      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
+      "sha256": "3764d84e85692d20d15f592d2fc4a2bb6f633519944f9409536d0a682830b83e"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "3b91df1f5646b9a56dd67881d2ece4cd03c6b08dbfe52378058d0347c54a5da0"
+      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
+      "sha256": "d90afd8d989000093f4c19e122b127a1454adb8d91c4064201b29cafa8464a5b"
     },
     {
       "approved": true,
@@ -586,30 +586,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "docs/tasks/2026-09-16--interop-order-fast-cycle.md",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "67fd1500ec6bcd043d39b555bbab6913fc40bf4bd85f843964bcb0f548a61b70"
+      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
+      "sha256": "d20105f4c086c29387befa8aafe7445955cf946a8ac3e0cd90e16123e4b2b1c7"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "6a93f52c7575f7d7d3848b2841b1c9678ab9984f756bb002d7f06c0159cc2024"
+      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
+      "sha256": "d7ecbbb579d37de7be706c059760eb36e5f6acde8c48a5dd4f0b05cb9fe347d4"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-order-c1.mjs",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "633332b6ba88a0681b0e6910c571d0ab3a707dd4d070a473f88bb5ee58a090cb"
+      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
+      "sha256": "b5ec996585b18086b009312f9056be3caf697a9c75619fb1fd2ef8eaeb4556b5"
     },
     {
       "approved": true,

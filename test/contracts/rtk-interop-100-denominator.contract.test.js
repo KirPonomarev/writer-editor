@@ -1192,12 +1192,12 @@ const assert=require('node:assert/strict'), fs=require('node:fs'), path=require(
 const {createHash}=require('node:crypto'), {spawnSync}=require('node:child_process');
 let ORDER_CELL,ORDER_POLICY_PATH,ORDER_POLICY_SHA256,ORDER_ADMITTED_PATHS,ORDER_BASE,ORDER_BASE_TREE,
     validateOrderRunId,selectOrderObservation,validateOrderAcceptance,stableOrderJson,readOrderFile,
-    readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1,verifyInterop100,run;
+    readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1,hashOrderObservation,verifyInterop100,run;
 const ready=Promise.all([import('../../scripts/ops/rtk-interop-order-c1.mjs'),
   import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs')]).then(([order,denominator])=>{
   ({ORDER_CELL,ORDER_POLICY_PATH,ORDER_POLICY_SHA256,ORDER_ADMITTED_PATHS,ORDER_BASE,ORDER_BASE_TREE,
     validateOrderRunId,selectOrderObservation,validateOrderAcceptance,stableOrderJson,readOrderFile,
-    readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1}=order);
+    readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1,hashOrderObservation}=order);
   verifyInterop100=denominator.verifyInterop100;
   run=ORDER_CELL+'__2026-09-16T00-00-00-000Z';
 });
@@ -1205,6 +1205,23 @@ const test=(name,fn)=>rootTest(name,async()=>{await ready;return fn();});
 const root=path.resolve(__dirname,'../..');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const policyBytes=()=>fs.readFileSync(path.join(root,ORDER_POLICY_PATH));
+
+test('Lab observation hash retains locale ordering while review indexes remain ordinal',()=>{
+  const vector={_z:4,a:1,A:2,'a-':3,nested:{z:5,Z:6,a2:7,a10:8}};
+  const expected='eae9d418eba96b26893e9904e9c0305395521d8e495e513b1eadef1c20fbc09f';
+  assert.equal(hashOrderObservation(vector),expected);
+  assert.notEqual(hash(stableOrderJson(vector)),expected);
+  assert.notEqual(hashOrderObservation({...vector,a:2,A:1}),expected);
+});
+
+test('retired policy can verify historical governance but cannot authorize current raw inspection',()=>{
+  const bytes=require('node:child_process').execFileSync('git',['show',
+    '8ddc4fca57a6f6f14afb81de83dd277f5750bfd2:'+ORDER_POLICY_PATH],{cwd:root});
+  assert.throws(()=>readOrderPolicy(bytes),/POLICY_PIN/);
+  assert.equal(readOrderPolicy(bytes,{allowLegacy:true}).cellId,ORDER_CELL);
+  const old=verifyOrderPostEvaluation({candidateSha:'8ddc4fca57a6f6f14afb81de83dd277f5750bfd2'});
+  assert.equal(old.status,'PASS');assert.equal(old.cellAcceptanceAuthority,false);
+});
 
 test('recipe pins source, denominator, seven oracles and six ORDER conditions',()=>{
   const p=readOrderPolicy(policyBytes());
