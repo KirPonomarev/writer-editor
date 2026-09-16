@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "48e33b57a0b859e4e6aa1448b47a9f4422d4cd550d6f322e8313514f49e57ad9"
+      "sha256": "5f546362c27ed055a13fbe3cea84ae8c40b9f8744aba5dbe100849e7d6544926"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "a72cb24516f342b74bfc7747c4981d5a6719703ded0adcbffce7ab9064824197"
+      "sha256": "e15f94990cc6fbd60838db52e60248f3b806de9d199b1cc78e55b980fbbd051d"
     },
     {
       "approved": true,
