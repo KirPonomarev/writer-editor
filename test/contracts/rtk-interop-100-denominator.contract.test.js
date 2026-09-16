@@ -1184,3 +1184,137 @@ test('governance approval state rejects approval digest tampering for admission 
     fs.rmSync(repoRoot, { recursive: true, force: true });
   }
 });
+
+// Bounded ORDER C1 recipe: same contract inventory file, independent assertions.
+test('ORDER C1 bounded recipe contracts', async (t) => {
+const pending=[];
+const test=(name,fn)=>pending.push(t.test(name,fn));
+const {default:assert} = await import('node:assert/strict');
+const {default:fs} = await import('node:fs');
+const {default:path} = await import('node:path');
+const {default:os} = await import('node:os');
+const {createHash} = await import('node:crypto');
+const {spawnSync} = await import('node:child_process');
+const {fileURLToPath} = await import('node:url');
+const {ORDER_CELL,ORDER_POLICY_PATH,ORDER_POLICY_SHA256,ORDER_ADMITTED_PATHS,ORDER_BASE,ORDER_BASE_TREE,
+  validateOrderRunId,selectOrderObservation,validateOrderAcceptance,stableOrderJson,readOrderFile,
+  readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1} = await import('../../scripts/ops/rtk-interop-order-c1.mjs');
+const {verifyInterop100} = await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
+
+const root=path.resolve(__dirname,'../..');
+const hash=b=>createHash('sha256').update(b).digest('hex');
+const run=ORDER_CELL+'__2026-09-16T00-00-00-000Z';
+const policyBytes=()=>fs.readFileSync(path.join(root,ORDER_POLICY_PATH));
+
+test('recipe pins source, denominator, seven oracles and six ORDER conditions',()=>{
+  const p=readOrderPolicy(policyBytes());
+  assert.equal(p.requiredOracles.length,7); assert.equal(p.requiredSubcases.length,6);
+  assert.equal(p.rawCheckerSha256,hash(fs.readFileSync(path.join(root,'scripts/ops/rtk-interop-order-c1-readback.py'))));
+  assert.equal(p.literalCheckerSha256,hash(fs.readFileSync(path.join(root,'scripts/ops/rtk-interop-c1-raw-readback.py'))));
+  assert.throws(()=>readOrderPolicy(Buffer.from(JSON.stringify({...p,cellId:'TEXT'}))),/POLICY_PIN/);
+});
+
+test('exact run selection rejects traversal, unknown recipe, duplicate observation and latest fallback',()=>{
+  assert.equal(validateOrderRunId(run),run);
+  for(const bad of [undefined,'',run+'/../x',run+'\\x','TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME__x']) assert.throws(()=>validateOrderRunId(bad),/RUN_ID/);
+  const row={type:'PHYSICAL_OBSERVATION',runId:run,cellId:ORDER_CELL};
+  assert.equal(selectOrderObservation([row,{...row,runId:run+'later'}],run),row);
+  assert.throws(()=>selectOrderObservation([row,row],run),/EXACT_OBSERVATION/);
+  assert.throws(()=>selectOrderObservation([{...row,runId:run+'later'}],run),/EXACT_OBSERVATION/);
+});
+
+test('acceptance is bound to independently recomputed index, run and product identity',()=>{
+  const review={runId:run,observationArtifactHash:'source',productHead:'a'.repeat(40),productTree:'b'.repeat(40)};
+  const entry={type:'CELL_ACCEPTED',admissionMode:'MACHINE_RECIPE_REVIEW_V1',status:'PASS',cellId:ORDER_CELL,
+    sourceRunId:run,sourceObservationHash:'source',productHead:review.productHead,productTree:review.productTree,
+    policySha256:ORDER_POLICY_SHA256,reviewIndexSha256:hash(Buffer.from(stableOrderJson(review)+'\n'))};
+  assert.equal(validateOrderAcceptance(entry,review),true);
+  for(const key of ['admissionMode','cellId','sourceRunId','sourceObservationHash','productHead','productTree','policySha256','reviewIndexSha256'])
+    assert.throws(()=>validateOrderAcceptance({...entry,[key]:'different'},review),/ACCEPTANCE_BINDING/);
+  assert.throws(()=>validateOrderAcceptance(entry,{...review,observationArtifactHash:'rehash'}),/ACCEPTANCE_BINDING/);
+});
+
+test('evidence filesystem reader rejects links, special traversal, changed bounds and hard links',()=>{
+  const dir=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'order-reader-'));
+  try {
+    fs.writeFileSync(path.join(dir,'raw'),'raw');
+    assert.equal(readOrderFile(dir,'raw').binding.sha256,hash('raw'));
+    for(const p of ['../raw','/raw','a/../raw','raw\\x']) assert.throws(()=>readOrderFile(dir,p),/ORDER_PATH/);
+    assert.throws(()=>readOrderFile(dir,'raw',2),/SIZE/);
+    fs.symlinkSync('raw',path.join(dir,'link')); assert.throws(()=>readOrderFile(dir,'link'),/SYMLINK/);
+    fs.linkSync(path.join(dir,'raw'),path.join(dir,'hard')); assert.throws(()=>readOrderFile(dir,'raw'),/FILE_KIND/);
+  } finally {fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+test('official consumer rejects mixed modes and caller-authored denominators without physical credit',()=>{
+  const result=verifyInterop100(root,{orderC1LabRoot:'/missing',orderRunId:run,freshC1EvidenceRoot:'/missing'});
+  assert.equal(result.ok,false); assert.equal(result.passedRequiredCells,0); assert.equal(result.authoritativeAdmission,false);
+  assert.ok(result.errors.includes('ORDER_MODE_OPTIONS_CONFLICT'));
+  assert.equal(verifyOrderC1({requiredCells:Array(1120).fill({cellId:ORDER_CELL})}).passedRequiredCells,0);
+});
+
+test('governance admission is bounded to the delivery and never grants cell credit',()=>{
+  const p=readOrderPolicy(policyBytes()), delivery='b'.repeat(40), candidate='c'.repeat(40);
+  let changed=ORDER_ADMITTED_PATHS.slice(), drift=[];
+  const git=args=>{
+    if(args[0]==='rev-parse') return args[1]===ORDER_BASE+'^{tree}'?ORDER_BASE_TREE:candidate;
+    if(args[0]==='ls-tree') return ORDER_POLICY_PATH;
+    if(args[0]==='log') return delivery;
+    if(args[0]==='merge-base') return '';
+    if(args[0]==='diff') return (args[3]===ORDER_BASE?changed:drift).join('\n');
+    if(args[0]==='show') return fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    throw Error('unexpected git');
+  };
+  const good=verifyOrderPostEvaluation({candidateSha:candidate,git});
+  assert.equal(good.cellAcceptanceAuthority,false); assert.equal(good.programDone,false);
+  changed.push('src/core/data-writer.js'); assert.throws(()=>verifyOrderPostEvaluation({git}),/UNADMITTED/); changed.pop();
+  drift=['scripts/ops/rtk-interop-order-c1-readback.py']; assert.throws(()=>verifyOrderPostEvaluation({git}),/DRIFT/);
+  assert.ok(p.protectedFiles.length>=6);
+});
+
+test('independent raw parser accepts equivalent runs and rejects semantic, XML and filesystem attacks',()=>{
+  const code=String.raw`
+import importlib.util, io, json, os, pathlib, tempfile, zipfile, xml.etree.ElementTree as ET
+s=importlib.util.spec_from_file_location('order', 'scripts/ops/rtk-interop-order-c1-readback.py'); m=importlib.util.module_from_spec(s); s.loader.exec_module(m)
+def package(doc, extra=None):
+    out=io.BytesIO()
+    with zipfile.ZipFile(out,'w') as z:
+        z.writestr('word/document.xml',doc)
+        if extra: z.writestr(*extra)
+    return out.getvalue()
+def rejected(fn, reason):
+    try: fn()
+    except (ValueError,OSError,KeyError) as e:
+        if reason: assert reason in str(e), (reason,str(e))
+    else: raise AssertionError('mutant survived')
+doc=ET.Element(m.W+'document'); body=ET.SubElement(doc,m.W+'body')
+for value in m.EXPECTED:
+    p=ET.SubElement(body,m.W+'p')
+    for text in [value[:len(value)//2],value[len(value)//2:]]:
+        ET.SubElement(ET.SubElement(p,m.W+'r'),m.W+'t').text=text
+raw=package(ET.tostring(doc)); m.paragraphs(m.docx_paragraphs(raw),'POSITIVE')
+c=m.semantic_controls(raw); assert len(c['orderMutantsExecuted'])==24 and len(c['rawMutantsExecuted'])==3
+assert c==m.semantic_controls(raw), 'raw control hashes must be deterministic'
+rejected(lambda:m.docx_paragraphs(package(b'<!DOCTYPE x [<!ENTITY y "x">]><x/>')),'DTD')
+rejected(lambda:m.docx_paragraphs(package(ET.tostring(doc),('../outside','bad'))),'DOCX_PATH')
+ET.SubElement(body[0],m.W+'hyperlink'); rejected(lambda:m.docx_paragraphs(package(ET.tostring(doc))),'UNKNOWN_PARAGRAPH'); body[0].remove(body[0][-1])
+ET.SubElement(body[0][0],m.W+'tab'); rejected(lambda:m.docx_paragraphs(package(ET.tostring(doc))),'UNKNOWN_RUN'); body[0][0].remove(body[0][0][-1])
+body[0],body[2]=body[2],body[0]
+tampered=package(ET.tostring(doc)); assert m.digest(tampered)!=m.digest(raw)
+rejected(lambda:m.paragraphs(m.docx_paragraphs(tampered),'COHERENT_REHASH'),'ORDER_OR_CONTENT')
+with tempfile.TemporaryDirectory() as d:
+    root=pathlib.Path(d).resolve(); (root/'raw').write_bytes(b'raw')
+    b={'path':'raw','bytes':3,'sha256':m.digest(b'raw')}; assert m.checked_read(root,b)==b'raw'
+    rejected(lambda:m.checked_read(root,{**b,'sha256':'0'*64}),'HASH')
+    rejected(lambda:m.checked_read(root,{**b,'path':'../raw'}),'PATH')
+    (root/'link').symlink_to('raw'); rejected(lambda:m.checked_read(root,{**b,'path':'link'}),None)
+    os.link(root/'raw',root/'hard'); rejected(lambda:m.checked_read(root,b),'FILE_KIND')
+print(json.dumps({'positiveEquivalentRuns':True,'coherentTamperRejected':True,'controls':c}))
+`;
+  const result=spawnSync('python3',['-I','-B','-c',code],{cwd:root,encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stdout+result.stderr);
+  assert.equal(JSON.parse(result.stdout).coherentTamperRejected,true);
+});
+
+await Promise.all(pending);
+});
