@@ -32,6 +32,8 @@ Correct visible structured-scene reexport, complete native C2 driver and indepen
 - src/export/docx/fullManuscriptDocxReviewPacketSource.js
 - test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js
 
+- docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json
+
 ## DENYLIST
 Renderer UI, new Core writers, new authority routes, dependencies, runtime network, frozen denominator and historical raw readers; other agents' work and private manuscripts.
 

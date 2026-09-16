@@ -79,7 +79,8 @@
     "test/contracts/rtk-interop-word-text-order-batch.contract.test.js",
     "test/unit/rtk-interop-c2-final-hops.test.py",
     "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
-    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js"
+    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
   ],
   "protectedFiles": [
     {
@@ -494,7 +495,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
-        "sha256": "86f8980605104c428800a1d85bae08fce6f9cb63fe24f09c9173c8341963f6a0"
+        "sha256": "b3834db7c11be659764ec6c65333f8b943be314e4b52a396a76453d4cf6e8b26"
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
