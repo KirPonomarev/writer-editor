@@ -81,8 +81,8 @@
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "b49552c98bfdb56e892594c9d7b94b6dad9f18fcba313aff05ac54c1e3ea1231",
-      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair."
+      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
+      "sha256": "b49552c98bfdb56e892594c9d7b94b6dad9f18fcba313aff05ac54c1e3ea1231"
     },
     {
       "approved": true,
@@ -94,8 +94,8 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "286b5d24f7da9d72fa27cb537b407af2cf0709370147c426952a14fe63e755da",
-      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair."
+      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
+      "sha256": "286b5d24f7da9d72fa27cb537b407af2cf0709370147c426952a14fe63e755da"
     },
     {
       "approved": true,
@@ -115,8 +115,8 @@
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "1c802e3f2200476823a68ef57d4da47ca129f2e3dd2a4ed86bf06751eeb77594",
-      "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added."
+      "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
+      "sha256": "1c802e3f2200476823a68ef57d4da47ca129f2e3dd2a4ed86bf06751eeb77594"
     },
     {
       "approved": true,
@@ -132,12 +132,12 @@
       "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
-      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
-      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
-      "sha256": "2e5fdec3f9e5f7ba4a91ca94552b2da2fc55053248f5e8b9856be921e005306e",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
-      ]
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
+      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
+      "sha256": "2e5fdec3f9e5f7ba4a91ca94552b2da2fc55053248f5e8b9856be921e005306e"
     },
     {
       "approved": true,
@@ -149,8 +149,8 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca"
     },
     {
       "approved": true,
@@ -180,8 +180,8 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-intake-preflight-report.contract.test.js",
-      "sha256": "4cb98dbc833cfe71a635b8f208f3a61f6f8c564cec49787076d9b2fe47697d95",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "4cb98dbc833cfe71a635b8f208f3a61f6f8c564cec49787076d9b2fe47697d95"
     },
     {
       "approved": true,
@@ -193,8 +193,8 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-package-boundary.contract.test.js",
-      "sha256": "038e63be34e389fefc6e57036ec139a00182a45b1817f21d032974c2ceb613cc",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "038e63be34e389fefc6e57036ec139a00182a45b1817f21d032974c2ceb613cc"
     },
     {
       "approved": true,
@@ -206,8 +206,8 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-part-policy.contract.test.js",
-      "sha256": "d85b901f5f2deb0baf04257a7592fff8ed5a5b18015b592ad67525b98a0421a6",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "d85b901f5f2deb0baf04257a7592fff8ed5a5b18015b592ad67525b98a0421a6"
     },
     {
       "approved": true,
@@ -219,8 +219,8 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/revision-bridge-docx-zip-inventory-materializer.contract.test.js",
-      "sha256": "5c9ca615703848e5617947aadc03bd10d9861b55e194f5611ea87f04ca388904",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "5c9ca615703848e5617947aadc03bd10d9861b55e194f5611ea87f04ca388904"
     },
     {
       "approved": true,
@@ -245,21 +245,21 @@
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim."
+      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:31:06.561154Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
-      "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "d1cd9e958ecd3cba1023685dfd2c5fc1bd91ea6e15c2fa2a381cc116479b491b"
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "877ca7565d5ee80ed4e1dee16aee9cda2468f2a67b63cb3e6729289bafb5ad97"
     },
     {
       "approved": true,
@@ -281,25 +281,25 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:10:49.407812Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
-      "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "c2bdc1096f3246906899c02548c4b5052993ebff2f6782a93e72e977d0cae947"
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "c685f1060049edfb99cd8a9dd485159e1ab5cda2d62a2228cc6ca2f3f2b883e7"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:05:53.444019Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
-      "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "cb944a24ae9a218c2b2964d6d7475e1f1d4bd3e6588fcdb896498795001954f7"
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "ab6a4e1cad937f520dd860fa0d3084a9dd6fd24bfe113df9c0111e66efeeefd4"
     },
     {
       "approved": true,
@@ -316,144 +316,144 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:05:53.444019Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
-      "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "b40afa81b18eab6431d44d48736ca9ab0f39b2733134c24ced3e672c6093c7ec"
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "cd91eeba32378bdadf4cb66e3c3b17b9d613469f6fc578edbeda76d32dd9a9a0"
     },
     {
       "approved": true,
-      "filePath": "src/export/docx/docxMinExportHandler.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "src/export/docx/docxMinExportHandler.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "6620064f486ea2b2cff3246d27e87d6690aa8ee6e34d53aa2e734ce97d85e0ef"
     },
     {
       "approved": true,
-      "filePath": "src/main.js",
       "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "src/main.js",
       "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
       "sha256": "b40cce17b180a76183a99f1cd95c9b6176234769958c0c30c938974d7260b4f5"
     },
     {
       "approved": true,
-      "filePath": "src/renderer/commands/projectCommands.mjs",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "src/renderer/commands/projectCommands.mjs",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "74f9461046c9d082156276a10eea43a0ff287ee27596650aaee86377fcebaab8"
     },
     {
       "approved": true,
-      "filePath": "src/renderer/editor.bundle.js",
       "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "src/renderer/editor.bundle.js",
       "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
       "sha256": "7afd94715444f1793f5dbe631ebce894a0b355447d8d3d7d034c05a705640947"
     },
     {
       "approved": true,
-      "filePath": "src/renderer/editor.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "src/renderer/editor.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "7d09958be969c60092e6dd4c4d5d97381ff8351876dae2529fe1a6a26d82fb03"
     },
     {
       "approved": true,
-      "filePath": "src/utils/docxImportSafeCreate.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "src/utils/docxImportSafeCreate.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "154803bb4aeff48edc74e80b6fe8d6350054cff83cd1f8206164b3439150abb7"
     },
     {
       "approved": true,
-      "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/docx-import-preview-ui-flow.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "6d70654aa0320c2d68b58f48cee2668b7330f8965481bf7df53a873ee62b427e"
     },
     {
       "approved": true,
-      "filePath": "test/unit/docx-import-product-flow-command.test.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/docx-import-product-flow-command.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "e4bfa57f6bcaffa35c258ed10c2f66d5f4e67f7e2b2057aa7a2a2ddb86d68234"
     },
     {
       "approved": true,
-      "filePath": "test/unit/docx-import-safe-create.test.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/docx-import-safe-create.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "5a84483c0c84a2459f931e39dae03f6dcdf3bfefecf03f1577d110fd318e3420"
     },
     {
       "approved": true,
-      "filePath": "test/unit/docx-min-export-handler.test.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/docx-min-export-handler.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "ee866c8d410396983014b47c39a446d83d9e125228cb53ceeeda30d474c4e9f2"
     },
     {
       "approved": true,
-      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
       "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE | OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
-      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
-      "sha256": "31fc1883d41fb39beb3bb886e89b1d59706c56bca3ba0fdbe0eccbc04c27c7e5",
       "evidenceStampIds": [
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
-      ]
+      ],
+      "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
+      "sha256": "31fc1883d41fb39beb3bb886e89b1d59706c56bca3ba0fdbe0eccbc04c27c7e5"
     },
     {
       "approved": true,
-      "filePath": "test/unit/sector-m-command-kernel-tree-document-adoption.test.js",
       "approvedAtUtc": "2026-09-14T14:55:03.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/sector-m-command-kernel-tree-document-adoption.test.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "6acf0ac600976d748eaf9b2b2d5c0d05fff4bbb415542cb8516b63b0f66f3ede"
     },
     {
       "approved": true,
-      "filePath": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
       "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
       "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE",
+      "filePath": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
       "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
       "sha256": "aa655f9a71b754a215c797cbf3f67a5793b43fa13785b9a0632bd554374ceb42"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:31:06.561154Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
-      "sha256": "be415a8b073030a15d7c89d701f6c1634b95fdaa4d38b8a834085c229fef758b"
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "3b91df1f5646b9a56dd67881d2ece4cd03c6b08dbfe52378058d0347c54a5da0"
     },
     {
       "approved": true,
@@ -478,25 +478,25 @@
     },
     {
       "approved": true,
-      "filePath": "src/utils/docxImportLocalFilePreview.js",
       "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
+      "filePath": "src/utils/docxImportLocalFilePreview.js",
       "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
       "sha256": "4e8cc20b47e0e75ea25d99ff42167222d36a6ec050fe9ce47b4dc79be010c36f"
     },
     {
       "approved": true,
-      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
       "approvedAtUtc": "2026-09-14T19:45:04.000Z",
       "approvedBy": "owner-delegated-task:TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_2026_09_14",
       "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_M1_LAB_REPAIR_ADMISSION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
+      "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview-command-surface.contract.test.js",
       "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
       "sha256": "1dda8cb9610e6b5fd702275890188b5afed65eb13607f29bf520183abc20b800"
     },
@@ -583,9 +583,44 @@
       "filePath": "scripts/ops/rtk-interop-c1-raw-readback.py",
       "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
       "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "filePath": "docs/tasks/2026-09-16--interop-order-fast-cycle.md",
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "67fd1500ec6bcd043d39b555bbab6913fc40bf4bd85f843964bcb0f548a61b70"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json",
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "6a93f52c7575f7d7d3848b2841b1c9678ab9984f756bb002d7f06c0159cc2024"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-order-c1.mjs",
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "633332b6ba88a0681b0e6910c571d0ab3a707dd4d070a473f88bb5ee58a090cb"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-order-c1-readback.py",
+      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
+      "sha256": "e24b8784fc9b8f62d5b9ebaaf0e3ebc4ef0822d58da83bcc6e3ecde793fa2b9e"
     }
   ],
-  "version": "v1.0",
   "evidenceStampIds": [
     "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1",
     "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
@@ -594,5 +629,6 @@
     "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
     "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
     "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
-  ]
+  ],
+  "version": "v1.0"
 }

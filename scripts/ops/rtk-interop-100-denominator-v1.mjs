@@ -5,6 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { verifyFreshC1 } from './rtk-interop-c1-fresh-evidence.mjs';
+import { verifyOrderC1 } from './rtk-interop-order-c1.mjs';
 
 export const DENOMINATOR_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 export const EVIDENCE_ENVELOPE_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json';
@@ -1461,6 +1462,15 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if (Object.hasOwn(options, 'orderC1LabRoot') || Object.hasOwn(options, 'orderRunId')) {
+    const specErrors = [];
+    validateSpec(spec, specErrors);
+    if (options.spec || options.envelope || options.ledger || Object.hasOwn(options, 'freshC1EvidenceRoot')
+      || options.requireLocalPhysicalPackage || options.requireExternalEvidencePackage || options.externalEvidencePackageRoot)
+      specErrors.push('ORDER_MODE_OPTIONS_CONFLICT');
+    return verifyOrderC1({repoRoot,labRoot:options.orderC1LabRoot,runId:options.orderRunId,
+      currentHead:options.currentHead || currentGitHead(repoRoot),requiredCells:buildRequiredCells(spec),specErrors});
+  }
   if (Object.hasOwn(options, 'freshC1EvidenceRoot')) {
     const specErrors = [];
     validateSpec(spec, specErrors);
@@ -1485,12 +1495,16 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 }
 
 function main() {
+  const orderIndex = process.argv.indexOf('--order-c1-lab-root');
+  const runIndex = process.argv.indexOf('--run-id');
   const freshIndex = process.argv.indexOf('--fresh-c1-evidence-root');
   const externalEvidencePackageRootIndex = process.argv.indexOf('--external-evidence-package-root');
   const externalEvidencePackageRoot = externalEvidencePackageRootIndex === -1
     ? ''
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
+    ...(orderIndex === -1 ? {} : {orderC1LabRoot:String(process.argv[orderIndex+1] || '').trim()}),
+    ...(runIndex === -1 ? {} : {orderRunId:String(process.argv[runIndex+1] || '').trim()}),
     ...(freshIndex === -1 ? {} : { freshC1EvidenceRoot: String(process.argv[freshIndex + 1] || '').trim() }),
     requireLocalPhysicalPackage: process.argv.includes('--require-local-physical-package'),
     requireExternalEvidencePackage: process.argv.includes('--require-external-evidence-package'),
