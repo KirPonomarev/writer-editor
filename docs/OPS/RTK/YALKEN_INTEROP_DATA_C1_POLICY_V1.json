@@ -53,7 +53,16 @@
     "src/export/docx/docxReviewPacketBuilder.js",
     "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
     "test/contracts/revision-bridge-docx-colors.contract.test.js",
-    "docs/tasks/2026-09-16--docx-colors-roundtrip.md"
+    "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
+    "src/io/inlineTypography.mjs",
+    "src/export/docx/docxInlineTypography.js",
+    "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+    "src/renderer/tiptap/index.js",
+    "src/renderer/tiptap/documentTextStyle.mjs",
+    "test/contracts/revision-bridge-docx-typography.contract.test.js",
+    "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
+    "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+    "src/io/inlineTypography.cjs"
   ],
   "protectedFiles": [
     {
@@ -268,7 +277,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "879159abd0c129093dde1e6cc957fff3860825a728a2c920a98e01088197487b"
+        "sha256": "e36399343f5ee9ab65c48aa5bed5f57ee8f305a1949fcbb04ec6982cd30a3235"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -288,11 +297,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "d1537e7c55b4451a943c62aa851e2122e4d75f5b29e7223c792733ab947ee749"
+        "sha256": "0faa27db2c897dabc8a01ac07f83dfc8c5f06a771bc78dfed0f6ebb8262b5e78"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "91c1204c5df8e2a66528dcace02792bb9ce87aad02e7f60b65f5463527e2b7c9"
+        "sha256": "04ecaa11291b6beb4b81195ddbef897b983790b5cf8f4c7a835d779b7dd693cc"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -368,7 +377,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "2ea7ea63ec8e3dd6d3003287b985884ef762f87b406cfbb42186cf7fab96a9b9"
+        "sha256": "2cab617e249a94f0b715e0fcc4417557b9638e16ddda019e6c460d644199f765"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -381,6 +390,42 @@
       {
         "path": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
         "sha256": "9495f830b1b309c31ed404d893a720a18cf97521b49c8957a2f5df56338de85b"
+      },
+      {
+        "path": "src/io/inlineTypography.mjs",
+        "sha256": "4f7ecb4a0b684c112c7401175ee9dc388ac19bbcf75a2069b232032accf854c2"
+      },
+      {
+        "path": "src/export/docx/docxInlineTypography.js",
+        "sha256": "6559d0813aacea3f118c42ce7e6a04f85e85a29606721f6e32007fed6d51369a"
+      },
+      {
+        "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+        "sha256": "827060fe180e00be6a73b1149e47b787f80410800460dfeaf7171638537c2e1b"
+      },
+      {
+        "path": "src/renderer/tiptap/index.js",
+        "sha256": "4c54bbcd65491a74ecf5bbb3badb2898138cdf89d9d2504744c121d34e684c3b"
+      },
+      {
+        "path": "src/renderer/tiptap/documentTextStyle.mjs",
+        "sha256": "82e29910c0ad5ad44f48597e21f3a884cf441b4f0ab25db56bcb5b657bb85505"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-typography.contract.test.js",
+        "sha256": "0b297fc72e4e9431351a8ff820fd7c0a0a20ff41bc6ff9dbeb344edfca325711"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
+        "sha256": "f4ba3423a3c1352312c9bd29827b0e497ebefd5ba4ae38c794cb9beff5b83906"
+      },
+      {
+        "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+        "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
+      },
+      {
+        "path": "src/io/inlineTypography.cjs",
+        "sha256": "6de19cf218968c341cb869eb73681432683add3c41bfc621abf6e2336a244be9"
       }
     ],
     "followupRepair": {
@@ -417,6 +462,11 @@
       "id": "DOCX_COLOR_ROUNDTRIP_C1_V1",
       "bindingBaseSha": "65107e5d13c52504139c04bb291e88514a67f17a",
       "scope": "Product repair: preserve opaque RGB text and highlight colors through minimal DOCX, actual Word return and admitted rich import; reuse existing review encoding and correct native Word palette. No full-STYLES credit."
+    },
+    "typographyRepair": {
+      "id": "DOCX_TYPOGRAPHY_ROUNDTRIP_C1_V1",
+      "bindingBaseSha": "466819b1308727d14e828689ea2323f2892cb619",
+      "scope": "Product repair: preserve uniform named fonts and exact half-point sizes through the existing editor, both DOCX writers, Word return and admitted rich import; measure actual renderer font fallback. No full-STYLES credit."
     }
   }
 }
