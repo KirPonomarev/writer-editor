@@ -906,8 +906,7 @@ function buildFullManuscriptProvisionalSelfParse({ source, revisionBridge, crypt
       provisionalDocxSha256,
     };
   }
-  const documentText = sceneProjection.sceneTexts.join('\n\n')
-    .replace(/\n{3,}/gu, '\n\n').replace(/^\n+/u, '').replace(/\n+$/u, '');
+  const documentText = sceneProjection.sceneTexts.join('\n\n');
   const documentTextSha256 = cryptoPort.sha256Json({ sceneText: documentText });
   const expectedDocumentTextSha256 = normalizeRtkSignedSha256(artifact.expectedDocumentTextSha256);
   if (!expectedDocumentTextSha256 || documentTextSha256 !== expectedDocumentTextSha256) {
@@ -23612,7 +23611,9 @@ async function readFullManuscriptDocxReviewExportDocumentContent(sceneCandidate)
     );
   }
   return {
-    text: parsed.text,
+    // Unwrapped plain scenes retain literal paragraph boundaries. Legacy metadata
+    // and cards still use the envelope parser so those blocks cannot leak into DOCX.
+    text: !parsed.doc && !parsed.hasMetaBlock && !parsed.hasCardsBlock ? observableContent : parsed.text,
     doc: parsed.doc,
     observableContent,
   };

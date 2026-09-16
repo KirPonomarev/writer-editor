@@ -36,6 +36,7 @@ Fixed synthetic volume fixtures, native full-manuscript journeys, independent co
 - test/contracts/rtk-word-full-manuscript-volume.contract.test.js
 
 - src/main.js
+- src/io/revisionBridge/index.mjs
 
 ## DENYLIST
 Frozen denominator and historical accepted evidence, private manuscripts, other agents' work, renderer UI, new Core writers or authority channels, dependency changes, runtime network, weakening input limits, bypassing required gates, fixture-only cell claims.
@@ -89,7 +90,9 @@ RTK_V4_PUBLICATION_GATE_PROVISIONAL_TEXT_MISMATCH. The source hashes the
 envelope display paragraph separators while the DOCX carries authored blocks.
 Derive the expected baseline from original authored blocks and preserve empty
 paragraphs exactly in the provisional reader; the reader must still reject
-coherently rehashed changed, missing or reordered paragraphs.
+coherently rehashed changed, missing or reordered paragraphs. The executed
+negative control also caught that grouping parsed paragraphs by scene masked
+whole-scene reordering; enforce declared block order before grouping.
 
 ## IMPLEMENTATION_STEPS
 1. Execute a three-scene full-manuscript source probe through real product commands and Word.

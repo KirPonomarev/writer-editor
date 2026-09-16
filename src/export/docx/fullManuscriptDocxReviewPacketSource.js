@@ -330,7 +330,8 @@ function buildFormatIrParagraphs(scene) {
     });
   };
   for (const node of topLevelNodes) visit(node);
-  const derivedText = normalizeVisibleDocumentText(result.map((paragraph) => paragraph.text).join('\n'));
+  const authoredText = result.map((paragraph) => paragraph.text).join('\n');
+  const derivedText = sourceDoc ? normalizeVisibleDocumentText(authoredText) : authoredText;
   if (derivedText !== scene.text) {
     throw makeError('FULL_MANUSCRIPT_FORMAT_IR_VISIBLE_TEXT_MISMATCH', { sceneId: scene.sceneId });
   }
@@ -772,6 +773,11 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       ? deps.deriveWordBookmarkNameV1
       : undefined,
   });
+  // Use authored paragraph boundaries, not the envelope's normalized display text.
+  // This is computed from source blocks before serializing or parsing any DOCX.
+  const sceneText = scenes.map((scene) => blocks
+    .filter((block) => block.sceneId === scene.sceneId)
+    .map((block) => block.text).join('\n')).join('\n\n');
   const sceneSnapshots = scenes.map((scene) => ({
     sceneId: scene.sceneId,
     sceneOrdinal: scene.sceneOrdinal,
@@ -829,7 +835,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     profile: FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID,
   });
   const provisionalBuffer = buildDocxReviewPacketBuffer({
-    sceneText: scenes.map((scene) => scene.text).join('\n\n'),
+    sceneText,
     blocks,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: 'YRTK1.provisional' },
@@ -1020,7 +1026,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     exportMap,
   };
   return {
-    sceneText: scenes.map((scene) => scene.text).join('\n\n'),
+    sceneText,
     blocks,
     forbiddenSecret: hmacSecret,
     customProperties: [
@@ -1059,7 +1065,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       provisionalDocxSha256,
       bytes: provisionalBuffer,
       expectedDocumentTextSha256: cryptoPort.sha256Json({
-        sceneText: scenes.map((scene) => scene.text).join('\n\n'),
+        sceneText,
       }),
     },
     exportCapsule,
