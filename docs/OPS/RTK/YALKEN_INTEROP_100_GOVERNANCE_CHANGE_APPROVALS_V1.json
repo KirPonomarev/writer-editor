@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
-      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "d9a4c756629a4c558ad886fed844d9cc7544969e2d5e883774117c33c49b5d01"
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "48e33b57a0b859e4e6aa1448b47a9f4422d4cd550d6f322e8313514f49e57ad9"
     },
     {
       "approved": true,
@@ -281,25 +281,25 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
-      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "95b51f778a06ed850d349a952d5d31e11260a7817455dfbac5d6e5c320ffab4b"
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "ffcfe387cb111835bc6b2522207cc1ddc7bd45ec3ded82b1e9baecfcc611a88c"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
-      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "a99817fc9962cfd930aa0ca58934afe79fe6233b20a8c80cb87c7a9519d77939"
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "350b9cb114e2a51972c1520b5bb6af66bcd273f88dcee140ec79897458cc9ace"
     },
     {
       "approved": true,
@@ -316,12 +316,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
-      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "25bf2d631b048271c2874137e2bb2000cc7addee56d871700626c5bb460ef997"
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "32422096e31ce6b51f1a5ad89153ba9800068eacdf74623cc6df8fddd2d1e1a0"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
-      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "2f93caa8139b9b88b9d51ea5724503c3730101a78f6ec1c4a76614638e8f0640"
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "a72cb24516f342b74bfc7747c4981d5a6719703ded0adcbffce7ab9064824197"
     },
     {
       "approved": true,
@@ -655,6 +655,51 @@
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
       "sha256": "0afbb89f587a4189c0d984fc9e410dcb4c53f436f54c5b54c9d642845b4d66bb"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--interop-data-recipes-c1.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "89905987a3ebbb8d17ae2f8619642e3b9dbc5165e9874a687c8d6f1f00507caf"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "af8ccf78571e22facf541f49f5f4261a8e477a6f0cd374fac1cdac2791f44bf3"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "935d58fb0e4e02ad6490a0754d0c8afd6390761f4ecb8ac51bdfa3fb50215130"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "bce0865d2d34b78f33539348f1be55ddb5932299a4b5bd2583c8fac5147fbc12"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
+      "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
+      "sha256": "3d075d675b17cd0c2994da13ec845224f9922d2a1d8ba026a91be1b5113afd09"
     }
   ],
   "evidenceStampIds": [

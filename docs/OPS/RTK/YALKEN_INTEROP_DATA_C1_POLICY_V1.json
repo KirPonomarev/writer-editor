@@ -1,0 +1,214 @@
+{
+  "schemaVersion": "YALKEN_INTEROP_DATA_C1_POLICY_V1",
+  "targetCellIds": [
+    "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+    "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME"
+  ],
+  "productSpecSha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93",
+  "baseSha": "d9220b6b7131043068564081e1c6a15f273afeb5",
+  "baseTree": "5b10838d67d56032ad72f501bbeb36b90f33a719",
+  "admittedPaths": [
+    "docs/tasks/2026-09-16--interop-data-recipes-c1.md",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
+    "scripts/ops/rtk-interop-data-c1.mjs",
+    "scripts/ops/rtk-interop-data-c1-readback.py",
+    "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json"
+  ],
+  "protectedFiles": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
+      "sha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json",
+      "sha256": "edce537a910d0d17e5396a73d446c8c35ae8f6cd8caa3cf528f5893305b0482f"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
+      "sha256": "a6af8e77dcecca72386b2a0ec30916de7fb7b5a312b5074594aa16a2035fa209"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_C1_FRESH_EVIDENCE_SUCCESSOR_V1.json",
+      "sha256": "f46e9beaa585329639fd7ec608d67d79bbfcd0f5e0b8e2bfdd80705294346447"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-c1-fresh-evidence.mjs",
+      "sha256": "941227f318581b50f506f3c78af3a1976fe7a81125a8e7a82929b574a79efcd4"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-c1-raw-readback.py",
+      "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
+    },
+    {
+      "path": "package.json",
+      "sha256": "f4ccb9cb2c6f7c0753ead9730caf009b16c9b06fd9bbb8083e937d51f9f913e1"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "ee4b7532f24371b7678eece7cb95df23ce4509830361c4629582dcb91507d432"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json",
+      "sha256": "d7ecbbb579d37de7be706c059760eb36e5f6acde8c48a5dd4f0b05cb9fe347d4"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-order-c1.mjs",
+      "sha256": "b5ec996585b18086b009312f9056be3caf697a9c75619fb1fd2ef8eaeb4556b5"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-order-c1-readback.py",
+      "sha256": "e24b8784fc9b8f62d5b9ebaaf0e3ebc4ef0822d58da83bcc6e3ecde793fa2b9e"
+    },
+    {
+      "path": "docs/tasks/2026-09-16--interop-order-fast-cycle.md",
+      "sha256": "d20105f4c086c29387befa8aafe7445955cf946a8ac3e0cd90e16123e4b2b1c7"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-text-order-c1.mjs",
+      "sha256": "15989f494ba74cc6da87ccb9198d3128f57a52467ea50ca04d7f022b40a435e9"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-text-c1-readback.py",
+      "sha256": "0afbb89f587a4189c0d984fc9e410dcb4c53f436f54c5b54c9d642845b4d66bb"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_TEXT_ORDER_C1_RECIPE_POLICY_V1.json",
+      "sha256": "1ecd8638863c441431cc1f297d09b5dbd18d03c1feb3759544f46ff443ed47a5"
+    },
+    {
+      "path": "docs/tasks/2026-09-16--interop-text-order-shared-c1.md",
+      "sha256": "c458c5273d63a1e17f4a4704be7e1621f7a92df5a4380cbc100dcb59bc5ae785"
+    }
+  ],
+  "rawCheckerSha256": "3d075d675b17cd0c2994da13ec845224f9922d2a1d8ba026a91be1b5113afd09",
+  "requiredOracles": [
+    "SEMANTIC",
+    "STRUCTURE",
+    "ORDER",
+    "LOSS",
+    "PROVENANCE",
+    "INDEPENDENT_READBACK",
+    "CLEANUP"
+  ],
+  "requiredSubcases": [
+    "blockOrderPreserved",
+    "providerTraversalStable",
+    "roundTripOrderStable",
+    "reorderDetected",
+    "sortKeysHashBound",
+    "orderDiffVisible"
+  ],
+  "qualifiedProvider": {
+    "wordAppPath": "/Applications/Microsoft Word.app",
+    "wordVersion": "16.112",
+    "wordBuild": "16.112.26081010",
+    "macosVersion": "26.6.1",
+    "macosBuild": "25G76",
+    "locale": "ru_FI"
+  },
+  "labRegistrySha256": "6ff83d79ea88b61f77f7c660c396f75ec55dabc07eb17ef354e6e2c179faaa51",
+  "labBaseHead": "88defb9f8e0ef491cafef083ac6d4d03c8e6be57",
+  "allowedLabDeltaPaths": [
+    "cli/lab.mjs",
+    "scripts/run_sequential.py",
+    "src/m1-text-single-scene-source-runtime.mjs",
+    "src/c1-data-case.mjs",
+    "src/data-c1-machine-review.mjs",
+    "src/m0-validators.mjs",
+    "src/order-single-scene.mjs",
+    "src/order-machine-review.mjs",
+    "src/text-order-machine-review.mjs",
+    "scripts/check-physical-run.mjs",
+    "README.md",
+    "LAB_MANIFEST.json",
+    "data/rtm/requirements-v2.json",
+    "data/rtm/rtm-v2.json",
+    "data/artifacts/ARTIFACTS.json",
+    "data/evidence/ledger.jsonl",
+    "dashboard/index.html",
+    "test/data-c1-recipe.test.mjs",
+    "test/solo-sequential.test.py"
+  ],
+  "labCodeBindings": [
+    {
+      "path": "cli/lab.mjs",
+      "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+    },
+    {
+      "path": "scripts/run_sequential.py",
+      "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+    },
+    {
+      "path": "src/m1-text-single-scene-source-runtime.mjs",
+      "sha256": "e6236c9aef4064d5dd3fb2ef070a28aa2af551beffb12d854bf90e4594711615"
+    },
+    {
+      "path": "src/c1-data-case.mjs",
+      "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+    },
+    {
+      "path": "src/data-c1-machine-review.mjs",
+      "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+    },
+    {
+      "path": "src/m0-validators.mjs",
+      "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+    },
+    {
+      "path": "src/order-single-scene.mjs",
+      "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+    },
+    {
+      "path": "src/order-machine-review.mjs",
+      "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+    },
+    {
+      "path": "src/text-order-machine-review.mjs",
+      "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+    },
+    {
+      "path": "scripts/check-physical-run.mjs",
+      "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+    }
+  ],
+  "requirementIds": [
+    "REQ-ACTIVEYALKENCANON-afff70d827d3",
+    "REQ-R24PACKAGE-785b4cb4a2d9",
+    "REQ-R24PACKAGE-455f1b030514",
+    "REQ-V2PORTABILITY-08bfe38a9e85",
+    "REQ-V2PORTABILITY-288f6f81f7a5"
+  ],
+  "notBeforeUtc": "2026-09-16T09:40:26.453007+00:00",
+  "casePolicy": "Locally committed bounded authored-input paragraphs. Exact preservation only. No expected-output, route, action or executable fields. New input files do not change checker source.",
+  "runtimeAdmission": "Actual clean current main, pinned Lab code and immutable runtime input. All raw checks and atomic paired publication required.",
+  "uniqueCredit": "Two fixed product cell IDs; input variants and repeats never multiply the numerator",
+  "requirementBindings": [
+    {
+      "id": "REQ-ACTIVEYALKENCANON-afff70d827d3",
+      "sha256": "d505a3607fad0d1a2d47d0b4fa813f6db3652beb0f6b7580db677a1eef6e1ddb"
+    },
+    {
+      "id": "REQ-R24PACKAGE-785b4cb4a2d9",
+      "sha256": "b8825bcbcb745150a54ea5a9af8038fddbd45862f40692ce59fa7ead0e82b430"
+    },
+    {
+      "id": "REQ-R24PACKAGE-455f1b030514",
+      "sha256": "0daea1e3b594a5ea51861a990b47c3f26db40fc74fbfe5f27b546549a4bb01ab"
+    },
+    {
+      "id": "REQ-V2PORTABILITY-08bfe38a9e85",
+      "sha256": "653857bd4181e000176a2d988f93299ad1c934c58d3761575bf39acacc0da08c"
+    },
+    {
+      "id": "REQ-V2PORTABILITY-288f6f81f7a5",
+      "sha256": "851c600e5bb8c38ac5d92844a164eed409c5e4231024a4b35d51e7a05edc84de"
+    }
+  ]
+}

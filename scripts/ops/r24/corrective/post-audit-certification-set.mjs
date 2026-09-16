@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {verifyDataC1PostEvaluation} from '../../rtk-interop-data-c1.mjs';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -7724,6 +7725,8 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const textOrderC1Exception = allowAuditCycle2Admission
     ? verifyTextOrderPostEvaluation({candidateSha:resolvedCandidate,git}) : null;
   for (const admittedPath of (textOrderC1Exception?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  const dataC1Exception=allowAuditCycle2Admission?verifyDataC1PostEvaluation({candidateSha:resolvedCandidate,git}):null;
+  for(const admittedPath of (dataC1Exception?.admittedPaths??[]))allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -7733,6 +7736,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.freshC1PostEvaluationException = freshC1Exception;
   verificationResult.orderC1PostEvaluationException = orderC1Exception;
   verificationResult.textOrderC1PostEvaluationException = textOrderC1Exception;
+  verificationResult.dataC1PostEvaluationException = dataC1Exception;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;
