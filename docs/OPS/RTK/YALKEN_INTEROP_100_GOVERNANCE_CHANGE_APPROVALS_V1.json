@@ -74,28 +74,28 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "cacec9a3fbcde88ff189002f01e7843d8a0dc7f27bfbd1d95b7572cec2d39634"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "91c1204c5df8e2a66528dcace02792bb9ce87aad02e7f60b65f5463527e2b7c9"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
-      "sha256": "286b5d24f7da9d72fa27cb537b407af2cf0709370147c426952a14fe63e755da"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "ffc6de6b53b0ba2bf3a8b9e0b0503811243d4499fbd8589cfc36e9d6fb84baa0"
     },
     {
       "approved": true,
@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "f6bb41d6bfb3a4a176aaddc4c93c80fc7c9d32ec240c660e9a8e231b9ec12042"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "c07edaea1062aab26adfb3a05a356a7d019667ebc2a1c460ce84e27d5894b9bc"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
-      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "bd8d543827decaf9bbc10e3f57f43495d88aae105d2023f0e7a6690dd5162656"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "da0ac031361b99fa4a88a3496494ed7f080baab02587d197f96ff791617e8697"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
-      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "a3a4754fdba25e1bdd27412e0da3645b74f647aa16d4de183fc6e53f70eb6abc"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "3a9055a8fa3325a3cdc37a808f45a27b872173329b8772778bb3eb11c35b360a"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
-      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "6deed22e0b3e91e69a1548f4b692538ec589ee5477dbe858ced3d1ebe4fa56d6"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "9efa7f185a9494111d27b997df5bf02c5818ffc5016c70369941a6a5a5dc1316"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -749,11 +749,11 @@
     {
       "filePath": "src/export/docx/docxMinBuilder.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "8b25df2feb51005d26a579b368b88137f6b0bd7fb30a28bedabb7cd128ab815e"
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "d1537e7c55b4451a943c62aa851e2122e4d75f5b29e7223c792733ab947ee749"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -880,6 +880,42 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "17f9bc54cd9105f2c5df830fc77dc024e40057d144ac47c27248db3b1f279326"
+    },
+    {
+      "filePath": "src/export/docx/docxReviewPacketBuilder.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "2ea7ea63ec8e3dd6d3003287b985884ef762f87b406cfbb42186cf7fab96a9b9"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "9495f830b1b309c31ed404d893a720a18cf97521b49c8957a2f5df56338de85b"
+    },
+    {
+      "filePath": "src/export/docx/docxInlineColors.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "3a959b271bbf40e66bf076228c575663a55984cf059432d2bc71640e53e6a940"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-colors.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
+      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "d8dac9a3d78ce5db2fb59f43f8d5f8daf942455b515e9a8887cbb730750729af"
     }
   ],
   "evidenceStampIds": [

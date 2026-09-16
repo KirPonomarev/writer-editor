@@ -6,6 +6,7 @@ const {
   escapeXml,
   normalizeDocxTextForSerialization,
 } = require('./docxTextXml.js');
+const { buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -66,24 +67,6 @@ function readDeclaredBookmarkName(block) {
   }
   return '';
 }
-const WORD_HIGHLIGHT_NAME_BY_COLOR = Object.freeze({
-  '#000000': 'black',
-  '#0000ff': 'blue',
-  '#00ffff': 'cyan',
-  '#00008b': 'darkBlue',
-  '#008b8b': 'darkCyan',
-  '#a9a9a9': 'darkGray',
-  '#006400': 'darkGreen',
-  '#8b008b': 'darkMagenta',
-  '#8b0000': 'darkRed',
-  '#808000': 'darkYellow',
-  '#008000': 'green',
-  '#d3d3d3': 'lightGray',
-  '#ff00ff': 'magenta',
-  '#ff0000': 'red',
-  '#ffffff': 'white',
-  '#ffff00': 'yellow',
-});
 
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
@@ -155,18 +138,8 @@ function buildRunPropertiesXml(inline = {}, preservedMarks = []) {
   if (inline.italic === true) properties.push('<w:i/>');
   if (inline.underline === true) properties.push('<w:u w:val="single"/>');
   if (inline.strike === true) properties.push('<w:strike/>');
-  if (typeof inline.color === 'string' && /^#[a-f0-9]{6}$/iu.test(inline.color)) {
-    properties.push(`<w:color w:val="${inline.color.slice(1).toUpperCase()}"/>`);
-  }
-  if (typeof inline.highlight === 'string') {
-    const highlightName = WORD_HIGHLIGHT_NAME_BY_COLOR[inline.highlight.toLowerCase()];
-    if (highlightName) properties.push(`<w:highlight w:val="${highlightName}"/>`);
-    else if (/^#[a-f0-9]{6}$/iu.test(inline.highlight)) {
-      properties.push(`<w:shd w:val="clear" w:color="auto" w:fill="${inline.highlight.slice(1).toUpperCase()}"/>`);
-    } else {
-      throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_HIGHLIGHT_UNSUPPORTED');
-    }
-  }
+  const colors = buildDocxColorPropertiesXml(inline);
+  if (colors) properties.push(colors);
   if (typeof inline.fontFamily === 'string' && inline.fontFamily) {
     const family = escapeXml(inline.fontFamily);
     properties.push(`<w:rFonts w:ascii="${family}" w:hAnsi="${family}" w:eastAsia="${family}" w:cs="${family}"/>`);

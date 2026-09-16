@@ -1773,19 +1773,19 @@ function formattingColorAction(children) {
     : null;
 }
 
-const WORD_HIGHLIGHT_COLOR_BY_NAME = Object.freeze({
+export const WORD_HIGHLIGHT_COLOR_BY_NAME = Object.freeze({
   black: '#000000',
   blue: '#0000ff',
   cyan: '#00ffff',
-  darkblue: '#00008b',
-  darkcyan: '#008b8b',
-  darkgray: '#a9a9a9',
-  darkgreen: '#006400',
-  darkmagenta: '#8b008b',
-  darkred: '#8b0000',
+  darkblue: '#000080',
+  darkcyan: '#008080',
+  darkgray: '#808080',
+  darkgreen: '#008000',
+  darkmagenta: '#800080',
+  darkred: '#800000',
   darkyellow: '#808000',
-  green: '#008000',
-  lightgray: '#d3d3d3',
+  green: '#00ff00',
+  lightgray: '#c0c0c0',
   magenta: '#ff00ff',
   red: '#ff0000',
   white: '#ffffff',
