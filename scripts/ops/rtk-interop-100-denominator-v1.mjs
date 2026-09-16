@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { verifyFreshC1 } from './rtk-interop-c1-fresh-evidence.mjs';
 import { verifyOrderC1 } from './rtk-interop-order-c1.mjs';
+import { verifyTextOrderC1 } from './rtk-interop-text-order-c1.mjs';
 
 export const DENOMINATOR_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 export const EVIDENCE_ENVELOPE_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json';
@@ -1462,6 +1463,16 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if (Object.hasOwn(options, 'textOrderC1LabRoot') || Object.hasOwn(options, 'textOrderRunId')) {
+    const specErrors = [];
+    validateSpec(spec, specErrors);
+    if (options.spec || options.envelope || options.ledger || Object.hasOwn(options, 'freshC1EvidenceRoot')
+      || Object.hasOwn(options, 'orderC1LabRoot') || Object.hasOwn(options, 'orderRunId')
+      || options.requireLocalPhysicalPackage || options.requireExternalEvidencePackage || options.externalEvidencePackageRoot)
+      specErrors.push('TEXT_ORDER_MODE_OPTIONS_CONFLICT');
+    return verifyTextOrderC1({repoRoot,labRoot:options.textOrderC1LabRoot,runId:options.textOrderRunId,
+      currentHead:options.currentHead || currentGitHead(repoRoot),requiredCells:buildRequiredCells(spec),specErrors});
+  }
   if (Object.hasOwn(options, 'orderC1LabRoot') || Object.hasOwn(options, 'orderRunId')) {
     const specErrors = [];
     validateSpec(spec, specErrors);
@@ -1495,6 +1506,7 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 }
 
 function main() {
+  const textOrderIndex = process.argv.indexOf('--text-order-c1-lab-root');
   const orderIndex = process.argv.indexOf('--order-c1-lab-root');
   const runIndex = process.argv.indexOf('--run-id');
   const freshIndex = process.argv.indexOf('--fresh-c1-evidence-root');
@@ -1503,8 +1515,11 @@ function main() {
     ? ''
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
+    ...(textOrderIndex === -1 ? {} : {textOrderC1LabRoot:String(process.argv[textOrderIndex+1] || '').trim()}),
     ...(orderIndex === -1 ? {} : {orderC1LabRoot:String(process.argv[orderIndex+1] || '').trim()}),
-    ...(runIndex === -1 ? {} : {orderRunId:String(process.argv[runIndex+1] || '').trim()}),
+    ...(runIndex === -1 ? {} : textOrderIndex === -1
+      ? {orderRunId:String(process.argv[runIndex+1] || '').trim()}
+      : {textOrderRunId:String(process.argv[runIndex+1] || '').trim()}),
     ...(freshIndex === -1 ? {} : { freshC1EvidenceRoot: String(process.argv[freshIndex + 1] || '').trim() }),
     requireLocalPhysicalPackage: process.argv.includes('--require-local-physical-package'),
     requireExternalEvidencePackage: process.argv.includes('--require-external-evidence-package'),

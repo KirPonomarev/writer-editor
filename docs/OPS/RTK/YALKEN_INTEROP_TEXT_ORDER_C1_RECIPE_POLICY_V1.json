@@ -1,0 +1,181 @@
+{
+  "schemaVersion": "YALKEN_TEXT_ORDER_C1_RECIPE_POLICY_V1",
+  "productContract": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
+  "sourceCellId": "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+  "targetCellIds": [
+    "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+    "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME"
+  ],
+  "productSpecSha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93",
+  "baseSha": "d91813a56d14f08dcd9f6ed1fad61bddacff05a4",
+  "baseTree": "7e1e5e52ac176654a85c3d533ecfbffc4f29bf00",
+  "admittedPaths": [
+    "docs/tasks/2026-09-16--interop-text-order-shared-c1.md",
+    "docs/OPS/RTK/YALKEN_INTEROP_TEXT_ORDER_C1_RECIPE_POLICY_V1.json",
+    "scripts/ops/rtk-interop-text-order-c1.mjs",
+    "scripts/ops/rtk-interop-text-c1-readback.py",
+    "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+    "test/contracts/rtk-interop-100-denominator.contract.test.js",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json"
+  ],
+  "notBeforeUtc": "2026-09-16T08:00:31.880353+00:00",
+  "authority": "Direct owner approval to continue the final plan with separate TEXT and ORDER decisions from one known native C1 source execution, personally without agents",
+  "productRouteObligations": {
+    "id": "C1",
+    "title": "Yalken to Word to Yalken",
+    "hops": [
+      "YALKEN_EXPORT",
+      "WORD_LIFECYCLE",
+      "YALKEN_RETURN_INTAKE"
+    ],
+    "requiredProviderProfiles": [
+      "WORD_DESKTOP"
+    ],
+    "cyclePolicy": {
+      "kind": "ONE_ROUND_TRIP",
+      "requiredCycles": 1
+    }
+  },
+  "textRawCheckerSha256": "0afbb89f587a4189c0d984fc9e410dcb4c53f436f54c5b54c9d642845b4d66bb",
+  "fixtureParagraphSha256": "693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1",
+  "qualifiedProvider": {
+    "wordAppPath": "/Applications/Microsoft Word.app",
+    "wordVersion": "16.112",
+    "wordBuild": "16.112.26081010",
+    "macosVersion": "26.6.1",
+    "macosBuild": "25G76",
+    "locale": "ru_FI"
+  },
+  "requiredOracles": [
+    "SEMANTIC",
+    "STRUCTURE",
+    "ORDER",
+    "LOSS",
+    "PROVENANCE",
+    "INDEPENDENT_READBACK",
+    "CLEANUP"
+  ],
+  "textSubcases": [
+    "bodyTextReadbackIndependent",
+    "emptyParagraphsAccounted",
+    "lineBreakPolicyDeclared",
+    "paragraphBoundariesPreserved",
+    "plainTextPreserved",
+    "whitespaceEdgesPreserved"
+  ],
+  "textControlIds": [
+    "content-replacement",
+    "leading-space",
+    "trailing-space",
+    "nbsp-substitution",
+    "unicode-nfd",
+    "zwj-deletion",
+    "empty-paragraph-deletion",
+    "embedded-line-break",
+    "cyrillic-deletion",
+    "cjk-insertion"
+  ],
+  "labBaseHead": "d9b8124ec0faeda671d025ab0b075652e5970181",
+  "allowedLabDeltaPaths": [
+    "LAB_MANIFEST.json",
+    "cli/lab.mjs",
+    "scripts/run_sequential.py",
+    "src/text-order-machine-review.mjs",
+    "test/text-order-machine-review.test.mjs",
+    "README.md",
+    "dashboard/index.html",
+    "data/artifacts/ARTIFACTS.json",
+    "data/evidence/ledger.jsonl"
+  ],
+  "labCodeBindings": [
+    {
+      "path": "cli/lab.mjs",
+      "sha256": "66f07fd012bb6683f7dacdf7c59c7e414c60ded19b68ee20672cf251919d2ac6"
+    },
+    {
+      "path": "scripts/run_sequential.py",
+      "sha256": "bf8f16d92293b00071e2502aa0cc9625cb38371f9f242884b8f4b06f67f90ffe"
+    },
+    {
+      "path": "src/text-order-machine-review.mjs",
+      "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+    },
+    {
+      "path": "src/order-machine-review.mjs",
+      "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+    }
+  ],
+  "labRegistrySha256": "6ff83d79ea88b61f77f7c660c396f75ec55dabc07eb17ef354e6e2c179faaa51",
+  "protectedFiles": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
+      "sha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_ENVELOPE_V1.json",
+      "sha256": "edce537a910d0d17e5396a73d446c8c35ae8f6cd8caa3cf528f5893305b0482f"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_100_EVIDENCE_LEDGER_V1.json",
+      "sha256": "a6af8e77dcecca72386b2a0ec30916de7fb7b5a312b5074594aa16a2035fa209"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_C1_FRESH_EVIDENCE_SUCCESSOR_V1.json",
+      "sha256": "f46e9beaa585329639fd7ec608d67d79bbfcd0f5e0b8e2bfdd80705294346447"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-c1-fresh-evidence.mjs",
+      "sha256": "941227f318581b50f506f3c78af3a1976fe7a81125a8e7a82929b574a79efcd4"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-c1-raw-readback.py",
+      "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
+    },
+    {
+      "path": "package.json",
+      "sha256": "f4ccb9cb2c6f7c0753ead9730caf009b16c9b06fd9bbb8083e937d51f9f913e1"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "ee4b7532f24371b7678eece7cb95df23ce4509830361c4629582dcb91507d432"
+    },
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json",
+      "sha256": "d7ecbbb579d37de7be706c059760eb36e5f6acde8c48a5dd4f0b05cb9fe347d4"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-order-c1.mjs",
+      "sha256": "b5ec996585b18086b009312f9056be3caf697a9c75619fb1fd2ef8eaeb4556b5"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-order-c1-readback.py",
+      "sha256": "e24b8784fc9b8f62d5b9ebaaf0e3ebc4ef0822d58da83bcc6e3ecde793fa2b9e"
+    },
+    {
+      "path": "docs/tasks/2026-09-16--interop-order-fast-cycle.md",
+      "sha256": "d20105f4c086c29387befa8aafe7445955cf946a8ac3e0cd90e16123e4b2b1c7"
+    }
+  ],
+  "claimBoundary": {
+    "exactUniqueCellIds": [
+      "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME"
+    ],
+    "onePhysicalExecution": true,
+    "independentFieldControls": true,
+    "pairedAtomicLabPublication": true,
+    "broadPass": false,
+    "programDone": false,
+    "runtimeProfile": "SOURCE_RUNTIME",
+    "outcome": "PRESERVED",
+    "newFixtureRequiresReview": true,
+    "historicalDifferentHeadCountsAdded": false,
+    "producerFlagsGrantCredit": false
+  },
+  "serialization": "ORDINAL_JSON_KEYS; SOURCE_OBSERVATION_USES_FROZEN_LAB_V2_RULES",
+  "recovery": "Reuse identical orphan index; return complete matching pair on exact retry; reject partial or duplicate pairs; preserve failed artifacts"
+}
