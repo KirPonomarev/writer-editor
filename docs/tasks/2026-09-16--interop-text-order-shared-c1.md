@@ -126,3 +126,10 @@ Keep failed raw evidence. Lab acceptance is separate from product admission.
 Neither two repeated RUNs nor two checks of one field create additional unique
 cells. Historical different-head TEXT and ORDER records are not added to the new
 two-cell count. No claim covers all 1120 targets or all 745 source requirements.
+
+### Git output compatibility within the same contour
+The actual static certification gate returned Git output as Buffer bytes and
+exposed a string-only assumption in the successor governance helper. Policy
+revision 2 records the bounded correction: decode textual Git output explicitly,
+preserve raw bytes for hashes, and test both forms. Native readers, authority
+checks and target cells remain unchanged; the failed gate grants no credit.

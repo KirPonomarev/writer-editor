@@ -1464,6 +1464,8 @@ it('shared governance admits only the delivered successor scope and gives no run
   };
   const good=shared.verifyTextOrderPostEvaluation({git});
   assert.equal(good.status,'PASS');assert.equal(good.cellAcceptanceAuthority,false);assert.equal(good.programDone,false);
+  assert.deepEqual(shared.verifyTextOrderPostEvaluation({git:args=>Buffer.from(git(args))}),good,
+    'the repository certification gate returns raw Git Buffers');
   changed.push('src/core/unrelated.js');assert.throws(()=>shared.verifyTextOrderPostEvaluation({git}),/UNADMITTED/);changed.pop();
   drift=['scripts/ops/rtk-interop-text-c1-readback.py'];
   assert.throws(()=>shared.verifyTextOrderPostEvaluation({git}),/IMPLEMENTATION_DRIFT/);

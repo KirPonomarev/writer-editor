@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "2a36a7a6dabe2eabe03df3601457abbcd2116ccc5ea4716acde33d36ebc319c8"
+      "sha256": "d9a4c756629a4c558ad886fed844d9cc7544969e2d5e883774117c33c49b5d01"
     },
     {
       "approved": true,
@@ -321,7 +321,7 @@
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "ec75cfb03c7fe3e936a3e62cd7bf008ed0234a83ff00728c91e46d7f981f27a3"
+      "sha256": "25bf2d631b048271c2874137e2bb2000cc7addee56d871700626c5bb460ef997"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "7ddf66446c85da78af6c7d9c12136344033517ecde9fb921fa38e241c7de301f"
+      "sha256": "2f93caa8139b9b88b9d51ea5724503c3730101a78f6ec1c4a76614638e8f0640"
     },
     {
       "approved": true,
@@ -627,7 +627,7 @@
       "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "e8968fad3644d393148ce56a88443316e49737bb0f9b8faf3e3e7a1dae995b48"
+      "sha256": "c458c5273d63a1e17f4a4704be7e1621f7a92df5a4380cbc100dcb59bc5ae785"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_TEXT_ORDER_C1_RECIPE_POLICY_V1.json",
@@ -636,7 +636,7 @@
       "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "8fd205ca279453d7d34bd158d36348ec4c827581c94b7256eed57c8acd680fcc"
+      "sha256": "1ecd8638863c441431cc1f297d09b5dbd18d03c1feb3759544f46ff443ed47a5"
     },
     {
       "filePath": "scripts/ops/rtk-interop-text-order-c1.mjs",
@@ -645,7 +645,7 @@
       "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
-      "sha256": "a5c6df7d304296694e296840a978c6c88a7ab04c28ce9e48f395dd9887142f70"
+      "sha256": "15989f494ba74cc6da87ccb9198d3128f57a52467ea50ca04d7f022b40a435e9"
     },
     {
       "filePath": "scripts/ops/rtk-interop-text-c1-readback.py",

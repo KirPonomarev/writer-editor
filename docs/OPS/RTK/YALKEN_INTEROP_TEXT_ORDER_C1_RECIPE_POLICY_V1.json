@@ -177,5 +177,7 @@
     "producerFlagsGrantCredit": false
   },
   "serialization": "ORDINAL_JSON_KEYS; SOURCE_OBSERVATION_USES_FROZEN_LAB_V2_RULES",
-  "recovery": "Reuse identical orphan index; return complete matching pair on exact retry; reject partial or duplicate pairs; preserve failed artifacts"
+  "recovery": "Reuse identical orphan index; return complete matching pair on exact retry; reject partial or duplicate pairs; preserve failed artifacts",
+  "revision": 2,
+  "compatibilityCorrection": "Decode text Git output from either Buffer or string in the existing certification adapter; preserve raw bytes for hashing and the same two-cell scope."
 }

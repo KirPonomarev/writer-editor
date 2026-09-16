@@ -10,7 +10,7 @@ export const TEXT_CELL='TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME';
 export const SHARED_CELLS=Object.freeze([TEXT_CELL,ORDER_CELL]);
 export const SHARED_MODE='SHARED_TEXT_ORDER_RECIPE_REVIEW_V1';
 export const SHARED_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_TEXT_ORDER_C1_RECIPE_POLICY_V1.json';
-export const SHARED_POLICY_SHA256='8fd205ca279453d7d34bd158d36348ec4c827581c94b7256eed57c8acd680fcc';
+export const SHARED_POLICY_SHA256='1ecd8638863c441431cc1f297d09b5dbd18d03c1feb3759544f46ff443ed47a5';
 export const SHARED_BASE='d91813a56d14f08dcd9f6ed1fad61bddacff05a4';
 export const SHARED_BASE_TREE='7e1e5e52ac176654a85c3d533ecfbffc4f29bf00';
 export const SHARED_ADMITTED_PATHS=Object.freeze([
@@ -57,22 +57,22 @@ export function readSharedPolicy(bytes) {
   return p;
 }
 export function verifyTextOrderPostEvaluation({candidateSha='HEAD',git=gitAt(ROOT)}={}) {
-  const resolved=git(['rev-parse',candidateSha]).trim();
+  const resolved=String(git(['rev-parse',candidateSha])).trim();
   requireThat(sha40(resolved),'SHARED_GIT_HEAD');
-  if(!git(['ls-tree','--name-only',resolved,'--',SHARED_POLICY_PATH]).trim())
+  if(!String(git(['ls-tree','--name-only',resolved,'--',SHARED_POLICY_PATH])).trim())
     return {status:'NOT_APPLICABLE',admittedPaths:[]};
   const policy=readSharedPolicy(git(['show',resolved+':'+SHARED_POLICY_PATH]));
-  const revisions=git(['log','--format=%H',resolved,'--',SHARED_POLICY_PATH]).trim().split('\n').filter(Boolean);
+  const revisions=String(git(['log','--format=%H',resolved,'--',SHARED_POLICY_PATH])).trim().split('\n').filter(Boolean);
   requireThat(revisions.length>0&&revisions.length<=32,'SHARED_DELIVERY_IDENTITY');
   const delivery=revisions.filter(sha=>sharedHash(git(['show',sha+':'+SHARED_POLICY_PATH]))===SHARED_POLICY_SHA256).at(-1);
   requireThat(sha40(delivery),'SHARED_DELIVERY_IDENTITY');
   git(['merge-base','--is-ancestor',SHARED_BASE,delivery]);
-  requireThat(git(['rev-parse',SHARED_BASE+'^{tree}']).trim()===SHARED_BASE_TREE,'SHARED_BASE_TREE');
-  const changed=git(['diff','--name-only','--no-renames',SHARED_BASE,delivery,'--']).trim().split('\n').filter(Boolean);
+  requireThat(String(git(['rev-parse',SHARED_BASE+'^{tree}'])).trim()===SHARED_BASE_TREE,'SHARED_BASE_TREE');
+  const changed=String(git(['diff','--name-only','--no-renames',SHARED_BASE,delivery,'--'])).trim().split('\n').filter(Boolean);
   requireThat(changed.every(p=>SHARED_ADMITTED_PATHS.includes(p)),'SHARED_UNADMITTED_DELTA');
   for(const b of policy.protectedFiles)
     requireThat(sharedHash(git(['show',resolved+':'+b.path]))===b.sha256,'SHARED_PROTECTED_FILE');
-  const drift=new Set(git(['diff','--name-only','--no-renames',delivery,resolved,'--',...SHARED_ADMITTED_PATHS]).trim().split('\n').filter(Boolean));
+  const drift=new Set(String(git(['diff','--name-only','--no-renames',delivery,resolved,'--',...SHARED_ADMITTED_PATHS])).trim().split('\n').filter(Boolean));
   const immutable=[SHARED_POLICY_PATH,TEXT_RAW_PATH,'scripts/ops/rtk-interop-text-order-c1.mjs',
     'docs/tasks/2026-09-16--interop-text-order-shared-c1.md'];
   requireThat(immutable.every(p=>!drift.has(p)),'SHARED_IMPLEMENTATION_DRIFT');
