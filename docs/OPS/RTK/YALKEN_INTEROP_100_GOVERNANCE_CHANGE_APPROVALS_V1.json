@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "858275e003251b3066aad6f664816977de553b51861e666c1f2ed523b3caf0b8"
+      "sha256": "e83ce7a1565d925652fe81381b1e32c4658ea1f1ccca9e80be1704eadcbbb3a5"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "cd17276d6aceead6a11dc09606e04cf2032c21851c78b4a92cfc0c6ff6e9c359"
+      "sha256": "e290986d310e5df48177e43957b38d00ca15dbb280af6c5ac38b6187e644abcb"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1077,7 +1077,7 @@
       "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "0087b2bb74c7f507c378debfdab3d1fae2e7e304af3561ab76073a382e23d6e8"
+      "sha256": "778722301a8e1efacf5dfbd7618961946b2bdda236b636c26d476697881a2c64"
     },
     {
       "filePath": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",

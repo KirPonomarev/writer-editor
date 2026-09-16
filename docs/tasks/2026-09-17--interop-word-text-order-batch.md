@@ -27,7 +27,8 @@ owns integration, real Word effects and the single delivery chain.
 - Effects: existing isolated native Word lifecycle and local evidence reads.
 - Events: no new product event or background job.
 - product ports: existing source reader and export adapter; no direct renderer writer.
-- Design OS ports and surfaces: none; DESIGN_TOOL_ROUTER: NOT_APPLICABLE.
+- Design OS ports and surfaces: none. Visual design routing does not apply because
+  this task changes no product visual contract.
 - state classes: PROJECT_STATE stays in the product; proof is DERIVED_STATE.
 - immutable identities: saved raw source revision, project/scene/node, run,
   current merged SHA/tree, provider, profile, packaged executable and artifacts.
