@@ -33,6 +33,8 @@ Existing DOCX command adapters, bounded snapshot store, renderer bundle, executa
 - test/contracts/rtk-interop-100-denominator.contract.test.js
 - docs/ARCH_DIFF_LOG.md
 
+- test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js
+
 ## DENYLIST
 
 - src/core/ipc-envelope-v1.cjs
@@ -87,7 +89,7 @@ TARGET: Saved 64-paragraph case passes with unchanged raw preservation law. No c
 
 CHECK_1_PRE_IDENTITY: Bootstrap, canonical identity, clean branch, encrypted writable T7 and architecture preflight.
 CHECK_2_POST_NEGATIVE: Reference forgery, mutation, mixed payload, kind, lifetime, storage budgets, project/ABA changes and async stale result; original oversized inline envelope still rejected.
-CHECK_3_POST_CHAIN: Actual parser and command adapter replay, existing DOCX preview/admission/atomic/idempotency contracts and unchanged IPC tests.
+CHECK_3_POST_CHAIN: The previous head had a stale assertion adding a blank paragraph between two paragraphs; correct it and separately assert preservation of an explicit empty paragraph. Actual parser and command adapter replay, existing DOCX preview/admission/atomic/idempotency contracts and unchanged IPC tests.
 CHECK_4_POST_NATIVE: Actual Word plus renderer confirmation on final merged head; independent raw evidence and measured full cycle.
 CHECK_5_POST_DELIVERY: Inventory, governance, guardrails, required CI, push, PR, merge and exact merged verification. Historical runs are not credited on a new runtime SHA.
 

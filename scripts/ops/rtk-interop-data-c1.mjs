@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='24c8a54cfeefd4c4ff96175c1efbe07ef2659eefc06d9df02cd90ab122223aa6';
+export const DATA_POLICY_SHA256='566ea4c0e9a3532f99acb60d7504531b4c3c151f636fa2e0da98dc19f689a3b1';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;
@@ -89,7 +89,7 @@ export function prepareDataC1({repoRoot=ROOT,labRoot,caseId}={}) {
   demand(same(actualProvider,policy.qualifiedProvider),'DATA_PROVIDER_QUALIFICATION');
   return {ok:true,admissionCredit:0,identity,labIdentity,input,casePath,caseSha256:raw.binding.sha256,policy,actualProvider,seconds:(performance.now()-started)/1000};
 }
-const DATA_ADMITTED_PATHS=["docs/tasks/2026-09-16--interop-data-recipes-c1.md", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json", "scripts/ops/rtk-interop-data-c1.mjs", "scripts/ops/rtk-interop-data-c1-readback.py", "scripts/ops/rtk-interop-100-denominator-v1.mjs", "test/contracts/rtk-interop-100-denominator.contract.test.js", "scripts/ops/r24/corrective/post-audit-certification-set.mjs", "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json", "src/main.js", "src/utils/docxImportPreviewReferences.js", "src/renderer/commands/projectCommands.mjs", "test/contracts/revision-bridge-docx-import-reference.contract.test.js", "docs/tasks/2026-09-16--docx-import-preview-reference.md", "src/renderer/editor.bundle.js", "docs/ARCH_DIFF_LOG.md"];
+const DATA_ADMITTED_PATHS=["docs/tasks/2026-09-16--interop-data-recipes-c1.md", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json", "scripts/ops/rtk-interop-data-c1.mjs", "scripts/ops/rtk-interop-data-c1-readback.py", "scripts/ops/rtk-interop-100-denominator-v1.mjs", "test/contracts/rtk-interop-100-denominator.contract.test.js", "scripts/ops/r24/corrective/post-audit-certification-set.mjs", "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json", "src/main.js", "src/utils/docxImportPreviewReferences.js", "src/renderer/commands/projectCommands.mjs", "test/contracts/revision-bridge-docx-import-reference.contract.test.js", "docs/tasks/2026-09-16--docx-import-preview-reference.md", "src/renderer/editor.bundle.js", "docs/ARCH_DIFF_LOG.md", "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js"];
 function readDataPolicyBytes(b){demand(hash(b)===DATA_POLICY_SHA256,'DATA_POLICY_PIN');return JSON.parse(b);}
 export function verifyDataC1PostEvaluation({candidateSha='HEAD',git=gitAt(ROOT)}={}) {
   const resolved=String(git(['rev-parse',candidateSha])).trim();

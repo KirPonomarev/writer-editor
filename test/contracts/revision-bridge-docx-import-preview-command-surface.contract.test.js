@@ -248,10 +248,14 @@ test('DOCX import preview command surface: clean content report returns wrapped 
   assert.equal(result.docxImportPreviewPlan.writeEffects, false);
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.mode, 'create-only');
   assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entryCount, 1);
-  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  assert.equal(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\nBravo');
   assert.equal(result.docxImportPreviewPlan.lossReport.mode, 'plain-text-only');
   assert.equal(port.calls.rememberAdmission.length, 1);
   assert.equal(port.calls.rememberAdmission[0].previewHash, result.docxImportPreviewPlan.previewHash);
+  const withEmptyParagraph = await port.handleDocxImportPreviewCommandSurface(toPayload(
+    contentPreviewReport(['Alpha', '', 'Bravo']),
+  ));
+  assert.equal(withEmptyParagraph.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
   assertNoForbiddenCommandFields(result);
 });
 

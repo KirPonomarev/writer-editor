@@ -26,7 +26,8 @@
     "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
     "docs/tasks/2026-09-16--docx-import-preview-reference.md",
     "src/renderer/editor.bundle.js",
-    "docs/ARCH_DIFF_LOG.md"
+    "docs/ARCH_DIFF_LOG.md",
+    "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -249,7 +250,7 @@
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
-        "sha256": "b2f8552b7afabab06b759da84601fcf27f98548338ed91883f09e428f51b29e0"
+        "sha256": "fea988da6e8d321af2fc85c54dc623c64e313855af055951eadec8914f6ecd0f"
       }
     ]
   }

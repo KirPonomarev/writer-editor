@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "f90095f9932c72dd4c3ff94b0acba1869585384a67794b0a2b3a9e284a971197"
+      "sha256": "f4b64b8cc5dd7875f0d3aed4d454d43f9977953f1ad2569fc7c9d28cbbfe18c8"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "216da36dd4925734db3ed124a2cb880433fc33835b7538610104e81204608c04"
+      "sha256": "07423c3087b7946af2660948d379e97b2d73492f2e4158cb6b21fd0ea2a92fb9"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "24c8a54cfeefd4c4ff96175c1efbe07ef2659eefc06d9df02cd90ab122223aa6"
+      "sha256": "566ea4c0e9a3532f99acb60d7504531b4c3c151f636fa2e0da98dc19f689a3b1"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "720d05a6c5ce27bbb453c3f427c840077a490bbf2244dfc774ed72ae7e4d5abe"
+      "sha256": "0192708b5505ef42b6855ca4a10e5dc8799909a001cffc01bd994221e9f3719f"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -726,7 +726,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "b2f8552b7afabab06b759da84601fcf27f98548338ed91883f09e428f51b29e0"
+      "sha256": "fea988da6e8d321af2fc85c54dc623c64e313855af055951eadec8914f6ecd0f"
     },
     {
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -736,6 +736,15 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
       "sha256": "7e0ad33e537c321c7d1abef0efe83885c0b60b6e264d9a562a83cf855589f31f"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "077dba8260ea576acce09a5f6929dd18eee966777933572ad062a010e82ac1aa"
     }
   ],
   "evidenceStampIds": [
