@@ -6803,6 +6803,17 @@ body.dark-theme .authoring-surface__item[data-state="dirty"] {
   margin-top: 0;
 }
 
+/* Outside markers collide with the paginated shape-outside float. Keep the
+   native marker and first paragraph in one line flow, including across gaps. */
+.main-content--editor #editor.tiptap-host .ProseMirror li {
+  list-style-position: inside;
+  margin-block: 1em;
+}
+
+.main-content--editor #editor.tiptap-host .ProseMirror li > p:first-child {
+  display: inline;
+}
+
 .main-content--editor #editor.tiptap-host {
   width: var(--page-width-px);
   max-width: var(--page-width-px);
