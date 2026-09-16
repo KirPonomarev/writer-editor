@@ -368,6 +368,13 @@ function interop100DenominatorAdmissionGitFixture({ changedPaths, mutateBeforeSe
   git(repoRoot, ['add', 'base.txt']);
   git(repoRoot, ['commit', '-q', '-m', 'base']);
   const files = new Map([...new Set([...e.admittedPaths, e.denominatorPath])].map((relative) => [relative, fs.readFileSync(relative)]));
+  // This fixture exercises a historical admission. New unrelated test files
+  // must not change its inventory; the live inventory has its own required gate.
+  const inventoryFixture = objectFromCommit('0a45daf438c778143afad28ba02b519393a11f9b', e.inventoryPath);
+  const historicalInventory = JSON.parse(inventoryFixture);
+  assert.equal(historicalInventory.entries.length, e.currentInventoryFileDenominator);
+  assert.equal(historicalInventory.totals.all, e.currentInventoryFileDenominator);
+  files.set(e.inventoryPath, Buffer.from(inventoryFixture));
   const read = (relative) => JSON.parse(files.get(relative));
   const put = (relative, value) => files.set(relative, canonicalBytes(value));
   const writeRepoFilesFromMap = () => {
@@ -472,6 +479,17 @@ const verifyInterop100DenominatorAdmissionFixture = (fixture) => verifyR24Intero
   repoRoot: fixture.repoRoot,
 });
 
+test('R24 interop100 denominator hardening exception rejects inventory from a different scope', () => {
+  const fixture = interop100DenominatorAdmissionGitFixture({ mutateBeforeSeal: ({ e, read, put }) => {
+    const inventory = read(e.inventoryPath);
+    inventory.totals.all += 1;
+    put(e.inventoryPath, inventory);
+  } });
+  try {
+    assert.throws(() => verifyInterop100DenominatorAdmissionFixture(fixture), /E_R24_INTEROP100_DENOMINATOR_INVENTORY_SHAPE/);
+  } finally { fixture.cleanup(); }
+});
+
 test('R24 interop100 denominator hardening exception accepts exact current delta', () => {
   const fixture = interop100DenominatorAdmissionGitFixture();
   try {
@@ -484,16 +502,17 @@ test('R24 interop100 denominator hardening exception accepts exact current delta
     assert.equal(result.claimVerdict, 'AUTHORITATIVE_REHYDRATION_REQUIRED');
     assert.equal(result.supportedDenominatorPromotion, false);
     assert.equal(result.programDone, false);
+    // Sealing rebinds the frozen inventory's two test hashes as one new file.
     assert.deepEqual(fixture.publisherSummary(), {
-      deduped: 5,
+      deduped: 4,
       failures: 0,
-      fsyncCalls: 22,
-      published: 11,
+      fsyncCalls: 24,
+      published: 12,
       readbackCalls: 16,
-      renameCalls: 11,
-      uniquePathByteHashCount: 11,
+      renameCalls: 12,
+      uniquePathByteHashCount: 12,
       uniquePathCount: 8,
-      writeCalls: 11,
+      writeCalls: 12,
     });
   } finally {
     fixture.cleanup();

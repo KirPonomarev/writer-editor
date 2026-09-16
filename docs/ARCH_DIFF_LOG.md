@@ -104,3 +104,12 @@
 - Риск: future agents могут принять post-edit declaration update за обычный порядок и расширять wording/evidence scope без fresh owner authority.
 - Rollback: откатить эту запись, новый command-palette successor, WP307 test update и три product slice files; WP806 historical bytes не затрагиваются.
 - План удаления исключения: запись закрывает только этот bounded current-editor successor repair. Future editor wording-surface changes должны заранее включать successor bookkeeping в clean declaration/preflight либо получать отдельный fresh contour.
+
+
+## 2026-09-16 — C1 large-document import reference repair
+
+Owner-authorized task C1_IMPORT_BREADTH_REPAIR_20260916 repairs the reproduced 64-paragraph E_ENVELOPE_BREADTH failure. The data-recipe qualification now admits the explicitly enumerated runtime repair and its generated renderer bundle, guarded by exact source hashes. This extends the previous OPS-only post-evaluation path exception for this bounded repair; it grants no cell acceptance and carries no historical runtime PASS onto the new source. The raw independent reader, frozen denominator and global IPC limits remain byte-identical. Fresh native merged-head evidence is required. Rollback: revert this product PR and corresponding local Lab driver qualification; retain prior evidence.
+
+### C1 import preview repair — CI fixture follow-up
+
+The candidate CI run 35094206293 identified a historical bundle assertion comparing an old wording successor with the new generated bundle, and an old admission fixture loading the growing live test inventory. The bounded task now includes the two affected test files. Keep all historical successors and the admission verifier unchanged: bind the current bundle through the existing exact runtime repair qualification; seed the historical unit fixture from the recorded 0a45daf base inventory and retain a negative control for wrong inventory scope. The real current inventory remains separately mandatory. This grants no product cell PASS. Rollback remains the same PR and corresponding local Lab qualification.

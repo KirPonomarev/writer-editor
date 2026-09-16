@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='69c2c4d972b83a76c5535c1e766010b03d7da4c7dce6327ab5732fb730fa4503';
+export const DATA_POLICY_SHA256='465240c5614f88df5ba13ee70ec4cdb39d89c67aed95b011f64969f3b9e36ab7';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;
@@ -42,6 +42,7 @@ export function loadDataPolicy() {
   demand(p.schemaVersion==='YALKEN_INTEROP_DATA_C1_POLICY_V1'&&same(p.targetCellIds,CELLS),'DATA_POLICY_SCOPE');
   for(const binding of p.protectedFiles)demand(hash(readOrderFile(ROOT,binding.path).bytes)===binding.sha256,'DATA_PROTECTED_FILE');
   demand(hash(readOrderFile(ROOT,RAW_PATH).bytes)===p.rawCheckerSha256,'DATA_CHECKER_PIN');
+  for(const b of p.qualifiedRuntimeRepair.sourceBindings)demand(hash(readOrderFile(ROOT,b.path).bytes)===b.sha256,'DATA_RUNTIME_REPAIR_PIN');
   return p;
 }
 function cleanIdentity(root) {
@@ -88,7 +89,7 @@ export function prepareDataC1({repoRoot=ROOT,labRoot,caseId}={}) {
   demand(same(actualProvider,policy.qualifiedProvider),'DATA_PROVIDER_QUALIFICATION');
   return {ok:true,admissionCredit:0,identity,labIdentity,input,casePath,caseSha256:raw.binding.sha256,policy,actualProvider,seconds:(performance.now()-started)/1000};
 }
-const DATA_ADMITTED_PATHS=["docs/tasks/2026-09-16--interop-data-recipes-c1.md", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json", "scripts/ops/rtk-interop-data-c1.mjs", "scripts/ops/rtk-interop-data-c1-readback.py", "scripts/ops/rtk-interop-100-denominator-v1.mjs", "test/contracts/rtk-interop-100-denominator.contract.test.js", "scripts/ops/r24/corrective/post-audit-certification-set.mjs", "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json"];
+const DATA_ADMITTED_PATHS=["docs/tasks/2026-09-16--interop-data-recipes-c1.md", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json", "scripts/ops/rtk-interop-data-c1.mjs", "scripts/ops/rtk-interop-data-c1-readback.py", "scripts/ops/rtk-interop-100-denominator-v1.mjs", "test/contracts/rtk-interop-100-denominator.contract.test.js", "scripts/ops/r24/corrective/post-audit-certification-set.mjs", "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json", "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json", "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json", "src/main.js", "src/utils/docxImportPreviewReferences.js", "src/renderer/commands/projectCommands.mjs", "test/contracts/revision-bridge-docx-import-reference.contract.test.js", "docs/tasks/2026-09-16--docx-import-preview-reference.md", "src/renderer/editor.bundle.js", "docs/ARCH_DIFF_LOG.md", "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js", "test/unit/r24-wp307-writer-local-profile-integration.test.js", "test/contracts/r24-post-audit-certification-set.contract.test.mjs"];
 function readDataPolicyBytes(b){demand(hash(b)===DATA_POLICY_SHA256,'DATA_POLICY_PIN');return JSON.parse(b);}
 export function verifyDataC1PostEvaluation({candidateSha='HEAD',git=gitAt(ROOT)}={}) {
   const resolved=String(git(['rev-parse',candidateSha])).trim();
@@ -96,6 +97,8 @@ export function verifyDataC1PostEvaluation({candidateSha='HEAD',git=gitAt(ROOT)}
   if(!String(git(['ls-tree','--name-only',resolved,'--',DATA_POLICY_PATH])).trim())
     return {status:'NOT_APPLICABLE',admittedPaths:[]};
   const policy=readDataPolicyBytes(git(['show',resolved+':'+DATA_POLICY_PATH]));
+  demand(same(policy.admittedPaths,DATA_ADMITTED_PATHS),'DATA_DELIVERY_SCOPE');
+  for(const b of policy.qualifiedRuntimeRepair.sourceBindings)demand(hash(git(['show',resolved+':'+b.path]))===b.sha256,'DATA_RUNTIME_REPAIR_PIN');
   const revisions=String(git(['log','--format=%H',resolved,'--',DATA_POLICY_PATH])).trim().split('\n').filter(Boolean);
   demand(revisions.length>0&&revisions.length<=32,'SHARED_DELIVERY_IDENTITY');
   const delivery=revisions.filter(sha=>hash(git(['show',sha+':'+DATA_POLICY_PATH]))===DATA_POLICY_SHA256).at(-1);

@@ -19,7 +19,17 @@
     "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
     "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
     "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json"
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "src/main.js",
+    "src/utils/docxImportPreviewReferences.js",
+    "src/renderer/commands/projectCommands.mjs",
+    "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+    "docs/tasks/2026-09-16--docx-import-preview-reference.md",
+    "src/renderer/editor.bundle.js",
+    "docs/ARCH_DIFF_LOG.md",
+    "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
+    "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+    "test/contracts/r24-post-audit-certification-set.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -85,6 +95,10 @@
     {
       "path": "docs/tasks/2026-09-16--interop-text-order-shared-c1.md",
       "sha256": "c458c5273d63a1e17f4a4704be7e1621f7a92df5a4380cbc100dcb59bc5ae785"
+    },
+    {
+      "path": "src/core/ipc-envelope-v1.cjs",
+      "sha256": "157617747d4387ec7af664b6eff613af8f90742a9648e2a192d55e36b0564b8d"
     }
   ],
   "rawCheckerSha256": "62ca427e6bc31d199ed81bbb2d0ca224cf723cd04c5e4450b0a467e7f1876a8f",
@@ -147,7 +161,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "904faaf8050b107554725b5b809ba9e2f8efd41e7e5dd388d2b5834f118c7c8a"
+      "sha256": "0ddeb452f3c80ef6a978bf99bdfc995c95a6b2f1863142df61e5ab5e612ff3a6"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -210,5 +224,44 @@
       "id": "REQ-V2PORTABILITY-288f6f81f7a5",
       "sha256": "851c600e5bb8c38ac5d92844a164eed409c5e4231024a4b35d51e7a05edc84de"
     }
-  ]
+  ],
+  "qualifiedRuntimeRepair": {
+    "id": "DOCX_IMPORT_PREVIEW_REFERENCE_REPAIR_V1",
+    "bindingBaseSha": "0a45daf438c778143afad28ba02b519393a11f9b",
+    "scope": "Compact reference transport with unchanged raw preservation oracle and IPC limits; requires fresh native evidence, no historical PASS carry-forward",
+    "sourceBindings": [
+      {
+        "path": "src/main.js",
+        "sha256": "68c4810f682a61da3841c15d8f7686d78feb7be41ced57bc5039ef1a8840c47e"
+      },
+      {
+        "path": "src/utils/docxImportPreviewReferences.js",
+        "sha256": "a8e370b449affb34bee65b5de5ec006923db58208684f4c7d6038a79cc13119c"
+      },
+      {
+        "path": "src/renderer/commands/projectCommands.mjs",
+        "sha256": "7fac98e87f9cee4d28b6d41d1725486a769ee89581eab03ab99438f114cb7cd1"
+      },
+      {
+        "path": "src/renderer/editor.bundle.js",
+        "sha256": "879159abd0c129093dde1e6cc957fff3860825a728a2c920a98e01088197487b"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
+        "sha256": "3b959f1cbea4852ba036d6373ea6560ee4be19c8c9c050acd9ee95242c9a94c5"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
+        "sha256": "6b7d8892b8c3b4beb9c16cab7b1ec632c8bf63f463360bbf7064d84c210acaee"
+      },
+      {
+        "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+        "sha256": "006dfa0f2b19745ab5ff6b357458e63612b4c4c806b91c2d5b568909d63de851"
+      },
+      {
+        "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+        "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
+      }
+    ]
+  }
 }

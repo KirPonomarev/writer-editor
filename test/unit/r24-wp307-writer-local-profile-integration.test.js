@@ -192,7 +192,15 @@ test('WP307 preserves its historical wording hash and follows admitted append-on
   assert.deepEqual(textSingleSceneSuccessor.surfaceOverrides.map((entry) => entry.path), ['src/renderer/editor.js']);
   assert.equal(textSingleSceneEditor.sha256, digest);
   assert.equal(textSingleSceneSuccessor.generatedRuntimeArtifact.path, 'src/renderer/editor.bundle.js');
-  assert.equal(textSingleSceneSuccessor.generatedRuntimeArtifact.sha256, bundleDigest);
+  // Keep the historical wording successor intact. The existing C1 repair
+  // qualification binds the later generated bundle to its actual bytes.
+  assert.equal(textSingleSceneSuccessor.generatedRuntimeArtifact.sha256, 'sha256:7afd94715444f1793f5dbe631ebce894a0b355447d8d3d7d034c05a705640947');
+  const dataPolicy = JSON.parse(read('docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json'));
+  const repair = dataPolicy.qualifiedRuntimeRepair;
+  assert.equal(repair.id, 'DOCX_IMPORT_PREVIEW_REFERENCE_REPAIR_V1');
+  assert.equal(repair.bindingBaseSha, '0a45daf438c778143afad28ba02b519393a11f9b');
+  const repairedBundle = repair.sourceBindings.find((entry) => entry.path === 'src/renderer/editor.bundle.js');
+  assert.equal(`sha256:${repairedBundle.sha256}`, bundleDigest);
   assert.equal(textSingleSceneSuccessor.authority.nonClaims.includes('no cell acceptance'), true);
   assert.equal(wp307Successor.programDone, false);
   assert.equal(wp503Successor.programDone, false);
