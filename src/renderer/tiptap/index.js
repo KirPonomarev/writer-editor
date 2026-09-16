@@ -3,6 +3,7 @@ import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import { DocumentTextStyle } from './documentTextStyle.mjs'
+import { DocumentParagraphAlignment, readParagraphAlignment } from './documentParagraphAlignment.mjs'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -259,6 +260,7 @@ function readFormattingState(editor) {
       link: false,
       linkActive: false,
       linkHref: '',
+      paragraphAlignment: '',
       paragraphStyle: '',
       characterStyle: '',
       selectionEmpty: true,
@@ -287,6 +289,7 @@ function readFormattingState(editor) {
     link: linkActive,
     linkActive,
     linkHref: linkAttributes && typeof linkAttributes.href === 'string' ? linkAttributes.href : '',
+    paragraphAlignment: readParagraphAlignment(editor),
     paragraphStyle: getStructuredParagraphStyleOption(editor),
     characterStyle: getStructuredCharacterStyleOption(editor),
     selectionEmpty,
@@ -533,6 +536,7 @@ export function initTiptap(mountEl, options = {}) {
         underline: false,
       }),
       DocumentTextStyle,
+      DocumentParagraphAlignment,
       Color,
       Highlight.configure({
         multicolor: true,
@@ -688,6 +692,13 @@ export function getTiptapFormattingState() {
 export function runTiptapFormatCommand(commandName, commandPayload = undefined) {
   if (!currentEditorInstance || !currentEditorInstance.commands) {
     return { performed: false, action: commandName, reason: 'EDITOR_UNAVAILABLE' }
+  }
+
+  if (commandName === 'setParagraphAlignment') {
+    const value = commandPayload?.value
+    const performed = runFocusedChainCommand('setParagraphAlignment', value)
+    notifyFormattingStateChange()
+    return { performed: performed === true, action: commandName, reason: performed ? null : 'ALIGNMENT_NOT_CHANGED' }
   }
 
   if (commandName === 'clearList') {
