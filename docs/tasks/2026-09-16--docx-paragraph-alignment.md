@@ -27,6 +27,9 @@ Structured editor transaction, bounded paragraph attributes and DOCX mapping; in
 - src/utils/docxImportLocalFilePreview.js
 - src/main.js
 - test/contracts/revision-bridge-docx-alignment.contract.test.js
+- test/unit/r24-wp307-writer-local-profile-integration.test.js
+- test/unit/sector-m-toolbar-expansion-wave-a1.test.js
+- test/contracts/rtk-release01-terminal-claims.contract.test.js
 - docs/tasks/2026-09-16--docx-paragraph-alignment.md
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - scripts/ops/rtk-interop-data-c1.mjs
@@ -70,6 +73,8 @@ CHECK_1_PRE_IDENTITY: Secure volume, clean branch, bootstrap, canon continuity a
 CHECK_2_POST_ALIGNMENT: Enums, defaults, inheritance, direct override, namespace, duplicates, malicious values, selected and adjacent paragraphs, no-alignment bytes.
 CHECK_3_POST_NATIVE: Word export/import/reopen, computed editor alignment, actual controls, undo/redo, raw corruptions and existing typography/color/list/text proof.
 CHECK_3A_POST_MAIN_PROJECTION: Execute the actual main-process source-report canonicalizer; preserve validated alignment while dropping unrelated fields and rejecting forged values in the downstream parser.
+CHECK_3B_CURRENT_BINDING: Preserve historical wording successors and validate the current editor against the existing digest-pinned C1 runtime repair qualification; reject absent, duplicate, malformed and tampered bindings.
+WORD_PROOF_LIMIT: Native open/save/readback with identical bytes does not prove Word reserialization. A separate Save As probe creates different bytes and exposes explicit-left normalization and unresolved theme-font defaults. Full STYLES remains unproved; these limitations cannot be counted as a passing full roundtrip.
 CHECK_4_POST_DELIVERY: Affected tests, tracked generated build, inventory, policy, certification, CI, normal merge and fresh exact-head verification.
 
 ## STOP_CONDITION

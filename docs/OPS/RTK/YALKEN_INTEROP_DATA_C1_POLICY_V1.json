@@ -68,7 +68,9 @@
     "src/renderer/tiptap/documentParagraphAlignment.mjs",
     "src/renderer/editor.js",
     "test/contracts/revision-bridge-docx-alignment.contract.test.js",
-    "docs/tasks/2026-09-16--docx-paragraph-alignment.md"
+    "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
+    "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
+    "test/contracts/rtk-release01-terminal-claims.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -295,7 +297,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "006dfa0f2b19745ab5ff6b357458e63612b4c4c806b91c2d5b568909d63de851"
+        "sha256": "4abc44c73b0df4ddc6e3deb4b0529e237574c1cf0a61bd1e60c1fe88815d9dbd"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -455,7 +457,15 @@
       },
       {
         "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
-        "sha256": "42d3e2c7b7a808274dad2ce3fd42615584c4b0db3372bd91343025fd441d1f2e"
+        "sha256": "63b0d168fa06a334a82e6a6e76018b11531442c39c1ada254d8ca5a25bcb3f77"
+      },
+      {
+        "path": "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
+        "sha256": "daa10e578414d45ddb16b3af8f97b37a401f926b0f4fb0fc00265d19c4b9e79e"
+      },
+      {
+        "path": "test/contracts/rtk-release01-terminal-claims.contract.test.js",
+        "sha256": "88003a56a4171d5c65e7c7dd3d916e00d54ec05c2a0e4b064b7934647eadf43a"
       }
     ],
     "followupRepair": {
