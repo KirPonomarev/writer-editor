@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
-      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
-      "sha256": "e24b3e84b13a88f602c3fd958980a5acb549268b5507133e9e50c61ea8859da3"
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "91b5b4a1fd5c279a11790e58d1a067a504303e3a7ee0fba13e18c953d4abbd94"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
-      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
-      "sha256": "d0ab77d0d0ae691b8b38ba77374516a3521951f1abe8e7c34d49ae736769ddd4"
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "cf7592176d8736d6f481bb6f6e81d47433187558b3814bae00a3574c83f8c96f"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
-      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
-      "sha256": "a038a345afe566653dfe390f495d3dac2b313890dfcb7e98634a56e8a4e2eacf"
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "ab043cf0df27659b981c221616351be81915cee9785ccc649933e0992327c251"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
-      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
-      "sha256": "fd421fcf37f5aacac7a8525da4c98f28989725d4d358145345ef7c004aedf66b"
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "15a37de799c385276cb6d32ad54556ca80701c0a67f09cf93bca3f5686a50ed2"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -799,6 +799,33 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
       "sha256": "c3efb15b7d53fb6c5f4c5e2d17735b93508b205e2122a065fbb3c31eed3e85d2"
+    },
+    {
+      "filePath": ".github/workflows/oss-policy.yml",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "cfffc518c0280219b4607236f0c4ec87df706c1dcbb8eca17d62c512b5a8a4eb"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--parallel-postbuild-ci-lanes.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "25f015863b3e82c9592217a78f7588dce0860a751c847be68c8d7c0f40151353"
+    },
+    {
+      "filePath": "test/contracts/r24-postbuild-lanes.contract.test.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
+      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
+      "sha256": "4d6369b53962a88fc55f9701c2332773edd0945ef1246f11b27010ef81331e17"
     }
   ],
   "evidenceStampIds": [

@@ -188,6 +188,10 @@ jobs:
   actual-renderer-build-rtk:
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [post-audit, rtk]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -197,11 +201,14 @@ jobs:
           node-version-file: .node-version
           cache: npm
       - run: npm ci --engine-strict
+      - name: Verify post-build lane coverage and failure gates
+        run: node --test test/contracts/r24-postbuild-lanes.contract.test.mjs
       - name: Build the actual shipped renderer and preload artifacts
         run: npm run build:renderer
       - name: Require build-to-clean-tree policy
         run: git diff --exit-code -- src/renderer/editor.bundle.js src/preload.bundle.cjs
       - name: Run focused post-audit negative contracts after real build
+        if: ${{ matrix.lane == 'post-audit' }}
         run: |
           npm run test:r24-post-audit
           node --test test/contracts/r24-post-audit-certification-set.contract.test.mjs test/contracts/r24-protected-wip-snapshot.contract.test.mjs test/contracts/r24-wp604-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp605-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp710-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp606-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp607-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp800-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp801-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp802-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp803-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp804-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp805-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp806-post-audit-compatibility.contract.test.mjs test/contracts/r24-wp708-post-audit-compatibility.contract.test.mjs
@@ -228,6 +235,7 @@ jobs:
             node --test test/contracts/r24-wp709-terminal-carriers.contract.test.mjs test/contracts/r24-wp709-post-audit-compatibility.contract.test.mjs
           )
       - name: Run full maintained RTK after real build
+        if: ${{ matrix.lane == 'rtk' }}
         run: npm run test:rtk
 
   ops-vector:

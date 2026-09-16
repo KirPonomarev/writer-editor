@@ -38,7 +38,10 @@
     "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
     "src/derived/navigatorCounters.mjs",
     "test/unit/navigator-derived-counters.test.js",
-    "docs/tasks/2026-09-16--docx-navigator-visible-word-count.md"
+    "docs/tasks/2026-09-16--docx-navigator-visible-word-count.md",
+    ".github/workflows/oss-policy.yml",
+    "test/contracts/r24-postbuild-lanes.contract.test.mjs",
+    "docs/tasks/2026-09-16--parallel-postbuild-ci-lanes.md"
   ],
   "protectedFiles": [
     {
@@ -306,6 +309,18 @@
       {
         "path": "docs/tasks/2026-09-16--docx-navigator-visible-word-count.md",
         "sha256": "c3efb15b7d53fb6c5f4c5e2d17735b93508b205e2122a065fbb3c31eed3e85d2"
+      },
+      {
+        "path": ".github/workflows/oss-policy.yml",
+        "sha256": "cfffc518c0280219b4607236f0c4ec87df706c1dcbb8eca17d62c512b5a8a4eb"
+      },
+      {
+        "path": "test/contracts/r24-postbuild-lanes.contract.test.mjs",
+        "sha256": "4d6369b53962a88fc55f9701c2332773edd0945ef1246f11b27010ef81331e17"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--parallel-postbuild-ci-lanes.md",
+        "sha256": "25f015863b3e82c9592217a78f7588dce0860a751c847be68c8d7c0f40151353"
       }
     ],
     "followupRepair": {
@@ -317,6 +332,11 @@
       "id": "NAVIGATOR_VISIBLE_SCENE_WORD_COUNT_V1",
       "bindingBaseSha": "d97340e691e12745eb199fc172904429977a4fbe",
       "scope": "Navigator uses decoded visible text; raw identity hashes remain unchanged. No whole-cell credit; fresh native evidence remains required."
+    },
+    "ciSchedulingRepair": {
+      "id": "PARALLEL_POSTBUILD_CI_LANES_V1",
+      "bindingBaseSha": "9e611228f1db19e18784c2b3d8e2da51f8b06939",
+      "scope": "CI scheduling only: unchanged post-audit and RTK command blocks run in parallel after separate builds. Protected aggregate failure gate unchanged. No runtime or whole-cell credit."
     }
   }
 }
