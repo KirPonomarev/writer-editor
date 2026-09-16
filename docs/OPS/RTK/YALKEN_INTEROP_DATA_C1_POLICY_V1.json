@@ -60,7 +60,8 @@
     "src/renderer/tiptap/index.js",
     "src/renderer/tiptap/documentTextStyle.mjs",
     "test/contracts/revision-bridge-docx-typography.contract.test.js",
-    "docs/tasks/2026-09-16--docx-typography-roundtrip.md"
+    "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
+    "test/unit/sector-m-tiptap-runtime-bridge.test.js"
   ],
   "protectedFiles": [
     {
@@ -415,7 +416,11 @@
       },
       {
         "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
-        "sha256": "591f98f927f97d5cb362d36752737786fc04de4906b554e0f956ca1c8267bc79"
+        "sha256": "5a7f901615631f73c8a65b88c06d7932be4874b4a91c1b154726ea23bbc4eb59"
+      },
+      {
+        "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+        "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
       }
     ],
     "followupRepair": {

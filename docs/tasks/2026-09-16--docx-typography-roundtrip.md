@@ -23,6 +23,7 @@ Bounded font/size encoding, editor attributes and preview reconstruction; indepe
 - src/renderer/tiptap/index.js
 - src/renderer/tiptap/documentTextStyle.mjs
 - test/contracts/revision-bridge-docx-typography.contract.test.js
+- test/unit/sector-m-tiptap-runtime-bridge.test.js
 - docs/tasks/2026-09-16--docx-typography-roundtrip.md
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - scripts/ops/rtk-interop-data-c1.mjs
