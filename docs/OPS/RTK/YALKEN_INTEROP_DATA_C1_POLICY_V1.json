@@ -61,7 +61,8 @@
     "src/renderer/tiptap/documentTextStyle.mjs",
     "test/contracts/revision-bridge-docx-typography.contract.test.js",
     "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
-    "test/unit/sector-m-tiptap-runtime-bridge.test.js"
+    "test/unit/sector-m-tiptap-runtime-bridge.test.js",
+    "src/io/inlineTypography.cjs"
   ],
   "protectedFiles": [
     {
@@ -276,7 +277,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "143ee4ed0d7529afdf7a01a762dd71528ba7c526a0d20e3fe62c5d1120206ada"
+        "sha256": "e36399343f5ee9ab65c48aa5bed5f57ee8f305a1949fcbb04ec6982cd30a3235"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -392,15 +393,15 @@
       },
       {
         "path": "src/io/inlineTypography.mjs",
-        "sha256": "71701428d79e17dd606dcb608969092383d8b8f07ade2d0da4badfd70a462630"
+        "sha256": "4f7ecb4a0b684c112c7401175ee9dc388ac19bbcf75a2069b232032accf854c2"
       },
       {
         "path": "src/export/docx/docxInlineTypography.js",
-        "sha256": "b82df105fa719953c5472a20fc00cfd4b5cef372291e1e0dbb4032990a195176"
+        "sha256": "6559d0813aacea3f118c42ce7e6a04f85e85a29606721f6e32007fed6d51369a"
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "064af107e8ea11f2a04c751b5e011d29f69394bacd0178cfc885519e9bff5d05"
+        "sha256": "827060fe180e00be6a73b1149e47b787f80410800460dfeaf7171638537c2e1b"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -412,15 +413,19 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-typography.contract.test.js",
-        "sha256": "f6f907aec75f0745f9de2532591cb2312d35b509114dd28e9e48982af175c6c5"
+        "sha256": "0b297fc72e4e9431351a8ff820fd7c0a0a20ff41bc6ff9dbeb344edfca325711"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
-        "sha256": "6921c0370dd559a788b8762a96902e868efebc14767112e0a1916de0c6507a07"
+        "sha256": "f4ba3423a3c1352312c9bd29827b0e497ebefd5ba4ae38c794cb9beff5b83906"
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
         "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
+      },
+      {
+        "path": "src/io/inlineTypography.cjs",
+        "sha256": "6de19cf218968c341cb869eb73681432683add3c41bfc621abf6e2336a244be9"
       }
     ],
     "followupRepair": {

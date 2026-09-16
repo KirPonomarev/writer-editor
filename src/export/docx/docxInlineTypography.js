@@ -1,6 +1,6 @@
 'use strict';
 
-const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.mjs');
+const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
 const { escapeXml } = require('./docxTextXml.js');
 
 function buildDocxTypographyPropertiesXml(inline = {}) {

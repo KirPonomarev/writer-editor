@@ -15,6 +15,7 @@ Bounded font/size encoding, editor attributes and preview reconstruction; indepe
 
 ## ALLOWLIST
 - src/io/inlineTypography.mjs
+- src/io/inlineTypography.cjs
 - src/export/docx/docxInlineTypography.js
 - src/export/docx/docxMinBuilder.js
 - src/export/docx/docxReviewPacketBuilder.js
@@ -66,6 +67,7 @@ DESIGN_TOOL_ROUTER: Applicable Lazyweb first. Consulted existing document editor
 ## CHECKS
 CHECK_1_PRE_IDENTITY: Secure mount, clean branch, bootstrap, unchanged already-read canon objects and declaration preflight.
 CHECK_2_POST_FONT: Literal family, exact size, defaults, per-slot cascade, namespace, invalid/forged values, plain neighbors and unchanged no-font bytes.
+CHECK_2A_POST_MODULE_GRAPH: Fresh-process ESM-first, CJS-first and concurrent loading of the existing PDF/archive graph; one pure CommonJS value helper with an ESM facade, bundled by existing esbuild for the editor.
 CHECK_3_POST_NATIVE: Actual Word, independent OOXML/canonical/HTML typography, actual platform font fallback, raw corruptions and existing text/order admission.
 CHECK_4_POST_DELIVERY: Required affected tests, real build with byte-identical tracked renderer and preload, policy, inventory, certification, CI, normal merge and fresh exact-head verification.
 

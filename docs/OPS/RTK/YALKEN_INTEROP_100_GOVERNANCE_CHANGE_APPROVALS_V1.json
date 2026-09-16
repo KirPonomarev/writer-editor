@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "b8ff88390f5c74f59a4d51edaf228f1a7e1aade9ccb1b1935b15c4cc8ed0a752"
+      "sha256": "729f563c6f35695223bf2327848ba146a341b6d3abe1678bb591031d18f95c76"
     },
     {
       "approved": true,
@@ -357,7 +357,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/renderer/editor.bundle.js",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "143ee4ed0d7529afdf7a01a762dd71528ba7c526a0d20e3fe62c5d1120206ada"
+      "sha256": "e36399343f5ee9ab65c48aa5bed5f57ee8f305a1949fcbb04ec6982cd30a3235"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "4ea2d4a05f42697b04ff21a54641d2f5f7dee57237468ddf46744d5b589892e1"
+      "sha256": "11c5f64385ca9ea920de284c93a130d9b5b58a441887537a4054416cdb32dfc0"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "1385cf48e8dd122ba6a3ebd028af2bd4cfa25888344a25d182673f3d557abc79"
+      "sha256": "97345716afb82bea23f5a17b6d48e93ba867b859a95c89df9b3f45445993c888"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "3c69a85133ede2978176f44390c4fc52b366836d86494cf170b285f6a6a92d30"
+      "sha256": "d2615ac8b0283fbd68ae1f5b806acda07448bb3f31e22cbc8bc349260832ae06"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -924,7 +924,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "064af107e8ea11f2a04c751b5e011d29f69394bacd0178cfc885519e9bff5d05"
+      "sha256": "827060fe180e00be6a73b1149e47b787f80410800460dfeaf7171638537c2e1b"
     },
     {
       "filePath": "src/renderer/tiptap/index.js",
@@ -942,7 +942,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "6921c0370dd559a788b8762a96902e868efebc14767112e0a1916de0c6507a07"
+      "sha256": "f4ba3423a3c1352312c9bd29827b0e497ebefd5ba4ae38c794cb9beff5b83906"
     },
     {
       "filePath": "src/export/docx/docxInlineTypography.js",
@@ -951,7 +951,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "b82df105fa719953c5472a20fc00cfd4b5cef372291e1e0dbb4032990a195176"
+      "sha256": "6559d0813aacea3f118c42ce7e6a04f85e85a29606721f6e32007fed6d51369a"
     },
     {
       "filePath": "src/io/inlineTypography.mjs",
@@ -960,7 +960,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "71701428d79e17dd606dcb608969092383d8b8f07ade2d0da4badfd70a462630"
+      "sha256": "4f7ecb4a0b684c112c7401175ee9dc388ac19bbcf75a2069b232032accf854c2"
     },
     {
       "filePath": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -978,7 +978,7 @@
       "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "f6f907aec75f0745f9de2532591cb2312d35b509114dd28e9e48982af175c6c5"
+      "sha256": "0b297fc72e4e9431351a8ff820fd7c0a0a20ff41bc6ff9dbeb344edfca325711"
     },
     {
       "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -988,6 +988,15 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "3c1554717087b06e2bcdb241db4127423446f55e43676dc821cbf497733523ff"
+    },
+    {
+      "filePath": "src/io/inlineTypography.cjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "6de19cf218968c341cb869eb73681432683add3c41bfc621abf6e2336a244be9"
     }
   ],
   "evidenceStampIds": [

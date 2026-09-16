@@ -56,6 +56,20 @@ const size = half => `<w:sz w:val="${half}"/><w:szCs w:val="${half}"/>`;
 const document = content => ({type:'doc',content:[{type:'paragraph',content}]});
 const hasFontLoss = plan => plan.lossReport.items.some(i=>i.code==='DOCX_IMPORT_PREVIEW_TYPOGRAPHY_NOT_IMPORTED');
 
+test('C1 typography: existing archive graph loads in fresh ESM-first, CJS-first and concurrent processes', () => {
+  const {spawnSync}=require('node:child_process');
+  const imports=[
+    "await import('./src/core/pdf-archive-review-profile-v1.mjs');",
+    "await import('./src/export/docx/docxMinBuilder.js');await import('./src/core/pdf-archive-review-profile-v1.mjs');",
+    "await Promise.all([import('./src/core/pdf-archive-review-profile-v1.mjs'),import('./src/io/inlineTypography.mjs'),import('./src/export/docx/docxMinBuilder.js')]);",
+  ];
+  for (const entry of imports) {
+    const script=entry+"const api=await import('./src/core/pdf-archive-review-profile-v1.mjs');if(typeof api.createProjectArchiveProfile!=='function')throw Error('ARCHIVE_API_MISSING');const a=await import('./src/io/inlineTypography.mjs');const b=(await import('./src/io/inlineTypography.cjs')).default;if(a.normalizeFontSize!==b.normalizeFontSize||a.normalizeFontSize('18px')!=='13.5pt')throw Error('FONT_API_DRIFT');console.log('typography-order-ok');";
+    const result=spawnSync(process.execPath,['--input-type=module','-e',script],{cwd:path.resolve(__dirname,'../..'),encoding:'utf8',timeout:15000});
+    assert.equal(result.status,0,result.stderr);assert.equal(result.stdout.trim(),'typography-order-ok');
+  }
+});
+
 test('C1 typography: export and import preserve named fonts, sizes, colors, marks and plain neighbors', async () => {
   const styled = text('Шрифт Font', 'Georgia', '18pt');
   styled.marks[0].attrs.color = '#123456';

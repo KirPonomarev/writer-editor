@@ -2,7 +2,7 @@
 
 const crypto = require('crypto');
 const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
-const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.mjs');
+const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
 
 const FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID = 'cmd.project.review.exportFullManuscriptDocxReviewPacket';
 const FULL_MANUSCRIPT_REVIEW_DOCX_CAPABILITY_ID = 'cap.project.review.exportFullManuscriptDocxReviewPacket';
