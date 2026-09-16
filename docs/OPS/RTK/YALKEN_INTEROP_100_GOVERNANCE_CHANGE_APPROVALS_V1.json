@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
-      "sha256": "a575cdd650e483624efe5b75ff4ea132b1074ae1c976b18711a1ba147ba25e11"
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "d9a4c756629a4c558ad886fed844d9cc7544969e2d5e883774117c33c49b5d01"
     },
     {
       "approved": true,
@@ -281,25 +281,25 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "c685f1060049edfb99cd8a9dd485159e1ab5cda2d62a2228cc6ca2f3f2b883e7"
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "95b51f778a06ed850d349a952d5d31e11260a7817455dfbac5d6e5c320ffab4b"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T01:39:43.285822+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916",
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "ab6a4e1cad937f520dd860fa0d3084a9dd6fd24bfe113df9c0111e66efeeefd4"
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "a99817fc9962cfd930aa0ca58934afe79fe6233b20a8c80cb87c7a9519d77939"
     },
     {
       "approved": true,
@@ -316,12 +316,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
-      "sha256": "3764d84e85692d20d15f592d2fc4a2bb6f633519944f9409536d0a682830b83e"
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "25bf2d631b048271c2874137e2bb2000cc7addee56d871700626c5bb460ef997"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T02:19:16.522169+00:00",
-      "approvedBy": "owner-direct-task:INTEROP_ORDER_C1_FAST_CYCLE_20260916:SERIALIZATION_REPAIR",
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Complete the same authorized ORDER contour after a genuine failed end-to-end admission. Reproduce the pinned Lab observation hash format, keep ordinal review indexes and all semantic/authority gates, add zero-credit full artifact replay and regression tests. Failed raw evidence remains immutable and uncredited.",
-      "sha256": "d90afd8d989000093f4c19e122b127a1454adb8d91c4064201b29cafa8464a5b"
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "2f93caa8139b9b88b9d51ea5724503c3730101a78f6ec1c4a76614638e8f0640"
     },
     {
       "approved": true,
@@ -619,6 +619,42 @@
       "filePath": "scripts/ops/rtk-interop-order-c1-readback.py",
       "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
       "sha256": "e24b8784fc9b8f62d5b9ebaaf0e3ebc4ef0822d58da83bcc6e3ecde793fa2b9e"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--interop-text-order-shared-c1.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "c458c5273d63a1e17f4a4704be7e1621f7a92df5a4380cbc100dcb59bc5ae785"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_TEXT_ORDER_C1_RECIPE_POLICY_V1.json",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "1ecd8638863c441431cc1f297d09b5dbd18d03c1feb3759544f46ff443ed47a5"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-text-order-c1.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "15989f494ba74cc6da87ccb9198d3128f57a52467ea50ca04d7f022b40a435e9"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-text-c1-readback.py",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T08:00:31.880353+00:00",
+      "approvedBy": "owner-direct-task:INTEROP_TEXT_ORDER_SHARED_C1_20260916",
+      "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
+      "rationale": "Direct owner next-step approval: share one known native C1 execution for two independently verified TEXT and ORDER product cells. Bind the bounded successor, controls, tests and registry hygiene; preserve frozen prior contracts. No new runtime capability, physical proof or broad portability credit is granted by this metadata.",
+      "sha256": "0afbb89f587a4189c0d984fc9e410dcb4c53f436f54c5b54c9d642845b4d66bb"
     }
   ],
   "evidenceStampIds": [

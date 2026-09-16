@@ -5,6 +5,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { C1_FRESH_PATH, readFreshC1Successor, verifyFreshC1Metadata } from '../../rtk-interop-c1-fresh-evidence.mjs';
 import { verifyOrderPostEvaluation } from '../../rtk-interop-order-c1.mjs';
+import { verifyTextOrderPostEvaluation } from '../../rtk-interop-text-order-c1.mjs';
 import { canonicalBytes } from './canonical-json.mjs';
 import { inspectExactZip } from './terminal-attestation-verifier.mjs';
 import { verifyRuleset } from './post-audit-merge-gate.mjs';
@@ -7720,6 +7721,9 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const orderC1Exception = allowAuditCycle2Admission
     ? verifyOrderPostEvaluation({candidateSha:resolvedCandidate,git}) : null;
   for (const admittedPath of (orderC1Exception?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
+  const textOrderC1Exception = allowAuditCycle2Admission
+    ? verifyTextOrderPostEvaluation({candidateSha:resolvedCandidate,git}) : null;
+  for (const admittedPath of (textOrderC1Exception?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -7728,6 +7732,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.r24Interop100U000cPagebreakReexportPostEvaluationException=r24Interop100U000cPagebreakReexportException;
   verificationResult.freshC1PostEvaluationException = freshC1Exception;
   verificationResult.orderC1PostEvaluationException = orderC1Exception;
+  verificationResult.textOrderC1PostEvaluationException = textOrderC1Exception;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;

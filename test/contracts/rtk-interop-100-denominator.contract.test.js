@@ -1334,3 +1334,140 @@ print(json.dumps({'positiveEquivalentRuns':True,'coherentTamperRejected':True,'c
 });
 
 }
+
+// Register root TAP records: the maintained inventory intentionally counts roots.
+{
+const rootTest=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const {spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../..');
+let shared,denominator;
+const ready=Promise.all([import('../../scripts/ops/rtk-interop-text-order-c1.mjs'),
+  import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs')]).then(([s,d])=>{shared=s;denominator=d;});
+const it=(name,fn)=>rootTest(name,async()=>{await ready;return fn();});
+const fixtureSha='693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1';
+
+function fieldFixture() {
+  const common={review:{runId:'run',productHead:'a'.repeat(40),productTree:'b'.repeat(40),
+    observationSha256:'c'.repeat(64),sourceDocxSha256:'d'.repeat(64),returnedDocxSha256:'e'.repeat(64),
+    persistedSceneSha256:'f'.repeat(64),files:[{},{}]}};
+  const r=common.review;
+  const raw={ok:true,schemaVersion:'TEXT_C1_RAW_READBACK_V1',admissionCredit:0,
+    cellId:shared.TEXT_CELL,sourceCellId:shared.SHARED_CELLS[1],runId:r.runId,
+    productHead:r.productHead,productTree:r.productTree,observationSha256:r.observationSha256,
+    fixtureParagraphSha256:fixtureSha,sourceDocxSha256:r.sourceDocxSha256,
+    returnedDocxSha256:r.returnedDocxSha256,persistedSceneSha256:r.persistedSceneSha256,
+    filesVerified:2,subcases:[...shared.TEXT_SUBCASES],
+    controls:{positiveControls:['identity','split-xml-runs'],rawMutantsExecuted:shared.TEXT_CONTROL_IDS.map((id,i)=>({
+      id,sha256:String(i).padStart(64,'0'),rejected:true,failure:id==='embedded-line-break'
+        ?'TEXT_CONTROL_LINE_BREAK_POLICY':'TEXT_CONTROL_CODEPOINTS_OR_BOUNDARIES'}))},
+    presence:{paragraphs:12,emptyParagraphOrdinals:[1,10],whitespaceEdgeOrdinals:[9],localeProfiles:7},
+    stageParagraphSha256:Object.fromEntries(['source','export-docx','word-native','returned-docx',
+      'source-renderer','import-renderer','persisted','reopened'].map(k=>[k,fixtureSha])),
+    lineBreakPolicy:'NO_EMBEDDED_BREAKS;SOURCE_DOUBLE_LF;PERSISTED_SINGLE_LF;WORD_NATIVE_CR'};
+  return {raw,common};
+}
+
+it('shared policy binds two exact fields and preserves the delivered single-field readers',()=>{
+  const p=shared.readSharedPolicy(fs.readFileSync(path.join(root,shared.SHARED_POLICY_PATH)));
+  assert.deepEqual(p.targetCellIds,shared.SHARED_CELLS);
+  assert.equal(p.textControlIds.length,10);
+  assert.equal(p.textRawCheckerSha256,shared.sharedHash(fs.readFileSync(path.join(root,'scripts/ops/rtk-interop-text-c1-readback.py'))));
+  for(const binding of p.protectedFiles)
+    assert.equal(shared.sharedHash(fs.readFileSync(path.join(root,binding.path))),binding.sha256,binding.path);
+  assert.throws(()=>shared.readSharedPolicy(Buffer.from(JSON.stringify({...p,targetCellIds:[p.sourceCellId]}))),/POLICY_PIN/);
+});
+
+it('independent TEXT controls reject ten raw mutations and allow equivalent XML run boundaries',()=>{
+  const code=[
+    "import importlib.util,io,json,zipfile,xml.etree.ElementTree as ET",
+    "s=importlib.util.spec_from_file_location('text','scripts/ops/rtk-interop-text-c1-readback.py');m=importlib.util.module_from_spec(s);s.loader.exec_module(m)",
+    "doc=ET.Element(m.order.W+'document');body=ET.SubElement(doc,m.order.W+'body')",
+    "for value in m.EXPECTED:",
+    " p=ET.SubElement(body,m.order.W+'p');ET.SubElement(ET.SubElement(p,m.order.W+'r'),m.order.W+'t').text=value",
+    "out=io.BytesIO()",
+    "with zipfile.ZipFile(out,'w') as z:z.writestr('word/document.xml',ET.tostring(doc))",
+    "raw=out.getvalue();result=m.text_controls(raw)",
+    "assert tuple(x['id'] for x in result['rawMutantsExecuted'])==m.CONTROL_IDS",
+    "assert len(set(x['sha256'] for x in result['rawMutantsExecuted']))==10",
+    "assert result==m.text_controls(raw)",
+    "assert result['positiveControls']==['identity','split-xml-runs']",
+    "print(json.dumps(result))",
+  ].join('\n');
+  const p=spawnSync('python3',['-I','-B','-c',code],{cwd:root,encoding:'utf8',timeout:10000});
+  assert.equal(p.status,0,p.stdout+p.stderr);
+  assert.equal(JSON.parse(p.stdout).rawMutantsExecuted.length,10);
+});
+
+it('TEXT proof requires all raw stages, nonempty coverage and actually rejected distinct controls',()=>{
+  const {raw,common}=fieldFixture();
+  assert.equal(shared.validateTextRawResult(raw,common),true);
+  const clone=()=>JSON.parse(JSON.stringify(raw));
+  for(const key of ['cellId','sourceCellId','runId','productHead','productTree','observationSha256',
+    'sourceDocxSha256','returnedDocxSha256','persistedSceneSha256'])
+    assert.throws(()=>shared.validateTextRawResult({...raw,[key]:'other'},common),/RAW_BINDING/);
+  let bad=clone();bad.controls.rawMutantsExecuted[0].rejected=false;
+  assert.throws(()=>shared.validateTextRawResult(bad,common),/CONTROLS/);
+  bad=clone();bad.controls.rawMutantsExecuted[1].sha256=bad.controls.rawMutantsExecuted[0].sha256;
+  assert.throws(()=>shared.validateTextRawResult(bad,common),/CONTROLS/);
+  bad=clone();delete bad.stageParagraphSha256['word-native'];
+  assert.throws(()=>shared.validateTextRawResult(bad,common),/NONVACUOUS/);
+  bad=clone();bad.presence.emptyParagraphOrdinals=[0,1];
+  assert.throws(()=>shared.validateTextRawResult(bad,common),/NONVACUOUS/);
+  bad=clone();bad.subcases.pop();
+  assert.throws(()=>shared.validateTextRawResult(bad,common),/RAW_BINDING/);
+});
+
+it('two accepted fields require a complete pair and their own bound proof, never one duplicated cell',()=>{
+  const review={runId:'run',productHead:'a'.repeat(40),productTree:'b'.repeat(40),
+    observationArtifactHash:'source',fieldProofs:shared.SHARED_CELLS.map((cellId,i)=>({
+      cellId,field:i?'ORDER':'TEXT',outcome:'PRESERVED'}))};
+  const entries=review.fieldProofs.map(proof=>({type:'CELL_ACCEPTED',admissionMode:shared.SHARED_MODE,
+    status:'PASS',cellId:proof.cellId,field:proof.field,sourceRunId:'run',sourceCellId:shared.SHARED_CELLS[1],
+    sourceObservationHash:'source',productHead:review.productHead,productTree:review.productTree,
+    policySha256:shared.SHARED_POLICY_SHA256,
+    reviewIndexSha256:shared.sharedHash(Buffer.from(shared.stableSharedJson(review)+'\n')),
+    fieldProofSha256:shared.sharedHash(Buffer.from(shared.stableSharedJson(proof)))}));
+  assert.equal(shared.validateTextOrderAcceptances(entries,review),true);
+  for(const bad of [[entries[0]],[entries[0],entries[0]],[...entries,entries[0]]])
+    assert.throws(()=>shared.validateTextOrderAcceptances(bad,review),/DECISION_SET/);
+  for(const key of ['field','sourceRunId','sourceCellId','sourceObservationHash','policySha256',
+    'reviewIndexSha256','fieldProofSha256','productHead','productTree'])
+    assert.throws(()=>shared.validateTextOrderAcceptances([{...entries[0],[key]:'other'},entries[1]],review),/FIELD_ACCEPTANCE/);
+  assert.throws(()=>shared.validateTextOrderAcceptances(entries,{...review,runId:'later'}),/FIELD_ACCEPTANCE/);
+});
+
+it('shared official mode rejects mode conflicts, custom authority and duplicate denominator IDs',()=>{
+  for(const conflict of [{orderC1LabRoot:'/missing'},{freshC1EvidenceRoot:'/missing'},
+    {ledger:{}},{envelope:{}},{spec:denominator.readInterop100Denominator(root)}]) {
+    const result=denominator.verifyInterop100(root,{textOrderC1LabRoot:'/missing',textOrderRunId:'run',...conflict});
+    assert.equal(result.authoritativeAdmission,false);assert.equal(result.passedRequiredCells,0);
+    assert.ok(result.errors.includes('TEXT_ORDER_MODE_OPTIONS_CONFLICT'));
+  }
+  const report=shared.verifyTextOrderC1({requiredCells:Array(1120).fill({cellId:shared.TEXT_CELL})});
+  assert.equal(report.ok,false);assert.equal(report.passedRequiredCells,0);assert.equal(report.broadPassClaim,false);
+});
+
+it('shared governance admits only the delivered successor scope and gives no runtime credit',()=>{
+  const delivery='b'.repeat(40),candidate='c'.repeat(40);
+  let changed=[...shared.SHARED_ADMITTED_PATHS],drift=[];
+  const git=args=>{
+    if(args[0]==='rev-parse')return args[1]===shared.SHARED_BASE+'^{tree}'?shared.SHARED_BASE_TREE:candidate;
+    if(args[0]==='ls-tree')return shared.SHARED_POLICY_PATH;
+    if(args[0]==='log')return delivery;
+    if(args[0]==='merge-base')return '';
+    if(args[0]==='diff')return (args[3]===shared.SHARED_BASE?changed:drift).join('\n');
+    if(args[0]==='show')return fs.readFileSync(path.join(root,args[1].slice(args[1].indexOf(':')+1)));
+    throw Error('unexpected git');
+  };
+  const good=shared.verifyTextOrderPostEvaluation({git});
+  assert.equal(good.status,'PASS');assert.equal(good.cellAcceptanceAuthority,false);assert.equal(good.programDone,false);
+  assert.deepEqual(shared.verifyTextOrderPostEvaluation({git:args=>Buffer.from(git(args))}),good,
+    'the repository certification gate returns raw Git Buffers');
+  changed.push('src/core/unrelated.js');assert.throws(()=>shared.verifyTextOrderPostEvaluation({git}),/UNADMITTED/);changed.pop();
+  drift=['scripts/ops/rtk-interop-text-c1-readback.py'];
+  assert.throws(()=>shared.verifyTextOrderPostEvaluation({git}),/IMPLEMENTATION_DRIFT/);
+});
+}
