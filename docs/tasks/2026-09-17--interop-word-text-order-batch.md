@@ -87,6 +87,11 @@ The product batch consumer computes admission from executed independent field
 proofs. It does not require a second manual ledger declaration of the same result.
 The canonical denominator and existing acceptance modes remain unchanged.
 
+Delivery verification must survive more than 32 lifetime policy revisions.
+Keep bounded Git I/O, validate every revision identity and retain the oldest
+exact-policy delivery with its ancestry, protected bytes, delta and drift checks.
+The 33-revision regression also rejects malformed identities and immutable drift.
+
 Rollback: revert this product PR and its companion local Lab source commits;
 retain native artifacts and all earlier receipts.
 

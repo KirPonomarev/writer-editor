@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='c2c52d9c62af1537be1bed45a96b196ee66dc11d65cd1cb4f6623c9bbf2810e0';
+export const DATA_POLICY_SHA256='572a7a6939c8e771e2e70e235ed975878be24823e33deedb7abc0b46f5e4c2d5';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;
@@ -100,7 +100,9 @@ export function verifyDataC1PostEvaluation({candidateSha='HEAD',git=gitAt(ROOT)}
   demand(same(policy.admittedPaths,DATA_ADMITTED_PATHS),'DATA_DELIVERY_SCOPE');
   for(const b of policy.qualifiedRuntimeRepair.sourceBindings)demand(hash(git(['show',resolved+':'+b.path]))===b.sha256,'DATA_RUNTIME_REPAIR_PIN');
   const revisions=String(git(['log','--format=%H',resolved,'--',DATA_POLICY_PATH])).trim().split('\n').filter(Boolean);
-  demand(revisions.length>0&&revisions.length<=32,'SHARED_DELIVERY_IDENTITY');
+  // Git I/O is bounded by timeout and maxBuffer, not by lifetime policy updates.
+  // Keep the oldest exact-policy delivery so later reverts cannot erase drift.
+  demand(revisions.length>0&&revisions.every(sha40),'SHARED_DELIVERY_IDENTITY');
   const delivery=revisions.filter(sha=>hash(git(['show',sha+':'+DATA_POLICY_PATH]))===DATA_POLICY_SHA256).at(-1);
   demand(sha40(delivery),'SHARED_DELIVERY_IDENTITY');
   git(['merge-base','--is-ancestor','d9220b6b7131043068564081e1c6a15f273afeb5',delivery]);

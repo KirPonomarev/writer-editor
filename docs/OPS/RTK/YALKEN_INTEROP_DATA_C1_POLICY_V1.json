@@ -495,11 +495,11 @@
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
-        "sha256": "b3834db7c11be659764ec6c65333f8b943be314e4b52a396a76453d4cf6e8b26"
+        "sha256": "cc1c85e15f6672ced2d80b84966031a6c5f2d482004a1ca80f6e99b6590550e4"
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "6572f412fc91e3d0d4b0ceec5898768a712989eb5059859ee1733b44864a3975"
+        "sha256": "6dac1ac99ae91acae95cc8f19791291cbee75034ffacac3fed48a5c7d5fc682f"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
