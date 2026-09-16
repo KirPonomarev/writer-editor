@@ -187,6 +187,7 @@ function sanitizeContentPreviewReport(report) {
                 'text',
                 'textHash',
                 'charCount',
+                'inlineRuns',
               ]))
               .filter(isPlainObject)
             : [],

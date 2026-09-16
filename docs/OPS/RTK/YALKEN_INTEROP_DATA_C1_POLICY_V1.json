@@ -29,7 +29,13 @@
     "docs/ARCH_DIFF_LOG.md",
     "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
     "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-    "test/contracts/r24-post-audit-certification-set.contract.test.mjs"
+    "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+    "src/export/docx/docxMinBuilder.js",
+    "src/io/revisionBridge/index.mjs",
+    "src/utils/docxImportSafeCreate.js",
+    "src/utils/docxImportLocalFilePreview.js",
+    "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
+    "docs/tasks/2026-09-16--docx-inline-styles-c1.md"
   ],
   "protectedFiles": [
     {
@@ -232,7 +238,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "68c4810f682a61da3841c15d8f7686d78feb7be41ced57bc5039ef1a8840c47e"
+        "sha256": "40683b72c9fed50b3bcd07938e34dd7f010bf817ab2847f42c15850cd4dcab40"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -261,7 +267,36 @@
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
         "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
+      },
+      {
+        "path": "src/export/docx/docxMinBuilder.js",
+        "sha256": "8ddba48b215c9af9c25e2828dd7811839ef1d2ae4a7ef8c91189c2df94790d54"
+      },
+      {
+        "path": "src/io/revisionBridge/index.mjs",
+        "sha256": "60d762634aa09ad9fcdccf31359b234a9e6666ce94ee81caa507b6a6f4df75df"
+      },
+      {
+        "path": "src/utils/docxImportSafeCreate.js",
+        "sha256": "4191c701c7a6ffd4d63427d18758f50380a37e30a2e81a3003ddda6cb86e3cd9"
+      },
+      {
+        "path": "src/utils/docxImportLocalFilePreview.js",
+        "sha256": "6e3c7dd508ff0a8012376dda615b37dbc20ea6bdc908080fe452971409a7b4af"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
+        "sha256": "508d045fd0fc21fad0d349c6ceeecd118dd43a4bc4e97cebda1ca972cb2185a1"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
+        "sha256": "8a283c49c509776c4313cce9da54a95d1dc62e0ff3c7a04a71ecf1de0a36d556"
       }
-    ]
+    ],
+    "followupRepair": {
+      "id": "DOCX_INLINE_STYLES_C1_V1",
+      "bindingBaseSha": "573155e49fb540fbcd6c7c306f79b318ddcdcc57",
+      "scope": "Four inline marks through existing DOCX and canonical scene path. No whole-STYLES credit. Fresh TEXT/ORDER evidence remains required for DATA admission."
+    }
   }
 }

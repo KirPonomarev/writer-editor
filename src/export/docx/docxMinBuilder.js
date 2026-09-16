@@ -131,6 +131,15 @@ function readDocumentNodeText(node) {
   return content.map((child) => readDocumentNodeText(child)).join('');
 }
 
+function readDocumentInlineRuns(node) {
+  if (!isPlainObjectValue(node)) return [];
+  if (node.type === 'text') {
+    return [{ text: typeof node.text === 'string' ? node.text : '', marks: node.marks }];
+  }
+  if (node.type === 'hardBreak') return [{ text: '\n', marks: [] }];
+  return (Array.isArray(node.content) ? node.content : []).flatMap(readDocumentInlineRuns);
+}
+
 function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   if (!isPlainObjectValue(doc) || doc.type !== 'doc' || !Array.isArray(doc.content)) return null;
   const blocks = [];
@@ -138,20 +147,21 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   for (const node of doc.content) {
     if (!isPlainObjectValue(node)) continue;
     const text = readDocumentNodeText(node);
+    const runs = readDocumentInlineRuns(node);
     if (node.type === 'pageBreak' || (node.type === 'paragraph' && text.trim() === pageBreakToken)) {
       blocks.push({ kind: 'pageBreak', text: pageBreakToken });
       continue;
     }
     if (node.type === 'heading' && Number(node.attrs?.level) === 1) {
-      blocks.push({ kind: 'heading', text });
+      blocks.push({ kind: 'heading', text, runs });
       continue;
     }
     if (node.type === 'heading' && Number(node.attrs?.level) === 2) {
-      blocks.push({ kind: 'sceneHeading', text });
+      blocks.push({ kind: 'sceneHeading', text, runs });
       continue;
     }
     if (text || node.type === 'paragraph') {
-      blocks.push({ kind: 'paragraph', text });
+      blocks.push({ kind: 'paragraph', text, runs });
     }
   }
 
@@ -168,6 +178,17 @@ function resolveDocxParagraphStyleId(styleDescriptor, semanticKind) {
 function buildDocxTextRunsXml(text) {
   const runContentXml = buildDocxRunContentXml(text, { allowFormFeedPageBreak: true });
   return runContentXml ? `<w:r>${runContentXml}</w:r>` : '';
+}
+
+function buildDocxMarkedRunXml(run) {
+  const marks = new Set((Array.isArray(run.marks) ? run.marks : []).map((mark) => mark?.type));
+  // Explicit off prevents a paragraph/Word default style from bleeding into
+  // the adjacent unmarked text. Complex-script bold/italic follow the same mark.
+  const properties = [['bold', 'b'], ['bold', 'bCs'], ['italic', 'i'], ['italic', 'iCs'], ['strike', 'strike']]
+    .map(([mark, tag]) => `<w:${tag} w:val="${marks.has(mark) ? '1' : '0'}"/>`).join('')
+    + `<w:u w:val="${marks.has('underline') ? 'single' : 'none'}"/>`;
+  const content = buildDocxRunContentXml(run.text, { allowFormFeedPageBreak: true });
+  return content ? `<w:r><w:rPr>${properties}</w:rPr>${content}</w:r>` : '';
 }
 
 function assertDocxBuilderDependencies(dependencies) {
@@ -200,7 +221,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
   const paragraphs = entries.length > 0
-    ? entries.map((entry) => {
+    ? entries.map((entry, index) => {
       const semanticKind = normalizeSemanticKind(entry && entry.kind);
       const styleDescriptor = styleMap.resolve(entry);
       const styleId = resolveDocxParagraphStyleId(styleDescriptor, semanticKind);
@@ -213,7 +234,13 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (!text) {
         return `<w:p>${styleXml}</w:p>`;
       }
-      return `<w:p>${styleXml}${buildDocxTextRunsXml(text)}</w:p>`;
+      const runs = semanticBlocks?.[index]?.runs;
+      // Keep the established plain serialization byte-stable when no supported
+      // mark is present anywhere in the paragraph.
+      const hasMarks = Array.isArray(runs) && runs.some((run) => Array.isArray(run.marks)
+        && run.marks.some((mark) => ['bold', 'italic', 'underline', 'strike'].includes(mark?.type)));
+      const runsXml = hasMarks ? runs.map(buildDocxMarkedRunXml).join('') : buildDocxTextRunsXml(text);
+      return `<w:p>${styleXml}${runsXml}</w:p>`;
     }).join('')
     : '<w:p/>';
 
