@@ -172,7 +172,7 @@ test('C1 alignment: invalid commands, capability queries and already-selected al
 
 test('C1 alignment: review writer and scanner preserve justified Word both and reject invalid or duplicate alignment',async()=>{
   const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
-  const data={customProperties:[{name:'YRTK_C01_AUTH',value:'YRTK1.synthetic-alignment'},{name:'YRTK2_TOKEN',value:'YRTK2.synthetic-alignment'}],blocks:[{text:'review',formatIr:{paragraph:{textAlign:'justify'},runs:[{text:'review',from:0,to:6,inline:{}}]}}]};
+  const data={customProperties:[{name:'YRTK_C01_AUTH',value:'YRTK1.synthetic-alignment'},{name:'YRTK2_TOKEN',value:'YRTK2.synthetic-alignment'}],blocks:[{text:'review',formatIr:{schemaVersion:'yalken.rtk.format-ir.v1',paragraph:{textAlign:'justify'},runs:[{text:'review',from:0,to:6,inline:{}}]}}]};
   const bytes=buildDocxReviewPacketBuffer(data);const {doc}=await preview(bytes);assert.equal(doc.content[0].attrs.textAlign,'justify');
   assert.ok(bytes.includes(Buffer.from('<w:jc w:val="both"/>')));
   data.blocks[0].formatIr.paragraph.textAlign='center; color:red';assert.throws(()=>buildDocxReviewPacketBuffer(data),/ALIGNMENT_INVALID/);

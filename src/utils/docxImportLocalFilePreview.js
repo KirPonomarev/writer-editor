@@ -189,6 +189,7 @@ function sanitizeContentPreviewReport(report) {
                 'charCount',
                 'inlineRuns',
                 'headingLevel',
+                'textAlign',
                 'list',
               ]))
               .filter(isPlainObject)

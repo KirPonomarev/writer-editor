@@ -24,6 +24,7 @@ Structured editor transaction, bounded paragraph attributes and DOCX mapping; in
 - src/export/docx/docxReviewPacketBuilder.js
 - src/io/revisionBridge/index.mjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
+- src/utils/docxImportLocalFilePreview.js
 - test/contracts/revision-bridge-docx-alignment.contract.test.js
 - docs/tasks/2026-09-16--docx-paragraph-alignment.md
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json

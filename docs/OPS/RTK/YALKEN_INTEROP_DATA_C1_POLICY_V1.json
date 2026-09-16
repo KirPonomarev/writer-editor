@@ -62,7 +62,13 @@
     "test/contracts/revision-bridge-docx-typography.contract.test.js",
     "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
     "test/unit/sector-m-tiptap-runtime-bridge.test.js",
-    "src/io/inlineTypography.cjs"
+    "src/io/inlineTypography.cjs",
+    "src/io/paragraphAlignment.cjs",
+    "src/io/paragraphAlignment.mjs",
+    "src/renderer/tiptap/documentParagraphAlignment.mjs",
+    "src/renderer/editor.js",
+    "test/contracts/revision-bridge-docx-alignment.contract.test.js",
+    "docs/tasks/2026-09-16--docx-paragraph-alignment.md"
   ],
   "protectedFiles": [
     {
@@ -277,7 +283,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "e36399343f5ee9ab65c48aa5bed5f57ee8f305a1949fcbb04ec6982cd30a3235"
+        "sha256": "46e5ff7b3a4e633cb1361d29ea4bc20b0f6a013954d8b4b1587daf4d19e09cb0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -297,11 +303,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "0faa27db2c897dabc8a01ac07f83dfc8c5f06a771bc78dfed0f6ebb8262b5e78"
+        "sha256": "cb7f57f0e0be1041c3f657bec5ec66ee8f24c90271872108eb85b512df939ded"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "04ecaa11291b6beb4b81195ddbef897b983790b5cf8f4c7a835d779b7dd693cc"
+        "sha256": "12ea09a147cba61a81e179a6d3b336c63cc2f68cd7fda1edbc2d3b10b8f72432"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -309,7 +315,7 @@
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "a52e73572f568f3773bca09b16ead5b047d04d87b00e4db9c65670332d57519d"
+        "sha256": "c401191a04d89689020b15657fa8087119ff01a144f152b64bf2166e38ed6133"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -377,11 +383,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "2cab617e249a94f0b715e0fcc4417557b9638e16ddda019e6c460d644199f765"
+        "sha256": "3d25f9967a6b32b3c213ef08340e236a567feaa4339341ae3d232b800c05a05d"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "ffc6de6b53b0ba2bf3a8b9e0b0503811243d4499fbd8589cfc36e9d6fb84baa0"
+        "sha256": "b31f99142e0846b056e4f4418cc452ea1cf9c54af93302f6d76ff2541323f1e0"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -405,7 +411,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "4c54bbcd65491a74ecf5bbb3badb2898138cdf89d9d2504744c121d34e684c3b"
+        "sha256": "66cda9cea74a776aa53b6a9234f98b61f4d84b2c213ba8e5ca07b64e0eed810a"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -426,6 +432,30 @@
       {
         "path": "src/io/inlineTypography.cjs",
         "sha256": "6de19cf218968c341cb869eb73681432683add3c41bfc621abf6e2336a244be9"
+      },
+      {
+        "path": "src/io/paragraphAlignment.cjs",
+        "sha256": "ccb1c389386d12e6f2cac9e2ce05e033d1f918c87946a158c96f0eff1e87a26d"
+      },
+      {
+        "path": "src/io/paragraphAlignment.mjs",
+        "sha256": "a13aa22829d2d4fc2fb46784064be3737aafa2a2280d6e59b16288483999a793"
+      },
+      {
+        "path": "src/renderer/tiptap/documentParagraphAlignment.mjs",
+        "sha256": "0b58f3bbcd4bf48a642c4054bcc553ca3f4079fa51a1a81607fb6ba09cc5f866"
+      },
+      {
+        "path": "src/renderer/editor.js",
+        "sha256": "4a8c1aaaf9f88f7c0da0701af0e0839d1e58c62ebc7a4af4e56b87d0245d487c"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
+        "sha256": "e74e23264186133d82aed7bd86a242537302ba55c5a97eb515f1d93b71a52797"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
+        "sha256": "ada11f8511e414b40d90a42e82237ba42148b3f3cfe067ca7c60a084deb9a4c1"
       }
     ],
     "followupRepair": {
@@ -467,6 +497,11 @@
       "id": "DOCX_TYPOGRAPHY_ROUNDTRIP_C1_V1",
       "bindingBaseSha": "466819b1308727d14e828689ea2323f2892cb619",
       "scope": "Product repair: preserve uniform named fonts and exact half-point sizes through the existing editor, both DOCX writers, Word return and admitted rich import; measure actual renderer font fallback. No full-STYLES credit."
+    },
+    "paragraphAlignmentRepair": {
+      "id": "DOCX_PARAGRAPH_ALIGNMENT_C1_V1",
+      "bindingBaseSha": "370918970bd3a9b6af4f06c4830318154499b499",
+      "scope": "Product repair: preserve paragraph alignment through existing structured commands, DOCX writers and readers, Word return and admitted persisted import; keep all rich text and undo. No full-STYLES credit."
     }
   }
 }
