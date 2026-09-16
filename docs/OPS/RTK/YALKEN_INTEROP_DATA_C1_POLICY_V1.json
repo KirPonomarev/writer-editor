@@ -48,7 +48,12 @@
     "docs/tasks/2026-09-16--docx-list-roundtrip.md",
     "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
     "src/renderer/styles.css",
-    "docs/tasks/2026-09-16--editor-list-marker-flow.md"
+    "docs/tasks/2026-09-16--editor-list-marker-flow.md",
+    "src/export/docx/docxInlineColors.js",
+    "src/export/docx/docxReviewPacketBuilder.js",
+    "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+    "test/contracts/revision-bridge-docx-colors.contract.test.js",
+    "docs/tasks/2026-09-16--docx-colors-roundtrip.md"
   ],
   "protectedFiles": [
     {
@@ -283,11 +288,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "8b25df2feb51005d26a579b368b88137f6b0bd7fb30a28bedabb7cd128ab815e"
+        "sha256": "8858f455238fbb6ba82360cc85d5328938da3ce8c617635c7bc1b0680195bf46"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "cacec9a3fbcde88ff189002f01e7843d8a0dc7f27bfbd1d95b7572cec2d39634"
+        "sha256": "91c1204c5df8e2a66528dcace02792bb9ce87aad02e7f60b65f5463527e2b7c9"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -356,6 +361,26 @@
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
         "sha256": "17f9bc54cd9105f2c5df830fc77dc024e40057d144ac47c27248db3b1f279326"
+      },
+      {
+        "path": "src/export/docx/docxInlineColors.js",
+        "sha256": "3a959b271bbf40e66bf076228c575663a55984cf059432d2bc71640e53e6a940"
+      },
+      {
+        "path": "src/export/docx/docxReviewPacketBuilder.js",
+        "sha256": "2ea7ea63ec8e3dd6d3003287b985884ef762f87b406cfbb42186cf7fab96a9b9"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+        "sha256": "ffc6de6b53b0ba2bf3a8b9e0b0503811243d4499fbd8589cfc36e9d6fb84baa0"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
+        "sha256": "1189a8fba21b37a45f462d6753fdbc0bb80f925d53a268862ca319a1ecc8d4e1"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
+        "sha256": "400d089f0c076cea1879c7a2014592c46c2f482b45a951f7f2dfeccf206e5111"
       }
     ],
     "followupRepair": {
@@ -387,6 +412,11 @@
       "id": "EDITOR_LIST_MARKER_FLOW_C1_V1",
       "bindingBaseSha": "9cf590992130606a5a52bfa229cfa19a5b0ec948",
       "scope": "Mechanical existing-editor repair: keep native list markers in the same paginated line flow as their first paragraph, preserving native list semantics, commands, stored content and transfer behavior. No full-STYLES credit."
+    },
+    "colorRepair": {
+      "id": "DOCX_COLOR_ROUNDTRIP_C1_V1",
+      "bindingBaseSha": "65107e5d13c52504139c04bb291e88514a67f17a",
+      "scope": "Product repair: preserve opaque RGB text and highlight colors through minimal DOCX, actual Word return and admitted rich import; reuse existing review encoding and correct native Word palette. No full-STYLES credit."
     }
   }
 }

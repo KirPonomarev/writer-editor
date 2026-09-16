@@ -15,6 +15,7 @@ const {
   escapeXml,
   normalizeDocxTextForSerialization,
 } = require('./docxTextXml.js');
+const { normalizeOpaqueRgb, buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
@@ -207,13 +208,27 @@ function buildDocxTextRunsXml(text) {
   return runContentXml ? `<w:r>${runContentXml}</w:r>` : '';
 }
 
-function buildDocxMarkedRunXml(run) {
+function readRunColors(run) {
+  const colors = {};
+  for (const mark of Array.isArray(run.marks) ? run.marks : []) {
+    const key = mark?.type === 'textStyle' ? 'color' : mark?.type === 'highlight' ? 'highlight' : null;
+    const value = mark?.attrs?.color;
+    if (!key || value == null || value === '') continue;
+    const color = normalizeOpaqueRgb(value);
+    if (Object.hasOwn(colors, key) && colors[key] !== color) throw new Error('DOCX_COLOR_MARK_CONFLICT');
+    colors[key] = color;
+  }
+  return colors;
+}
+
+function buildDocxMarkedRunXml(run, hasColors = false) {
   const marks = new Set((Array.isArray(run.marks) ? run.marks : []).map((mark) => mark?.type));
   // Explicit off prevents a paragraph/Word default style from bleeding into
   // the adjacent unmarked text. Complex-script bold/italic follow the same mark.
   const properties = [['bold', 'b'], ['bold', 'bCs'], ['italic', 'i'], ['italic', 'iCs'], ['strike', 'strike']]
     .map(([mark, tag]) => `<w:${tag} w:val="${marks.has(mark) ? '1' : '0'}"/>`).join('')
-    + `<w:u w:val="${marks.has('underline') ? 'single' : 'none'}"/>`;
+    + `<w:u w:val="${marks.has('underline') ? 'single' : 'none'}"/>`
+    + (hasColors ? buildDocxColorPropertiesXml(readRunColors(run), { explicitOff: true }) : '');
   const content = buildDocxRunContentXml(run.text, { allowFormFeedPageBreak: true });
   return content ? `<w:r><w:rPr>${properties}</w:rPr>${content}</w:r>` : '';
 }
@@ -274,7 +289,8 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       // mark is present anywhere in the paragraph.
       const hasMarks = Array.isArray(runs) && runs.some((run) => Array.isArray(run.marks)
         && run.marks.some((mark) => ['bold', 'italic', 'underline', 'strike'].includes(mark?.type)));
-      const runsXml = hasMarks ? runs.map(buildDocxMarkedRunXml).join('') : buildDocxTextRunsXml(text);
+      const hasColors = Array.isArray(runs) && runs.some(run => Object.keys(readRunColors(run)).length > 0);
+      const runsXml = hasMarks || hasColors ? runs.map(run => buildDocxMarkedRunXml(run, hasColors)).join('') : buildDocxTextRunsXml(text);
       return `<w:p>${styleXml}${runsXml}</w:p>`;
     }).join('')
     : '<w:p/>';

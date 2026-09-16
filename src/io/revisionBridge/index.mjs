@@ -3,6 +3,7 @@ import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs'
 import {
   extractReviewTransportFormattingRunsV2,
   parseReviewTransportPackageV2,
+  WORD_HIGHLIGHT_COLOR_BY_NAME,
 } from './reviewTransportPackageParserV2.mjs';
 
 const PACKET_VALID_CODE = 'REVISION_BRIDGE_PACKET_VALID';
@@ -8036,11 +8037,38 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
   metadata.list = { numId: reference.numId, level, kind, ordinal };
 }
 
+const DOCX_UNSUPPORTED_COLOR = 'DOCX_UNSUPPORTED_EFFECTIVE_COLOR';
+function docxInlineReadColor(properties, tag, token, namespaces) {
+  const attr = name => docxContentPreviewWordAttributeValue(token, namespaces, name).trim();
+  const value = attr('val');
+  if (tag === 'w:highlight') {
+    const name = value.toLowerCase();
+    if (name !== 'none' && !Object.hasOwn(WORD_HIGHLIGHT_COLOR_BY_NAME, name)) throw new Error('DOCX_INLINE_HIGHLIGHT_INVALID');
+    properties.highlight = name === 'none' ? null : WORD_HIGHLIGHT_COLOR_BY_NAME[name];
+    return;
+  }
+  const fill = tag === 'w:color' ? value : attr('fill');
+  if (fill && fill !== 'auto' && !/^[a-f0-9]{6}$/iu.test(fill)) throw new Error('DOCX_INLINE_COLOR_INVALID');
+  const themeName = attr(tag === 'w:color' ? 'themeColor' : 'themeFill');
+  const modifiers = (tag === 'w:color' ? ['themeTint', 'themeShade'] : ['themeFillTint', 'themeFillShade']).map(attr);
+  if (modifiers.some(v => v && !/^[a-f0-9]{2}$/iu.test(v))) throw new Error('DOCX_INLINE_COLOR_THEME_MODIFIER_INVALID');
+  const key = tag === 'w:color' ? 'color' : 'shading';
+  if (tag === 'w:shd' && value === 'nil') { properties.shading = null; return; }
+  if (themeName || modifiers.some(Boolean) || (tag === 'w:shd' && !['', 'clear'].includes(value))) {
+    properties[key] = DOCX_UNSUPPORTED_COLOR;
+  } else if (!fill || fill === 'auto') {
+    if (tag === 'w:color' && !fill) throw new Error('DOCX_INLINE_COLOR_VALUE_REQUIRED');
+    properties[key] = null;
+  } else properties[key] = `#${fill.toLowerCase()}`;
+}
+
 function docxInlineReadProperty(properties, tag, token, namespaces) {
   const mark = DOCX_INLINE_MARKS[tag];
-  if (!mark) return;
+  const isColor = ['w:color', 'w:highlight', 'w:shd'].includes(tag);
+  if (!mark && !isColor) return;
   if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
     !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_INLINE_PROPERTY_NAMESPACE');
+  if (isColor) { docxInlineReadColor(properties, tag, token, namespaces); return; }
   const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
   if (tag === 'w:u') {
     // Other underline patterns cannot be represented by the editor mark.
@@ -8147,7 +8175,7 @@ function docxInlineApplyStyle(properties, id, type, catalog) {
   }
   for (const style of chain.reverse()) {
     for (const [mark, enabled] of Object.entries(style.properties)) {
-      if (mark === 'underline') properties[mark] = enabled;
+      if (['underline', 'color', 'highlight', 'shading'].includes(mark)) properties[mark] = enabled;
       else if (enabled) properties[mark] = !properties[mark];
     }
   }
@@ -8160,11 +8188,21 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
   docxInlineApplyStyle(properties, run?.styleId || '', 'character', catalog);
   Object.assign(properties, run?.properties || {});
   const marks = Object.values(DOCX_INLINE_MARKS).filter((mark) => properties[mark] === true);
+  const color = properties.color;
+  // Highlight supersedes shading, even when inherited from a style. Clearing
+  // highlight reveals effective shading; the properties cascade separately.
+  const highlight = properties.highlight ?? properties.shading;
+  if (color === DOCX_UNSUPPORTED_COLOR || highlight === DOCX_UNSUPPORTED_COLOR) metadata.unsupportedColor = true;
+  const colors = {
+    ...(typeof color === 'string' && color !== DOCX_UNSUPPORTED_COLOR ? { color } : {}),
+    ...(typeof highlight === 'string' && highlight !== DOCX_UNSUPPORTED_COLOR ? { highlight } : {}),
+  };
   const last = metadata.inlineRuns.at(-1);
-  if (last && JSON.stringify(last.marks) === JSON.stringify(marks)) last.text += text;
+  if (last && JSON.stringify(last.marks) === JSON.stringify(marks)
+    && last.color === colors.color && last.highlight === colors.highlight) last.text += text;
   else {
     if (++budget.count > DOCX_INLINE_MAX_RUNS) throw new Error('DOCX_INLINE_RUN_LIMIT');
-    metadata.inlineRuns.push({ text, marks });
+    metadata.inlineRuns.push({ text, marks, ...colors });
   }
 }
 
@@ -8212,13 +8250,20 @@ function docxInlineCanonicalContent(paragraphs) {
     const nodes = [];
     let joined = '';
     for (const run of runs) {
-      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks'].includes(key))
+      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight'].includes(key))
         || typeof run.text !== 'string' || !run.text || !Array.isArray(run.marks)
         || run.marks.length > 4 || new Set(run.marks).size !== run.marks.length
         || run.marks.some((mark) => !Object.values(DOCX_INLINE_MARKS).includes(mark))) throw new Error('DOCX_INLINE_RUN_INVALID');
+      for (const key of ['color', 'highlight']) {
+        if (Object.hasOwn(run, key) && (typeof run[key] !== 'string' || !/^#[a-f0-9]{6}$/u.test(run[key]))) {
+          throw new Error('DOCX_INLINE_COLOR_PROJECTION_INVALID');
+        }
+      }
       joined += run.text;
-      hasMarks ||= run.marks.length > 0;
+      hasMarks ||= run.marks.length > 0 || Boolean(run.color || run.highlight);
       const marks = run.marks.map((type) => ({ type }));
+      if (run.color) marks.push({ type: 'textStyle', attrs: { color: run.color } });
+      if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
       const parts = run.text.split('\n');
       parts.forEach((text, index) => {
         if (index) nodes.push({ type: 'hardBreak' });
@@ -8274,7 +8319,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
-  if (metadata.inlineRuns?.some((run) => run.marks.length > 0)) {
+  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight)) {
     paragraph.inlineRuns = metadata.inlineRuns;
   }
   if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
@@ -8304,6 +8349,13 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
   }
   if (styleCatalog) metadata.headingLevel = docxResolveHeadingLevel(metadata, styleCatalog);
   if (numberingCatalog) docxResolveParagraphList(metadata, styleCatalog, numberingCatalog, diagnostics, paragraphs.length);
+  if (metadata.unsupportedColor && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
+    diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
+      severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+      sourceCode: 'DOCX_INLINE_COLOR_UNSUPPORTED', tagName: 'w:rPr', paragraphIndex: paragraphs.length,
+      message: 'Effective themed color or patterned shading cannot be represented as an opaque RGB editor color',
+    }));
+  }
   paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
   return { ok: true };
 }
@@ -9432,6 +9484,10 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
     return { code: 'DOCX_IMPORT_PREVIEW_PACKAGE_DIRECTORY_IGNORED', category: 'package' };
   }
   const tagName = typeof diagnostic.tagName === 'string' ? diagnostic.tagName : '';
+  if (sourceCode === 'DOCX_INLINE_COLOR_UNSUPPORTED') return {
+    code: 'DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED', category: 'formatting',
+    message: 'Effective themed color or patterned shading is not imported; explicit supported RGB colors remain preserved',
+  };
   if (tagName === 'w:tbl') return { code: 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED', category: 'table' };
   if (tagName === 'w:drawing' || tagName === 'w:pict' || tagName === 'w:object') {
     return { code: 'DOCX_IMPORT_PREVIEW_MEDIA_NOT_IMPORTED', category: 'media' };
@@ -9701,6 +9757,10 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       : hasHeadings
       ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+    if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.color || run.highlight))) {
+      formatting.message = 'Opaque RGB text and highlight colors are preserved. '
+        + formatting.message.replace('fonts, colors and other formatting', 'fonts, themed colors and other formatting');
+    }
   }
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview
   // report into the preview plan source. This is the identity thread: raw
