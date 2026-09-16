@@ -1,3 +1,4 @@
+import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
@@ -7882,6 +7883,158 @@ function docxContentPreviewSelectMarkupCompatibilityXml(xmlText) {
   return { xmlText: output.join(''), diagnostics };
 }
 
+
+// Inline-style preservation is a bounded projection, not a Word style editor.
+const DOCX_INLINE_MARKS = Object.freeze({ 'w:b': 'bold', 'w:i': 'italic', 'w:u': 'underline', 'w:strike': 'strike' });
+const DOCX_INLINE_MAX_RUNS = 50000;
+const DOCX_INLINE_MAX_STYLES = 2048;
+
+function docxInlineReadProperty(properties, tag, token, namespaces) {
+  const mark = DOCX_INLINE_MARKS[tag];
+  if (!mark) return;
+  if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
+    !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_INLINE_PROPERTY_NAMESPACE');
+  const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
+  if (tag === 'w:u') {
+    // Other underline patterns cannot be represented by the editor mark.
+    if (!['', 'single', 'none'].includes(value)) throw new Error('DOCX_INLINE_UNDERLINE_UNSUPPORTED');
+    properties[mark] = value !== 'none';
+  } else {
+    if (!['', 'true', 'false', 'on', 'off', '1', '0'].includes(value)) throw new Error('DOCX_INLINE_ON_OFF_INVALID');
+    properties[mark] = !['false', 'off', '0'].includes(value);
+  }
+}
+
+function docxInlineStyleCatalog(bytes) {
+  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '' };
+  const metadata = docxHostileFileGateCentralEntries(bytes);
+  if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
+  if (!metadata.entries.some((entry) => entry.entryId === 'word/styles.xml')) return catalog;
+  const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/styles.xml', 1024 * 1024);
+  if (!part) throw new Error('DOCX_INLINE_STYLE_PART_LIMIT_OR_INVALID');
+  const xml = docxZipDecodeUtf8Xml(part);
+  if (xml === null || docxContentPreviewUnsupportedEncoding(xml) || /<!\s*(DOCTYPE|ENTITY)\b/iu.test(xml)) {
+    throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+  }
+  if (docxContentPreviewValidateXmlAttributesAndNamespaces(xml).failure) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+  const selected = docxContentPreviewSelectMarkupCompatibilityXml(xml);
+  if (selected.failure) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+  const text = selected.xmlText;
+  const stack = [];
+  let cursor = 0;
+  let current = null;
+  let root = '';
+  while (cursor < text.length) {
+    const next = docxContentPreviewNextXmlToken(text, cursor);
+    if (!next || next.failure) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+    cursor = next.nextCursor;
+    const token = next.token;
+    if (!token.startsWith('<') || token.startsWith('<?') || token.startsWith('<!--')) continue;
+    const closing = token.startsWith('</');
+    if (closing) {
+      const frame = stack.pop();
+      if (!frame || frame.raw !== docxContentPreviewTagName(token)) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+      if (frame.tag === 'w:style') current = null;
+      continue;
+    }
+    const parsed = docxContentPreviewParseStrictStartTag(token.slice(1, -1), stack.at(-1)?.ns || new Map());
+    if (!parsed) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+    const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? `w:${parsed.localName}` : '';
+    const parent = stack.at(-1)?.tag;
+    if (!stack.length) {
+      if (root) throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+      root = tag;
+    }
+    if (tag === 'w:style' && parent === 'w:styles') {
+      const id = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'styleId');
+      const type = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'type');
+      if (!id || id.length > 256 || catalog.styles.has(id) || catalog.styles.size >= DOCX_INLINE_MAX_STYLES) throw new Error('DOCX_INLINE_STYLE_ID_OR_LIMIT');
+      current = { type, properties: {}, basedOn: '' };
+      catalog.styles.set(id, current);
+      const defaultValue = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'default');
+      if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
+    } else if (current && tag === 'w:basedOn' && parent === 'w:style') {
+      current.basedOn = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'val');
+    } else if (parent === 'w:rPr') {
+      const owner = stack.at(-2)?.tag;
+      if (owner === 'w:style' && current && ['paragraph', 'character'].includes(current.type)) {
+        docxInlineReadProperty(current.properties, tag, token, parsed.namespaceMap);
+      } else if (owner === 'w:rPrDefault') {
+        docxInlineReadProperty(catalog.defaults, tag, token, parsed.namespaceMap);
+      }
+    }
+    if (!parsed.selfClosing) stack.push({ raw: parsed.rawTagName, tag, ns: parsed.namespaceMap });
+    else if (tag === 'w:style') current = null;
+    if (stack.length > 128) throw new Error('DOCX_INLINE_STYLE_DEPTH');
+  }
+  if (stack.length || root !== 'w:styles') throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
+  return catalog;
+}
+
+function docxInlineApplyStyle(properties, id, type, catalog) {
+  const chain = [];
+  const seen = new Set();
+  while (id) {
+    if (seen.has(id) || chain.length >= 64) throw new Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');
+    seen.add(id);
+    const style = catalog.styles.get(id);
+    if (!style || style.type !== type) break;
+    chain.push(style);
+    id = style.basedOn;
+  }
+  for (const style of chain.reverse()) {
+    for (const [mark, enabled] of Object.entries(style.properties)) {
+      if (mark === 'underline') properties[mark] = enabled;
+      else if (enabled) properties[mark] = !properties[mark];
+    }
+  }
+}
+
+function docxInlineAppendText(metadata, run, text, catalog, budget) {
+  if (!metadata || !text) return;
+  const properties = { ...catalog.defaults };
+  docxInlineApplyStyle(properties, metadata.paragraphStyleId || catalog.defaultParagraph, 'paragraph', catalog);
+  docxInlineApplyStyle(properties, run?.styleId || '', 'character', catalog);
+  Object.assign(properties, run?.properties || {});
+  const marks = Object.values(DOCX_INLINE_MARKS).filter((mark) => properties[mark] === true);
+  const last = metadata.inlineRuns.at(-1);
+  if (last && JSON.stringify(last.marks) === JSON.stringify(marks)) last.text += text;
+  else {
+    if (++budget.count > DOCX_INLINE_MAX_RUNS) throw new Error('DOCX_INLINE_RUN_LIMIT');
+    metadata.inlineRuns.push({ text, marks });
+  }
+}
+
+function docxInlineCanonicalContent(paragraphs) {
+  let runCount = 0;
+  let hasMarks = false;
+  const content = paragraphs.map((paragraph) => {
+    const runs = paragraph.inlineRuns === undefined
+      ? (paragraph.text ? [{ text: paragraph.text, marks: [] }] : [])
+      : paragraph.inlineRuns;
+    if (!Array.isArray(runs) || (runCount += runs.length) > DOCX_INLINE_MAX_RUNS) throw new Error('DOCX_INLINE_RUN_LIMIT');
+    const nodes = [];
+    let joined = '';
+    for (const run of runs) {
+      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks'].includes(key))
+        || typeof run.text !== 'string' || !run.text || !Array.isArray(run.marks)
+        || run.marks.length > 4 || new Set(run.marks).size !== run.marks.length
+        || run.marks.some((mark) => !Object.values(DOCX_INLINE_MARKS).includes(mark))) throw new Error('DOCX_INLINE_RUN_INVALID');
+      joined += run.text;
+      hasMarks ||= run.marks.length > 0;
+      const marks = run.marks.map((type) => ({ type }));
+      const parts = run.text.split('\n');
+      parts.forEach((text, index) => {
+        if (index) nodes.push({ type: 'hardBreak' });
+        if (text) nodes.push({ type: 'text', text, ...(marks.length ? { marks } : {}) });
+      });
+    }
+    if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
+    return { type: 'paragraph', content: nodes };
+  });
+  return hasMarks ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
+}
+
 function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   const paragraph = {
     order,
@@ -7890,6 +8043,9 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
+  if (metadata.inlineRuns?.some((run) => run.marks.length > 0)) {
+    paragraph.inlineRuns = metadata.inlineRuns;
+  }
   if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
     paragraph.paragraphStyleId = metadata.paragraphStyleId;
   }
@@ -7936,7 +8092,7 @@ function docxContentPreviewUnsupportedEncoding(xmlText) {
   return normalized === 'utf-8' || normalized === 'utf8' || normalized === 'us-ascii' ? null : encoding[2].trim();
 }
 
-function docxContentPreviewParseMainDocumentXml(xmlText) {
+function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
   const xmlValidation = docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText);
   if (xmlValidation.failure) return { failure: xmlValidation.failure };
   const mceSelection = docxContentPreviewSelectMarkupCompatibilityXml(xmlText);
@@ -7957,6 +8113,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
   let activeParagraphIndex = -1;
   let activeListNumbering = null;
   let activeParagraphMetadata = null;
+  let activeInlineRun = null;
+  const inlineBudget = { count: 0 };
   let sectionPropertiesDepth = 0;
   let unsupportedDepth = 0;
   let textDepth = 0;
@@ -7979,6 +8137,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       if (unsupportedDepth === 0 && insideParagraph && textDepth > 0) {
         const decoded = docxContentPreviewDecodeText(token);
         paragraphText += decoded;
+        docxInlineAppendText(activeParagraphMetadata, activeInlineRun, decoded, inlineStyles, inlineBudget);
         totalTextChars += decoded.length;
         if (totalTextChars > DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars) {
           return {
@@ -8009,6 +8168,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
       if (unsupportedDepth === 0 && insideParagraph && textDepth > 0) {
         const decoded = token.slice(9, -3);
         paragraphText += decoded;
+        docxInlineAppendText(activeParagraphMetadata, activeInlineRun, decoded, inlineStyles, inlineBudget);
         totalTextChars += decoded.length;
         if (totalTextChars > DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars) {
           return {
@@ -8094,6 +8254,18 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
     }
     if (unsupportedDepth > 0) continue;
 
+    // Only properties owned by this run apply; paragraph-mark properties,
+    // revisions and foreign-namespace lookalikes never become inline marks.
+    const parentTag = closing ? elementStack.at(-1)?.semanticTagName
+      : elementStack.at(selfClosing ? -1 : -2)?.semanticTagName;
+    if (insideParagraph && tagName === 'w:r') {
+      activeInlineRun = closing || selfClosing ? null : { properties: {}, styleId: '' };
+    } else if (activeInlineRun && !closing && parentTag === 'w:rPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:r') {
+      docxInlineReadProperty(activeInlineRun.properties, tagName, token, tokenNamespaceMap);
+      if (tagName === 'w:rStyle') activeInlineRun.styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
+    }
+
     if (insideParagraph && !closing && tagName === 'w:fldSimple') {
       const instruction = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'instr');
       if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
@@ -8154,6 +8326,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         activeParagraphIndex = paragraphs.length;
         activeListNumbering = null;
         activeParagraphMetadata = {
+          inlineRuns: [],
           bookmarkStartIds: new Set(),
           zeroLengthBookmarkCount: 0,
         };
@@ -8221,6 +8394,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText) {
         );
       }
       paragraphText += marker;
+      docxInlineAppendText(activeParagraphMetadata, activeInlineRun, marker, inlineStyles, inlineBudget);
       totalTextChars += marker.length;
       if (totalTextChars > DOCX_CONTENT_PREVIEW_BOUNDS.maxTextChars) {
         return {
@@ -8405,7 +8579,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       carrierIgnored,
     });
   }
-  const parsed = docxContentPreviewParseMainDocumentXml(xmlText);
+  let parsed;
+  try {
+    parsed = docxContentPreviewParseMainDocumentXml(xmlText, docxInlineStyleCatalog(bytes));
+  } catch (error) {
+    parsed = { failure: docxContentPreviewMalformedXmlDiagnostic(error.message) };
+  }
   if (parsed.failure) {
     return docxContentPreviewResult({
       ok: false,
@@ -9265,12 +9444,24 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     ? googleDocsTabs.importParagraphIndexes
     : paragraphValidation.texts.map((_text, index) => index);
   const importedText = importParagraphIndexes.map((index) => paragraphValidation.texts[index]).join('\n');
+  let richContent;
+  try {
+    richContent = docxInlineCanonicalContent(contentPreview.paragraphs);
+  } catch (error) {
+    return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID, { field: 'contentPreview.paragraphs.inlineRuns', sourceCode: error.message });
+  }
   const sourceHash = docxImportPreviewStableHash(input);
-  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, importedText, {
+  const candidateCreatePlan = docxImportPreviewBuildCandidateCreatePlan(input, contentPreview, richContent ?? importedText, {
     googleDocsTabs,
     importParagraphIndexes,
   });
   const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText, googleDocsTabs);
+  if (richContent !== null) {
+    lossReport.mode = 'inline-marks';
+    const formatting = lossReport.items.find((item) => item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY');
+    formatting.code = 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
+    formatting.message = 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+  }
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview
   // report into the preview plan source. This is the identity thread: raw
   // artifact bytes -> content preview -> preview plan source -> receipt.
