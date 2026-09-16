@@ -35,7 +35,10 @@
     "src/utils/docxImportSafeCreate.js",
     "src/utils/docxImportLocalFilePreview.js",
     "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
-    "docs/tasks/2026-09-16--docx-inline-styles-c1.md"
+    "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
+    "src/derived/navigatorCounters.mjs",
+    "test/unit/navigator-derived-counters.test.js",
+    "docs/tasks/2026-09-16--docx-navigator-visible-word-count.md"
   ],
   "protectedFiles": [
     {
@@ -291,12 +294,29 @@
       {
         "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
         "sha256": "8a283c49c509776c4313cce9da54a95d1dc62e0ff3c7a04a71ecf1de0a36d556"
+      },
+      {
+        "path": "src/derived/navigatorCounters.mjs",
+        "sha256": "bf7ec0ff9175ff4df9236d3770a2018a30f92dbb9e8b52315ed04b3a06c63410"
+      },
+      {
+        "path": "test/unit/navigator-derived-counters.test.js",
+        "sha256": "47cfb1b7bf195faa260c25c71e67c0c6c400695c072c3074a07f90b2ba1bddb0"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-navigator-visible-word-count.md",
+        "sha256": "c3efb15b7d53fb6c5f4c5e2d17735b93508b205e2122a065fbb3c31eed3e85d2"
       }
     ],
     "followupRepair": {
       "id": "DOCX_INLINE_STYLES_C1_V1",
       "bindingBaseSha": "573155e49fb540fbcd6c7c306f79b318ddcdcc57",
       "scope": "Four inline marks through existing DOCX and canonical scene path. No whole-STYLES credit. Fresh TEXT/ORDER evidence remains required for DATA admission."
+    },
+    "navigatorCounterRepair": {
+      "id": "NAVIGATOR_VISIBLE_SCENE_WORD_COUNT_V1",
+      "bindingBaseSha": "d97340e691e12745eb199fc172904429977a4fbe",
+      "scope": "Navigator uses decoded visible text; raw identity hashes remain unchanged. No whole-cell credit; fresh native evidence remains required."
     }
   }
 }

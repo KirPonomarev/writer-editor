@@ -91,3 +91,64 @@ test('navigator derived counters stay bounded on a large tree', async () => {
   assert.equal(durationMs < 250, true, `large-tree counter derivation took ${durationMs}ms`);
 });
 
+test('navigator counts visible rich text and excludes envelope metadata and cards', async () => {
+  const { countNavigatorWords } = await loadCountersModule();
+  const { composeObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const payload = composeObservablePayload({
+    doc: { type: 'doc', content: [
+      { type: 'paragraph', content: [{ type: 'text', text: 'BOLD_SENTINEL', marks: [{ type: 'bold' }] }, { type: 'text', text: ' plain ' }, { type: 'text', text: 'ITALIC_SENTINEL', marks: [{ type: 'italic' }] }] },
+      { type: 'paragraph', content: [] },
+      { type: 'paragraph', content: [{ type: 'text', text: 'UNDERLINE STRIKE BOTH', marks: [{ type: 'underline' }, { type: 'strike' }] }] },
+      { type: 'paragraph', content: [{ type: 'text', text: 'stable конец Ω 😀' }] },
+    ] },
+    metaEnabled: true, meta: { synopsis: 'not manuscript words', status: 'черновик' },
+    cards: [{ title: 'planning card', text: 'also not manuscript words' }],
+  });
+  assert.equal(countNavigatorWords(payload), 10);
+  assert.equal(countNavigatorWords(composeObservablePayload({ text: 'one\ntwo three', metaEnabled: true, cards: [{ text: 'excluded card words' }] })), 3);
+});
+
+test('navigator preserves word boundaries across rich runs, hard breaks and paragraphs', async () => {
+  const { countNavigatorWords } = await loadCountersModule();
+  const { composeObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const payload = composeObservablePayload({ doc: { type: 'doc', content: [
+    { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Joined', marks: [{ type: 'bold' }] }, { type: 'text', text: 'Word' }, { type: 'hardBreak' }, { type: 'text', text: 'два\tтри' }] },
+    { type: 'paragraph', content: [{ type: 'text', text: 'four\u00a0five' }] },
+  ] } });
+  assert.equal(countNavigatorWords(payload), 5);
+});
+
+test('empty rich scenes stay zero words and incomplete despite metadata', async () => {
+  const counters = await loadCountersModule();
+  const { composeObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const scene = node('a', 'scene');
+  const root = node('b', 'roman-root', [scene]);
+  const payload = composeObservablePayload({ doc: { type: 'doc', content: [{ type: 'paragraph' }] }, metaEnabled: true });
+  await counters.annotateNavigatorDerivedCounters(root, { readText: async () => payload });
+  assert.equal(scene.derivedCounters.wordCount, 0);
+  assert.equal(root.derivedCounters.completedSceneCount, 0);
+  assert.equal(root.derivedCounters.progressPercent, 0);
+});
+
+test('invalid rich payloads reject derivation instead of publishing fabricated word counts', async () => {
+  const counters = await loadCountersModule();
+  const { composeObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const valid = composeObservablePayload({ doc: { type: 'doc', content: [{ type: 'paragraph' }] } });
+  for (const payload of ['[doc-v2 length=99999]\n{}', '[doc-v2 length=1]\n{', valid + '\nconflicting text']) {
+    assert.throws(() => counters.countNavigatorWords(payload), { code: 'E_DOC_PAYLOAD_INVALID' });
+    await assert.rejects(counters.annotateNavigatorDerivedCounters(node('a', 'scene'), { readText: async () => payload }), { code: 'E_DOC_PAYLOAD_INVALID' });
+  }
+});
+
+test('rich formatting changes retain raw-source invalidation while word counts stay stable', async () => {
+  const counters = await loadCountersModule();
+  const { composeObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const scene = node('a', 'scene');
+  const root = node('b', 'roman-root', [scene]);
+  const payload = marked => composeObservablePayload({ doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'one two', ...(marked ? { marks: [{ type: 'bold' }] } : {}) }] }] } });
+  const first = await counters.annotateNavigatorDerivedCounters(root, { readText: async () => payload(false) });
+  const second = await counters.annotateNavigatorDerivedCounters(root, { previousSnapshot: first.snapshot, readText: async () => payload(true) });
+  assert.equal(root.derivedCounters.wordCount, 2);
+  assert.deepEqual(second.changedSceneIds, [scene.nodeId]);
+  assert.notEqual(second.snapshot.leafHashes[scene.nodeId], first.snapshot.leafHashes[scene.nodeId]);
+});
