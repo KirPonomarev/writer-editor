@@ -63,6 +63,8 @@ const WORDING_PREDECESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'COR
 const WORDING_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'WP806_RELEASE01_WORDING_SURFACE_SUCCESSOR_V1.json');
 const COMMAND_PALETTE_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'CORE_A4_COMMAND_PALETTE_VISIBLE_COMMANDS_WORDING_SURFACE_SUCCESSOR_V1.json');
 const TEXT_SINGLE_SCENE_SUCCESSOR_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'R24', 'CORRECTIVE', 'TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_WORDING_SURFACE_SUCCESSOR_V1.json');
+const C1_DATA_POLICY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'YALKEN_INTEROP_DATA_C1_POLICY_V1.json');
+const C1_DATA_GATE_PATH = path.join(REPO_ROOT, 'scripts', 'ops', 'rtk-interop-data-c1.mjs');
 const WORD_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'WORD_BUILD_PROFILE_REGISTRY_V1.json');
 const GOOGLE_REGISTRY_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'RTK', 'GOOGLE_BUILD_PROFILE_REGISTRY_V1.json');
 const CAPABILITY_MATRIX_PATH = path.join(REPO_ROOT, 'docs', 'OPS', 'STATUS', 'CAPABILITY_MATRIX.json');
@@ -203,6 +205,7 @@ const RELEASE01_SUCCESSOR_CHAIN_CODES = Object.freeze({
   PREDECESSOR_OVERRIDE_MISMATCH: 'RTK_RELEASE01_WORDING_SUCCESSOR_PREDECESSOR_OVERRIDE_MISMATCH',
   SURFACE_OVERRIDE_MISSING: 'RTK_RELEASE01_WORDING_SUCCESSOR_SURFACE_OVERRIDE_MISSING',
   CURRENT_OVERRIDE_MISSING: 'RTK_RELEASE01_WORDING_SUCCESSOR_CURRENT_OVERRIDE_MISSING',
+  CURRENT_QUALIFICATION_INVALID: 'RTK_RELEASE01_WORDING_CURRENT_QUALIFICATION_INVALID',
 });
 
 function failSuccessorChain(code, message) {
@@ -218,6 +221,14 @@ function loadJsonWithBytes(absPath) {
     digest: sha256RawBytes(bytes),
     value: JSON.parse(bytes.toString('utf8')),
   };
+}
+
+function currentC1PolicyPin() {
+  const pins = [...fs.readFileSync(C1_DATA_GATE_PATH, 'utf8').matchAll(/^export const DATA_POLICY_SHA256='([a-f0-9]{64})';$/gm)];
+  if (pins.length !== 1) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'exactly one C1 policy pin required');
+  }
+  return pins[0][1];
 }
 
 function assertExactSurfaceOverridePaths(successor, expectedPaths, code) {
@@ -256,6 +267,8 @@ function compileRelease01CurrentWordingRegistry({
   wp806SuccessorLoad = loadJsonWithBytes(WORDING_SUCCESSOR_PATH),
   commandPaletteSuccessorLoad = loadJsonWithBytes(COMMAND_PALETTE_SUCCESSOR_PATH),
   textSingleSceneSuccessorLoad = loadJsonWithBytes(TEXT_SINGLE_SCENE_SUCCESSOR_PATH),
+  currentQualificationLoad = loadJsonWithBytes(C1_DATA_POLICY_PATH),
+  currentQualificationPin = currentC1PolicyPin(),
 } = {}) {
   const registry = clone(historicalRegistry);
   const wp805Digest = sha256RawFile(WORDING_PREDECESSOR_PATH);
@@ -337,6 +350,27 @@ function compileRelease01CurrentWordingRegistry({
     textSingleScene.surfaceOverrides,
     RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING
   );
+
+  // Validate the complete historical chain first. The already admitted C1
+  // qualification binds the current editor without rewriting any predecessor.
+  const qualification = currentQualificationLoad;
+  if (!qualification || !Buffer.isBuffer(qualification.bytes)
+    || sha256RawBytes(qualification.bytes) !== currentQualificationPin
+    || qualification.digest !== currentQualificationPin
+    || JSON.stringify(JSON.parse(qualification.bytes.toString('utf8'))) !== JSON.stringify(qualification.value)) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'C1 qualification must match the gate-pinned bytes');
+  }
+  const repair = qualification.value.qualifiedRuntimeRepair;
+  const editorBindings = Array.isArray(repair?.sourceBindings)
+    ? repair.sourceBindings.filter((entry) => entry?.path === 'src/renderer/editor.js') : [];
+  if (repair?.id !== 'DOCX_IMPORT_PREVIEW_REFERENCE_REPAIR_V1'
+    || editorBindings.length !== 1 || !/^[a-f0-9]{64}$/u.test(editorBindings[0].sha256)) {
+    failSuccessorChain(RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID, 'one valid current editor binding in the admitted C1 repair required');
+  }
+  applySurfaceOverrides(registry, [{
+    ...textSingleScene.surfaceOverrides[0],
+    sha256: `sha256:${editorBindings[0].sha256}`,
+  }], RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_OVERRIDE_MISSING);
 
   return registry;
 }
@@ -904,6 +938,47 @@ test('RELEASE01-14c-successor-chain-rejects-broken-TEXT-SINGLE-SCENE-predecessor
     historicalRegistry: loaded.registry,
     textSingleSceneSuccessorLoad: { ...textSingleSceneLoad, value: mutated },
   }), (error) => error && error.code === RELEASE01_SUCCESSOR_CHAIN_CODES.PREDECESSOR_HASH_MISMATCH);
+});
+
+test('RELEASE01-14d-current-qualification-rejects-stale-bytes-and-decoded-tampering', async () => {
+  const module = await loadModule();
+  const loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true);
+  const qualification = loadJsonWithBytes(C1_DATA_POLICY_PATH);
+  const decodedTamper = clone(qualification.value);
+  decodedTamper.qualifiedRuntimeRepair.sourceBindings.find((entry) => entry.path === 'src/renderer/editor.js').sha256 = '0'.repeat(64);
+  for (const currentQualificationLoad of [
+    null,
+    { ...qualification, bytes: Buffer.concat([qualification.bytes, Buffer.from(' ')]) },
+    { ...qualification, digest: '0'.repeat(64) },
+    { ...qualification, value: decodedTamper },
+  ]) {
+    assert.throws(() => compileRelease01CurrentWordingRegistry({
+      historicalRegistry: loaded.registry, currentQualificationLoad,
+    }), (error) => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
+});
+
+test('RELEASE01-14e-current-qualification-rejects-invalid-or-ambiguous-editor-bindings', async () => {
+  const module = await loadModule();
+  const loaded = module.loadTerminalClaimRegistry(REGISTRY_PATH);
+  assert.equal(loaded.ok, true);
+  for (const mutate of [
+    (repair) => { repair.id = 'UNADMITTED_REPAIR'; },
+    (repair) => { repair.sourceBindings = repair.sourceBindings.filter((entry) => entry.path !== 'src/renderer/editor.js'); },
+    (repair) => { repair.sourceBindings.push(clone(repair.sourceBindings.find((entry) => entry.path === 'src/renderer/editor.js'))); },
+    (repair) => { repair.sourceBindings.find((entry) => entry.path === 'src/renderer/editor.js').sha256 = 'invalid'; },
+  ]) {
+    const value = loadJsonWithBytes(C1_DATA_POLICY_PATH).value;
+    mutate(value.qualifiedRuntimeRepair);
+    const bytes = Buffer.from(JSON.stringify(value));
+    const digest = sha256RawBytes(bytes);
+    assert.throws(() => compileRelease01CurrentWordingRegistry({
+      historicalRegistry: loaded.registry,
+      currentQualificationLoad: { bytes, value, digest },
+      currentQualificationPin: digest,
+    }), (error) => error?.code === RELEASE01_SUCCESSOR_CHAIN_CODES.CURRENT_QUALIFICATION_INVALID);
+  }
 });
 
 // ===========================================================================

@@ -1,5 +1,6 @@
 import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
 import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs';
+import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../paragraphAlignment.mjs';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
@@ -8175,6 +8176,13 @@ function docxInlineStyleCatalog(bytes) {
         catalog.defaultNumbering ??= {};
         docxReadNumberingProperty(catalog.defaultNumbering, tag, token, parsed.namespaceMap);
       }
+    } else if (tag === 'w:jc' && parent === 'w:pPr') {
+      const owner = stack.at(-2)?.tag;
+      if (owner === 'w:style' && current?.type === 'paragraph') {
+        docxReadParagraphAlignment(current, token, parsed.namespaceMap);
+      } else if (owner === 'w:pPrDefault') {
+        docxReadParagraphAlignment(catalog, token, parsed.namespaceMap);
+      }
     } else if (tag === 'w:outlineLvl' && parent === 'w:pPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current?.type === 'paragraph') {
@@ -8255,6 +8263,32 @@ function docxReadOutlineLevel(token, namespaces) {
   return Number(value);
 }
 
+function docxReadParagraphAlignment(properties, token, namespaces) {
+  if (Object.hasOwn(properties, 'wordAlignment')) throw new Error('DOCX_PARAGRAPH_ALIGNMENT_DUPLICATE');
+  const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
+  fromWordParagraphAlignment(value);
+  properties.wordAlignment = value;
+}
+
+function docxResolveParagraphAlignment(metadata, catalog) {
+  let value = metadata.wordAlignment;
+  let id = metadata.paragraphStyleId || catalog.defaultParagraph;
+  const seen = new Set();
+  while (id) {
+    if (seen.has(id) || seen.size >= 64) throw new Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');
+    seen.add(id);
+    const style = catalog.styles.get(id);
+    if (!style || style.type !== 'paragraph') break;
+    value ??= style.wordAlignment;
+    id = style.basedOn;
+  }
+  value ??= catalog.wordAlignment;
+  if (value === undefined) return;
+  const textAlign = fromWordParagraphAlignment(value);
+  if (textAlign === null) metadata.unsupportedAlignment = true;
+  else metadata.textAlign = textAlign;
+}
+
 function docxResolveHeadingLevel(metadata, catalog) {
   let outline = metadata.outlineLevel;
   let id = metadata.paragraphStyleId || catalog.defaultParagraph;
@@ -8280,7 +8314,11 @@ function docxInlineCanonicalContent(paragraphs) {
     if (level !== undefined && (!Number.isInteger(level) || level < 1 || level > 6)) {
       throw new Error('DOCX_HEADING_LEVEL_INVALID');
     }
-    hasMarks ||= level !== undefined;
+    const textAlign = paragraph.textAlign;
+    if (Object.hasOwn(paragraph, 'textAlign') && (textAlign === null || normalizeParagraphAlignment(textAlign) !== textAlign)) {
+      throw new Error('DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID');
+    }
+    hasMarks ||= level !== undefined || textAlign !== undefined;
     const runs = paragraph.inlineRuns === undefined
       ? (paragraph.text ? [{ text: paragraph.text, marks: [] }] : [])
       : paragraph.inlineRuns;
@@ -8313,8 +8351,8 @@ function docxInlineCanonicalContent(paragraphs) {
       });
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
-    return level === undefined ? { type: 'paragraph', content: nodes }
-      : { type: 'heading', attrs: { level }, content: nodes };
+    const attrs = { ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}) };
+    return { type: level === undefined ? 'paragraph' : 'heading', ...(Object.keys(attrs).length ? { attrs } : {}), content: nodes };
   });
   const content = [];
   const stack = [];
@@ -8368,6 +8406,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     paragraph.paragraphStyleId = metadata.paragraphStyleId;
   }
   if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
+  if (metadata.textAlign !== undefined) paragraph.textAlign = metadata.textAlign;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
@@ -8389,7 +8428,17 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
       }),
     };
   }
-  if (styleCatalog) metadata.headingLevel = docxResolveHeadingLevel(metadata, styleCatalog);
+  if (styleCatalog) {
+    metadata.headingLevel = docxResolveHeadingLevel(metadata, styleCatalog);
+    docxResolveParagraphAlignment(metadata, styleCatalog);
+  }
+  if (metadata.unsupportedAlignment && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
+    diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
+      severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+      sourceCode: 'DOCX_PARAGRAPH_ALIGNMENT_UNSUPPORTED', tagName: 'w:jc', paragraphIndex: paragraphs.length,
+      message: 'Direction-dependent or distributed paragraph alignment cannot be represented by the supported editor alignments',
+    }));
+  }
   if (numberingCatalog) docxResolveParagraphList(metadata, styleCatalog, numberingCatalog, diagnostics, paragraphs.length);
   if (metadata.unsupportedColor && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
     diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
@@ -8702,6 +8751,9 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:outlineLvl') {
       activeParagraphMetadata.outlineLevel = docxReadOutlineLevel(token, tokenNamespaceMap);
+    } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:jc') {
+      docxReadParagraphAlignment(activeParagraphMetadata, token, tokenNamespaceMap);
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:pStyle') {
       activeParagraphMetadata.paragraphStyleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val').trim();
@@ -9810,6 +9862,10 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       : hasHeadings
       ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+    if (contentPreview.paragraphs.some(p => p.textAlign !== undefined)) {
+      formatting.message = 'Left, center, right and justified paragraph alignment are preserved. '
+        + formatting.message.replace('Paragraph appearance', 'Other paragraph appearance').replace('paragraph appearance', 'other paragraph appearance');
+    }
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.color || run.highlight))) {
       formatting.message = 'Opaque RGB text and highlight colors are preserved. '
         + formatting.message.replace('fonts, colors and other formatting', 'fonts, themed colors and other formatting');

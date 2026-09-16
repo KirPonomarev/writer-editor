@@ -8,6 +8,7 @@ const {
 } = require('./docxTextXml.js');
 const { buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 const { buildDocxTypographyPropertiesXml } = require('./docxInlineTypography.js');
+const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -178,10 +179,10 @@ function buildParagraphXml(block, index, hyperlinkByHref) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const textRun = buildFormatIrRunsXml(block, hyperlinkByHref);
-  const textAlign = normalizeString(block.formatIr?.paragraph?.textAlign);
+  const textAlign = toWordParagraphAlignment(block.formatIr?.paragraph?.textAlign);
   const headingLevel = Number(block.formatIr?.paragraph?.headingLevel);
   const paragraphPropertyParts = [];
-  if (textAlign && ['left', 'center', 'right', 'justify'].includes(textAlign)) {
+  if (textAlign) {
     paragraphPropertyParts.push(`<w:jc w:val="${textAlign}"/>`);
   }
   if (block.formatIr?.paragraph?.nodeType === 'heading') {

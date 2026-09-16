@@ -17,6 +17,7 @@ const {
 } = require('./docxTextXml.js');
 const { normalizeOpaqueRgb, buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 const { buildDocxTypographyPropertiesXml, readRunTypography } = require('./docxInlineTypography.js');
+const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
 
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
@@ -164,7 +165,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       }
       const paragraph = item.content[0];
       if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
-      blocks.push({ kind: 'paragraph', text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering });
+      blocks.push({ kind: 'paragraph', text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering, textAlign: toWordParagraphAlignment(paragraph.attrs?.textAlign) });
       for (const nested of item.content.slice(1)) visitList(nested, level + 1);
     }
   };
@@ -186,11 +187,11 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
         throw new Error('DOCX_HEADING_LEVEL_INVALID');
       }
-      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs });
+      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
       continue;
     }
     if (text || node.type === 'paragraph') {
-      blocks.push({ kind: 'paragraph', text, runs });
+      blocks.push({ kind: 'paragraph', text, runs, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
     }
   }
 
@@ -283,8 +284,10 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const text = typeof entry?.text === 'string' ? entry.text : '';
       const numbering = semanticBlocks?.[index]?.numbering;
       if (numbering) numberings.set(numbering.numId, numbering);
+      const textAlign = semanticBlocks?.[index]?.textAlign;
       const properties = (styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
-        + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '');
+        + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
+        + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
       const styleXml = properties ? `<w:pPr>${properties}</w:pPr>` : '';
       if (!text) {
         return `<w:p>${styleXml}</w:p>`;

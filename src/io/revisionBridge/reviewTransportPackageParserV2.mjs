@@ -24,6 +24,8 @@ export const RTK_REVIEW_TRANSPORT_AUTHORITY_CUSTOM_PROPERTY_NAMES = Object.freez
   'YRTK_C01_AUTH',
 ]);
 
+import { fromWordParagraphAlignment } from '../paragraphAlignment.mjs';
+
 const W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
 const CONTENT_TYPES_NS = 'http://schemas.openxmlformats.org/package/2006/content-types';
@@ -1874,10 +1876,12 @@ function formattingInlineState(actions) {
 
 function formattingParagraphState(children) {
   const state = {};
-  const alignment = children.find((item) => item.localName === 'jc');
-  if (alignment) {
-    const value = attr(alignment, 'val').trim().toLowerCase();
-    if (['left', 'center', 'right', 'justify'].includes(value)) state.textAlign = value;
+  const alignments = children.filter((item) => item.localName === 'jc');
+  if (alignments.length === 1) {
+    try {
+      const value = fromWordParagraphAlignment(attr(alignments[0], 'val').trim());
+      if (value !== null) state.textAlign = value;
+    } catch { /* The scanner marks a jc without a supported value as invalid. */ }
   }
   return state;
 }

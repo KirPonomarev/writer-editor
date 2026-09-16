@@ -20472,7 +20472,11 @@ function getAlignmentActionForLine(line) {
 }
 
 function syncAlignmentButtonsToSelection() {
-  if (isTiptapMode) return;
+  if (isTiptapMode) {
+    const alignment = getTiptapFormattingState().paragraphAlignment;
+    updateAlignmentButtons(alignment ? `align-${alignment}` : '');
+    return;
+  }
   if (!editor) return;
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) return;
@@ -21082,6 +21086,9 @@ function handleFormatAlign(action) {
   if (!Object.prototype.hasOwnProperty.call(ALIGNMENT_PREFIX_BY_ACTION, action)) {
     return { performed: false, reason: 'ALIGN_ACTION_UNKNOWN' };
   }
+  if (isTiptapMode) {
+    return handleTiptapFormatCommand('setParagraphAlignment', { value: action.slice('align-'.length) });
+  }
   applyAlignmentStyle(action);
   updateAlignmentButtons(action);
   return { performed: true, action };
@@ -21156,6 +21163,7 @@ function normalizeToolbarFormattingState(input) {
     orderedList: Boolean(source.orderedList),
     link: Boolean(source.link || source.linkActive),
     linkHref: typeof source.linkHref === 'string' ? source.linkHref : '',
+    paragraphAlignment: ['left', 'center', 'right', 'justify'].includes(source.paragraphAlignment) ? source.paragraphAlignment : '',
     paragraphStyle: typeof source.paragraphStyle === 'string' ? source.paragraphStyle : '',
     characterStyle: typeof source.characterStyle === 'string' ? source.characterStyle : '',
     selectionEmpty: source.selectionEmpty !== false,
@@ -21363,6 +21371,7 @@ function syncToolbarFormattingState(nextState = null) {
   const state = isTiptapMode
     ? normalizeToolbarFormattingState(nextState || getTiptapFormattingState())
     : normalizeToolbarFormattingState();
+  if (isTiptapMode) updateAlignmentButtons(state.paragraphAlignment ? `align-${state.paragraphAlignment}` : '');
   updateToolbarPressedButton(formatBoldButton, state.bold);
   updateToolbarPressedButton(formatItalicButton, state.italic);
   updateToolbarPressedButton(formatUnderlineButton, state.underline);
@@ -22845,7 +22854,7 @@ document.addEventListener('keydown', (event) => {
   }
 }, true);
 document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
-document.addEventListener('selectionchange', syncToolbarFormattingState);
+document.addEventListener('selectionchange', () => syncToolbarFormattingState());
 
 window.addEventListener('resize', () => {
   syncWriterA11yPerformanceProjection();

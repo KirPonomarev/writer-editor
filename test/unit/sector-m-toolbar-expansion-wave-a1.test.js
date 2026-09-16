@@ -58,7 +58,7 @@ test('sector-m toolbar expansion wave a1: editor wiring keeps commands behind ke
   assert.ok(source.includes("listClear: () => handleTiptapFormatCommand('clearList')"))
   assert.ok(source.includes('void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_BOLD);'))
   assert.ok(source.includes('void dispatchUiCommand(EXTRA_COMMAND_IDS.FORMAT_TOGGLE_ITALIC);'))
-  assert.ok(source.includes('document.addEventListener(\'selectionchange\', syncToolbarFormattingState);'))
+  assert.ok(source.includes('document.addEventListener(\'selectionchange\', () => syncToolbarFormattingState());'))
   assert.equal(source.includes('document.execCommand(\'bold\')'), false)
   assert.equal(source.includes('document.execCommand(\'italic\')'), false)
 })
