@@ -1471,3 +1471,89 @@ it('shared governance admits only the delivered successor scope and gives no run
   assert.throws(()=>shared.verifyTextOrderPostEvaluation({git}),/IMPLEMENTATION_DRIFT/);
 });
 }
+
+{
+const it=test;const root=path.resolve(__dirname,'../..');
+it('data C1 validates authored inputs without accepting output, code or route authority',async()=>{
+  const data=await import('../../scripts/ops/rtk-interop-data-c1.mjs');
+  const cases=JSON.parse(fs.readFileSync(path.join(root,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json'))).cases;
+  assert.notEqual(cases[0].paragraphs.length,cases[1].paragraphs.length);
+  for(const c of cases)assert.deepEqual(data.validateDataCase(c),c);
+  const third=structuredClone(cases[1]);third.id='new-data-only';third.paragraphs.push('A third authored input, without modifying the checker.');
+  assert.deepEqual(data.validateDataCase(third),third);
+  for(const key of ['expected','status','action','path','route','script'])assert.throws(()=>data.validateDataCase({...third,[key]:'PASS'}),/CASE_FIELDS/);
+  for(const id of ['../outside','x/y','x\\y','', 'A','a'.repeat(65)])assert.throws(()=>data.validateDataCase({...third,id}),/CASE_ID/);
+  for(const value of ['\n','\r','\t','\u0000','\ud800','\uffff']){
+    const bad=structuredClone(third);bad.paragraphs.push(value);assert.throws(()=>data.validateDataCase(bad),/CASE_/);
+  }
+  for(const mutate of [c=>{c.paragraphs=c.paragraphs.map(x=>x.replace('[whitespaceEdgesPreserved]','[space-control]'));},c=>c.paragraphs.fill('same'),c=>c.paragraphs.splice(0,1),c=>c.paragraphs.push('x'.repeat(65537)),c=>c.paragraphs.splice(0,60)]){
+    const bad=structuredClone(third);mutate(bad);assert.throws(()=>data.validateDataCase(bad),/CASE_/);
+  }
+});
+
+it('data C1 independent Python reader distinguishes ordering, whitespace and Unicode on both inputs',()=>{
+  const code=`import importlib.util,json,io,zipfile,copy,xml.etree.ElementTree as E
+from pathlib import Path
+p=Path('scripts/ops/rtk-interop-data-c1-readback.py');s=importlib.util.spec_from_file_location('data_reader',p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+cases=json.loads(Path('docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json').read_text())['cases']
+short=copy.deepcopy(cases[1]);short['id']='short-first-paragraph';short['paragraphs'].insert(0,'X');cases.append(short)
+killed=0
+for case in cases:
+ a=m.validate_case(case);doc=E.Element(m.W+'document');body=E.SubElement(doc,m.W+'body')
+ for value in a:
+  para=E.SubElement(body,m.W+'p');run=E.SubElement(para,m.W+'r');E.SubElement(run,m.W+'t').text=value
+ out=io.BytesIO()
+ with zipfile.ZipFile(out,'w') as z:z.writestr('word/document.xml',E.tostring(doc))
+ actual=m.docx_paragraphs(out.getvalue());m.compare_paragraphs(a,actual,'GOOD')
+ m.compare_paragraphs(a,m.docx_paragraphs(m.split_text_run(out.getvalue())),'SPLIT_POSITIVE')
+ variants=[actual[1:],[actual[1],actual[0],*actual[2:]],actual+[actual[0]],[v.strip() for v in actual],[v.replace('Café','Cafe\\u0301') for v in actual],[v.replace(' ','\\u00a0',1) for v in actual]]
+ for bad in variants:
+  try:m.compare_paragraphs(a,bad,'MUTANT')
+  except ValueError as err:
+   assert str(err).startswith('MUTANT_ORDER_OR_CONTENT:') and 'firstParagraph' in str(err);killed+=1
+  else:raise AssertionError('surviving mutation')
+ bad={**case,'paragraphs':[v.replace('[whitespaceEdgesPreserved]','[space-control]') for v in a]}
+ try:m.validate_case(bad)
+ except ValueError as err:assert str(err)=='CASE_PRESENCE'
+ else:raise AssertionError('driver whitespace sentinel missing')
+ for key in ['expected','script','path']:
+  try:m.validate_case({**case,key:'PASS'})
+  except ValueError:pass
+  else:raise AssertionError('authority field accepted')
+assert killed==18
+print(json.dumps({'cases':len(cases),'killed':killed}))`;
+  const result=spawnSync('python3',['-I','-B','-c',code],{cwd:root,encoding:'utf8',timeout:10000});
+  assert.equal(result.status,0,result.stdout+result.stderr);assert.deepEqual(JSON.parse(result.stdout),{cases:3,killed:18});
+});
+
+it('data C1 official mode rejects mixed authority and cannot count diagnostic or duplicate cells',async()=>{
+  const {verifyInterop100,readInterop100Denominator}=await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
+  const data=await import('../../scripts/ops/rtk-interop-data-c1.mjs');
+  for(const extra of [{spec:readInterop100Denominator(root)},{orderC1LabRoot:root},{textOrderC1LabRoot:root},{freshC1EvidenceRoot:root},{ledger:[]},{requireLocalPhysicalPackage:true}]){
+    const result=verifyInterop100(root,{dataC1LabRoot:root,dataC1RunId:'missing',...extra});
+    assert.equal(result.authoritativeAdmission,false);assert.equal(result.passedRequiredCells,0);assert.ok(result.errors.includes('DATA_C1_MODE_OPTIONS_CONFLICT'));
+  }
+  assert.equal(data.verifyDataC1({requiredCells:Array(1120).fill({cellId:data.CELLS[0]})}).passedRequiredCells,0);
+  assert.throws(()=>data.validateDataC1Acceptances([],{}),/DATA_DECISION_SET/);
+});
+
+it('data C1 delivery binds immutable code and preserves Buffer and text Git adapters',async()=>{
+  const data=await import('../../scripts/ops/rtk-interop-data-c1.mjs');
+  const policy=data.loadDataPolicy(),candidate='f'.repeat(40),delivery='e'.repeat(40);
+  let changed=[...policy.admittedPaths],drift=[];
+  const git=args=>{
+    if(args[0]==='rev-parse')return args[1]===policy.baseSha+'^{tree}'?policy.baseTree:candidate;
+    if(args[0]==='ls-tree')return data.DATA_POLICY_PATH;
+    if(args[0]==='log')return delivery;
+    if(args[0]==='merge-base')return '';
+    if(args[0]==='diff')return (args[3]===policy.baseSha?changed:drift).join('\n');
+    if(args[0]==='show')return fs.readFileSync(path.join(root,args[1].slice(41)),'utf8');
+    throw new Error(args.join(' '));
+  };
+  const result=data.verifyDataC1PostEvaluation({git});assert.equal(result.status,'PASS');assert.equal(result.cellAcceptanceAuthority,false);
+  assert.deepEqual(data.verifyDataC1PostEvaluation({git:a=>Buffer.from(git(a))}),result);
+  changed.push('src/main.js');assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/UNADMITTED/);changed.pop();
+  drift=['scripts/ops/rtk-interop-data-c1-readback.py'];assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/IMPLEMENTATION_DRIFT/);
+});
+
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "YALKEN_C1_DATA_RECIPE_EXAMPLES_V1",
+  "claim": "Bounded paragraph preservation; each case is input data, never an expected-output override",
+  "cases": [
+    {
+      "schemaVersion": "YALKEN_C1_PARAGRAPH_CASE_V1",
+      "id": "paragraph-baseline",
+      "paragraphs": [
+        "[plainTextPreserved] Body text sentinel alpha.",
+        "",
+        "[latin-basic] Plain ASCII text survives Word and Yalken return.",
+        "[latin-diacritic] Café naïve façade coöperate jalapeño résumé.",
+        "[cyrillic] Привет мир. Текст сцены сохраняется.",
+        "[greek] Καλημέρα κόσμε. Το κείμενο παραμένει.",
+        "[cjk] 中文文本保留。日本語の本文も保持。한국어 문장도 유지.",
+        "[rtl-hebrew] שלום עולם. טקסט בעברית נשמר.",
+        "[emoji-zwj] Family 👨‍👩‍👧‍👦 and technologist 🧑‍💻 stay intact.",
+        "  [whitespaceEdgesPreserved] leading and trailing spaces stay here  ",
+        "",
+        "[paragraphBoundariesPreserved] Final paragraph after an intentional empty paragraph."
+      ]
+    },
+    {
+      "schemaVersion": "YALKEN_C1_PARAGRAPH_CASE_V1",
+      "id": "paragraph-reordered-expanded",
+      "paragraphs": [
+        "[plainTextPreserved] Body text sentinel alpha. Additional authored input: 42.",
+        "[latin-basic] Plain ASCII text survives Word and Yalken return.",
+        "",
+        "[cyrillic] Привет мир. Текст сцены сохраняется.",
+        "[latin-diacritic] Café naïve façade coöperate jalapeño résumé.",
+        "[greek] Καλημέρα κόσμε. Το κείμενο παραμένει.",
+        "[cjk] 中文文本保留。日本語の本文も保持。한국어 문장도 유지.",
+        "[rtl-hebrew] שלום עולם. טקסט בעברית נשמר.",
+        "[emoji-zwj] Family 👨‍👩‍👧‍👦 and technologist 🧑‍💻 stay intact.",
+        "Новая строка — «Ялкен»; 1 < 2 & 3 > 2.",
+        "  [whitespaceEdgesPreserved] leading and trailing spaces stay here  ",
+        "",
+        "Another independently authored paragraph.",
+        "Repeated words, repeated words; original order stays.",
+        "[paragraphBoundariesPreserved] Final paragraph after an intentional empty paragraph."
+      ]
+    }
+  ]
+}
