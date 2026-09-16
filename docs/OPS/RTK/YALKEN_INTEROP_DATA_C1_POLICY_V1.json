@@ -311,7 +311,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "ecf42f56ca3ef6e92bc69d1b1059d4897ad79877be49d0a473f29fff4e9178ce"
+        "sha256": "d986de7b6ee01990fc028aec1243e6215429eabdae1d2acfdb37a0c0e530ffb7"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -471,7 +471,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
-        "sha256": "23aa551880a969ff18f2aecaace261c93f71b1f3bf9fd9e4402fd206460b6719"
+        "sha256": "f58b8e4dc179cab39508b130896b00492fd4de55858807e4071dbd53c4630423"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-theme-fonts.md",

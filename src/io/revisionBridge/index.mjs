@@ -8057,7 +8057,7 @@ function docxFontAttributes(token, namespaceMap) {
   }));
 }
 
-function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor) {
+function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { allowUnqualifiedRoot = false } = {}) {
   const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, entryId, 1024 * 1024);
   const xml = part && docxZipDecodeUtf8Xml(part);
   if (typeof xml !== 'string' || docxContentPreviewUnsupportedEncoding(xml)
@@ -8078,7 +8078,8 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor) {
     }
     const parsed = docxContentPreviewParseStrictStartTag(token.slice(1, -1), stack.at(-1)?.namespaceMap || new Map());
     if (!parsed || stack.length >= 64) throw new Error('DOCX_FONT_PART_INVALID');
-    if (!stack.length && (++roots !== 1 || parsed.namespaceUri !== rootNamespace || parsed.localName !== rootName)) throw new Error('DOCX_FONT_PART_ROOT');
+    const rootNamespaceAllowed = parsed.namespaceUri === rootNamespace || (allowUnqualifiedRoot && parsed.namespaceUri === '');
+    if (!stack.length && (++roots !== 1 || !rootNamespaceAllowed || parsed.localName !== rootName)) throw new Error('DOCX_FONT_PART_ROOT');
     const attributes = docxFontAttributes(token, parsed.namespaceMap);
     visitor(parsed, stack, (name, ns = '') => attributes.get(`${ns}\u0000${name}`));
     if (!parsed.selfClosing) stack.push(parsed);
@@ -8095,7 +8096,10 @@ function docxFontThemeCatalog(bytes) {
   if (!entries.has(relationships)) return catalog;
   const selected = new Map();
   docxFontVisitPart(bytes, relationships, DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, stack, attr) => {
-    if (stack.length !== 1 || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
+    // Existing preview admits unqualified relationship XML for inert link
+    // diagnostics. Only a fully qualified package root can select font parts.
+    if (stack.length !== 1 || stack[0].namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE
+      || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
     const kind = ['theme', 'settings'].find(value => attr('Type') === `${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE}/${value}`);
     if (!kind) return;
     const target = attr('Target');
@@ -8103,7 +8107,7 @@ function docxFontThemeCatalog(bytes) {
     const resolved = docxHostileFileGateNormalizeInternalRelationshipTarget('word', target);
     if (resolved.escapedPackage || resolved.externalUri || resolved.unsafeAbsolute || !entries.has(resolved.normalizedTarget)) throw new Error('DOCX_FONT_RELATIONSHIP_INVALID');
     selected.set(kind, resolved.normalizedTarget);
-  });
+  }, { allowUnqualifiedRoot: true });
   if (!selected.has('theme')) return catalog;
   let schemes = 0;
   docxFontVisitPart(bytes, selected.get('theme'), DOCX_FONT_DRAWING_NAMESPACE, 'theme', (node, stack, attr) => {

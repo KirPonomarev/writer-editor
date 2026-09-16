@@ -170,6 +170,13 @@ test('C1 theme fonts: absent relationship does not confer authority on an orphan
   assert.equal(hasLoss(value.plan), true);
 });
 
+test('C1 theme fonts: unqualified diagnostic-only relationships never select a theme', async () => {
+  const value = await preview(pack({ transformParts: parts => parts.map(p => p.name === 'word/_rels/document.xml.rels'
+    ? { ...p, data: p.data.replace(` xmlns="${REL}"`, '') } : p) }));
+  assert.deepEqual(value.families, [null]);
+  assert.equal(hasLoss(value.plan), true);
+});
+
 test('C1 theme fonts: malformed, duplicate and hostile theme values block preview', async () => {
   const [bridge] = await modules;
   const themes = [
