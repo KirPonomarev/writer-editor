@@ -1101,6 +1101,7 @@ module.exports = {
   buildFullManuscriptCapabilityManifest,
   buildFullManuscriptDocxReviewPacketSource,
   buildFullManuscriptBlocks,
+  buildFormatIrParagraphs,
   normalizeFullManuscriptScenes,
   validateFullManuscriptAuthorityReturn,
 };
