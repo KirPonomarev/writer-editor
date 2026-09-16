@@ -212,7 +212,10 @@ function readRunColors(run) {
   const colors = {};
   for (const mark of Array.isArray(run.marks) ? run.marks : []) {
     const key = mark?.type === 'textStyle' ? 'color' : mark?.type === 'highlight' ? 'highlight' : null;
-    const value = mark?.attrs?.color;
+    // The editor's highlight shortcut and input rule create a mark with no
+    // color attribute. Like the existing review exporter, preserve its yellow.
+    const rawValue = mark?.attrs?.color;
+    const value = key === 'highlight' && (rawValue == null || rawValue === '') ? '#ffff00' : rawValue;
     if (!key || value == null || value === '') continue;
     const color = normalizeOpaqueRgb(value);
     if (Object.hasOwn(colors, key) && colors[key] !== color) throw new Error('DOCX_COLOR_MARK_CONFLICT');

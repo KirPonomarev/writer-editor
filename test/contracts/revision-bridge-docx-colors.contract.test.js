@@ -114,6 +114,22 @@ test('C1 colors: defaults, basedOn, paragraph and character color cascade uses a
   assert.deepEqual(profile(doc).map(p => p.color), ['#112233','#334455','#445566','#556677',null]);
 });
 
+test('C1 colors: default highlight from the editor shortcut remains yellow beside plain text', async () => {
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [
+    { type: 'text', text: 'a', marks: [{ type: 'highlight' }] },
+    text('b'),
+    { type: 'text', text: 'c', marks: [{ type: 'highlight', attrs: { color: null } }] },
+    { type: 'text', text: 'd', marks: [{ type: 'highlight', attrs: { color: '' } }] },
+  ] }] };
+  const returned = (await preview(await exportDoc(doc))).doc;
+  assert.deepEqual(profile(returned).map(p => p.highlight), ['#ffff00', null, '#ffff00', '#ffff00']);
+  for (const color of [false, 0, {}, []]) {
+    const invalid = structuredClone(doc);
+    invalid.content[0].content[0].marks[0].attrs = { color };
+    await assert.rejects(exportDoc(invalid), /DOCX_COLOR_RGB_INVALID/);
+  }
+});
+
 test('C1 colors: highlight outranks shading; clearing highlight reveals shading and nil clears shading', async () => {
   const styles = stylesXml('<w:style w:type="paragraph" w:styleId="Body"><w:rPr><w:highlight w:val="yellow"/><w:shd w:val="clear" w:fill="123456"/></w:rPr></w:style>');
   const { doc } = await preview(pack('<w:p><w:pPr><w:pStyle w:val="Body"/></w:pPr>'+run('a','<w:shd w:val="clear" w:fill="ABCDEF"/>')+run('b','<w:highlight w:val="none"/>')+run('c','<w:highlight w:val="none"/><w:shd w:val="nil"/>')+'</w:p>', styles));

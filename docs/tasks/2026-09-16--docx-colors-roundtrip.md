@@ -59,7 +59,7 @@ DESIGN_TOOL_ROUTER: Backend serialization/parser repair; existing product UI is 
 
 ## CHECKS
 CHECK_1_PRE_IDENTITY: Secure mount, clean branch, bootstrap, unchanged already-read canon objects and declaration preflight.
-CHECK_2_POST_COLOR: Opaque RGB, palette, shading, direct/inherited/off, boundaries, malformed/forged values and unchanged no-color bytes.
+CHECK_2_POST_COLOR: Opaque RGB, palette, shading, direct/inherited/off, default yellow from the editor shortcut, boundaries, malformed/forged values and unchanged no-color bytes.
 CHECK_3_POST_NATIVE: Actual Word, independent OOXML/canonical/HTML profile and raw corruptions; existing text/order admission.
 CHECK_4_POST_DELIVERY: Required tests, build, policy, inventory, certification, CI, normal merge and fresh exact-head verification.
 

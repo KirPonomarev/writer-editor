@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "69aaacd69af2cbb3aff34a9a523598816b6e25a9e214a8ccfd29cd4e9d5e3471"
+      "sha256": "c07edaea1062aab26adfb3a05a356a7d019667ebc2a1c460ce84e27d5894b9bc"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "14f2811d3eea36626b7b9fefb7bcd22f31e21814f3b089b7735851c5355a7da5"
+      "sha256": "da0ac031361b99fa4a88a3496494ed7f080baab02587d197f96ff791617e8697"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "777ca20b708fd3ceb9181f08fea3f4d7414cf2a2d706f2f62b393bf6ee2ee60d"
+      "sha256": "3a9055a8fa3325a3cdc37a808f45a27b872173329b8772778bb3eb11c35b360a"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "7d95fb981baa89f58487e90f1ac5083943aebc82caf282f58f9a8727ec201c9f"
+      "sha256": "9efa7f185a9494111d27b997df5bf02c5818ffc5016c70369941a6a5a5dc1316"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -753,7 +753,7 @@
       "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "8858f455238fbb6ba82360cc85d5328938da3ce8c617635c7bc1b0680195bf46"
+      "sha256": "d1537e7c55b4451a943c62aa851e2122e4d75f5b29e7223c792733ab947ee749"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -897,7 +897,7 @@
       "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "400d089f0c076cea1879c7a2014592c46c2f482b45a951f7f2dfeccf206e5111"
+      "sha256": "9495f830b1b309c31ed404d893a720a18cf97521b49c8957a2f5df56338de85b"
     },
     {
       "filePath": "src/export/docx/docxInlineColors.js",
@@ -915,7 +915,7 @@
       "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "1189a8fba21b37a45f462d6753fdbc0bb80f925d53a268862ca319a1ecc8d4e1"
+      "sha256": "d8dac9a3d78ce5db2fb59f43f8d5f8daf942455b515e9a8887cbb730750729af"
     }
   ],
   "evidenceStampIds": [

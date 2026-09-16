@@ -288,7 +288,7 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "8858f455238fbb6ba82360cc85d5328938da3ce8c617635c7bc1b0680195bf46"
+        "sha256": "d1537e7c55b4451a943c62aa851e2122e4d75f5b29e7223c792733ab947ee749"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
@@ -376,11 +376,11 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
-        "sha256": "1189a8fba21b37a45f462d6753fdbc0bb80f925d53a268862ca319a1ecc8d4e1"
+        "sha256": "d8dac9a3d78ce5db2fb59f43f8d5f8daf942455b515e9a8887cbb730750729af"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
-        "sha256": "400d089f0c076cea1879c7a2014592c46c2f482b45a951f7f2dfeccf206e5111"
+        "sha256": "9495f830b1b309c31ed404d893a720a18cf97521b49c8957a2f5df56338de85b"
       }
     ],
     "followupRepair": {
