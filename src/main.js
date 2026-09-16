@@ -22,6 +22,7 @@ const {
   isDocxImportPreviewPlanAdmitted,
   rememberDocxImportPreviewPlanAdmission,
 } = require('./utils/docxImportSafeCreate');
+const { createDocxImportPreviewReferences } = require('./utils/docxImportPreviewReferences');
 const {
   DOCX_IMPORT_LOCAL_FILE_PREVIEW_MAX_BYTES,
   createDocxImportLocalFilePreview,
@@ -9652,6 +9653,29 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
 }
 // DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
 
+// DOCX_IMPORT_PREVIEW_REFERENCES_START
+const docxImportPreviewReferences = createDocxImportPreviewReferences();
+let docxImportPreviewProjectGeneration = 0;
+
+function captureDocxImportPreviewContext() {
+  return JSON.stringify([getProjectRootPath(), docxImportPreviewProjectGeneration]);
+}
+
+function invalidateDocxImportPreviewReferences() {
+  docxImportPreviewProjectGeneration += 1;
+  docxImportPreviewReferences.clear();
+}
+
+function rememberDocxImportPreviewReference(kind, value, context) {
+  if (context !== captureDocxImportPreviewContext()) return '';
+  return docxImportPreviewReferences.remember(kind, value, context);
+}
+
+function resolveDocxImportPreviewReference(kind, reference) {
+  return docxImportPreviewReferences.resolve(kind, reference, captureDocxImportPreviewContext());
+}
+// DOCX_IMPORT_PREVIEW_REFERENCES_END
+
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_START
 const DOCX_CONTENT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewContent';
 const DOCX_CONTENT_PREVIEW_MAX_BYTES = 10 * 1024 * 1024;
@@ -9824,6 +9848,8 @@ function buildDocxContentPreviewCommandResult(payload, previewResult) {
 }
 
 async function handleDocxContentPreviewCommandSurface(payload = {}) {
+  const referenceContext = typeof captureDocxImportPreviewContext === 'function'
+    ? captureDocxImportPreviewContext() : null;
   const decoded = decodeDocxContentPreviewBufferSource(payload);
   if (!decoded.ok) return decoded;
 
@@ -9877,7 +9903,13 @@ async function handleDocxContentPreviewCommandSurface(payload = {}) {
     );
   }
 
-  return buildDocxContentPreviewCommandResult(payload, previewResult);
+  const result = buildDocxContentPreviewCommandResult(payload, previewResult);
+  if (referenceContext !== null && result.previewOk) {
+    const reference = rememberDocxImportPreviewReference('content', result.docxContentPreviewReport, referenceContext);
+    if (!reference) return makeDocxContentPreviewTypedError('E_DOCX_IMPORT_REFERENCE_UNAVAILABLE', 'DOCX_IMPORT_REFERENCE_STALE_OR_FULL');
+    result.docxContentPreviewRef = reference;
+  }
+  return result;
 }
 // DOCX_CONTENT_PREVIEW_COMMAND_SURFACE_END
 
@@ -9886,7 +9918,7 @@ const DOCX_IMPORT_PREVIEW_COMMAND_ID = 'cmd.project.docx.previewImportPlan';
 const DOCX_IMPORT_PREVIEW_MAX_PAYLOAD_CHARS = 4 * 1024 * 1024;
 const DOCX_IMPORT_PREVIEW_MAX_OBJECT_DEPTH = 32;
 const DOCX_IMPORT_PREVIEW_MAX_REQUEST_ID_CHARS = 120;
-const DOCX_IMPORT_PREVIEW_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'docxContentPreviewReport']);
+const DOCX_IMPORT_PREVIEW_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'docxContentPreviewReport', 'docxContentPreviewRef']);
 const DOCX_IMPORT_PREVIEW_SOURCE_REPORT_ALLOWED_KEYS = new Set([
   'ok',
   'schemaVersion',
@@ -10244,6 +10276,15 @@ function validateDocxImportPreviewPayload(payload = {}) {
     );
   }
 
+  if (payload.docxContentPreviewRef !== undefined) {
+    if (payload.docxContentPreviewReport !== undefined) {
+      return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID', 'DOCX_IMPORT_PREVIEW_MIXED_SOURCE');
+    }
+    const report = typeof resolveDocxImportPreviewReference === 'function'
+      ? resolveDocxImportPreviewReference('content', payload.docxContentPreviewRef) : null;
+    if (!report) return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_REFERENCE_INVALID', 'DOCX_IMPORT_CONTENT_REFERENCE_INVALID');
+    payload = { requestId: payload.requestId, docxContentPreviewReport: report };
+  }
   if (!isPlainObjectValue(payload.docxContentPreviewReport)) {
     return makeDocxImportPreviewTypedError(
       'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
@@ -10383,6 +10424,8 @@ function buildDocxImportPreviewCommandResult(payload, importPreviewResult) {
 }
 
 async function handleDocxImportPreviewCommandSurface(payload = {}) {
+  const referenceContext = typeof captureDocxImportPreviewContext === 'function'
+    ? captureDocxImportPreviewContext() : null;
   const validated = validateDocxImportPreviewPayload(payload);
   if (!validated.ok) return validated;
 
@@ -10442,10 +10485,19 @@ async function handleDocxImportPreviewCommandSurface(payload = {}) {
     );
   }
 
+  if (referenceContext !== null && referenceContext !== captureDocxImportPreviewContext()) {
+    return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_REFERENCE_INVALID', 'DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
+  }
   if (importPreviewResult.ok === true && typeof rememberDocxImportPreviewPlanAdmission === 'function') {
     rememberDocxImportPreviewPlanAdmission(importPreviewResult);
   }
-  return buildDocxImportPreviewCommandResult(payload, importPreviewResult);
+  const result = buildDocxImportPreviewCommandResult(payload, importPreviewResult);
+  if (referenceContext !== null && result.importPreviewOk) {
+    const reference = rememberDocxImportPreviewReference('plan', result.docxImportPreviewPlan, referenceContext);
+    if (!reference) return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_REFERENCE_UNAVAILABLE', 'DOCX_IMPORT_REFERENCE_STALE_OR_FULL');
+    result.docxImportPreviewRef = reference;
+  }
+  return result;
 }
 // DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END
 
@@ -10455,7 +10507,7 @@ const DOCX_IMPORT_SAFE_CREATE_MAX_PAYLOAD_CHARS = 4 * 1024 * 1024;
 const DOCX_IMPORT_SAFE_CREATE_MAX_OBJECT_DEPTH = 32;
 const DOCX_IMPORT_SAFE_CREATE_MAX_REQUEST_ID_CHARS = 120;
 const DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE = /^(DOCX|FLOW)_[A-Z0-9_]{1,95}$/u;
-const DOCX_IMPORT_SAFE_CREATE_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'docxImportPreviewPlan']);
+const DOCX_IMPORT_SAFE_CREATE_ALLOWED_PAYLOAD_KEYS = new Set(['requestId', 'docxImportPreviewPlan', 'docxImportPreviewRef']);
 const DOCX_IMPORT_SAFE_CREATE_FORBIDDEN_PAYLOAD_KEYS = new Set([
   ['review', 'Packet'].join(''),
   ['review', 'Surface'].join(''),
@@ -10711,6 +10763,15 @@ function validateDocxImportSafeCreatePayload(payload = {}) {
     );
   }
 
+  if (payload.docxImportPreviewRef !== undefined) {
+    if (payload.docxImportPreviewPlan !== undefined) {
+      return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID', 'DOCX_IMPORT_SAFE_CREATE_MIXED_SOURCE');
+    }
+    const plan = typeof resolveDocxImportPreviewReference === 'function'
+      ? resolveDocxImportPreviewReference('plan', payload.docxImportPreviewRef) : null;
+    if (!plan) return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_REFERENCE_INVALID', 'DOCX_IMPORT_PLAN_REFERENCE_INVALID');
+    payload = { requestId: payload.requestId, docxImportPreviewPlan: plan };
+  }
   if (!isPlainObjectValue(payload.docxImportPreviewPlan)) {
     return makeDocxImportSafeCreateTypedError(
       'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',
@@ -10854,6 +10915,17 @@ function validateDocxImportSafeCreateCommandResult(result) {
 }
 
 async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
+  const referenceContext = typeof captureDocxImportPreviewContext === 'function'
+    ? captureDocxImportPreviewContext() : null;
+  const assertCurrentReferenceContext = () => {
+    if (referenceContext !== null && referenceContext !== captureDocxImportPreviewContext()) {
+      throw new Error('DOCX_IMPORT_REFERENCE_CONTEXT_CHANGED');
+    }
+    if (payload.docxImportPreviewRef !== undefined && (
+      typeof resolveDocxImportPreviewReference !== 'function'
+      || !resolveDocxImportPreviewReference('plan', payload.docxImportPreviewRef)
+    )) throw new Error('DOCX_IMPORT_PLAN_REFERENCE_EXPIRED');
+  };
   const validated = validateDocxImportSafeCreatePayload(payload);
   if (!validated.ok) return validated;
   if (typeof applyDocxImportSafeCreate !== 'function') {
@@ -10867,6 +10939,8 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
   try {
     const requestId = normalizeDocxImportSafeCreateRequestId(payload?.requestId);
     await ensureProjectStructure();
+    assertCurrentReferenceContext();
+    const importProjectRoot = getProjectRootPath();
     const romanRoot = getProjectSectionPath('roman');
     const projectBinding = await resolveProjectBindingForFile(romanRoot);
     // GENERIC-01 (G3): manifest-authority transaction port. The flow batch
@@ -10878,12 +10952,13 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
     } catch {
       docxImportTransactionAuthority = null;
     }
+    assertCurrentReferenceContext();
     safeCreateResult = await applyDocxImportSafeCreate(
       {
         docxImportPreviewPlan: validated.docxImportPreviewPlan,
       },
       {
-        projectRoot: getProjectRootPath(),
+        projectRoot: importProjectRoot,
         romanRoot,
         projectId: projectBinding && typeof projectBinding.projectId === 'string'
           ? projectBinding.projectId
@@ -10894,9 +10969,18 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
         manifestRaw: projectBinding && typeof projectBinding.manifestRaw === 'string'
           ? projectBinding.manifestRaw
           : '',
-        queueDiskOperation,
+        queueDiskOperation: (operation, label) => queueDiskOperation(async () => {
+          assertCurrentReferenceContext();
+          return operation();
+        }, label),
         operationLabel: 'safe create DOCX import scene batch',
-        writeBatchAtomic: writeFlowSceneBatchAtomic,
+        writeBatchAtomic: (input, options = {}) => writeFlowSceneBatchAtomic(input, {
+          ...options,
+          beforeActivate: async (...args) => {
+            if (typeof options.beforeActivate === 'function') await options.beforeActivate(...args);
+            assertCurrentReferenceContext();
+          },
+        }),
         transactionAuthority: docxImportTransactionAuthority,
         importRequestNonce: requestId,
       },
@@ -11181,6 +11265,8 @@ function buildDocxImportLocalFilePreviewCommandResult(previewResult) {
 }
 
 async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
+  const referenceContext = typeof captureDocxImportPreviewContext === 'function'
+    ? captureDocxImportPreviewContext() : null;
   if (typeof createDocxImportLocalFilePreview !== 'function') {
     return makeDocxImportLocalFilePreviewTypedError(
       'E_DOCX_IMPORT_LOCAL_FILE_PREVIEW_UNAVAILABLE',
@@ -11256,7 +11342,13 @@ async function handleDocxImportLocalFilePreviewCommandSurface(payload = {}) {
     );
   }
 
-  return buildDocxImportLocalFilePreviewCommandResult(previewResult);
+  const result = buildDocxImportLocalFilePreviewCommandResult(previewResult);
+  if (referenceContext !== null && result.contentPreviewOk) {
+    const reference = rememberDocxImportPreviewReference('content', result.docxContentPreviewReport, referenceContext);
+    if (!reference) return makeDocxImportLocalFilePreviewTypedError('E_DOCX_IMPORT_REFERENCE_UNAVAILABLE', 'DOCX_IMPORT_REFERENCE_STALE_OR_FULL');
+    result.docxContentPreviewRef = reference;
+  }
+  return result;
 }
 // DOCX_IMPORT_LOCAL_FILE_PREVIEW_COMMAND_SURFACE_END
 
@@ -17790,6 +17882,7 @@ async function findProjectBindingByProjectId(projectId) {
 
 function setActiveProjectNameFromRoot(projectRoot) {
   if (typeof projectRoot !== 'string' || !projectRoot.trim()) return;
+  if (typeof invalidateDocxImportPreviewReferences === 'function') invalidateDocxImportPreviewReferences();
   currentProjectName = sanitizeFilename(path.basename(projectRoot));
 }
 
@@ -18064,6 +18157,7 @@ async function handleProjectLifecycleOpenCommand(payload = {}) {
   let openCommitted = false;
   const restoreActiveProjectOnFailedOpen = (result) => {
     if (!openCommitted) {
+      if (typeof invalidateDocxImportPreviewReferences === 'function') invalidateDocxImportPreviewReferences();
       currentProjectName = previousActiveProjectName;
       currentFilePath = previousCurrentFilePath;
     }
@@ -18485,6 +18579,7 @@ async function moveProjectDirectoryWithManifestMutationUnderLease({
     const currentFileWasInsideSource = currentFilePath && (currentFilePath === sourceRoot || isPathInside(sourceRoot, currentFilePath));
     if (currentFileWasInsideSource && options.clearActiveAfterMove === true) {
       currentFilePath = null;
+      if (typeof invalidateDocxImportPreviewReferences === 'function') invalidateDocxImportPreviewReferences();
       currentProjectName = '';
       sendEditorText('');
       setDirtyState(false);
