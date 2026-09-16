@@ -105,6 +105,12 @@ test('C1 typography: themes, partial slots and differing script sizes are declar
 });
 
 test('C1 typography: source px and quoted names normalize exactly; no silent fractional rounding', async () => {
+  const {normalizeFontFamily}=await import('../../src/io/inlineTypography.mjs');
+  for(const value of ['Georgia',' Georgia ', '" Georgia "', "' Times New Roman '"]) {
+    const normalized=normalizeFontFamily(value);
+    assert.equal(normalizeFontFamily(normalized),normalized);
+    assert.equal(normalized, value.includes('Times') ? 'Times New Roman' : 'Georgia');
+  }
   const {doc}=await preview(await exportDoc(document([text('a','"Times New Roman"','16px'),text('b','Georgia','18px'),text('c',null,'1pt'),text('d',null,'1638pt')])));
   assert.deepEqual(profile(doc).map(p=>[p.fontFamily,p.fontSize]),[['Times New Roman','12pt'],['Georgia','13.5pt'],[null,'1pt'],[null,'1638pt']]);
   for(const value of ['15px','12.25pt','0pt','1638.5pt','NaNpt','1e2pt',12,false,{},'12pt; color:red']) {

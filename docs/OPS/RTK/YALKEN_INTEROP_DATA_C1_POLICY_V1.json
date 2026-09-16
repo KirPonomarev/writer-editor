@@ -392,7 +392,7 @@
       },
       {
         "path": "src/io/inlineTypography.mjs",
-        "sha256": "efc3d31a24fda6074dd532e6a863669458fb3df3709eea1faf8c56026fb4d39d"
+        "sha256": "71701428d79e17dd606dcb608969092383d8b8f07ade2d0da4badfd70a462630"
       },
       {
         "path": "src/export/docx/docxInlineTypography.js",
@@ -412,7 +412,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-typography.contract.test.js",
-        "sha256": "426afd0be9d164e63c71f9e0a3863895af29afec73fb153aecf8ccc45aaca0bf"
+        "sha256": "f6f907aec75f0745f9de2532591cb2312d35b509114dd28e9e48982af175c6c5"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",

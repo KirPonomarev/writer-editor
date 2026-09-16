@@ -9,7 +9,7 @@ export function normalizeFontFamily(value) {
     throw new Error('DOCX_FONT_FAMILY_INVALID');
   }
   let family = value.trim();
-  if (/^("[^"]+"|'[^']+')$/u.test(family)) family = family.slice(1, -1);
+  if (/^("[^"]+"|'[^']+')$/u.test(family)) family = family.slice(1, -1).trim();
   if (!family || !/^[\p{L}\p{M}\p{N} _.'-]+$/u.test(family) || GENERIC_FONTS.has(family.toLowerCase())) {
     throw new Error('DOCX_FONT_FAMILY_INVALID');
   }
