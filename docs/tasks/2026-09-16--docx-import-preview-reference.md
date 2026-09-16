@@ -34,6 +34,8 @@ Existing DOCX command adapters, bounded snapshot store, renderer bundle, executa
 - docs/ARCH_DIFF_LOG.md
 
 - test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js
+- test/unit/r24-wp307-writer-local-profile-integration.test.js
+- test/contracts/r24-post-audit-certification-set.contract.test.mjs
 
 ## DENYLIST
 
@@ -92,6 +94,7 @@ CHECK_2_POST_NEGATIVE: Reference forgery, mutation, mixed payload, kind, lifetim
 CHECK_3_POST_CHAIN: The previous head had a stale assertion adding a blank paragraph between two paragraphs; correct it and separately assert preservation of an explicit empty paragraph. Actual parser and command adapter replay, existing DOCX preview/admission/atomic/idempotency contracts and unchanged IPC tests.
 CHECK_4_POST_NATIVE: Actual Word plus renderer confirmation on final merged head; independent raw evidence and measured full cycle.
 CHECK_5_POST_DELIVERY: Inventory, governance, guardrails, required CI, push, PR, merge and exact merged verification. Historical runs are not credited on a new runtime SHA.
+CHECK_6_POST_HISTORICAL_FIXTURES: Preserve the old wording successor hash and bind the new bundle through the explicit runtime repair qualification. Historical admission fixtures use the recorded base inventory; a different inventory count must still fail. The real current inventory is independently checked.
 
 ## STOP_CONDITION
 

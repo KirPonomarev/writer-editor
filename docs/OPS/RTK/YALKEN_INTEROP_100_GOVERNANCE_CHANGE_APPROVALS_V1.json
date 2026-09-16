@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "f4b64b8cc5dd7875f0d3aed4d454d43f9977953f1ad2569fc7c9d28cbbfe18c8"
+      "sha256": "edcdd674369c17c482cd4025ce99221537014225f19c6e58d5b667a32b169432"
     },
     {
       "approved": true,
@@ -303,16 +303,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:31:06.561154Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915",
-      "authority": "DIRECT_OWNER_C1_FRESH_ADMISSION_REPAIR",
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-      "rationale": "Direct owner approved fresh C1 evidence admission repair: preserve archived Cell001 and fixed 1120 denominator; admit one independently reviewed raw source-runtime package through an explicit read-only verifier with semantic negatives and exact runtime identity. Governance metadata authorizes this bounded code change, not a physical or broad portability PASS.",
-      "sha256": "2a42e597bb6e26d27ac3163a4b04422a06902b0f776afd4a8272a17d195ae3f7"
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
     },
     {
       "approved": true,
@@ -415,15 +415,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-15T21:12:25.302995Z",
-      "approvedBy": "owner-direct-task:C1_FRESH_PRODUCT_ADMISSION_20260915:CURRENT_BYTE_REGISTRY_HYGIENE",
-      "authority": "OWNER_DELEGATED_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_POST_EVALUATION_SCOPE | OWNER_DELEGATED_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_POST_EVALUATION_SCOPE",
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "evidenceStampIds": [
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-      "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
-      "sha256": "31fc1883d41fb39beb3bb886e89b1d59706c56bca3ba0fdbe0eccbc04c27c7e5"
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "006dfa0f2b19745ab5ff6b357458e63612b4c4c806b91c2d5b568909d63de851"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "07423c3087b7946af2660948d379e97b2d73492f2e4158cb6b21fd0ea2a92fb9"
+      "sha256": "3dcff28152eae0dab91ca4e491fc3e9915f2f93be93b1525f8d9f6e7876a1a20"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "566ea4c0e9a3532f99acb60d7504531b4c3c151f636fa2e0da98dc19f689a3b1"
+      "sha256": "465240c5614f88df5ba13ee70ec4cdb39d89c67aed95b011f64969f3b9e36ab7"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "0192708b5505ef42b6855ca4a10e5dc8799909a001cffc01bd994221e9f3719f"
+      "sha256": "87a83517448b95d6c25cdbf886ccdba649577b963b93e9ddd8b0dc3e1cd4ba5a"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -726,7 +726,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "fea988da6e8d321af2fc85c54dc623c64e313855af055951eadec8914f6ecd0f"
+      "sha256": "6b7d8892b8c3b4beb9c16cab7b1ec632c8bf63f463360bbf7064d84c210acaee"
     },
     {
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -735,7 +735,7 @@
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "7e0ad33e537c321c7d1abef0efe83885c0b60b6e264d9a562a83cf855589f31f"
+      "sha256": "afbfa2a28a08876a0cd2acbb8e02f69e47ce4fb7c0484d75274c622f6cd19133"
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",

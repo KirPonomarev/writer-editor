@@ -27,7 +27,9 @@
     "docs/tasks/2026-09-16--docx-import-preview-reference.md",
     "src/renderer/editor.bundle.js",
     "docs/ARCH_DIFF_LOG.md",
-    "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js"
+    "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
+    "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+    "test/contracts/r24-post-audit-certification-set.contract.test.mjs"
   ],
   "protectedFiles": [
     {
@@ -250,7 +252,15 @@
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
-        "sha256": "fea988da6e8d321af2fc85c54dc623c64e313855af055951eadec8914f6ecd0f"
+        "sha256": "6b7d8892b8c3b4beb9c16cab7b1ec632c8bf63f463360bbf7064d84c210acaee"
+      },
+      {
+        "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
+        "sha256": "006dfa0f2b19745ab5ff6b357458e63612b4c4c806b91c2d5b568909d63de851"
+      },
+      {
+        "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
+        "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
       }
     ]
   }
