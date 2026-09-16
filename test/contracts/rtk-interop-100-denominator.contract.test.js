@@ -1486,7 +1486,7 @@ it('data C1 validates authored inputs without accepting output, code or route au
   for(const value of ['\n','\r','\t','\u0000','\ud800','\uffff']){
     const bad=structuredClone(third);bad.paragraphs.push(value);assert.throws(()=>data.validateDataCase(bad),/CASE_/);
   }
-  for(const mutate of [c=>c.paragraphs.fill('same'),c=>c.paragraphs.splice(0,1),c=>c.paragraphs.push('x'.repeat(65537)),c=>c.paragraphs.splice(0,60)]){
+  for(const mutate of [c=>{c.paragraphs=c.paragraphs.map(x=>x.replace('[whitespaceEdgesPreserved]','[space-control]'));},c=>c.paragraphs.fill('same'),c=>c.paragraphs.splice(0,1),c=>c.paragraphs.push('x'.repeat(65537)),c=>c.paragraphs.splice(0,60)]){
     const bad=structuredClone(third);mutate(bad);assert.throws(()=>data.validateDataCase(bad),/CASE_/);
   }
 });
@@ -1512,6 +1512,10 @@ for case in cases:
   except ValueError as err:
    assert str(err).startswith('MUTANT_ORDER_OR_CONTENT:') and 'firstParagraph' in str(err);killed+=1
   else:raise AssertionError('surviving mutation')
+ bad={**case,'paragraphs':[v.replace('[whitespaceEdgesPreserved]','[space-control]') for v in a]}
+ try:m.validate_case(bad)
+ except ValueError as err:assert str(err)=='CASE_PRESENCE'
+ else:raise AssertionError('driver whitespace sentinel missing')
  for key in ['expected','script','path']:
   try:m.validate_case({**case,key:'PASS'})
   except ValueError:pass

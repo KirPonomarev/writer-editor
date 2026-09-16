@@ -87,7 +87,7 @@
       "sha256": "c458c5273d63a1e17f4a4704be7e1621f7a92df5a4380cbc100dcb59bc5ae785"
     }
   ],
-  "rawCheckerSha256": "3d075d675b17cd0c2994da13ec845224f9922d2a1d8ba026a91be1b5113afd09",
+  "rawCheckerSha256": "62ca427e6bc31d199ed81bbb2d0ca224cf723cd04c5e4450b0a467e7f1876a8f",
   "requiredOracles": [
     "SEMANTIC",
     "STRUCTURE",

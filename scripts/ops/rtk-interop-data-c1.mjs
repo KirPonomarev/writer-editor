@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='af8ccf78571e22facf541f49f5f4261a8e477a6f0cd374fac1cdac2791f44bf3';
+export const DATA_POLICY_SHA256='66e15df918b9fc4e5b476cb0d85a99569ba0cbc9c4f591ee7f226c9a72b6d6fe';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;
@@ -30,7 +30,7 @@ export function validateDataCase(v) {
   demand(a.reduce((n,x)=>n+Buffer.byteLength(x),0)<=65536,'DATA_CASE_BYTES');
   demand(a.every(x=>!/[\u0000-\u001f\u007f-\u009f\ufffe\uffff]/u.test(x)),'DATA_CASE_CODEPOINTS');
   demand(a[0]&&a.at(-1)&&a.every((x,i)=>!i||x!==a[i-1]),'DATA_CASE_BOUNDARIES');
-  demand(a.filter(x=>x==='').length>=2&&a.some(x=>x.startsWith(' ')&&x.endsWith(' ')),'DATA_CASE_PRESENCE');
+  demand(a.filter(x=>x==='').length>=2&&a.some(x=>x.includes('[whitespaceEdgesPreserved]')&&x.startsWith(' ')&&x.endsWith(' ')),'DATA_CASE_PRESENCE');
   for(const m of MARKERS)demand(a.filter(x=>x.includes('['+m+']')).length===1,'DATA_CASE_LOCALE:'+m);
   for(const t of ['alpha.','Café','Привет','中文','\u200d','Καλημέρα','שלום'])demand(a.some(x=>x.includes(t)),'DATA_CASE_CONTROL_PRESENCE');
   return structuredClone(v);

@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "5f546362c27ed055a13fbe3cea84ae8c40b9f8744aba5dbe100849e7d6544926"
+      "sha256": "a32b240ae4b08369094aefe83f5f00542f90bec6521ff3ea1cf5bdb51178d27a"
     },
     {
       "approved": true,
@@ -321,7 +321,7 @@
       "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "32422096e31ce6b51f1a5ad89153ba9800068eacdf74623cc6df8fddd2d1e1a0"
+      "sha256": "73b37d501fb7810a596a6eb4e52938e77df826ac14f574bd747cc9fdc9e3262f"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "e15f94990cc6fbd60838db52e60248f3b806de9d199b1cc78e55b980fbbd051d"
+      "sha256": "c90ad2db0b34fa003473d65330e0e98ff1169979323716ccf3a340357003492a"
     },
     {
       "approved": true,
@@ -663,7 +663,7 @@
       "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
       "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "89905987a3ebbb8d17ae2f8619642e3b9dbc5165e9874a687c8d6f1f00507caf"
+      "sha256": "4b7f08953ad2673c4caa43d7b03a8d2d73bec2fe545969ee100ae8de2482c0be"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
       "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "af8ccf78571e22facf541f49f5f4261a8e477a6f0cd374fac1cdac2791f44bf3"
+      "sha256": "66e15df918b9fc4e5b476cb0d85a99569ba0cbc9c4f591ee7f226c9a72b6d6fe"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
       "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "bce0865d2d34b78f33539348f1be55ddb5932299a4b5bd2583c8fac5147fbc12"
+      "sha256": "8c553b4103cda0d6fc45c3cf95d1838193d2e0108e80456e15c00237a26e0932"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -699,7 +699,7 @@
       "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
       "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
-      "sha256": "3d075d675b17cd0c2994da13ec845224f9922d2a1d8ba026a91be1b5113afd09"
+      "sha256": "62ca427e6bc31d199ed81bbb2d0ca224cf723cd04c5e4450b0a467e7f1876a8f"
     }
   ],
   "evidenceStampIds": [

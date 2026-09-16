@@ -29,7 +29,7 @@ def validate_case(case):
     require(sum(len(p.encode('utf8')) for p in values)<=65536,'CASE_BYTES')
     require(all(not re.search('[\x00-\x1f\x7f-\x9f\ud800-\udfff\ufffe\uffff]',p) for p in values),'CASE_CODEPOINTS')
     require(bool(values[0]) and bool(values[-1]) and all(a!=b for a,b in zip(values,values[1:])),'CASE_BOUNDARIES')
-    require(sum(p=='' for p in values)>=2 and any(p.startswith(' ') and p.endswith(' ') for p in values),'CASE_PRESENCE')
+    require(sum(p=='' for p in values)>=2 and any('[whitespaceEdgesPreserved]' in p and p.startswith(' ') and p.endswith(' ') for p in values),'CASE_PRESENCE')
     for marker in MARKERS:
         require(sum(('['+marker+']') in p for p in values)==1,'CASE_LOCALE_'+marker)
     for token in ('alpha.','Café','Привет','中文','\u200d','Καλημέρα','שלום'):

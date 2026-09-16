@@ -36,7 +36,8 @@ new dependencies, product runtime features or provider-account changes.
   arbitrary input data never selects executable code or changes preservation law.
 - supported scope: TEXT/ORDER, SINGLE_SCENE, Product.C1, SOURCE_RUNTIME only;
   12..64 bounded paragraphs, no embedded line/control characters, mandatory
-  Unicode/whitespace/empty-paragraph control material. Other grammar rejects.
+  Unicode/empty-paragraph control material plus an edge-spaced paragraph containing
+  [whitespaceEdgesPreserved], required by the existing driver. Other grammar rejects.
 - persistence/recovery: immutable review index plus existing atomic paired
   ledger writer; exact retry has no additional effect or unique-cell credit.
 - performance/accessibility: full monotonic elapsed through fsynced report;
