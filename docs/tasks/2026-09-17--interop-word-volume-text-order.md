@@ -47,7 +47,7 @@ FEATURE_INTEGRATION_MANIFEST_V1
 - domainOwner: Product Core owns scenes; Command Kernel owns mutations.
 - authoritativeData: canonical saved scene bytes, IDs and ordered project tree.
 - derivedData: corpus descriptors, immutable raw readbacks and OPS admission result.
-- commandIds: existing tree.createNode, document.open, document.save, review.exportFullManuscriptDocxReviewPacket, review.activateDocxReviewPreviewSession, review.applyFullManuscriptExactTextReturn or exact batch apply, docx.previewContent, docx.previewImportPlan and docx.importSafeCreate.
+- commandIds: existing tree.createNode, document.open, project.save, review.exportFullManuscriptDocxReviewPacket, review.activateDocxReviewPreviewSession, review.applyFullManuscriptExactTextReturn or exact batch apply, docx.previewContent, docx.previewImportPlan and docx.importSafeCreate.
 - eventTypes: existing lifecycle and document invalidation only; no new event bus.
 - queryIds: query.projectTree and existing product review/document projections.
 - productProjectionIds: actual active document, scene tree and reviewSurface.
@@ -93,6 +93,14 @@ paragraphs exactly in the provisional reader; the reader must still reject
 coherently rehashed changed, missing or reordered paragraphs. The executed
 negative control also caught that grouping parsed paragraphs by scene masked
 whole-scene reordering; enforce declared block order before grouping.
+
+A 500k-word real-builder probe produced a 30.5 MB DOCX with 25.3 MB of
+advisory XML and was rejected by the existing 10 MiB part limit. Full baseline
+maps remain in the main-owned authenticated capsule; the public DOCX advisory
+now carries their correlation digests instead of duplicate baseline content.
+Document XML, signed carriers and local recovery authority stay byte-identical
+for the same source. Publication uses the existing full-manuscript parse
+profile already used by return intake; all declared ceilings stay unchanged.
 
 ## IMPLEMENTATION_STEPS
 1. Execute a three-scene full-manuscript source probe through real product commands and Word.

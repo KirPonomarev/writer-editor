@@ -1044,6 +1044,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
   const finalArtifactSha256 = `sha256:${sha256DocxReviewPreviewSessionBytes(documentBuffer)}`;
   const finalParse = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
     bytes: documentBuffer,
+    // Same already-declared full-manuscript profile as the return intake.
+    budgets: docxReviewReturnIntakeProductBudgets(),
     hmacSecret,
     expectedAuthority,
     returnedArtifactSha256: finalArtifactSha256,
