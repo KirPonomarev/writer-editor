@@ -9,7 +9,7 @@ export const ORDER_CELL = 'ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME';
 export const ORDER_POLICY_PATH = 'docs/OPS/RTK/YALKEN_INTEROP_ORDER_C1_RECIPE_POLICY_V1.json';
 export const ORDER_BASE = 'a453fdf2b258f420242c917f52674d422e60d135';
 export const ORDER_BASE_TREE = '505d1ba84a7422839db530a19b5a54e8b65bf702';
-export const ORDER_POLICY_SHA256 = '6a93f52c7575f7d7d3848b2841b1c9678ab9984f756bb002d7f06c0159cc2024';
+export const ORDER_POLICY_SHA256 = 'd7ecbbb579d37de7be706c059760eb36e5f6acde8c48a5dd4f0b05cb9fe347d4';
 export const ORDER_ADMITTED_PATHS = Object.freeze([
   'docs/tasks/2026-09-16--interop-order-fast-cycle.md', ORDER_POLICY_PATH,
   'scripts/ops/rtk-interop-order-c1.mjs', 'scripts/ops/rtk-interop-order-c1-readback.py',
@@ -64,8 +64,9 @@ export function readOrderFile(root, relative, max = MAX_FILE) {
   } finally { fs.closeSync(fd); }
 }
 
-export function readOrderPolicy(bytes) {
-  demand(hash(bytes) === ORDER_POLICY_SHA256, 'ORDER_POLICY_PIN');
+const LEGACY_ORDER_POLICY_SHA256 = '6a93f52c7575f7d7d3848b2841b1c9678ab9984f756bb002d7f06c0159cc2024';
+export function readOrderPolicy(bytes, { allowLegacy = false } = {}) {
+  demand(hash(bytes) === ORDER_POLICY_SHA256 || (allowLegacy && hash(bytes) === LEGACY_ORDER_POLICY_SHA256), 'ORDER_POLICY_PIN');
   const p = JSON.parse(bytes);
   demand(p.schemaVersion === 'YALKEN_ORDER_C1_RECIPE_POLICY_V1' && p.cellId === ORDER_CELL
     && p.productSpecSha256 === SPEC_SHA && p.baseSha === ORDER_BASE && p.baseTree === ORDER_BASE_TREE
@@ -77,10 +78,15 @@ export function verifyOrderPostEvaluation({ candidateSha = 'HEAD', git = gitAt(R
   const resolved = String(git(['rev-parse', candidateSha])).trim();
   demand(sha40(resolved), 'ORDER_GIT_HEAD');
   if (!String(git(['ls-tree', '--name-only', resolved, '--', ORDER_POLICY_PATH])).trim()) return { status: 'NOT_APPLICABLE', admittedPaths: [] };
-  const policy = readOrderPolicy(git(['show', `${resolved}:${ORDER_POLICY_PATH}`]));
-  const deliveries = String(git(['log', '--diff-filter=A', '--format=%H', resolved, '--', ORDER_POLICY_PATH])).trim().split('\n').filter(Boolean);
-  demand(deliveries.length === 1, 'ORDER_DELIVERY_IDENTITY');
-  const delivery = deliveries[0];
+  const policyBytes = git(['show', `${resolved}:${ORDER_POLICY_PATH}`]);
+  const policy = readOrderPolicy(policyBytes, { allowLegacy: true });
+  const revisions = String(git(['log', '--format=%H', resolved, '--', ORDER_POLICY_PATH])).trim().split('\n').filter(Boolean);
+  demand(revisions.length > 0 && revisions.length <= 32, 'ORDER_DELIVERY_IDENTITY');
+  // Freeze the first delivery of these exact policy bytes. An explicit reviewed
+  // policy revision may repair a checker; subsequent drift under that policy may not.
+  const deliveries = revisions.filter(sha => hash(git(['show', `${sha}:${ORDER_POLICY_PATH}`])) === hash(policyBytes));
+  demand(deliveries.length > 0, 'ORDER_DELIVERY_IDENTITY');
+  const delivery = deliveries.at(-1);
   git(['merge-base', '--is-ancestor', ORDER_BASE, delivery]);
   demand(String(git(['rev-parse', `${ORDER_BASE}^{tree}`])).trim() === ORDER_BASE_TREE, 'ORDER_BASE_TREE');
   const changed = String(git(['diff', '--name-only', '--no-renames', ORDER_BASE, delivery, '--'])).trim().split('\n').filter(Boolean);
@@ -128,39 +134,36 @@ export function validateOrderAcceptance(entry, review) {
   return true;
 }
 
-export function inspectOrderEvidence({ repoRoot = ROOT, labRoot, runId, currentHead } = {}) {
-  const started = performance.now();
-  demand(fs.realpathSync(repoRoot) === ROOT, 'ORDER_VERIFIER_CHECKOUT');
+// Lab v2 sorts object keys with its Node locale, whereas our review index uses
+// ordinal order. Reproduce the qualified producer format only for its hash.
+export function hashOrderObservation(value) {
+  const encoded=JSON.stringify(value, (_key,v)=>v && !Array.isArray(v) && typeof v==='object'
+    ? Object.fromEntries(Object.keys(v).sort((a,b)=>a.localeCompare(b,'en-US')).map(k=>[k,v[k]])) : v);
+  return hash(Buffer.from(encoded));
+}
+
+// Read-only replay of the complete artifact path. It never admits a cell. The
+// official wrapper separately requires the real clean current main and Lab source.
+export function inspectOrderArtifacts({labRoot,runId,productHead,productTree}={}) {
+  const started=performance.now();
   validateOrderRunId(runId);
-  const identity = cleanIdentity(repoRoot), git = gitAt(repoRoot);
-  demand(String(git(['rev-parse', 'origin/main'])).trim() === identity.head, 'ORDER_CURRENT_MAIN_REQUIRED');
-  demand(!currentHead || currentHead === identity.head, 'ORDER_ACTUAL_HEAD_MISMATCH');
-  const policy = readOrderPolicy(readOrderFile(repoRoot, ORDER_POLICY_PATH).bytes);
-  demand(hash(readOrderFile(repoRoot, SPEC_PATH).bytes) === SPEC_SHA, 'ORDER_SPEC_DRIFT');
-  demand(hash(readOrderFile(repoRoot, RAW_PATH).bytes) === policy.rawCheckerSha256, 'ORDER_RAW_CHECKER_PIN');
-  demand(hash(readOrderFile(repoRoot, 'scripts/ops/rtk-interop-c1-raw-readback.py').bytes) === policy.literalCheckerSha256, 'ORDER_LITERAL_CHECKER_PIN');
-  const labIdentity = cleanIdentity(labRoot);
-  const manifest = JSON.parse(readOrderFile(labRoot, 'LAB_MANIFEST.json').bytes);
-  demand(fs.realpathSync(manifest.shadow.yalken.root) === repoRoot && manifest.shadow.yalken.head === identity.head
-    && manifest.shadow.yalken.tree === identity.tree && manifest.shadow.yalken.readOnly === true, 'ORDER_SHADOW_BINDING');
-  demand(hash(readOrderFile(labRoot, 'data/registry/frozen-denominator-registry-v2.json').bytes) === policy.labRegistrySha256, 'ORDER_LAB_REGISTRY');
-  const ledgerBytes = readOrderFile(labRoot, 'data/evidence/ledger.jsonl', 64 * 1024 * 1024).bytes;
-  const ledger = ledgerBytes.toString('utf8').trim().split('\n').filter(Boolean).map(s => JSON.parse(s));
-  const observation = selectOrderObservation(ledger, runId);
-  demand(!ledger.some(e => (e.runId === runId && (e.stale === true || ['PRIVACY_INVALIDATED','AUDIT_INVALIDATED_PHYSICAL_OBSERVATION'].includes(e.type)))
-    || (e.type === 'EVIDENCE_SUPERSEDES' && e.supersedesRunId === runId)
-    || (e.type === 'AUDIT_INVALIDATED_PHYSICAL_OBSERVATION' && e.artifactHash === observation.artifactHash)), 'ORDER_INVALIDATED');
-  verifyLabSource(labRoot, observation.labHead, labIdentity.head, policy);
-  demand(String(gitAt(labRoot)(['rev-parse', observation.labHead+'^{tree}'])).trim() === observation.labTree, 'ORDER_LAB_RUNTIME_TREE');
-  demand(observation.yalkenShadowHead === identity.head && observation.yalkenShadowTree === identity.tree, 'ORDER_STALE_RUNTIME');
-  demand(Date.parse(observation.createdAt) >= Date.parse(policy.notBeforeUtc) && Date.parse(observation.createdAt) <= Date.now(), 'ORDER_OBSERVATION_TIME');
+  demand(sha40(productHead) && sha40(productTree), 'ORDER_REPLAY_IDENTITY');
+  const identity={head:productHead,tree:productTree};
+  const policy=readOrderPolicy(readOrderFile(ROOT,ORDER_POLICY_PATH).bytes);
+  demand(hash(readOrderFile(ROOT,RAW_PATH).bytes)===policy.rawCheckerSha256, 'ORDER_RAW_CHECKER_PIN');
+  demand(hash(readOrderFile(ROOT,'scripts/ops/rtk-interop-c1-raw-readback.py').bytes)===policy.literalCheckerSha256, 'ORDER_LITERAL_CHECKER_PIN');
+  const ledgerBytes=readOrderFile(labRoot,'data/evidence/ledger.jsonl',64*1024*1024).bytes;
+  const ledger=ledgerBytes.toString('utf8').trim().split('\n').filter(Boolean).map(s=>JSON.parse(s));
+  const observation=selectOrderObservation(ledger,runId);
+  demand(observation.yalkenShadowHead===productHead && observation.yalkenShadowTree===productTree,'ORDER_REPLAY_RUNTIME');
   const prefix = `runs/${runId}/`;
   const obsFile = readOrderFile(labRoot, prefix+'observation.json');
   const obs = JSON.parse(obsFile.bytes);
   demand(obs.runId === runId && obs.cellId === ORDER_CELL && obs.artifactHash === observation.artifactHash, 'ORDER_OBSERVATION_FILE_BINDING');
   demand(['labHead','labTree','createdAt','status','yalkenShadowHead','yalkenShadowTree'].every(k => obs[k] === observation[k]), 'ORDER_OBSERVATION_METADATA_BINDING');
   const withoutHash = { ...obs }; delete withoutHash.artifactHash;
-  demand(hash(Buffer.from(stableOrderJson(withoutHash))) === obs.artifactHash, 'ORDER_OBSERVATION_HASH');
+  demand(obs.artifactHashScope === 'observation_without_artifactHash', 'ORDER_OBSERVATION_HASH_SCOPE');
+  demand(hashOrderObservation(withoutHash) === obs.artifactHash, 'ORDER_OBSERVATION_HASH');
   const snapshotFile = readOrderFile(labRoot, prefix+'runtime-project-snapshot.json');
   const snapshot = JSON.parse(snapshotFile.bytes);
   const records = [...obs.artifacts, ...snapshot.files].map(({path:p,bytes,sha256}) => ({path:p,bytes,sha256}));
@@ -187,8 +190,36 @@ export function inspectOrderEvidence({ repoRoot = ROOT, labRoot, runId, currentH
     requiredOracles:raw.oracles,subcases:raw.subcases,controls:raw.controls,productAdmissionCredit:0};
   for (const b of records) demand(same(readOrderFile(labRoot,b.path).binding,b), 'ORDER_ARTIFACT_CHANGED_DURING_READ');
   demand(readOrderFile(labRoot,'data/evidence/ledger.jsonl',64*1024*1024).bytes.equals(ledgerBytes), 'ORDER_LEDGER_CHANGED_DURING_READ');
+  return {ok:true,admissionCredit:0,review,raw,ledger,observation,seconds:(performance.now()-started)/1000};
+}
+
+export function inspectOrderEvidence({ repoRoot = ROOT, labRoot, runId, currentHead } = {}) {
+  const started = performance.now();
+  demand(fs.realpathSync(repoRoot) === ROOT, 'ORDER_VERIFIER_CHECKOUT');
+  validateOrderRunId(runId);
+  const identity = cleanIdentity(repoRoot), git = gitAt(repoRoot);
+  demand(String(git(['rev-parse', 'origin/main'])).trim() === identity.head, 'ORDER_CURRENT_MAIN_REQUIRED');
+  demand(!currentHead || currentHead === identity.head, 'ORDER_ACTUAL_HEAD_MISMATCH');
+  const policy = readOrderPolicy(readOrderFile(repoRoot, ORDER_POLICY_PATH).bytes);
+  demand(hash(readOrderFile(repoRoot, SPEC_PATH).bytes) === SPEC_SHA, 'ORDER_SPEC_DRIFT');
+  demand(hash(readOrderFile(repoRoot, RAW_PATH).bytes) === policy.rawCheckerSha256, 'ORDER_RAW_CHECKER_PIN');
+  demand(hash(readOrderFile(repoRoot, 'scripts/ops/rtk-interop-c1-raw-readback.py').bytes) === policy.literalCheckerSha256, 'ORDER_LITERAL_CHECKER_PIN');
+  const labIdentity = cleanIdentity(labRoot);
+  const manifest = JSON.parse(readOrderFile(labRoot, 'LAB_MANIFEST.json').bytes);
+  demand(fs.realpathSync(manifest.shadow.yalken.root) === repoRoot && manifest.shadow.yalken.head === identity.head
+    && manifest.shadow.yalken.tree === identity.tree && manifest.shadow.yalken.readOnly === true, 'ORDER_SHADOW_BINDING');
+  demand(hash(readOrderFile(labRoot, 'data/registry/frozen-denominator-registry-v2.json').bytes) === policy.labRegistrySha256, 'ORDER_LAB_REGISTRY');
+  const facts=inspectOrderArtifacts({labRoot,runId,productHead:identity.head,productTree:identity.tree});
+  const {ledger,observation}=facts;
+  demand(!ledger.some(e => (e.runId === runId && (e.stale === true || ['PRIVACY_INVALIDATED','AUDIT_INVALIDATED_PHYSICAL_OBSERVATION'].includes(e.type)))
+    || (e.type === 'EVIDENCE_SUPERSEDES' && e.supersedesRunId === runId)
+    || (e.type === 'AUDIT_INVALIDATED_PHYSICAL_OBSERVATION' && e.artifactHash === observation.artifactHash)), 'ORDER_INVALIDATED');
+  verifyLabSource(labRoot, observation.labHead, labIdentity.head, policy);
+  demand(String(gitAt(labRoot)(['rev-parse', observation.labHead+'^{tree}'])).trim() === observation.labTree, 'ORDER_LAB_RUNTIME_TREE');
+  demand(observation.yalkenShadowHead === identity.head && observation.yalkenShadowTree === identity.tree, 'ORDER_STALE_RUNTIME');
+  demand(Date.parse(observation.createdAt) >= Date.parse(policy.notBeforeUtc) && Date.parse(observation.createdAt) <= Date.now(), 'ORDER_OBSERVATION_TIME');
   demand(same(cleanIdentity(repoRoot),identity) && same(cleanIdentity(labRoot),labIdentity), 'ORDER_IDENTITY_CHANGED_DURING_READ');
-  return {ok:true,review,raw,ledger,observation,labIdentity,seconds:(performance.now()-started)/1000};
+  return {...facts,labIdentity,seconds:(performance.now()-started)/1000};
 }
 
 export function verifyOrderC1(options = {}) {
