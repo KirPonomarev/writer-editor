@@ -8041,16 +8041,179 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
 
 const DOCX_UNSUPPORTED_COLOR = 'DOCX_UNSUPPORTED_EFFECTIVE_COLOR';
 const DOCX_UNSUPPORTED_FONT = 'DOCX_UNSUPPORTED_EFFECTIVE_FONT';
+const DOCX_FONT_THEME_TOKENS = new Set(['majorAscii', 'majorHAnsi', 'majorEastAsia', 'majorBidi', 'minorAscii', 'minorHAnsi', 'minorEastAsia', 'minorBidi']);
+const DOCX_FONT_DRAWING_NAMESPACE = ['h', 'ttp://schemas.openxmlformats.org/drawingml/2006/main'].join('');
+const DOCX_FONT_RELATIONSHIP_NAMESPACE = ['h', 'ttp://schemas.openxmlformats.org/package/2006/relationships'].join('');
+
+function docxFontAttributes(token, namespaceMap) {
+  const body = token.slice(1, -1).trim().replace(/\/$/u, '');
+  const name = docxContentPreviewTagName(token);
+  const parsed = docxContentPreviewParseStrictAttributes(body.slice(name.length));
+  if (!parsed) throw new Error('DOCX_FONT_ATTRIBUTES_INVALID');
+  return new Map(parsed.attributes.map(attribute => {
+    const resolved = docxContentPreviewResolveQName(attribute.nameParts, namespaceMap, { attribute: true });
+    if (!resolved) throw new Error('DOCX_FONT_ATTRIBUTE_NAMESPACE');
+    return [`${resolved.namespaceUri}\u0000${resolved.localName}`, attribute.value];
+  }));
+}
+
+function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor) {
+  const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, entryId, 1024 * 1024);
+  const xml = part && docxZipDecodeUtf8Xml(part);
+  if (typeof xml !== 'string' || docxContentPreviewUnsupportedEncoding(xml)
+    || /<!\s*(DOCTYPE|ENTITY)\b/iu.test(xml)
+    || docxContentPreviewValidateXmlAttributesAndNamespaces(xml).failure) throw new Error('DOCX_FONT_PART_INVALID');
+  const selected = docxContentPreviewSelectMarkupCompatibilityXml(xml);
+  if (selected.failure) throw new Error('DOCX_FONT_PART_INVALID');
+  const stack = []; let cursor = 0; let roots = 0;
+  while (cursor < selected.xmlText.length) {
+    const next = docxContentPreviewNextXmlToken(selected.xmlText, cursor);
+    if (!next || next.failure) throw new Error('DOCX_FONT_PART_INVALID');
+    cursor = next.nextCursor;
+    const token = next.token;
+    if (!token.startsWith('<') || token.startsWith('<?') || token.startsWith('<!--')) continue;
+    if (token.startsWith('</')) {
+      if (stack.pop()?.rawTagName !== docxContentPreviewTagName(token)) throw new Error('DOCX_FONT_PART_INVALID');
+      continue;
+    }
+    const parsed = docxContentPreviewParseStrictStartTag(token.slice(1, -1), stack.at(-1)?.namespaceMap || new Map());
+    if (!parsed || stack.length >= 64) throw new Error('DOCX_FONT_PART_INVALID');
+    if (!stack.length && (++roots !== 1 || parsed.namespaceUri !== rootNamespace || parsed.localName !== rootName)) throw new Error('DOCX_FONT_PART_ROOT');
+    const attributes = docxFontAttributes(token, parsed.namespaceMap);
+    visitor(parsed, stack, (name, ns = '') => attributes.get(`${ns}\u0000${name}`));
+    if (!parsed.selfClosing) stack.push(parsed);
+  }
+  if (stack.length || roots !== 1) throw new Error('DOCX_FONT_PART_INVALID');
+}
+
+function docxFontThemeCatalog(bytes) {
+  const catalog = { groups: new Map(), languages: new Map() };
+  const metadata = docxHostileFileGateCentralEntries(bytes);
+  if (metadata.failure) throw new Error('DOCX_FONT_PACKAGE_INVALID');
+  const entries = new Set(metadata.entries.map(entry => entry.entryId));
+  const relationships = 'word/_rels/document.xml.rels';
+  if (!entries.has(relationships)) return catalog;
+  const selected = new Map();
+  docxFontVisitPart(bytes, relationships, DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, stack, attr) => {
+    if (stack.length !== 1 || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
+    const kind = ['theme', 'settings'].find(value => attr('Type') === `${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE}/${value}`);
+    if (!kind) return;
+    const target = attr('Target');
+    if (selected.has(kind) || typeof target !== 'string' || target.includes('#') || (attr('TargetMode') && attr('TargetMode') !== 'Internal')) throw new Error('DOCX_FONT_RELATIONSHIP_INVALID');
+    const resolved = docxHostileFileGateNormalizeInternalRelationshipTarget('word', target);
+    if (resolved.escapedPackage || resolved.externalUri || resolved.unsafeAbsolute || !entries.has(resolved.normalizedTarget)) throw new Error('DOCX_FONT_RELATIONSHIP_INVALID');
+    selected.set(kind, resolved.normalizedTarget);
+  });
+  if (!selected.has('theme')) return catalog;
+  let schemes = 0;
+  docxFontVisitPart(bytes, selected.get('theme'), DOCX_FONT_DRAWING_NAMESPACE, 'theme', (node, stack, attr) => {
+    const path = [...stack, node];
+    if (!path.every(frame => frame.namespaceUri === DOCX_FONT_DRAWING_NAMESPACE)) return;
+    const names = path.map(frame => frame.localName).join('/');
+    if (names === 'theme/themeElements/fontScheme' && ++schemes !== 1) throw new Error('DOCX_FONT_SCHEME_DUPLICATE');
+    const groupName = path[3]?.localName;
+    if (!['majorFont', 'minorFont'].includes(groupName) || path[1]?.localName !== 'themeElements' || path[2]?.localName !== 'fontScheme') return;
+    if (path.length === 4) {
+      if (catalog.groups.has(groupName)) throw new Error('DOCX_FONT_GROUP_DUPLICATE');
+      catalog.groups.set(groupName, new Map());
+    } else if (path.length === 5 && ['latin', 'ea', 'cs', 'font'].includes(node.localName)) {
+      const group = catalog.groups.get(groupName);
+      const key = node.localName === 'font' ? attr('script') : node.localName;
+      if (!key || (node.localName === 'font' && !/^[A-Z][a-z]{3}$/u.test(key)) || group.has(key) || group.size >= 256) throw new Error('DOCX_FONT_FACE_DUPLICATE_OR_INVALID');
+      const face = attr('typeface');
+      if (face === undefined) throw new Error('DOCX_FONT_FACE_REQUIRED');
+      group.set(key, face === '' ? null : normalizeFontFamily(face));
+    }
+  });
+  if (schemes !== 1) throw new Error('DOCX_FONT_SCHEME_REQUIRED');
+  if (selected.has('settings')) {
+    let count = 0;
+    docxFontVisitPart(bytes, selected.get('settings'), DOCX_WORDPROCESSINGML_MAIN_NAMESPACE, 'settings', (node, stack, attr) => {
+      if (stack.length !== 1 || node.namespaceUri !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE || node.localName !== 'themeFontLang') return;
+      if (++count !== 1) throw new Error('DOCX_FONT_LANGUAGE_DUPLICATE');
+      for (const key of ['val', 'eastAsia', 'bidi']) {
+        const value = attr(key, DOCX_WORDPROCESSINGML_MAIN_NAMESPACE);
+        if (value === undefined) continue;
+        if (value.length > 85 || !/^[a-z]{2,8}(?:-[a-z0-9]{1,8})*$/iu.test(value)) throw new Error('DOCX_FONT_LANGUAGE_INVALID');
+        catalog.languages.set(key, value);
+      }
+    });
+  }
+  return catalog;
+}
+
+function docxFontLanguageScript(language) {
+  const parts = language.split('-');
+  const script = parts.slice(1).find(part => /^[A-Za-z]{4}$/u.test(part));
+  if (script) return script[0].toUpperCase() + script.slice(1).toLowerCase();
+  const languageScripts = {
+    en: 'Latn', fi: 'Latn', fr: 'Latn', de: 'Latn', es: 'Latn', it: 'Latn', pt: 'Latn', nl: 'Latn', sv: 'Latn', da: 'Latn', no: 'Latn', pl: 'Latn', cs: 'Latn', tr: 'Latn', vi: 'Latn',
+    ru: 'Cyrl', uk: 'Cyrl', bg: 'Cyrl', be: 'Cyrl', el: 'Grek', ja: 'Jpan', ko: 'Hang', ar: 'Arab', fa: 'Arab', ur: 'Arab', he: 'Hebr', hi: 'Deva', th: 'Thai',
+  };
+  // A Chinese primary language alone does not determine simplified/traditional.
+  if (parts[0].toLowerCase() === 'zh') {
+    const region = parts[1]?.toUpperCase();
+    return ['CN', 'SG'].includes(region) ? 'Hans' : ['TW', 'HK', 'MO'].includes(region) ? 'Hant' : null;
+  }
+  return Object.hasOwn(languageScripts, parts[0].toLowerCase()) ? languageScripts[parts[0].toLowerCase()] : null;
+}
+
+function docxFontResolveTheme(value, catalog) {
+  if (!value || typeof value !== 'object') return value;
+  const token = value.theme;
+  const group = catalog?.groups.get(token.startsWith('major') ? 'majorFont' : 'minorFont');
+  if (!group) return DOCX_UNSUPPORTED_FONT;
+  const region = token.endsWith('EastAsia') ? 'ea' : token.endsWith('Bidi') ? 'cs' : 'latin';
+  const language = catalog.languages.get(region === 'ea' ? 'eastAsia' : region === 'cs' ? 'bidi' : 'val');
+  if (language) {
+    const script = docxFontLanguageScript(language);
+    if (!script) return DOCX_UNSUPPORTED_FONT;
+    if (group.has(script)) return group.get(script) || DOCX_UNSUPPORTED_FONT;
+  }
+  return group.get(region) || DOCX_UNSUPPORTED_FONT;
+}
+
+function docxFontUsedSlots(text, properties, resolved) {
+  if (properties.font_forceCs || properties.font_rtl) return ['cs'];
+  // Hint-dependent East Asian classification needs additional language/charset
+  // evidence. Keep it explicit instead of substituting a western font.
+  if (properties.font_hint && properties.font_hint !== 'default') return null;
+  if (resolved.eastAsia === 'Times New Roman' && resolved.ascii === resolved.hAnsi) return ['ascii'];
+  const used = new Set();
+  // Word's published classification uses UTF-16 ranges, including surrogates.
+  for (let index = 0; index < text.length; index += 1) {
+    const c = text.charCodeAt(index);
+    if (c <= 0x7f || (c >= 0x590 && c <= 0x7bf) || (c >= 0xfb1d && c <= 0xfdff) || (c >= 0xfe70 && c <= 0xfefe)) used.add('ascii');
+    else if ((c >= 0x1100 && c <= 0x11ff) || (c >= 0x2f00 && c <= 0x2fdf) || (c >= 0x2ff0 && c <= 0x4dbf) || (c >= 0x4e00 && c <= 0x9faf) || (c >= 0xa000 && c <= 0xa4cf) || (c >= 0xac00 && c <= 0xdfff) || (c >= 0xf900 && c <= 0xfaff) || (c >= 0xfe30 && c <= 0xfe6f) || (c >= 0xff00 && c <= 0xffef)) used.add('eastAsia');
+    else used.add('hAnsi');
+  }
+  return [...used];
+}
+
 const DOCX_FONT_SLOTS = ['ascii', 'hAnsi', 'eastAsia', 'cs'];
 function docxInlineReadTypography(properties, tag, token, namespaces) {
   const attr = name => docxContentPreviewWordAttributeValue(token, namespaces, name);
   if (tag === 'w:rFonts') {
+    const attributes = docxFontAttributes(token, namespaces);
+    const fontAttribute = name => attributes.get(`${DOCX_WORDPROCESSINGML_MAIN_NAMESPACE}\u0000${name}`);
     for (const slot of DOCX_FONT_SLOTS) {
-      const value = attr(slot);
-      const theme = attr(slot === 'cs' ? 'cstheme' : `${slot}Theme`);
-      if (value) properties[`font_${slot}`] = normalizeFontFamily(value);
-      if (theme) properties[`font_${slot}`] = DOCX_UNSUPPORTED_FONT;
+      const value = fontAttribute(slot);
+      const theme = fontAttribute(slot === 'cs' ? 'cstheme' : `${slot}Theme`);
+      if (value !== undefined) properties[`font_${slot}`] = normalizeFontFamily(value);
+      if (theme !== undefined) {
+        if (!DOCX_FONT_THEME_TOKENS.has(theme)) throw new Error('DOCX_FONT_THEME_TOKEN_INVALID');
+        properties[`font_${slot}`] = { theme };
+      }
     }
+    const hint = fontAttribute('hint');
+    if (hint !== undefined) {
+      if (!['default', 'eastAsia', 'cs'].includes(hint)) throw new Error('DOCX_FONT_HINT_INVALID');
+      properties.font_hint = hint;
+    }
+  } else if (tag === 'w:cs' || tag === 'w:rtl') {
+    const value = attr('val');
+    if (!['', '0', '1', 'true', 'false', 'on', 'off'].includes(value)) throw new Error('DOCX_FONT_SCRIPT_FLAG_INVALID');
+    properties[tag === 'w:cs' ? 'font_forceCs' : 'font_rtl'] = !['0', 'false', 'off'].includes(value);
   } else {
     const value = attr('val').trim();
     if (!/^\d{1,4}$/u.test(value) || Number(value) < 2 || Number(value) > 3276) throw new Error('DOCX_INLINE_FONT_SIZE_INVALID');
@@ -8058,17 +8221,20 @@ function docxInlineReadTypography(properties, tag, token, namespaces) {
   }
 }
 
-function docxInlineEffectiveTypography(properties, metadata) {
+function docxInlineEffectiveTypography(properties, metadata, catalog, text) {
   const result = {};
-  // A single editor family/size cannot express Word's differing script slots.
-  // Preserve only a fully resolved, uniform selection; expose every other
-  // effective selection as a loss instead of choosing the first available slot.
-  for (const [key, slots] of [['fontFamily', DOCX_FONT_SLOTS], ['fontSize', ['size', 'sizeCs']]]) {
-    const values = slots.map(slot => properties[`font_${slot}`]);
-    if (values.every(value => value === undefined)) continue;
-    if (values.some(value => value === undefined || value === DOCX_UNSUPPORTED_FONT) || new Set(values).size !== 1) {
-      metadata.unsupportedTypography = true;
-    } else result[key] = values[0];
+  const resolved = Object.fromEntries(DOCX_FONT_SLOTS.map(slot => [slot, docxFontResolveTheme(properties[`font_${slot}`], catalog.themeFonts)]));
+  const hasTheme = DOCX_FONT_SLOTS.some(slot => typeof properties[`font_${slot}`] === 'object');
+  const familySlots = hasTheme ? docxFontUsedSlots(text, properties, resolved) : DOCX_FONT_SLOTS;
+  const families = familySlots?.map(slot => resolved[slot]);
+  if (Object.values(resolved).some(value => value !== undefined)) {
+    if (!families?.length || families.some(value => value === undefined || value === DOCX_UNSUPPORTED_FONT) || new Set(families).size !== 1) metadata.unsupportedTypography = true;
+    else result.fontFamily = families[0];
+  }
+  const sizes = [properties.font_size, properties.font_sizeCs];
+  if (sizes.some(value => value !== undefined)) {
+    if (sizes.some(value => value === undefined) || new Set(sizes).size !== 1) metadata.unsupportedTypography = true;
+    else result.fontSize = sizes[0];
   }
   return result;
 }
@@ -8100,7 +8266,7 @@ function docxInlineReadColor(properties, tag, token, namespaces) {
 function docxInlineReadProperty(properties, tag, token, namespaces) {
   const mark = DOCX_INLINE_MARKS[tag];
   const isColor = ['w:color', 'w:highlight', 'w:shd'].includes(tag);
-  const isTypography = ['w:rFonts', 'w:sz', 'w:szCs'].includes(tag);
+  const isTypography = ['w:rFonts', 'w:sz', 'w:szCs', 'w:cs', 'w:rtl'].includes(tag);
   if (!mark && !isColor && !isTypography) return;
   if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
     !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_INLINE_PROPERTY_NAMESPACE');
@@ -8118,7 +8284,7 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
 }
 
 function docxInlineStyleCatalog(bytes) {
-  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '' };
+  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', themeFonts: docxFontThemeCatalog(bytes) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
   if (!metadata.entries.some((entry) => entry.entryId === 'word/styles.xml')) return catalog;
@@ -8241,7 +8407,7 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
     ...(typeof color === 'string' && color !== DOCX_UNSUPPORTED_COLOR ? { color } : {}),
     ...(typeof highlight === 'string' && highlight !== DOCX_UNSUPPORTED_COLOR ? { highlight } : {}),
   };
-  const typography = docxInlineEffectiveTypography(properties, metadata);
+  const typography = docxInlineEffectiveTypography(properties, metadata, catalog, text);
   const last = metadata.inlineRuns.at(-1);
   if (last && JSON.stringify(last.marks) === JSON.stringify(marks)
     && last.color === colors.color && last.highlight === colors.highlight
@@ -8451,7 +8617,7 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
     diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
       severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
       sourceCode: 'DOCX_INLINE_TYPOGRAPHY_UNSUPPORTED', tagName: 'w:rPr', paragraphIndex: paragraphs.length,
-      message: 'Themed, unresolved or differing script fonts and sizes cannot be represented by a single editor font selection',
+      message: 'Unresolved or differing script fonts and sizes cannot be represented by a single editor font selection',
     }));
   }
   paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
@@ -9591,7 +9757,7 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   };
   if (sourceCode === 'DOCX_INLINE_TYPOGRAPHY_UNSUPPORTED') return {
     code: 'DOCX_IMPORT_PREVIEW_TYPOGRAPHY_NOT_IMPORTED', category: 'formatting',
-    message: 'Themed, unresolved or differing script font selections are not imported; uniform literal fonts and sizes remain preserved',
+    message: 'Unresolved or differing script font selections are not imported; supported literal and resolved theme fonts and sizes remain preserved',
   };
   if (tagName === 'w:tbl') return { code: 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED', category: 'table' };
   if (tagName === 'w:drawing' || tagName === 'w:pict' || tagName === 'w:object') {
@@ -9871,8 +10037,8 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
         + formatting.message.replace('fonts, colors and other formatting', 'fonts, themed colors and other formatting');
     }
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.fontFamily || run.fontSize))) {
-      formatting.message = 'Uniform literal fonts and half-point sizes are preserved. Installed font availability determines rendering. '
-        + formatting.message.replace('fonts,', 'themed and script-specific fonts,');
+      formatting.message = 'Uniform literal fonts, supported resolved theme fonts and half-point sizes are preserved. Installed font availability determines rendering. '
+        + formatting.message.replace('fonts,', 'unresolved or differing script fonts,');
     }
   }
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview

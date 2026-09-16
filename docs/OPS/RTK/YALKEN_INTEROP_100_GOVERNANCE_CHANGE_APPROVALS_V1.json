@@ -74,15 +74,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "12ea09a147cba61a81e179a6d3b336c63cc2f68cd7fda1edbc2d3b10b8f72432"
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "ecf42f56ca3ef6e92bc69d1b1059d4897ad79877be49d0a473f29fff4e9178ce"
     },
     {
       "approved": true,
@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "ac8ea75b6ddf521f2e011927d4eae2bdfa8e43bc7631c897517d439813500591"
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "f36411284a3491c54e9b08c89f874ce63f6ba7507213b3515ab33d9acd5b241c"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "3526fe9e7bb8a5e2307c7d78142fb0262144566c984482a91336f71538556796"
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "d08a4560902779bcb5c4c6ccebc317e45ece9da9cc077af62b8a6ce396650a6a"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "b991f93195cf808ed664d007d8a52176ba1e53c539d216f9656f2aaccaa0889c"
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "e0e4f60c0836b45453542a50c9ceddc5dc7a8371b4d2c340b7ad7a1f9b8e1bf1"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "8f86f8d917e619747d6867db0e3c21abfd67ca0f2e68f4106662fa8c0c672097"
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "d48213ff7e860852397c4a24afc894daeb1ca1d9f29df6ec70e6308febc2aecc"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -974,11 +974,11 @@
     {
       "filePath": "test/contracts/revision-bridge-docx-typography.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
-      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "0b297fc72e4e9431351a8ff820fd7c0a0a20ff41bc6ff9dbeb344edfca325711"
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "e7b44b3d74e60d1d225feb74ab2818f053828658001ec72ae8b706daea3fd855"
     },
     {
       "filePath": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
@@ -1051,6 +1051,24 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "daa10e578414d45ddb16b3af8f97b37a401f926b0f4fb0fc00265d19c4b9e79e"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--docx-theme-fonts.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "ba41f2a9d54afd7e7cdb4924589d124d7e75875f07c13934f1fd0a4be746d7c5"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T20:53:24.954068+00:00",
+      "approvedBy": "owner-direct-task:DOCX_THEME_FONTS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded theme-font import repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "23aa551880a969ff18f2aecaace261c93f71b1f3bf9fd9e4402fd206460b6719"
     }
   ],
   "evidenceStampIds": [
