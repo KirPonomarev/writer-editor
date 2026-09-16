@@ -126,3 +126,24 @@ test('C1 inline: local picker projection retains marks; admitted rich scene pers
   assert.equal(repeat.ok, true, JSON.stringify(repeat));
   assert.equal(fs.readdirSync(imported).length, 1);
 });
+
+
+test('C1 inline: the main-owned plan projection retains marks and both import routes bind identical content', async () => {
+  const { report } = await planFrom(packageBytes(`<w:p>${r('B', '<w:b/>')}${r('plain')}${r('I', '<w:i/>')}</w:p>`));
+  const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const start = main.indexOf('function copyDocxImportPreviewAllowedFields(');
+  const end = main.indexOf('function validateDocxImportPreviewPayload(', start);
+  assert.ok(start > 0 && end > start);
+  const projected = require('node:vm').runInNewContext(main.slice(start, end) + '\ncanonicalizeDocxImportPreviewSourceReport(report);', {
+    report,
+    isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
+    cloneJsonSafe: value => JSON.parse(JSON.stringify(value)),
+  });
+  const [bridge] = await modules;
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(JSON.parse(JSON.stringify(projected)));
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(plan.lossReport.mode, 'inline-marks');
+  const direct = bridge.buildDocxImportPreviewPlanFromContentPreview(report);
+  assert.equal(plan.candidateCreatePlan.entries[0].candidateContentSha256, direct.candidateCreatePlan.entries[0].candidateContentSha256);
+  assert.deepEqual(await profile(plan), await profile(direct));
+});

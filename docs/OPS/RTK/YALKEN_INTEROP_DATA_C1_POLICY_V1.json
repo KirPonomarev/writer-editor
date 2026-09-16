@@ -238,7 +238,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "68c4810f682a61da3841c15d8f7686d78feb7be41ced57bc5039ef1a8840c47e"
+        "sha256": "40683b72c9fed50b3bcd07938e34dd7f010bf817ab2847f42c15850cd4dcab40"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -286,11 +286,11 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
-        "sha256": "cbbed6ecac923d059ecae8f3e566711ddf8773b3b06aba29e5515ddc80953719"
+        "sha256": "508d045fd0fc21fad0d349c6ceeecd118dd43a4bc4e97cebda1ca972cb2185a1"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
-        "sha256": "fc093eaaab185053017411a180b6a690009204e3eff74de6a0c7e8cd9bab35ac"
+        "sha256": "8a283c49c509776c4313cce9da54a95d1dc62e0ff3c7a04a71ecf1de0a36d556"
       }
     ],
     "followupRepair": {

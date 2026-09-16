@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "d3435c22875db738487c39a51eb3c93699a433b205d030eebd286ccada7a57ad"
+      "sha256": "f9bcce69d6e7a0117283240a721c26efaea740a65b4b44d0687951a7787af5ad"
     },
     {
       "approved": true,
@@ -334,12 +334,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
-      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
+      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "68c4810f682a61da3841c15d8f7686d78feb7be41ced57bc5039ef1a8840c47e"
+      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
+      "sha256": "40683b72c9fed50b3bcd07938e34dd7f010bf817ab2847f42c15850cd4dcab40"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "2a524a47baa5a0589f64fc54e42ef14124751aa3d3bdb743fb1328f447ccfa45"
+      "sha256": "e4122d5af6f5d5795b88e2c2e9a3638e7c95ad430707b9370db4c1b66e0ef4ff"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "3d5336920fe37f9f38f1e6c990b73388b1c2ff6a12d64c820fbe087b0a6bcff1"
+      "sha256": "eb802b3bc514a3fa810a6ba5c6593b645bc65b62b6b01852d42ccf3d9acc562c"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "924da1a6b1aa337ac6e1443173903d07b77ff82ad7a66e0b0ee470c206963d23"
+      "sha256": "9bfa76b1bc089b47e9634fedf287d6c42a6a4c56bfc2211caa976add343e50d7"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -762,7 +762,7 @@
       "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "fc093eaaab185053017411a180b6a690009204e3eff74de6a0c7e8cd9bab35ac"
+      "sha256": "8a283c49c509776c4313cce9da54a95d1dc62e0ff3c7a04a71ecf1de0a36d556"
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -771,7 +771,7 @@
       "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "cbbed6ecac923d059ecae8f3e566711ddf8773b3b06aba29e5515ddc80953719"
+      "sha256": "508d045fd0fc21fad0d349c6ceeecd118dd43a4bc4e97cebda1ca972cb2185a1"
     }
   ],
   "evidenceStampIds": [

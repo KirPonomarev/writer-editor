@@ -10173,6 +10173,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'text',
                 'textHash',
                 'charCount',
+                'inlineRuns',
               ])
             ))
           : sourceReport.contentPreview.paragraphs,

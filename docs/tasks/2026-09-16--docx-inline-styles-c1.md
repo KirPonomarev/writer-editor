@@ -20,6 +20,7 @@ Existing DOCX serializer, bounded import projection and canonical doc-v2 content
 - src/export/docx/docxMinBuilder.js
 - src/io/revisionBridge/index.mjs
 - src/utils/docxImportSafeCreate.js
+- src/main.js
 - src/utils/docxImportLocalFilePreview.js
 - test/contracts/revision-bridge-docx-inline-styles.contract.test.js
 - docs/tasks/2026-09-16--docx-inline-styles-c1.md
@@ -35,13 +36,13 @@ Existing DOCX serializer, bounded import projection and canonical doc-v2 content
 
 ## DENYLIST
 
-Renderer, main adapter, IPC limits, dependencies, old raw oracle and historic evidence.
+Renderer, IPC limits, dependencies, old raw oracle and historic evidence.
 
 ## CONTRACT / SHAPES
 
 O: The same marked synthetic text survives export, Word and canonical import with exact per-character marks and unchanged paragraph/text boundaries.
 T: Canonical editor snapshot -> DOCX serialization -> bounded ZIP/XML reader -> validated mark projection -> admitted immutable plan -> existing atomic scene writer -> independent persisted readback.
-H: Export loses run boundaries and import emits only plain text. Retaining bounded mark runs and using the existing doc-v2 envelope repairs both losses without a new storage layer.
+H: Export loses run boundaries, import emits only plain text, and the main-owned report filter discards the mark projection before plan creation. Retaining bounded mark runs and using the existing doc-v2 envelope repairs both losses without a new storage layer.
 B: No new commands, UI, runtime dependencies, network, mutation authority or 1120-cell claim. Existing plain-text compatibility, plan hashes, stale guards, atomicity and recovery stay required. Revert this PR as one unit.
 P: Frozen marked/plain precheck; targeted malformed/namespace/cascade/mark-boundary tests; existing import/atomic contracts; native Word and reopened scene; independent negative controls; inventory, guardrails, CI and merged-head verification.
 I: Exact binding base above; final candidate, merged SHA, input/artifact hashes and elapsed seconds are recorded in the external task receipt.
