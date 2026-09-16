@@ -17,7 +17,21 @@ Existing DOCX serializer, bounded import projection and canonical doc-v2 content
 
 ## ALLOWLIST
 
-The exact task declaration binds the four product files (docxMinBuilder.js, index.mjs, docxImportLocalFilePreview.js, docxImportSafeCreate.js), the inline-style contract test and this task document. Existing DATA qualification, inventory and governance receipts may admit this bounded repair without changing the frozen raw checker, denominator or old evidence.
+- src/export/docx/docxMinBuilder.js
+- src/io/revisionBridge/index.mjs
+- src/utils/docxImportSafeCreate.js
+- src/utils/docxImportLocalFilePreview.js
+- test/contracts/revision-bridge-docx-inline-styles.contract.test.js
+- docs/tasks/2026-09-16--docx-inline-styles-c1.md
+- docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
+- scripts/ops/rtk-interop-data-c1.mjs
+- scripts/ops/r24/corrective/post-audit-certification-set.mjs
+- docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
+- docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
+- test/contracts/rtk-interop-100-denominator.contract.test.js
+- docs/ARCH_DIFF_LOG.md
 
 ## DENYLIST
 
@@ -52,7 +66,7 @@ RECOVERY: Existing atomic rollback and durable idempotency; imported rich conten
 PERFORMANCE: Bounded styles, runs and cascade depth; no work on typing path; measure the entire native/checking cycle.
 ACCESSIBILITY: Existing editor and confirmation unchanged.
 SURFACE_MANIFEST: EXISTING_SURFACE_UNCHANGED.
-DESIGN_TOOL_ROUTER: NOT_APPLICABLE.
+DESIGN_TOOL_ROUTER: DISABLED_FOR_NON_VISUAL_IMPORT_EXPORT_REPAIR.
 CURRENT: Baseline export loses 28 bold/italic positions; plain control passes; precheck took 0.196579 seconds.
 TARGET: Four inline marks only. Paragraph/list styles, fonts, colors, full STYLES, other routes and packaged profiles require separate proof.
 
@@ -76,14 +90,14 @@ CHECK_5_POST_DELIVERY: Inventory, guardrails, required CI, commit/push/PR/merge 
 
 Ambiguous identity, foreign changes, lost text, weakened oracle or bypassed authority stops delivery.
 
-## FAIL_PROTOCOL
-
-Retain expected/actual, input hashes, exact SHA and timing. After three identical failures change the hypothesis; no synthetic success or unsupported whole-cell credit.
-
 ## REPORT_FORMAT
 
 One text block: task, before/after/merged SHA, changed basenames, tests, delivery, evidence, limits and next step.
 
-## Primary reference
+## FAIL_PROTOCOL
+
+Retain expected/actual, input hashes, exact SHA and timing. After three identical failures change the hypothesis; no synthetic success or unsupported whole-cell credit.
+
+### Primary reference
 
 Word run properties apply after styles: [Microsoft Open XML RunProperties](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.runproperties?view=openxml-3.0.1). Bold/italic/strike are toggle properties in style inheritance; direct formatting sets the value: [Microsoft Open XML Bold](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.bold?view=openxml-3.0.1).
