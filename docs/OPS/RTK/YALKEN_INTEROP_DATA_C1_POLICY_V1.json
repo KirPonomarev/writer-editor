@@ -46,7 +46,9 @@
     "docs/tasks/2026-09-16--docx-heading-roundtrip.md",
     "test/contracts/revision-bridge-docx-lists.contract.test.js",
     "docs/tasks/2026-09-16--docx-list-roundtrip.md",
-    "test/contracts/revision-bridge-docx-content-preview.contract.test.js"
+    "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+    "src/renderer/styles.css",
+    "docs/tasks/2026-09-16--editor-list-marker-flow.md"
   ],
   "protectedFiles": [
     {
@@ -346,6 +348,14 @@
       {
         "path": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
         "sha256": "7cbbe1c2af8cc9d7c47d4194ea1b77f3d65bc29c0bbcea5cf859f5ca1101b55e"
+      },
+      {
+        "path": "src/renderer/styles.css",
+        "sha256": "2ac398340cde5d34425a1763ceae65abfb0b2879e332e852a0a49c3af8ad25e6"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
+        "sha256": "17f9bc54cd9105f2c5df830fc77dc024e40057d144ac47c27248db3b1f279326"
       }
     ],
     "followupRepair": {
@@ -372,6 +382,11 @@
       "id": "DOCX_LIST_ROUNDTRIP_C1_V1",
       "bindingBaseSha": "caa895ad1aef8ab85421c933a5c7c5a62442c9d3",
       "scope": "Product repair: preserve existing bullet and decimal lists with start numbers, item boundaries and bounded nesting through DOCX export, bounded numbering parsing, preview filters and admitted doc-v2 import. No full-STYLES credit."
+    },
+    "listMarkerRepair": {
+      "id": "EDITOR_LIST_MARKER_FLOW_C1_V1",
+      "bindingBaseSha": "9cf590992130606a5a52bfa229cfa19a5b0ec948",
+      "scope": "Mechanical existing-editor repair: keep native list markers in the same paginated line flow as their first paragraph, preserving native list semantics, commands, stored content and transfer behavior. No full-STYLES credit."
     }
   }
 }

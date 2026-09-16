@@ -445,14 +445,14 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
+      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "bd8d543827decaf9bbc10e3f57f43495d88aae105d2023f0e7a6690dd5162656"
     },
     {
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
+      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "07f2baf90d42cf94ec1d30f14439e74365c6914f4086184e81397c2ca3f717df"
+      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "a3a4754fdba25e1bdd27412e0da3645b74f647aa16d4de183fc6e53f70eb6abc"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
+      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "bc710fabb6411e57d62f0a7126859677353a8bab1173cc36db73fd228f037606"
+      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "6deed22e0b3e91e69a1548f4b692538ec589ee5477dbe858ced3d1ebe4fa56d6"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -862,6 +862,24 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "91a0c31c454e2508702b4b87fd3f8fbae01bce9e2dee6ac907c4a69211841e60"
+    },
+    {
+      "filePath": "src/renderer/styles.css",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
+      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "2ac398340cde5d34425a1763ceae65abfb0b2879e332e852a0a49c3af8ad25e6"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T17:07:52.713636+00:00",
+      "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "17f9bc54cd9105f2c5df830fc77dc024e40057d144ac47c27248db3b1f279326"
     }
   ],
   "evidenceStampIds": [

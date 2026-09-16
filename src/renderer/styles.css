@@ -6803,6 +6803,17 @@ body.dark-theme .authoring-surface__item[data-state="dirty"] {
   margin-top: 0;
 }
 
+/* Outside markers collide with the paginated shape-outside float. Keep the
+   native marker and first paragraph in one line flow, including across gaps. */
+.main-content--editor #editor.tiptap-host .ProseMirror li {
+  list-style-position: inside;
+  margin-block: 1em;
+}
+
+.main-content--editor #editor.tiptap-host .ProseMirror li > p:first-child {
+  display: inline;
+}
+
 .main-content--editor #editor.tiptap-host {
   width: var(--page-width-px);
   max-width: var(--page-width-px);
@@ -6993,7 +7004,8 @@ body.dark-theme .authoring-surface__item[data-state="dirty"] {
   mask-repeat: repeat-y;
   -webkit-mask-size: 100% var(--central-sheet-page-stride-px);
   mask-size: 100% var(--central-sheet-page-stride-px);
-  overflow: hidden;
+  /* Keep caret/scrollIntoView from scrolling text apart from the sheet strip. */
+  overflow: clip;
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .tiptap-editor,
