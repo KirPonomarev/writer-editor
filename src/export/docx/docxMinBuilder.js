@@ -152,12 +152,12 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
       blocks.push({ kind: 'pageBreak', text: pageBreakToken });
       continue;
     }
-    if (node.type === 'heading' && Number(node.attrs?.level) === 1) {
-      blocks.push({ kind: 'heading', text, runs });
-      continue;
-    }
-    if (node.type === 'heading' && Number(node.attrs?.level) === 2) {
-      blocks.push({ kind: 'sceneHeading', text, runs });
+    if (node.type === 'heading') {
+      const headingLevel = Number(node.attrs?.level);
+      if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
+        throw new Error('DOCX_HEADING_LEVEL_INVALID');
+      }
+      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs });
       continue;
     }
     if (text || node.type === 'paragraph') {
@@ -220,11 +220,14 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const styleMap = deps.styleMapModule.createStyleMap();
   const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
+  const headingLevels = new Set();
   const paragraphs = entries.length > 0
     ? entries.map((entry, index) => {
       const semanticKind = normalizeSemanticKind(entry && entry.kind);
       const styleDescriptor = styleMap.resolve(entry);
-      const styleId = resolveDocxParagraphStyleId(styleDescriptor, semanticKind);
+      const headingLevel = semanticBlocks?.[index]?.headingLevel;
+      const styleId = headingLevel ? `Heading${headingLevel}` : resolveDocxParagraphStyleId(styleDescriptor, semanticKind);
+      if (/^Heading[1-6]$/u.test(styleId)) headingLevels.add(Number(styleId.slice(-1)));
       if (semanticKind === 'pageBreak' || String(entry?.text || '').trim() === pageBreakToken) {
         return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
       }
@@ -249,7 +252,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-</Types>`;
+${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
@@ -262,10 +265,15 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   </w:body>
 </w:document>`;
 
+  const styleParts = headingLevels.size ? [
+    { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}</w:styles>` },
+    { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
+  ] : [];
   return buildStoredZip([
     { name: '[Content_Types].xml', data: contentTypes },
     { name: '_rels/.rels', data: rootRels },
     { name: 'word/document.xml', data: documentXml },
+    ...styleParts,
   ]);
 }
 

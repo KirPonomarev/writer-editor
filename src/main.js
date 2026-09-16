@@ -10174,6 +10174,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'textHash',
                 'charCount',
                 'inlineRuns',
+                'headingLevel',
               ])
             ))
           : sourceReport.contentPreview.paragraphs,

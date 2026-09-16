@@ -74,15 +74,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "60d762634aa09ad9fcdccf31359b234a9e6666ce94ee81caa507b6a6f4df75df"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "b84de709518885aec77b5151fbbc8a4bc79b08cbc9620d8ce0824e26f2e124d5"
     },
     {
       "approved": true,
@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
-      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
-      "sha256": "91b5b4a1fd5c279a11790e58d1a067a504303e3a7ee0fba13e18c953d4abbd94"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "19da7d0335de4736baf522ce93aab2cc4dbfa0e8f456407e669e89e9b8ff80e8"
     },
     {
       "approved": true,
@@ -334,12 +334,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "40683b72c9fed50b3bcd07938e34dd7f010bf817ab2847f42c15850cd4dcab40"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "cdb58c069c7fd5944c4a01daa83cbabddc79698ddccf5581c16cbc4c95321bb2"
     },
     {
       "approved": true,
@@ -370,12 +370,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/utils/docxImportSafeCreate.js",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "4191c701c7a6ffd4d63427d18758f50380a37e30a2e81a3003ddda6cb86e3cd9"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "29bd6553b2d1c9d654e738251cfaa3a81827e420ca631db90c2d89fa2aa22931"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
-      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
-      "sha256": "cf7592176d8736d6f481bb6f6e81d47433187558b3814bae00a3574c83f8c96f"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "53d376bcc81129cd997133326ac25ee3a1d451b1c44b73af10d6b1ed67b57fbb"
     },
     {
       "approved": true,
@@ -478,15 +478,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "src/utils/docxImportLocalFilePreview.js",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "6e3c7dd508ff0a8012376dda615b37dbc20ea6bdc908080fe452971409a7b4af"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "ba52282f4b22009e104e76233433bb689877ebab3f85f04921479e4156ecbf8c"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
-      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
-      "sha256": "ab043cf0df27659b981c221616351be81915cee9785ccc649933e0992327c251"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "2f0ae3bdaabf89be5c808fa0a35935d4f4a016aae3fad4a3098367859ac0be8b"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T14:35:42.075101+00:00",
-      "approvedBy": "owner-direct-task:CI_POSTBUILD_LANES_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
-      "sha256": "15a37de799c385276cb6d32ad54556ca80701c0a67f09cf93bca3f5686a50ed2"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "9fb2c23a86be29d30e5765e89f4c29327e6a4c89a119b3ff9f8e34c06c446691"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -749,11 +749,11 @@
     {
       "filePath": "src/export/docx/docxMinBuilder.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "8ddba48b215c9af9c25e2828dd7811839ef1d2ae4a7ef8c91189c2df94790d54"
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "1a75c13d642e2a6cfd47f3fb7f6ca4c58d944d4dd2cbfcf6c2a6801977cefd82"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -826,6 +826,24 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner accepted CI acceleration without reduced coverage. Preserve all original test commands, actual builds, aggregate failure gates, frozen raw oracle, denominator, product source and historical evidence. No whole-cell credit.",
       "sha256": "4d6369b53962a88fc55f9701c2332773edd0945ef1246f11b27010ef81331e17"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--docx-heading-roundtrip.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "c210c12fd3a8654287b422fc4ca15c71957fdab982c01c39894c3793e8a41436"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-headings.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T15:35:53Z",
+      "approvedBy": "owner-direct-task:DOCX_HEADINGS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded heading preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "ce23fcc8f52e40294b8fc16ca6599fab93ade04a0f00d879079933c772d7b642"
     }
   ],
   "evidenceStampIds": [
