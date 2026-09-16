@@ -7004,7 +7004,8 @@ body.dark-theme .authoring-surface__item[data-state="dirty"] {
   mask-repeat: repeat-y;
   -webkit-mask-size: 100% var(--central-sheet-page-stride-px);
   mask-size: 100% var(--central-sheet-page-stride-px);
-  overflow: hidden;
+  /* Keep caret/scrollIntoView from scrolling text apart from the sheet strip. */
+  overflow: clip;
 }
 
 .main-content--editor #editor.tiptap-host.tiptap-host--central-sheet-strip-proof[data-central-sheet-large-payload-fast-path-active="true"] > .tiptap-page-wrap .tiptap-editor,

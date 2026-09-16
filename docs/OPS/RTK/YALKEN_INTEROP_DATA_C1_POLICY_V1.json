@@ -351,11 +351,11 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "96dd304316a816815dd8b366fcd53b3d130b74544015bccfa71414804a6a31f7"
+        "sha256": "2ac398340cde5d34425a1763ceae65abfb0b2879e332e852a0a49c3af8ad25e6"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
-        "sha256": "8f6ba7fbaa48e87e3e702a8aef64f047f670be2ff9651354bb965757450096db"
+        "sha256": "17f9bc54cd9105f2c5df830fc77dc024e40057d144ac47c27248db3b1f279326"
       }
     ],
     "followupRepair": {

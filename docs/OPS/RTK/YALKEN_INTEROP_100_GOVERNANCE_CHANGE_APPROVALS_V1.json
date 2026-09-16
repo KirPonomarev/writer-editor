@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "c25ab6c46d7c7ce000cb67aab8b0dde526e6b5c5996014686b62af262beee401"
+      "sha256": "a3a4754fdba25e1bdd27412e0da3645b74f647aa16d4de183fc6e53f70eb6abc"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "8ca76d88e3bb4c6e7feab20110a1ce463c7144ffb9a078a17a5817277060d1f4"
+      "sha256": "6deed22e0b3e91e69a1548f4b692538ec589ee5477dbe858ced3d1ebe4fa56d6"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -870,7 +870,7 @@
       "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "96dd304316a816815dd8b366fcd53b3d130b74544015bccfa71414804a6a31f7"
+      "sha256": "2ac398340cde5d34425a1763ceae65abfb0b2879e332e852a0a49c3af8ad25e6"
     },
     {
       "filePath": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -879,7 +879,7 @@
       "approvedBy": "owner-direct-task:EDITOR_LIST_MARKERS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded native list-marker presentation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "8f6ba7fbaa48e87e3e702a8aef64f047f670be2ff9651354bb965757450096db"
+      "sha256": "17f9bc54cd9105f2c5df830fc77dc024e40057d144ac47c27248db3b1f279326"
     }
   ],
   "evidenceStampIds": [

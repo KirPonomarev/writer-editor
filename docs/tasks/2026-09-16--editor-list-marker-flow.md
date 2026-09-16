@@ -29,6 +29,7 @@ Core, command semantics, persistence, parsers, renderer JavaScript and HTML, fon
 O: Markers lead the first item line without overlap and text remains outside page gaps.
 T: Existing canonical doc-v2 list nodes -> immutable editor projection -> native ol/ul/li and CSS layout. No product mutation is introduced.
 H: Outside native markers are mispositioned by the existing shape-outside page flow. Put marker and first paragraph into the same line formatting context, retaining native counters and existing paragraph-scale item spacing.
+H2: A long item's scrollIntoView also scrolls the overflow-hidden inner text layer apart from the sheet shells. Use non-scrollable clipping on that layer; retain scrolling on the shared outer editor container. Verify the reproduced initial 50-percent failure and input undo/redo.
 B: One ProseMirror source; no manual marker strings, custom counters, page truth, removed page-gap float or change to save/import/export.
 P: Recorded failing native source/reopen screenshot and isolated Chromium reproduction; actual fixed renderer, list/empty/long/nested/starts/page-gap/input checks, old-CSS negative, unchanged Word roundtrip, required CI and exact merged verification.
 I: Base above; candidate/merged SHA, source/build hashes, native profile and measured timings recorded externally.
