@@ -168,7 +168,12 @@ def _docx_paragraphs(path: Path) -> tuple[list[str], ET.Element, dict[str, str]]
                      'DOCX_DOCUMENT_SHAPE')
             props = {}
             if 'docProps/custom.xml' in names:
-                custom = ET.fromstring(archive.read('docProps/custom.xml'))
+                custom_xml = archive.read('docProps/custom.xml')
+                _require(b'<!DOCTYPE' not in custom_xml.upper() and b'<!ENTITY' not in custom_xml.upper(),
+                         'DOCX_CUSTOM_DTD')
+                custom = ET.fromstring(custom_xml)
+                property_names = [item.get('name') for item in custom if item.get('name')]
+                _require(len(property_names) == len(set(property_names)), 'DOCX_CUSTOM_PROPERTIES_DUPLICATE')
                 props = {
                     item.get('name'): ''.join(item.itertext())
                     for item in custom

@@ -491,7 +491,7 @@
       },
       {
         "path": "test/unit/rtk-interop-c2-final-hops.test.py",
-        "sha256": "1606493f8098da7959a24c0d3f59039f00af079dc387ed094ea3774a4a12b53f"
+        "sha256": "733361cc5a16cc6ccf5418c680ee1eefec02d258d794f8d1c8505a1e27260f31"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
@@ -601,7 +601,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-c2-final-hops.py",
-        "sha256": "fca66a6acb061722a18c4baeea9d63365df3696c65c7c98aba454b5b38645061"
+        "sha256": "44d22e62dd6098035d297409194de7ab28046784d3e1e67b5f7a4408ee87e58a"
       },
       {
         "path": "scripts/ops/rtk-interop-order-c1-readback.py",

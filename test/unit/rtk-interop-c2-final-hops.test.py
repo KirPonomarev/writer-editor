@@ -1,6 +1,7 @@
 import copy
 import html
 import importlib.util
+import io
 import json
 import sys
 import tempfile
@@ -390,6 +391,21 @@ class C2FinalHopsTests(unittest.TestCase):
         reader.ET.SubElement(table, reader.W + 'p')
         with self.assertRaisesRegex(ValueError, 'TRACKED_BODY'):
             reader.tracked_docx(reader.order.replace_document(source, document))
+
+    def test_custom_properties_reject_entities_and_duplicate_authority_names(self):
+        for custom, code in [
+            ('<!DOCTYPE Properties [<!ENTITY carrier "unit">]><Properties><property name="YRTK_C01_AUTH"><value>&carrier;</value></property></Properties>', 'DOCX_CUSTOM_DTD'),
+            ('<Properties><property name="YRTK_C01_AUTH"><value>unit</value></property><property name="YRTK_C01_AUTH"><value>unit</value></property></Properties>', 'DOCX_CUSTOM_PROPERTIES_DUPLICATE'),
+        ]:
+            fixture = self.make()
+            original = (fixture.root / fixture._by_kind()['source-docx']['path']).read_bytes()
+            out = io.BytesIO()
+            with zipfile.ZipFile(io.BytesIO(original)) as source, zipfile.ZipFile(out, 'w') as target:
+                for member in source.infolist():
+                    target.writestr(member, custom if member.filename == 'docProps/custom.xml' else source.read(member.filename))
+            fixture.replace('source-docx', out.getvalue())
+            result = self.check(fixture)
+            self.assertEqual(result['findings'][0]['code'], code)
 
 
 if __name__ == '__main__':
