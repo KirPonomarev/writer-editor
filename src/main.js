@@ -10175,6 +10175,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'charCount',
                 'inlineRuns',
                 'headingLevel',
+                'textAlign',
                 'list',
               ])
             ))

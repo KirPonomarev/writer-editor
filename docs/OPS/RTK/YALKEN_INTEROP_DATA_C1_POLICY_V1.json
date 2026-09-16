@@ -271,7 +271,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "3755973daa36cb40935de4c9c4aeecae05912e76f4411976393d281f163e8db4"
+        "sha256": "4f42ab2355be8dad02be5e43a14df95285eddcbbd93b582fd01a753b2746f015"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -451,11 +451,11 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
-        "sha256": "e74e23264186133d82aed7bd86a242537302ba55c5a97eb515f1d93b71a52797"
+        "sha256": "6d39520e390e6ab204611a28c7496daf88e9c230e6037c339361ad5c94da0a7d"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",
-        "sha256": "ada11f8511e414b40d90a42e82237ba42148b3f3cfe067ca7c60a084deb9a4c1"
+        "sha256": "42d3e2c7b7a808274dad2ce3fd42615584c4b0db3372bd91343025fd441d1f2e"
       }
     ],
     "followupRepair": {

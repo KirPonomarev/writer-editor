@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "1e680999a5a9a3773c04d722ca123825a17a484bc4a4ed01768cd78903702f4c"
+      "sha256": "4e53395237027592b884b31e72f977895e9105f23d13ef9109ce4944466368a1"
     },
     {
       "approved": true,
@@ -334,12 +334,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T16:20:48Z",
-      "approvedBy": "owner-direct-task:DOCX_LISTS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
+      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Owner requested continued personal product import/export development. This bounded list preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "3755973daa36cb40935de4c9c4aeecae05912e76f4411976393d281f163e8db4"
+      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "4f42ab2355be8dad02be5e43a14df95285eddcbbd93b582fd01a753b2746f015"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "4013f9b1a2ebca387dea7e435aad2959b521000c1b9b03ef5af51c564bd765b0"
+      "sha256": "d820ef4992bb535bab44ef9ebd89fc173e94f2661517166a0fa6e9bb73de4e84"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "1925d2131204d012ff128dd1a0b44bede91c1ad8e5e91cb2e5bad829c7baa4f0"
+      "sha256": "a99df80bcd6bb959a6e6760a0430666270321b0ded12232297c009c82c7e0c2e"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "aedb68c595ead25fb6df76fca3dea10a9bf4e7043d9b298152be0072b6c95937"
+      "sha256": "cbc142fe7c52c83d9291cf9a4047d3e8ffa9730205eb37b8dd755a32fc7cd7dc"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1005,7 +1005,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "ada11f8511e414b40d90a42e82237ba42148b3f3cfe067ca7c60a084deb9a4c1"
+      "sha256": "42d3e2c7b7a808274dad2ce3fd42615584c4b0db3372bd91343025fd441d1f2e"
     },
     {
       "filePath": "src/io/paragraphAlignment.cjs",
@@ -1041,7 +1041,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "e74e23264186133d82aed7bd86a242537302ba55c5a97eb515f1d93b71a52797"
+      "sha256": "6d39520e390e6ab204611a28c7496daf88e9c230e6037c339361ad5c94da0a7d"
     }
   ],
   "evidenceStampIds": [

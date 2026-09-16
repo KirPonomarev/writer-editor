@@ -201,3 +201,18 @@ test('C1 alignment: admitted create persists alignment and retry creates no extr
   const forged=structuredClone(plan);forged.candidateCreatePlan.entries[0].content=forged.candidateCreatePlan.entries[0].content.replace('center','right');
   assert.equal((await applyDocxImportSafeCreate({docxImportPreviewPlan:forged},options)).ok,false);
 });
+
+test('C1 alignment: actual main-process report projection preserves alignment and retains its authority filter', async()=>{
+  const vm=require('node:vm');const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+  const start=main.indexOf('function copyDocxImportPreviewAllowedFields(');const end=main.indexOf('function validateDocxImportPreviewPayload(',start);
+  assert.ok(start>=0 && end>start);
+  const sandbox={cloneJsonSafe:v=>v===undefined?undefined:JSON.parse(JSON.stringify(v)),isPlainObjectValue:v=>Boolean(v&&typeof v==='object'&&!Array.isArray(v))};
+  vm.runInNewContext(main.slice(start,end)+'\nthis.project=canonicalizeDocxImportPreviewSourceReport;',sandbox);
+  const [bridge,envelope]=await modules;const input=source();const report=bridge.buildDocxContentPreviewFromZipBytes(await exportDoc(input));
+  report.contentPreview.paragraphs[0].untrustedPath='/tmp/not-authority';
+  const projected=sandbox.project(report);assert.equal(Object.hasOwn(projected.contentPreview.paragraphs[0],'untrustedPath'),false);
+  const plan=bridge.buildDocxImportPreviewPlanFromContentPreview(projected);assert.equal(plan.ok,true,JSON.stringify(plan));
+  assert.deepEqual(profile(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc),profile(input));
+  report.contentPreview.paragraphs[0].textAlign='right;position:fixed';
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(sandbox.project(report)).ok,false);
+});

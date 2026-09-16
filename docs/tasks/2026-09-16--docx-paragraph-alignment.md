@@ -25,6 +25,7 @@ Structured editor transaction, bounded paragraph attributes and DOCX mapping; in
 - src/io/revisionBridge/index.mjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 - src/utils/docxImportLocalFilePreview.js
+- src/main.js
 - test/contracts/revision-bridge-docx-alignment.contract.test.js
 - docs/tasks/2026-09-16--docx-paragraph-alignment.md
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
@@ -68,6 +69,7 @@ DESIGN_TOOL_ROUTER: Applicable Lazyweb first. Consulted document formatting cont
 CHECK_1_PRE_IDENTITY: Secure volume, clean branch, bootstrap, canon continuity and declaration preflight.
 CHECK_2_POST_ALIGNMENT: Enums, defaults, inheritance, direct override, namespace, duplicates, malicious values, selected and adjacent paragraphs, no-alignment bytes.
 CHECK_3_POST_NATIVE: Word export/import/reopen, computed editor alignment, actual controls, undo/redo, raw corruptions and existing typography/color/list/text proof.
+CHECK_3A_POST_MAIN_PROJECTION: Execute the actual main-process source-report canonicalizer; preserve validated alignment while dropping unrelated fields and rejecting forged values in the downstream parser.
 CHECK_4_POST_DELIVERY: Affected tests, tracked generated build, inventory, policy, certification, CI, normal merge and fresh exact-head verification.
 
 ## STOP_CONDITION
