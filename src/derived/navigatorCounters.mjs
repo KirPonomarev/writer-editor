@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { parseObservablePayload } from '../renderer/documentContentEnvelope.mjs';
 
 const TEXT_UNIT_KINDS = new Set(['chapter-file', 'scene']);
 
@@ -7,7 +8,13 @@ function stableHash(value) {
 }
 
 export function countNavigatorWords(text) {
-  const normalized = String(text || '').trim();
+  const parsed = parseObservablePayload(String(text || ''));
+  if (parsed.issue) {
+    const error = new Error(parsed.issue.message || 'Navigator scene payload is invalid');
+    error.code = parsed.issue.code;
+    throw error;
+  }
+  const normalized = parsed.text.trim();
   if (!normalized) return 0;
   return normalized.split(/\s+/u).filter(Boolean).length;
 }
@@ -125,4 +132,3 @@ export async function annotateNavigatorDerivedCounters(root, options = {}) {
     affectedNodeIds: Array.from(context.affectedNodeIds).sort(),
   };
 }
-

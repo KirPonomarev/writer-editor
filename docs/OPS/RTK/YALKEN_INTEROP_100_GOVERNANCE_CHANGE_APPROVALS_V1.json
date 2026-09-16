@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "f9bcce69d6e7a0117283240a721c26efaea740a65b4b44d0687951a7787af5ad"
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "e24b3e84b13a88f602c3fd958980a5acb549268b5507133e9e50c61ea8859da3"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "e4122d5af6f5d5795b88e2c2e9a3638e7c95ad430707b9370db4c1b66e0ef4ff"
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "d0ab77d0d0ae691b8b38ba77374516a3521951f1abe8e7c34d49ae736769ddd4"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "eb802b3bc514a3fa810a6ba5c6593b645bc65b62b6b01852d42ccf3d9acc562c"
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "a038a345afe566653dfe390f495d3dac2b313890dfcb7e98634a56e8a4e2eacf"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T12:50:41.526840+00:00",
-      "approvedBy": "owner-direct-task:STYLES_C1_PRESERVATION_20260916",
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
-      "sha256": "9bfa76b1bc089b47e9634fedf287d6c42a6a4c56bfc2211caa976add343e50d7"
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "fd421fcf37f5aacac7a8525da4c98f28989725d4d358145345ef7c004aedf66b"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -772,6 +772,33 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner continued personal accelerated import/export implementation with the next C1 STYLES step. Bounded four-inline-mark repair using existing commands and atomic persistence. Preserve frozen raw oracle, denominator and previous evidence; no whole-STYLES credit.",
       "sha256": "508d045fd0fc21fad0d349c6ceeecd118dd43a4bc4e97cebda1ca972cb2185a1"
+    },
+    {
+      "filePath": "src/derived/navigatorCounters.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "bf7ec0ff9175ff4df9236d3770a2018a30f92dbb9e8b52315ed04b3a06c63410"
+    },
+    {
+      "filePath": "test/unit/navigator-derived-counters.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "47cfb1b7bf195faa260c25c71e67c0c6c400695c072c3074a07f90b2ba1bddb0"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--docx-navigator-visible-word-count.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T14:04:04.227976+00:00",
+      "approvedBy": "owner-direct-task:NAV_COUNTS_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner accepted the observed rich-scene word-count correction and continued personal implementation. Only derived counts change; preserve the frozen raw oracle, denominator, scene bytes and previous evidence. No whole-cell credit.",
+      "sha256": "c3efb15b7d53fb6c5f4c5e2d17735b93508b205e2122a065fbb3c31eed3e85d2"
     }
   ],
   "evidenceStampIds": [
