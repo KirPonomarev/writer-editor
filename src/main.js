@@ -231,6 +231,7 @@ const { runDocxReviewPacketExport } = require('./export/docx/docxReviewPacketExp
 const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   buildFullManuscriptDocxReviewPacketSource,
+  buildFormatIrParagraphs,
 } = require('./export/docx/fullManuscriptDocxReviewPacketSource');
 const {
   buildFullManuscriptReviewReturnApplyPlan,
@@ -4211,8 +4212,11 @@ function buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, options = {
   const deriveWordBookmarkNameV1 = typeof options.deriveWordBookmarkNameV1 === 'function'
     ? options.deriveWordBookmarkNameV1
     : deriveWordBookmarkNameV1Cjs;
-  const lines = String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
-  return lines.map((text, index) => {
+  const paragraphs = options.doc
+    ? buildFormatIrParagraphs({ sceneId, text: sceneText, doc: options.doc })
+    : String(sceneText || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n')
+      .map((text) => ({ text, formatIr: null }));
+  return paragraphs.map(({ text, formatIr }, index) => {
     const seed = `${sceneId}\n${index}\n${text}`;
     const seedHash = computeHash(seed);
     const blockId = `block-${String(index + 1).padStart(4, '0')}-${seedHash.slice(0, 16)}`;
@@ -4226,7 +4230,8 @@ function buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, options = {
       textId,
       text,
       canonicalTextSha256: `sha256:${computeHash(text)}`,
-      canonicalMarksSha256: cryptoPort.sha256Json({ marks: [] }),
+      canonicalMarksSha256: cryptoPort.sha256Json(formatIr || { marks: [] }),
+      ...(formatIr ? { formatIr } : {}),
       wordSignals: [
         {
           kind: 'w14ParaIdTextId',
@@ -4281,7 +4286,7 @@ function buildReviewDocxPacketHashTree({ projectId, sceneId, sceneRevision, rawS
       documentParagraphIndex: normOrdinal(block.documentParagraphIndex ?? blockIndex),
       canonicalTextSha256: block.canonicalTextSha256,
       canonicalMarksSha256: block.canonicalMarksSha256,
-      formatIr: null,
+      formatIr: block.formatIr || null,
     })),
   }];
   if (revisionBridge && typeof revisionBridge.buildWordV4ManifestHashTree === 'function') {
@@ -4308,7 +4313,7 @@ function buildReviewDocxPacketHashTree({ projectId, sceneId, sceneRevision, rawS
       paragraphId: block.paragraphId,
       canonicalTextSha256: block.canonicalTextSha256,
       canonicalMarksSha256: block.canonicalMarksSha256,
-      formatIr: null,
+      formatIr: block.formatIr || null,
     }),
   }));
   const sceneDigest = cryptoPort.sha256Json({
@@ -4347,11 +4352,17 @@ async function readDocxReviewPacketExportSource() {
     throw new Error(binding.reason || 'REVIEW_DOCX_EXPORT_PROJECT_BINDING_UNAVAILABLE');
   }
 
-  const sceneText = await fs.readFile(currentFilePath, 'utf8');
+  const sceneRawContent = await fs.readFile(currentFilePath, 'utf8');
+  const envelopeModule = await loadDocumentContentEnvelopeModule();
+  const parsedDocument = envelopeModule.parseObservablePayload(sceneRawContent);
+  if (!parsedDocument || parsedDocument.issue || typeof parsedDocument.text !== 'string') {
+    throw new Error('REVIEW_DOCX_EXPORT_DOCUMENT_ENVELOPE_INVALID');
+  }
+  const sceneText = parsedDocument.doc ? parsedDocument.text : sceneRawContent;
   const projectId = docxReviewPreviewSessionDetailString(binding.projectId);
   const projectRoot = docxReviewPreviewSessionDetailString(binding.projectRoot) || path.dirname(binding.manifestPath);
   const sceneId = getProjectRelativeFilePath(currentFilePath, binding.manifestPath).replace(/\\/g, '/');
-  const rawSha256 = `sha256:${computeHash(sceneText)}`;
+  const rawSha256 = `sha256:${computeHash(sceneRawContent)}`;
   const sceneRevision = rawSha256;
   const createdAtUtc = new Date().toISOString();
   const roundIdHex = crypto.randomBytes(16).toString('hex');
@@ -4362,7 +4373,7 @@ async function readDocxReviewPacketExportSource() {
   const semanticReturnId = `semantic-return-${roundIdHex}`;
   const hmacSecret = crypto.randomBytes(32).toString('hex');
   const cryptoPort = createRtkReviewTransportCryptoPort();
-  const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, { roundId });
+  const blocks = buildReviewDocxPacketBlocks(sceneText, sceneId, cryptoPort, { roundId, doc: parsedDocument.doc });
   const primaryBlock = blocks[0] || {
     blockId: 'block-0000-empty',
     paragraphId: 'yrtk-p-empty',
@@ -4400,7 +4411,7 @@ async function readDocxReviewPacketExportSource() {
           documentParagraphIndex: blockIndex,
           canonicalTextSha256: block.canonicalTextSha256,
           canonicalMarksSha256: block.canonicalMarksSha256,
-          formatIr: null,
+          formatIr: block.formatIr || null,
           wordSignals: block.wordSignals,
         })),
       },

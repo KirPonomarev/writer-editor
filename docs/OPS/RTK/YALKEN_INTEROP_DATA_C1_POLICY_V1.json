@@ -72,7 +72,15 @@
     "test/unit/sector-m-toolbar-expansion-wave-a1.test.js",
     "test/contracts/rtk-release01-terminal-claims.contract.test.js",
     "test/contracts/revision-bridge-docx-theme-fonts.contract.test.js",
-    "docs/tasks/2026-09-16--docx-theme-fonts.md"
+    "docs/tasks/2026-09-16--docx-theme-fonts.md",
+    "scripts/ops/rtk-interop-word-text-order-batch.mjs",
+    "scripts/ops/rtk-interop-word-text-order-readback.py",
+    "scripts/ops/rtk-interop-c2-final-hops.py",
+    "test/contracts/rtk-interop-word-text-order-batch.contract.test.js",
+    "test/unit/rtk-interop-c2-final-hops.test.py",
+    "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
+    "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
   ],
   "protectedFiles": [
     {
@@ -204,7 +212,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "0ddeb452f3c80ef6a978bf99bdfc995c95a6b2f1863142df61e5ab5e612ff3a6"
+      "sha256": "287f965fbfd36e1630d26346ca5dbca84abcabd132a4836a124f4b65e8bf41d0"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -275,7 +283,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "4f42ab2355be8dad02be5e43a14df95285eddcbbd93b582fd01a753b2746f015"
+        "sha256": "344c76f392fa449d15cd637db15e152d58b1d5984f40a6d30fac122f114af9dc"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -411,7 +419,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "827060fe180e00be6a73b1149e47b787f80410800460dfeaf7171638537c2e1b"
+        "sha256": "6d8928ebdd67a61266f2cd01d76e3efc587a63957f2e1e90b112c495d217c7eb"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -476,6 +484,26 @@
       {
         "path": "docs/tasks/2026-09-16--docx-theme-fonts.md",
         "sha256": "ba41f2a9d54afd7e7cdb4924589d124d7e75875f07c13934f1fd0a4be746d7c5"
+      },
+      {
+        "path": "test/contracts/rtk-interop-word-text-order-batch.contract.test.js",
+        "sha256": "0238d1878b264e5af4b1218be87e2ef6b05717b99ae6a54e23cbf334b49962cd"
+      },
+      {
+        "path": "test/unit/rtk-interop-c2-final-hops.test.py",
+        "sha256": "733361cc5a16cc6ccf5418c680ee1eefec02d258d794f8d1c8505a1e27260f31"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
+        "sha256": "cc1c85e15f6672ced2d80b84966031a6c5f2d482004a1ca80f6e99b6590550e4"
+      },
+      {
+        "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+        "sha256": "6dac1ac99ae91acae95cc8f19791291cbee75034ffacac3fed48a5c7d5fc682f"
+      },
+      {
+        "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
+        "sha256": "cd76893405ab2d3098b4884d0f07eb884c0e1c64e98234cd6834eb342f4c5d84"
       }
     ],
     "followupRepair": {
@@ -527,6 +555,71 @@
       "id": "DOCX_THEME_FONT_IMPORT_C1_V1",
       "bindingBaseSha": "9c14113d4230e028161554dbd2db30fd73b96301",
       "scope": "Product repair: resolve supported Word theme selections through bounded existing readers and admitted import; preserve text, explicit overrides and loss diagnostics. No full-STYLES credit."
+    },
+    "wordTextOrderBatch": {
+      "taskId": "WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
+      "bindingBaseSha": "cd20513262277f292d7ff446dadd6eb97a2ae618",
+      "scope": "Decode saved rich-scene envelope for review reexport; admit complete single-scene C1/C2 TEXT and ORDER on source and packaged profiles only after fresh merged native execution. No other field or route credit."
     }
+  },
+  "wordTextOrderBatch": {
+    "schemaVersion": "WORD_TEXT_ORDER_BATCH_V1",
+    "cellIds": [
+      "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME"
+    ],
+    "requiredHops": {
+      "C1": [
+        "YALKEN_EXPORT",
+        "WORD_LIFECYCLE",
+        "YALKEN_RETURN_INTAKE"
+      ],
+      "C2": [
+        "YALKEN_EXPORT",
+        "WORD_LIFECYCLE",
+        "YALKEN_RETURN_INTAKE",
+        "YALKEN_APPLY",
+        "YALKEN_REEXPORT",
+        "WORD_REOPEN_READBACK"
+      ]
+    },
+    "notBeforeUtc": "2026-09-16T21:52:26.361685+00:00",
+    "readerBindings": [
+      {
+        "path": "scripts/ops/rtk-interop-word-text-order-batch.mjs",
+        "sha256": "9b3c5b31baf9a7a54799fdab137ede68102bc9c78d9ff930759482bc2ff8f3a7"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-text-order-readback.py",
+        "sha256": "437f4417a6f4ed6d852293cd45b538200cf47e0a0c5b2d6d306351e10404001e"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-c2-final-hops.py",
+        "sha256": "44d22e62dd6098035d297409194de7ab28046784d3e1e67b5f7a4408ee87e58a"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-order-c1-readback.py",
+        "sha256": "e24b8784fc9b8f62d5b9ebaaf0e3ebc4ef0822d58da83bcc6e3ecde793fa2b9e"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-text-c1-readback.py",
+        "sha256": "0afbb89f587a4189c0d984fc9e410dcb4c53f436f54c5b54c9d642845b4d66bb"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-c1-raw-readback.py",
+        "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
+      }
+    ],
+    "sourceParagraphSha256": "693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1",
+    "reviewedParagraphSha256": "9661ff5f7b1218ad5517936e57162443470c53c85a5e697f8c54ff3129e02a50",
+    "electronVersion": "41.10.3",
+    "admission": "Read-only computation from exact current merged runtime, pinned Lab source, complete actual native hops and separate independent raw TEXT and ORDER proofs. No additional self-authored acceptance receipt.",
+    "packagedC1Scope": "Governed importSafeCreate command after admitted preview; no native file-dialog claim."
   }
 }

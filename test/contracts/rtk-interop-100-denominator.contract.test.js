@@ -1558,6 +1558,32 @@ it('data C1 delivery binds immutable code and preserves Buffer and text Git adap
   drift=['scripts/ops/rtk-interop-data-c1-readback.py'];assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/IMPLEMENTATION_DRIFT/);
 });
 
+it('data C1 delivery survives 33 policy revisions while retaining original identity and drift checks',async()=>{
+  const data=await import('../../scripts/ops/rtk-interop-data-c1.mjs');
+  const policy=data.loadDataPolicy(),candidate='f'.repeat(40);
+  let revisions=Array.from({length:33},(_,i)=>(33-i).toString(16).padStart(40,'0')),drift=[];
+  const firstDelivery=revisions.at(-1),repeatedDelivery=revisions[0];
+  const git=args=>{
+    if(args[0]==='rev-parse')return args[1]===policy.baseSha+'^{tree}'?policy.baseTree:candidate;
+    if(args[0]==='ls-tree')return data.DATA_POLICY_PATH;
+    if(args[0]==='log')return revisions.join('\n');
+    if(args[0]==='merge-base')return '';
+    if(args[0]==='diff')return (args[3]===policy.baseSha?policy.admittedPaths:drift).join('\n');
+    if(args[0]==='show'){
+      const revision=args[1].slice(0,40),file=args[1].slice(41);
+      const bytes=fs.readFileSync(path.join(root,file),'utf8');
+      return file===data.DATA_POLICY_PATH&&![candidate,firstDelivery,repeatedDelivery].includes(revision)?bytes+'\n':bytes;
+    }
+    throw new Error(args.join(' '));
+  };
+  const result=data.verifyDataC1PostEvaluation({git});
+  assert.equal(result.deliverySha,firstDelivery);assert.equal(result.cellAcceptanceAuthority,false);
+  drift=['scripts/ops/rtk-interop-data-c1-readback.py'];
+  assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/IMPLEMENTATION_DRIFT/);drift=[];
+  revisions=[...revisions,'invalid-commit'];
+  assert.throws(()=>data.verifyDataC1PostEvaluation({git}),/DELIVERY_IDENTITY/);
+});
+
 }
 
 // Keep the bounded runtime repair in the required maintained RTK lane.
