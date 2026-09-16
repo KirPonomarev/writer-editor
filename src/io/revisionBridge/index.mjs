@@ -7889,6 +7889,153 @@ const DOCX_INLINE_MARKS = Object.freeze({ 'w:b': 'bold', 'w:i': 'italic', 'w:u':
 const DOCX_INLINE_MAX_RUNS = 50000;
 const DOCX_INLINE_MAX_STYLES = 2048;
 
+function docxListInteger(value, max = 2147483647) {
+  if (typeof value !== 'string' || value.length > 16 || !/^[+]?\d+$/u.test(value)
+    || !Number.isInteger(Number(value)) || Number(value) < 0 || Number(value) > max) {
+    throw new Error('DOCX_LIST_INTEGER_INVALID');
+  }
+  return Number(value);
+}
+
+function docxReadNumberingProperty(target, tag, token, namespaces) {
+  const key = tag === 'w:numId' ? 'numId' : tag === 'w:ilvl' ? 'level' : '';
+  if (!key) return;
+  if (Object.hasOwn(target, key)) throw new Error('DOCX_LIST_DUPLICATE_PROPERTY');
+  const value = docxListInteger(docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim(), key === 'level' ? 8 : 2147483647);
+  target[key] = key === 'numId' ? String(value) : value;
+}
+
+function docxNumberingCatalog(bytes) {
+  const catalog = { abstracts: new Map(), instances: new Map(), counters: new Map() };
+  const inventory = docxHostileFileGateCentralEntries(bytes);
+  if (inventory.failure) throw new Error('DOCX_LIST_INVENTORY_INVALID');
+  if (!inventory.entries.some((entry) => entry.entryId === 'word/numbering.xml')) return catalog;
+  const part = docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/numbering.xml', 1024 * 1024);
+  if (!part) throw new Error('DOCX_LIST_PART_LIMIT_OR_INVALID');
+  const xml = docxZipDecodeUtf8Xml(part);
+  if (xml === null || docxContentPreviewUnsupportedEncoding(xml) || /<!\s*(DOCTYPE|ENTITY)\b/iu.test(xml)
+    || docxContentPreviewValidateXmlAttributesAndNamespaces(xml).failure) throw new Error('DOCX_LIST_XML_INVALID');
+  const selected = docxContentPreviewSelectMarkupCompatibilityXml(xml);
+  if (selected.failure) throw new Error('DOCX_LIST_XML_INVALID');
+  const text = selected.xmlText;
+  const stack = [];
+  let cursor = 0;
+  let root = '';
+  const guarded = new Set(['numbering', 'abstractNum', 'num', 'abstractNumId', 'lvlOverride', 'startOverride', 'lvl', 'start', 'numFmt', 'lvlText', 'lvlRestart', 'pStyle', 'numStyleLink', 'styleLink', 'isLgl', 'lvlPicBulletId']);
+  while (cursor < text.length) {
+    const next = docxContentPreviewNextXmlToken(text, cursor);
+    if (!next || next.failure) throw new Error('DOCX_LIST_XML_INVALID');
+    cursor = next.nextCursor;
+    const token = next.token;
+    if (!token.startsWith('<') || token.startsWith('<?') || token.startsWith('<!--')) continue;
+    if (token.startsWith('</')) {
+      if (stack.pop()?.raw !== docxContentPreviewTagName(token)) throw new Error('DOCX_LIST_XML_INVALID');
+      continue;
+    }
+    const parsed = docxContentPreviewParseStrictStartTag(token.slice(1, -1), stack.at(-1)?.ns || new Map());
+    if (!parsed) throw new Error('DOCX_LIST_XML_INVALID');
+    const tag = parsed.namespaceUri === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE ? parsed.localName : '';
+    if (!tag && guarded.has(parsed.localName)) throw new Error('DOCX_LIST_NAMESPACE');
+    const parent = stack.at(-1);
+    const value = (name = 'val') => docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, name).trim();
+    const frame = { raw: parsed.rawTagName, tag, ns: parsed.namespaceMap };
+    if (!stack.length) {
+      if (root || tag !== 'numbering') throw new Error('DOCX_LIST_XML_INVALID');
+      root = tag;
+    }
+    if (parent?.tag === 'numbering' && ['abstractNum', 'num'].includes(tag)) {
+      const map = tag === 'num' ? catalog.instances : catalog.abstracts;
+      const id = String(docxListInteger(value(tag === 'num' ? 'numId' : 'abstractNumId')));
+      if (map.has(id) || map.size >= 2048) throw new Error('DOCX_LIST_DEFINITION_ID_OR_LIMIT');
+      frame.data = { levels: new Map(), overrides: new Map() };
+      map.set(id, frame.data);
+    } else if (parent?.tag === 'num' && tag === 'abstractNumId') {
+      if (parent.data.abstractId !== undefined) throw new Error('DOCX_LIST_DUPLICATE_PROPERTY');
+      parent.data.abstractId = String(docxListInteger(value()));
+    } else if (parent?.tag === 'num' && tag === 'lvlOverride') {
+      const level = docxListInteger(value('ilvl'), 8);
+      if (parent.data.overrides.has(level)) throw new Error('DOCX_LIST_DUPLICATE_LEVEL');
+      frame.data = { level };
+      parent.data.overrides.set(level, frame.data);
+    } else if (parent?.tag === 'lvlOverride' && tag === 'startOverride') {
+      if (parent.data.start !== undefined) throw new Error('DOCX_LIST_DUPLICATE_PROPERTY');
+      parent.data.start = docxListInteger(value());
+    } else if (tag === 'lvl' && ['abstractNum', 'lvlOverride'].includes(parent?.tag)) {
+      const level = docxListInteger(value('ilvl'), 8);
+      frame.data = { level };
+      if (parent.tag === 'abstractNum') {
+        if (parent.data.levels.has(level)) throw new Error('DOCX_LIST_DUPLICATE_LEVEL');
+        parent.data.levels.set(level, frame.data);
+      } else {
+        if (parent.data.definition || parent.data.level !== level) throw new Error('DOCX_LIST_OVERRIDE_LEVEL_INVALID');
+        parent.data.definition = frame.data;
+      }
+    } else if (parent?.tag === 'lvl' && ['start', 'numFmt', 'lvlText', 'lvlRestart', 'pStyle'].includes(tag)) {
+      if (Object.hasOwn(parent.data, tag)) throw new Error('DOCX_LIST_DUPLICATE_PROPERTY');
+      const raw = value();
+      if (raw.length > 256) throw new Error('DOCX_LIST_PROPERTY_LIMIT');
+      parent.data[tag] = ['start', 'lvlRestart'].includes(tag) ? docxListInteger(raw, tag === 'lvlRestart' ? 9 : 2147483647) : raw;
+    } else if ((parent?.tag === 'abstractNum' && ['numStyleLink', 'styleLink'].includes(tag))
+      || (parent?.tag === 'lvl' && ['isLgl', 'lvlPicBulletId'].includes(tag))) {
+      parent.data.unsupported = true;
+    }
+    if (!parsed.selfClosing) stack.push(frame);
+    if (stack.length > 128) throw new Error('DOCX_LIST_XML_DEPTH');
+  }
+  if (stack.length || root !== 'numbering') throw new Error('DOCX_LIST_XML_INVALID');
+  return catalog;
+}
+
+function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragraphIndex) {
+  const reference = { ...metadata.numbering };
+  const styleIds = [];
+  let id = metadata.paragraphStyleId || styles.defaultParagraph;
+  while (id) {
+    if (styleIds.includes(id) || styleIds.length >= 64) throw new Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');
+    styleIds.push(id);
+    const style = styles.styles.get(id);
+    if (!style || style.type !== 'paragraph') break;
+    reference.numId ??= style.numbering?.numId;
+    id = style.basedOn;
+  }
+  reference.numId ??= styles.defaultNumbering?.numId;
+  if (!reference.numId || reference.numId === '0') return;
+  const instance = catalog.instances.get(reference.numId);
+  const abstract = catalog.abstracts.get(instance?.abstractId);
+  const definitionAt = (level) => instance?.overrides.get(level)?.definition || abstract?.levels.get(level);
+  // ilvl in paragraph styles is not an authoritative level. Word binds that
+  // level through the numbering definition's pStyle instead (17.3.1.19).
+  const styleLevels = Array.from({ length: 9 }, (_, level) => level)
+    .filter((level) => styleIds.includes(definitionAt(level)?.pStyle));
+  const level = reference.level ?? (styleLevels.length === 1 ? styleLevels[0] : 0);
+  const definition = definitionAt(level);
+  const kind = definition?.numFmt === 'bullet' ? 'bulletList' : 'orderedList';
+  const declareLoss = () => {
+    docxContentPreviewAddListNumberingDiagnostic(diagnostics, { paragraphIndex, numId: reference.numId, ilvl: String(level) });
+  };
+  if (!instance || !abstract || abstract.unsupported || !definition || styleLevels.length > 1) {
+    declareLoss();
+    return;
+  }
+  let counters = catalog.counters.get(reference.numId);
+  if (!counters) { counters = []; catalog.counters.set(reference.numId, counters); }
+  const ordinal = counters[level] === undefined ? (instance.overrides.get(level)?.start ?? definition.start ?? 0) : counters[level] + 1;
+  if (ordinal > 2147483647) throw new Error('DOCX_LIST_COUNTER_LIMIT');
+  counters[level] = ordinal;
+  for (let deeper = level + 1; deeper <= 8; deeper += 1) {
+    const restart = definitionAt(deeper)?.lvlRestart ?? deeper;
+    if ((restart > deeper ? deeper : restart) === level + 1) counters[deeper] = undefined;
+  }
+  // Even an unrepresentable numbered heading consumes its Word ordinal. Do
+  // not renumber a later supported paragraph when reporting that earlier loss.
+  if (definition.unsupported || metadata.headingLevel !== undefined
+    || !(definition.numFmt === 'bullet' || ((definition.numFmt ?? 'decimal') === 'decimal' && definition.lvlText === `%${level + 1}.`))) {
+    declareLoss();
+    return;
+  }
+  metadata.list = { numId: reference.numId, level, kind, ordinal };
+}
+
 function docxInlineReadProperty(properties, tag, token, namespaces) {
   const mark = DOCX_INLINE_MARKS[tag];
   if (!mark) return;
@@ -7955,6 +8102,15 @@ function docxInlineStyleCatalog(bytes) {
       if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
     } else if (current && tag === 'w:basedOn' && parent === 'w:style') {
       current.basedOn = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'val');
+    } else if (parent === 'w:numPr' && stack.at(-2)?.tag === 'w:pPr') {
+      const owner = stack.at(-3)?.tag;
+      if (owner === 'w:style' && current?.type === 'paragraph') {
+        current.numbering ??= {};
+        docxReadNumberingProperty(current.numbering, tag, token, parsed.namespaceMap);
+      } else if (owner === 'w:pPrDefault') {
+        catalog.defaultNumbering ??= {};
+        docxReadNumberingProperty(catalog.defaultNumbering, tag, token, parsed.namespaceMap);
+      }
     } else if (tag === 'w:outlineLvl' && parent === 'w:pPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current?.type === 'paragraph') {
@@ -8043,7 +8199,7 @@ function docxResolveHeadingLevel(metadata, catalog) {
 function docxInlineCanonicalContent(paragraphs) {
   let runCount = 0;
   let hasMarks = false;
-  const content = paragraphs.map((paragraph) => {
+  const blocks = paragraphs.map((paragraph) => {
     const level = paragraph.headingLevel;
     if (level !== undefined && (!Number.isInteger(level) || level < 1 || level > 6)) {
       throw new Error('DOCX_HEADING_LEVEL_INVALID');
@@ -8073,6 +8229,40 @@ function docxInlineCanonicalContent(paragraphs) {
     return level === undefined ? { type: 'paragraph', content: nodes }
       : { type: 'heading', attrs: { level }, content: nodes };
   });
+  const content = [];
+  const stack = [];
+  blocks.forEach((block, index) => {
+    const list = paragraphs[index].list;
+    if (list === undefined) {
+      stack.length = 0;
+      content.push(block);
+      return;
+    }
+    if (!isPlainObject(list) || Object.keys(list).length !== 4
+      || Object.keys(list).some((key) => !['numId', 'level', 'kind', 'ordinal'].includes(key))
+      || !/^[1-9]\d{0,9}$/u.test(list.numId) || typeof list.numId !== 'string' || Number(list.numId) > 2147483647
+      || !Number.isInteger(list.level) || list.level < 0 || list.level > 8
+      || !['bulletList', 'orderedList'].includes(list.kind)
+      || !Number.isInteger(list.ordinal) || list.ordinal < 0 || list.ordinal > 2147483647
+      || block.type !== 'paragraph' || list.level > stack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
+    hasMarks = true;
+    stack.length = Math.min(stack.length, list.level + 1);
+    let active = stack[list.level];
+    if (!active || active.numId !== list.numId || active.node.type !== list.kind
+      || (list.kind === 'orderedList' && active.nextOrdinal !== list.ordinal)) {
+      const node = { type: list.kind, ...(list.kind === 'orderedList' ? { attrs: { start: list.ordinal } } : {}), content: [] };
+      if (list.level === 0) content.push(node);
+      else {
+        const parentItem = stack[list.level - 1]?.node.content.at(-1);
+        if (!parentItem) throw new Error('DOCX_LIST_ORPHAN_LEVEL');
+        parentItem.content.push(node);
+      }
+      active = { numId: list.numId, node };
+      stack[list.level] = active;
+    }
+    active.node.content.push({ type: 'listItem', content: [block] });
+    active.nextOrdinal = list.ordinal + 1;
+  });
   return hasMarks ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }
 
@@ -8091,6 +8281,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     paragraph.paragraphStyleId = metadata.paragraphStyleId;
   }
   if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
+  if (metadata.list !== undefined) paragraph.list = metadata.list;
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
   }
@@ -8100,7 +8291,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   return paragraph;
 }
 
-function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleCatalog = null) {
+function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleCatalog = null, numberingCatalog = null, diagnostics = []) {
   const nextCount = paragraphs.length + 1;
   if (nextCount > DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs) {
     return {
@@ -8112,6 +8303,7 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
     };
   }
   if (styleCatalog) metadata.headingLevel = docxResolveHeadingLevel(metadata, styleCatalog);
+  if (numberingCatalog) docxResolveParagraphList(metadata, styleCatalog, numberingCatalog, diagnostics, paragraphs.length);
   paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
   return { ok: true };
 }
@@ -8135,7 +8327,7 @@ function docxContentPreviewUnsupportedEncoding(xmlText) {
   return normalized === 'utf-8' || normalized === 'utf8' || normalized === 'us-ascii' ? null : encoding[2].trim();
 }
 
-function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
+function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numberings) {
   const xmlValidation = docxContentPreviewValidateXmlAttributesAndNamespaces(xmlText);
   if (xmlValidation.failure) return { failure: xmlValidation.failure };
   const mceSelection = docxContentPreviewSelectMarkupCompatibilityXml(xmlText);
@@ -8375,7 +8567,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
         };
       }
       if (selfClosing) {
-        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles);
+        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles, numberings, diagnostics);
         if (pushed.failure) return pushed;
         insideParagraph = false;
         paragraphText = '';
@@ -8384,7 +8576,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
         activeParagraphMetadata = null;
       }
     } else if (tagName === 'w:p' && closing && insideParagraph) {
-      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles);
+      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles, numberings, diagnostics);
       if (pushed.failure) return pushed;
       insideParagraph = false;
       paragraphText = '';
@@ -8394,22 +8586,17 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
       textDepth = 0;
       fieldInstructionTextDepth = 0;
       complexFieldStack.length = 0;
-    } else if (insideParagraph && tagName === 'w:numPr' && !closing) {
-      activeListNumbering = {
-        paragraphIndex: activeParagraphIndex,
-        numId: '',
-        ilvl: '',
-      };
-      if (selfClosing) {
-        docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
-        activeListNumbering = null;
-      }
-    } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:numId') {
-      activeListNumbering.numId = docxContentPreviewListNumberingValue(token, tokenNamespaceMap, 'val');
-    } else if (insideParagraph && activeListNumbering && !closing && tagName === 'w:ilvl') {
-      activeListNumbering.ilvl = docxContentPreviewListNumberingValue(token, tokenNamespaceMap, 'val');
-    } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering) {
-      docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
+    } else if (insideParagraph && tagName === 'w:numPr' && !closing && parentTag === 'w:pPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p') {
+      if (activeParagraphMetadata.numbering) throw new Error('DOCX_LIST_DUPLICATE_PROPERTY');
+      activeParagraphMetadata.numbering = {};
+      activeListNumbering = selfClosing ? null : activeParagraphMetadata.numbering;
+    } else if (insideParagraph && activeListNumbering && !closing && parentTag === 'w:numPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:pPr'
+      && elementStack.at(selfClosing ? -3 : -4)?.semanticTagName === 'w:p') {
+      docxReadNumberingProperty(activeListNumbering, tagName, token, tokenNamespaceMap);
+    } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering
+      && parentTag === 'w:pPr' && elementStack.at(-2)?.semanticTagName === 'w:p') {
       activeListNumbering = null;
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:outlineLvl') {
@@ -8471,7 +8658,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
   }
 
   if (insideParagraph) {
-    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles);
+    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles, numberings, diagnostics);
     if (pushed.failure) return pushed;
   }
 
@@ -8628,7 +8815,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   }
   let parsed;
   try {
-    parsed = docxContentPreviewParseMainDocumentXml(xmlText, docxInlineStyleCatalog(bytes));
+    parsed = docxContentPreviewParseMainDocumentXml(xmlText, docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
   } catch (error) {
     parsed = { failure: docxContentPreviewMalformedXmlDiagnostic(error.message) };
   }
@@ -9505,10 +9692,13 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText, googleDocsTabs);
   if (richContent !== null) {
     const hasHeadings = contentPreview.paragraphs.some((paragraph) => paragraph.headingLevel !== undefined);
-    lossReport.mode = hasHeadings ? 'headings-and-inline-marks' : 'inline-marks';
+    const hasLists = contentPreview.paragraphs.some((paragraph) => paragraph.list !== undefined);
+    lossReport.mode = hasLists ? 'lists-headings-and-inline-marks' : hasHeadings ? 'headings-and-inline-marks' : 'inline-marks';
     const formatting = lossReport.items.find((item) => item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY');
-    formatting.code = hasHeadings ? 'DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS' : 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
-    formatting.message = hasHeadings
+    formatting.code = hasLists ? 'DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS' : hasHeadings ? 'DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS' : 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
+    formatting.message = hasLists
+      ? 'Supported bullet and decimal lists, start numbers, nesting, heading levels 1 to 6 and inline marks are preserved. List marker appearance, paragraph appearance, fonts, colors and other formatting are not imported; unsupported numbering is listed separately.'
+      : hasHeadings
       ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
   }

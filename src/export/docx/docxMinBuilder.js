@@ -143,9 +143,36 @@ function readDocumentInlineRuns(node) {
 function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   if (!isPlainObjectValue(doc) || doc.type !== 'doc' || !Array.isArray(doc.content)) return null;
   const blocks = [];
+  let nextListId = 1;
+  const visitList = (list, level) => {
+    if (level > 8 || nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
+    if (!Array.isArray(list.content) || !list.content.length) throw new Error('DOCX_LIST_EMPTY');
+    const start = list.type === 'orderedList' ? (list.attrs?.start ?? 1) : 1;
+    if (list.type === 'orderedList' && list.attrs?.type != null && list.attrs.type !== '1') throw new Error('DOCX_LIST_FORMAT_UNSUPPORTED');
+    if (!Number.isInteger(start) || start < 0 || start > 2147483647
+      || start + list.content.length - 1 > 2147483647) throw new Error('DOCX_LIST_START_INVALID');
+    const numbering = { numId: nextListId++, level, kind: list.type, start };
+    for (const item of list.content) {
+      // One paragraph per item is unambiguous in ordinary OOXML. Unnumbered
+      // continuation paragraphs cannot be recovered as item ownership here.
+      if (item?.type !== 'listItem' || !Array.isArray(item.content)
+        || item.content[0]?.type !== 'paragraph'
+        || item.content.slice(1).some((node) => !['bulletList', 'orderedList'].includes(node?.type))) {
+        throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
+      }
+      const paragraph = item.content[0];
+      if (readDocumentNodeText(paragraph).trim() === pageBreakToken) throw new Error('DOCX_LIST_ITEM_SHAPE_UNSUPPORTED');
+      blocks.push({ kind: 'paragraph', text: readDocumentNodeText(paragraph), runs: readDocumentInlineRuns(paragraph), numbering });
+      for (const nested of item.content.slice(1)) visitList(nested, level + 1);
+    }
+  };
 
   for (const node of doc.content) {
     if (!isPlainObjectValue(node)) continue;
+    if (node.type === 'bulletList' || node.type === 'orderedList') {
+      visitList(node, 0);
+      continue;
+    }
     const text = readDocumentNodeText(node);
     const runs = readDocumentInlineRuns(node);
     if (node.type === 'pageBreak' || (node.type === 'paragraph' && text.trim() === pageBreakToken)) {
@@ -221,6 +248,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
   const headingLevels = new Set();
+  const numberings = new Map();
   const paragraphs = entries.length > 0
     ? entries.map((entry, index) => {
       const semanticKind = normalizeSemanticKind(entry && entry.kind);
@@ -233,7 +261,11 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       }
 
       const text = typeof entry?.text === 'string' ? entry.text : '';
-      const styleXml = styleId ? `<w:pPr><w:pStyle w:val="${escapeXml(styleId)}"/></w:pPr>` : '';
+      const numbering = semanticBlocks?.[index]?.numbering;
+      if (numbering) numberings.set(numbering.numId, numbering);
+      const properties = (styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
+        + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '');
+      const styleXml = properties ? `<w:pPr>${properties}</w:pPr>` : '';
       if (!text) {
         return `<w:p>${styleXml}</w:p>`;
       }
@@ -252,7 +284,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}</Types>`;
+${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
@@ -267,8 +299,21 @@ ${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="app
 
   const styleParts = headingLevels.size ? [
     { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}</w:styles>` },
-    { name: 'word/_rels/document.xml.rels', data: '<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>' },
   ] : [];
+  if (numberings.size) {
+    const definitions = [...numberings.values()].map(({ numId, level, kind, start }) => {
+      const format = kind === 'orderedList' ? 'decimal' : 'bullet';
+      const marker = kind === 'orderedList' ? `%${level + 1}.` : '•';
+      return `<w:abstractNum w:abstractNumId="${numId}"><w:multiLevelType w:val="multilevel"/><w:lvl w:ilvl="${level}"><w:start w:val="${start}"/><w:numFmt w:val="${format}"/><w:lvlText w:val="${marker}"/><w:lvlJc w:val="left"/><w:pPr><w:tabs><w:tab w:val="num" w:pos="${(level + 1) * 720}"/></w:tabs><w:ind w:left="${(level + 1) * 720}" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>`;
+    }).join('');
+    const instances = [...numberings.keys()].map((numId) => `<w:num w:numId="${numId}"><w:abstractNumId w:val="${numId}"/></w:num>`).join('');
+    styleParts.push({ name: 'word/numbering.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${definitions}${instances}</w:numbering>` });
+  }
+  if (headingLevels.size || numberings.size) {
+    const relationships = (headingLevels.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
+      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '');
+    styleParts.push({ name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>` });
+  }
   return buildStoredZip([
     { name: '[Content_Types].xml', data: contentTypes },
     { name: '_rels/.rels', data: rootRels },

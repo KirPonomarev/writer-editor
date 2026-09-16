@@ -270,9 +270,9 @@ function numberedParagraphXml(text, { ilvl = '0', numId = '1' } = {}) {
 
 function numberingXml() {
   return [
-    '<w:numbering>',
+     '<w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">',
     '<w:abstractNum w:abstractNumId="0">',
-    '<w:lvl w:ilvl="0"><w:numFmt w:val="decimal"/><w:lvlText w:val="%1."/></w:lvl>',
+    '<w:lvl w:ilvl="0"><w:numFmt w:val="upperRoman"/><w:lvlText w:val="%1."/></w:lvl>',
     '</w:abstractNum>',
     '<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>',
     '</w:numbering>',
@@ -1716,7 +1716,7 @@ test('DOCX content preview: hyperlink visible text survives split runs anchors a
   assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
 });
 
-test('DOCX content preview: paragraph numbering is explicit unsupported list loss', async () => {
+test('DOCX content preview: unsupported Roman paragraph numbering is explicit list loss', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
     numberedParagraphXml('alpha', { numId: '1', ilvl: '0' }),
