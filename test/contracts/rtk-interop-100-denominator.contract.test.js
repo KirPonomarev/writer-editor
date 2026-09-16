@@ -1185,25 +1185,25 @@ test('governance approval state rejects approval digest tampering for admission 
   }
 });
 
-// Bounded ORDER C1 recipe: same contract inventory file, independent assertions.
-test('ORDER C1 bounded recipe contracts', async (t) => {
-const pending=[];
-const test=(name,fn)=>pending.push(t.test(name,fn));
-const {default:assert} = await import('node:assert/strict');
-const {default:fs} = await import('node:fs');
-const {default:path} = await import('node:path');
-const {default:os} = await import('node:os');
-const {createHash} = await import('node:crypto');
-const {spawnSync} = await import('node:child_process');
-const {fileURLToPath} = await import('node:url');
-const {ORDER_CELL,ORDER_POLICY_PATH,ORDER_POLICY_SHA256,ORDER_ADMITTED_PATHS,ORDER_BASE,ORDER_BASE_TREE,
-  validateOrderRunId,selectOrderObservation,validateOrderAcceptance,stableOrderJson,readOrderFile,
-  readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1} = await import('../../scripts/ops/rtk-interop-order-c1.mjs');
-const {verifyInterop100} = await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
-
+// Bounded ORDER C1 recipe; every check is a root TAP record for the maintained parser.
+{
+const {test:rootTest}=require('node:test');
+const assert=require('node:assert/strict'), fs=require('node:fs'), path=require('node:path'), os=require('node:os');
+const {createHash}=require('node:crypto'), {spawnSync}=require('node:child_process');
+let ORDER_CELL,ORDER_POLICY_PATH,ORDER_POLICY_SHA256,ORDER_ADMITTED_PATHS,ORDER_BASE,ORDER_BASE_TREE,
+    validateOrderRunId,selectOrderObservation,validateOrderAcceptance,stableOrderJson,readOrderFile,
+    readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1,verifyInterop100,run;
+const ready=Promise.all([import('../../scripts/ops/rtk-interop-order-c1.mjs'),
+  import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs')]).then(([order,denominator])=>{
+  ({ORDER_CELL,ORDER_POLICY_PATH,ORDER_POLICY_SHA256,ORDER_ADMITTED_PATHS,ORDER_BASE,ORDER_BASE_TREE,
+    validateOrderRunId,selectOrderObservation,validateOrderAcceptance,stableOrderJson,readOrderFile,
+    readOrderPolicy,verifyOrderPostEvaluation,verifyOrderC1}=order);
+  verifyInterop100=denominator.verifyInterop100;
+  run=ORDER_CELL+'__2026-09-16T00-00-00-000Z';
+});
+const test=(name,fn)=>rootTest(name,async()=>{await ready;return fn();});
 const root=path.resolve(__dirname,'../..');
 const hash=b=>createHash('sha256').update(b).digest('hex');
-const run=ORDER_CELL+'__2026-09-16T00-00-00-000Z';
 const policyBytes=()=>fs.readFileSync(path.join(root,ORDER_POLICY_PATH));
 
 test('recipe pins source, denominator, seven oracles and six ORDER conditions',()=>{
@@ -1316,5 +1316,4 @@ print(json.dumps({'positiveEquivalentRuns':True,'coherentTamperRejected':True,'c
   assert.equal(JSON.parse(result.stdout).coherentTamperRejected,true);
 });
 
-await Promise.all(pending);
-});
+}

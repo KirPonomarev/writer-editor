@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "cd9ee2c1c43cacb680cc28c1df9435081d8ab66d53bdf113486b190f93a4bf21"
+      "sha256": "877ca7565d5ee80ed4e1dee16aee9cda2468f2a67b63cb3e6729289bafb5ad97"
     },
     {
       "approved": true,
@@ -321,7 +321,7 @@
       "authority": "DIRECT_OWNER_FINAL_PLAN_V2_PERSONAL_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "c06a05b31c2f6c540955c7d8ab9743432002aa7740a7be119fc38ccb615e662c"
+      "sha256": "cd91eeba32378bdadf4cb66e3c3b17b9d613469f6fc578edbeda76d32dd9a9a0"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized final plan V2 implementation personally. Exact known ORDER C1 recipe, raw independent checks, immutable index and full timing; preserve archived TEXT and fixed 1120 cells. Metadata binds this bounded code and registry hygiene, not physical or broad portability credit.",
-      "sha256": "8888c3ddfec28eee34894c3e4fcf6bb99a93afe7e23085ba6c6b76598070b9cb"
+      "sha256": "3b91df1f5646b9a56dd67881d2ece4cd03c6b08dbfe52378058d0347c54a5da0"
     },
     {
       "approved": true,
