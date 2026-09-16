@@ -43,7 +43,10 @@
     "test/contracts/r24-postbuild-lanes.contract.test.mjs",
     "docs/tasks/2026-09-16--parallel-postbuild-ci-lanes.md",
     "test/contracts/revision-bridge-docx-headings.contract.test.js",
-    "docs/tasks/2026-09-16--docx-heading-roundtrip.md"
+    "docs/tasks/2026-09-16--docx-heading-roundtrip.md",
+    "test/contracts/revision-bridge-docx-lists.contract.test.js",
+    "docs/tasks/2026-09-16--docx-list-roundtrip.md",
+    "test/contracts/revision-bridge-docx-content-preview.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -246,7 +249,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "cdb58c069c7fd5944c4a01daa83cbabddc79698ddccf5581c16cbc4c95321bb2"
+        "sha256": "3755973daa36cb40935de4c9c4aeecae05912e76f4411976393d281f163e8db4"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -278,19 +281,19 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "1a75c13d642e2a6cfd47f3fb7f6ca4c58d944d4dd2cbfcf6c2a6801977cefd82"
+        "sha256": "8b25df2feb51005d26a579b368b88137f6b0bd7fb30a28bedabb7cd128ab815e"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "b84de709518885aec77b5151fbbc8a4bc79b08cbc9620d8ce0824e26f2e124d5"
+        "sha256": "cacec9a3fbcde88ff189002f01e7843d8a0dc7f27bfbd1d95b7572cec2d39634"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "29bd6553b2d1c9d654e738251cfaa3a81827e420ca631db90c2d89fa2aa22931"
+        "sha256": "26c560ff99654188706db8b8fa0d2cb51d8bc2421d9df5b19ac22d50a45a4b26"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "ba52282f4b22009e104e76233433bb689877ebab3f85f04921479e4156ecbf8c"
+        "sha256": "a52e73572f568f3773bca09b16ead5b047d04d87b00e4db9c65670332d57519d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -331,6 +334,18 @@
       {
         "path": "docs/tasks/2026-09-16--docx-heading-roundtrip.md",
         "sha256": "c210c12fd3a8654287b422fc4ca15c71957fdab982c01c39894c3793e8a41436"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-lists.contract.test.js",
+        "sha256": "91a0c31c454e2508702b4b87fd3f8fbae01bce9e2dee6ac907c4a69211841e60"
+      },
+      {
+        "path": "docs/tasks/2026-09-16--docx-list-roundtrip.md",
+        "sha256": "61c12f8dcf5b48db2811443ff3f109ed43db9e6958e056d74413fc51e21f6403"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+        "sha256": "7cbbe1c2af8cc9d7c47d4194ea1b77f3d65bc29c0bbcea5cf859f5ca1101b55e"
       }
     ],
     "followupRepair": {
@@ -352,6 +367,11 @@
       "id": "DOCX_HEADING_ROUNDTRIP_C1_V1",
       "bindingBaseSha": "9b4c1059a945a9c7ba914829ec85bd320b0bda29",
       "scope": "Product repair: preserve existing heading levels 1 to 6 through DOCX export, bounded outline/style parsing, preview filters and admitted doc-v2 import. No full-STYLES credit."
+    },
+    "listRepair": {
+      "id": "DOCX_LIST_ROUNDTRIP_C1_V1",
+      "bindingBaseSha": "caa895ad1aef8ab85421c933a5c7c5a62442c9d3",
+      "scope": "Product repair: preserve existing bullet and decimal lists with start numbers, item boundaries and bounded nesting through DOCX export, bounded numbering parsing, preview filters and admitted doc-v2 import. No full-STYLES credit."
     }
   }
 }
