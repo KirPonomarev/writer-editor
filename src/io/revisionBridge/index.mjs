@@ -1,4 +1,5 @@
 import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
+import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
@@ -8038,6 +8039,39 @@ function docxResolveParagraphList(metadata, styles, catalog, diagnostics, paragr
 }
 
 const DOCX_UNSUPPORTED_COLOR = 'DOCX_UNSUPPORTED_EFFECTIVE_COLOR';
+const DOCX_UNSUPPORTED_FONT = 'DOCX_UNSUPPORTED_EFFECTIVE_FONT';
+const DOCX_FONT_SLOTS = ['ascii', 'hAnsi', 'eastAsia', 'cs'];
+function docxInlineReadTypography(properties, tag, token, namespaces) {
+  const attr = name => docxContentPreviewWordAttributeValue(token, namespaces, name);
+  if (tag === 'w:rFonts') {
+    for (const slot of DOCX_FONT_SLOTS) {
+      const value = attr(slot);
+      const theme = attr(slot === 'cs' ? 'cstheme' : `${slot}Theme`);
+      if (value) properties[`font_${slot}`] = normalizeFontFamily(value);
+      if (theme) properties[`font_${slot}`] = DOCX_UNSUPPORTED_FONT;
+    }
+  } else {
+    const value = attr('val').trim();
+    if (!/^\d{1,4}$/u.test(value) || Number(value) < 2 || Number(value) > 3276) throw new Error('DOCX_INLINE_FONT_SIZE_INVALID');
+    properties[tag === 'w:sz' ? 'font_size' : 'font_sizeCs'] = normalizeFontSize(`${Number(value) / 2}pt`);
+  }
+}
+
+function docxInlineEffectiveTypography(properties, metadata) {
+  const result = {};
+  // A single editor family/size cannot express Word's differing script slots.
+  // Preserve only a fully resolved, uniform selection; expose every other
+  // effective selection as a loss instead of choosing the first available slot.
+  for (const [key, slots] of [['fontFamily', DOCX_FONT_SLOTS], ['fontSize', ['size', 'sizeCs']]]) {
+    const values = slots.map(slot => properties[`font_${slot}`]);
+    if (values.every(value => value === undefined)) continue;
+    if (values.some(value => value === undefined || value === DOCX_UNSUPPORTED_FONT) || new Set(values).size !== 1) {
+      metadata.unsupportedTypography = true;
+    } else result[key] = values[0];
+  }
+  return result;
+}
+
 function docxInlineReadColor(properties, tag, token, namespaces) {
   const attr = name => docxContentPreviewWordAttributeValue(token, namespaces, name).trim();
   const value = attr('val');
@@ -8065,10 +8099,12 @@ function docxInlineReadColor(properties, tag, token, namespaces) {
 function docxInlineReadProperty(properties, tag, token, namespaces) {
   const mark = DOCX_INLINE_MARKS[tag];
   const isColor = ['w:color', 'w:highlight', 'w:shd'].includes(tag);
-  if (!mark && !isColor) return;
+  const isTypography = ['w:rFonts', 'w:sz', 'w:szCs'].includes(tag);
+  if (!mark && !isColor && !isTypography) return;
   if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
     !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_INLINE_PROPERTY_NAMESPACE');
   if (isColor) { docxInlineReadColor(properties, tag, token, namespaces); return; }
+  if (isTypography) { docxInlineReadTypography(properties, tag, token, namespaces); return; }
   const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
   if (tag === 'w:u') {
     // Other underline patterns cannot be represented by the editor mark.
@@ -8175,7 +8211,7 @@ function docxInlineApplyStyle(properties, id, type, catalog) {
   }
   for (const style of chain.reverse()) {
     for (const [mark, enabled] of Object.entries(style.properties)) {
-      if (['underline', 'color', 'highlight', 'shading'].includes(mark)) properties[mark] = enabled;
+      if (['underline', 'color', 'highlight', 'shading'].includes(mark) || mark.startsWith('font_')) properties[mark] = enabled;
       else if (enabled) properties[mark] = !properties[mark];
     }
   }
@@ -8197,12 +8233,14 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
     ...(typeof color === 'string' && color !== DOCX_UNSUPPORTED_COLOR ? { color } : {}),
     ...(typeof highlight === 'string' && highlight !== DOCX_UNSUPPORTED_COLOR ? { highlight } : {}),
   };
+  const typography = docxInlineEffectiveTypography(properties, metadata);
   const last = metadata.inlineRuns.at(-1);
   if (last && JSON.stringify(last.marks) === JSON.stringify(marks)
-    && last.color === colors.color && last.highlight === colors.highlight) last.text += text;
+    && last.color === colors.color && last.highlight === colors.highlight
+    && last.fontFamily === typography.fontFamily && last.fontSize === typography.fontSize) last.text += text;
   else {
     if (++budget.count > DOCX_INLINE_MAX_RUNS) throw new Error('DOCX_INLINE_RUN_LIMIT');
-    metadata.inlineRuns.push({ text, marks, ...colors });
+    metadata.inlineRuns.push({ text, marks, ...colors, ...typography });
   }
 }
 
@@ -8250,7 +8288,7 @@ function docxInlineCanonicalContent(paragraphs) {
     const nodes = [];
     let joined = '';
     for (const run of runs) {
-      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight'].includes(key))
+      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight', 'fontFamily', 'fontSize'].includes(key))
         || typeof run.text !== 'string' || !run.text || !Array.isArray(run.marks)
         || run.marks.length > 4 || new Set(run.marks).size !== run.marks.length
         || run.marks.some((mark) => !Object.values(DOCX_INLINE_MARKS).includes(mark))) throw new Error('DOCX_INLINE_RUN_INVALID');
@@ -8259,10 +8297,14 @@ function docxInlineCanonicalContent(paragraphs) {
           throw new Error('DOCX_INLINE_COLOR_PROJECTION_INVALID');
         }
       }
+      for (const [key, normalize] of [['fontFamily', normalizeFontFamily], ['fontSize', normalizeFontSize]]) {
+        if (Object.hasOwn(run, key) && normalize(run[key]) !== run[key]) throw new Error('DOCX_INLINE_TYPOGRAPHY_PROJECTION_INVALID');
+      }
       joined += run.text;
-      hasMarks ||= run.marks.length > 0 || Boolean(run.color || run.highlight);
+      hasMarks ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize);
       const marks = run.marks.map((type) => ({ type }));
-      if (run.color) marks.push({ type: 'textStyle', attrs: { color: run.color } });
+      const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
+      if (Object.keys(textStyle).length) marks.push({ type: 'textStyle', attrs: textStyle });
       if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
       const parts = run.text.split('\n');
       parts.forEach((text, index) => {
@@ -8319,7 +8361,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
-  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight)) {
+  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight || run.fontFamily || run.fontSize)) {
     paragraph.inlineRuns = metadata.inlineRuns;
   }
   if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
@@ -8354,6 +8396,13 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
       severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
       sourceCode: 'DOCX_INLINE_COLOR_UNSUPPORTED', tagName: 'w:rPr', paragraphIndex: paragraphs.length,
       message: 'Effective themed color or patterned shading cannot be represented as an opaque RGB editor color',
+    }));
+  }
+  if (metadata.unsupportedTypography && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
+    diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
+      severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+      sourceCode: 'DOCX_INLINE_TYPOGRAPHY_UNSUPPORTED', tagName: 'w:rPr', paragraphIndex: paragraphs.length,
+      message: 'Themed, unresolved or differing script fonts and sizes cannot be represented by a single editor font selection',
     }));
   }
   paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
@@ -9488,6 +9537,10 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
     code: 'DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED', category: 'formatting',
     message: 'Effective themed color or patterned shading is not imported; explicit supported RGB colors remain preserved',
   };
+  if (sourceCode === 'DOCX_INLINE_TYPOGRAPHY_UNSUPPORTED') return {
+    code: 'DOCX_IMPORT_PREVIEW_TYPOGRAPHY_NOT_IMPORTED', category: 'formatting',
+    message: 'Themed, unresolved or differing script font selections are not imported; uniform literal fonts and sizes remain preserved',
+  };
   if (tagName === 'w:tbl') return { code: 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED', category: 'table' };
   if (tagName === 'w:drawing' || tagName === 'w:pict' || tagName === 'w:object') {
     return { code: 'DOCX_IMPORT_PREVIEW_MEDIA_NOT_IMPORTED', category: 'media' };
@@ -9760,6 +9813,10 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.color || run.highlight))) {
       formatting.message = 'Opaque RGB text and highlight colors are preserved. '
         + formatting.message.replace('fonts, colors and other formatting', 'fonts, themed colors and other formatting');
+    }
+    if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.fontFamily || run.fontSize))) {
+      formatting.message = 'Uniform literal fonts and half-point sizes are preserved. Installed font availability determines rendering. '
+        + formatting.message.replace('fonts,', 'themed and script-specific fonts,');
     }
   }
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview

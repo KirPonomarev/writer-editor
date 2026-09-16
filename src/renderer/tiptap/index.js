@@ -2,7 +2,7 @@ import { Editor } from '@tiptap/core'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
-import { TextStyle } from '@tiptap/extension-text-style'
+import { DocumentTextStyle } from './documentTextStyle.mjs'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -532,7 +532,7 @@ export function initTiptap(mountEl, options = {}) {
         link: false,
         underline: false,
       }),
-      TextStyle,
+      DocumentTextStyle,
       Color,
       Highlight.configure({
         multicolor: true,

@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
+const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.mjs');
 
 const FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID = 'cmd.project.review.exportFullManuscriptDocxReviewPacket';
 const FULL_MANUSCRIPT_REVIEW_DOCX_CAPABILITY_ID = 'cap.project.review.exportFullManuscriptDocxReviewPacket';
@@ -73,16 +74,9 @@ function normalizeFormatColor(value, code) {
 }
 
 function normalizeFormatFontSize(value) {
-  const source = normalizeString(value).toLowerCase();
-  const pointsMatch = /^(\d{1,4}(?:\.5)?)pt$/u.exec(source);
-  if (pointsMatch) return `${Number(pointsMatch[1])}pt`;
-  const pixelsMatch = /^(\d{1,4}(?:\.\d{1,4})?)px$/u.exec(source);
-  if (!pixelsMatch) throw makeError('FULL_MANUSCRIPT_FORMAT_IR_FONT_SIZE_UNSUPPORTED', { value });
-  const points = Number(pixelsMatch[1]) * 0.75;
-  if (!Number.isFinite(points) || points < 1 || points > 1638) {
+  try { return normalizeFontSize(value); } catch {
     throw makeError('FULL_MANUSCRIPT_FORMAT_IR_FONT_SIZE_UNSUPPORTED', { value });
   }
-  return `${Math.round(points * 2) / 2}pt`;
 }
 
 function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal) {
@@ -110,11 +104,9 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal) {
         inline.color = normalizeFormatColor(attrs.color, 'FULL_MANUSCRIPT_FORMAT_IR_COLOR_UNSUPPORTED');
       }
       if (attrs.fontFamily !== null && attrs.fontFamily !== undefined && attrs.fontFamily !== '') {
-        const fontFamily = normalizeString(attrs.fontFamily);
-        if (!fontFamily || fontFamily.length > 128 || /[\u0000-\u001f\u007f]/u.test(fontFamily)) {
+        try { inline.fontFamily = normalizeFontFamily(attrs.fontFamily); } catch {
           throw makeError('FULL_MANUSCRIPT_FORMAT_IR_FONT_FAMILY_UNSUPPORTED', { sceneId, paragraphOrdinal });
         }
-        inline.fontFamily = fontFamily;
       }
       if (attrs.fontSize !== null && attrs.fontSize !== undefined && attrs.fontSize !== '') {
         inline.fontSize = normalizeFormatFontSize(attrs.fontSize);

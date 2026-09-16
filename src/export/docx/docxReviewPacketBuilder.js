@@ -7,6 +7,7 @@ const {
   normalizeDocxTextForSerialization,
 } = require('./docxTextXml.js');
 const { buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
+const { buildDocxTypographyPropertiesXml } = require('./docxInlineTypography.js');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -140,14 +141,8 @@ function buildRunPropertiesXml(inline = {}, preservedMarks = []) {
   if (inline.strike === true) properties.push('<w:strike/>');
   const colors = buildDocxColorPropertiesXml(inline);
   if (colors) properties.push(colors);
-  if (typeof inline.fontFamily === 'string' && inline.fontFamily) {
-    const family = escapeXml(inline.fontFamily);
-    properties.push(`<w:rFonts w:ascii="${family}" w:hAnsi="${family}" w:eastAsia="${family}" w:cs="${family}"/>`);
-  }
-  if (typeof inline.fontSize === 'string' && /^(\d{1,4}(?:\.5)?)pt$/u.test(inline.fontSize)) {
-    const halfPoints = String(Math.round(Number.parseFloat(inline.fontSize) * 2));
-    properties.push(`<w:sz w:val="${halfPoints}"/><w:szCs w:val="${halfPoints}"/>`);
-  }
+  const typography = buildDocxTypographyPropertiesXml(inline);
+  if (typography) properties.push(typography);
   return properties.length > 0 ? `<w:rPr>${properties.join('')}</w:rPr>` : '';
 }
 

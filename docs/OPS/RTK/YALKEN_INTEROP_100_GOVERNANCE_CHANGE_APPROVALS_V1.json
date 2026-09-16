@@ -74,15 +74,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "91c1204c5df8e2a66528dcace02792bb9ce87aad02e7f60b65f5463527e2b7c9"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "04ecaa11291b6beb4b81195ddbef897b983790b5cf8f4c7a835d779b7dd693cc"
     },
     {
       "approved": true,
@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "c07edaea1062aab26adfb3a05a356a7d019667ebc2a1c460ce84e27d5894b9bc"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "0689a6e20c43b6df59ff6d41c369f0f7ccf8b5980d3876d57e03f5d31164b805"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "da0ac031361b99fa4a88a3496494ed7f080baab02587d197f96ff791617e8697"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "4f43c11bab7f1ecf2eb69f6eff72053d1565699b7e805ac0303c1fab451b681f"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "3a9055a8fa3325a3cdc37a808f45a27b872173329b8772778bb3eb11c35b360a"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "edebcdab2d81dc994f8073de42f02f0b72f1389e907596dd0495ba6d42f8771d"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "9efa7f185a9494111d27b997df5bf02c5818ffc5016c70369941a6a5a5dc1316"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "42cd7be640cd30d0bfa00713baf371a402857702cf54f55f7c596dc1d07468e0"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -749,11 +749,11 @@
     {
       "filePath": "src/export/docx/docxMinBuilder.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "d1537e7c55b4451a943c62aa851e2122e4d75f5b29e7223c792733ab947ee749"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "0faa27db2c897dabc8a01ac07f83dfc8c5f06a771bc78dfed0f6ebb8262b5e78"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -884,11 +884,11 @@
     {
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T17:46:54.455291+00:00",
-      "approvedBy": "owner-direct-task:DOCX_COLORS_C1_20260916",
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "2ea7ea63ec8e3dd6d3003287b985884ef762f87b406cfbb42186cf7fab96a9b9"
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "2cab617e249a94f0b715e0fcc4417557b9638e16ddda019e6c460d644199f765"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
@@ -916,6 +916,69 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "d8dac9a3d78ce5db2fb59f43f8d5f8daf942455b515e9a8887cbb730750729af"
+    },
+    {
+      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "064af107e8ea11f2a04c751b5e011d29f69394bacd0178cfc885519e9bff5d05"
+    },
+    {
+      "filePath": "src/renderer/tiptap/index.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "4c54bbcd65491a74ecf5bbb3badb2898138cdf89d9d2504744c121d34e684c3b"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "591f98f927f97d5cb362d36752737786fc04de4906b554e0f956ca1c8267bc79"
+    },
+    {
+      "filePath": "src/export/docx/docxInlineTypography.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "b82df105fa719953c5472a20fc00cfd4b5cef372291e1e0dbb4032990a195176"
+    },
+    {
+      "filePath": "src/io/inlineTypography.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "efc3d31a24fda6074dd532e6a863669458fb3df3709eea1faf8c56026fb4d39d"
+    },
+    {
+      "filePath": "src/renderer/tiptap/documentTextStyle.mjs",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "82e29910c0ad5ad44f48597e21f3a884cf441b4f0ab25db56bcb5b657bb85505"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-typography.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T18:37:19.631915+00:00",
+      "approvedBy": "owner-direct-task:DOCX_TYPOGRAPHY_C1_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner requested continued personal product import/export development. This bounded typography preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
+      "sha256": "426afd0be9d164e63c71f9e0a3863895af29afec73fb153aecf8ccc45aaca0bf"
     }
   ],
   "evidenceStampIds": [

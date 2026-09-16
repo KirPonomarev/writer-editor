@@ -16,6 +16,7 @@ const {
   normalizeDocxTextForSerialization,
 } = require('./docxTextXml.js');
 const { normalizeOpaqueRgb, buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
+const { buildDocxTypographyPropertiesXml, readRunTypography } = require('./docxInlineTypography.js');
 
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
@@ -224,14 +225,15 @@ function readRunColors(run) {
   return colors;
 }
 
-function buildDocxMarkedRunXml(run, hasColors = false) {
+function buildDocxMarkedRunXml(run, hasColors = false, hasTypography = false) {
   const marks = new Set((Array.isArray(run.marks) ? run.marks : []).map((mark) => mark?.type));
   // Explicit off prevents a paragraph/Word default style from bleeding into
   // the adjacent unmarked text. Complex-script bold/italic follow the same mark.
   const properties = [['bold', 'b'], ['bold', 'bCs'], ['italic', 'i'], ['italic', 'iCs'], ['strike', 'strike']]
     .map(([mark, tag]) => `<w:${tag} w:val="${marks.has(mark) ? '1' : '0'}"/>`).join('')
     + `<w:u w:val="${marks.has('underline') ? 'single' : 'none'}"/>`
-    + (hasColors ? buildDocxColorPropertiesXml(readRunColors(run), { explicitOff: true }) : '');
+    + (hasColors ? buildDocxColorPropertiesXml(readRunColors(run), { explicitOff: true }) : '')
+    + (hasTypography ? buildDocxTypographyPropertiesXml(readRunTypography(run)) : '');
   const content = buildDocxRunContentXml(run.text, { allowFormFeedPageBreak: true });
   return content ? `<w:r><w:rPr>${properties}</w:rPr>${content}</w:r>` : '';
 }
@@ -293,7 +295,9 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const hasMarks = Array.isArray(runs) && runs.some((run) => Array.isArray(run.marks)
         && run.marks.some((mark) => ['bold', 'italic', 'underline', 'strike'].includes(mark?.type)));
       const hasColors = Array.isArray(runs) && runs.some(run => Object.keys(readRunColors(run)).length > 0);
-      const runsXml = hasMarks || hasColors ? runs.map(run => buildDocxMarkedRunXml(run, hasColors)).join('') : buildDocxTextRunsXml(text);
+      const hasTypography = Array.isArray(runs) && runs.some(run => Object.keys(readRunTypography(run)).length > 0);
+      const runsXml = hasMarks || hasColors || hasTypography
+        ? runs.map(run => buildDocxMarkedRunXml(run, hasColors, hasTypography)).join('') : buildDocxTextRunsXml(text);
       return `<w:p>${styleXml}${runsXml}</w:p>`;
     }).join('')
     : '<w:p/>';
