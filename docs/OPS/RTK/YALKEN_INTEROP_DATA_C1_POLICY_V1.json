@@ -283,7 +283,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "46e5ff7b3a4e633cb1361d29ea4bc20b0f6a013954d8b4b1587daf4d19e09cb0"
+        "sha256": "e309c9c50e9d1be5d7a1cd9c304e43a110eb039e2a025e1fc8ecc0f45b55d466"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -447,11 +447,11 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "4a8c1aaaf9f88f7c0da0701af0e0839d1e58c62ebc7a4af4e56b87d0245d487c"
+        "sha256": "4506517ea08443e1bf069903595dfc21e24cef6ad533d53906d789c3952b0ceb"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
-        "sha256": "6d39520e390e6ab204611a28c7496daf88e9c230e6037c339361ad5c94da0a7d"
+        "sha256": "0474f299c55d8dd8040f52fbf3dfdb63b9086b2f0fb0c8f198e86758e5974012"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-paragraph-alignment.md",

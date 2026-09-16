@@ -216,3 +216,12 @@ test('C1 alignment: actual main-process report projection preserves alignment an
   report.contentPreview.paragraphs[0].textAlign='right;position:fixed';
   assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(sandbox.project(report)).ok,false);
 });
+
+test('C1 alignment: native selection events refresh formatting instead of being treated as formatting data',()=>{
+  const vm=require('node:vm');const source=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const bindings=source.split('\n').filter(l=>l.includes("document.addEventListener('selectionchange',") && l.includes('syncToolbarFormattingState'));
+  assert.equal(bindings.length,1);const calls=[];const callbacks=[];
+  vm.runInNewContext(bindings[0],{document:{addEventListener:(_name,callback)=>callbacks.push(callback)},syncToolbarFormattingState:(...args)=>calls.push(args)});
+  callbacks[0]({type:'selectionchange',target:{}});
+  assert.equal(calls.length,1);assert.deepEqual(calls[0],[],'The event must not masquerade as a document formatting projection');
+});

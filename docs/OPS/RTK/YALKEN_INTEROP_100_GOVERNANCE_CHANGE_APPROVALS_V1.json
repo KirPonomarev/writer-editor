@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "4e53395237027592b884b31e72f977895e9105f23d13ef9109ce4944466368a1"
+      "sha256": "76b02ca8d91e1b01c71fdb760eb5ebaa007abff8366c18c835a9b2c9e631efef"
     },
     {
       "approved": true,
@@ -357,7 +357,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/renderer/editor.bundle.js",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "46e5ff7b3a4e633cb1361d29ea4bc20b0f6a013954d8b4b1587daf4d19e09cb0"
+      "sha256": "e309c9c50e9d1be5d7a1cd9c304e43a110eb039e2a025e1fc8ecc0f45b55d466"
     },
     {
       "approved": true,
@@ -366,7 +366,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/renderer/editor.js",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "4a8c1aaaf9f88f7c0da0701af0e0839d1e58c62ebc7a4af4e56b87d0245d487c"
+      "sha256": "4506517ea08443e1bf069903595dfc21e24cef6ad533d53906d789c3952b0ceb"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "d820ef4992bb535bab44ef9ebd89fc173e94f2661517166a0fa6e9bb73de4e84"
+      "sha256": "b1e4896b2714733c88eae26b398cd2cd73e645fd4794a1f5d1c6e4f8bd5c6a73"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "a99df80bcd6bb959a6e6760a0430666270321b0ded12232297c009c82c7e0c2e"
+      "sha256": "5d0a3eea561c68d10dee5611c7e5abbdd04fd75599287c82838d0e0c4c86904e"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "cbc142fe7c52c83d9291cf9a4047d3e8ffa9730205eb37b8dd755a32fc7cd7dc"
+      "sha256": "3851840e34d134807f8bfa98bac28ef584ae2dd9925e1b333c73dd3c12751b53"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1041,7 +1041,7 @@
       "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "6d39520e390e6ab204611a28c7496daf88e9c230e6037c339361ad5c94da0a7d"
+      "sha256": "0474f299c55d8dd8040f52fbf3dfdb63b9086b2f0fb0c8f198e86758e5974012"
     }
   ],
   "evidenceStampIds": [

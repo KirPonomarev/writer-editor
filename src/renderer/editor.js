@@ -22854,7 +22854,7 @@ document.addEventListener('keydown', (event) => {
   }
 }, true);
 document.addEventListener('selectionchange', syncAlignmentButtonsToSelection);
-document.addEventListener('selectionchange', syncToolbarFormattingState);
+document.addEventListener('selectionchange', () => syncToolbarFormattingState());
 
 window.addEventListener('resize', () => {
   syncWriterA11yPerformanceProjection();
