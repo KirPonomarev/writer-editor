@@ -22,6 +22,7 @@ Bounded font/size encoding, editor attributes and preview reconstruction; indepe
 - src/io/revisionBridge/index.mjs
 - src/renderer/tiptap/index.js
 - src/renderer/tiptap/documentTextStyle.mjs
+- src/renderer/editor.bundle.js
 - test/contracts/revision-bridge-docx-typography.contract.test.js
 - test/unit/sector-m-tiptap-runtime-bridge.test.js
 - docs/tasks/2026-09-16--docx-typography-roundtrip.md
@@ -66,7 +67,7 @@ DESIGN_TOOL_ROUTER: Applicable Lazyweb first. Consulted existing document editor
 CHECK_1_PRE_IDENTITY: Secure mount, clean branch, bootstrap, unchanged already-read canon objects and declaration preflight.
 CHECK_2_POST_FONT: Literal family, exact size, defaults, per-slot cascade, namespace, invalid/forged values, plain neighbors and unchanged no-font bytes.
 CHECK_3_POST_NATIVE: Actual Word, independent OOXML/canonical/HTML typography, actual platform font fallback, raw corruptions and existing text/order admission.
-CHECK_4_POST_DELIVERY: Required affected tests, build, policy, inventory, certification, CI, normal merge and fresh exact-head verification.
+CHECK_4_POST_DELIVERY: Required affected tests, real build with byte-identical tracked renderer and preload, policy, inventory, certification, CI, normal merge and fresh exact-head verification.
 
 ## STOP_CONDITION
 Ambiguous identity, foreign WIP, silent effective font or size loss, authority widening, text loss, invalid-value acceptance or required gate failure.

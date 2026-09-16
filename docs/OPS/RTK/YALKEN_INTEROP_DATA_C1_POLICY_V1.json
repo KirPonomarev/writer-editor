@@ -276,7 +276,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "879159abd0c129093dde1e6cc957fff3860825a728a2c920a98e01088197487b"
+        "sha256": "143ee4ed0d7529afdf7a01a762dd71528ba7c526a0d20e3fe62c5d1120206ada"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -416,7 +416,7 @@
       },
       {
         "path": "docs/tasks/2026-09-16--docx-typography-roundtrip.md",
-        "sha256": "5a7f901615631f73c8a65b88c06d7932be4874b4a91c1b154726ea23bbc4eb59"
+        "sha256": "6921c0370dd559a788b8762a96902e868efebc14767112e0a1916de0c6507a07"
       },
       {
         "path": "test/unit/sector-m-tiptap-runtime-bridge.test.js",
