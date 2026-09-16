@@ -7955,6 +7955,13 @@ function docxInlineStyleCatalog(bytes) {
       if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
     } else if (current && tag === 'w:basedOn' && parent === 'w:style') {
       current.basedOn = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'val');
+    } else if (tag === 'w:outlineLvl' && parent === 'w:pPr') {
+      const owner = stack.at(-2)?.tag;
+      if (owner === 'w:style' && current?.type === 'paragraph') {
+        current.outlineLevel = docxReadOutlineLevel(token, parsed.namespaceMap);
+      } else if (owner === 'w:pPrDefault') {
+        catalog.defaultOutlineLevel = docxReadOutlineLevel(token, parsed.namespaceMap);
+      }
     } else if (parent === 'w:rPr') {
       const owner = stack.at(-2)?.tag;
       if (owner === 'w:style' && current && ['paragraph', 'character'].includes(current.type)) {
@@ -8005,10 +8012,43 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
   }
 }
 
+function docxReadOutlineLevel(token, namespaces) {
+  if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
+    !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_OUTLINE_NAMESPACE');
+  const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
+  if (value.length > 16 || !/^[+-]?\d+$/u.test(value)
+    || !Number.isInteger(Number(value)) || Number(value) < 0 || Number(value) > 9) {
+    throw new Error('DOCX_OUTLINE_LEVEL_INVALID');
+  }
+  return Number(value);
+}
+
+function docxResolveHeadingLevel(metadata, catalog) {
+  let outline = metadata.outlineLevel;
+  let id = metadata.paragraphStyleId || catalog.defaultParagraph;
+  const seen = new Set();
+  while (id) {
+    if (seen.has(id) || seen.size >= 64) throw new Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');
+    seen.add(id);
+    const style = catalog.styles.get(id);
+    if (!style || style.type !== 'paragraph') break;
+    outline ??= style.outlineLevel;
+    id = style.basedOn;
+  }
+  outline ??= catalog.defaultOutlineLevel ?? 9;
+  if (outline >= 6 && outline < 9) throw new Error('DOCX_HEADING_LEVEL_UNSUPPORTED');
+  return outline === 9 ? undefined : outline + 1;
+}
+
 function docxInlineCanonicalContent(paragraphs) {
   let runCount = 0;
   let hasMarks = false;
   const content = paragraphs.map((paragraph) => {
+    const level = paragraph.headingLevel;
+    if (level !== undefined && (!Number.isInteger(level) || level < 1 || level > 6)) {
+      throw new Error('DOCX_HEADING_LEVEL_INVALID');
+    }
+    hasMarks ||= level !== undefined;
     const runs = paragraph.inlineRuns === undefined
       ? (paragraph.text ? [{ text: paragraph.text, marks: [] }] : [])
       : paragraph.inlineRuns;
@@ -8030,7 +8070,8 @@ function docxInlineCanonicalContent(paragraphs) {
       });
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
-    return { type: 'paragraph', content: nodes };
+    return level === undefined ? { type: 'paragraph', content: nodes }
+      : { type: 'heading', attrs: { level }, content: nodes };
   });
   return hasMarks ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }
@@ -8049,6 +8090,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
     paragraph.paragraphStyleId = metadata.paragraphStyleId;
   }
+  if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
   }
@@ -8058,7 +8100,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   return paragraph;
 }
 
-function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}) {
+function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleCatalog = null) {
   const nextCount = paragraphs.length + 1;
   if (nextCount > DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs) {
     return {
@@ -8069,6 +8111,7 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}) {
       }),
     };
   }
+  if (styleCatalog) metadata.headingLevel = docxResolveHeadingLevel(metadata, styleCatalog);
   paragraphs.push(docxContentPreviewBuildParagraph(paragraphs.length, text, metadata));
   return { ok: true };
 }
@@ -8332,7 +8375,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
         };
       }
       if (selfClosing) {
-        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
+        const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles);
         if (pushed.failure) return pushed;
         insideParagraph = false;
         paragraphText = '';
@@ -8341,7 +8384,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
         activeParagraphMetadata = null;
       }
     } else if (tagName === 'w:p' && closing && insideParagraph) {
-      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
+      const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles);
       if (pushed.failure) return pushed;
       insideParagraph = false;
       paragraphText = '';
@@ -8368,7 +8411,11 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
     } else if (insideParagraph && tagName === 'w:numPr' && closing && activeListNumbering) {
       docxContentPreviewAddListNumberingDiagnostic(diagnostics, activeListNumbering);
       activeListNumbering = null;
-    } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:pStyle') {
+    } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:outlineLvl') {
+      activeParagraphMetadata.outlineLevel = docxReadOutlineLevel(token, tokenNamespaceMap);
+    } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
+      && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:pStyle') {
       activeParagraphMetadata.paragraphStyleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val').trim();
     } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkStart') {
       const bookmarkId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'id').trim();
@@ -8424,7 +8471,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles) {
   }
 
   if (insideParagraph) {
-    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata);
+    const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles);
     if (pushed.failure) return pushed;
   }
 
@@ -9457,10 +9504,13 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   });
   const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText, googleDocsTabs);
   if (richContent !== null) {
-    lossReport.mode = 'inline-marks';
+    const hasHeadings = contentPreview.paragraphs.some((paragraph) => paragraph.headingLevel !== undefined);
+    lossReport.mode = hasHeadings ? 'headings-and-inline-marks' : 'inline-marks';
     const formatting = lossReport.items.find((item) => item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY');
-    formatting.code = 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
-    formatting.message = 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+    formatting.code = hasHeadings ? 'DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS' : 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
+    formatting.message = hasHeadings
+      ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
+      : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
   }
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview
   // report into the preview plan source. This is the identity thread: raw
