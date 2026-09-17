@@ -2,6 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
+const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
 const modules = Promise.all([
@@ -115,4 +117,21 @@ test('C1 blocks: style inheritance is bounded and follows namespace identity', a
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(packageBytes(body, styles)).ok, false);
   }
   assert.equal(bridge.buildDocxContentPreviewFromZipBytes(packageBytes(body.replace('<w:pStyle w:val="Localized"/>', '<w:pStyle w:val="Localized"/><w:pStyle w:val="Other"/>'), definition)).ok, false);
+});
+test('C1 blocks: admitted rich plan creates exact durable bytes once and rejects tampering', async t => {
+  const original = { type: 'doc', content: [quote(p('quotation')), code('code\nline')] };
+  const { plan } = await imported(await exported(original));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'docx-blocks-'));
+  t.after(() => fs.rmSync(projectRoot, { recursive: true, force: true }));
+  const options = { projectRoot, romanRoot: path.join(projectRoot, 'roman'), projectId: 'block-styles-test' };
+  rememberDocxImportPreviewPlanAdmission(plan);
+  for (let n = 0; n < 2; n++) {
+    const applied = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+    assert.equal(applied.ok, true, JSON.stringify(applied));
+    const folder = path.join(options.romanRoot, 'Imported');
+    assert.equal(fs.readdirSync(folder).length, 1);
+    assert.equal(fs.readFileSync(path.join(folder, fs.readdirSync(folder)[0]), 'utf8'), plan.candidateCreatePlan.entries[0].content);
+  }
+  const forged = structuredClone(plan); forged.candidateCreatePlan.entries[0].content += 'corrupt';
+  assert.equal((await applyDocxImportSafeCreate({ docxImportPreviewPlan: forged }, options)).ok, false);
 });

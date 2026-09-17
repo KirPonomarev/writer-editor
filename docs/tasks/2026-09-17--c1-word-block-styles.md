@@ -19,6 +19,7 @@ Bounded importer/exporter repair, focused hostile-input and roundtrip tests, and
 - src/export/docx/docxMinBuilder.js
 - src/io/revisionBridge/index.mjs
 - src/utils/docxImportLocalFilePreview.js
+- src/utils/docxImportSafeCreate.js
 - test/contracts/revision-bridge-docx-block-styles.contract.test.js
 - scripts/ops/rtk-interop-word-manuscript-fixtures.mjs
 - scripts/ops/rtk-interop-word-manuscript-readback.py
