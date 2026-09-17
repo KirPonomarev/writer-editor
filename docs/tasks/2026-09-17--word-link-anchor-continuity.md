@@ -12,7 +12,7 @@ DESIGN_TOOL_ROUTER: NOT_APPLICABLE; backend and executable proof only.
 Preserve exact safe hyperlink targets and authored ranges, declared per-round bookmarks and hash-bound locators through C2/C3 Word exchange. Missing or duplicated anchors must produce explicit diagnostics with no canonical mutation. Execute all six frozen identifier subcases in the existing shared journeys.
 
 ## ARTIFACT
-One bounded extension of the current Word recipe and independent product admission, with corrections to the existing export/return path only if observed necessary. Qualify the companion background Word driver and omit root docs/test from disposable runtime copies while retaining full runtime-source equality and mandatory product tests.
+One bounded extension of the current Word recipe and independent product admission, with corrections to the existing export/return path only if observed necessary. Qualify the companion background Word driver and omit root test and documentation outside required docs/OPS/STATUS from disposable runtime copies while retaining full runtime-source equality and mandatory product tests.
 
 ## ALLOWLIST
 - src/export/docx/docxReviewPacketBuilder.js
@@ -64,7 +64,7 @@ FEATURE_INTEGRATION_MANIFEST_V1
 - capabilityFallback: Missing, duplicate, unsafe or stale identities are typed failures before write; no heuristic reconstruction.
 - recovery: Existing before-state recovery and byte verification remain mandatory.
 - securityBoundary: Existing ZIP/XML/URI and relationship limits. Fixture links use inert example.test targets and are never opened. No runtime network or secrets.
-- performanceBudget: Full case target300seconds; shared recipe remains sequential, with all raw readback and source-pin checks. Root docs/test are executed in product checks and excluded only from disposable application copies.
+- performanceBudget: Full case target300seconds; shared recipe remains sequential, with all raw readback and source-pin checks. Root tests and documentation are checked in product CI; disposable copies retain docs/OPS/STATUS because renderer build imports its configuration, and exclude the other root docs/test.
 - accessibilityRequirements: Existing UI unchanged; native Word may run without stealing focus; screenshots bind only to the owned Word window.
 - negativeBypassChecks: Missing/duplicate/swapped/renamed bookmark, dangling/duplicate/unsafe/changed link relation, wrong source locator hash, stale capability and runtime-copy content mismatch.
 - lifecycle: Owned synthetic projects and disposable external files only; real Word save/close/reopen plus fresh product process are required.

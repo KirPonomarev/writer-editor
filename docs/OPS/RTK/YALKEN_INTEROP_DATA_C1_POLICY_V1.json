@@ -254,7 +254,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "88bd7b8a63fb5c3816645253403bede118d425c927441dfd896baa317a791a96"
+      "sha256": "125c8b7eddb85bdc818b977bbd6e801af904f2ec111d6af728629a06b27d2c57"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -689,7 +689,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
-        "sha256": "e23ad3b9a3753f074a48a946d9e78cd9ef5baf85dacd151590585e7069985a9c"
+        "sha256": "f683133b43266f2d04cfe639aecfc592d6c18c79dc26b3ec0ad6a8d2a38c63cb"
       }
     ],
     "followupRepair": {
@@ -1148,7 +1148,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "d06ab3a9b034289430a5f06f5ceddae2249b4ad2c4370a6a3e3ddf4bfaf3bce1"
+        "sha256": "ea86c6f16f25ef1ec388f8bba23670f50c5a82b8894234e812dec57c0830244a"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",

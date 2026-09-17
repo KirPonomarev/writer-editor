@@ -676,7 +676,7 @@ def audit(request):
     build=read('runtime-build.json');cp,tc=build['runtimeAppCopyProof'],build['toolchain']
     require((build['shadowHead'],build['shadowTree'])==(head,tree) and build['build']['status']==0,'MANUSCRIPT_BUILD')
     require(cp['ok'] is True and cp['sourceFileCount']==cp['copyFileCount']>0 and cp['sourceDigest']==cp['copyDigest'] and re.fullmatch('[a-f0-9]{64}',cp['sourceDigest']) and cp['failures']==[],'MANUSCRIPT_COPY')
-    require(cp['excluded']==['.git','node_modules','dist','/docs/','/test/'],'MANUSCRIPT_COPY_SCOPE')
+    require(cp['excluded']==['.git','node_modules','dist','/docs/**','/test/'] and cp['included']==['/docs/OPS/STATUS/**'],'MANUSCRIPT_COPY_SCOPE')
     require(tc['compatibleWithShadowManifests'] is True and tc['shadowPackageJsonSha256']==tc['dependencyPackageJsonSha256']==request['packageJsonSha256'] and tc['shadowPackageLockSha256']==tc['dependencyPackageLockSha256']==request['packageLockSha256'] and tc['electronPackageVersion']==request['electronVersion'],'MANUSCRIPT_TOOLCHAIN')
     if profile=='PACKAGED_BUILD_RUNTIME':
         pkg=build['packagedBuild'];proof=pkg['proof'];require(pkg['built'] is True and pkg['build']['status']==0 and proof['ok'] is True and proof['failures']==[],'MANUSCRIPT_PACKAGED_BUILD')
