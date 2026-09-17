@@ -545,7 +545,7 @@ function validateDocxImportPreviewPlan(plan) {
   if (
     !isPlainObject(plan.lossReport)
     || plan.lossReport.schemaVersion !== DOCX_IMPORT_PREVIEW_LOSS_REPORT_SCHEMA
-    || !['plain-text-only', 'inline-marks', 'headings-and-inline-marks', 'lists-headings-and-inline-marks'].includes(plan.lossReport.mode)
+    || !['plain-text-only', 'inline-marks', 'headings-and-inline-marks', 'lists-headings-and-inline-marks', 'block-styles-headings-lists-and-inline-marks'].includes(plan.lossReport.mode)
     || !Array.isArray(plan.lossReport.items)
     || plan.lossReport.itemCount !== plan.lossReport.items.length
   ) {

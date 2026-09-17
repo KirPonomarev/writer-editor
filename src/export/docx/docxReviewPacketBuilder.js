@@ -9,6 +9,7 @@ const {
 const { buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 const { buildDocxTypographyPropertiesXml } = require('./docxInlineTypography.js');
 const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
+const { docxBlockStyleId, buildDocxBlockStyleDefinitions } = require('./docxBlockStyles.js');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -192,6 +193,8 @@ function buildParagraphXml(block, index, hyperlinkByHref) {
     paragraphPropertyParts.push(`<w:outlineLvl w:val="${headingLevel - 1}"/>`);
   }
   const blockquoteDepth = Number(block.formatIr?.paragraph?.blockquoteDepth || 0);
+  const blockStyleId = docxBlockStyleId(block.formatIr?.paragraph?.nodeType === 'codeBlock', blockquoteDepth);
+  if (blockStyleId) paragraphPropertyParts.unshift(`<w:pStyle w:val="${blockStyleId}"/>`);
   if (Number.isSafeInteger(blockquoteDepth) && blockquoteDepth > 0 && blockquoteDepth <= 8) {
     paragraphPropertyParts.push(`<w:ind w:left="${blockquoteDepth * 720}"/>`);
   }
@@ -205,9 +208,6 @@ function buildParagraphXml(block, index, hyperlinkByHref) {
       throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_LIST_UNSUPPORTED');
     }
     paragraphPropertyParts.push(`<w:numPr><w:ilvl w:val="${level}"/><w:numId w:val="${numId}"/></w:numPr>`);
-  }
-  if (block.formatIr?.paragraph?.nodeType === 'codeBlock') {
-    paragraphPropertyParts.push('<w:pStyle w:val="YalkenCodeBlock"/>');
   }
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
@@ -373,10 +373,13 @@ function buildNumberingXml(definitions) {
 <w:numbering xmlns:w="${WORD_MAIN_NS}">${abstract}${instances}</w:numbering>`;
 }
 
-function buildStylesXml() {
+function buildStylesXml(blocks) {
+  const ids = ['YalkenCodeBlock', ...blocks.map(block => docxBlockStyleId(
+    block.formatIr?.paragraph?.nodeType === 'codeBlock', Number(block.formatIr?.paragraph?.blockquoteDepth || 0),
+  )).filter(Boolean)];
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="${WORD_MAIN_NS}">
-  <w:style w:type="paragraph" w:styleId="YalkenCodeBlock"><w:name w:val="Yalken Code Block"/><w:qFormat/><w:pPr><w:spacing w:before="80" w:after="80"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:pPr><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:sz w:val="20"/></w:rPr></w:style>
+  ${buildDocxBlockStyleDefinitions(ids)}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
 </w:styles>`;
 }
@@ -502,7 +505,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
-    { name: 'word/styles.xml', data: buildStylesXml() },
+    { name: 'word/styles.xml', data: buildStylesXml(blocks) },
     { name: 'docProps/custom.xml', data: buildCustomPropertiesXml(customProperties) },
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },
     { name: 'customXml/item1.xml', data: buildCustomXmlPayloadXml(input) },

@@ -100,7 +100,10 @@
     "src/io/markdown/index.mjs",
     "src/core/project-transaction-v1.cjs",
     "src/product/mainProjectManifestAuthority.mjs",
-    "test/unit/sector-m-scene-rich-truth.test.js"
+    "test/unit/sector-m-scene-rich-truth.test.js",
+    "test/contracts/revision-bridge-docx-block-styles.contract.test.js",
+    "docs/tasks/2026-09-17--c1-word-block-styles.md",
+    "src/export/docx/docxBlockStyles.js"
   ],
   "protectedFiles": [
     {
@@ -234,7 +237,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "bde6d49141332c53120fce88c302b6a9c960ddb76dc317214389049c0de3e79c"
+      "sha256": "2f5e99dab0d18629125180ceb22b568cd3ca33f0592d5fbfed108e5ad7683c28"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -270,7 +273,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "973a1a903f48396df0e1f53c79176c8c3d80e25529c786b67dfec65b560e6b68"
+      "sha256": "6c72538ff9300a50dc411c04f77e3303faf062bd08f3104309799ff087df8352"
     }
   ],
   "requirementIds": [
@@ -313,7 +316,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "2c474598e0a7fe90ab2b0bd13b143b94847a4c03aab9aefafe11ac333f420e3b"
+        "sha256": "88b41ea7d9d0178242b71c1876c7b377a8128ecf92e3487df8efa75cf1983a5c"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -329,7 +332,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-        "sha256": "3b959f1cbea4852ba036d6373ea6560ee4be19c8c9c050acd9ee95242c9a94c5"
+        "sha256": "c996a7ea2203db09b8b8b5b56e80d90845a934d79bd3b24e4a3db349779a6899"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
@@ -345,19 +348,19 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "cb7f57f0e0be1041c3f657bec5ec66ee8f24c90271872108eb85b512df939ded"
+        "sha256": "31dacbeaaab87d0649fb548e1ad75ca99be791d9babf1701a4b0d8fc21255eb6"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "0c7a0ac850d1ac17b9b02da3a940944c871297fce7c5d7245ce10fbb53b93fbb"
+        "sha256": "51534894fce47f3d4ba321ffa057255911955ea5c67a3fa67db37a89076b3bff"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
-        "sha256": "26c560ff99654188706db8b8fa0d2cb51d8bc2421d9df5b19ac22d50a45a4b26"
+        "sha256": "7e7ab7b3d1b20be0f8d532b3904844d7155fed6caa153574ac6ff24f8413cf1d"
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "c401191a04d89689020b15657fa8087119ff01a144f152b64bf2166e38ed6133"
+        "sha256": "0493b893d3b452051a8db83bee751648825142b62cfa584ffc1155b31e7d9c64"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -425,7 +428,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "c9137b053880dbceb7a17fc1951605671a3b34c30a74f16725a9291d9fb60fac"
+        "sha256": "3151e953cf29f7a6c02ede85ea2f9f4c78e083a8f4f757e8ee348a52def74118"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -565,11 +568,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "a44b505761fd4eee8d1643d23d20b1692b500d2d00ef4c1144dffeb47494f3bc"
+        "sha256": "a780eeedd28dbb617d8f16f55a8c3741c4e930889acc7bc99807a48983359ac3"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "90d59708e729d0532d302e477cfc91c68a8af7221f33f220527448b355f9c6a6"
+        "sha256": "1071c7312ed32adc77a5df8ef30a8ae3404844a0db1ad4259e4bf645b71faf6b"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -594,6 +597,18 @@
       {
         "path": "test/unit/sector-m-scene-rich-truth.test.js",
         "sha256": "29bca52d8ccb9f361baa539eba0b6615d584b061e21daffe101178163165c602"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-block-styles.contract.test.js",
+        "sha256": "527ea42fee3bb9024abeb68266b688710456e50037da8ad87a179eb06ad2b705"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--c1-word-block-styles.md",
+        "sha256": "91fba0d57a50aec4fe77771fb0580befc800e913a8196043714a01bc4ee1ddbf"
+      },
+      {
+        "path": "src/export/docx/docxBlockStyles.js",
+        "sha256": "1a03db3538aa2eb5323d3c0491cb37ee95c8c40cc4adb3e9f5e8bea3c6a06fba"
       }
     ],
     "followupRepair": {
@@ -652,9 +667,9 @@
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     },
     "wordManuscriptBatch": {
-      "taskId": "WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
-      "bindingBaseSha": "5ce698ae4f1378a8fe4323975a8a523e8b060aaa",
-      "scope": "Complete native manuscript field journeys on C1/C2/five-cycle C3. Repair directly reproduced Save/apply transaction integration, durable manifest succession, literal Word Xstring token escaping and missing authored tree projection. Preserve canonical authority and all corruption guards."
+      "taskId": "C1_WORD_BLOCK_STYLES_20260917",
+      "bindingBaseSha": "ea390f9508192d9076ab805e33cd8cf59fa9f917",
+      "scope": "Preserve declared quote depth and plain code blocks through generic C1 import, safe-create, save, fresh reopen and terminal Word readback. Requalify all current manuscript fields without changing frozen denominator or authorizing mutations from evidence."
     }
   },
   "wordTextOrderBatch": {
@@ -779,9 +794,11 @@
       "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "STYLES__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "STYLES__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
@@ -801,9 +818,11 @@
       "TEXT__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "STYLES__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "STYLES__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
@@ -827,9 +846,11 @@
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "STYLES__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "STYLES__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
@@ -853,9 +874,11 @@
       "TEXT__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "STYLES__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "STYLES__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
@@ -940,19 +963,19 @@
         "sceneCountReadback"
       ]
     },
-    "notBeforeUtc": "2026-09-17T01:38:43.925088+00:00",
+    "notBeforeUtc": "2026-09-17T06:14:54.969Z",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "8dcbddcbe2aa8b5351cef553a583f53960f98595006501f87992081ee301b8ec"
+        "sha256": "dbd1feaa9a34d361db60bcb56c74f44005cd1fef2dd267ab941ce15ce8cf1c5e"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "b4c1c348caafe5c2be30f5331fc149afa6dfc5ee411bb633297b3f981a85e593"
+        "sha256": "79cd3fcac42a46fa7d31664ec299fe50806d01e09c7005bbac3b1b62a9523dc0"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "226f233238edbda5eeeb1c155847281076c7e218020e1bd36b82ed8052e67316"
+        "sha256": "d4b2755997e4b71f7887c4d393c1b0a256ddf1accf15c4248c9086e1fa095e19"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -971,8 +994,8 @@
       "SINGLE_SCENE": {
         "C1": [
           {
-            "sha256": "ad6b665174fa4af66be3c5c35f63074c11c6ef6f8dc4ee6eacfb99b0157965c5",
-            "count": 15
+            "sha256": "05f9e89a503228902b91ed543ca7889def8c3185e80926cf9e9d9d7bd852bc42",
+            "count": 34
           }
         ],
         "C2": [
@@ -1015,8 +1038,8 @@
       "MULTI_SCENE": {
         "C1": [
           {
-            "sha256": "a1307931a1bad67a19cf6429bf0df83eaef8ac4746427daedb026fa78502e051",
-            "count": 15
+            "sha256": "111f5bfa3cd740daed05af46a4d60790a8bba555143f0762f13eb21757cc0965",
+            "count": 34
           }
         ],
         "C2": [
@@ -1059,8 +1082,8 @@
       "FULL_SYNTHETIC_NOVEL": {
         "C1": [
           {
-            "sha256": "732f90197f223c07aba805b52be567bd3d074edf8eab49c3c8e12412e916267e",
-            "count": 1716
+            "sha256": "9b5f67052d47b266a4c5fb27180bff68e8f332870c200d6b57b48d3c6e48e301",
+            "count": 1735
           }
         ],
         "C2": [
@@ -1103,8 +1126,8 @@
       "LARGE_DOCUMENT": {
         "C1": [
           {
-            "sha256": "f19ba10598345a9ba929c583c7bfa9bf0396a34e2e0d44f0890d5f5d8038bf84",
-            "count": 8394
+            "sha256": "758633ac5988f0d1bd968ef229aa137391143a5013b14cd09bc0f0ac80acd708",
+            "count": 8413
           }
         ],
         "C2": [
@@ -1153,7 +1176,7 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "C1 plain-text safe-create proves TEXT/ORDER/UNICODE; C2/C3 add declared rich styles and nonvacuous multi-scene hierarchy. C3 is exactly five Word cycles from the frozen canonical route, not the historical Lab C3 label.",
+    "scope": "C1 safe-create preserves the fixed rich style corpus through save, fresh reopen and current-document re-export to Word. All three routes prove TEXT/ORDER/UNICODE/STYLES; C2/C3 retain nonvacuous multi-scene hierarchy. C3 is exactly five actual Word cycles.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",

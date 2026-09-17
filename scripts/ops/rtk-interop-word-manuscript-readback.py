@@ -15,9 +15,9 @@ SUBCASES={
 }
 HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N']}
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
-STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style']
+STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style']
 STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path']
-def fields(volume,route):return ['TEXT','ORDER','UNICODE_IME_LOCALE']+([] if route=='C1' else ['STYLES']+([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE']))
+def fields(volume,route):return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -34,7 +34,7 @@ def styles():
 def expected_docs(volume,route,round=0):
     ps=[list(v.PROBES)] if volume=='SINGLE_SCENE' else v.expected_scenes(volume)
     docs=[{'type':'doc','content':[para(p.replace('sentinel alpha','sentinel round'+str(round)) if round else p) for p in s]} for s in ps]
-    docs[0]['content'] += [para(p) for p in UNICODE]+([] if route=='C1' else styles())
+    docs[0]['content'] += [para(p) for p in UNICODE]+styles()
     return docs
 
 def paragraphs(doc):
@@ -155,6 +155,7 @@ def assert_docx_styles(parts,document):
     require(number3==number4 and number3[1:]==(0,'decimal',3),'STYLE_NUMBER_START');proof['ordered']=[3,4]
     for text,level in [('[nested-bullet] Nested bullet item.',1),('[bullet-1] First bullet item.',0),('[bullet-2] Second bullet item.',0)]:require(cascade.number(by[text])[1:3]==(level,'bullet'),'STYLE_BULLET')
     quote,_=cascade.paragraph(by['[quote] Authored quotation.']);require(quote.get(W+'ind',{}).get(W+'left')=='720','STYLE_QUOTE')
+    require(cascade.paragraph(by['[quote] Authored quotation.'])[1]=='YalkenBlockquote1','STYLE_QUOTE_ROLE')
     code=by['[code] const answer = 42;'];pr,_=cascade.paragraph(code);require(pr.get(W+'shd',{}).get(W+'fill')=='F3F4F6','STYLE_CODE_SHADE')
     require(all(cascade.run(code,r).get(W+'rFonts',{}).get(W+'ascii')=='Menlo' and cascade.run(code,r).get(W+'sz',{}).get(W+'val')=='20' for r in code.findall(W+'r') if v.visible(r)),'STYLE_CODE_CASCADE')
     proof.update(code={'font':'Menlo','points':10,'fill':'F3F4F6'},bullets=[1,0,0],quoteIndent=720)
@@ -186,7 +187,7 @@ def controls(source,volume,route,ids,round_id):
     # A run split preserves both exact text and inherited style semantics.
     d=copy.deepcopy(template);p=d.find(W+'body/'+W+'p');r=next(r for r in p.findall(W+'r') if r.find(W+'t') is not None);t=r.find(W+'t');clone=copy.deepcopy(r);original=t.text;t.text=original[:5];clone.find(W+'t').text=original[5:];p.insert(list(p).index(r)+1,clone)
     b=replace_part(source,'word/document.xml',ET.tostring(d,encoding='utf-8'));exact(docx(b)[0],expected,'CONTROL_SPLIT_RUN')
-    if route!='C1':assert_docx_styles(docx(b)[1],docx(b)[2])
+    assert_docx_styles(docx(b)[1],docx(b)[2])
     for name in TEXT_CONTROLS:
         d=copy.deepcopy(template);body=d.find(W+'body');ps=body.findall(W+'p')
         if name=='swap-paragraphs':body.remove(ps[0]);body.insert(1,ps[0])
@@ -218,24 +219,23 @@ def controls(source,volume,route,ids,round_id):
         except ValueError:rejected=True
         require(rejected,'FALSE_GREEN_'+name);results.append({'id':name,'rejected':True,'sha256':digest(b)})
     style_results=[]
-    if route!='C1':
-        for name in STYLE_CONTROLS:
-            d=copy.deepcopy(template);part_name='word/document.xml';root=d
-            if name=='remove-bold':
-                for r in d.iter(W+'r'):
-                    if v.visible(r)=='bold':r.remove(r.find(W+'rPr'))
-            elif name=='change-align':next(p for p in d.iter(W+'p') if v.visible(p).startswith('[align-center]')).find(W+'pPr/'+W+'jc').set(W+'val','right')
-            elif name=='change-heading':next(p for p in d.iter(W+'p') if v.visible(p).startswith('[heading-1]')).find(W+'pPr/'+W+'outlineLvl').set(W+'val','5')
-            elif name=='change-font':next(r for r in d.iter(W+'r') if v.visible(r)=='font').find(W+'rPr/'+W+'rFonts').set(W+'ascii','Courier New')
-            elif name=='change-number-start':
-                part_name='word/numbering.xml';root=ET.fromstring(parts[part_name]);next(l for l in root.iter(W+'lvl') if l.find(W+'numFmt').get(W+'val')=='decimal').find(W+'start').set(W+'val','1')
-            elif name=='remove-code-style':
-                part_name='word/styles.xml';root=ET.fromstring(parts[part_name]);root.remove(next(n for n in root if n.get(W+'styleId')=='YalkenCodeBlock'))
-            b=replace_part(source,part_name,ET.tostring(root,encoding='utf-8'));rejected=False
-            try:
-                actual,mp,md=docx(b);exact(actual,expected,'STYLE_CONTROL_TEXT');assert_docx_styles(mp,md)
-            except (ValueError,KeyError):rejected=True
-            require(rejected,'FALSE_GREEN_'+name);style_results.append({'id':name,'rejected':True,'sha256':digest(b)})
+    for name in STYLE_CONTROLS:
+        d=copy.deepcopy(template);part_name='word/document.xml';root=d
+        if name=='remove-bold':
+            for r in d.iter(W+'r'):
+                if v.visible(r)=='bold':r.remove(r.find(W+'rPr'))
+        elif name=='change-align':next(p for p in d.iter(W+'p') if v.visible(p).startswith('[align-center]')).find(W+'pPr/'+W+'jc').set(W+'val','right')
+        elif name=='change-heading':next(p for p in d.iter(W+'p') if v.visible(p).startswith('[heading-1]')).find(W+'pPr/'+W+'outlineLvl').set(W+'val','5')
+        elif name=='change-font':next(r for r in d.iter(W+'r') if v.visible(r)=='font').find(W+'rPr/'+W+'rFonts').set(W+'ascii','Courier New')
+        elif name=='change-number-start':
+            part_name='word/numbering.xml';root=ET.fromstring(parts[part_name]);next(l for l in root.iter(W+'lvl') if l.find(W+'numFmt').get(W+'val')=='decimal').find(W+'start').set(W+'val','1')
+        elif name in ['remove-code-style','remove-quote-style']:
+            part_name='word/styles.xml';root=ET.fromstring(parts[part_name]);ident='YalkenCodeBlock' if name=='remove-code-style' else 'YalkenBlockquote1';root.remove(next(n for n in root if n.get(W+'styleId')==ident))
+        b=replace_part(source,part_name,ET.tostring(root,encoding='utf-8'));rejected=False
+        try:
+            actual,mp,md=docx(b);exact(actual,expected,'STYLE_CONTROL_TEXT');assert_docx_styles(mp,md)
+        except (ValueError,KeyError):rejected=True
+        require(rejected,'FALSE_GREEN_'+name);style_results.append({'id':name,'rejected':True,'sha256':digest(b)})
     structural=[]
     if volume!='SINGLE_SCENE':
         for name in STRUCTURE_CONTROLS[:3]:
@@ -288,10 +288,11 @@ def audit(request):
         require('Chromium' in value.get('scope',''),'FONT_FALLBACK_DECLARATION');font_ledger.append({'stage':label,'fonts':ff,'scope':value['scope']})
     def renderer(s,doc,label):
         exact(s['renderer']['paragraphs'],paragraphs(doc),label);require(s['open']['ok'] is True and s['open']['documentId']==s['nodeId'],'DOCUMENT_OPEN_ID');font_check(s['fonts'],label)
-        if route!='C1' and any(p.startswith('[inline]') for p in paragraphs(doc)):
+        if any(p.startswith('[inline]') for p in paragraphs(doc)):
             probes={p['text']:p for p in s['renderer']['probes']}
             for i in range(1,7):require(probes[f'[heading-{i}] Authored heading.']['tag']=='H'+str(i),'RENDERER_HEADING')
             for a in ['left','center','right','justify']:require(probes[f'[align-{a}] Authored paragraph alignment.']['align']==a,'RENDERER_ALIGNMENT')
+            require(probes['[quote] Authored quotation.']['blockquoteDepth']==1 and probes['[code] const answer = 42;']['tag']=='PRE','RENDERER_BLOCK_STYLES')
             inline=probes['[inline] bold italic underline strike color highlight font']['runs'];by={r['text']:r for r in inline}
             require(float(by['bold']['fontWeight'])>float(by['[inline] ']['fontWeight']) and by['italic']['fontStyle']=='italic','RENDERER_BOLD_ITALIC')
             require('underline' in by['underline']['textDecorationLine'] and 'line-through' in by['strike']['textDecorationLine'],'RENDERER_DECORATION')
@@ -320,7 +321,7 @@ def audit(request):
     for i,(s,d) in enumerate(zip(src,docs)):
         require(s['file']==prefix+f'source-scenes/{i}.txt' and s['save']['ok'] is True,'SOURCE_SAVE_BINDING');b=files[s['file']];source_hashes.append(digest(b));require(digest(b)==s['sha256'],'SOURCE_FILE_HASH')
         actual=scene(b);exact(paragraphs(actual),paragraphs(d),'SOURCE_RAW')
-        if route!='C1':require(normalize_doc(actual)==normalize_doc(d),'SOURCE_RICH_DOCUMENT')
+        require(normalize_doc(actual)==normalize_doc(d),'SOURCE_RICH_DOCUMENT')
         renderer(s,d,'source-renderer-'+str(i))
     stage('source',sum([paragraphs(scene(files[s['file']])) for s in src],[]));stage('source-renderer',sum([s['renderer']['paragraphs'] for s in src],[]))
     boot=read('boot.json');locale=boot['locale'];require(boot['profile']==profile and locale['language'] in locale['languages'] and locale['intl']['locale'] and locale['intl']['timeZone'] and 'Electron/' in locale['userAgent'] and provider['locale'] and provider['languages'],'LOCALE_BINDING')
@@ -340,7 +341,7 @@ def audit(request):
         ps,parts,doc=docx(b);stage(name+'-docx',ps,round)
         # Bind physical bookmark partitions to each separately saved scene.
         structure_stages[name]={'bookmarkSha256':bookmark_partition(doc,cap['roundId'],ids,expected_docs(volume,route,round))}
-        if route!='C1':style_stages[name]=assert_docx_styles(parts,doc)
+        style_stages[name]=assert_docx_styles(parts,doc)
         custom=ET.fromstring(parts['docProps/custom.xml']);properties={n.get('name'):re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m[1],16)),n[0].text or '') for n in custom}
         token=properties['YRTK_C01_AUTH'];require(token.startswith('YRTK1.'),'AUTHORITY_CARRIER');encoded=token[6:];payload=json.loads(base64.urlsafe_b64decode(encoded+'='*((-len(encoded))%4)))['payload']
         require(payload['projectId']==pid and payload['orderedSceneIds']==ids and [s['sceneId'] for s in payload['sceneRevisions']]==ids and [s['rawSha256'] for s in payload['sceneRevisions']]==['sha256:'+h for h in hashes] and payload['roundId']==cap['roundId'],'EXPORTED_RAW_SCENE_PARTITION')
@@ -354,8 +355,9 @@ def audit(request):
         require(life['nativeReadbackPath'].endswith('/'+run+'/'+directory+'/word-native-readback.txt') and life['evidencePath'].endswith('/'+run+'/'+returned_file),'WORD_FILE_BINDING')
         stage(name+'-native',v.native(raw(directory+'/word-native-readback.txt')),round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round)
-        structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_docs(volume,route,round))}
-        if route!='C1':style_stages[name]=assert_docx_styles(parts,d)
+        if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_docs(volume,route,round))}
+        else:require(route=='C1' and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
+        style_stages[name]=assert_docx_styles(parts,d)
     for ordinal in range(1,cycles+1):
         base=f'rounds/{ordinal}';before_round=ordinal-1 if route!='C1' else 0;after_round=ordinal if route!='C1' else 0
         cap=export_check(base+'/export',base+'/source.docx',before_round,previous_hashes)
@@ -400,10 +402,17 @@ def audit(request):
         require(len(reopened['scenes'])==1,'C1_REOPEN_COUNT');rr=reopened['scenes'][0]
         b=raw('imported-scene.txt');saved=raw('imported-saved.txt')
         require(rr['file']==prefix+'reopened-scenes/0.txt' and saved==files[rr['file']]==raw('runtime-project-snapshot/'+actual['sceneId']) and digest(b)==actual['sceneFileSha256'] and digest(saved)==rr['sha256'] and actual['sceneId']==rr['sceneId'] and actual['nodeId']==rr['nodeId'],'C1_DURABLE_BINDING')
-        stage('import-renderer',actual['rendererReturnedParagraphs']);stage('imported-raw',b.decode('utf8').split('\n'));stage('persisted',paragraphs(scene(saved)));stage('saved-renderer',im['renderer']['paragraphs']);font_check(im['fonts'],'import-renderer')
-        renderer(rr,{'type':'doc','content':[para(p) for p in expected]},'reopened-renderer');stage('reopened-renderer',rr['renderer']['paragraphs'])
+        stage('import-renderer',actual['rendererReturnedParagraphs']);stage('imported-raw',paragraphs(scene(b)));stage('persisted',paragraphs(scene(saved)));stage('saved-renderer',im['renderer']['paragraphs']);font_check(im['fonts'],'import-renderer')
+        imported_doc={'type':'doc','content':sum([d['content'] for d in docs],[])}
+        for data in [b,saved,files[rr['file']]]:require(normalize_doc(scene(data))==normalize_doc(imported_doc),'C1_RICH_PERSISTENCE')
+        renderer(rr,imported_doc,'reopened-renderer');stage('reopened-renderer',rr['renderer']['paragraphs'])
+        x=read('reexport.json');rmin=x['result'];exported=raw('reexport.docx')
+        require(x['commandId']=='cmd.project.export.docxMin' and rmin['ok'] is True and rmin['bytesWritten']==len(exported) and x['before']==x['after']==[digest(saved)] and x['sha256']==digest(exported),'C1_REEXPORT_COMMAND_HASH')
+        ps,parts,d=docx(exported);stage('reexport-docx',ps);style_stages['reexport']=assert_docx_styles(parts,d)
+        word_check('final-word-lifecycle','reexport.docx','final-word.docx','final-word',0,False,None)
+        require(len({s['semanticStyleSha256'] for s in style_stages.values()})==1,'STYLE_STAGE_CONTINUITY')
         for loss in [receipt['lossReport'],r['importPreview']['docxImportPreviewPlan']['lossReport']]:
-            require(loss['mode']=='plain-text-only' and loss['itemCount']==len(loss['items'])==6 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY','info')]+[('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]*2),'C1_DECLARED_LOSS')
+            require(loss['mode']=='block-styles-headings-lists-and-inline-marks' and loss['itemCount']==len(loss['items'])==6 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS','info')]+[('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]*2),'C1_DECLARED_LOSS')
     for name in ['source.png','reopen.png']+(['saved.png'] if route=='C1' else []):require(raw(name).startswith(b'\x89PNG\r\n\x1a\n') and len(raw(name))>100,'PRODUCT_SCREENSHOT')
     cleanup=read('cleanup.json');require(cleanup['ok'] is True and len(cleanup['ownedProcesses'])==2 and {p['pid'] for p in cleanup['ownedProcesses']}=={boot['pid'],reopened['pid']} and all(p['exitCode'] is not None or p['signalCode'] is not None for p in cleanup['ownedProcesses']),'RUNTIME_CLEANUP')
     result=read('result.json');require(result['ok'] is True and result['failure'] is None and result['admissionCredit']==0 and result['candidateDiagnosticOnly']==obs['candidateDiagnosticOnly'],'NATIVE_COMPLETION')
@@ -428,7 +437,7 @@ def audit(request):
     unicode_proof={'probes':UNICODE,'locale':locale,'providerLocale':{k:provider[k] for k in ['locale','languages']},'compositionEventsSha256':digest(raw('composition-events.json')),'fontLedger':font_ledger,'limitations':limitations}
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
-    return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':None if route=='C1' else {'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
+    return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 
 if __name__=='__main__':
     try:

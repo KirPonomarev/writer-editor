@@ -1,6 +1,7 @@
 import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
 import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs';
 import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../paragraphAlignment.mjs';
+import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
@@ -8494,10 +8495,40 @@ function docxResolveHeadingLevel(metadata, catalog) {
   return outline === 9 ? undefined : outline + 1;
 }
 
+function docxResolveBlockStyle(metadata, catalog) {
+  let id = metadata.paragraphStyleId || catalog.defaultParagraph;
+  let role = null;
+  const seen = new Set();
+  while (id) {
+    if (seen.has(id) || seen.size >= 64) throw new Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');
+    seen.add(id);
+    const declaredRole = readDocxBlockStyleId(id);
+    const style = catalog.styles.get(id);
+    if (!style || style.type !== 'paragraph') {
+      if (declaredRole) throw new Error('DOCX_BLOCK_STYLE_DEFINITION_REQUIRED');
+      break;
+    }
+    if (declaredRole) {
+      if (role && JSON.stringify(role) !== JSON.stringify(declaredRole)) throw new Error('DOCX_BLOCK_STYLE_CONFLICT');
+      role = declaredRole;
+    }
+    id = style.basedOn;
+  }
+  if (role) Object.assign(metadata, role);
+}
+
 function docxInlineCanonicalContent(paragraphs) {
   let runCount = 0;
   let hasMarks = false;
   const blocks = paragraphs.map((paragraph) => {
+    const codeBlock = paragraph.blockKind === 'codeBlock';
+    const depth = paragraph.blockquoteDepth;
+    if ((Object.hasOwn(paragraph, 'blockKind') && !codeBlock)
+      || (Object.hasOwn(paragraph, 'blockquoteDepth') && (!Number.isInteger(depth) || depth < 1 || depth > 8))
+      || ((codeBlock || depth !== undefined) && paragraph.list !== undefined)
+      || (codeBlock && (paragraph.headingLevel !== undefined || (paragraph.textAlign !== undefined && paragraph.textAlign !== 'left')))) {
+      throw new Error('DOCX_BLOCK_STYLE_PROJECTION_INVALID');
+    }
     const level = paragraph.headingLevel;
     if (level !== undefined && (!Number.isInteger(level) || level < 1 || level > 6)) {
       throw new Error('DOCX_HEADING_LEVEL_INVALID');
@@ -8506,7 +8537,7 @@ function docxInlineCanonicalContent(paragraphs) {
     if (Object.hasOwn(paragraph, 'textAlign') && (textAlign === null || normalizeParagraphAlignment(textAlign) !== textAlign)) {
       throw new Error('DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID');
     }
-    hasMarks ||= level !== undefined || textAlign !== undefined;
+    hasMarks ||= level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
     const runs = paragraph.inlineRuns === undefined
       ? (paragraph.text ? [{ text: paragraph.text, marks: [] }] : [])
       : paragraph.inlineRuns;
@@ -8527,6 +8558,16 @@ function docxInlineCanonicalContent(paragraphs) {
         if (Object.hasOwn(run, key) && normalize(run[key]) !== run[key]) throw new Error('DOCX_INLINE_TYPOGRAPHY_PROJECTION_INVALID');
       }
       joined += run.text;
+      if (codeBlock) {
+        // The editor code node has no marks. Only its fixed presentation may
+        // be folded into the node; arbitrary Word formatting cannot disappear.
+        if (run.marks.length || run.color || run.highlight
+          || (run.fontFamily !== undefined && run.fontFamily !== 'Menlo')
+          || (run.fontSize !== undefined && run.fontSize !== '10pt')) {
+          throw new Error('DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+        }
+        continue;
+      }
       hasMarks ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize);
       const marks = run.marks.map((type) => ({ type }));
       const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
@@ -8540,7 +8581,11 @@ function docxInlineCanonicalContent(paragraphs) {
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
     const attrs = { ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}) };
-    return { type: level === undefined ? 'paragraph' : 'heading', ...(Object.keys(attrs).length ? { attrs } : {}), content: nodes };
+    let block = codeBlock
+      ? { type: 'codeBlock', attrs: { language: '' }, content: joined ? [{ type: 'text', text: joined }] : [] }
+      : { type: level === undefined ? 'paragraph' : 'heading', ...(Object.keys(attrs).length ? { attrs } : {}), content: nodes };
+    for (let n = 0; n < (depth || 0); n++) block = { type: 'blockquote', content: [block] };
+    return block;
   });
   const content = [];
   const stack = [];
@@ -8596,6 +8641,8 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (metadata.headingLevel !== undefined) paragraph.headingLevel = metadata.headingLevel;
   if (metadata.textAlign !== undefined) paragraph.textAlign = metadata.textAlign;
   if (metadata.list !== undefined) paragraph.list = metadata.list;
+  if (metadata.blockKind !== undefined) paragraph.blockKind = metadata.blockKind;
+  if (metadata.blockquoteDepth !== undefined) paragraph.blockquoteDepth = metadata.blockquoteDepth;
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
   }
@@ -8619,6 +8666,7 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
   if (styleCatalog) {
     metadata.headingLevel = docxResolveHeadingLevel(metadata, styleCatalog);
     docxResolveParagraphAlignment(metadata, styleCatalog);
+    docxResolveBlockStyle(metadata, styleCatalog);
   }
   if (metadata.unsupportedAlignment && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
     diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
@@ -8628,6 +8676,12 @@ function docxContentPreviewPushParagraph(paragraphs, text, metadata = {}, styleC
     }));
   }
   if (numberingCatalog) docxResolveParagraphList(metadata, styleCatalog, numberingCatalog, diagnostics, paragraphs.length);
+  if ((metadata.blockKind || metadata.blockquoteDepth) && metadata.list) throw new Error('DOCX_BLOCK_STYLE_LIST_CONFLICT');
+  if (metadata.blockKind === 'codeBlock' && (metadata.headingLevel !== undefined
+    || metadata.unsupportedAlignment || metadata.unsupportedColor || metadata.unsupportedTypography
+    || (metadata.textAlign !== undefined && metadata.textAlign !== 'left'))) {
+    throw new Error('DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+  }
   if (metadata.unsupportedColor && diagnostics.length < DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics) {
     diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC', {
       severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
@@ -8944,6 +8998,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       docxReadParagraphAlignment(activeParagraphMetadata, token, tokenNamespaceMap);
     } else if (insideParagraph && activeParagraphMetadata && !closing && parentTag === 'w:pPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:p' && tagName === 'w:pStyle') {
+      if (Object.hasOwn(activeParagraphMetadata, 'paragraphStyleId')) throw new Error('DOCX_PARAGRAPH_STYLE_DUPLICATE');
       activeParagraphMetadata.paragraphStyleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val').trim();
     } else if (insideParagraph && activeParagraphMetadata && !closing && tagName === 'w:bookmarkStart') {
       const bookmarkId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'id').trim();
@@ -10042,6 +10097,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   if (richContent !== null) {
     const hasHeadings = contentPreview.paragraphs.some((paragraph) => paragraph.headingLevel !== undefined);
     const hasLists = contentPreview.paragraphs.some((paragraph) => paragraph.list !== undefined);
+    const hasBlockStyles = contentPreview.paragraphs.some(paragraph => paragraph.blockKind || paragraph.blockquoteDepth);
     lossReport.mode = hasLists ? 'lists-headings-and-inline-marks' : hasHeadings ? 'headings-and-inline-marks' : 'inline-marks';
     const formatting = lossReport.items.find((item) => item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY');
     formatting.code = hasLists ? 'DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS' : hasHeadings ? 'DOCX_IMPORT_PREVIEW_HEADINGS_AND_INLINE_MARKS' : 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY';
@@ -10061,6 +10117,11 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.fontFamily || run.fontSize))) {
       formatting.message = 'Uniform literal fonts, supported resolved theme fonts and half-point sizes are preserved. Installed font availability determines rendering. '
         + formatting.message.replace('fonts,', 'unresolved or differing script fonts,');
+    }
+    if (hasBlockStyles) {
+      lossReport.mode = 'block-styles-headings-lists-and-inline-marks';
+      formatting.code = 'DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS';
+      formatting.message = 'Defined Yalken quote depth and plain code blocks are preserved. Code uses the fixed Menlo 10pt presentation. Exact quote-container grouping and arbitrary Word paragraph formatting are not imported. ' + formatting.message;
     }
   }
   // GENERIC-01 (G1): thread full artifact SHA-256 from the content preview

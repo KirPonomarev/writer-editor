@@ -24,7 +24,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  NOVEL_SCENE_STRUCTURE:['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
 });
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
-const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style'];
+const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
 const STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path'];
 export function manuscriptStages(route){
  const stages={source:0,'source-renderer':0,composition:0},cycles=route==='C3'?5:1;
@@ -33,7 +33,7 @@ export function manuscriptStages(route){
   stages[p+'/export-docx']=route==='C1'?0:n-1;stages[p+'/word-native']=r;stages[p+'/word-docx']=r;
   if(route!=='C1'){stages[p+'/persisted']=r;stages[p+'/applied-renderer']=r;}
  }
- if(route==='C1')for(const p of ['import-renderer','imported-raw','persisted','saved-renderer','reopened-renderer'])stages[p]=0;
+ if(route==='C1')for(const p of ['import-renderer','imported-raw','persisted','saved-renderer','reopened-renderer','reexport-docx','final-word-lifecycle-native','final-word-lifecycle-docx'])stages[p]=0;
  else for(const p of ['reopened-persisted','reopened-renderer','reexport-docx','final-word-lifecycle-native','final-word-lifecycle-docx'])stages[p]=cycles;
  return stages;
 }
@@ -96,7 +96,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    demand(stage.round===n&&stage.paragraphSha256===qualified.sha256&&stage.paragraphCount===qualified.count&&sha64(stage.sortKeysSha256),'MANUSCRIPT_STAGE_HASH');
   }
   demand(same(f.controls.positiveControls,['identity','split-xml-runs'])&&controls(f.controls.textMutants,TEXT_CONTROLS)
-   &&controls(f.controls.styleMutants,row.route==='C1'?[]:STYLE_CONTROLS)
+   &&controls(f.controls.styleMutants,STYLE_CONTROLS)
    &&controls(f.controls.structureMutants,row.volume==='SINGLE_SCENE'?[]:row.route==='C1'?STRUCTURE_CONTROLS.slice(0,3):STRUCTURE_CONTROLS),'MANUSCRIPT_RAW_MUTATIONS');
   const u=f.unicodeProof;demand(same(u?.probes,UNICODE_PROBES)&&sha64(u?.compositionEventsSha256)&&u.locale?.language&&u.locale.languages.includes(u.locale.language)
    &&u.locale.intl?.locale&&u.locale.intl.timeZone&&u.providerLocale?.locale&&u.providerLocale?.languages&&u.fontLedger?.length===(row.route==='C1'?sceneCount+2:2*sceneCount+cycles)
@@ -111,7 +111,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
     &&['lostScenes','lostChapters','mergedScenes','splitScenes'].every(k=>same(f.structureLossLedger[k],[]))&&f.structureLossLedger.scope,'MANUSCRIPT_SCENE_STRUCTURE');
   }
  }
- demand(row.route==='C1'?raw.finalHops===null:raw.finalHops?.ok===true&&raw.finalHops.acceptanceCredit===0,'MANUSCRIPT_FINAL_HOPS');
+ demand(raw.finalHops?.ok===true&&raw.finalHops.acceptanceCredit===0,'MANUSCRIPT_FINAL_HOPS');
  return true;
 }
 
@@ -175,7 +175,7 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     cellDecisions:fieldProofs.map(f=>({cellId:f.cellId,status:'PASS',outcome:f.outcome,sourceRunId:f.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(f)))})),
     policySha256:DATA_POLICY_SHA256,rawReadbacks:ok?reviews:[],seconds:(performance.now()-started)/1000,
     limitations:['Only complete named field subcases at four fixed volumes and actual source/packaged profiles.',
-      'C1 safe-create imports plain text and declares metadata/bookmark loss; C1 does not claim rich styles or hierarchy.',
+      'C1 safe-create preserves the declared rich styles and declares metadata/bookmark loss; scene hierarchy is outside C1.',
       'C3 requires five actual authenticated Word edit/apply rounds, a fresh process and terminal Word readback.',
       'IME proof covers native Chromium composition on the bound locale; all OS IME engines and pixel identity remain unproved.']};
 }
