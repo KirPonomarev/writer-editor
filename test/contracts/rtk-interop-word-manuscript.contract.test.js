@@ -164,12 +164,12 @@ test('Comment admission rejects missing hops, weak controls, lost tombstones and
  assert.throws(()=>check(p,5,rounds));
 });
 
-test('Manuscript admission targets 158 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Manuscript admission targets 174 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,158);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,158);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,174);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,174);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));

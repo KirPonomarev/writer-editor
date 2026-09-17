@@ -252,8 +252,8 @@ test('EXPORT01-E2-bookmark-name-parity', async () => {
   assert.match(emittedName, unifiedForm, `emitted name ${emittedName} is not unified YRTK_<32hex>`);
   assert.equal(declaredName, emittedName, 'declared name must equal emitted name byte-for-byte');
 
-  // (c) REAL resolver path: build a minimal DOCX whose single paragraph carries
-  // the EMITTED bookmark name (word-rewritten paraId/textId) plus a tracked
+  // (c) REAL resolver path: retain every declared paragraph and change only the
+  // first, carrying its EMITTED bookmark (word-rewritten paraId/textId) plus a tracked
   // change, and assert the resolver routes it to the declared scene via the
   // declared bookmarkName signal. This proves resolver admits the same name.
   const revisionBridge = await loadRevisionBridge();
@@ -277,7 +277,7 @@ test('EXPORT01-E2-bookmark-name-parity', async () => {
   function cleanDocxZip(paragraphXml) {
     const contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
     const rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>';
-    const docXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${paragraphXml}</w:body></w:document>`;
+    const docXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"><w:body>${paragraphXml}</w:body></w:document>`;
     const zipEntries = [
       { name: '[Content_Types].xml', data: Buffer.from(contentTypes, 'utf8') },
       { name: '_rels/.rels', data: Buffer.from(rels, 'utf8') },
@@ -345,8 +345,10 @@ test('EXPORT01-E2-bookmark-name-parity', async () => {
     `<w:bookmarkEnd w:id="1"/>`,
     `</w:p>`,
   ].join('');
+  const emittedParagraphs = documentXml.match(/<w:p(?:\s[^>]*)?>[\s\S]*?<\/w:p>/gu);
+  assert.equal(emittedParagraphs?.length, source.blocks.length, 'retain the complete declared paragraph set');
   const candidate = revisionBridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(
-    cleanDocxZip(paragraphXml),
+    cleanDocxZip(paragraphXml + emittedParagraphs.slice(1).join('')),
     { targetScope: { type: 'scene', id: 'roman/currently-open.md' }, fullManuscriptExportMap: exportMap },
   );
   assert.equal(candidate.ok, true, `resolver candidate failed: ${JSON.stringify(candidate)}`);

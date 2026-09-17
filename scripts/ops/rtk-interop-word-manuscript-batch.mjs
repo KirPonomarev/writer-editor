@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {performance} from 'node:perf_hooks';
 import {readOrderFile,stableOrderJson,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {loadDataPolicy,DATA_POLICY_SHA256,hash} from './rtk-interop-data-c1.mjs';
-import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,UNICODE_PROBES} from './rtk-interop-word-manuscript-fixtures.mjs';
+import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,UNICODE_PROBES,MANUSCRIPT_LINK_TARGETS,buildWordManuscriptFixture} from './rtk-interop-word-manuscript-fixtures.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-manuscript-readback.py';
@@ -25,6 +25,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  NOVEL_SCENE_STRUCTURE:['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
  TRACKED_REVIEW_SEMANTICS:['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
  COMMENTS:['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
+ IDENTIFIERS_ANCHORS:['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
 });
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
@@ -46,6 +47,41 @@ const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const same=(a,b)=>stableOrderJson(a)===stableOrderJson(b);
 const sha40=x=>typeof x==='string'&&/^[a-f0-9]{40}$/u.test(x);
 const sha64=x=>typeof x==='string'&&/^[a-f0-9]{64}$/u.test(x);
+export function validateManuscriptIdentifierProof(p,volume,cycles,roundProofs){
+ const names=['rounds/1/review-probe','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
+ const locatorNames=['reexport',...Array.from({length:cycles},(_,i)=>'rounds/'+(i+1)+'/export')];
+ const fixture=buildWordManuscriptFixture(volume,'C2'),paragraphIndex=fixture.scenes[0].paragraphs.indexOf('[links] reference / reference / reference.');
+ const links=[0,1,0].map((target,i)=>({paragraphIndex,startUtf16:8+12*i,endUtf16:17+12*i,text:'reference',href:MANUSCRIPT_LINK_TARGETS[target]}));
+ const linkHash=hash(stableOrderJson(links)),blockCount=fixture.paragraphsForRound(0).length,sceneCount=fixture.scenes.length;
+ demand(p&&same(Object.keys(p.stages||{}).sort(),names.sort())&&same(Object.keys(p.locators||{}).sort(),locatorNames.sort()),'MANUSCRIPT_IDENTIFIER_STAGES');
+ for(const s of Object.values(p.stages))demand(s.bookmarkCount===blockCount&&same(s.links,links)&&s.linkSemanticSha256===linkHash
+  &&[s.bookmarkSha256,s.relationshipsSha256,s.artifactSha256].every(sha64)&&typeof s.roundId==='string'&&s.roundId.startsWith('round-')&&s.scope,'MANUSCRIPT_IDENTIFIER_RAW');
+ for(const l of Object.values(p.locators))demand([l.artifactSha256,l.locatorSha256,l.sourceMapSha256].every(sha64)&&/^sha256:[a-f0-9]{64}$/u.test(l.storeDigest)&&/^sha256:[a-f0-9]{64}$/u.test(l.coreManifestDigest)
+  &&l.blockCount===blockCount&&l.sceneCount===sceneCount&&l.sourceSceneHashes?.length===sceneCount&&l.sourceSceneHashes.every(sha64)
+  &&l.storage?.encoding==='gzip'&&sha64(l.storage.encodedSha256)&&Number.isSafeInteger(l.storage.encodedBytes)&&l.storage.encodedBytes>0&&l.storage.encodedBytes<=32*1024*1024
+  &&Number.isSafeInteger(l.storage.decodedBytes)&&l.storage.decodedBytes>0&&l.storage.decodedBytes<=128*1024*1024,'MANUSCRIPT_LOCATOR_HASH');
+ for(const [i,r] of roundProofs.entries()){
+  const key='rounds/'+(i+1),e=p.stages[key+'/export'],w=p.stages[key+'/word'],l=p.locators[key+'/export'];
+  demand(e.artifactSha256===r.exportSha256&&w.artifactSha256===r.returnedSha256&&e.roundId===r.roundId&&w.roundId===r.roundId&&l.roundId===r.roundId&&l.exportId===r.exportId&&e.bookmarkSha256===w.bookmarkSha256,'MANUSCRIPT_IDENTIFIER_ROUND_BINDING');
+  if(i)demand(same(l.sourceSceneHashes,roundProofs[i-1].savedSceneHashes),'MANUSCRIPT_LOCATOR_ROUND_BASELINE');
+ }
+ demand(p.locators.reexport.roundId===p.stages.reexport.roundId&&p.stages.reexport.roundId===p.stages['final-word-lifecycle'].roundId&&p.stages.reexport.bookmarkSha256===p.stages['final-word-lifecycle'].bookmarkSha256
+  &&same(p.locators.reexport.sourceSceneHashes,roundProofs.at(-1).savedSceneHashes),'MANUSCRIPT_IDENTIFIER_REEXPORT');
+ const ids=['missing-bookmark','duplicate-bookmark','wrong-bookmark-end','partial-bookmark-range','renamed-bookmark','removed-link','swapped-link-targets','dangling-link','duplicate-relationship','unsafe-link','unreferenced-link'];
+ demand(Array.isArray(p.negativeControls)&&same(p.negativeControls.map(c=>c.id),ids)&&p.negativeControls.every(c=>c.rejected===true&&sha64(c.sha256))
+  &&new Set(p.negativeControls.map(c=>c.sha256)).size===ids.length,'MANUSCRIPT_IDENTIFIER_CONTROLS');
+ demand(Array.isArray(p.intakeControls)&&same(p.intakeControls.map(c=>c.kind),['identity','missing-bookmark','duplicate-bookmark']),'MANUSCRIPT_IDENTIFIER_INTAKES');
+ for(const c of p.intakeControls)demand(c.sourceSha256===roundProofs[0].returnedSha256&&c.sourceSha256!==c.mutantSha256
+  &&[c.mutantSha256,c.intakeSha256,c.canonicalStateSha256].every(sha64)&&c.writerCalled===false&&c.previewAccepted===true&&c.exactMatchAllowed===(c.kind==='identity')
+  &&c.applyAttempted===(c.kind!=='identity')&&(c.kind==='identity'?(c.code===null&&c.applyCode===null&&c.applyResultSha256===null):
+   c.code==='DOCX_REVIEW_BOOKMARK_'+(c.kind==='missing-bookmark'?'MISSING':'DUPLICATE')&&c.applyCode==='E_REVIEW_EXACT_TEXT_APPLY_BATCH_BLOCKED'&&sha64(c.applyResultSha256))
+  &&c.lostIdentifiers?.length===(c.kind==='missing-bookmark'?1:0)&&c.duplicateIdentifiers?.length===(c.kind==='duplicate-bookmark'?1:0)
+  &&[...c.lostIdentifiers,...c.duplicateIdentifiers].every(n=>/^YRTK_[a-f0-9]{32}$/u.test(n)),'MANUSCRIPT_IDENTIFIER_INTAKE_BINDING');
+ demand(new Set(p.intakeControls.map(c=>c.canonicalStateSha256)).size===1&&new Set(p.intakeControls.map(c=>c.mutantSha256)).size===3
+  &&p.intakeControls[1].lostIdentifiers[0]===p.intakeControls[2].duplicateIdentifiers[0],'MANUSCRIPT_IDENTIFIER_NEGATIVE_STATE');
+ demand(p.lossLedger&&['lostIdentifiers','duplicateIdentifiers','unsafeHyperlinks'].every(k=>same(p.lossLedger[k],[]))&&p.lossLedger.scope,'MANUSCRIPT_IDENTIFIER_LOSS_LEDGER');
+ return true;
+}
 export function validateManuscriptCommentProof(p,cycles,roundProofs){
  const names=['rounds/1/review-probe','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
  const queries=['source-comments','reopened-comments',...Array.from({length:cycles},(_,i)=>'rounds/'+(i+1)+'/comments')];
@@ -169,6 +205,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    demand(same(Object.keys(f.styleProofs).sort(),names.sort())&&Object.values(f.styleProofs).every(p=>p.semanticStyleSha256===batch.semanticStyleSha256&&sha64(p.stylePartsSha256['word/styles.xml'])&&sha64(p.stylePartsSha256['word/numbering.xml']))&&f.unsupportedStylesDeclared,'MANUSCRIPT_STYLE_CONTINUITY');
   }
   if(f.field==='COMMENTS')validateManuscriptCommentProof(f.commentProof,cycles,raw.roundProofs);
+  if(f.field==='IDENTIFIERS_ANCHORS')validateManuscriptIdentifierProof(f.identifierProof,row.volume,cycles,raw.roundProofs);
   if(f.field==='NOVEL_SCENE_STRUCTURE'){
    const names=['source-tree','reopen-tree','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word','rounds/'+(i+1)+'/tree']).flat()];
    demand(same(Object.keys(f.structureProofs).sort(),names.sort())&&Object.entries(f.structureProofs).every(([name,p])=>name.endsWith('tree')?p.sceneCount===sceneCount&&sha64(p.hierarchySha256):sha64(p.bookmarkSha256))
