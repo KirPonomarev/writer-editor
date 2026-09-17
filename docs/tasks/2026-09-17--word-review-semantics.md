@@ -6,7 +6,7 @@ CHECKS_BASELINE_VERSION: CHECKS_BASELINE_V1
 TASK_ID: WORD_REVIEW_SEMANTICS_20260917
 BINDING_BASE_SHA: de1a662d0804c5afa50cc4af9efd91bf32deaa6f
 AUTHORITY: Standing direct owner instruction to personally continue until all 1120 import/export cells are fully implemented and independently proved.
-DESIGN_TOOL_ROUTER: Backend-only proof work; classification is in the architecture declaration.
+DESIGN_TOOL_ROUTER: Backend-only product and proof work; classification is in the architecture declaration.
 
 ## MICRO_GOAL
 Prove all six tracked-review mandatory subcases in C2/C3 across the four supported Word volumes and both actual profiles. Native insert/delete, actual native property revision, authorship/provenance and typed manual-only visibility must survive intake without silent apply. Existing explicit text apply, save, fresh reopen and terminal reexport remain mandatory. Preserve all 126 previous field predicates.
@@ -15,6 +15,10 @@ Prove all six tracked-review mandatory subcases in C2/C3 across the four support
 The existing manuscript driver and independent raw reader extended with a native property-review subcase and complete tracked revision proof. No new framework, dependency, runtime network or product UI.
 
 ## ALLOWLIST
+- src/main.js
+- src/io/revisionBridge/reviewTransportPackageParserV2.mjs
+- test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js
+- docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json
 - scripts/ops/rtk-interop-word-manuscript-fixtures.mjs
 - scripts/ops/rtk-interop-word-manuscript-readback.py
 - scripts/ops/rtk-interop-word-manuscript-batch.mjs
@@ -29,7 +33,7 @@ The existing manuscript driver and independent raw reader extended with a native
 - docs/tasks/2026-09-17--word-review-semantics.md
 
 ## DENYLIST
-- src
+- src/renderer
 - package.json
 - package-lock.json
 - Frozen denominator, ledger, envelope and archived validators
@@ -100,3 +104,5 @@ Repository final report schema with exact identities, executed test counts, comp
 
 ## FAIL_PROTOCOL
 Retain failures and raw bytes with zero credit. Revert the bounded proof change and pinned Lab companions together. Full 1120 objective remains active.
+
+Native diagnostic observation: a complete baseline cycle took 19.775 seconds. Intake omitted revision authors and dates and the parser omitted the separate Word UTC carrier. This contour preserves those values in the existing read-only result; no authority is derived from them. The UTC namespace follows Microsoft MS-DOCX word16du schema: https://learn.microsoft.com/en-us/openspecs/office_standards/ms-docx/e5d0aa0c-4ecc-40d9-a0e0-aac8655a8316 .

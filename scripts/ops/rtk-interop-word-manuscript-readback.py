@@ -12,6 +12,7 @@ SUBCASES={
  'UNICODE_IME_LOCALE':['unicodeNormalizationStable','bidiRunsAccounted','imeCompositionTextPreserved','localeProfileBound','fontScriptFallbackDeclared','unicodeReadbackIndependent'],
  'STYLES':['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  'NOVEL_SCENE_STRUCTURE':['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
+ 'TRACKED_REVIEW_SEMANTICS':['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
 }
 HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N'],'C5':['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE']}
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
@@ -21,7 +22,7 @@ def fields(volume,route):
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
         return ['TEXT','ORDER','UNICODE_IME_LOCALE']
-    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])
+    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -108,6 +109,72 @@ def docx(data,round=0,google=False):
         require(''.join(n.text or '' for n in dele[0].iter(W+'delText'))==('sentinel alpha' if round==1 else 'sentinel round'+str(round-1)),'TRACKED_DELETE')
     else:require(not ins and not dele,'UNEXPECTED_TRACKED_EDIT')
     return [v.visible(p) for p in body.findall(W+'p')],parts,d
+
+
+REVIEW_CONTROLS=['missing-insert','missing-delete','missing-property','changed-author','changed-legacy-date','changed-utc-date','wrong-utc-namespace','missing-current-format','wrong-property-kind','missing-manual-reason','granted-write','silent-canonical-apply']
+WORD_DATE_UTC='{http://schemas.microsoft.com/office/word/2023/wordml/word16du}dateUtc'
+def review_revision_proof(document,intake,ordinal,property_probe=False):
+    result=intake['result'];returned=result['returnIntake'];metadata=returned['reviewMetadata']
+    require(result['ok'] is True and result['commandId']=='cmd.project.review.activateDocxReviewPreviewSession','REVIEW_PRODUCT_COMMAND')
+    require(all(result[k] is False and returned[k] is False for k in ['canAutoApply','canImportMutate','canWriteStorage']),'REVIEW_NO_WRITE_AUTHORITY')
+    require(intake['before']==intake['after'],'REVIEW_NO_SILENT_APPLY')
+    require(returned['authenticated'] is True and returned['sourceMode']=='TRACKED','REVIEW_AUTHENTICATED')
+    require(metadata['authority']=='ADVISORY_ONLY' and metadata['timestampPolicy']=='LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION' and metadata['sourceArtifactSha256']==returned['returnedArtifactSha256'] and re.fullmatch('sha256:[a-f0-9]{64}',metadata['sourceArtifactSha256']),'REVIEW_METADATA_BINDING')
+    text=[];properties=[];ids=[]
+    for node in document.iter():
+        kind=node.tag.removeprefix(W)
+        if node.tag not in [W+k for k in ['ins','del','rPrChange','pPrChange','numPrChange']]:continue
+        ident=node.get(W+'id');author=node.get(W+'author');date=node.get(W+'date');utc=node.get(WORD_DATE_UTC)
+        require(isinstance(ident,str) and ident.isdecimal() and ident not in ids,'REVIEW_NATIVE_IDENTITY');ids.append(ident)
+        require(isinstance(author,str) and author.strip() and len(author)<=1024,'REVIEW_AUTHOR')
+        require(all(isinstance(t,str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z',t) for t in [date,utc]),'REVIEW_NATIVE_TIMESTAMPS')
+        row={'nativeRevisionId':ident,'author':author,'date':date,'dateUtc':utc}
+        if kind in ['ins','del']:
+            operation='insert' if kind=='ins' else 'delete';value=''.join(n.text or '' for n in node.iter(W+('t' if kind=='ins' else 'delText')))
+            expected='sentinel round'+str(ordinal) if kind=='ins' else ('sentinel alpha' if ordinal==1 else 'sentinel round'+str(ordinal-1))
+            require(value==expected,'REVIEW_LITERAL_REVISION')
+            text.append({**row,'operation':operation,'text':value,'classification':'TEXT_MANUAL','reasonCode':'RTK_MANUAL_DEGRADED_LOCATOR'})
+        else:
+            require(property_probe and kind=='rPrChange' and node.find(W+'rPr') is not None and not list(node.find(W+'rPr')),'REVIEW_OLD_PROPERTY')
+            parent=next((n for n in document.iter(W+'rPr') if node in list(n)),None)
+            require(parent is not None and parent.find(W+'b') is not None and parent.find(W+'b').get(W+'val','1') in ['1','true','on'],'REVIEW_CURRENT_PROPERTY')
+            properties.append({**row,'propertyKind':kind,'classification':'MANUAL_REVIEW','reasonCode':'RTK_BLOCKED_STRUCTURAL'})
+    require(len(text)==2 and sorted(x['operation'] for x in text)==['delete','insert'] and len(properties)==(1 if property_probe else 0),'REVIEW_REQUIRED_FOOTPRINTS')
+    require(metadata['textRevisions']==text and metadata['propertyRevisions']==properties,'REVIEW_PRODUCT_METADATA_CONTINUITY')
+    counts=returned['counts'];require(counts['textRevisions']==2 and counts['propertyRevisions']==len(properties) and counts['moveRevisions']==0,'REVIEW_PRODUCT_COUNTS')
+    graph=result['reviewSurface']['revisionSession']['reviewGraph'];changes=graph['textChanges']
+    require(len(changes)==1 and changes[0]['match']['quote']==next(r['text'] for r in text if r['operation']=='delete') and changes[0]['replacementText']==next(r['text'] for r in text if r['operation']=='insert') and changes[0]['createdAt']==next(r['date'] for r in text if r['operation']=='insert'),'REVIEW_PREVIEW_REVISION')
+    if property_probe:
+        require(intake['explicitCanonicalApplyConfirmed'] is False and result['formattingProductPath']['writerCalled'] is False,'REVIEW_PROPERTY_UNAPPLIED')
+        require(any(d['diagnosticId']=='docx-review-diagnostic-RTK_BLOCKED_STRUCTURAL' and d['severity']=='warning' and d['message']=='Structure and property changes require manual review.' for d in graph['diagnosticItems']),'REVIEW_MANUAL_REASON_VISIBLE')
+    return {'textRevisions':text,'propertyRevisions':properties,'metadataSha256':digest(canonical(metadata)),'canonicalBefore':intake['before'],'canonicalAfter':intake['after'],'authority':'ADVISORY_ONLY','manualOnlyReasonCodes':['RTK_BLOCKED_STRUCTURAL'] if property_probe else []}
+
+def review_controls(document,intake):
+    # Calibrate the revision predicate on the actual native first paragraph.
+    # Full-document preservation is independently required by the journey oracle.
+    first=document.find(W+'body/'+W+'p');require(first is not None,'REVIEW_CONTROL_PARAGRAPH')
+    rows=[]
+    for name in REVIEW_CONTROLS:
+        root=ET.Element(W+'document');body=ET.SubElement(root,W+'body');body.append(copy.deepcopy(first));value=copy.deepcopy(intake)
+        def remove(tag):
+            parent=next(n for n in root.iter() if any(c.tag==W+tag for c in n));parent.remove(next(c for c in parent if c.tag==W+tag))
+        if name in ['missing-insert','missing-delete','missing-property']:remove({'missing-insert':'ins','missing-delete':'del','missing-property':'rPrChange'}[name])
+        elif name in ['changed-author','changed-legacy-date','changed-utc-date']:
+            key={'changed-author':'author','changed-legacy-date':'date','changed-utc-date':'dateUtc'}[name];value['result']['returnIntake']['reviewMetadata']['textRevisions'][0][key]='changed'
+        elif name=='wrong-utc-namespace':
+            node=next(root.iter(W+'ins'));node.set('{urn:lookalike}dateUtc',node.attrib.pop(WORD_DATE_UTC))
+        elif name=='missing-current-format':remove('b')
+        elif name=='wrong-property-kind':value['result']['returnIntake']['reviewMetadata']['propertyRevisions'][0]['propertyKind']='pPrChange'
+        elif name=='missing-manual-reason':value['result']['reviewSurface']['revisionSession']['reviewGraph']['diagnosticItems']=[]
+        elif name=='granted-write':value['result']['canWriteStorage']=True
+        elif name=='silent-canonical-apply':value['after']={'sceneHashes':['0'*64]}
+        rejected=False
+        try:review_revision_proof(root,value,1,True)
+        except ValueError:rejected=True
+        require(rejected,'FALSE_GREEN_REVIEW_'+name)
+        rows.append({'id':name,'rejected':True,'sha256':digest(ET.tostring(root)+canonical(value))})
+    return rows
+
 
 class StyleCascade:
     def __init__(self,parts):
@@ -409,7 +476,7 @@ def audit(request):
     require(all(any(e['type']==typ and e['data']==data for e in events) for typ,data in [('compositionupdate','取消'),('compositionupdate','にほんご'),('compositionupdate','日本語')]),'IME_CANDIDATE_SEQUENCE')
     require(sum(e['type']=='compositionstart' for e in events)>=2 and sum(e['type']=='compositionend' for e in events)>=2 and any(e['type']=='input' and e['inputType']=='insertText' and e['isComposing'] is False and e['data']=='.' for e in events),'IME_COMMIT_END')
     stage('composition',sum([ime['afterCommit']['paragraphs']]+[paragraphs(d) for d in docs[1:]],[]))
-    export_ids=set();previous_hashes=source_hashes;round_proofs=[]
+    export_ids=set();previous_hashes=source_hashes;round_proofs=[];review_rounds=[];review_probe=None
     def export_check(name,filename,round,hashes):
         x=read(name+'.json');r=x['result'];cap=r['exportCapsule'];b=raw(filename)
         require(x['before']==x['after']==hashes and r['ok'] is True and r['exported'] is True and r['commandId']=='cmd.project.review.exportFullManuscriptDocxReviewPacket' and r['bytesWritten']==len(b) and x['sha256']==digest(b),'EXPORT_COMMAND_HASH_CHAIN')
@@ -465,6 +532,20 @@ def audit(request):
             require(a['authenticated'] is True and a['returnedArtifactSha256']=='sha256:'+digest(raw(base+'/returned.docx')) and a['roundId']==cap['roundId'] and a['exportId']==cap['exportId'] and all(a['authority'].get(k) is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'RETURN_AUTHORITY')
             require(all(r[k] is False for k in ['canAutoApply','canImportMutate','canWriteStorage']),'INTAKE_NO_MUTATION_AUTHORITY')
             changes=r['reviewSurface']['revisionSession']['reviewGraph']['textChanges'];require(len(changes)==1 and changes[0]['match']['quote']==('sentinel alpha' if ordinal==1 else 'sentinel round'+str(ordinal-1)) and changes[0]['replacementText']=='sentinel round'+str(ordinal),'EXACT_ROUND_CHANGE')
+            reviewed_document=docx(raw(base+'/returned.docx'),ordinal)[2]
+            review_rounds.append({'ordinal':ordinal,'returnedSha256':digest(raw(base+'/returned.docx')),**review_revision_proof(reviewed_document,x,ordinal)})
+            if ordinal==1:
+                probe_file=base+'/review-probe/returned.docx';probe=raw(probe_file);ps,parts,pdoc=docx(probe,1);exact(ps,sum([paragraphs(d) for d in expected_docs(volume,route,1)],[]),'REVIEW_PROBE_FULL_TEXT')
+                lifecycle=read(base+'/review-probe-word.json');require(lifecycle['status']=='PASS' and lifecycle['cleanupOk'] is True and lifecycle['compileProcess']['status']==lifecycle['process']['status']==0,'REVIEW_PROBE_WORD_LIFECYCLE')
+                require(lifecycle['sourceDocxHash']==lifecycle['preOpenHash']==digest(raw(base+'/source.docx')) and lifecycle['postWordHash']==lifecycle['copiedBackHash']==digest(probe),'REVIEW_PROBE_BYTES')
+                for k,value in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','3'),('COMMENT_COUNT','0'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lifecycle['process']['stdout'].splitlines() if line.startswith(k+'=')]==[k+'='+value],'REVIEW_PROBE_'+k)
+                require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
+                exact(v.native(raw(base+'/review-probe/word-native-readback.txt')),ps,'REVIEW_PROBE_NATIVE_TEXT')
+                require(lifecycle['evidencePath'].endswith('/'+run+'/'+probe_file) and lifecycle['nativeReadbackPath'].endswith('/'+run+'/'+base+'/review-probe/word-native-readback.txt'),'REVIEW_PROBE_NATIVE_PATH')
+                probe_intake=read(base+'/review-probe-intake.json');pr=probe_intake['result']['returnIntake']
+                require(pr['returnedArtifactSha256']=='sha256:'+digest(probe) and pr['roundId']==cap['roundId'] and pr['exportId']==cap['exportId'] and all(pr['authority'][k] is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'REVIEW_PROBE_AUTHENTICATED_RETURN')
+                require(probe_intake['before']['sceneHashes']==source_hashes and probe_intake['before']['commentStateSha256'] is None and raw(base+'/review-probe/manifest-before.json')==raw(base+'/review-probe/manifest-after.json') and probe_intake['before']['manifestSha256']==digest(raw(base+'/review-probe/manifest-before.json')),'REVIEW_PROBE_CANONICAL_NO_WRITE')
+                review_probe={'returnedSha256':digest(probe),'sourceSha256':digest(raw(base+'/source.docx')),'roundId':cap['roundId'],'exportId':cap['exportId'],'negativeControls':review_controls(pdoc,probe_intake),**review_revision_proof(pdoc,probe_intake,1,True)}
             ap=read(base+'/apply.json');result=ap['result'];receipt=result['result']['receipt'];require(result==read(base+'/apply-command-result.json'),'APPLY_RAW_RESULT')
             require(ap['commandId']=='cmd.project.review.applyExactTextChangesBatch' and result['ok'] is True and result['applied'] is True and result['totals']=={'requested':1,'applied':1,'blocked':0,'failed':0,'skipped':0} and ap['changeId']==changes[0]['changeId'],'EXPLICIT_APPLY')
             require(ap['before']==previous_hashes and ap['afterApply'][0]!=previous_hashes[0] and ap['afterApply'][1:]==previous_hashes[1:] and receipt['sceneId']==ids[0] and receipt['projectId']==pid and receipt['changeIds']==[ap['changeId']] and receipt['writeStatus']=='applied' and result['editorSync']['ok'] is True and ap['save']['ok'] is True,'APPLY_CANONICAL_MUTATION')
@@ -541,7 +622,7 @@ def audit(request):
     if route=='C5':
         unicode_proof['providerLocale']=google_proof['providerLocale']
         limitations['fonts']='Actual Chromium glyph fallback on the bound source/return runtime. Google content API has no interactive UI font session; literal Unicode is read before and after export. Pixel identity is not claimed.'
-    proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
+    proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
     return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 

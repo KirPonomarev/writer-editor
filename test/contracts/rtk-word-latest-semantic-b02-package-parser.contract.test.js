@@ -384,3 +384,24 @@ test('B02 public export and receipt preserve non-certification and platform-neut
     assert.equal(source.includes(forbidden), false, forbidden);
   }
 });
+
+test('Review timestamps retain both literal Word date and namespaced UTC without foreign-namespace spoofing', async () => {
+  const parser = await loadParser();
+  const utcNs = 'http://schemas.microsoft.com/office/word/2023/wordml/word16du';
+  const parse = (prefix, namespace) => parser.parseReviewTransportPackageV2({parts:baseParts(
+    documentXml(`<w:p><w:r><w:rPr><w:b/><w:rPrChange w:id="1" w:author=" Ada é " w:date="2026-09-17T13:23:00Z" ${prefix}:dateUtc="2026-09-17T10:23:00Z"><w:rPr/></w:rPrChange></w:rPr><w:t>format</w:t></w:r><w:ins w:id="2" w:author=" Ada é " w:date="2026-09-17T13:23:00Z" ${prefix}:dateUtc="2026-09-17T10:23:00Z"><w:r><w:t>new</w:t></w:r></w:ins></w:p>`)
+      .replace('<w:document ',`<w:document xmlns:${prefix}="${namespace}" `)
+  )},{cryptoPort});
+  for (const prefix of ['w16du','utc']) {
+    const result=parse(prefix,utcNs);assertReviewAnalysisOnly(result);
+    for(const revision of [...result.reviewIr.textRevisions,...result.reviewIr.propertyRevisions]) {
+      assert.equal(revision.author,' Ada é ');
+      assert.equal(revision.date,'2026-09-17T13:23:00Z');
+      assert.equal(revision.dateUtc,'2026-09-17T10:23:00Z');
+    }
+    assert.equal(result.reviewIr.propertyRevisions[0].classification,'MANUAL_REVIEW');
+    assert.equal(result.reviewIr.propertyRevisions[0].reasonCode,'RTK_BLOCKED_STRUCTURAL');
+  }
+  const spoof=parse('w16du','urn:untrusted-lookalike');assertReviewAnalysisOnly(spoof);
+  for(const r of [...spoof.reviewIr.textRevisions,...spoof.reviewIr.propertyRevisions])assert.equal(r.dateUtc,'');
+});
