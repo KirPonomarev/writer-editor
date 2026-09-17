@@ -219,3 +219,15 @@ test('Flat manuscript chapter-file supports atomic Word apply and following Save
   h.context.getDocumentContextFromPath=()=>({kind});await assert.rejects(h.publish(h.scenePath,'forbidden',{expectedText:'returned from Word'}),e=>e.code==='E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED');assert.equal(await fsp.readFile(h.scenePath,'utf8'),'returned from Word');
  }
 });
+
+for(const code of ['EISDIR','EINVAL','EPERM','EIO'])test('Manifest transition retains existing directory-sync policy for '+code,async t=>{
+ const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manifest-sync-policy-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
+ const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
+ const anchorRoot=path.join(root,'anchors'),targetPath=path.join(root,'project.json'),projectId='fixture-project',before=JSON.stringify({projectId,n:0}),after=JSON.stringify({projectId,n:1});
+ await fsp.writeFile(targetPath,before);const probePath=path.join(anchorRoot,'manifest-transitions',digest(projectId+'\0'+targetPath)),original=fsp.open;let reached=0;
+ t.mock.method(fsp,'open',async(p,...args)=>{if(p===probePath&&args[0]==='r'){reached++;throw Object.assign(new Error('injected directory sync condition'),{code});}return original(p,...args);});
+ const authority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false}),publish=()=>authority.commitManifestText({projectId,targetPath,expectedText:before,nextText:after});
+ if(code==='EIO')await assert.rejects(publish(),e=>e.code==='EIO');
+ else{await publish();assert.equal((await authority.verifyManifestContinuation({projectId,manifestPath:targetPath,fromDigest:digest(before),toDigest:digest(after)})).ok,true);}
+ assert.equal(reached,1);assert.equal(await fsp.readFile(targetPath,'utf8'),after);
+});

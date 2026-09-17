@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "f24efa670189730ef230284fdca744b2366f2f16483d7c421b5418a5de759a5c"
+      "sha256": "6fc6a71fd74086c70809bf29e3dbec0bd947929b553b096181938474ae3de781"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "9659ab96fbaf60db4c604dfc0a89054b371ad5d00d0aa5710094f8635ff9f483"
+      "sha256": "6395ad1f5d304804788ed85df129ffbe85d8dec48cca4946ea4a7bd60d10b404"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "0ac498fb8b39f2a92f39f5b094b3c0bfb85ee39b5a3f741cdff63acbe73719ad"
+      "sha256": "a8ad72a7f17efec1b7af786f2b33492c5b2c27b65c9bea850ca1c82308338bf5"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "df44498d2ad482ed54607acfd0e812b91e1cb6deb5b1d3e831c71b3d0649f5c8"
+      "sha256": "38a3b18c5282755bbcaf49ed3927e135b96bf152e52b3a0d63aa8ec38c74153e"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1248,7 +1248,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "8f0c526a27a29f1c540495d54eabca463500bf01f15a732672bbf1473a496e13"
+      "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -1257,7 +1257,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "bc4d926db3c49caa5a55c496fc1ec000088b83de49737b4fdd31ac9257c7e23e"
+      "sha256": "a44b505761fd4eee8d1643d23d20b1692b500d2d00ef4c1144dffeb47494f3bc"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",

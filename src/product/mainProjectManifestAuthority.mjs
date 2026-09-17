@@ -45,9 +45,13 @@ async function syncFileAndParent(targetPath) {
   } finally {
     await fileHandle.close();
   }
+  await syncDirectory(path.dirname(targetPath));
+}
+
+async function syncDirectory(directoryPath) {
   let directoryHandle;
   try {
-    directoryHandle = await fs.open(path.dirname(targetPath), 'r');
+    directoryHandle = await fs.open(directoryPath, 'r');
     await directoryHandle.sync();
   } catch (error) {
     if (!['EINVAL', 'EPERM', 'EISDIR'].includes(error?.code)) throw error;
@@ -121,8 +125,7 @@ export function createMainProjectManifestAuthority(input = {}) {
     }
     await syncFileAndParent(file);
     for (const parent of [path.dirname(dir), path.dirname(path.dirname(dir)), anchorRoot]) {
-      const handle = await fs.open(parent, 'r');
-      try { await handle.sync(); } finally { await handle.close(); }
+      await syncDirectory(parent);
     }
   }
 

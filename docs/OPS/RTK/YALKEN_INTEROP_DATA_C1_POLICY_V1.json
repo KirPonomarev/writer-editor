@@ -564,7 +564,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "bc4d926db3c49caa5a55c496fc1ec000088b83de49737b4fdd31ac9257c7e23e"
+        "sha256": "a44b505761fd4eee8d1643d23d20b1692b500d2d00ef4c1144dffeb47494f3bc"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -588,7 +588,7 @@
       },
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
-        "sha256": "8f0c526a27a29f1c540495d54eabca463500bf01f15a732672bbf1473a496e13"
+        "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
       }
     ],
     "followupRepair": {
