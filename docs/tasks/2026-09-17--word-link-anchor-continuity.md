@@ -6,7 +6,7 @@ CHECKS_BASELINE_VERSION: CHECKS_BASELINE_V1
 TASK_ID: WORD_LINK_ANCHOR_CONTINUITY_20260917
 BINDING_BASE_SHA: fa441bffb44b30aa00e85d6a5e0a528051633c0b
 AUTHORITY: Standing owner instruction to personally complete all1120 import/export cells and optimize full-cycle speed; PR1942 and158-cell closure are complete.
-DESIGN_TOOL_ROUTER: NOT_APPLICABLE; backend and executable proof only.
+DESIGN_TOOL_ROUTER: Backend-only; no change to a product design contract.
 
 ## MICRO_GOAL
 Preserve exact safe hyperlink targets and authored ranges, declared per-round bookmarks and hash-bound locators through C2/C3 Word exchange. Missing or duplicated anchors must remain visible in manual preview, produce explicit diagnostics and block actual exact-text apply without canonical mutation. Execute all six frozen identifier subcases in the existing shared journeys.
@@ -105,7 +105,7 @@ AGENT_FINAL_REPORT_V1 with exact identities, numerator/1120, measured complete c
 Fix one observed cause inside scope. No self-PASS, cross-head inheritance or fabricated native provider proof.
 
 
-## OBSERVED CORRECTION
+### OBSERVED CORRECTION
 The native missing-bookmark control exposed exact-match promotion through paragraph index in the manual review candidate path. Exact matches now require a complete unique declared bookmark set and agreement with the existing strict block resolver; lost, duplicated or conflicting identities stay manual. Real negative controls invoke the canonical batch-apply command and require its typed exact-match rejection plus unchanged scene, manifest and comment state.
 
 SCOPE_EXTENSION: Correct one existing current-profile positive fixture to carry the actual declared bookmark. It previously certified exact matching from a signed carrier and paragraph position despite omitting the locator. Its exact-lane assertion remains; new independent negative controls prove missing and duplicate anchors cannot apply. This is the same authority defect and delivery chain.

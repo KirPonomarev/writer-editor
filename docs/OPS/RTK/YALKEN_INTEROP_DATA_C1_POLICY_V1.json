@@ -691,7 +691,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
-        "sha256": "44b57575d7a9687136232b5d3cc10db73df57e15e6510ac154c8451cda3309cf"
+        "sha256": "3d6497308df43207236f25cdfcf4b0beaf28038ca124b227255eceefa3a77d91"
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
