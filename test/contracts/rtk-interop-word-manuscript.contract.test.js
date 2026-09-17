@@ -24,7 +24,7 @@ async function harness(t,options={}) {
  const preservation=await import(pathToFileURL(path.join(ROOT,'src/core/proRoundtripPreservation.mjs')));
  let publications=0;
  const context=vm.createContext({fs:fsp,Buffer,commitProjectTransaction,durableSaveTransaction,...gateway,
-  lastSignaledEditGeneration:7,isAllowedFilePath:p=>p===scenePath,queueDiskOperation:fn=>fn(),
+  isDirty:false,autoSaveInProgress:false,lastSignaledEditGeneration:7,isAllowedFilePath:p=>p===scenePath,queueDiskOperation:fn=>fn(),
   resolveProjectBindingForFile:async()=>({manifestPath,manifest:JSON.parse(await fsp.readFile(manifestPath,'utf8'))}),
   SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   isPlainObjectValue:v=>!!v&&typeof v==='object'&&!Array.isArray(v),
@@ -38,8 +38,8 @@ async function harness(t,options={}) {
    await durableSaveTransaction({filePath:targetPath,content:nextText,revision:publications});
   }}),
  });
- vm.runInContext(adapter+'\n'+source.match(/async function publishReviewSceneWithProjectTransaction\([^]*?\n}/)[0],context);
- return {root,scenePath,manifestPath,publish:context.publishReviewSceneWithProjectTransaction,save:(content,revision)=>context.commitWriterProjectSnapshot(scenePath,content,revision,{},'test atomic invalidation'),publications:()=>publications};
+ vm.runInContext(adapter+'\n'+['publishReviewSceneWithProjectTransaction','runReviewExactTextSafeWriteFromMainState','runReviewExactTextBatchSafeWriteFromMainState'].map(n=>source.match(new RegExp('async function '+n+'\\([^]*?\\n}'))[0]).join('\n'),context);
+ return {root,scenePath,manifestPath,publish:context.publishReviewSceneWithProjectTransaction,context,save:(content,revision)=>context.commitWriterProjectSnapshot(scenePath,content,revision,{},'test atomic invalidation'),publications:()=>publications};
 }
 test('Actual Writer adapter preserves atomic invalidation across changed, identical and subsequent saves',async t=>{
  const h=await harness(t);
@@ -86,4 +86,12 @@ test('Main review publication refuses stale expected input before writing or inv
  const h=await harness(t);const before=await fsp.readFile(h.manifestPath);
  await assert.rejects(h.publish(h.scenePath,'overwrite',{expectedText:'obsolete'}),e=>e.code==='E_PROJECT_TRANSACTION_SCENE_CAS');
  assert.equal(await fsp.readFile(h.scenePath,'utf8'),'original');assert.deepEqual(await fsp.readFile(h.manifestPath),before);assert.equal(h.publications(),0);
+});
+
+for(const mode of ['Single','Batch'])test('Main '+mode+' review route injects project publication inside its existing disk queue',async t=>{
+ const h=await harness(t);assert.equal((await h.save('saved before Word',1)).success,true);
+ const {writeMarkdownWithTransactionRecovery}=await import(pathToFileURL(path.join(ROOT,'src/io/markdown/index.mjs')));
+ const run=mode==='Batch'?h.context.runReviewExactTextBatchSafeWriteFromMainState:h.context.runReviewExactTextSafeWriteFromMainState;
+ await run(async(input,options)=>{assert.equal(options.publishScene,h.publish);return writeMarkdownWithTransactionRecovery(h.scenePath,'returned from Word',{...options,expectedText:'saved before Word'});},{},{});
+ assert.equal((await h.save('returned from Word',8)).success,true);
 });

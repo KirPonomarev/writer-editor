@@ -21094,10 +21094,10 @@ async function handleRtkNonOverlapTrackedReplacementCommandSurface(payload = {})
       },
     };
   }
-  return module.createRtkNonOverlapTrackedReplacementCommandHandler({
+  return queueDiskOperation(() => module.createRtkNonOverlapTrackedReplacementCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
     exactWriterOptions: { publishScene: publishReviewSceneWithProjectTransaction },
-  })(payload);
+  })(payload), 'review tracked replacement project transaction');
 }
 
 let rtkMultiSceneNonOverlapTrackedReplacementModulePromise = null;
@@ -21981,22 +21981,20 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
     || getDocumentContextFromPath(filePath)?.kind !== 'scene') {
     throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
   }
-  return queueDiskOperation(async () => {
-    const binding = await resolveProjectBindingForFile(filePath);
-    if (!binding?.manifestPath || !binding.manifest?.projectId) {
-      throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
-    }
-    const receipt = await commitWriterProjectSnapshot(
-      filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
-      'review exact scene and manifest transaction', { expectedSceneContent: options.expectedText },
-    );
-    if (receipt.success !== true || receipt.projectTransaction !== true) {
-      throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
-        code: receipt.code || 'E_REVIEW_PROJECT_SCENE_SAVE_FAILED',
-      });
-    }
-    return { ok: 1, targetPath: filePath, bytesWritten: Buffer.byteLength(content, 'utf8'), safetyMode: 'strict', receipt };
-  }, 'review exact scene and manifest publication');
+  const binding = await resolveProjectBindingForFile(filePath);
+  if (!binding?.manifestPath || !binding.manifest?.projectId) {
+    throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
+  }
+  const receipt = await commitWriterProjectSnapshot(
+    filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
+    'review exact scene and manifest transaction', { expectedSceneContent: options.expectedText },
+  );
+  if (receipt.success !== true || receipt.projectTransaction !== true) {
+    throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
+      code: receipt.code || 'E_REVIEW_PROJECT_SCENE_SAVE_FAILED',
+    });
+  }
+  return { ok: 1, targetPath: filePath, bytesWritten: Buffer.byteLength(content, 'utf8'), safetyMode: 'strict', receipt };
 }
 
 async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWrite, input, safeWriteOptions = {}) {
@@ -22021,7 +22019,7 @@ async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWri
           ],
         };
       }
-      return applyExactTextMinSafeWrite(input, safeWriteOptions);
+      return applyExactTextMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
     },
     'review exact text safe apply',
   );
@@ -22049,7 +22047,7 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
           ],
         };
       }
-      return applyExactTextBatchMinSafeWrite(input, safeWriteOptions);
+      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
     },
     'review exact text batch safe apply',
   );
