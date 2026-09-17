@@ -28,7 +28,7 @@ DCTERMS='{http://purl.org/dc/terms/}'
 XSI='{http://www.w3.org/2001/XMLSchema-instance}'
 CUSTOM='{http://schemas.openxmlformats.org/officeDocument/2006/custom-properties}'
 VT='{http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes}'
-METADATA_PUBLIC=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJECT_ID','YALKEN_PROJECT_TITLE','YALKEN_PROJECT_CREATED_AT_UTC','YALKEN_METADATA_DIGEST']
+METADATA_PUBLIC=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJECT_ID','YALKEN_PROJECT_TITLE','YALKEN_PROJECT_CREATED_AT_UTC','YALKEN_APPLICATION_CREATOR','YALKEN_METADATA_DIGEST']
 METADATA_AUTHORITY=['YRTK_C01_AUTH','YRTK2_TOKEN','YRTK_CORE_DIGEST']
 def fields(volume,route,recipe='DEFAULT'):
     require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT'] and route in ['C1','C2','C3','C5'],'MANUSCRIPT_SCOPE')
@@ -166,16 +166,20 @@ def metadata_doc(parts,data):
     counts={name:sum(r['name']==name for r in custom_rows) for name in {r['name'] for r in custom_rows}}
     duplicate_custom=sorted(name for name,count in counts.items() if count>1)
     public={name:next((r['value'] for r in custom_rows if r['name']==name),'') if counts.get(name)==1 else '' for name in METADATA_PUBLIC}
-    protected={'schemaVersion':public['YALKEN_METADATA_SCHEMA'],'projectId':core_values['identifier'],'title':core_values['title'],'createdAtUtc':core_values['createdAtUtc'],'creator':core_values['creator']}
+    core_protected={'projectId':core_values['identifier'],'title':core_values['title'],'createdAtUtc':core_values['createdAtUtc'],'creator':core_values['creator']}
+    protected={'schemaVersion':public['YALKEN_METADATA_SCHEMA'],'projectId':public['YALKEN_PROJECT_ID'],'title':public['YALKEN_PROJECT_TITLE'],'createdAtUtc':public['YALKEN_PROJECT_CREATED_AT_UTC'],'creator':public['YALKEN_APPLICATION_CREATOR']}
     missing=sorted(name for name,value in protected.items() if not value)
+    missing_core=sorted(name for name,value in core_protected.items() if not value)
     unknown=sorted({r['name'] for r in custom_rows if r['name'] not in METADATA_PUBLIC+METADATA_AUTHORITY})
+    expected_created=protected['createdAtUtc'];core_created=core_protected['createdAtUtc']
+    normalized=['createdAtUtc.minutePrecision'] if expected_created!=core_created and expected_created[:16]==core_created[:16] and expected_created.endswith('Z') and core_created.endswith('Z') else []
     return {
       'artifactSha256':digest(data),'corePropertiesPresent':True,'customPropertiesPresent':True,
-      'protectedProperties':protected,'protectedDigest':'sha256:'+digest(canonical(protected)),
+      'protectedProperties':protected,'coreProtectedProperties':core_protected,'protectedDigest':'sha256:'+digest(canonical(protected)),
       'publicCustomProperties':public,'createdTimestampType':created_type,
       'volatileCoreProperties':{'lastModifiedBy':core_values['lastModifiedBy'],'modifiedAtUtc':core_values['modifiedAtUtc'],'revision':core_values['revision']},
-      'missingProtectedProperties':missing,'duplicateCorePropertyNames':sorted(duplicate_core),'duplicateCustomPropertyNames':duplicate_custom,
-      'unknownCustomPropertyNames':unknown,'providerVolatileFields':['lastModifiedBy','modifiedAtUtc','revision'],
+      'missingProtectedProperties':missing,'missingCoreProtectedProperties':missing_core,'duplicateCorePropertyNames':sorted(duplicate_core),'duplicateCustomPropertyNames':duplicate_custom,
+      'unknownCustomPropertyNames':unknown,'providerVolatileFields':['lastModifiedBy','modifiedAtUtc','revision'],'providerNormalizedFields':normalized,
       'customPropertyValueTypesAccounted':[{'name':r['name'],'valueType':r['valueType']} for r in custom_rows],
     }
 
@@ -775,7 +779,7 @@ def audit(request):
     project=read('source-project.json');pid=project['projectId'];registry=project['treeIdentity']['nodes'];by_binding={r['bindingKey']:n for n,r in registry.items() if r.get('present') is not False}
     metadata_protected={'schemaVersion':'yalken.rtk.word.document-metadata.v1','projectId':pid,'title':project['projectName'],'createdAtUtc':project['createdAtUtc'],'creator':'Yalken'}
     metadata_digest='sha256:'+digest(canonical(metadata_protected))
-    metadata_public={'YALKEN_METADATA_SCHEMA':metadata_protected['schemaVersion'],'YALKEN_METADATA_POLICY':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','YALKEN_PROJECT_ID':pid,'YALKEN_PROJECT_TITLE':project['projectName'],'YALKEN_PROJECT_CREATED_AT_UTC':project['createdAtUtc'],'YALKEN_METADATA_DIGEST':metadata_digest}
+    metadata_public={'YALKEN_METADATA_SCHEMA':metadata_protected['schemaVersion'],'YALKEN_METADATA_POLICY':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','YALKEN_PROJECT_ID':pid,'YALKEN_PROJECT_TITLE':project['projectName'],'YALKEN_PROJECT_CREATED_AT_UTC':project['createdAtUtc'],'YALKEN_APPLICATION_CREATOR':'Yalken','YALKEN_METADATA_DIGEST':metadata_digest}
     metadata_policies={'authorship':'APPLICATION_CREATOR_IS_YALKEN_PROJECT_AUTHOR_NOT_INFERRED','timestamps':'PROJECT_CREATED_AT_PROTECTED_MODIFIED_AT_PROVIDER_VOLATILE','returnedAuthority':'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE','unknownCustomProperties':'LEDGER_ONLY_NO_AUTHORITY','policyId':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1'}
     require([by_binding['file:'+s] for s in ids]==nodes,'PROJECT_SCENE_REGISTRY')
     def tree_check(value,label):
@@ -833,6 +837,8 @@ def audit(request):
         proof=metadata_doc(parts,data)
         require(proof['protectedProperties']==metadata_protected and proof['protectedDigest']==metadata_digest
                 and proof['publicCustomProperties']==metadata_public and proof['createdTimestampType']=='dcterms:W3CDTF'
+                and all(proof['coreProtectedProperties'][k]==metadata_protected[k] for k in ['projectId','title','creator'])
+                and proof['coreProtectedProperties']['createdAtUtc'][:16]==metadata_protected['createdAtUtc'][:16]
                 and proof['missingProtectedProperties']==proof['duplicateCorePropertyNames']==proof['duplicateCustomPropertyNames']==proof['unknownCustomPropertyNames']==[],'METADATA_STAGE:'+name)
         metadata_stages[name]=proof
     def export_check(name,filename,round,hashes):
@@ -914,7 +920,7 @@ def audit(request):
             require(dm['status']=='VERIFIED_PROTECTED_DOCUMENT_METADATA' and dm['authority']=='ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE'
                     and dm['protectedDigest']==metadata_digest and dm['protectedProperties']==metadata_protected and dm['policies']==metadata_policies
                     and dm['lossLedger']['missingProtectedProperties']==dm['lossLedger']['duplicateCorePropertyNames']==dm['lossLedger']['duplicateCustomPropertyNames']==dm['lossLedger']['unknownCustomPropertyNames']==[]
-                    and dm['lossLedger']['providerVolatileFields']==['lastModifiedBy','modifiedAtUtc','revision'],'METADATA_INTAKE_BINDING')
+                    and dm['lossLedger']['providerVolatileFields']==['lastModifiedBy','modifiedAtUtc','revision'] and dm['lossLedger']['providerNormalizedFields'] in [[],['createdAtUtc.minutePrecision']],'METADATA_INTAKE_BINDING')
             require(x['manifestBeforeSha256']==x['manifestAfterSha256'] and re.fullmatch('[a-f0-9]{64}',x['manifestBeforeSha256']),'METADATA_INTAKE_MANIFEST_NO_WRITE')
             metadata_intakes.append({'ordinal':ordinal,'status':dm['status'],'authority':dm['authority'],'protectedDigest':dm['protectedDigest'],'protectedProperties':dm['protectedProperties'],'before':x['before'],'after':x['after'],'manifestSha256':x['manifestBeforeSha256'],'writerCalled':False})
             changes=r['reviewSurface']['revisionSession']['reviewGraph']['textChanges'];require(len(changes)==1 and changes[0]['match']['quote']==('sentinel alpha' if ordinal==1 else 'sentinel round'+str(ordinal-1)) and changes[0]['replacementText']=='sentinel round'+str(ordinal),'EXACT_ROUND_CHANGE')
@@ -988,15 +994,16 @@ def audit(request):
                     if kind=='missing-core-part':require('docProps/core.xml' not in mparts,'METADATA_CONTROL_MISSING_CORE')
                     else:
                         changed=metadata_doc(mparts,mutant)
-                        if kind=='changed-title':require(changed['protectedProperties']['title']!=metadata_protected['title'],'METADATA_CONTROL_TITLE')
-                        elif kind=='changed-project-id':require(changed['protectedProperties']['projectId']!=metadata_protected['projectId'],'METADATA_CONTROL_PROJECT_ID')
-                        elif kind=='changed-created-at':require(changed['protectedProperties']['createdAtUtc']!=metadata_protected['createdAtUtc'],'METADATA_CONTROL_CREATED')
+                        if kind=='changed-title':require(changed['coreProtectedProperties']['title']!=metadata_protected['title'],'METADATA_CONTROL_TITLE')
+                        elif kind=='changed-project-id':require(changed['coreProtectedProperties']['projectId']!=metadata_protected['projectId'],'METADATA_CONTROL_PROJECT_ID')
+                        elif kind=='changed-created-at':require(changed['coreProtectedProperties']['createdAtUtc'][:16]!=metadata_protected['createdAtUtc'][:16],'METADATA_CONTROL_CREATED')
                         elif kind=='missing-custom-property':require(changed['publicCustomProperties']['YALKEN_PROJECT_TITLE']=='','METADATA_CONTROL_CUSTOM_MISSING')
                         elif kind=='duplicate-protected-property':require(changed['duplicateCustomPropertyNames']==['YALKEN_PROJECT_ID'],'METADATA_CONTROL_DUPLICATE')
                         elif kind=='forged-signed-digest':require(changed['protectedProperties']==original_metadata['protectedProperties'] and changed['publicCustomProperties']==original_metadata['publicCustomProperties'] and mparts['docProps/custom.xml']!=original[1]['docProps/custom.xml'],'METADATA_CONTROL_FORGED_SIGNED')
                     require(control['before']==control['after'] and control['before']['sceneHashes']==source_hashes and re.fullmatch('[a-f0-9]{64}',control['before']['manifestSha256']),'METADATA_CONTROL_NO_WRITE')
                     result=control['result'];code=result.get('code') or result.get('reason') or result.get('value',{}).get('code') or result.get('value',{}).get('reason')
-                    details=result.get('details') or result.get('value',{}).get('details') or {}
+                    details=(result.get('details') or result.get('value',{}).get('details')
+                             or result.get('value',{}).get('error',{}).get('details') or {})
                     require(result.get('ok') is not True and isinstance(code,str) and code.startswith('RTK_RETURN_INTAKE_') and all(result.get(k) is not True for k in ['canOpenReviewSession','canAutoApply','canImportMutate','canWriteStorage']),'METADATA_CONTROL_REJECTED:'+kind)
                     metadata_negative.append({'id':kind,'rejected':True,'code':code,'mismatches':details.get('mismatches',[]),'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/metadata-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(control['before'])),'writerCalled':False,'before':control['before'],'after':control['after']})
             ap=read(base+'/apply.json');result=ap['result'];receipt=result['result']['receipt'];require(result==read(base+'/apply-command-result.json'),'APPLY_RAW_RESULT')
@@ -1090,7 +1097,7 @@ def audit(request):
         metadata_proof={'schemaVersion':'WORD_MANUSCRIPT_METADATA_PROOF_V1','authority':'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE','policies':metadata_policies,
                         'expected':{'protectedProperties':metadata_protected,'protectedDigest':metadata_digest,'publicCustomProperties':metadata_public},
                         'stages':metadata_stages,'intakeBindings':metadata_intakes,'negativeControls':metadata_negative,
-                        'lossLedger':{'missingProtectedProperties':[],'duplicateCorePropertyNames':[],'duplicateCustomPropertyNames':[],'unknownCustomPropertyNames':[],'providerVolatileFields':['lastModifiedBy','modifiedAtUtc','revision'],'scope':'Protected project identity is dual-carried and digest-bound. Provider-volatile fields are observed without project write; unknown custom properties are ledger-only.'}}
+                        'lossLedger':{'missingProtectedProperties':[],'missingCoreProtectedProperties':[],'duplicateCorePropertyNames':[],'duplicateCustomPropertyNames':[],'unknownCustomPropertyNames':[],'providerVolatileFields':['lastModifiedBy','modifiedAtUtc','revision'],'providerNormalizedFieldsObserved':sorted({x for p in metadata_stages.values() for x in p['providerNormalizedFields']}),'providerNormalizationPolicy':'WORD_CORE_CREATED_AT_MINUTE_PRECISION_CUSTOM_PROPERTY_RETAINS_EXACT','scope':'Protected project identity is dual-carried and digest-bound. Word minute-precision core timestamps are accounted while the signed custom property retains the exact canonical instant; provider-volatile fields are observed without project write; unknown custom properties are ledger-only.'}}
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route,recipe)]
     for proof in proofs:
         if proof['field']=='COMMENTS':proof['commentProof']=comment_proof

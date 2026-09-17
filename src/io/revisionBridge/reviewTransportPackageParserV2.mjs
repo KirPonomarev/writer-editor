@@ -47,6 +47,7 @@ const WORD_DOCUMENT_METADATA_PUBLIC_PROPERTIES = Object.freeze([
   'YALKEN_PROJECT_ID',
   'YALKEN_PROJECT_TITLE',
   'YALKEN_PROJECT_CREATED_AT_UTC',
+  'YALKEN_APPLICATION_CREATOR',
   'YALKEN_METADATA_DIGEST',
 ]);
 const WORD_DOCUMENT_METADATA_AUTHORITY_PROPERTIES = Object.freeze([
@@ -1393,12 +1394,18 @@ function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
   ]);
   const unknownCustomPropertyNames = [...new Set(customRows.map((row) => row.name)
     .filter((name) => name && !knownNames.has(name)))].sort();
-  const protectedProperties = {
-    schemaVersion: publicCustomProperties.YALKEN_METADATA_SCHEMA,
+  const coreProtectedProperties = {
     projectId: coreProperties.identifier,
     title: coreProperties.title,
     createdAtUtc: coreProperties.createdAtUtc,
     creator: coreProperties.creator,
+  };
+  const protectedProperties = {
+    schemaVersion: publicCustomProperties.YALKEN_METADATA_SCHEMA,
+    projectId: publicCustomProperties.YALKEN_PROJECT_ID,
+    title: publicCustomProperties.YALKEN_PROJECT_TITLE,
+    createdAtUtc: publicCustomProperties.YALKEN_PROJECT_CREATED_AT_UTC,
+    creator: publicCustomProperties.YALKEN_APPLICATION_CREATOR,
   };
   const protectedDigest = cryptoPort.sha256Json(protectedProperties);
   const createdToken = coreTokensByName.get('createdAtUtc')?.[0];
@@ -1407,6 +1414,18 @@ function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
     .filter(([, value]) => !rawString(value))
     .map(([name]) => name)
     .sort();
+  const missingCoreProtectedProperties = Object.entries(coreProtectedProperties)
+    .filter(([, value]) => !rawString(value))
+    .map(([name]) => name)
+    .sort();
+  const expectedCreatedAtMilliseconds = Date.parse(rawString(protectedProperties.createdAtUtc));
+  const coreCreatedAtMilliseconds = Date.parse(rawString(coreProtectedProperties.createdAtUtc));
+  const providerNormalizedFields = Number.isFinite(expectedCreatedAtMilliseconds)
+    && Number.isFinite(coreCreatedAtMilliseconds)
+    && rawString(protectedProperties.createdAtUtc) !== rawString(coreProtectedProperties.createdAtUtc)
+    && Math.floor(expectedCreatedAtMilliseconds / 60_000) === Math.floor(coreCreatedAtMilliseconds / 60_000)
+    ? ['createdAtUtc.minutePrecision']
+    : [];
   return {
     metadata: {
       schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
@@ -1416,6 +1435,7 @@ function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
       customPropertiesPresent: Boolean(customXml),
       customPropertiesRootValid: customRootValid,
       protectedProperties,
+      coreProtectedProperties,
       protectedDigest,
       publicCustomProperties,
       authorityPropertyNamesPresent,
@@ -1430,10 +1450,12 @@ function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
       duplicateCustomPropertyNames,
       lossLedger: {
         missingProtectedProperties,
+        missingCoreProtectedProperties,
         duplicateCorePropertyNames,
         duplicateCustomPropertyNames,
         unknownCustomPropertyNames,
         providerVolatileFields: ['lastModifiedBy', 'modifiedAtUtc', 'revision'],
+        providerNormalizedFields,
         customPropertyValueTypesAccounted: customRows.map((row) => ({
           name: row.name,
           valueType: row.valueType,
@@ -3462,6 +3484,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     documentMetadata: {
       schemaVersion: documentMetadata.schemaVersion,
       protectedProperties: documentMetadata.protectedProperties,
+      coreProtectedProperties: documentMetadata.coreProtectedProperties,
       protectedDigest: documentMetadata.protectedDigest,
       publicCustomProperties: documentMetadata.publicCustomProperties,
       volatileCoreProperties: documentMetadata.volatileCoreProperties,

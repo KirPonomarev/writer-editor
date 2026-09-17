@@ -8265,6 +8265,12 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
         createdAtUtc: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.createdAtUtc),
         creator: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.creator),
       },
+      coreProtectedProperties: {
+        projectId: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.projectId),
+        title: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.title),
+        createdAtUtc: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.createdAtUtc),
+        creator: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.creator),
+      },
       policies: {
         authorship: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.authorship),
         timestamps: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.timestamps),
@@ -8281,6 +8287,9 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
         missingProtectedProperties: Array.isArray(documentMetadataBinding.lossLedger?.missingProtectedProperties)
           ? documentMetadataBinding.lossLedger.missingProtectedProperties.map(docxReviewPreviewSessionDetailString).filter(Boolean)
           : [],
+        missingCoreProtectedProperties: Array.isArray(documentMetadataBinding.lossLedger?.missingCoreProtectedProperties)
+          ? documentMetadataBinding.lossLedger.missingCoreProtectedProperties.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
         duplicateCorePropertyNames: Array.isArray(documentMetadataBinding.lossLedger?.duplicateCorePropertyNames)
           ? documentMetadataBinding.lossLedger.duplicateCorePropertyNames.map(docxReviewPreviewSessionDetailString).filter(Boolean)
           : [],
@@ -8292,6 +8301,9 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
           : [],
         providerVolatileFields: Array.isArray(documentMetadataBinding.lossLedger?.providerVolatileFields)
           ? documentMetadataBinding.lossLedger.providerVolatileFields.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        providerNormalizedFields: Array.isArray(documentMetadataBinding.lossLedger?.providerNormalizedFields)
+          ? documentMetadataBinding.lossLedger.providerNormalizedFields.map(docxReviewPreviewSessionDetailString).filter(Boolean)
           : [],
       },
     },

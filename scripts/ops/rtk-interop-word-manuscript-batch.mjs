@@ -105,7 +105,7 @@ export function validateManuscriptCommentProof(p,cycles,roundProofs){
 export function validateManuscriptMetadataProof(p,cycles,roundProofs){
  const names=['reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
  const protectedKeys=['schemaVersion','projectId','title','createdAtUtc','creator'];
- const publicKeys=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJECT_ID','YALKEN_PROJECT_TITLE','YALKEN_PROJECT_CREATED_AT_UTC','YALKEN_METADATA_DIGEST'];
+ const publicKeys=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJECT_ID','YALKEN_PROJECT_TITLE','YALKEN_PROJECT_CREATED_AT_UTC','YALKEN_APPLICATION_CREATOR','YALKEN_METADATA_DIGEST'];
  demand(p?.schemaVersion==='WORD_MANUSCRIPT_METADATA_PROOF_V1'&&p.authority==='ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE'
   &&p.policies?.authorship==='APPLICATION_CREATOR_IS_YALKEN_PROJECT_AUTHOR_NOT_INFERRED'
   &&p.policies?.timestamps==='PROJECT_CREATED_AT_PROTECTED_MODIFIED_AT_PROVIDER_VOLATILE'
@@ -120,9 +120,12 @@ export function validateManuscriptMetadataProof(p,cycles,roundProofs){
   &&same(Object.keys(expected.publicCustomProperties||{}).sort(),publicKeys.sort()),'MANUSCRIPT_METADATA_EXPECTED');
  for(const [name,s] of Object.entries(p.stages))demand(sha64(s.artifactSha256)&&s.protectedDigest===expected.protectedDigest
   &&same(s.protectedProperties,expected.protectedProperties)&&same(s.publicCustomProperties,expected.publicCustomProperties)
+  &&['projectId','title','creator'].every(k=>s.coreProtectedProperties?.[k]===expected.protectedProperties[k])
+  &&s.coreProtectedProperties?.createdAtUtc?.slice(0,16)===expected.protectedProperties.createdAtUtc.slice(0,16)
   &&s.createdTimestampType==='dcterms:W3CDTF'&&s.corePropertiesPresent===true&&s.customPropertiesPresent===true
-  &&same(s.duplicateCorePropertyNames,[])&&same(s.duplicateCustomPropertyNames,[])&&same(s.missingProtectedProperties,[])
+  &&same(s.duplicateCorePropertyNames,[])&&same(s.duplicateCustomPropertyNames,[])&&same(s.missingProtectedProperties,[])&&same(s.missingCoreProtectedProperties,[])
   &&same(s.unknownCustomPropertyNames,[])&&same(s.providerVolatileFields,['lastModifiedBy','modifiedAtUtc','revision'])
+  &&(same(s.providerNormalizedFields,[])||same(s.providerNormalizedFields,['createdAtUtc.minutePrecision']))
   &&s.volatileCoreProperties&&typeof s.volatileCoreProperties.lastModifiedBy==='string'&&typeof s.volatileCoreProperties.modifiedAtUtc==='string'&&typeof s.volatileCoreProperties.revision==='string','MANUSCRIPT_METADATA_STAGE:'+name);
  for(const [i,r] of roundProofs.entries())demand(p.stages['rounds/'+(i+1)+'/export'].artifactSha256===r.exportSha256
   &&p.stages['rounds/'+(i+1)+'/word'].artifactSha256===r.returnedSha256,'MANUSCRIPT_METADATA_ROUND_BINDING');
@@ -138,9 +141,12 @@ export function validateManuscriptMetadataProof(p,cycles,roundProofs){
   &&x.writerCalled===false&&same(x.before,x.after)&&Array.isArray(x.mismatches))
   &&p.negativeControls.filter(x=>!['missing-core-part','forged-signed-digest'].includes(x.id)).every(x=>x.code==='RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH'&&x.mismatches.length>0)
   &&new Set(p.negativeControls.map(x=>x.mutantSha256)).size===ids.length,'MANUSCRIPT_METADATA_CONTROLS');
- demand(p.lossLedger&&same(p.lossLedger.missingProtectedProperties,[])&&same(p.lossLedger.duplicateCorePropertyNames,[])
+ demand(p.lossLedger&&same(p.lossLedger.missingProtectedProperties,[])&&same(p.lossLedger.missingCoreProtectedProperties,[])&&same(p.lossLedger.duplicateCorePropertyNames,[])
   &&same(p.lossLedger.duplicateCustomPropertyNames,[])&&same(p.lossLedger.unknownCustomPropertyNames,[])
-  &&same(p.lossLedger.providerVolatileFields,['lastModifiedBy','modifiedAtUtc','revision'])&&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_METADATA_LEDGER');
+  &&same(p.lossLedger.providerVolatileFields,['lastModifiedBy','modifiedAtUtc','revision'])&&Array.isArray(p.lossLedger.providerNormalizedFieldsObserved)
+  &&p.lossLedger.providerNormalizedFieldsObserved.every(x=>x==='createdAtUtc.minutePrecision')&&new Set(p.lossLedger.providerNormalizedFieldsObserved).size===p.lossLedger.providerNormalizedFieldsObserved.length
+  &&p.lossLedger.providerNormalizationPolicy==='WORD_CORE_CREATED_AT_MINUTE_PRECISION_CUSTOM_PROPERTY_RETAINS_EXACT'
+  &&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_METADATA_LEDGER');
  return true;
 }
 export function validateGoogleManuscriptTransport(p){

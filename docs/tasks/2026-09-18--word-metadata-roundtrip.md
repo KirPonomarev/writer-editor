@@ -45,6 +45,8 @@ Protected values are projectId, projectName, createdAtUtc and the explicit appli
 
 Word may change lastModifiedBy, modified time and revision. These values are provider-volatile observations. Unknown custom properties are named in a loss ledger and receive no authority. Intake never copies any returned metadata into the canonical manifest.
 
+The native Word pilot proved that Word truncates the core `dcterms:created` value to minute precision. The exact canonical instant therefore remains signed in `YALKEN_PROJECT_CREATED_AT_UTC`; the core value is an independently checked carrier that must stay within the same UTC minute. Cross-minute drift is rejected. This provider normalization is recorded explicitly in every proof.
+
 The six frozen subcases are:
 
 1. documentPropertiesAccounted
@@ -71,4 +73,3 @@ I: exact base SHA above; verified encrypted writable T7; clean isolated worktree
 ## STOP CONDITION
 
 Stop after the third identical failure signature, preserve expected/actual values, seed, exact revisions and hashes, and record one next hypothesis. Never convert partial, stale, self-authored or count-only evidence into PASS.
-

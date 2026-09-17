@@ -35,7 +35,7 @@ def metadata_parts():
  for tag,value in values:
   n=ET.SubElement(core,tag);n.text=value
   if tag in [m.DCTERMS+'created',m.DCTERMS+'modified']:n.set(m.XSI+'type','dcterms:W3CDTF')
- custom=ET.Element(m.CUSTOM+'Properties');props={'YALKEN_METADATA_SCHEMA':protected['schemaVersion'],'YALKEN_METADATA_POLICY':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','YALKEN_PROJECT_ID':protected['projectId'],'YALKEN_PROJECT_TITLE':protected['title'],'YALKEN_PROJECT_CREATED_AT_UTC':protected['createdAtUtc'],'YALKEN_METADATA_DIGEST':sha,'YRTK_C01_AUTH':'token','YRTK2_TOKEN':'token2','YRTK_CORE_DIGEST':'sha256:'+'f'*64}
+ custom=ET.Element(m.CUSTOM+'Properties');props={'YALKEN_METADATA_SCHEMA':protected['schemaVersion'],'YALKEN_METADATA_POLICY':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','YALKEN_PROJECT_ID':protected['projectId'],'YALKEN_PROJECT_TITLE':protected['title'],'YALKEN_PROJECT_CREATED_AT_UTC':protected['createdAtUtc'],'YALKEN_APPLICATION_CREATOR':protected['creator'],'YALKEN_METADATA_DIGEST':sha,'YRTK_C01_AUTH':'token','YRTK2_TOKEN':'token2','YRTK_CORE_DIGEST':'sha256:'+'f'*64}
  for i,(name,value) in enumerate(props.items(),2):
   p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
  return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
@@ -60,6 +60,7 @@ class ManuscriptOracle(unittest.TestCase):
  def test_metadata_oracle_reads_dual_carriers_and_ledgers_provider_changes(self):
   parts,protected,sha=metadata_parts();proof=m.metadata_doc(parts,b'fixture')
   self.assertEqual(proof['protectedProperties'],protected);self.assertEqual(proof['protectedDigest'],sha);self.assertEqual(proof['createdTimestampType'],'dcterms:W3CDTF')
+  self.assertEqual(proof['coreProtectedProperties'],{'projectId':'project-unit','title':'Роман & metadata','createdAtUtc':'2026-09-18T01:02:03.000Z','creator':'Yalken'})
   self.assertEqual(proof['volatileCoreProperties'],{'lastModifiedBy':'Word User','modifiedAtUtc':'2026-09-18T02:03:04Z','revision':'9'})
   self.assertEqual(proof['missingProtectedProperties'],[]);self.assertEqual(proof['unknownCustomPropertyNames'],[])
   custom=ET.fromstring(parts['docProps/custom.xml']);p=ET.SubElement(custom,m.CUSTOM+'property',name='WORD_PROVIDER_PROPERTY',pid='99');ET.SubElement(p,m.VT+'lpwstr').text='visible'

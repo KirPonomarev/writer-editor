@@ -446,6 +446,7 @@ function buildFullManuscriptDocumentMetadata(input = {}, cryptoPort = createDefa
       { name: 'YALKEN_PROJECT_ID', value: projectId },
       { name: 'YALKEN_PROJECT_TITLE', value: title },
       { name: 'YALKEN_PROJECT_CREATED_AT_UTC', value: createdAtUtc },
+      { name: 'YALKEN_APPLICATION_CREATOR', value: WORD_DOCUMENT_METADATA_CREATOR },
       { name: 'YALKEN_METADATA_DIGEST', value: protectedDigest },
     ],
   };
@@ -461,11 +462,23 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
   const expect = isPlainObjectValue(expected.protectedProperties) ? expected.protectedProperties : {};
   const actual = isPlainObjectValue(returned.protectedProperties) ? returned.protectedProperties : {};
   const signedDigest = normalizeString(input.signedDigest);
+  const coreProtected = isPlainObjectValue(returned.coreProtectedProperties)
+    ? returned.coreProtectedProperties
+    : {};
   if (returned.schemaVersion !== WORD_DOCUMENT_METADATA_SCHEMA) mismatches.push('schemaVersion');
   if (returned.corePropertiesPresent !== true || returned.corePropertiesRootValid !== true) mismatches.push('coreProperties');
   if (returned.customPropertiesPresent !== true || returned.customPropertiesRootValid !== true) mismatches.push('customProperties');
   for (const key of ['schemaVersion', 'projectId', 'title', 'createdAtUtc', 'creator']) {
     if (normalizeString(actual[key]) !== normalizeString(expect[key])) mismatches.push(`protectedProperties.${key}`);
+  }
+  for (const key of ['projectId', 'title', 'creator']) {
+    if (normalizeString(coreProtected[key]) !== normalizeString(expect[key])) mismatches.push(`coreProtectedProperties.${key}`);
+  }
+  const expectedCreatedAt = Date.parse(normalizeString(expect.createdAtUtc));
+  const coreCreatedAt = Date.parse(normalizeString(coreProtected.createdAtUtc));
+  if (!Number.isFinite(expectedCreatedAt) || !Number.isFinite(coreCreatedAt)
+    || Math.floor(expectedCreatedAt / 60_000) !== Math.floor(coreCreatedAt / 60_000)) {
+    mismatches.push('coreProtectedProperties.createdAtUtc');
   }
   if (returned.createdTimestampType !== 'dcterms:W3CDTF') mismatches.push('createdTimestampType');
   if (normalizeString(returned.protectedDigest) !== normalizeString(expected.protectedDigest)) mismatches.push('protectedDigest');
@@ -500,6 +513,7 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
       authority: 'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',
       protectedDigest: expected.protectedDigest,
       protectedProperties: cloneJson(actual),
+      coreProtectedProperties: cloneJson(coreProtected),
       policies: cloneJson(expected.policies),
       volatileCoreProperties: isPlainObjectValue(returned.volatileCoreProperties)
         ? cloneJson(returned.volatileCoreProperties)

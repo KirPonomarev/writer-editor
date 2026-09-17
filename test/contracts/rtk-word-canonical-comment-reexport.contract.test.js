@@ -320,12 +320,14 @@ test('production publication revalidation rejects changed scenes, canonical comm
   const input=inputs(),source=makeSource(input);
   const owner={generation:1};source.publicationOwner=owner;
   const expected=source.localAuthorityCapsule.exportMap.scenes[0];
+  const expectedMetadata=source.localAuthorityCapsule.documentMetadata.protectedProperties;
   let state=input.nonTextReturnState,raw=input.scenes[0].text;
   // The input fixture used plain text as its saved observable bytes.
   assert.equal(expected.rawSha256,'sha256:'+sha(raw));
   const ctx=mainHarness(['revalidateFullManuscriptDocxReviewPacketExportSource'],{
     isDirty:false,autoSaveInProgress:false,activeStage10ApplicationBootstrap:owner,getProjectRootPath:()=>input.projectRoot,
     buildFullManuscriptDocxReviewExportScope:async()=>({projectId:input.projectId,projectRoot:input.projectRoot,
+      projectName:expectedMetadata.title,projectCreatedAtUtc:expectedMetadata.createdAtUtc,
       sceneCandidates:[{sceneId:input.scenes[0].sceneId}]}),
     readFullManuscriptDocxReviewExportDocumentContent:async()=>({observableContent:raw}),
     loadRevisionBridgeModule:async()=>({createRtkNonTextReturnFilePort:()=>({readCanonical:async()=>state})}),
