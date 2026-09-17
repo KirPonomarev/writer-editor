@@ -960,6 +960,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const authorityEncoded = buildAuthorityEnvelope(authorityPayload, hmacSecret, cryptoPort);
   const exportCapsule = {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.v1',
+    ...(commentExport ? { commentSummary: { ...authorityPayload.commentSummary } } : {}),
     projectId,
     profileId: FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID,
     scope: 'full-manuscript',

@@ -466,7 +466,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "624e3d2373771e35194134128431d295408ff44beb33adc96ac6bd9230eeeaab"
+        "sha256": "1e36dcc5c3ec4ce32de3892b80b3b0770dee43dfa3c2b8f9a8457875e5722634"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -650,7 +650,7 @@
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
-        "sha256": "d3ce20e0ab8dd6b426d13a4dc79be200a797c73c284ad802f6cc78d0daacd92b"
+        "sha256": "f85141a01e4a08961c0a120d24195a78bfd5b619f8b4588fa0845b6b1c007e94"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js",

@@ -311,6 +311,7 @@ test('actual export handler revalidates inside queue and refuses missing comment
     const result=await runDocxReviewPacketExport({requestId:'unit'},deps);
     assert.equal(result.ok,mode==='normal',JSON.stringify(result));
     assert.equal(writes,mode==='normal'?1:0);
+    if(mode==='normal')assert.deepEqual(result.exportCapsule.commentSummary,{stateRevision:2,exportedThreadCount:1,exportedMessageCount:2,intentionalDeletionCount:0});
     if(mode==='stale-in-queue'||mode==='normal')assert.equal(checks,1);
   }
 });
