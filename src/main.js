@@ -20181,6 +20181,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           manifestContent,
           expectedManifestContent: prepared.expectedText,
           revision,
+          verifyManifestContinuation: (request) => authority.verifyManifestContinuation({ ...request, projectId: prepared.projectId }),
           publishManifest: async ({ manifestPath, expectedText, nextText, reason }) => {
             if (manifestPath !== prepared.manifestPath) {
               const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');
@@ -20218,6 +20219,10 @@ async function recoverWriterProjectTransactionForFile(filePath) {
   return recoverProjectTransaction({
     scenePath: filePath,
     manifestPath,
+    verifyManifestContinuation: async (request) => {
+      const current = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+      return authority.verifyManifestContinuation({ ...request, projectId: normalizeStableProjectId(current.projectId) });
+    },
     publishManifest: async ({ manifestPath: targetPath, expectedText, nextText, reason }) => {
       if (targetPath !== manifestPath) {
         const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');

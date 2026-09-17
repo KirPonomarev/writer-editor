@@ -186,6 +186,7 @@ async function readCommitRecordState({
   expectedJournal = null,
   observedScene,
   observedManifest,
+  verifyManifestContinuation,
   fsAdapter = fsp,
 }) {
   const source = await readOptionalText(commitPathFor(scenePath), fsAdapter);
@@ -205,6 +206,15 @@ async function readCommitRecordState({
   if (record.scenePath !== scenePath || record.manifestPath !== manifestPath) {
     return corruptCommitState(source, 'COMMIT_RECORD_BINDING');
   }
+  const manifestMatches = async (targetDigest) => {
+    if (record.manifestDigest === targetDigest) return true;
+    if (typeof verifyManifestContinuation !== 'function') return false;
+    try {
+      const proof = await verifyManifestContinuation({ manifestPath, fromDigest: record.manifestDigest, toDigest: targetDigest });
+      return proof?.ok === true && proof.manifestPath === manifestPath
+        && proof.fromDigest === record.manifestDigest && proof.toDigest === targetDigest;
+    } catch { return false; }
+  };
   if (expectedJournal) {
     const currentCommit = record.transactionId === expectedJournal.transactionId
       && record.revision === expectedJournal.revision
@@ -212,7 +222,7 @@ async function readCommitRecordState({
       && record.manifestDigest === sha256hex(expectedJournal.after.manifest);
     if (currentCommit) return Object.freeze({ status: 'VALID', relation: 'CURRENT', record, source });
     const priorCommit = record.sceneDigest === digestOptional(expectedJournal.before.scene)
-      && record.manifestDigest === sha256hex(expectedJournal.before.manifest);
+      && await manifestMatches(sha256hex(expectedJournal.before.manifest));
     if (priorCommit) return Object.freeze({ status: 'VALID', relation: 'PRIOR', record, source });
     if (record.transactionId === expectedJournal.transactionId && record.revision !== expectedJournal.revision) {
       return corruptCommitState(source, 'COMMIT_RECORD_REVISION_MISMATCH');
@@ -225,7 +235,7 @@ async function readCommitRecordState({
   if (observedScene !== undefined && record.sceneDigest !== digestOptional(observedScene)) {
     return corruptCommitState(source, 'COMMIT_RECORD_SCENE_DIGEST_MISMATCH');
   }
-  if (observedManifest !== undefined && record.manifestDigest !== digestOptional(observedManifest)) {
+  if (observedManifest !== undefined && !(await manifestMatches(digestOptional(observedManifest)))) {
     return corruptCommitState(source, 'COMMIT_RECORD_MANIFEST_DIGEST_MISMATCH');
   }
   return Object.freeze({ status: 'VALID', relation: 'OBSERVED', record, source });
@@ -398,7 +408,7 @@ async function publishSceneExact({ scenePath, expectedText, nextText, revision, 
   await durableSaveTransaction({ filePath: scenePath, content: nextText, revision, fsAdapter });
 }
 
-async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, fsAdapter = fsp }) {
+async function recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, fsAdapter = fsp }) {
   assertPathPair(scenePath, manifestPath);
   if (typeof publishManifest !== 'function') {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MANIFEST_AUTHORITY_REQUIRED', TRANSACTION_PHASES.ADMIT);
@@ -413,6 +423,7 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
     scenePath,
     manifestPath,
     expectedJournal: journal,
+    verifyManifestContinuation,
     fsAdapter,
   });
   if (commitState.status === 'CORRUPT') {
@@ -478,6 +489,7 @@ async function commitProjectTransaction({
   expectedManifestContent,
   revision,
   publishManifest,
+  verifyManifestContinuation,
   fsAdapter = fsp,
 }) {
   assertPathPair(scenePath, manifestPath);
@@ -494,7 +506,7 @@ async function commitProjectTransaction({
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MANIFEST_AUTHORITY_REQUIRED', TRANSACTION_PHASES.ADMIT);
   }
 
-  const recovery = await recoverProjectTransaction({ scenePath, manifestPath, publishManifest, fsAdapter });
+  const recovery = await recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, fsAdapter });
   const observedScene = await readOptionalText(scenePath, fsAdapter);
   const observedManifest = await readOptionalText(manifestPath, fsAdapter);
   if (observedScene !== expectedSceneContent) {
@@ -527,6 +539,7 @@ async function commitProjectTransaction({
     manifestPath,
     observedScene,
     observedManifest,
+    verifyManifestContinuation,
     fsAdapter,
   });
   if (priorCommitState.status === 'CORRUPT') {

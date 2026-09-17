@@ -33,6 +33,8 @@ One bounded native manuscript fixture and journey driver, separate raw field ora
 - src/io/markdown/index.mjs
 - src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 - src/io/revisionBridge/exactTextMinSafeWrite.mjs
+- src/core/project-transaction-v1.cjs
+- src/product/mainProjectManifestAuthority.mjs
 - src/main.js
 - src/io/revisionBridge/index.mjs
 - test/contracts/rtk-word-full-manuscript-volume.contract.test.js
@@ -42,7 +44,7 @@ One bounded native manuscript fixture and journey driver, separate raw field ora
 - package-lock.json
 - docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json
 - src/renderer
-- src/core
+- src/core except the explicitly declared project-transaction-v1.cjs integration
 - Historical accepted evidence and raw artifacts
 - New product network, secrets, dependencies or broad security limits
 
@@ -95,7 +97,7 @@ Composition uses the isolated real Chromium editable input path and records the 
 
 Styles and hierarchy require nonvacuous source fixtures, complete raw readback and mutation controls. A missing mandatory subcase keeps its field unproved. Existing simple text/order journeys and historical evidence remain unchanged. Only a directly reproduced product failure can justify a repair within the declared outcome.
 
-The native rich probe reproduced two persistence integration failures: post-Save invalidation changed the committed manifest, and accepted Word review changed the scene outside its existing WP201 commit. The fix includes invalidation in the scene/manifest transaction and injects the same main-owned publication port into the existing review recovery wrapper. Existing snapshots, journals, receipt/readback, input CAS and corruption checks remain mandatory. A stale or failed writer never acknowledges success.
+The native rich probe reproduced two persistence integration failures: post-Save invalidation changed the committed manifest, and accepted Word review changed the scene outside its existing WP201 commit. The fix includes invalidation in the scene/manifest transaction and injects the same main-owned publication port into the existing review recovery wrapper. Existing snapshots, journals, receipt/readback, input CAS and corruption checks remain mandatory. A stale or failed writer never acknowledges success. The multi-scene follow-up reproduced legitimate manifest succession invalidating older scene commits; the existing manifest authority now durably records exact transitions in its private anchor directory. The core accepts an older manifest digest only through a verified, bounded same-project/path hash chain from that authority. Missing or unrecorded changes remain corruption, and pending journal recovery retains the same check.
 
 The native token failure also exposed Word custom-string decoding: a random signed token contained literal `_x3eCC_`, which Word converted to a Unicode character. Custom properties now escape literal Xstring sequences; both authority readers decode once before the unchanged digest and signature checks.
 

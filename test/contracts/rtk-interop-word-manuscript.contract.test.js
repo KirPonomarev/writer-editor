@@ -112,3 +112,17 @@ test('Custom-property signed tokens escape Word Xstring decoding exactly once',(
  }
  assert.equal(context.decodeDocxCustomPropertyText('_x005F_x0041_'),'_x0041_');
 });
+
+test('Actual manifest authority proves cross-scene succession and rejects an unrecorded edit',async t=>{
+ const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manifest-continuation-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
+ const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
+ const authority=createMainProjectManifestAuthority({anchorRoot:path.join(root,'anchors'),useLeaseHeartbeatWorker:false});
+ const manifestPath=path.join(root,'project.json'),projectId='fixture-project';
+ const scenes=['a','b','c'].map(n=>path.join(root,n+'.txt'));
+ await fsp.writeFile(manifestPath,JSON.stringify({projectId,n:0}));for(const p of scenes)await fsp.writeFile(p,'initial');
+ const verifyManifestContinuation=req=>authority.verifyManifestContinuation({...req,projectId});
+ const commit=async(i,n)=>commitProjectTransaction({scenePath:scenes[i],sceneContent:'edited-'+n,expectedSceneContent:await fsp.readFile(scenes[i],'utf8'),manifestPath,expectedManifestContent:await fsp.readFile(manifestPath,'utf8'),manifestContent:JSON.stringify({projectId,n}),revision:n,verifyManifestContinuation,publishManifest:({manifestPath:targetPath,expectedText,nextText})=>authority.commitManifestText({projectId,targetPath,expectedText,nextText})});
+ for(const [i,n] of [[0,1],[1,2],[2,3],[0,4],[1,5],[0,6]])assert.equal((await commit(i,n)).success,true);
+ const before=await fsp.readFile(scenes[0],'utf8');await fsp.writeFile(manifestPath,JSON.stringify({projectId,n:999}));
+ await assert.rejects(commit(0,7),e=>e.code==='E_PROJECT_COMMIT_CORRUPT');assert.equal(await fsp.readFile(scenes[0],'utf8'),before);
+});

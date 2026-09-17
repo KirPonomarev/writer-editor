@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import { constants as fsConstants } from 'node:fs';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 
@@ -105,6 +106,68 @@ export function createMainProjectManifestAuthority(input = {}) {
     useHeartbeatWorker: input.useLeaseHeartbeatWorker,
   });
 
+  // A scene's last commit can legitimately predate another scene's manifest
+  // update. Only this publication authority records those durable transitions.
+  const transitionRoot = (projectId, targetPath) => path.join(anchorRoot, 'manifest-transitions', hashText(`${projectId}\0${targetPath}`));
+  async function recordManifestTransition(projectId, targetPath, previousHash, nextHash) {
+    if (!previousHash || previousHash === nextHash) return;
+    const dir = path.join(transitionRoot(projectId, targetPath), previousHash);
+    const file = path.join(dir, `${nextHash}.json`);
+    const text = JSON.stringify({ schemaVersion: 'yalken.manifest-transition.v1', projectId, targetPath, previousHash, nextHash });
+    await fs.mkdir(dir, { recursive: true, mode: 0o700 });
+    try { await createTextExclusively(file, text); }
+    catch (error) {
+      if (error?.code !== 'EEXIST' || (await readTextIfPresent(file)).text !== text) throw error;
+    }
+    await syncFileAndParent(file);
+    for (const parent of [path.dirname(dir), path.dirname(path.dirname(dir)), anchorRoot]) {
+      const handle = await fs.open(parent, 'r');
+      try { await handle.sync(); } finally { await handle.close(); }
+    }
+  }
+
+  async function verifyManifestContinuation({ projectId, manifestPath, fromDigest, toDigest }) {
+    const no = { ok: false };
+    if (normalizeStage10ProjectId(projectId) !== projectId || !path.isAbsolute(manifestPath)
+      || !/^[a-f0-9]{64}$/u.test(fromDigest) || !/^[a-f0-9]{64}$/u.test(toDigest)) return no;
+    const root = transitionRoot(projectId, manifestPath);
+    const pending = [fromDigest], visited = new Set();
+    try {
+      const anchor = await fs.realpath(anchorRoot), actualRoot = await fs.realpath(root);
+      if (!actualRoot.startsWith(`${anchor}${path.sep}`)) return no;
+      while (pending.length && visited.size < 4096) {
+        const previousHash = pending.shift();
+        if (visited.has(previousHash)) continue;
+        visited.add(previousHash);
+        if (previousHash === toDigest) return { ok: true, projectId, manifestPath, fromDigest, toDigest };
+        const dir = path.join(root, previousHash);
+        let entries;
+        try {
+          const st = await fs.lstat(dir);
+          if (!st.isDirectory() || st.isSymbolicLink()) return no;
+          entries = await fs.readdir(dir);
+        } catch (error) { if (error?.code === 'ENOENT') continue; throw error; }
+        if (entries.length > 256) return no;
+        for (const entry of entries) {
+          if (!/^[a-f0-9]{64}\.json$/u.test(entry)) return no;
+          const handle = await fs.open(path.join(dir, entry), fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_NONBLOCK);
+          let record;
+          try {
+            const st = await handle.stat();
+            if (!st.isFile() || st.nlink !== 1 || st.size > 4096) return no;
+            record = JSON.parse(await handle.readFile('utf8'));
+          } finally { await handle.close(); }
+          const nextHash = entry.slice(0, -5);
+          if (record.schemaVersion !== 'yalken.manifest-transition.v1' || record.projectId !== projectId
+            || record.targetPath !== manifestPath || record.previousHash !== previousHash || record.nextHash !== nextHash) return no;
+          if (!visited.has(nextHash)) pending.push(nextHash);
+          if (pending.length > 4096) return no;
+        }
+      }
+    } catch { return no; }
+    return no;
+  }
+
   async function replaceText(targetPath, nextText, label) {
     if (!writeFileAtomic) {
       const temporaryPath = path.join(
@@ -194,6 +257,7 @@ export function createMainProjectManifestAuthority(input = {}) {
           actualHash: readback.exists ? hashText(readback.text) : '',
         });
       }
+      await recordManifestTransition(projectId, targetPath, expectedText === null ? '' : hashText(expectedText), hashText(nextText));
       return {
         ok: true,
         schemaVersion: MAIN_PROJECT_MANIFEST_AUTHORITY_SCHEMA,
@@ -221,5 +285,6 @@ export function createMainProjectManifestAuthority(input = {}) {
     leaseManager,
     withProjectLease: (projectId, operation) => leaseManager.withLease(projectId, operation),
     commitManifestText,
+    verifyManifestContinuation,
   });
 }
