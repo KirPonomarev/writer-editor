@@ -32,6 +32,7 @@ const CONTENT_TYPES_NS = 'http://schemas.openxmlformats.org/package/2006/content
 const W14_NS = 'http://schemas.microsoft.com/office/word/2010/wordml';
 const W15_NS = 'http://schemas.microsoft.com/office/word/2012/wordml';
 const W16CID_NS = 'http://schemas.microsoft.com/office/word/2016/wordml/cid';
+const W16CEX_NS = 'http://schemas.microsoft.com/office/word/2018/wordml/cex';
 const W16DU_NS = 'http://schemas.microsoft.com/office/word/2023/wordml/word16du';
 const SIGNED_SHA256_RE = /^sha256:[a-f0-9]{64}$/u;
 const HMAC_RE = /^hmac-sha256:[a-f0-9]{64}$/u;
@@ -2269,9 +2270,28 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
   const endsById = new Map();
   const refsById = new Map();
   const duplicateIds = new Set();
+  const paragraphs = documentScan.tokens.filter((token) => isWordToken(token, 'p')
+    && token.path.length === 3 && token.path[1] === 'body');
+  const paragraphAtoms = new Map();
+  const semanticRange = (startToken, endToken, finalText = false) => {
+    if (!endToken || endToken.openStart < startToken.closeEnd) return null;
+    const paragraph = paragraphs.find((token) => token.openEnd <= startToken.openStart
+      && token.closeStart >= endToken.closeEnd);
+    if (!paragraph) return null;
+    if (!paragraphAtoms.has(paragraph.openStart)) {
+      paragraphAtoms.set(paragraph.openStart, extractSemanticAtoms(documentXml, documentScan, paragraph));
+    }
+    const atoms = paragraphAtoms.get(paragraph.openStart).filter((atom) => !finalText || atom.kind !== 'DeletedText');
+    const before = atoms.filter((atom) => atom.order < startToken.openStart);
+    const within = atoms.filter((atom) => atom.order >= startToken.closeEnd && atom.order < endToken.openStart);
+    const startUtf16 = semanticAtomsToText(before).length;
+    const selectedText = semanticAtomsToText(within);
+    return { startUtf16, endUtf16: startUtf16 + selectedText.length, selectedText,
+      blockTextSha256: cryptoPort.sha256Text(semanticAtomsToText(atoms)) };
+  };
   for (const token of documentScan.tokens) {
     if (token.namespaceUri !== W_NS) continue;
-    const id = attr(token, 'id');
+    const id = attr(token, 'id', W_NS);
     if (!id) continue;
     if (token.localName === 'commentRangeStart') {
       if (startsById.has(id)) duplicateIds.add(id);
@@ -2291,10 +2311,12 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
   }
   // Crossing-interval check across DIFFERENT ids (proper overlap of [start,end)).
   const completeRanges = [];
+  const crossingIds = new Set();
   for (const [id, startToken] of startsById) {
     const endToken = endsById.get(id);
     if (!endToken) continue;
-    completeRanges.push({ id, start: startToken.openStart, end: endToken.closeEnd, startToken, endToken });
+    completeRanges.push({ id, start: startToken.openStart, end: endToken.closeEnd, startToken, endToken,
+      semantic: semanticRange(startToken, endToken), paragraphIndex: paragraphIndexForOffset(documentScan, startToken.openStart) });
   }
   for (let i = 0; i < completeRanges.length; i += 1) {
     for (let j = i + 1; j < completeRanges.length; j += 1) {
@@ -2303,7 +2325,10 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
       if (a.id === b.id) continue;
       const overlaps = Math.max(a.start, b.start) < Math.min(a.end, b.end);
       const nested = (a.start <= b.start && a.end >= b.end) || (b.start <= a.start && b.end >= a.end);
-      if (overlaps && !nested) {
+      const sameTextRange = a.semantic && b.semantic && a.paragraphIndex === b.paragraphIndex
+        && a.semantic.startUtf16 === b.semantic.startUtf16 && a.semantic.endUtf16 === b.semantic.endUtf16;
+      if (overlaps && !nested && !sameTextRange) {
+        crossingIds.add(a.id); crossingIds.add(b.id);
         reasons.push(reason('RTK_COMMENT_ANCHOR_CROSSING', `comments.${a.id}.${b.id}`, 'Crossing comment anchor intervals are typed, not exact.', { commentIdA: a.id, commentIdB: b.id }));
       }
     }
@@ -2323,15 +2348,23 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
     } else if (isDuplicate) {
       diagnostic = 'RTK_COMMENT_ANCHOR_DUPLICATE';
       anchored = false;
-    } else if (completeRanges.some((r) => r.id !== id && Math.max(r.start, startToken.openStart) < Math.min(r.end, endToken.closeEnd))) {
+    } else if (crossingIds.has(id)) {
       // Cross-story/crossing — leave anchored false (crossing diagnostic already pushed above).
       diagnostic = 'RTK_COMMENT_ANCHOR_CROSSING';
     } else {
       anchored = true;
     }
-    const quotedAnchorText = endToken
-      ? stripTagsToText(documentXml.slice(startToken.closeEnd, endToken.openStart)).trim()
-      : '';
+    const anchorRange = semanticRange(startToken, endToken);
+    const finalTextAnchorRange = semanticRange(startToken, endToken, true);
+    const quotedAnchorText = anchorRange?.selectedText ?? (endToken
+      ? semanticAtomsToText(extractSemanticAtoms(documentXml, documentScan,
+          { openEnd: startToken.closeEnd, closeStart: endToken.openStart }))
+      : '');
+    if (anchored && (!hasRef || !anchorRange)) {
+      anchored = false;
+      diagnostic = 'RTK_COMMENT_ANCHOR_LONE';
+      reasons.push(reason(diagnostic, `comments.${id}`, 'A complete single-paragraph range and reference are required.', { commentId: id }));
+    }
     const relatedReplacementGroup = relatedReplacementGroupForCommentAnchor({
       anchorStart: startToken.openStart,
       anchorEnd: endToken ? endToken.closeEnd : startToken.closeEnd,
@@ -2346,6 +2379,8 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
       anchorStart: startToken.openStart,
       anchorEnd: endToken ? endToken.closeEnd : startToken.closeEnd,
       quotedAnchorText,
+      anchorRange,
+      finalTextAnchorRange,
       anchored,
       anchorDiagnostic: diagnostic,
       hasStart,
@@ -2389,35 +2424,43 @@ function collectModernCommentMetadata(scans) {
   const metadataByParaId = new Map();
   const metadataById = new Map();
   const people = [];
-  for (const token of scans.commentsExtended.tokens.filter((item) => item.localName === 'commentEx')) {
+  for (const token of scans.commentsExtended.tokens.filter((item) => item.namespaceUri === W15_NS && item.localName === 'commentEx')) {
     const item = {
-      paraId: attr(token, 'paraId'),
-      paraIdParent: attr(token, 'paraIdParent'),
-      done: attr(token, 'done').toLowerCase() === 'true' || attr(token, 'done') === '1',
+      paraId: attr(token, 'paraId', W15_NS),
+      paraIdParent: attr(token, 'paraIdParent', W15_NS),
+      done: attr(token, 'done', W15_NS).toLowerCase() === 'true' || attr(token, 'done', W15_NS) === '1',
       attributes: cloneJsonSafe(token.attributes),
     };
-    if (item.paraId) metadataByParaId.set(item.paraId, item);
+    if (item.paraId) metadataByParaId.set(item.paraId, { ...item, duplicate: metadataByParaId.has(item.paraId) });
   }
   for (const token of scans.commentsIds.tokens) {
-    if (token.localName !== 'commentId') continue;
+    if (token.namespaceUri !== W16CID_NS || token.localName !== 'commentId') continue;
     const item = {
-      paraId: attr(token, 'paraId'),
-      durableId: attr(token, 'durableId') || attr(token, 'durableId', W16CID_NS),
-      dateUtc: attr(token, 'dateUtc') || attr(token, 'dateUtc', W16CID_NS),
+      paraId: attr(token, 'paraId', W16CID_NS),
+      durableId: attr(token, 'durableId', W16CID_NS),
+      dateUtc: attr(token, 'dateUtc', W16CID_NS),
       attributes: cloneJsonSafe(token.attributes),
     };
-    if (item.paraId) metadataByParaId.set(item.paraId, { ...(metadataByParaId.get(item.paraId) || {}), ...item });
+    if (item.paraId) {
+      const prior = metadataByParaId.get(item.paraId) || {};
+      metadataByParaId.set(item.paraId, { ...prior, ...item, duplicate: prior.duplicate === true || Boolean(prior.durableId) || metadataById.has(item.durableId) });
+    }
     if (item.durableId) metadataById.set(item.durableId, item);
   }
   for (const token of scans.commentsExtensible.tokens) {
-    const paraId = attr(token, 'paraId');
+    if (token.namespaceUri !== W16CEX_NS || token.localName !== 'commentExtensible') continue;
+    const durableId = attr(token, 'durableId', W16CEX_NS);
+    const idRecord = metadataById.get(durableId);
+    const paraId = idRecord?.paraId || attr(token, 'paraId', W16CEX_NS);
     if (!paraId) continue;
     const item = {
       ...(metadataByParaId.get(paraId) || {}),
       paraId,
-      durableId: attr(token, 'durableId') || attr(token, 'durableId', W16CID_NS),
-      reopened: attr(token, 'reopened') === '1' || attr(token, 'reopened').toLowerCase() === 'true',
-      done: attr(token, 'done') === '1' || attr(token, 'done').toLowerCase() === 'true',
+      durableId,
+      dateUtc: attr(token, 'dateUtc', W16CEX_NS),
+      reopened: attr(token, 'reopened', W16CEX_NS) === '1' || attr(token, 'reopened', W16CEX_NS).toLowerCase() === 'true',
+      duplicate: metadataByParaId.get(paraId)?.duplicate === true || metadataByParaId.get(paraId)?.extensibleSeen === true,
+      extensibleSeen: true,
       attributes: cloneJsonSafe(token.attributes),
     };
     metadataByParaId.set(paraId, item);
@@ -2480,8 +2523,9 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
   const records = [];
   const seenIds = new Set();
   let ordinal = 0;
-  for (const token of scans.comments.tokens.filter((item) => item.localName === 'comment')) {
-    const rawId = attr(token, 'id') || String(ordinal);
+  for (const token of scans.comments.tokens.filter((item) => isWordToken(item, 'comment'))) {
+    const declaredRawId = attr(token, 'id', W_NS);
+    const rawId = declaredRawId || String(ordinal);
     const explicitParaId = attr(token, 'paraId', W_NS) || attr(token, 'paraId');
     const fallbackParaId = explicitParaId ? '' : lastCommentParagraphParaId(scans, token);
     const paraId = explicitParaId || fallbackParaId || rawId;
@@ -2493,21 +2537,26 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
     const duplicate = seenIds.has(rawId);
     seenIds.add(rawId);
     const anchor = anchors.get(rawId) || {};
-    const body = tokenText(scans.comments.xml, token);
+    const paragraphs = scans.comments.tokens.filter(item => isWordToken(item, 'p')
+      && item.openStart > token.openStart && item.closeEnd <= token.closeStart)
+      .sort((left, right) => left.openStart - right.openStart);
+    const body = paragraphs.map(paragraph => tokenTextSemantic(scans.comments.xml, scans.comments, paragraph)).join('\n');
     const parentKey = attr(token, 'parentId') || rawString(meta.paraIdParent);
-    const author = attr(token, 'author');
+    const author = attr(token, 'author', W_NS);
     const record = {
       rawId,
       paraId,
       paraIdSource,
       parentKey,
       duplicate,
-      relationshipDiagnostic: '',
+      relationshipDiagnostic: !declaredRawId ? 'RTK_COMMENT_ID_MISSING'
+        : meta.duplicate === true ? 'RTK_COMMENT_METADATA_AMBIGUOUS' : '',
       ordinal,
       body,
       author,
-      initials: attr(token, 'initials'),
-      date: attr(token, 'date'),
+      initials: attr(token, 'initials', W_NS),
+      date: attr(token, 'date', W_NS),
+      dateUtc: attr(token, 'dateUtc', W16DU_NS) || rawString(meta.dateUtc),
       durableId: rawString(meta.durableId),
       done: meta.done === true,
       reopened: meta.reopened === true
@@ -2627,6 +2676,8 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
         author: reply.author,
         initials: reply.initials,
         date: reply.date,
+        dateUtc: reply.dateUtc,
+        durableId: reply.durableId,
         sourceXmlProvenance: reply.sourceXmlProvenance,
       });
       replies.push(...buildReplies(reply, seen));
@@ -2664,8 +2715,11 @@ function parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort
         people: metadata.people,
       },
       date: record.date,
+      dateUtc: record.dateUtc,
       anchorStart: record.anchor.anchorStart ?? null,
       anchorEnd: record.anchor.anchorEnd ?? null,
+      anchorRange: record.anchor.anchorRange || null,
+      finalTextAnchorRange: record.anchor.finalTextAnchorRange || null,
       quotedAnchorText: record.anchor.quotedAnchorText || '',
       relatedRevision: record.anchor.relatedRevision || null,
       relatedReplacementGroup: isPlainObject(record.anchor.relatedReplacementGroup)

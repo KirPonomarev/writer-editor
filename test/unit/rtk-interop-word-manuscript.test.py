@@ -107,4 +107,44 @@ class ManuscriptOracle(unittest.TestCase):
   for mutate in [lambda v:v['result']['returnIntake']['reviewMetadata'].update(sourceArtifactSha256='sha256:'+'0'*64),lambda v:v['result']['returnIntake']['reviewMetadata'].update(authority='CAN_WRITE'),lambda v:v['result']['returnIntake']['reviewMetadata']['textRevisions'].reverse(),lambda v:v['result']['returnIntake']['counts'].update(propertyRevisions=0)]:
    bad=copy.deepcopy(value);mutate(bad)
    with self.assertRaises(ValueError):m.review_revision_proof(d,bad,1,True)
+def test_comment_oracle_matches_raw_namespaces_graph_ranges_and_twelve_mutants(self):
+  expected=m.comment_expected('SINGLE_SCENE','C2','project-unit','roman/01_scene-01.txt')
+  d=ET.fromstring(document(m.paragraphs(m.expected_docs('SINGLE_SCENE','C2')[0])))
+  comments=ET.Element(m.W+'comments');ex=ET.Element(m.C15+'commentsEx');ids=ET.Element(m.CID+'commentsIds');cex=ET.Element(m.CEX+'commentsExtensible')
+  ct=ET.Element('{http://schemas.openxmlformats.org/package/2006/content-types}Types')
+  rels=ET.Element('{http://schemas.openxmlformats.org/package/2006/relationships}Relationships')
+  for n,r in zip(m.COMMENT_PARTS,m.COMMENT_RELATIONSHIPS):
+   ET.SubElement(ct,'{http://schemas.openxmlformats.org/package/2006/content-types}Override',PartName='/word/'+n+'.xml',ContentType='application/vnd.openxmlformats-officedocument.wordprocessingml.'+n+'+xml')
+   ET.SubElement(rels,'{http://schemas.openxmlformats.org/package/2006/relationships}Relationship',Id=n,Type=r,Target=n+'.xml')
+  i=0
+  for thread in expected['threads'][:2]:
+   p=d.find(m.W+'body').findall(m.W+'p')[thread['anchor']['sceneParagraphIndex']];parent=None;starts=[];ends=[]
+   for message in thread['messages']:
+    ident=str(i);pid=format(1024+i,'08X');i+=1;durable=m.comment_durable(message['commentId']);pro=message['provenance']
+    c=ET.SubElement(comments,m.W+'comment',{m.W+'id':ident,**{m.W+k:pro[k] for k in ['author','initials','date']}})
+    cp=ET.SubElement(c,m.W+'p',{m.C14+'paraId':pid});run=ET.SubElement(cp,m.W+'r')
+    for atom in __import__('re').split(r'([\t\n])',message['body']):
+     if atom in ['\t','\n']:ET.SubElement(run,m.W+('tab' if atom=='\t' else 'br'))
+     elif atom:ET.SubElement(run,m.W+'t').text=atom
+    ET.SubElement(ex,m.C15+'commentEx',{m.C15+'paraId':pid,m.C15+'done':'1' if thread['status']=='resolved' else '0',**({m.C15+'paraIdParent':parent} if parent else {})})
+    ET.SubElement(ids,m.CID+'commentId',{m.CID+'paraId':pid,m.CID+'durableId':durable})
+    ET.SubElement(cex,m.CEX+'commentExtensible',{m.CEX+'durableId':durable,m.CEX+'dateUtc':pro['dateUtc']})
+    starts.append(ET.Element(m.W+'commentRangeStart',{m.W+'id':ident}));ends.append(ET.Element(m.W+'commentRangeEnd',{m.W+'id':ident}));rr=ET.Element(m.W+'r');ET.SubElement(rr,m.W+'commentReference',{m.W+'id':ident});ends.append(rr)
+    if parent is None:parent=pid
+   for j,x in enumerate(starts):p.insert(j,x)
+   p.extend(ends)
+  parts={'[Content_Types].xml':ET.tostring(ct),'word/_rels/document.xml.rels':ET.tostring(rels),'word/document.xml':ET.tostring(d)}
+  parts.update({'word/'+name+'.xml':ET.tostring(root) for name,root in zip(m.COMMENT_PARTS,[comments,ex,ids,cex])})
+  proof=m.comment_parts(parts,d,expected);self.assertEqual(proof['messageCount'],4);self.assertEqual(proof['intentionalDeletionCount'],1)
+  controls=m.comment_controls(parts,d,expected);self.assertEqual([r['id'] for r in controls],m.COMMENT_CONTROLS);self.assertEqual(len(set(r['sha256'] for r in controls)),12)
+  # Word may split runs and renumber local IDs; neither operation changes meaning.
+  changed=copy.deepcopy(comments);first=changed[0].find('.//'+m.W+'r');atom=first.find(m.W+'t');value=atom.text;atom.text=value[:3];ET.SubElement(first,m.W+'t').text=value[3:]
+  # Keep literal order: insert the split atom immediately after the original.
+  new=first[-1];first.remove(new);first.insert(list(first).index(atom)+1,new)
+  split={**parts,'word/comments.xml':ET.tostring(changed)}
+  self.assertEqual(m.comment_parts(split,d,expected)['semanticSha256'],proof['semanticSha256'])
+  for mutated in [{**parts,'word/comments.xml':ET.tostring(changed).replace(b'Alice &amp; editor',b'Alice')},
+                  {**parts,'[Content_Types].xml':parts['[Content_Types].xml'].replace(b'application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml',b'application/vnd.ms-word.commentsExtended+xml')}]:
+   with self.assertRaises(ValueError):m.comment_parts(mutated,d,expected)
+
 if __name__=='__main__':unittest.main()

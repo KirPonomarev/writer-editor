@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
+const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
 
 const FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID = 'cmd.project.review.exportFullManuscriptDocxReviewPacket';
@@ -773,6 +774,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       ? deps.deriveWordBookmarkNameV1
       : undefined,
   });
+  const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
   const sceneText = scenes.map((scene) => blocks
@@ -800,6 +802,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     profileId: FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID,
     scope: 'full-manuscript',
     roundId,
+    ...(commentExport ? { commentExport } : {}),
     scenes: scenes.map((scene) => ({
       sceneId: scene.sceneId,
       sceneOrdinal: scene.sceneOrdinal,
@@ -837,6 +840,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const provisionalBuffer = buildDocxReviewPacketBuffer({
     sceneText,
     blocks,
+    commentExport,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: 'YRTK1.provisional' },
       { name: REVIEW_DOCX_PACKET_YRTK2_PROPERTY_NAME, value: 'YRTK2.provisional' },
@@ -882,7 +886,8 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     exportArtifactId,
     semanticReturnId,
     createdAtUtc,
-    compileIrDigest: cryptoPort.sha256Json({ scope: 'full-manuscript', orderedSceneIds, blocks: blocks.map((block) => block.blockId) }),
+    compileIrDigest: cryptoPort.sha256Json({ scope: 'full-manuscript', orderedSceneIds, blocks: blocks.map((block) => block.blockId),
+      ...(commentExport ? { commentExportDigest: cryptoPort.sha256Json(commentExport) } : {}) }),
     actualBaselineDigest: fullBookRawSha256,
     parserProfileDigest,
     capabilityProfileDigest: capabilityManifestDigest,
@@ -944,6 +949,13 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     yrtk2TokenDigest: cryptoPort.sha256Text(yrtk2Result.token),
     capabilityManifestDigest,
     blockCount: blocks.length,
+    ...(commentExport ? { commentSummary: {
+      stateRevision: commentExport.stateRevision,
+      exportedThreadCount: commentExport.threads.length,
+      exportedMessageCount: commentExport.threads.reduce((sum, thread) => sum + thread.messages.length, 0),
+      intentionalDeletionCount: commentExport.tombstones.length,
+    } } : {}),
+    ...(commentExport ? { commentStateDigest: commentExport.stateDigest } : {}),
   };
   const authorityEncoded = buildAuthorityEnvelope(authorityPayload, hmacSecret, cryptoPort);
   const exportCapsule = {
@@ -1024,10 +1036,12 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       secretEmbeddedInDocx: false,
     },
     exportMap,
+    commentExport,
   };
   return {
     sceneText,
     blocks,
+    commentExport,
     forbiddenSecret: hmacSecret,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: authorityEncoded },

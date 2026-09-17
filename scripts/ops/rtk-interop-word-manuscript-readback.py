@@ -13,6 +13,7 @@ SUBCASES={
  'STYLES':['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  'NOVEL_SCENE_STRUCTURE':['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
  'TRACKED_REVIEW_SEMANTICS':['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
+ 'COMMENTS':['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
 }
 HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N'],'C5':['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE']}
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
@@ -22,7 +23,7 @@ def fields(volume,route):
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
         return ['TEXT','ORDER','UNICODE_IME_LOCALE']
-    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS'])
+    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -96,10 +97,10 @@ def docx(data,round=0,google=False):
         a=[n.get(W+'id') for n in starts];b=[n.get(W+'id') for n in ends]
         require(a==b and len(set(a))==len(a) and all(isinstance(i,str) and i.isdecimal() for i in a),'GOOGLE_BOOKMARK_PAIRING')
     for p in body.findall(W+'p'):
-        require(all(n.tag in {W+x for x in ['pPr','r','ins','del','bookmarkStart','bookmarkEnd','proofErr']} for n in p),'DOCX_PARAGRAPH')
+        require(all(n.tag in {W+x for x in ['pPr','r','ins','del','bookmarkStart','bookmarkEnd','proofErr','commentRangeStart','commentRangeEnd']} for n in p),'DOCX_PARAGRAPH')
         for rev in [*p.findall(W+'ins'),*p.findall(W+'del')]:require(all(n.tag==W+'r' for n in rev),'DOCX_REVISION')
         for r in p.iter(W+'r'):
-            require(all(n.tag in {W+x for x in ['rPr','t','delText','lastRenderedPageBreak']} for n in r),'DOCX_RUN')
+            require(all(n.tag in {W+x for x in ['rPr','t','delText','lastRenderedPageBreak','commentReference']} for n in r),'DOCX_RUN')
             for n in r:
                 if n.tag in [W+'t',W+'delText']:require(not list(n),'DOCX_TEXT_LEAF')
                 if n.tag==W+'lastRenderedPageBreak':require(not list(n) and not n.attrib and not n.text,'DOCX_PAGE_CACHE')
@@ -110,6 +111,133 @@ def docx(data,round=0,google=False):
     else:require(not ins and not dele,'UNEXPECTED_TRACKED_EDIT')
     return [v.visible(p) for p in body.findall(W+'p')],parts,d
 
+
+# Independent comment oracle. Fixed source data and raw OOXML, not a product
+# projection or its own PASS flag, define the expected result.
+C14='{http://schemas.microsoft.com/office/word/2010/wordml}'
+C15='{http://schemas.microsoft.com/office/word/2012/wordml}'
+CID='{http://schemas.microsoft.com/office/word/2016/wordml/cid}'
+CEX='{http://schemas.microsoft.com/office/word/2018/wordml/cex}'
+COMMENT_PARTS=['comments','commentsExtended','commentsIds','commentsExtensible']
+COMMENT_RELATIONSHIPS=[
+ 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments',
+ 'http://schemas.microsoft.com/office/2011/relationships/commentsExtended',
+ 'http://schemas.microsoft.com/office/2016/09/relationships/commentsIds',
+ 'http://schemas.microsoft.com/office/2018/08/relationships/commentsExtensible']
+COMMENT_CONTROLS=['missing-root','missing-reply','body-whitespace','wrong-author','wrong-date','wrong-utc-namespace','wrong-parent','wrong-status','wrong-anchor','missing-reference','duplicate-identity','deleted-reappeared']
+def comment_expected(volume,route,pid,scene_id):
+    ps=paragraphs(expected_docs(volume,route)[0]);out=[]
+    for status,quote in [('open','[quote] Authored quotation.'),('resolved','[code] const answer = 42;'),('deleted','[heading-1] Authored heading.')]:
+        ident='manuscript-comment-'+status;index=ps.index(quote)
+        messages=[{'commentId':ident+'-root','kind':'root','body':'  Root '+status+' & <замечание>\n\t尾 ','provenance':{'author':'Alice & editor','initials':'AE','date':'2026-09-17T10:00:00Z','dateUtc':'2026-09-17T10:00:00Z'}},
+                  {'commentId':ident+'-reply','kind':'reply','body':'Reply '+status+' 🧭','provenance':{'author':'Bob','initials':'B','date':'2026-09-17T10:01:00Z','dateUtc':'2026-09-17T10:01:00Z'}}]
+        out.append({'threadId':ident,'sceneId':scene_id,'rootCommentId':messages[0]['commentId'],'status':status,**({'deleted':True} if status=='deleted' else {}),
+                    'anchor':{'sceneId':scene_id,'blockId':'','paragraphIndex':index,'sceneParagraphIndex':index,'blockTextSha256':digest(quote.encode()),'startUtf16':0,'selectedText':quote,'selectedTextSha256':digest(quote.encode()),'authoritySource':'saved-project-exact-paragraph-range'},'messages':messages})
+    return {'schemaVersion':'yalken.rtk.word.non-text-return-state.v1','projectId':pid,'revision':1,'threads':out,'events':[]}
+def comment_durable(ident):
+    return format((int(digest(('comment-durable:'+ident).encode())[:8],16)&0x7fffffff) or 1,'08X')
+def comment_parts(parts,document,expected):
+    parsed={}
+    ct=ET.fromstring(parts['[Content_Types].xml']);rels=ET.fromstring(parts['word/_rels/document.xml.rels'])
+    for name,rel in zip(COMMENT_PARTS,COMMENT_RELATIONSHIPS):
+        p='word/'+name+'.xml'
+        require([n.get('ContentType') for n in ct if n.get('PartName')=='/'+p]==['application/vnd.openxmlformats-officedocument.wordprocessingml.'+name+'+xml'],'COMMENT_CONTENT_TYPE')
+        require([n.get('Target') for n in rels if n.get('Type')==rel]==[name+'.xml'],'COMMENT_RELATIONSHIP')
+        parsed[name]=ET.fromstring(parts[p])
+    require(parsed['comments'].tag==W+'comments' and parsed['commentsExtended'].tag==C15+'commentsEx'
+            and parsed['commentsIds'].tag==CID+'commentsIds' and parsed['commentsExtensible'].tag==CEX+'commentsExtensible','COMMENT_PART_NAMESPACE')
+    def indexed(root,tag,attr):
+        require(all(n.tag==tag for n in root),'COMMENT_ENTRY_NAMESPACE')
+        ids=[n.get(attr) for n in root];require(len(ids)==4 and len(set(ids))==4 and all(ids),'COMMENT_IDENTITY_SET')
+        return dict(zip(ids,list(root)))
+    cs=indexed(parsed['comments'],W+'comment',W+'id')
+    ex=indexed(parsed['commentsExtended'],C15+'commentEx',C15+'paraId')
+    cid=indexed(parsed['commentsIds'],CID+'commentId',CID+'paraId')
+    cex=indexed(parsed['commentsExtensible'],CEX+'commentExtensible',CEX+'durableId')
+    by_durable={};by_para={}
+    for ident,c in cs.items():
+        ps=c.findall(W+'p');require(ps and all(n.tag==W+'p' for n in c),'COMMENT_BODY_STRUCTURE')
+        par=ps[-1].get(C14+'paraId');require(par in ex and par in cid and par not in by_para,'COMMENT_PARAGRAPH_JOIN')
+        durable=cid[par].get(CID+'durableId');require(durable in cex and durable not in by_durable,'COMMENT_DURABLE_JOIN')
+        texts=[]
+        for p in ps:
+            # The body's only authored atoms are text, tabs and line breaks.
+            require(not list(p.iter(W+'del')) and not list(p.iter(W+'ins')),'COMMENT_BODY_REVISIONS')
+            require(all(n.tag in {W+x for x in ['pPr','r','proofErr','bookmarkStart','bookmarkEnd']} for n in p),'COMMENT_BODY_NODE')
+            for r in p.findall(W+'r'):require(all(n.tag in {W+x for x in ['rPr','t','tab','br','cr','annotationRef']} for n in r),'COMMENT_BODY_ATOM')
+            texts.append(''.join(n.text or '' if n.tag==W+'t' else '\t' if n.tag==W+'tab' else '\n' if n.tag in [W+'br',W+'cr'] else '' for n in p.iter()))
+        row={'id':ident,'paraId':par,'durableId':durable,'body':'\n'.join(texts),'parent':ex[par].get(C15+'paraIdParent'),
+             'done':ex[par].get(C15+'done'),'provenance':{'author':c.get(W+'author'),'initials':c.get(W+'initials'),'date':c.get(W+'date'),'dateUtc':cex[durable].get(CEX+'dateUtc')}}
+        by_durable[durable]=row;by_para[par]=row
+    require(set(ex)==set(cid)==set(by_para) and set(cex)==set(by_durable),'COMMENT_GRAPH_EXACT_JOIN')
+    ranges={};starts={};ends={};refs={}
+    body=document.find(W+'body')
+    for pi,p in enumerate(body.findall(W+'p')):
+        position=0;value=''
+        def walk(n,deleted=False):
+            nonlocal position,value
+            deleted=deleted or n.tag in [W+'del',W+'moveFrom']
+            if deleted:return
+            if n.tag in [W+'commentRangeStart',W+'commentRangeEnd',W+'commentReference']:
+                ident=n.get(W+'id');require(ident in cs and not list(n) and not n.text,'COMMENT_MARKER_ID')
+                target=starts if n.tag==W+'commentRangeStart' else ends if n.tag==W+'commentRangeEnd' else refs
+                require(ident not in target,'COMMENT_DUPLICATE_RANGE');target[ident]=(pi,position)
+            atom=(n.text or '') if n.tag==W+'t' else '\t' if n.tag==W+'tab' else '\n' if n.tag in [W+'br',W+'cr'] else ''
+            position+=len(atom.encode('utf-16-le'))//2;value+=atom
+            for child in n:walk(child,deleted)
+        walk(p);ranges[pi]=value
+    require(set(starts)==set(ends)==set(refs)==set(cs),'COMMENT_REFERENCE_SET')
+    result=[]
+    for thread in expected['threads']:
+        if thread['status']=='deleted':
+            require(all(comment_durable(m['commentId']) not in by_durable for m in thread['messages']),'COMMENT_DELETED_REAPPEARED');continue
+        parent=None
+        for message in thread['messages']:
+            durable=comment_durable(message['commentId']);require(durable in by_durable,'COMMENT_MESSAGE_MISSING')
+            row=by_durable[durable];require(row['body']==message['body'] and row['provenance']==message['provenance'],'COMMENT_LITERAL_BODY_PROVENANCE')
+            require(row['parent']==parent and row['done']==('1' if thread['status']=='resolved' else '0'),'COMMENT_THREAD_SHAPE_STATE')
+            ident=row['id'];a=thread['anchor'];pos=a['sceneParagraphIndex'];start=a['startUtf16'];end=start+len(a['selectedText'].encode('utf-16-le'))//2
+            require(starts[ident]==(pos,start) and ends[ident]==refs[ident]==(pos,end),'COMMENT_EXACT_RANGE')
+            require(ranges[pos].encode('utf-16-le')[2*start:2*end].decode('utf-16-le')==a['selectedText'],'COMMENT_ANCHOR_TEXT')
+            result.append({'canonicalCommentId':message['commentId'],'durableId':durable,'body':row['body'],'provenance':row['provenance'],'kind':message['kind'],'status':thread['status'],'paragraphIndex':pos,'startUtf16':start,'endUtf16':end})
+            if message['kind']=='root':parent=row['paraId']
+    require(len(result)==len(by_durable)==4,'COMMENT_EXACT_MESSAGE_SET')
+    return {'semanticSha256':digest(canonical(result)),'messageCount':4,'threadCount':2,'intentionalDeletionCount':1,
+            'partsSha256':{n:digest(parts['word/'+n+'.xml']) for n in COMMENT_PARTS}}
+def comment_controls(parts,document,expected):
+    result=[]
+    for name in COMMENT_CONTROLS:
+        pp=dict(parts);d=copy.deepcopy(document)
+        key='comments.xml' if name in ['missing-root','missing-reply','body-whitespace','wrong-author','wrong-date','duplicate-identity','deleted-reappeared'] else 'commentsExtensible.xml' if name=='wrong-utc-namespace' else 'commentsExtended.xml'
+        root=ET.fromstring(pp['word/'+key]);items=list(root)
+        if name=='missing-root':root.remove(items[0])
+        elif name=='missing-reply':root.remove(items[1])
+        elif name=='body-whitespace':
+            atom=items[0].find('.//'+W+'t');atom.text=(atom.text or '').strip()
+        elif name=='wrong-author':items[0].set(W+'author','Mallory')
+        elif name=='wrong-date':items[0].set(W+'date','2000-01-01T00:00:00Z')
+        elif name=='wrong-utc-namespace':
+            value=items[0].attrib.pop(CEX+'dateUtc');items[0].set(W+'dateUtc',value)
+        elif name=='wrong-parent':items[1].set(C15+'paraIdParent',items[2].get(C15+'paraId'))
+        elif name=='wrong-status':items[0].set(C15+'done','1')
+        elif name=='wrong-anchor':
+            marker=next(d.iter(W+'commentRangeStart'))
+            for p in d.iter():
+                if marker in list(p):p.remove(marker);p.append(marker);break
+        elif name=='missing-reference':
+            marker=next(d.iter(W+'commentReference'))
+            for p in d.iter():
+                if marker in list(p):p.remove(marker);break
+        elif name=='duplicate-identity':root.append(copy.deepcopy(items[0]))
+        elif name=='deleted-reappeared':
+            message=copy.deepcopy(items[0]);message.set(W+'id','999999');message.find('.//'+W+'t').text='  Root deleted & <замечание>\n\t尾 ';root.append(message)
+        pp['word/'+key]=ET.tostring(root)
+        rejected=False
+        try:comment_parts(pp,d,expected)
+        except (ValueError,KeyError):rejected=True
+        require(rejected,'COMMENT_FALSE_GREEN_'+name)
+        result.append({'id':name,'rejected':True,'sha256':digest(canonical({'parts':{k:digest(b) for k,b in pp.items()},'document':digest(ET.tostring(d))}))})
+    return result
 
 REVIEW_CONTROLS=['missing-insert','missing-delete','missing-property','changed-author','changed-legacy-date','changed-utc-date','wrong-utc-namespace','missing-current-format','wrong-property-kind','missing-manual-reason','granted-write','silent-canonical-apply']
 WORD_DATE_UTC='{http://schemas.microsoft.com/office/word/2023/wordml/word16du}dateUtc'
@@ -477,6 +605,27 @@ def audit(request):
     require(sum(e['type']=='compositionstart' for e in events)>=2 and sum(e['type']=='compositionend' for e in events)>=2 and any(e['type']=='input' and e['inputType']=='insertText' and e['isComposing'] is False and e['data']=='.' for e in events),'IME_COMMIT_END')
     stage('composition',sum([ime['afterCommit']['paragraphs']]+[paragraphs(d) for d in docs[1:]],[]))
     export_ids=set();previous_hashes=source_hashes;round_proofs=[];review_rounds=[];review_probe=None
+    comment_stages={};comment_queries={};comment_negative=[];comment_loss=None;comment_state_sha=None
+    expected_comments=comment_expected(volume,route,pid,ids[0]) if not generic else None
+    def comment_query(name):
+        value=read(name+'.json');b=raw(name+'-state.json');p=value['result']['rtkNonTextReturnState']
+        require(value['file']==prefix+name+'-state.json' and digest(b)==value['sha256']==comment_state_sha
+                and json.loads(b)==expected_comments and value['result']['ok'] is True,'COMMENT_CANONICAL_BYTES')
+        require(p['projectId']==pid and p['present'] is True and p['stateSha256']==comment_state_sha
+                and p['revision']==1 and p['threadCount']==3 and p['openRootCommentCount']==1,'COMMENT_PRODUCT_QUERY')
+        require(len(p['threads'])==3,'COMMENT_QUERY_COUNT')
+        for actual,wanted in zip(p['threads'],expected_comments['threads']):
+            require(all(actual[k]==wanted[k] for k in ['threadId','sceneId','rootCommentId','status','messages'])
+                and actual['rootBody']==wanted['messages'][0]['body']
+                and actual['rootBodySha256']==digest(wanted['messages'][0]['body'].encode())
+                and all(actual['anchor'][k]==wanted['anchor'][k] for k in ['sceneId','blockId','paragraphIndex','selectedText','selectedTextSha256','authoritySource']),'COMMENT_QUERY_LITERAL_FIELDS')
+        comment_queries[name]={'rawStateSha256':digest(b),'querySha256':digest(raw(name+'.json'))}
+    if not generic:
+        comment_state_sha=digest(raw('source-comments-state.json'));comment_query('source-comments')
+        require(read('comment-origin.json')=={'kind':'OWNED_SAVED_PROJECT_FIXTURE','canonicalApplyClaim':False,'sourceSha256':comment_state_sha},'COMMENT_SOURCE_AUTHORITY')
+    def comment_doc(name,parts,document,data):
+        proof=comment_parts(parts,document,expected_comments)
+        comment_stages[name]={**proof,'artifactSha256':digest(data)}
     def export_check(name,filename,round,hashes):
         x=read(name+'.json');r=x['result'];cap=r['exportCapsule'];b=raw(filename)
         require(x['before']==x['after']==hashes and r['ok'] is True and r['exported'] is True and r['commandId']=='cmd.project.review.exportFullManuscriptDocxReviewPacket' and r['bytesWritten']==len(b) and x['sha256']==digest(b),'EXPORT_COMMAND_HASH_CHAIN')
@@ -484,6 +633,10 @@ def audit(request):
         require(cap['exportId'] not in export_ids and cap['roundId'].startswith('round-'),'EXPORT_FRESH_ROUND');export_ids.add(cap['exportId'])
         require(r['publicationGate']['ok'] is True and r['publicationGate']['finalArtifactSha256']=='sha256:'+digest(b) and r['canAutoApply'] is False and r['canImportMutate'] is False,'EXPORT_AUTHORITY')
         ps,parts,doc=docx(b);stage(name+'-docx',ps,round)
+        if not generic:
+            comment_doc(name,parts,doc,b)
+            require(cap['commentSummary']=={'stateRevision':1,'exportedThreadCount':2,'exportedMessageCount':4,'intentionalDeletionCount':1}
+                    and r['publicationGate']['commentPreservationVerified'] is True and r['publicationGate']['intentionalDeletionCount']==1,'COMMENT_EXPORT_PUBLICATION')
         # Bind physical bookmark partitions to each separately saved scene.
         structure_stages[name]={'bookmarkSha256':bookmark_partition(doc,cap['roundId'],ids,expected_docs(volume,route,round))}
         style_stages[name]=assert_docx_styles(parts,doc)
@@ -495,11 +648,12 @@ def audit(request):
         life=read(name+'.json');require(life['status']=='PASS' and life['process']['status']==life['compileProcess']['status']==0 and life['cleanupOk'] is True,'WORD_LIFECYCLE')
         require(life['sourceDocxHash']==life['preOpenHash']==digest(raw(source_file)) and life['postWordHash']==life['copiedBackHash']==digest(raw(returned_file)),'WORD_HASH_CHAIN')
         lines=life['process']['stdout'].splitlines()
-        for k,val in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','2' if tracked else '0'),('COMMENT_COUNT','0'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lines if line.startswith(k+'=')]==[k+'='+val],'WORD_'+k)
+        for k,val in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','2' if tracked else '0'),('COMMENT_COUNT','0' if generic else '4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lines if line.startswith(k+'=')]==[k+'='+val],'WORD_'+k)
         require(life['screenshotProof']['ok'] is True and raw(directory+'/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'WORD_SCREENSHOT')
         require(life['nativeReadbackPath'].endswith('/'+run+'/'+directory+'/word-native-readback.txt') and life['evidencePath'].endswith('/'+run+'/'+returned_file),'WORD_FILE_BINDING')
         stage(name+'-native',v.native(raw(directory+'/word-native-readback.txt')),round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round)
+        if not generic:comment_doc(name,parts,d,raw(returned_file))
         if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_docs(volume,route,round))}
         else:require(generic and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
         if route!='C5':style_stages[name]=assert_docx_styles(parts,d)
@@ -529,6 +683,10 @@ def audit(request):
         done=read(base+'/round.json');require(done=={'ordinal':ordinal,'reviewedOrdinal':after_round,'requiredCycles':cycles,'complete':True,'admissionCredit':0},'ROUND_COUNT')
         if not generic:
             x=read(base+'/intake.json');r=x['result'];a=r['returnIntake'];require(x['before']==x['after']==previous_hashes and r['ok'] is True and r['commandId']=='cmd.project.review.activateDocxReviewPreviewSession','INTAKE_NO_WRITE')
+            cp=r['commentProductPath']
+            require(cp['ok'] is True and cp['status']=='unchanged' and cp['code']=='RTK_COMMENT_REEXPORT_RETURN_UNCHANGED'
+                    and cp['writerCalled'] is False and cp['applyReceipts']==cp['replayReceipts']==[]
+                    and cp['baselineReadback']=={'ok':True,'unchangedThreadIds':['manuscript-comment-open','manuscript-comment-resolved'],'missing':[],'changed':[]},'COMMENT_NO_DUPLICATE_APPLY')
             require(a['authenticated'] is True and a['returnedArtifactSha256']=='sha256:'+digest(raw(base+'/returned.docx')) and a['roundId']==cap['roundId'] and a['exportId']==cap['exportId'] and all(a['authority'].get(k) is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'RETURN_AUTHORITY')
             require(all(r[k] is False for k in ['canAutoApply','canImportMutate','canWriteStorage']),'INTAKE_NO_MUTATION_AUTHORITY')
             changes=r['reviewSurface']['revisionSession']['reviewGraph']['textChanges'];require(len(changes)==1 and changes[0]['match']['quote']==('sentinel alpha' if ordinal==1 else 'sentinel round'+str(ordinal-1)) and changes[0]['replacementText']=='sentinel round'+str(ordinal),'EXACT_ROUND_CHANGE')
@@ -538,14 +696,31 @@ def audit(request):
                 probe_file=base+'/review-probe/returned.docx';probe=raw(probe_file);ps,parts,pdoc=docx(probe,1);exact(ps,sum([paragraphs(d) for d in expected_docs(volume,route,1)],[]),'REVIEW_PROBE_FULL_TEXT')
                 lifecycle=read(base+'/review-probe-word.json');require(lifecycle['status']=='PASS' and lifecycle['cleanupOk'] is True and lifecycle['compileProcess']['status']==lifecycle['process']['status']==0,'REVIEW_PROBE_WORD_LIFECYCLE')
                 require(lifecycle['sourceDocxHash']==lifecycle['preOpenHash']==digest(raw(base+'/source.docx')) and lifecycle['postWordHash']==lifecycle['copiedBackHash']==digest(probe),'REVIEW_PROBE_BYTES')
-                for k,value in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','3'),('COMMENT_COUNT','0'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lifecycle['process']['stdout'].splitlines() if line.startswith(k+'=')]==[k+'='+value],'REVIEW_PROBE_'+k)
+                for k,value in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','3'),('COMMENT_COUNT','4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lifecycle['process']['stdout'].splitlines() if line.startswith(k+'=')]==[k+'='+value],'REVIEW_PROBE_'+k)
+                comment_doc(base+'/review-probe',parts,pdoc,probe)
                 require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
                 exact(v.native(raw(base+'/review-probe/word-native-readback.txt')),ps,'REVIEW_PROBE_NATIVE_TEXT')
                 require(lifecycle['evidencePath'].endswith('/'+run+'/'+probe_file) and lifecycle['nativeReadbackPath'].endswith('/'+run+'/'+base+'/review-probe/word-native-readback.txt'),'REVIEW_PROBE_NATIVE_PATH')
                 probe_intake=read(base+'/review-probe-intake.json');pr=probe_intake['result']['returnIntake']
                 require(pr['returnedArtifactSha256']=='sha256:'+digest(probe) and pr['roundId']==cap['roundId'] and pr['exportId']==cap['exportId'] and all(pr['authority'][k] is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'REVIEW_PROBE_AUTHENTICATED_RETURN')
-                require(probe_intake['before']['sceneHashes']==source_hashes and probe_intake['before']['commentStateSha256'] is None and raw(base+'/review-probe/manifest-before.json')==raw(base+'/review-probe/manifest-after.json') and probe_intake['before']['manifestSha256']==digest(raw(base+'/review-probe/manifest-before.json')),'REVIEW_PROBE_CANONICAL_NO_WRITE')
+                require(probe_intake['before']['sceneHashes']==source_hashes and probe_intake['before']['commentStateSha256']==comment_state_sha and raw(base+'/review-probe/manifest-before.json')==raw(base+'/review-probe/manifest-after.json') and probe_intake['before']['manifestSha256']==digest(raw(base+'/review-probe/manifest-before.json')),'REVIEW_PROBE_CANONICAL_NO_WRITE')
                 review_probe={'returnedSha256':digest(probe),'sourceSha256':digest(raw(base+'/source.docx')),'roundId':cap['roundId'],'exportId':cap['exportId'],'negativeControls':review_controls(pdoc,probe_intake),**review_revision_proof(pdoc,probe_intake,1,True)}
+                comment_negative=comment_controls(parts,pdoc,expected_comments)
+                loss=read(base+'/comment-loss-intake.json');lb=raw(base+'/comments-missing.docx');lps,lparts,ldoc=docx(lb,1)
+                require(lps==docx(raw(base+'/returned.docx'),1)[0] and not any(n.startswith('word/comments') for n in lparts)
+                        and not any(n.tag in [W+'commentRangeStart',W+'commentRangeEnd',W+'commentReference'] for n in ldoc.iter()),'COMMENT_ACTUAL_LOSS_MUTANT')
+                require(loss['kind']=='EXPLICIT_CORRUPTION_NEGATIVE_CONTROL' and loss['sourceSha256']==digest(raw(base+'/returned.docx'))
+                        and loss['mutantSha256']==digest(lb) and loss['before']==loss['after']
+                        and loss['before']['sceneHashes']==source_hashes and loss['before']['commentStateSha256']==comment_state_sha
+                        and loss['before']['manifestSha256']==digest(raw(base+'/review-probe/manifest-before.json')),'COMMENT_LOSS_NO_WRITE')
+                lr=loss['result'];li=lr['returnIntake'];lp=lr['commentProductPath']
+                require(lr['ok'] is True and li['authenticated'] is True and li['returnedArtifactSha256']=='sha256:'+digest(lb)
+                        and li['roundId']==cap['roundId'] and li['exportId']==cap['exportId']
+                        and lp['ok'] is False and lp['status']=='blocked' and lp['writerCalled'] is False
+                        and lp['code']=='RTK_COMMENT_REEXPORT_RETURN_CHANGED_OR_MISSING'
+                        and lp['applyReceipts']==lp['replayReceipts']==[]
+                        and lp['typedBlocked']==[{'threadId':t['threadId'],'canonicalCommentId':t['rootCommentId'],'code':'COMMENT_ROOT_MISSING'} for t in expected_comments['threads'][:2]],'COMMENT_VISIBLE_LOSS_LEDGER')
+                comment_loss={'sourceSha256':loss['sourceSha256'],'mutantSha256':digest(lb),'intakeSha256':digest(raw(base+'/comment-loss-intake.json')),'canonicalStateSha256':comment_state_sha,'missing':lp['typedBlocked'],'writerCalled':False}
             ap=read(base+'/apply.json');result=ap['result'];receipt=result['result']['receipt'];require(result==read(base+'/apply-command-result.json'),'APPLY_RAW_RESULT')
             require(ap['commandId']=='cmd.project.review.applyExactTextChangesBatch' and result['ok'] is True and result['applied'] is True and result['totals']=={'requested':1,'applied':1,'blocked':0,'failed':0,'skipped':0} and ap['changeId']==changes[0]['changeId'],'EXPLICIT_APPLY')
             require(ap['before']==previous_hashes and ap['afterApply'][0]!=previous_hashes[0] and ap['afterApply'][1:]==previous_hashes[1:] and receipt['sceneId']==ids[0] and receipt['projectId']==pid and receipt['changeIds']==[ap['changeId']] and receipt['writeStatus']=='applied' and result['editorSync']['ok'] is True and ap['save']['ok'] is True,'APPLY_CANONICAL_MUTATION')
@@ -555,10 +730,13 @@ def audit(request):
                 require(s['file']==prefix+base+f'/saved-scenes/{i}.txt','APPLY_SCENE_PATH');b=files[s['file']];actual=scene(b);require(digest(b)==s['sha256'] and normalize_doc(actual)==normalize_doc(d),'APPLY_RAW_RICH_SCENE');hashes.append(digest(b));all_ps+=paragraphs(actual)
             require(hashes==ap['afterSave'] and hashes[1:]==previous_hashes[1:],'APPLY_SAVED_HASH_CHAIN');previous_hashes=hashes;stage(base+'/persisted',all_ps,ordinal)
             renderer({**ap,'nodeId':nodes[0]},new_docs[0],base+'/applied-renderer');stage(base+'/applied-renderer',ap['renderer']['paragraphs']+sum([paragraphs(d) for d in new_docs[1:]],[]),ordinal);tree_check(ap['tree'],base+'/tree')
+            comment_query(base+'/comments')
         round_proofs.append({'ordinal':ordinal,'exportId':cap['exportId'],'roundId':cap['roundId'],'exportSha256':digest(raw(base+'/source.docx')),'returnedSha256':digest(raw(base+'/returned.docx')),'savedSceneHashes':previous_hashes})
     reopened=read('reopen.json');close=read('close.json')
     require(reopened['firstPid']==boot['pid']==close['pid'] and reopened['pid']!=boot['pid'] and close['closed'] is True,'FRESH_PROCESS')
     if not generic:
+        comment_query('reopened-comments')
+        require(raw('reopened-comments-state.json')==raw('runtime-project-snapshot/.yalken/word-review/non-text-return-state.v1.json'),'COMMENT_FRESH_PROCESS_DURABILITY')
         require(len(reopened['scenes'])==count,'REOPEN_SCENE_COUNT');all_raw=[];all_render=[]
         for i,(s,d) in enumerate(zip(reopened['scenes'],expected_docs(volume,route,final_round))):
             require(s['sceneId']==ids[i] and s['nodeId']==nodes[i] and s['file']==prefix+f'reopened-scenes/{i}.txt','REOPEN_SCENE_BINDING')
@@ -622,7 +800,16 @@ def audit(request):
     if route=='C5':
         unicode_proof['providerLocale']=google_proof['providerLocale']
         limitations['fonts']='Actual Chromium glyph fallback on the bound source/return runtime. Google content API has no interactive UI font session; literal Unicode is read before and after export. Pixel identity is not claimed.'
+    comment_proof=None
+    if not generic:
+        require(len({p['semanticSha256'] for p in comment_stages.values()})==1,'COMMENT_ALL_STAGE_CONTINUITY')
+        comment_proof={'sourceKind':'OWNED_SAVED_PROJECT_FIXTURE','canonicalApplyClaim':False,'sourceStateSha256':comment_state_sha,
+                       'stages':comment_stages,'queries':comment_queries,'negativeControls':comment_negative,'lossControl':comment_loss,
+                       'intentionalDeletionLedger':[{'threadId':'manuscript-comment-deleted','status':'deleted','messageCount':2,'outcome':'CANONICAL_DELETION_NOT_EXPORTED'}],
+                       'scope':'Two existing canonical root threads with one reply each, open/resolved states, one intentional tombstone; exact body, provenance and anchors. Edited existing comments return a typed block; automatic conflict resolution is not claimed.'}
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
+    for proof in proofs:
+        if proof['field']=='COMMENTS':proof['commentProof']=comment_proof
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
     return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 

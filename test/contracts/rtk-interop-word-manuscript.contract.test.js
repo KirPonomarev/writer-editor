@@ -140,12 +140,36 @@ test('Read-only manuscript tree exposes registered part/chapter/scene hierarchy 
  assert.equal(tree.length,1);assert.equal(tree[0].kind,'part');assert.equal(tree[0].children[0].kind,'chapter-folder');assert.deepEqual(tree[0].children[0].children.map(n=>[n.kind,n.name]),[['scene','first'],['scene','second']]);
 });
 
-test('Manuscript admission targets 142 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Comment admission rejects missing hops, weak controls, lost tombstones and fabricated no-write evidence',async()=>{
+ const {validateManuscriptCommentProof:check}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const h=ch=>ch.repeat(64),rounds=[{exportSha256:h('a'),returnedSha256:h('b')}];
+ const stage={messageCount:4,threadCount:2,intentionalDeletionCount:1,artifactSha256:h('a'),semanticSha256:h('c'),
+  partsSha256:Object.fromEntries(['comments','commentsExtended','commentsIds','commentsExtensible'].map(n=>[n,h('d')]))};
+ const controls=['missing-root','missing-reply','body-whitespace','wrong-author','wrong-date','wrong-utc-namespace','wrong-parent','wrong-status','wrong-anchor','missing-reference','duplicate-identity','deleted-reappeared'];
+ const p={sourceKind:'OWNED_SAVED_PROJECT_FIXTURE',canonicalApplyClaim:false,sourceStateSha256:h('e'),scope:'Unit oracle fixture, no product admission',
+  stages:Object.fromEntries(['rounds/1/export','rounds/1/word','rounds/1/review-probe','reexport','final-word-lifecycle'].map(n=>[n,{...structuredClone(stage),artifactSha256:n==='rounds/1/word'?h('b'):h('a')}])),
+  queries:Object.fromEntries(['source-comments','rounds/1/comments','reopened-comments'].map(n=>[n,{rawStateSha256:h('e'),querySha256:h('f')}])),
+  negativeControls:controls.map(id=>({id,rejected:true,sha256:digest(Buffer.from(id))})),
+  lossControl:{sourceSha256:h('b'),mutantSha256:h('c'),intakeSha256:h('d'),canonicalStateSha256:h('e'),writerCalled:false,
+   missing:['open','resolved'].map(s=>({threadId:'manuscript-comment-'+s,canonicalCommentId:'manuscript-comment-'+s+'-root',code:'COMMENT_ROOT_MISSING'}))},
+  intentionalDeletionLedger:[{threadId:'manuscript-comment-deleted',status:'deleted',messageCount:2,outcome:'CANONICAL_DELETION_NOT_EXPORTED'}]};
+ assert.equal(check(p,1,rounds),true);
+ for(const mutate of [x=>delete x.stages['final-word-lifecycle'],x=>delete x.queries['reopened-comments'],x=>x.canonicalApplyClaim=true,
+  x=>x.stages.reexport.semanticSha256=h('0'),x=>delete x.stages.reexport.partsSha256.commentsIds,x=>x.queries['reopened-comments'].rawStateSha256=h('0'),
+  x=>x.negativeControls.pop(),x=>x.negativeControls[0].rejected=false,x=>x.negativeControls[0].sha256=x.negativeControls[1].sha256,
+  x=>x.lossControl.writerCalled=true,x=>x.lossControl.mutantSha256=x.lossControl.sourceSha256,x=>x.lossControl.missing.pop(),
+  x=>x.intentionalDeletionLedger=[],x=>x.stages['rounds/1/word'].artifactSha256=h('0'),x=>x.sourceStateSha256='count-only']){
+  const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,1,rounds));
+ }
+ assert.throws(()=>check(p,5,rounds));
+});
+
+test('Manuscript admission targets 158 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,142);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,142);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,158);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,158);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));

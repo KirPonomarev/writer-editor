@@ -49,6 +49,11 @@ function sanitizeReviewDocxExportCapsule(value) {
     productRuntimeWired: source.productRuntimeWired === true,
     returnIntakeWired: source.returnIntakeWired === true,
   };
+  if (isPlainObjectValue(source.commentSummary)) {
+    capsule.commentSummary = Object.fromEntries(['stateRevision', 'exportedThreadCount', 'exportedMessageCount', 'intentionalDeletionCount']
+      .map(key => [key, Number.isSafeInteger(source.commentSummary[key]) && source.commentSummary[key] >= 0
+        ? source.commentSummary[key] : null]));
+  }
   return capsule;
 }
 
@@ -157,7 +162,10 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
       && publicationGate.ok === true
       && publicationGate.provisionalSelfParse?.verified === true
       && publicationGate.finalSelfParse?.semanticEquivalent === true
-      && publicationGate.yrtk2Verification?.code === 'RTK_RETURN_INTAKE_YRTK2_VERIFIED';
+      && publicationGate.yrtk2Verification?.code === 'RTK_RETURN_INTAKE_YRTK2_VERIFIED'
+      && (!source?.commentExport || (Array.isArray(publicationGate.commentProofs)
+        && publicationGate.commentProofs.length === (source.commentExport.threads.length > 0 ? 2 : 1)
+        && publicationGate.commentProofs.every(proof => proof.ok === true)));
     if (!publicationGateReady) {
       return makeTypedReviewDocxExportError(
         'E_REVIEW_DOCX_EXPORT_PUBLICATION_GATE_BLOCKED',
@@ -183,6 +191,9 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
           ? targetState.reason
           : 'REVIEW_DOCX_EXPORT_TARGET_FORBIDDEN';
         throw error;
+      }
+      if (source?.commentExport) {
+        await requireDependency(deps, 'revalidateDocxReviewPacketExportSource')(source);
       }
       return writeBufferAtomic(outPath, documentBuffer);
     }, 'export review docx packet');
@@ -238,6 +249,8 @@ async function runDocxReviewPacketExport(payloadRaw, deps = {}) {
         provisionalSelfParseVerified: publicationGate.provisionalSelfParse?.verified === true,
         finalSelfParseSemanticEquivalent: publicationGate.finalSelfParse?.semanticEquivalent === true,
         yrtk2Verified: publicationGate.yrtk2Verification?.code === 'RTK_RETURN_INTAKE_YRTK2_VERIFIED',
+        ...(source?.commentExport ? { commentPreservationVerified: publicationGate.commentProofs?.every(proof => proof.ok === true) === true,
+          intentionalDeletionCount: source.commentExport.tombstones.length } : {}),
       } : null,
       canAutoApply: false,
       canWriteManuscript: false,

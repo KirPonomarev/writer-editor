@@ -228,6 +228,7 @@ const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/do
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { buildDocxReviewPacketBuffer: buildDocxReviewPacketBufferCore, deriveWordBookmarkNameV1: deriveWordBookmarkNameV1Cjs } = require('./export/docx/docxReviewPacketBuilder');
 const { runDocxReviewPacketExport } = require('./export/docx/docxReviewPacketExportHandler');
+const { commentStateDigest, normalizeCommentProvenance, compareCommentExportReadback } = require('./export/docx/docxReviewPacketComments.js');
 const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   buildFullManuscriptDocxReviewPacketSource,
@@ -1042,6 +1043,19 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       provisionalSelfParse,
     };
   }
+  const commentProofs = [];
+  if (source.commentExport?.threads?.length > 0) {
+    const provisionalComments = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
+      bytes: source.provisionalSelfParseArtifact.bytes,
+      budgets: docxReviewReturnIntakeProductBudgets(),
+    }, { cryptoPort });
+    const readback = compareCommentExportReadback(source.commentExport, provisionalComments?.reviewIr?.commentThreads);
+    if (provisionalComments?.ok !== true || !readback.ok
+      || provisionalComments.reviewIr.commentThreads.length !== source.commentExport.threads.length) {
+      return { ok: false, publishAllowed: false, code: 'RTK_V4_PUBLICATION_COMMENT_PROVISIONAL_MISMATCH', commentReadback: readback };
+    }
+    commentProofs.push({ phase: 'provisional', ...readback });
+  }
   const finalArtifactSha256 = `sha256:${sha256DocxReviewPreviewSessionBytes(documentBuffer)}`;
   const finalParse = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
     bytes: documentBuffer,
@@ -1059,6 +1073,13 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       publishAllowed: false,
       finalArtifactSha256,
     };
+  }
+  if (source.commentExport) {
+    const readback = compareCommentExportReadback(source.commentExport, finalParse.reviewIr?.commentThreads);
+    if (!readback.ok || finalParse.reviewIr?.commentThreads?.length !== source.commentExport.threads.length) {
+      return { ok: false, publishAllowed: false, code: 'RTK_V4_PUBLICATION_COMMENT_FINAL_MISMATCH', commentReadback: readback };
+    }
+    commentProofs.push({ phase: 'final', ...readback });
   }
   const yrtk2Verification = verifyDocxReviewReturnYrtk2Binding({
     localAuthority,
@@ -1097,6 +1118,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     publishAllowed: doubleSelfParse.publishAllowed === true,
     finalArtifactSha256,
     coreManifestDigest: yrtk2Verification.coreManifestDigest,
+    ...(source.commentExport ? { commentProofs, commentTombstones: cloneJsonSafe(source.commentExport.tombstones) } : {}),
     yrtk2Verification,
     provisionalSelfParse: {
       verified: provisionalSelfParse.verified === true,
@@ -4668,11 +4690,13 @@ async function readFullManuscriptDocxReviewPacketExportSource() {
     projectRoot,
     manifestPath,
     scenes,
+    nonTextReturnState: await revisionBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot }),
     expectedOrderedSceneIds: scenes.map((scene) => scene.sceneId),
   }, {
     revisionBridge,
     cryptoPort: createRtkReviewTransportCryptoPort(),
   });
+  source.publicationOwner = activeStage10ApplicationBootstrap;
   // ROUND-01 (V3): import the export-time secret into the main-process-only
   // vault and patch the durable capsule with the opaque keyRef + public
   // correlation material. The raw secret never reaches the durable store.
@@ -4705,6 +4729,35 @@ async function readFullManuscriptDocxReviewPacketExportSource() {
   // failed export therefore leaves zero durable authority for this round.
   source.pendingAuthorityStore = activeReviewDocxExportAuthorityStore;
   return source;
+}
+
+async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
+  const capsule = source?.localAuthorityCapsule;
+  if (!capsule || !source.commentExport || isDirty || autoSaveInProgress
+    || source.publicationOwner !== activeStage10ApplicationBootstrap
+    || capsule.projectRoot !== getProjectRootPath()) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SOURCE_STALE');
+  }
+  const scope = await buildFullManuscriptDocxReviewExportScope();
+  if (scope.projectId !== source.commentExport.projectId || scope.projectRoot !== capsule.projectRoot) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');
+  }
+  const candidates = scope.sceneCandidates || [];
+  const expected = capsule.exportMap.scenes;
+  if (candidates.length !== expected.length) throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SCENE_SET_STALE');
+  for (const [index, candidate] of candidates.entries()) {
+    const content = await readFullManuscriptDocxReviewExportDocumentContent(candidate);
+    if (candidate.sceneId !== expected[index].sceneId
+      || `sha256:${createRtkReviewTransportCryptoPort().sha256Text(content.observableContent)}` !== expected[index].rawSha256) {
+      throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SCENE_STALE');
+    }
+  }
+  const bridge = await loadRevisionBridgeModule();
+  const state = await bridge.createRtkNonTextReturnFilePort().readCanonical({ projectId: scope.projectId, projectRoot: scope.projectRoot });
+  if (commentStateDigest(state) !== source.commentExport.stateDigest || isDirty || autoSaveInProgress
+    || source.publicationOwner !== activeStage10ApplicationBootstrap || capsule.projectRoot !== getProjectRootPath()) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_COMMENT_STATE_STALE');
+  }
 }
 
 async function buildDocxReviewPacketBuffer(source) {
@@ -4855,6 +4908,9 @@ async function handleFullManuscriptReviewDocxExportPacketCommandSurface(payload 
     readDocxReviewPacketExportSource: typeof options.readDocxReviewPacketExportSource === 'function'
       ? options.readDocxReviewPacketExportSource
       : readFullManuscriptDocxReviewPacketExportSource,
+    revalidateDocxReviewPacketExportSource: typeof options.revalidateDocxReviewPacketExportSource === 'function'
+      ? options.revalidateDocxReviewPacketExportSource
+      : revalidateFullManuscriptDocxReviewPacketExportSource,
     buildDocxReviewPacketBuffer: typeof options.buildDocxReviewPacketBuffer === 'function'
       ? options.buildDocxReviewPacketBuffer
       : buildDocxReviewPacketBuffer,
@@ -5349,7 +5405,7 @@ function buildDocxReviewPreviewSessionCommentShadowPayload(context, candidate, r
   const commentThreads = Array.isArray(intakeReviewIr?.commentThreads)
     ? cloneJsonSafe(intakeReviewIr.commentThreads)
     : (Array.isArray(reviewPacket.commentThreads) ? cloneJsonSafe(reviewPacket.commentThreads) : []);
-  if (commentThreads.length === 0) {
+  if (commentThreads.length === 0 && !context.reviewTransportAuthorityCapsule?.commentExport?.threads?.length) {
     return null;
   }
   const rawCommentPlacements = Array.isArray(intakeReviewIr?.commentPlacements)
@@ -5509,6 +5565,12 @@ async function applyAuthenticatedDocxCommentProductPath({
       replayReceipts: [],
     };
   }
+  if (commentShadowPayload.reviewIr.commentThreads?.length === 0
+    && context.reviewTransportAuthorityCapsule?.commentExport?.threads?.length > 0) {
+    const lost = compareCommentExportReadback(context.reviewTransportAuthorityCapsule.commentExport, []);
+    return { ok: false, status: 'blocked', code: 'RTK_COMMENT_REEXPORT_RETURN_CHANGED_OR_MISSING',
+      typedBlocked: lost.missing, writerCalled: false, applyReceipts: [], replayReceipts: [] };
+  }
   const identityJoin = isPlainObjectValue(commentShadowPayload.sceneAuthorityIdentityJoin)
     ? commentShadowPayload.sceneAuthorityIdentityJoin
     : null;
@@ -5541,6 +5603,25 @@ async function applyAuthenticatedDocxCommentProductPath({
       replayReceipts: [],
     };
   }
+  const baselineComments = context.reviewTransportAuthorityCapsule?.commentExport;
+  if (baselineComments) {
+    const owner = activeStage10ApplicationBootstrap;
+    let currentState;
+    try {
+      currentState = await revisionBridge.createRtkNonTextReturnFilePort().readCanonical({
+        projectId: context.projectId, projectRoot: context.projectRoot,
+      });
+    } catch {
+      return { ok: false, status: 'blocked', code: 'RTK_COMMENT_REEXPORT_CANONICAL_READ_FAILED',
+        writerCalled: false, applyReceipts: [], replayReceipts: [] };
+    }
+    if (baselineComments.projectId !== context.projectId
+      || baselineComments.stateDigest !== commentStateDigest(currentState)
+      || owner !== activeStage10ApplicationBootstrap || context.projectRoot !== getProjectRootPath()) {
+      return { ok: false, status: 'blocked', code: 'RTK_COMMENT_REEXPORT_CANONICAL_STATE_STALE',
+        writerCalled: false, applyReceipts: [], replayReceipts: [] };
+    }
+  }
   const plan = revisionBridge.buildAuthenticatedCommentReturnCommands({
     authenticated: true,
     projectId: context.projectId,
@@ -5559,6 +5640,15 @@ async function applyAuthenticatedDocxCommentProductPath({
       directPortDispatch: false,
       applyReceipts: [],
       replayReceipts: [],
+    };
+  }
+  if (plan.commands.length === 0 && plan.baselineReadback?.unchangedThreadIds?.length > 0) {
+    return {
+      ok: true, status: 'unchanged', code: 'RTK_COMMENT_REEXPORT_RETURN_UNCHANGED',
+      commandBusDispatchOnly: true, directPortDispatch: false, pendingProductApplyLane: false,
+      applyReceipts: [], replayReceipts: [], writerCalled: false,
+      baselineReadback: cloneJsonSafe(plan.baselineReadback),
+      planSummary: { commandCount: 0, rootCommentCount: 0, replyCount: 0, commentStateCount: 0 },
     };
   }
   if (explicitCanonicalApplyConfirmed !== true) {
@@ -12854,6 +12944,7 @@ function normalizeRtkNonTextReturnThreadProjection(thread = {}) {
       commentId: docxReviewPreviewSessionDetailString(message.commentId),
       kind: docxReviewPreviewSessionDetailString(message.kind),
       body: typeof message.body === 'string' ? message.body : '',
+      provenance: normalizeCommentProvenance(message.provenance),
     }))
     : [];
   const rootMessage = messages.find((message) => message.kind === 'root') || messages[0] || null;
@@ -12902,15 +12993,15 @@ function buildRtkNonTextReturnReviewSurfaceProjection(projection) {
       totalPlacements: threads.length,
       preservedThreads: threads.map((thread) => ({
         threadId: docxReviewPreviewSessionDetailString(thread.threadId),
-        author: 'Yalken canonical return',
-        createdAt: '',
+        author: thread.messages?.[0]?.provenance?.author || '',
+        createdAt: thread.messages?.[0]?.provenance?.dateUtc || thread.messages?.[0]?.provenance?.date || '',
         resolved: thread.status !== 'open',
         messages: Array.isArray(thread.messages)
           ? thread.messages.map((message) => ({
             messageId: docxReviewPreviewSessionDetailString(message.commentId),
-            author: 'Yalken canonical return',
+            author: message.provenance?.author || '',
             body: typeof message.body === 'string' ? message.body : '',
-            createdAt: '',
+            createdAt: message.provenance?.dateUtc || message.provenance?.date || '',
           }))
           : [],
       })),

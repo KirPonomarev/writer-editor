@@ -1,4 +1,5 @@
 import {buildWordVolumeFixture,WORD_VOLUME_TEXT_PROBES} from './rtk-interop-word-volume-fixtures.mjs';
+import {createHash} from 'node:crypto';
 
 export const MANUSCRIPT_VOLUMES=Object.freeze(['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']);
 export const MANUSCRIPT_ROUTES=Object.freeze(['C1','C2','C3','C5']);
@@ -32,7 +33,7 @@ export function manuscriptFields(volume,route){
   if(volume==='LARGE_DOCUMENT')throw new Error('GOOGLE_NATIVE_VOLUME_UNQUALIFIED');
   return ['TEXT','ORDER','UNICODE_IME_LOCALE'];
  }
- return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),...(route==='C1'?[]:['TRACKED_REVIEW_SEMANTICS'])];
+ return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),...(route==='C1'?[]:['TRACKED_REVIEW_SEMANTICS','COMMENTS'])];
 }
 export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.filter(route=>route!=='C5'||volume!=='LARGE_DOCUMENT').flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptFields(volume,route).map(field=>`${field}__${volume}__${route}__${profile}`)))));
 export function buildWordManuscriptFixture(volume,route){
@@ -41,4 +42,22 @@ export function buildWordManuscriptFixture(volume,route){
  const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0)content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
  const forRound=round=>scenes.map(s=>s.paragraphs.map(p=>round?p.replace('sentinel alpha','sentinel round'+round):p));
  return {schemaVersion:'WORD_MANUSCRIPT_FIXTURE_V1',volume,route,minimumWords:base.minimumWords,requiredCycles:route==='C3'?5:1,scenes,forRound,paragraphsForRound:round=>forRound(round).flat(),sourceTokenForRound:round=>round===1?'sentinel alpha':'sentinel round'+(round-1),replacementTokenForRound:round=>'sentinel round'+round,imeText:'日本語.',imePrefix:'[ime] '};
+}
+
+// Initial owned project data, like the authored scenes. It is never proof of a
+// native edit or a canonical apply; those observations are recorded separately.
+export function buildWordManuscriptCommentState({fixture,projectId,sceneId}){
+ const sha=s=>createHash('sha256').update(s,'utf8').digest('hex');
+ const specs=[['open','[quote] Authored quotation.'],['resolved','[code] const answer = 42;'],['deleted','[heading-1] Authored heading.']];
+ const threads=specs.map(([status,blockText])=>{
+  const index=fixture.scenes[0].paragraphs.indexOf(blockText);
+  if(index<0)throw Error('COMMENT_FIXTURE_PARAGRAPH');
+  const id='manuscript-comment-'+status;
+  const messages=[{commentId:id+'-root',kind:'root',body:'  Root '+status+' & <замечание>\n\t尾 ',provenance:{author:'Alice & editor',initials:'AE',date:'2026-09-17T10:00:00Z',dateUtc:'2026-09-17T10:00:00Z'}},
+   {commentId:id+'-reply',kind:'reply',body:'Reply '+status+' 🧭',provenance:{author:'Bob',initials:'B',date:'2026-09-17T10:01:00Z',dateUtc:'2026-09-17T10:01:00Z'}}];
+  return {threadId:id,sceneId,rootCommentId:messages[0].commentId,status,...(status==='deleted'?{deleted:true}:{}),
+   anchor:{sceneId,blockId:'',paragraphIndex:index,sceneParagraphIndex:index,blockTextSha256:sha(blockText),
+    startUtf16:0,selectedText:blockText,selectedTextSha256:sha(blockText),authoritySource:'saved-project-exact-paragraph-range'},messages};
+ });
+ return {schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:1,threads,events:[]};
 }
