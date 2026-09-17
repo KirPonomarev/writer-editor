@@ -105,7 +105,8 @@
     "docs/tasks/2026-09-17--c1-word-block-styles.md",
     "src/export/docx/docxBlockStyles.js",
     "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
-    "docs/tasks/2026-09-17--c5-google-native-manuscript.md"
+    "docs/tasks/2026-09-17--c5-google-native-manuscript.md",
+    "docs/tasks/2026-09-17--word-review-semantics.md"
   ],
   "protectedFiles": [
     {
@@ -239,7 +240,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "4cb2b4989bbbe31466d85db9ed90f95bf2a6f9cc8b75feae037ff43dd92a12a3"
+      "sha256": "3356e8f592a3dd364515a3e435ff841d3d9157d686d9b3289eb4bb142391b730"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -275,7 +276,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "98278e67c145f5965c0879963fc1588a7a9bb7adcae0795c6356da321847da61"
+      "sha256": "4df51ba23cd6f6f24fc2c1cfa3a4f4a5e0108968b75929078805e0b52d5e7659"
     }
   ],
   "requirementIds": [
@@ -615,6 +616,10 @@
       {
         "path": "docs/tasks/2026-09-17--c5-google-native-manuscript.md",
         "sha256": "3ff4078b43220e918951cd0561085db2d1c3ec3097ef1e3975c4af96549ed292"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--word-review-semantics.md",
+        "sha256": "368496e275e51c409eec6b497867203fbb1dd49653ea72cff7ea9442c2eb45e8"
       }
     ],
     "followupRepair": {
@@ -673,9 +678,9 @@
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     },
     "wordManuscriptBatch": {
-      "taskId": "C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
-      "bindingBaseSha": "96af7e5cb7e756e6203f5866f218db751df71c2b",
-      "scope": "Complete C5 native Google conversion, durable canonical return and independent text/order/Unicode proof. Preserve all 108 Word predicates; current direct transport is separately versioned from immutable historical staging qualification. No denominator-axis change or evidence-created mutation authority."
+      "taskId": "WORD_REVIEW_SEMANTICS_20260917",
+      "bindingBaseSha": "de1a662d0804c5afa50cc4af9efd91bf32deaa6f",
+      "scope": "Complete tracked-review insert/delete, property semantics, metadata and no-silent-apply proof through native Word and canonical product commands. All 126 previous predicates remain mandatory; no denominator or authority change."
     }
   },
   "wordTextOrderBatch": {
@@ -993,7 +998,7 @@
         "sceneCountReadback"
       ]
     },
-    "notBeforeUtc": "2026-09-17T08:30:04.086250+00:00",
+    "notBeforeUtc": "2026-09-17T10:19:30.010313+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
