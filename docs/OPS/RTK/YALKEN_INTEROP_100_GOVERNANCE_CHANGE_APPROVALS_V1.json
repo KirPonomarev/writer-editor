@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "73afcfd958c11d0ec51fefbab9ab6abdb425566d9e08805de0207c438f57125a"
+      "sha256": "583b029d74eb422dc6d4a54e17965108c5d2b9ff7c879acf20017853c86035d8"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "4ecc79e325f3176ee71088b636fc622ba3d95f123645094f1fd0d13dc6498ed7"
+      "sha256": "90c565907fbfaf40007a61525f0a61b8c31d2cf7cfa9254ff26488179689e37a"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
