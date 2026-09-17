@@ -20148,13 +20148,31 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
         } catch (error) {
           if (!error || error.code !== 'ENOENT') throw error;
         }
+        // Invalidation is part of the same scene/manifest commit. Publishing it
+        // after ACK would immediately invalidate the commit's manifest digest.
+        let manifestContent = prepared.nextText;
+        if (expectedSceneContent !== content && getDocumentContextFromPath(filePath)?.kind === 'scene') {
+          const sceneId = getProjectRelativeFilePath(filePath, prepared.manifestPath);
+          const preservation = await loadProRoundtripPreservationModule();
+          const invalidation = sceneId && typeof preservation?.applyFreeEditProDataInvalidation === 'function'
+            ? preservation.applyFreeEditProDataInvalidation(
+              JSON.parse(manifestContent), { changedSceneIds: [sceneId], deletedSceneIds: [] },
+            )
+            : null;
+          if (!invalidation || invalidation.ok !== true || !isPlainObjectValue(invalidation.manifest)) {
+            const error = new Error('PROJECT_SAVE_INVALIDATION_FAILED');
+            error.code = 'E_PROJECT_SAVE_INVALIDATION_FAILED';
+            throw error;
+          }
+          manifestContent = JSON.stringify(invalidation.manifest, null, 2);
+        }
         const authority = await getMainProjectManifestAuthority();
         const receipt = await commitProjectTransaction({
           scenePath: filePath,
           sceneContent: content,
           expectedSceneContent,
           manifestPath: prepared.manifestPath,
-          manifestContent: prepared.nextText,
+          manifestContent,
           expectedManifestContent: prepared.expectedText,
           revision,
           publishManifest: async ({ manifestPath, expectedText, nextText, reason }) => {
@@ -29224,12 +29242,14 @@ async function runAutoSave() {
           return lifecycleSaveFailure(lifecycleSubjectId, 'SAVE_WRITE_FAILED', classify(false, null));
         }
         saveReceipt = saveResult;
-        try {
-          await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
-            operationLabel: 'autosave pro data invalidation',
-          });
-        } catch (error) {
-          logDevError('autoSave:proDataInvalidation', error);
+        if (saveResult.projectTransaction !== true) {
+          try {
+            await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
+              operationLabel: 'autosave pro data invalidation',
+            });
+          } catch (error) {
+            logDevError('autoSave:proDataInvalidation', error);
+          }
         }
       } else {
         saveReceipt = await queueDiskOperation(
@@ -29435,7 +29455,7 @@ async function handleSave() {
       'save existing project transaction'
     );
     if (saveResult.success) {
-      if (textChanged) {
+      if (textChanged && saveResult.projectTransaction !== true) {
         try {
           await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
             operationLabel: 'save pro data invalidation',
