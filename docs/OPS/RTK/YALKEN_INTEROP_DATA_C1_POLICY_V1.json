@@ -103,7 +103,9 @@
     "test/unit/sector-m-scene-rich-truth.test.js",
     "test/contracts/revision-bridge-docx-block-styles.contract.test.js",
     "docs/tasks/2026-09-17--c1-word-block-styles.md",
-    "src/export/docx/docxBlockStyles.js"
+    "src/export/docx/docxBlockStyles.js",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
+    "docs/tasks/2026-09-17--c5-google-native-manuscript.md"
   ],
   "protectedFiles": [
     {
@@ -273,7 +275,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "6c72538ff9300a50dc411c04f77e3303faf062bd08f3104309799ff087df8352"
+      "sha256": "98278e67c145f5965c0879963fc1588a7a9bb7adcae0795c6356da321847da61"
     }
   ],
   "requirementIds": [
@@ -568,11 +570,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "a780eeedd28dbb617d8f16f55a8c3741c4e930889acc7bc99807a48983359ac3"
+        "sha256": "1069b3ec38d082c771fd839adc29826ef9b0fe7edf69e96ee7f744dddcb04121"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "1071c7312ed32adc77a5df8ef30a8ae3404844a0db1ad4259e4bf645b71faf6b"
+        "sha256": "554781e7344034eb66c88bd931b96d9c878717f2fbb029a1c2c9d1132d451fa2"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -609,6 +611,10 @@
       {
         "path": "src/export/docx/docxBlockStyles.js",
         "sha256": "1a03db3538aa2eb5323d3c0491cb37ee95c8c40cc4adb3e9f5e8bea3c6a06fba"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--c5-google-native-manuscript.md",
+        "sha256": "3ff4078b43220e918951cd0561085db2d1c3ec3097ef1e3975c4af96549ed292"
       }
     ],
     "followupRepair": {
@@ -667,9 +673,9 @@
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     },
     "wordManuscriptBatch": {
-      "taskId": "C1_WORD_BLOCK_STYLES_20260917",
-      "bindingBaseSha": "ea390f9508192d9076ab805e33cd8cf59fa9f917",
-      "scope": "Preserve declared quote depth and plain code blocks through generic C1 import, safe-create, save, fresh reopen and terminal Word readback. Requalify all current manuscript fields without changing frozen denominator or authorizing mutations from evidence."
+      "taskId": "C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "bindingBaseSha": "96af7e5cb7e756e6203f5866f218db751df71c2b",
+      "scope": "Complete C5 native Google conversion, durable canonical return and independent text/order/Unicode proof. Preserve all 108 Word predicates; current direct transport is separately versioned from immutable historical staging qualification. No denominator-axis change or evidence-created mutation authority."
     }
   },
   "wordTextOrderBatch": {
@@ -815,6 +821,12 @@
       "ORDER__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__SINGLE_SCENE__C5__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C5__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C5__SOURCE_RUNTIME",
+      "TEXT__SINGLE_SCENE__C5__PACKAGED_BUILD_RUNTIME",
+      "ORDER__SINGLE_SCENE__C5__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C5__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__SOURCE_RUNTIME",
@@ -843,6 +855,12 @@
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MULTI_SCENE__C5__SOURCE_RUNTIME",
+      "ORDER__MULTI_SCENE__C5__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C5__SOURCE_RUNTIME",
+      "TEXT__MULTI_SCENE__C5__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MULTI_SCENE__C5__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C5__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
@@ -871,6 +889,12 @@
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C5__PACKAGED_BUILD_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C5__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C5__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
@@ -919,6 +943,12 @@
         "WORD_LIFECYCLE_ROUND_N",
         "YALKEN_RETURN_INTAKE_ROUND_N",
         "YALKEN_APPLY_ROUND_N"
+      ],
+      "C5": [
+        "YALKEN_SOURCE_EXPORT",
+        "GOOGLE_NATIVE_LIFECYCLE",
+        "GOOGLE_NATIVE_DOCX_EXPORT",
+        "YALKEN_RETURN_INTAKE"
       ]
     },
     "requiredSubcases": {
@@ -963,19 +993,19 @@
         "sceneCountReadback"
       ]
     },
-    "notBeforeUtc": "2026-09-17T06:14:54.969Z",
+    "notBeforeUtc": "2026-09-17T08:30:04.086250+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "dbd1feaa9a34d361db60bcb56c74f44005cd1fef2dd267ab941ce15ce8cf1c5e"
+        "sha256": "9c69efa813218dfc680b00607f6591e62139a3206ce6a9cc2b619ec835bea019"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "79cd3fcac42a46fa7d31664ec299fe50806d01e09c7005bbac3b1b62a9523dc0"
+        "sha256": "16f325da9bfef12751c9245f34a54c1c85a551e6d1dae2503c3ad4e758552841"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "d4b2755997e4b71f7887c4d393c1b0a256ddf1accf15c4248c9086e1fa095e19"
+        "sha256": "bf725ee084e69f3e6eae098052fdcdc9bcd46bdd2457895151ca1607fbee6dd2"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -1033,6 +1063,12 @@
             "sha256": "82816a50492821f0932bd02819d9ffda07f421a91c932783119514dff302983e",
             "count": 34
           }
+        ],
+        "C5": [
+          {
+            "sha256": "05f9e89a503228902b91ed543ca7889def8c3185e80926cf9e9d9d7bd852bc42",
+            "count": 34
+          }
         ]
       },
       "MULTI_SCENE": {
@@ -1077,6 +1113,12 @@
             "sha256": "b8f8a2254d214a917195e2055cbbec7d136ecbe1addbd9bedf8c419773b52094",
             "count": 34
           }
+        ],
+        "C5": [
+          {
+            "sha256": "111f5bfa3cd740daed05af46a4d60790a8bba555143f0762f13eb21757cc0965",
+            "count": 34
+          }
         ]
       },
       "FULL_SYNTHETIC_NOVEL": {
@@ -1119,6 +1161,12 @@
           },
           {
             "sha256": "b703f23914af8d3538d002aeb36ab348ef60895d892ccdb924708b9d7e5d0d3c",
+            "count": 1735
+          }
+        ],
+        "C5": [
+          {
+            "sha256": "9b5f67052d47b266a4c5fb27180bff68e8f332870c200d6b57b48d3c6e48e301",
             "count": 1735
           }
         ]
@@ -1176,11 +1224,52 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "C1 safe-create preserves the fixed rich style corpus through save, fresh reopen and current-document re-export to Word. All three routes prove TEXT/ORDER/UNICODE/STYLES; C2/C3 retain nonvacuous multi-scene hierarchy. C3 is exactly five actual Word cycles.",
+    "scope": "C5 adds real Google native conversion and durable safe-create for TEXT/ORDER/UNICODE in three supported volumes; no C5 style, hierarchy or identifier admission. C1 safe-create preserves the fixed rich style corpus through save, fresh reopen and current-document re-export to Word. All three routes prove TEXT/ORDER/UNICODE/STYLES; C2/C3 retain nonvacuous multi-scene hierarchy. C3 is exactly five actual Word cycles.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",
       "Unsupported document objects reject the bounded proof; generic C1 declares metadata and bookmark loss."
-    ]
+    ],
+    "googleNativeTransport": {
+      "status": "ROUTE_QUALIFIED_NOT_CELL_PASS",
+      "directLocalPathImport": {
+        "supported": true,
+        "countsAsPass": false,
+        "qualification": "ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP"
+      },
+      "sourceReferenceKind": "ABSOLUTE_LOCAL_FILE_PATH",
+      "requiredSteps": [
+        "IMPORT_LOCAL_DOCX_AS_NATIVE_GOOGLE_DOC",
+        "VERIFY_NATIVE_ID_MIME_REVISION_AND_FULL_BODY",
+        "EXPORT_NATIVE_DOCX",
+        "VERIFY_UNCHANGED_NATIVE_REVISION",
+        "DELETE_EXACT_CREATED_GOOGLE_FILES"
+      ],
+      "createdDriveFilesCleanup": "EXACT_CREATED_IDS_DELETE_REQUIRED",
+      "routeQualificationCountsAsCellPass": false,
+      "productRuntimeNetworkPolicy": "OFFLINE_FIRST_RUNTIME_NETWORK_DENIED",
+      "externalConnectorUse": "DISPOSABLE_SYNTHETIC_TEST_EVIDENCE_ONLY",
+      "schemaVersion": "GOOGLE_NATIVE_DIRECT_TRANSPORT_V2",
+      "historicalStagingQualification": {
+        "status": "HISTORICAL_NON_CELL_QUALIFICATION",
+        "requiredSteps": [
+          "DIRECT_LOCAL_PATH_IMPORT_NEGATIVE",
+          "UPLOAD_LOCAL_DOCX_AS_RAW_DRIVE_FILE",
+          "FETCH_UPLOADED_DOCX_AS_INTERNAL_FILE_URI",
+          "IMPORT_INTERNAL_FILE_URI_AS_NATIVE_GOOGLE_DOC",
+          "VERIFY_NATIVE_READBACK",
+          "EXPORT_NATIVE_DOCX",
+          "DELETE_EXACT_CREATED_GOOGLE_FILES"
+        ],
+        "typedBlocker": "GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED",
+        "stillCountsAsCellPass": false
+      },
+      "scope": "Current C5 manuscript evidence only; supersedes the archived connector transport assumption, not the frozen axes or any historical cell evidence.",
+      "supersedesArchivedTransportAssumption": {
+        "specSha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93",
+        "field": "providerTransportPolicy.googleLocalDocxToNativeImport",
+        "retainsHistoricalStagingReceipt": true
+      }
+    }
   }
 }

@@ -15,6 +15,7 @@ export const MANUSCRIPT_HOPS=Object.freeze({
  C1:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE'],
  C2:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE','YALKEN_APPLY','YALKEN_REEXPORT','WORD_REOPEN_READBACK'],
  C3:['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N'],
+ C5:['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE'],
 });
 export const MANUSCRIPT_SUBCASES=Object.freeze({
  TEXT:['bodyTextReadbackIndependent','emptyParagraphsAccounted','lineBreakPolicyDeclared','paragraphBoundariesPreserved','plainTextPreserved','whitespaceEdgesPreserved'],
@@ -27,13 +28,15 @@ const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-uni
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
 const STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path'];
 export function manuscriptStages(route){
- const stages={source:0,'source-renderer':0,composition:0},cycles=route==='C3'?5:1;
+ const stages={source:0,'source-renderer':0,composition:0},cycles=route==='C3'?5:1,generic=route==='C1'||route==='C5';
  for(let n=1;n<=cycles;n++){
-  const r=route==='C1'?0:n,p='rounds/'+n;
-  stages[p+'/export-docx']=route==='C1'?0:n-1;stages[p+'/word-native']=r;stages[p+'/word-docx']=r;
-  if(route!=='C1'){stages[p+'/persisted']=r;stages[p+'/applied-renderer']=r;}
+  const r=generic?0:n,p='rounds/'+n;
+  stages[p+'/export-docx']=generic?0:n-1;
+  if(route==='C5'){stages[p+'/google-native-before']=0;stages[p+'/google-native-after']=0;stages[p+'/google-docx']=0;}
+  else{stages[p+'/word-native']=r;stages[p+'/word-docx']=r;}
+  if(!generic){stages[p+'/persisted']=r;stages[p+'/applied-renderer']=r;}
  }
- if(route==='C1')for(const p of ['import-renderer','imported-raw','persisted','saved-renderer','reopened-renderer','reexport-docx','final-word-lifecycle-native','final-word-lifecycle-docx'])stages[p]=0;
+ if(generic)for(const p of ['import-renderer','imported-raw','persisted','saved-renderer','reopened-renderer','reexport-docx','final-word-lifecycle-native','final-word-lifecycle-docx'])stages[p]=0;
  else for(const p of ['reopened-persisted','reopened-renderer','reexport-docx','final-word-lifecycle-native','final-word-lifecycle-docx'])stages[p]=cycles;
  return stages;
 }
@@ -41,6 +44,18 @@ const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const same=(a,b)=>stableOrderJson(a)===stableOrderJson(b);
 const sha40=x=>typeof x==='string'&&/^[a-f0-9]{40}$/u.test(x);
 const sha64=x=>typeof x==='string'&&/^[a-f0-9]{64}$/u.test(x);
+export function validateGoogleManuscriptTransport(p){
+ demand(p?.schemaVersion==='GOOGLE_NATIVE_DIRECT_TRANSPORT_V2'&&p.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
+  &&same(p.directLocalPathImport,{supported:true,countsAsPass:false,qualification:'ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP'})
+  &&p.sourceReferenceKind==='ABSOLUTE_LOCAL_FILE_PATH'
+  &&same(p.requiredSteps,['IMPORT_LOCAL_DOCX_AS_NATIVE_GOOGLE_DOC','VERIFY_NATIVE_ID_MIME_REVISION_AND_FULL_BODY','EXPORT_NATIVE_DOCX','VERIFY_UNCHANGED_NATIVE_REVISION','DELETE_EXACT_CREATED_GOOGLE_FILES'])
+  &&p.createdDriveFilesCleanup==='EXACT_CREATED_IDS_DELETE_REQUIRED'&&p.routeQualificationCountsAsCellPass===false
+  &&p.productRuntimeNetworkPolicy==='OFFLINE_FIRST_RUNTIME_NETWORK_DENIED'&&p.externalConnectorUse==='DISPOSABLE_SYNTHETIC_TEST_EVIDENCE_ONLY'
+  &&p.supersedesArchivedTransportAssumption?.specSha256==='5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93'
+  &&p.supersedesArchivedTransportAssumption?.field==='providerTransportPolicy.googleLocalDocxToNativeImport'
+  &&p.supersedesArchivedTransportAssumption?.retainsHistoricalStagingReceipt===true,'MANUSCRIPT_GOOGLE_TRANSPORT_POLICY');
+ return true;
+}
 const gitAt=root=>args=>execFileSync('git',args,{cwd:root,encoding:'utf8',timeout:10000,maxBuffer:16*1024*1024});
 const json=(root,file,max)=>JSON.parse(readOrderFile(root,file,max).bytes);
 function clean(root){
@@ -50,11 +65,11 @@ function clean(root){
   demand(sha40(head)&&sha40(tree),'MANUSCRIPT_BATCH_GIT_IDENTITY');return {head,tree};
 }
 export function validateManuscriptRuns(runIds){
-  demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=24,'MANUSCRIPT_BATCH_RUN_SET');
+  demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=30,'MANUSCRIPT_BATCH_RUN_SET');
   const rows=runIds.map(runId=>{
     demand(typeof runId==='string','MANUSCRIPT_BATCH_RUN_ID');
-    const m=/^ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[123])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}$/u.exec(runId);
-    demand(m,'MANUSCRIPT_BATCH_RUN_ID');return {runId,volume:m[1],route:m[2],profile:m[3],cellId:runId.slice(0,runId.lastIndexOf('__'))};
+    const m=/^ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}$/u.exec(runId);
+    demand(m,'MANUSCRIPT_BATCH_RUN_ID');manuscriptFields(m[1],m[2]);return {runId,volume:m[1],route:m[2],profile:m[3],cellId:runId.slice(0,runId.lastIndexOf('__'))};
   });
   demand(new Set(rows.map(x=>x.cellId)).size===rows.length,'MANUSCRIPT_BATCH_DUPLICATE_JOURNEY');return rows;
 }
@@ -97,10 +112,19 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
   }
   demand(same(f.controls.positiveControls,['identity','split-xml-runs'])&&controls(f.controls.textMutants,TEXT_CONTROLS)
    &&controls(f.controls.styleMutants,STYLE_CONTROLS)
-   &&controls(f.controls.structureMutants,row.volume==='SINGLE_SCENE'?[]:row.route==='C1'?STRUCTURE_CONTROLS.slice(0,3):STRUCTURE_CONTROLS),'MANUSCRIPT_RAW_MUTATIONS');
+   &&controls(f.controls.structureMutants,row.volume==='SINGLE_SCENE'?[]:['C1','C5'].includes(row.route)?STRUCTURE_CONTROLS.slice(0,3):STRUCTURE_CONTROLS),'MANUSCRIPT_RAW_MUTATIONS');
   const u=f.unicodeProof;demand(same(u?.probes,UNICODE_PROBES)&&sha64(u?.compositionEventsSha256)&&u.locale?.language&&u.locale.languages.includes(u.locale.language)
-   &&u.locale.intl?.locale&&u.locale.intl.timeZone&&u.providerLocale?.locale&&u.providerLocale?.languages&&u.fontLedger?.length===(row.route==='C1'?sceneCount+2:2*sceneCount+cycles)
+   &&u.locale.intl?.locale&&u.locale.intl.timeZone&&u.fontLedger?.length===(['C1','C5'].includes(row.route)?sceneCount+2:2*sceneCount+cycles)
    &&u.fontLedger.every(x=>x.fonts?.length&&x.fonts.reduce((s,f)=>s+f.glyphCount,0)>0&&x.scope.includes('Chromium'))&&u.limitations?.ime&&u.limitations?.fonts,'MANUSCRIPT_UNICODE_FONT_BINDING');
+  if(row.route==='C5'){
+   const g=f.googleProof;
+   demand(g?.transport==='DIRECT_LOCAL_PATH_NATIVE_CONVERSION_V2'&&g.cleanupVerified===true&&typeof g.documentId==='string'&&/^[A-Za-z0-9_-]{10,200}$/u.test(g.documentId)&&typeof g.revisionId==='string'&&g.revisionId.length>0
+    &&sha64(g.sourceSha256)&&sha64(g.returnedSha256)&&sha64(g.rawResponseSha256)&&sha64(g.productLossLedgerSha256)&&g.sourceSha256===raw.roundProofs[0].exportSha256&&g.returnedSha256===raw.roundProofs[0].returnedSha256
+    &&g.nativeBodySha256===f.stageProofs['rounds/1/google-native-before'].paragraphSha256&&same(u.providerLocale,g.providerLocale)
+    &&same(g.providerLocale,{mode:'CONTENT_API_NO_PROVIDER_UI_SESSION',sourceLocaleBoundSeparately:true,normalization:'LITERAL_CODEPOINTS_NO_NORMALIZATION'})
+    &&controls(g.negativeControls,['wrong-source-binding','non-native-mime','mixed-document-id','changed-revision','missing-cleanup','missing-tab','coherent-native-text-loss','returned-byte-substitution'])
+    &&same(g.unclaimedFieldLedger?.notAdmitted,['STYLES','NOVEL_SCENE_STRUCTURE','IDENTIFIERS_ANCHORS'])&&Array.isArray(g.unclaimedFieldLedger.headingChanges)&&sha64(g.unclaimedFieldLedger.sourceBookmarkNamesSha256)&&sha64(g.unclaimedFieldLedger.returnedBookmarkNamesSha256),'MANUSCRIPT_GOOGLE_PROVIDER_BINDING');
+  }else demand(u.providerLocale?.locale&&u.providerLocale?.languages&&!f.googleProof,'MANUSCRIPT_WORD_PROVIDER_LOCALE');
   if(f.field==='STYLES'){
    const names=Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat().concat(['reexport','final-word-lifecycle']);
    demand(same(Object.keys(f.styleProofs).sort(),names.sort())&&Object.values(f.styleProofs).every(p=>p.semanticStyleSha256===batch.semanticStyleSha256&&sha64(p.stylePartsSha256['word/styles.xml'])&&sha64(p.stylePartsSha256['word/numbering.xml']))&&f.unsupportedStylesDeclared,'MANUSCRIPT_STYLE_CONTINUITY');
@@ -124,6 +148,7 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     identity=clean(ROOT);const labIdentity=clean(labRoot),policy=loadDataPolicy(),batch=policy.wordManuscriptBatch;
     demand(gitAt(ROOT)(['rev-parse','origin/main']).trim()===identity.head&&(!currentHead||currentHead===identity.head),'MANUSCRIPT_BATCH_CURRENT_MAIN');
     demand(batch?.schemaVersion===MANUSCRIPT_BATCH_MODE&&same(batch.cellIds,MANUSCRIPT_CELLS)&&same(batch.requiredHops,MANUSCRIPT_HOPS),'MANUSCRIPT_BATCH_POLICY_SCOPE');
+    validateGoogleManuscriptTransport(batch.googleNativeTransport);
     demand(hash(readOrderFile(ROOT,SPEC).bytes)===policy.productSpecSha256,'MANUSCRIPT_BATCH_SPEC_PIN');
     demand(requiredCells?.length===1120&&new Set(requiredCells.map(c=>c.cellId)).size===1120
       &&MANUSCRIPT_CELLS.every(id=>requiredCells.some(c=>c.cellId===id)),'MANUSCRIPT_BATCH_DENOMINATOR');
@@ -174,8 +199,9 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     currentHead:identity?.head||null,currentTree:identity?.tree||null,percentage:acceptedCellIds.length/1120*100,
     cellDecisions:fieldProofs.map(f=>({cellId:f.cellId,status:'PASS',outcome:f.outcome,sourceRunId:f.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(f)))})),
     policySha256:DATA_POLICY_SHA256,rawReadbacks:ok?reviews:[],seconds:(performance.now()-started)/1000,
-    limitations:['Only complete named field subcases at four fixed volumes and actual source/packaged profiles.',
+    limitations:['Only complete named field subcases at executed fixed volumes and actual source/packaged profiles.',
       'C1 safe-create preserves the declared rich styles and declares metadata/bookmark loss; scene hierarchy is outside C1.',
       'C3 requires five actual authenticated Word edit/apply rounds, a fresh process and terminal Word readback.',
+      'C5 additionally binds complete native Google bodies before/after DOCX export, an unchanged provider revision and exact created-ID deletion. LARGE_DOCUMENT and non-text fields remain unproved in C5.',
       'IME proof covers native Chromium composition on the bound locale; all OS IME engines and pixel identity remain unproved.']};
 }

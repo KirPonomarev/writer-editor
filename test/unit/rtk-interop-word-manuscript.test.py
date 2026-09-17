@@ -61,4 +61,37 @@ class ManuscriptOracle(unittest.TestCase):
  def test_count_only_or_caller_expected_value_never_grants_credit(self):
   request={'root':str(ROOT),'runId':'ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME__fake','productHead':'a'*40,'productTree':'b'*40,'files':[],'expectedParagraphs':m.UNICODE,'ok':True,'admissionCredit':100}
   with self.assertRaisesRegex(ValueError,'INVENTORY'):m.audit(request)
+ def test_google_native_readback_preserves_utf16_ranges_and_rejects_omitted_content(self):
+  ps=['  é e\u0301 日本語 🧑‍💻  ','','end'];ident='native-test-document'
+  def native():
+   body=[{'endIndex':1,'sectionBreak':{}}];offset=1
+   for text in ps:
+    run=text+'\n';end=offset+len(run.encode('utf-16-le'))//2;body.append({'startIndex':offset,'endIndex':end,'paragraph':{'elements':[{'startIndex':offset,'endIndex':end,'textRun':{'content':run}}]}});offset=end
+   return {'documentId':ident,'revisionId':'revision-test','body':None,'tabs':[{'documentId':ident,'tabId':'t.0','parentTabId':None,'body':{'content':body}}]}
+  doc=native();self.assertEqual(m.google_native_paragraphs(doc,ident),ps)
+  mutations=[lambda d:d['tabs'].append(copy.deepcopy(d['tabs'][0])),lambda d:d['tabs'][0].update(headers={'hidden':'text'}),lambda d:d['tabs'][0]['body']['content'][1]['paragraph']['elements'][0].update(inlineObjectElement={'id':'hidden'}),lambda d:d['tabs'][0]['body']['content'][1].update(startIndex=2),lambda d:d['tabs'][0]['body']['content'][1]['paragraph']['elements'][0]['textRun'].update(suggestedInsertionIds=['hidden']),lambda d:d.update(documentId='other')]
+  for mutate in mutations:
+   changed=native();mutate(changed)
+   with self.assertRaises(ValueError):m.google_native_paragraphs(changed,ident)
+ def test_google_exchange_binds_actual_bytes_and_rejects_coherent_text_loss_and_forged_cleanup(self):
+  import base64
+  ident='native-test-document';ps=['sentinel',''];offset=1;body=[{'endIndex':1,'sectionBreak':{}}]
+  for text in ps:
+   end=offset+len(text)+1;body.append({'startIndex':offset,'endIndex':end,'paragraph':{'elements':[{'startIndex':offset,'endIndex':end,'textRun':{'content':text+'\n'}}]}});offset=end
+  doc={'documentId':ident,'revisionId':'revision-test','body':None,'tabs':[{'documentId':ident,'tabId':'t.0','body':{'content':body}}]};data=archive(document(ps))
+  row=lambda req,value:{'request':req,'response':{'isError':False,'structuredContent':value}}
+  req={'schemaVersion':'GOOGLE_NATIVE_REQUEST_V1','runId':'unit-fixture','source':'/synthetic/source.docx','sourceSha256':m.digest(data),'profile':'GOOGLE_NATIVE','uploadMode':'native_google_docs'}
+  response={'schemaVersion':'GOOGLE_NATIVE_RETURN_V1','runId':req['runId'],'sourceSha256':m.digest(data),'import':row({'source_file':req['source'],'upload_mode':'native_google_docs'},{'fileId':ident,'documentId':ident,'success':True,'converted':True,'mimeType':m.GOOGLE_NATIVE_MIME}),'metadata':row({'fileId':ident},{'id':ident,'mime_type':m.GOOGLE_NATIVE_MIME}),'nativeBefore':row({'document_id':ident},copy.deepcopy(doc)),'nativeAfter':row({'document_id':ident},copy.deepcopy(doc)),'export':row({'url':'https://docs.google.com/document/d/'+ident,'download_raw_file':True,'include_base64':True,'raw_export_mime_type':m.GOOGLE_DOCX_MIME},{'id':ident,'mime_type':m.GOOGLE_DOCX_MIME,'file_size_bytes':len(data),'b64_string':base64.b64encode(data).decode()}),'cleanup':{'delete':row({'url':'https://drive.google.com/file/d/'+ident+'/view'},{'success':True}),'readback':{'request':{'fileId':ident},'response':{'isError':True,'structuredContent':{'error_code':'NOT_FOUND','error':'404 missing '+ident}}}}}
+  self.assertEqual(m.google_exchange(response,req,data,data)[:2],(ps,ps));controls=m.google_controls(response,req,data,data,ps);self.assertEqual([x['id'] for x in controls],m.GOOGLE_CONTROLS);self.assertTrue(all(x['rejected'] for x in controls))
+  # IDs must agree in requests too, even if response text is copied unchanged.
+  for side,key in [('metadata','fileId'),('nativeAfter','document_id')]:
+   bad=copy.deepcopy(response);bad[side]['request'][key]='other'
+   with self.assertRaises(ValueError):m.google_exchange(bad,req,data,data)
+ def test_google_body_bookmarks_cannot_hide_text_or_weaken_word_reader(self):
+  xml=document(['text']);xml=xml.replace(b'<w:body>',b'<w:body><w:bookmarkStart w:id="0" w:name="provider"/><w:bookmarkEnd w:id="0"/>')
+  self.assertEqual(m.docx(archive(xml),google=True)[0],['text'])
+  with self.assertRaises(ValueError):m.docx(archive(xml))
+  for bad in [xml.replace(b'<w:bookmarkEnd w:id="0"/>',b'<w:bookmarkEnd w:id="1"/>'),xml.replace(b'w:name="provider"/>',b'w:name="provider"><w:t>hidden</w:t></w:bookmarkStart>')]:
+   with self.assertRaises(ValueError):m.docx(archive(bad),google=True)
+  with self.assertRaises(ValueError):m.fields('LARGE_DOCUMENT','C5')
 if __name__=='__main__':unittest.main()
