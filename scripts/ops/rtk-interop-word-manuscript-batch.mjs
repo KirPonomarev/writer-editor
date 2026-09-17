@@ -57,7 +57,9 @@ export function validateManuscriptIdentifierProof(p,volume,cycles,roundProofs){
  for(const s of Object.values(p.stages))demand(s.bookmarkCount===blockCount&&same(s.links,links)&&s.linkSemanticSha256===linkHash
   &&[s.bookmarkSha256,s.relationshipsSha256,s.artifactSha256].every(sha64)&&typeof s.roundId==='string'&&s.roundId.startsWith('round-')&&s.scope,'MANUSCRIPT_IDENTIFIER_RAW');
  for(const l of Object.values(p.locators))demand([l.artifactSha256,l.locatorSha256,l.sourceMapSha256].every(sha64)&&/^sha256:[a-f0-9]{64}$/u.test(l.storeDigest)&&/^sha256:[a-f0-9]{64}$/u.test(l.coreManifestDigest)
-  &&l.blockCount===blockCount&&l.sceneCount===sceneCount&&l.sourceSceneHashes?.length===sceneCount&&l.sourceSceneHashes.every(sha64),'MANUSCRIPT_LOCATOR_HASH');
+  &&l.blockCount===blockCount&&l.sceneCount===sceneCount&&l.sourceSceneHashes?.length===sceneCount&&l.sourceSceneHashes.every(sha64)
+  &&l.storage?.encoding==='gzip'&&sha64(l.storage.encodedSha256)&&Number.isSafeInteger(l.storage.encodedBytes)&&l.storage.encodedBytes>0&&l.storage.encodedBytes<=32*1024*1024
+  &&Number.isSafeInteger(l.storage.decodedBytes)&&l.storage.decodedBytes>0&&l.storage.decodedBytes<=128*1024*1024,'MANUSCRIPT_LOCATOR_HASH');
  for(const [i,r] of roundProofs.entries()){
   const key='rounds/'+(i+1),e=p.stages[key+'/export'],w=p.stages[key+'/word'],l=p.locators[key+'/export'];
   demand(e.artifactSha256===r.exportSha256&&w.artifactSha256===r.returnedSha256&&e.roundId===r.roundId&&w.roundId===r.roundId&&l.roundId===r.roundId&&l.exportId===r.exportId&&e.bookmarkSha256===w.bookmarkSha256,'MANUSCRIPT_IDENTIFIER_ROUND_BINDING');

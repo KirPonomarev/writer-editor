@@ -121,7 +121,8 @@
     "src/io/revisionBridge/reviewTransportMatchProofV1.mjs",
     "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
     "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
-    "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js"
+    "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+    "test/contracts/rtk-export01-unified-bookmark.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -291,7 +292,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "484df407fdd371b6e1af04792261ff5c61d977c7accecbca95f01b4ad62c259f"
+      "sha256": "80e53d10c91014059a1c84a8e6931af9c256b6a1e89a53e7c02417c4b80d69b1"
     }
   ],
   "requirementIds": [
@@ -590,7 +591,7 @@
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "3cf286b69c6cfd11c458b2ea22b8e1bd2689ea1a26609909a36b010f84e50133"
+        "sha256": "bad3f6c26b2631865f0dbfe0ca207c16c79b68537474472f276f7d7d44175e53"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -686,15 +687,19 @@
       },
       {
         "path": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
-        "sha256": "ced617d71f6b06bea3251fb8bd70c0d8cc20bc1ddef0ed20dd8d2e5e3fe0b136"
+        "sha256": "d5ab729693e3aa939387d5fbe3db412bc0c94b38bf0e1e55058852154ad4879f"
       },
       {
         "path": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
-        "sha256": "938e9c2206a81c9cf3db96835ac31978cf10b1747b715b53507dd0f38af6b215"
+        "sha256": "44b57575d7a9687136232b5d3cc10db73df57e15e6510ac154c8451cda3309cf"
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
         "sha256": "76e77bc3fa80895b8e03a62a4960d6b49f80328a6fd444a5855096870d3a4ab8"
+      },
+      {
+        "path": "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
+        "sha256": "694cb9ab9f4937a87a72272a28c77e4a0e80f616f55ff05ba6018177c08e04d8"
       }
     ],
     "followupRepair": {
@@ -1149,11 +1154,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "b58c3eca6fb1c397d87ea731888aff2b33160dfaef452034b451603ff89d110e"
+        "sha256": "ec1254dd676f73f9e20fdc83e7a5c0a857e3b140604cad9a575d04eb6355a445"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "453d8f28bd7fc23fecb9f176c60c07609a3561258bf66fca86c16270edf83788"
+        "sha256": "6c50aeb4dd578773363bdd627028568d6ea426a6faf5503b4a9825baca31fef1"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",

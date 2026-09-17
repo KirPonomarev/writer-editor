@@ -30,6 +30,11 @@ def identifier_archive():
    p.insert(0,ET.Element(m.W+'bookmarkStart',{m.W+'id':str(offset),m.W+'name':name}));p.append(ET.Element(m.W+'bookmarkEnd',{m.W+'id':str(offset)}));offset+=1
  parts={'word/_rels/document.xml.rels':ET.tostring(rels)};return archive(ET.tostring(d),parts),ids,docs
 class ManuscriptOracle(unittest.TestCase):
+ def test_lossless_locator_archive_rejects_wrong_hash_length_truncation_and_bombs(self):
+  data=b'{"owned":"'+b'x'*2048+b'"}';encoded=m.gzip.compress(data)
+  self.assertEqual(m.decode_locator_store(encoded,m.digest(data),len(data)),data)
+  for archive,sha,length in [(encoded,'0'*64,len(data)),(encoded,m.digest(data),len(data)-1),(encoded,m.digest(data),len(data)+1),(encoded,m.digest(data),128*1024*1024+1),(encoded[:-3],m.digest(data),len(data)),(encoded+encoded,m.digest(data),len(data)),(encoded,m.digest(data),True)]:
+   with self.assertRaises((ValueError,OSError,EOFError)):m.decode_locator_store(archive,sha,length)
  def test_word_split_uri_fragment_preserves_full_target_and_rejects_fragment_loss(self):
   data,ids,docs=identifier_archive();_,parts,d=m.docx(data);rels=ET.fromstring(parts['word/_rels/document.xml.rels'])
   by_id={r.get('Id'):r for r in rels}

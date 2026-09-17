@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Independent bounded manuscript oracle: fixed expectations, raw bytes, no product parser."""
-import base64,copy,hashlib,importlib.util,io,json,os,re,sys,time,unicodedata,zipfile
+import base64,copy,gzip,hashlib,importlib.util,io,json,os,re,sys,time,unicodedata,zipfile
 from pathlib import Path
 from xml.etree import ElementTree as ET
 _spec=importlib.util.spec_from_file_location('volume_oracle',Path(__file__).with_name('rtk-interop-word-volume-readback.py'))
@@ -184,6 +184,13 @@ def identifier_doc(parts,document,round_id,ids,docs):
             'links':actual,'linkSemanticSha256':digest(canonical(actual)),
             'relationshipsSha256':digest(parts['word/_rels/document.xml.rels']),
             'scope':'Declared YRTK per-round locators and literal safe hyperlink ranges; native relationship renumbering is allowed only with unchanged range-to-target mapping.'}
+
+def decode_locator_store(data,sha256,expected_bytes):
+    require(type(expected_bytes) is int and 0<expected_bytes<=128*1024*1024 and 0<len(data)<=32*1024*1024,'LOCATOR_ARCHIVE_BOUND')
+    with gzip.GzipFile(fileobj=io.BytesIO(data),mode='rb') as stream:
+        decoded=stream.read(expected_bytes+1)
+    require(len(decoded)==expected_bytes and digest(decoded)==sha256,'LOCATOR_ARCHIVE_HASH')
+    return decoded
 
 def locator_store(data,activation,cap,ids,docs,hashes):
     store=json.loads(data);unsigned={k:v for k,v in store.items() if k!='authorityStoreDigest'}
@@ -782,9 +789,11 @@ def audit(request):
         token=properties['YRTK_C01_AUTH'];require(token.startswith('YRTK1.'),'AUTHORITY_CARRIER');encoded=token[6:];payload=json.loads(base64.urlsafe_b64decode(encoded+'='*((-len(encoded))%4)))['payload']
         require(payload['projectId']==pid and payload['orderedSceneIds']==ids and [s['sceneId'] for s in payload['sceneRevisions']]==ids and [s['rawSha256'] for s in payload['sceneRevisions']]==['sha256:'+h for h in hashes] and payload['roundId']==cap['roundId'],'EXPORTED_RAW_SCENE_PARTITION')
         if not generic:
-            data=raw(name+'-authority-store.json')
-            require(x['authorityStoreFile']==prefix+name+'-authority-store.json' and x['authorityStoreSha256']==digest(data),'LOCATOR_STORE_FILE')
+            encoded=raw(name+'-authority-store.json.gz')
+            require(x['authorityStoreFile']==prefix+name+'-authority-store.json.gz' and x['authorityStoreEncoding']=='gzip','LOCATOR_STORE_FILE')
+            data=decode_locator_store(encoded,x['authorityStoreSha256'],x['authorityStoreUncompressedBytes'])
             locator_stages[name]=locator_store(data,r['activation'],cap,ids,expected_docs(volume,route,round),hashes)
+            locator_stages[name]['storage']={'encoding':'gzip','encodedSha256':digest(encoded),'encodedBytes':len(encoded),'decodedBytes':len(data)}
             identifier_stages[name]={**identifier_doc(parts,doc,cap['roundId'],ids,expected_docs(volume,route,round)),'artifactSha256':digest(b),'roundId':cap['roundId']}
         return cap
     def word_check(name,source_file,returned_file,directory,round,tracked,cap):
