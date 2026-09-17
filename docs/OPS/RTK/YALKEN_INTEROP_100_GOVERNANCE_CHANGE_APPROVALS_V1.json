@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "d75d80c4b479501732438c73ad00a018f95fe1c88db8ef55a8fe2c054ac50747"
+      "sha256": "de0f8105b1a523b2e8a929a3ff0bf4ddae9b3b9a0755197406a63cb829bc3efa"
     },
     {
       "approved": true,
@@ -339,7 +339,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "e606cd8a9d721a9025bd1c874e977c7c04a49f986ea85777c8b773b6af0fb00d"
+      "sha256": "88b41ea7d9d0178242b71c1876c7b377a8128ecf92e3487df8efa75cf1983a5c"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "57d354ac2a43ede99f1c869f4b359aae040d3716c8c50d336be60b2cc98e645e"
+      "sha256": "6a66cdc58c58167d656e92311999c9acdecc2d2b6fc7443147a2a743149768b6"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "35b8bff9a26877faf52c6ffddf94ff2d147c00bb7ee3a7292cd68c060e8dd120"
+      "sha256": "bd16fffb14e696ee074e7906be93195718daf2d5758438a1415a4d47b35b2b01"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "f0d295422b36f7063cd03de3ef16aeb6c751031d36da082f29947065f28d1463"
+      "sha256": "a6bbeef46524ae63b4c413639d643c7a3ccec4df61963780a3ec1673e362d899"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -713,11 +713,11 @@
     {
       "filePath": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
-      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
-      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "3b959f1cbea4852ba036d6373ea6560ee4be19c8c9c050acd9ee95242c9a94c5"
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "c996a7ea2203db09b8b8b5b56e80d90845a934d79bd3b24e4a3db349779a6899"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
@@ -1293,7 +1293,7 @@
       "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "eda52cbde5bc53d5cd7dace05dde542e7986b494610e224bfffb276793d1a97a"
+      "sha256": "91fba0d57a50aec4fe77771fb0580befc800e913a8196043714a01bc4ee1ddbf"
     },
     {
       "filePath": "src/export/docx/docxBlockStyles.js",

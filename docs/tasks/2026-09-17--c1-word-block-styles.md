@@ -21,6 +21,7 @@ Bounded importer/exporter repair, focused hostile-input and roundtrip tests, and
 - src/utils/docxImportLocalFilePreview.js
 - src/utils/docxImportSafeCreate.js
 - test/contracts/revision-bridge-docx-block-styles.contract.test.js
+- test/contracts/revision-bridge-docx-import-reference.contract.test.js
 - scripts/ops/rtk-interop-word-manuscript-fixtures.mjs
 - scripts/ops/rtk-interop-word-manuscript-readback.py
 - scripts/ops/rtk-interop-word-manuscript-batch.mjs
@@ -34,7 +35,7 @@ Bounded importer/exporter repair, focused hostile-input and roundtrip tests, and
 - docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json
 - docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json
 
-- src/main.js (preview metadata allowlist only)
+- src/main.js (preview metadata allowlist and existing safe-create reference payload measurement)
 - src/export/docx/docxBlockStyles.js
 - scripts/ops/rtk-interop-data-c1.mjs
 
@@ -90,6 +91,8 @@ P: Failing regression first, focused hostile projection tests, actual source and
 I: Exact base, final candidate and merged SHA, Word provider/build, fixture digest, native run and artifact hashes.
 
 The ordinary importer maps only explicitly defined paragraph styles in the supported Yalken transport profile. Missing definitions, invalid metadata, conflicting headings/list/code properties and unsupported code formatting must not silently produce a successful lossy rich candidate. Indentation alone remains ordinary paragraph formatting. Fixed code presentation is the existing Menlo 10pt code style. Quote depth is preserved; arbitrary Word paragraph styling and exact quote-container grouping are not new claims.
+
+Native 500k C1 qualification exposed a second boundary defect: safe-create applied the 4 MiB wire limit after resolving the immutable main-owned plan. Measure the received reference request, as the existing preview command already does. Preserve direct-payload limits, the 8 MiB snapshot and 16 MiB total cache limits, parser bounds, depth/shape checks, admission, expiry and project-generation guards. The large-plan regression must prove atomic full-content readback, oversized direct-payload rejection and zero writes from a stale reference.
 
 ## IMPLEMENTATION_STEPS
 1. Pin the reproduced loss and run the new negative regression on base.

@@ -316,7 +316,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e606cd8a9d721a9025bd1c874e977c7c04a49f986ea85777c8b773b6af0fb00d"
+        "sha256": "88b41ea7d9d0178242b71c1876c7b377a8128ecf92e3487df8efa75cf1983a5c"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -332,7 +332,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
-        "sha256": "3b959f1cbea4852ba036d6373ea6560ee4be19c8c9c050acd9ee95242c9a94c5"
+        "sha256": "c996a7ea2203db09b8b8b5b56e80d90845a934d79bd3b24e4a3db349779a6899"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-import-preview-reference.md",
@@ -604,7 +604,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--c1-word-block-styles.md",
-        "sha256": "eda52cbde5bc53d5cd7dace05dde542e7986b494610e224bfffb276793d1a97a"
+        "sha256": "91fba0d57a50aec4fe77771fb0580befc800e913a8196043714a01bc4ee1ddbf"
       },
       {
         "path": "src/export/docx/docxBlockStyles.js",

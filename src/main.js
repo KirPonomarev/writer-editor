@@ -10790,6 +10790,9 @@ function validateDocxImportSafeCreatePayload(payload = {}) {
     );
   }
 
+  // The wire cap applies to the received request. Main-owned snapshots retain
+  // their existing cache bounds and every resolved-plan validation below.
+  const receivedPayload = payload;
   if (payload.docxImportPreviewRef !== undefined) {
     if (payload.docxImportPreviewPlan !== undefined) {
       return makeDocxImportSafeCreateTypedError('E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID', 'DOCX_IMPORT_SAFE_CREATE_MIXED_SOURCE');
@@ -10827,7 +10830,7 @@ function validateDocxImportSafeCreatePayload(payload = {}) {
     );
   }
 
-  const payloadChars = measureDocxImportSafeCreatePayloadChars(payload);
+  const payloadChars = measureDocxImportSafeCreatePayloadChars(receivedPayload);
   if (payloadChars < 0) {
     return makeDocxImportSafeCreateTypedError(
       'E_DOCX_IMPORT_SAFE_CREATE_PAYLOAD_INVALID',

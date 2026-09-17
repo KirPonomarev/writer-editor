@@ -127,6 +127,29 @@ test('64-paragraph actual parser and main command chain preserve content through
   assert.equal(retry.idempotent, true); assert.equal(port.state.writes, 1);
 });
 
+test('large admitted plans retain the wire limit and import through a bounded current reference', async t => {
+  const port = harness(t);
+  const paragraphs = Array.from({ length: 4500 }, (_, index) => `${index}: ${'large bound payload '.repeat(48)}`);
+  const { plan } = await preview(port, paragraphs);
+  const direct = { requestId: 'large-direct', docxImportPreviewPlan: plan.docxImportPreviewPlan };
+  assert.ok(JSON.stringify(direct).length > 4 * 1024 * 1024);
+  const rejected = await port.handleDocxImportSafeCreateCommandSurface(direct);
+  assert.equal(rejected.error.reason, 'DOCX_IMPORT_SAFE_CREATE_PAYLOAD_TOO_LARGE');
+  assert.equal(port.state.writes, 0);
+  const payload = { requestId: 'large-reference', docxImportPreviewRef: plan.docxImportPreviewRef };
+  assert.equal(validateIpcEnvelope(createEnvelope('ui:command-bridge', 'cmd.project.docx.importSafeCreate', payload), 'ui:command-bridge').ok, true);
+  const result = await port.handleDocxImportSafeCreateCommandSurface(payload);
+  assert.equal(result.safeCreateOk, true, JSON.stringify(result));
+  assert.equal(port.state.writes, 1);
+  const imported = path.join(port.tempRoot, 'A', 'roman', 'Imported');
+  const files = fs.readdirSync(imported).filter(name => name.endsWith('.txt'));
+  assert.equal(files.length, 1);
+  assert.equal(fs.readFileSync(path.join(imported, files[0]), 'utf8'), paragraphs.join('\n'));
+  port.invalidateDocxImportPreviewReferences();
+  assert.equal((await port.handleDocxImportSafeCreateCommandSurface(payload)).ok, false);
+  assert.equal(port.state.writes, 1);
+});
+
 test('forged, malformed, mixed, wrong-kind and expired project-generation references never reach the writer', async t => {
   const port = harness(t);
   const { content, plan } = await preview(port, ['Alpha', '', 'Привет']);
