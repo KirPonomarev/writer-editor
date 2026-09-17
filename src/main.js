@@ -9666,7 +9666,12 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
 // DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
 
 // DOCX_IMPORT_PREVIEW_REFERENCES_START
-const docxImportPreviewReferences = createDocxImportPreviewReferences();
+// A 500k-word content preview is about 4.6 MB. Let one snapshot use up to
+// half of the existing 16 MiB cache; total retention, TTL and input limits stay fixed.
+const docxImportPreviewReferences = createDocxImportPreviewReferences({
+  maxSnapshotBytes: 8 * 1024 * 1024,
+  maxTotalBytes: 16 * 1024 * 1024,
+});
 let docxImportPreviewProjectGeneration = 0;
 
 function captureDocxImportPreviewContext() {

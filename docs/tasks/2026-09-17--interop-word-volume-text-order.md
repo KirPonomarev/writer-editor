@@ -100,7 +100,18 @@ maps remain in the main-owned authenticated capsule; the public DOCX advisory
 now carries their correlation digests instead of duplicate baseline content.
 Document XML, signed carriers and local recovery authority stay byte-identical
 for the same source. Publication uses the existing full-manuscript parse
-profile already used by return intake; all declared ceilings stay unchanged.
+profile already used by return intake; all input and parser ceilings stay unchanged.
+
+The native 500k-word generic import then parses successfully but cannot publish
+its 4.6 MB content preview into a 4 MiB internal reference entry. Main allows an
+8 MiB entry within the unchanged 16 MiB total cache budget; original file/IPC
+limits, expiry, context checks, immutable snapshots and typed failure remain.
+This is internal derived-cache allocation, not a larger untrusted input budget.
+
+The independent reader accepts only an empty w:lastRenderedPageBreak as a
+cached pagination marker, as specified by ISO/IEC 29500 and Microsoft Learn:
+https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.lastrenderedpagebreak
+Actual authored line/page breaks and markers containing content remain rejected.
 
 ## IMPLEMENTATION_STEPS
 1. Execute a three-scene full-manuscript source probe through real product commands and Word.

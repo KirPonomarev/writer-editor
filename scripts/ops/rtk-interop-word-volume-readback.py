@@ -81,8 +81,10 @@ def docx(data,tracked=False):
         require(all(c.tag in {W+'pPr',W+'r',W+'ins',W+'del',W+'bookmarkStart',W+'bookmarkEnd',W+'proofErr'} for c in p),'PARAGRAPH_GRAMMAR')
         for revision in [*p.findall(W+'ins'),*p.findall(W+'del')]:require(all(c.tag==W+'r' for c in revision),'REVISION_GRAMMAR')
         for r in p.iter(W+'r'):
-            require(all(c.tag in {W+'rPr',W+'t',W+'delText'} for c in r),'RUN_GRAMMAR')
+            require(all(c.tag in {W+'rPr',W+'t',W+'delText',W+'lastRenderedPageBreak'} for c in r),'RUN_GRAMMAR')
             require(all(not list(c) for c in r if c.tag in {W+'t',W+'delText'}),'TEXT_LEAF_GRAMMAR')
+            # ISO/IEC 29500: cached pagination position; no authored character.
+            require(all(not list(c) and not c.attrib and not c.text for c in r if c.tag==W+'lastRenderedPageBreak'),'RENDERED_PAGE_MARKER_GRAMMAR')
     inserts=document.findall('.//'+W+'ins');deletes=document.findall('.//'+W+'del')
     if tracked:
         require(len(inserts)==len(deletes)==1,'EXACT_TRACKED_REPLACEMENT')
@@ -235,7 +237,7 @@ def audit(request):
         require(ex['before']==ex['after'] and len(ex['before'])==len(src),'VOLUME_EXPORT_NO_WRITE')
         if not reviewed:require(ex['before']==[s['sha256'] for s in src],'VOLUME_EXPORT_SOURCE_HASHES')
         require(result['ok'] is True and result['commandId']=='cmd.project.review.exportFullManuscriptDocxReviewPacket' and result['exported'] is True and result['bytesWritten']==len(b) and ex['artifactSha256']==digest(b),'VOLUME_CANONICAL_EXPORT')
-        require(capsule['scope']=='full-manuscript' and capsule['orderedSceneIds']==ids and capsule['sceneCount']==len(src) and capsule['blockCount']==len(expected_paragraphs(volume)),'VOLUME_EXPORT_IDENTITY')
+        require(capsule['projectId']==read('source-project.json')['projectId'] and capsule['scope']=='full-manuscript' and capsule['orderedSceneIds']==ids and capsule['sceneCount']==len(src) and capsule['blockCount']==len(expected_paragraphs(volume)),'VOLUME_EXPORT_IDENTITY')
         require(result['publicationGate']['finalArtifactSha256']=='sha256:'+digest(b) and result['publicationGate']['ok'] is True and result['canAutoApply'] is False and result['canImportMutate'] is False,'VOLUME_EXPORT_PUBLICATION')
         stage('reexport-docx' if reviewed else 'export-docx',docx(b)[0],reviewed);return capsule
     capsule=export('export','source.docx',False)
@@ -263,10 +265,14 @@ def audit(request):
             b=files[s['savedFile']];final=raw('runtime-project-snapshot/'+ids[i]);require(b==final and digest(b)==s['sha256']==r['sha256'],'VOLUME_FRESH_PERSISTED_BYTES')
             exact(scene(b),ps,'SAVED_SCENE');exact(s['renderer'],ps,'SAVED_RENDERER');exact(r['renderer'],ps,'REOPEN_RENDERER');saved_all.extend(scene(b));render_all.extend(s['renderer']);reopen_all.extend(r['renderer'])
         stage('persisted',saved_all,True);stage('applied-renderer',render_all,True);stage('reopened-renderer',reopen_all,True)
+        require(read('reexport.json')['before']==[s['sha256'] for s in saved],'VOLUME_REEXPORT_SAVED_BINDING')
         export('reexport','reexport.docx',True);word('final-word-lifecycle','reexport.docx','final-word.docx','final-word',True,False)
     else:
         im=read('import.json');r=im['result'];receipt=r['safeCreate']['receipt'];actual=r['importedScene'];require(im['before']==im['after']==[s['sha256'] for s in src] and im['save']['ok'] is True and r['ok']==1 and r['safeCreate']['commandOk'] is True and r['safeCreate']['commandId']=='cmd.project.docx.importSafeCreate','VOLUME_C1_SAFE_CREATE')
-        require(receipt['sourceArtifactSha256']==digest(raw('returned.docx')) and receipt['candidateContentSha256']==digest(raw('imported-scene.txt')) and receipt['manifestAuthority']['durablePublication'] is True and receipt['atomicEvidence']=={'sceneCount':1,'markerCleared':True},'VOLUME_C1_RECEIPT')
+        require(receipt['projectId']==capsule['projectId'] and receipt['sourceArtifactSha256']==digest(raw('returned.docx')) and receipt['candidateContentSha256']==digest(raw('imported-scene.txt')) and receipt['manifestAuthority']['durablePublication'] is True and receipt['atomicEvidence']=={'sceneCount':1,'markerCleared':True},'VOLUME_C1_RECEIPT')
+        if volume=='LARGE_DOCUMENT':
+            dialog=read('owned-docx-dialog.json');require(dialog['schemaVersion']=='WORD_VOLUME_OWNED_DIALOG_V1' and dialog['pid']==reopened['firstPid'] and dialog['sourceSha256']==dialog['chosenSha256']==digest(raw('returned.docx')) and dialog['interactionDriver']=='CODEX_CUA_NATIVE' and r['contentPreview']['commandId']==dialog['commandId']=='cmd.project.docx.previewLocalFile','VOLUME_OWNED_LOCAL_FILE')
+        else:require(r['contentPreview']['commandId']=='cmd.project.docx.previewContent','VOLUME_BOUNDED_CONTENT_PREVIEW')
         require(r['rendererAccept']['directSafeCreateBridge'] is True and r['rendererAccept']['dialogRouteUsed'] is False,'VOLUME_C1_COMMAND_SCOPE')
         require(len(reopened['scenes'])==1,'VOLUME_C1_REOPEN_COUNT');rr=reopened['scenes'][0]
         b=raw('imported-scene.txt');saved=raw('imported-saved.txt');require(saved==raw('runtime-project-snapshot/'+actual['sceneId']) and digest(b)==actual['sceneFileSha256'] and digest(saved)==rr['sha256'] and actual['sceneId']==rr['sceneId'] and actual['nodeId']==rr['nodeId']==rr['open']['documentId'],'VOLUME_C1_DURABLE_BINDING')

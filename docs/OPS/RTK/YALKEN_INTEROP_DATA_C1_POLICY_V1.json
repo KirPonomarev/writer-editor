@@ -294,7 +294,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a2c26b371f60c11b3a9a83660ff122d9b3930bb3e52d7ebaca09b3dc038ba91d"
+        "sha256": "c3e6db0fb582e843406f4819a38d7b2319d62e8bf95f7352bcd3e881b565e23c"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -518,15 +518,15 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
-        "sha256": "83718ba9116665a0a0ff75759d7fa10efbeb53bda2af0fca03429d4aed28207d"
+        "sha256": "0b0db8e7764e8fc9e774408196312cbfbf54998454c27c29778920cc858104a5"
       },
       {
         "path": "test/unit/rtk-interop-word-volume.test.py",
-        "sha256": "aa16c59e8dff577362e2e99dbd58b0e3f8fb1a1a4c1e58a1a877de56f0d639e0"
+        "sha256": "624c6e0420294b2cf8a7189d306ce1cce99b27c2e6c9aef0bbb3d216d35cdf8e"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
-        "sha256": "06f19c8da0c1a360ee8106ce4cb35085b7adb9f2cb399ec434601da136bfdb57"
+        "sha256": "8f7578e6d021f8b03d53d87a9c411727657fa92088ff5e393c9ec925bab74a61"
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
@@ -668,7 +668,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
-        "sha256": "aeaac354fb3e1a47aee2e19fc03c77af7ce4460db502dfe44f4b2599626e7524"
+        "sha256": "a4c9b9398ff49fc73b16637e66df29d2c31625fa200eb93166d860958fc1ba44"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-fixtures.mjs",

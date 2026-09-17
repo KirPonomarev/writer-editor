@@ -44,6 +44,11 @@ class VolumeOracle(unittest.TestCase):
         base=document(list(v.PROBES))
         for b in [archive(base,{'../escape':b'x'}),archive(base,{'x.xml':b'<!DOCTYPE x><x/>'}),archive(base,{'x.rels':b'<Relationships><Relationship TargetMode="External"/></Relationships>'}),archive(base.replace(b'<w:body>',b'<w:body><w:tbl/>')),archive(base.replace(b'<w:t xml:space="preserve">',b'<w:t xml:space="preserve"><w:br/>',1))]:
             with self.assertRaises(ValueError):v.docx(b)
+    def test_cached_pagination_marker_has_no_authored_character(self):
+        base=document(list(v.PROBES));marked=base.replace(b'</w:t>',b'</w:t><w:lastRenderedPageBreak/>',1)
+        self.assertEqual(v.docx(archive(marked))[0],list(v.PROBES))
+        for bad in [base.replace(b'</w:t>',b'</w:t><w:br/>',1),base.replace(b'</w:t>',b'</w:t><w:lastRenderedPageBreak><w:t>hidden</w:t></w:lastRenderedPageBreak>',1)]:
+            with self.assertRaises(ValueError):v.docx(archive(bad))
     def test_unknown_volume_rejected(self):
         for volume in ['SINGLE_SCENE','one-million','',None]:
             with self.assertRaises(ValueError):v.expected_scenes(volume)
