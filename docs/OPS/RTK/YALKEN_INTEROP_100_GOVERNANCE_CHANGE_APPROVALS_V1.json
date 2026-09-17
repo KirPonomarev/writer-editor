@@ -660,7 +660,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "c679d473337c889ca4307ace44f92de342adfb173aed0b0a9e9a02dbcd956eba"
+      "sha256": "39e29ae5205b5cca1550acd5b42a852be1e8452093d07e85484d7800268c92b4"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -678,7 +678,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "4fd0b8913572dc659906cc0d92988167346e4b4595f7299d22d461852c01973c"
+      "sha256": "d4adcabd79c429bb62dc2bc6456e8ad95b5d0b2aedceb346150d71c62fbb3912"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1200,7 +1200,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "0780a39805ae9efcaee07f73cf42c1e29703cd37123d1ce13bf61d5d363bd2f2"
+      "sha256": "453d8f28bd7fc23fecb9f176c60c07609a3561258bf66fca86c16270edf83788"
     },
     {
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1263,7 +1263,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "46b8f39db0be4e6d197e4015865a1c72090316221cc6fc7a1d8b0f35baee7738"
+      "sha256": "3cf286b69c6cfd11c458b2ea22b8e1bd2689ea1a26609909a36b010f84e50133"
     },
     {
       "filePath": "test/unit/sector-m-scene-rich-truth.test.js",

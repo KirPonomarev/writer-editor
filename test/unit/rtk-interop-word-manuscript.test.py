@@ -30,6 +30,20 @@ def identifier_archive():
    p.insert(0,ET.Element(m.W+'bookmarkStart',{m.W+'id':str(offset),m.W+'name':name}));p.append(ET.Element(m.W+'bookmarkEnd',{m.W+'id':str(offset)}));offset+=1
  parts={'word/_rels/document.xml.rels':ET.tostring(rels)};return archive(ET.tostring(d),parts),ids,docs
 class ManuscriptOracle(unittest.TestCase):
+ def test_word_split_uri_fragment_preserves_full_target_and_rejects_fragment_loss(self):
+  data,ids,docs=identifier_archive();_,parts,d=m.docx(data);rels=ET.fromstring(parts['word/_rels/document.xml.rels'])
+  by_id={r.get('Id'):r for r in rels}
+  for link in d.iter(m.W+'hyperlink'):link.set(m.W+'anchor',by_id[link.get(m.OFFICE_REL+'id')].get('Target').split('#',1)[1])
+  for r in rels:r.set('Target',r.get('Target').split('#',1)[0])
+  parts['word/_rels/document.xml.rels']=ET.tostring(rels)
+  self.assertEqual([r['href'] for r in m.identifier_doc(parts,d,'round-unit',ids,docs)['links']],[m.LINK_TARGETS[0],m.LINK_TARGETS[1],m.LINK_TARGETS[0]])
+  for kind in ['missing','wrong','ambiguous']:
+   x=copy.deepcopy(d);changed=dict(parts);link=next(x.iter(m.W+'hyperlink'))
+   if kind=='missing':del link.attrib[m.W+'anchor']
+   elif kind=='wrong':link.set(m.W+'anchor','other')
+   else:
+    other=copy.deepcopy(rels);other[0].set('Target',m.LINK_TARGETS[0]);changed['word/_rels/document.xml.rels']=ET.tostring(other)
+   with self.assertRaises(ValueError):m.identifier_doc(changed,x,'round-unit',ids,docs)
  def test_identifier_ranges_relationships_and_eleven_corruptions(self):
   data,ids,docs=identifier_archive();ps,parts,d=m.docx(data)
   proof=m.identifier_doc(parts,d,'round-unit',ids,docs)

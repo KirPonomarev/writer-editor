@@ -590,7 +590,7 @@
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "46b8f39db0be4e6d197e4015865a1c72090316221cc6fc7a1d8b0f35baee7738"
+        "sha256": "3cf286b69c6cfd11c458b2ea22b8e1bd2689ea1a26609909a36b010f84e50133"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -1153,7 +1153,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "0780a39805ae9efcaee07f73cf42c1e29703cd37123d1ce13bf61d5d363bd2f2"
+        "sha256": "453d8f28bd7fc23fecb9f176c60c07609a3561258bf66fca86c16270edf83788"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",

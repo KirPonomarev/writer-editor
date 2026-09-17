@@ -51,6 +51,7 @@ def expected_docs(volume,route,round=0):
     return docs
 
 LINK_TARGETS=['https://example.test/research?a=1&b=%D1%91#chapter-2','https://example.test/other?q=%F0%9F%A7%AD#note']
+LINK_REL_TARGETS=LINK_TARGETS+[s.split('#',1)[0] for s in LINK_TARGETS]
 REL='{http://schemas.openxmlformats.org/package/2006/relationships}'
 OFFICE_REL='{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
 LINK_REL='http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink'
@@ -101,7 +102,7 @@ def docx(data,round=0,google=False):
         if name.endswith(('.xml','.rels')):require(b'<!DOCTYPE' not in b.upper() and b'<!ENTITY' not in b.upper(),'XML_DTD')
         if name.endswith('.rels'):
             for e in ET.fromstring(b):
-                if e.attrib.get('TargetMode','Internal')=='External':require(name=='word/_rels/document.xml.rels' and e.tag==REL+'Relationship' and e.get('Type')==LINK_REL and e.get('Target') in LINK_TARGETS,'EXTERNAL_RELATIONSHIP')
+                if e.attrib.get('TargetMode','Internal')=='External':require(name=='word/_rels/document.xml.rels' and e.tag==REL+'Relationship' and e.get('Type')==LINK_REL and e.get('Target') in LINK_REL_TARGETS,'EXTERNAL_RELATIONSHIP')
     d=ET.fromstring(parts['word/document.xml']);body=d.find(W+'body')
     allowed_body=[W+'p',W+'sectPr']+([W+'bookmarkStart',W+'bookmarkEnd'] if google else [])
     require(d.tag==W+'document' and body is not None and all(n.tag in allowed_body for n in body),'DOCX_BODY')
@@ -113,7 +114,7 @@ def docx(data,round=0,google=False):
     for p in body.findall(W+'p'):
         require(all(n.tag in {W+x for x in ['pPr','r','ins','del','bookmarkStart','bookmarkEnd','proofErr','commentRangeStart','commentRangeEnd','hyperlink']} for n in p),'DOCX_PARAGRAPH')
         for link in p.findall(W+'hyperlink'):
-            require(set(link.attrib)<={OFFICE_REL+'id',W+'history'} and link.get(OFFICE_REL+'id') and all(n.tag==W+'r' for n in link),'DOCX_HYPERLINK_SHAPE')
+            require(set(link.attrib)<={OFFICE_REL+'id',W+'history',W+'anchor'} and link.get(OFFICE_REL+'id') and all(n.tag==W+'r' for n in link),'DOCX_HYPERLINK_SHAPE')
         for rev in [*p.findall(W+'ins'),*p.findall(W+'del')]:require(all(n.tag==W+'r' for n in rev),'DOCX_REVISION')
         for r in p.iter(W+'r'):
             require(all(n.tag in {W+x for x in ['rPr','t','delText','lastRenderedPageBreak','commentReference']} for n in r),'DOCX_RUN')
@@ -144,8 +145,12 @@ def raw_links(parts,document):
             text=v.visible(child);size=len(text.encode('utf-16-le'))//2
             if child.tag==W+'hyperlink':
                 ident=child.get(OFFICE_REL+'id');rel=relationships.get(ident)
-                require(rel is not None and rel.get('Type')==LINK_REL and rel.get('TargetMode')=='External' and rel.get('Target') in LINK_TARGETS and size>0,'LINK_RELATIONSHIP_TARGET')
-                used.add(ident);row={'paragraphIndex':index,'startUtf16':offset,'endUtf16':offset+size,'text':text,'href':rel.get('Target')}
+                require(rel is not None and rel.get('Type')==LINK_REL and rel.get('TargetMode')=='External' and rel.get('Target') in LINK_REL_TARGETS and size>0,'LINK_RELATIONSHIP_TARGET')
+                target=rel.get('Target');anchor=child.get(W+'anchor')
+                require(anchor is None or anchor and '#' not in target,'LINK_AMBIGUOUS_FRAGMENT')
+                href=target+('#'+anchor if anchor is not None else '')
+                require(href in LINK_TARGETS,'LINK_LITERAL_FRAGMENT')
+                used.add(ident);row={'paragraphIndex':index,'startUtf16':offset,'endUtf16':offset+size,'text':text,'href':href}
                 if rows and all(rows[-1][k]==row[k] for k in ['paragraphIndex','href']) and rows[-1]['endUtf16']==offset:
                     rows[-1]['endUtf16']=offset+size;rows[-1]['text']+=text
                 else:rows.append(row)
