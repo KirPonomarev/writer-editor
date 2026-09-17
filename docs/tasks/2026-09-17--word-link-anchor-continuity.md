@@ -9,7 +9,7 @@ AUTHORITY: Standing owner instruction to personally complete all1120 import/expo
 DESIGN_TOOL_ROUTER: NOT_APPLICABLE; backend and executable proof only.
 
 ## MICRO_GOAL
-Preserve exact safe hyperlink targets and authored ranges, declared per-round bookmarks and hash-bound locators through C2/C3 Word exchange. Missing or duplicated anchors must produce explicit diagnostics with no canonical mutation. Execute all six frozen identifier subcases in the existing shared journeys.
+Preserve exact safe hyperlink targets and authored ranges, declared per-round bookmarks and hash-bound locators through C2/C3 Word exchange. Missing or duplicated anchors must remain visible in manual preview, produce explicit diagnostics and block actual exact-text apply without canonical mutation. Execute all six frozen identifier subcases in the existing shared journeys.
 
 ## ARTIFACT
 One bounded extension of the current Word recipe and independent product admission, with corrections to the existing export/return path only if observed necessary. Qualify the companion background Word driver and omit root test and documentation outside required docs/OPS/STATUS from disposable runtime copies while retaining full runtime-source equality and mandatory product tests.
@@ -102,3 +102,6 @@ AGENT_FINAL_REPORT_V1 with exact identities, numerator/1120, measured complete c
 ## FAIL_PROTOCOL
 Fix one observed cause inside scope. No self-PASS, cross-head inheritance or fabricated native provider proof.
 
+
+## OBSERVED CORRECTION
+The native missing-bookmark control exposed exact-match promotion through paragraph index in the manual review candidate path. Exact matches now require a complete unique declared bookmark set and agreement with the existing strict block resolver; lost, duplicated or conflicting identities stay manual. Real negative controls invoke the canonical batch-apply command and require its typed exact-match rejection plus unchanged scene, manifest and comment state.

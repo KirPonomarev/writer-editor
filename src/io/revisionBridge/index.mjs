@@ -5466,6 +5466,7 @@ function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}
   const revisions = [];
   const elementStack = [];
   const paragraphStack = [];
+  const paragraphRecords = [];
   let revisionSequence = 0;
   let paragraphIndex = -1;
   let paragraphDepth = 0;
@@ -5618,13 +5619,16 @@ function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}
       const textId = docxReviewPreviewSessionReadXmlAttr(token, 'textId');
       const resolvedTargetScope = fullManuscriptScopeForParagraph({ paraId, textId, paragraphIndex });
       if (!selfClosing) {
-        paragraphStack.push({
+        const paragraphRecord = {
           paraId,
           textId,
+          paragraphIndex,
           bookmarkNames: [],
           fullManuscriptResolved: Boolean(resolvedTargetScope),
           targetScope: resolvedTargetScope || targetScope,
-        });
+        };
+        paragraphStack.push(paragraphRecord);
+        paragraphRecords[paragraphIndex] = paragraphRecord;
       }
     } else if (tagName === 'w:bookmarkStart' && paragraphDepth > 0 && paragraphStack.length > 0) {
       const bookmarkName = docxReviewPreviewSessionReadXmlAttr(token, 'name');
@@ -5705,6 +5709,47 @@ function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}
       'error',
     );
     return { textChanges: [], structuralChanges: [], diagnostics, malformed: true };
+  }
+
+  // A signed manuscript map may declare stable bookmark identities. An index
+  // or still-known native id must not rescue a lost/duplicated bookmark, and a
+  // later paragraph must not retroactively duplicate an earlier revision's
+  // identity. Validate the completed document before producing exact matches.
+  const mapScenes = Array.isArray(options.fullManuscriptExportMap?.scenes) ? options.fullManuscriptExportMap.scenes : [];
+  const mapBlocks = mapScenes.flatMap((scene) => Array.isArray(scene?.blocks) ? scene.blocks : []);
+  const declaredBookmarks = mapBlocks.flatMap((block) => (Array.isArray(block?.wordSignals) ? block.wordSignals : [])
+      .filter((signal) => signal?.kind === 'bookmarkName')
+      .map((signal) => normalizeString(signal.value?.name).toLowerCase()))
+    .filter(Boolean);
+  if (declaredBookmarks.length > 0) {
+    const counts = new Map();
+    for (const paragraph of paragraphRecords) {
+      for (const name of paragraph?.bookmarkNames || []) {
+        const key = normalizeString(name).toLowerCase();
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+    }
+    let complete = new Set(declaredBookmarks).size === declaredBookmarks.length;
+    if (!complete) addDiagnostic('DOCX_REVIEW_BOOKMARK_SOURCE_AMBIGUOUS', 'The local manuscript map declares duplicate bookmark identities.', 'error');
+    for (const name of new Set(declaredBookmarks)) {
+      const count = counts.get(name) || 0;
+      if (count === 1) continue;
+      complete = false;
+      addDiagnostic(count === 0 ? 'DOCX_REVIEW_BOOKMARK_MISSING' : 'DOCX_REVIEW_BOOKMARK_DUPLICATE',
+        `Declared bookmark ${name} has ${count} returned occurrences; exact apply is unavailable.`, 'warning', name);
+    }
+    const resolveBlock = docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap);
+    const positionsDeclared = mapBlocks.every((block) => Number.isSafeInteger(block.documentParagraphIndex) && block.documentParagraphIndex >= 0);
+    for (const revision of revisions) {
+      const paragraph = paragraphRecords[revision.paragraphIndex] || {};
+      const resolution = resolveBlock({ ...paragraph, paragraphIndex: positionsDeclared ? paragraph.paragraphIndex : -1 });
+      revision.fullManuscriptResolved = complete && resolution?.ok === true;
+      if (revision.fullManuscriptResolved) {
+        revision.targetScope = { type: 'scene', id: resolution.authority.sceneId };
+      } else if (complete) {
+        addDiagnostic('DOCX_REVIEW_BOOKMARK_LOCATOR_CONFLICT', 'Returned paragraph identity conflicts with the authenticated manuscript map; exact apply is unavailable.', 'warning', `docx-revision-${revision.revisionId}`);
+      }
+    }
   }
 
   const textChanges = [];

@@ -846,10 +846,23 @@ def audit(request):
                     before=control['before'];result=control['result']
                     require(before==control['after'] and before['sceneHashes']==source_hashes and before['commentStateSha256']==comment_state_sha and re.fullmatch('[a-f0-9]{64}',before['manifestSha256']),'IDENTIFIER_CONTROL_NO_WRITE')
                     require(all(result.get(k) is not True for k in ['canAutoApply','canImportMutate','canWriteStorage']),'IDENTIFIER_CONTROL_NO_AUTHORITY')
+                    require(result['ok'] is True and result['returnIntake']['authenticated'] is True and result['returnIntake']['returnedArtifactSha256']=='sha256:'+digest(mutant),'IDENTIFIER_AUTHENTICATED_PREVIEW')
+                    graph=result['reviewSurface']['revisionSession']['reviewGraph'];changes=graph['textChanges']
+                    require(len(changes)==1 and changes[0]['match']['quote']=='sentinel alpha' and changes[0]['replacementText']=='sentinel round1','IDENTIFIER_CONTROL_CHANGE')
+                    require(before['manifestSha256']==digest(raw(base+'/review-probe/manifest-before.json')),'IDENTIFIER_CANONICAL_MANIFEST')
+                    code=None;apply_code=None;apply_hash=None
                     if kind=='identity':
-                        require(result['ok'] is True and result['returnIntake']['authenticated'] is True and result['returnIntake']['returnedArtifactSha256']=='sha256:'+digest(mutant),'IDENTIFIER_POSITIVE_CONTROL')
-                    else:require(result['ok'] is False and isinstance(result.get('code'),str) and result['code'],'IDENTIFIER_TYPED_REJECTION')
-                    identifier_intakes.append({'kind':kind,'sourceSha256':control['sourceSha256'],'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/identifier-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(before)),'writerCalled':False,'accepted':kind=='identity','code':result.get('code'),'lostIdentifiers':[original_starts[0]] if kind=='missing-bookmark' else [],'duplicateIdentifiers':[original_starts[0]] if kind=='duplicate-bookmark' else []})
+                        require(changes[0]['match']['kind']=='exact' and 'applyAttempt' not in control and mparts==original[1],'IDENTIFIER_POSITIVE_CONTROL')
+                    else:
+                        word='missing' if kind=='missing-bookmark' else 'duplicate';code='DOCX_REVIEW_BOOKMARK_'+word.upper()
+                        require(changes[0]['match']['kind']=='manual' and 'sourceAuthority' not in changes[0]
+                                and any(d['diagnosticId'].startswith('docx-review-bookmark-'+word+'-') and d['relatedItemId']==original_starts[0].lower() for d in graph['diagnosticItems']),'IDENTIFIER_TYPED_LOSS')
+                        attempt=control['applyAttempt'];ar=attempt['result'];error=ar.get('error',{})
+                        require(attempt['commandId']=='cmd.project.review.applyExactTextChangesBatch' and attempt['changeId']==changes[0]['changeId'] and attempt['after']==before
+                                and ar['ok'] is False and ar.get('applied') is not True and error.get('code')=='E_REVIEW_EXACT_TEXT_APPLY_BATCH_BLOCKED'
+                                and error.get('reason')=='REVIEW_EXACT_TEXT_APPLY_BATCH_EXACT_MATCH_REQUIRED','IDENTIFIER_ACTUAL_APPLY_REJECTION')
+                        apply_code=error['code'];apply_hash=digest(canonical(ar))
+                    identifier_intakes.append({'kind':kind,'sourceSha256':control['sourceSha256'],'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/identifier-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(before)),'writerCalled':False,'previewAccepted':True,'exactMatchAllowed':kind=='identity','code':code,'applyAttempted':kind!='identity','applyCode':apply_code,'applyResultSha256':apply_hash,'lostIdentifiers':[original_starts[0]] if kind=='missing-bookmark' else [],'duplicateIdentifiers':[original_starts[0]] if kind=='duplicate-bookmark' else []})
                 probe_file=base+'/review-probe/returned.docx';probe=raw(probe_file);ps,parts,pdoc=docx(probe,1);exact(ps,sum([paragraphs(d) for d in expected_docs(volume,route,1)],[]),'REVIEW_PROBE_FULL_TEXT')
                 lifecycle=read(base+'/review-probe-word.json');require(lifecycle['status']=='PASS' and lifecycle['cleanupOk'] is True and lifecycle['compileProcess']['status']==lifecycle['process']['status']==0,'REVIEW_PROBE_WORD_LIFECYCLE')
                 require(lifecycle['sourceDocxHash']==lifecycle['preOpenHash']==digest(raw(base+'/source.docx')) and lifecycle['postWordHash']==lifecycle['copiedBackHash']==digest(probe),'REVIEW_PROBE_BYTES')

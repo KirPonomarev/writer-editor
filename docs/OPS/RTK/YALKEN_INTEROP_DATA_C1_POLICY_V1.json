@@ -290,7 +290,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "1711dfbe668b25f09d2ff79c1395c13612696db9acccd6b9d119a7a1c741d0f1"
+      "sha256": "55aa5f0e0bba09098aae7edf2dce90db66fac98cf659d73598a66e50621f4674"
     }
   ],
   "requirementIds": [
@@ -369,7 +369,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "51534894fce47f3d4ba321ffa057255911955ea5c67a3fa67db37a89076b3bff"
+        "sha256": "be2d3457596b8f4ad0098c6d0323ed664b827e125b12cd2c0ddb52756139d79f"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -685,11 +685,11 @@
       },
       {
         "path": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
-        "sha256": "e9a99d064fe054cc22843440784e7b9c0789755a569cb84bad9d914699f21130"
+        "sha256": "31e473ab346882bb5f34550aca5c983e717ed1ebd33f9ad36c818461929feaae"
       },
       {
         "path": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
-        "sha256": "f683133b43266f2d04cfe639aecfc592d6c18c79dc26b3ec0ad6a8d2a38c63cb"
+        "sha256": "bf00ff5877defe518f23920609ac70d25eef166837f264198838b6af71601fc2"
       }
     ],
     "followupRepair": {
@@ -1144,11 +1144,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "6ab5f1fd66fee754b7e6612ad12a4076e3a6dc143c5e846fd070317940a97fdc"
+        "sha256": "b58c3eca6fb1c397d87ea731888aff2b33160dfaef452034b451603ff89d110e"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "ea86c6f16f25ef1ec388f8bba23670f50c5a82b8894234e812dec57c0830244a"
+        "sha256": "3da08362a857e704e960325143a8a070aaae73e66e57c9098c5bf6f93d14f871"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",

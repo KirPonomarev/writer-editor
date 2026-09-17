@@ -10,6 +10,39 @@ const {pathToFileURL}=require('node:url');
 const ROOT=path.resolve(__dirname,'../..');
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
 
+test('Authenticated manuscript preview never promotes missing, duplicate or conflicting bookmarks through paragraph position',async()=>{
+ const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+ const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
+ const source=buildFullManuscriptDocxReviewPacketSource({projectId:'owned-anchor-guard',scenes:[{sceneId:'first',scenePath:'/owned/first',title:'first',text:'alpha\nshared',order:0},{sceneId:'second',scenePath:'/owned/second',title:'second',text:'other\nshared',order:1}]},{hmacSecret:'unit-only'});
+ const child=spawnSync('python3',['-I','-B','-c',String.raw`
+import sys,io,re,zipfile,json,base64
+data=base64.b64decode(sys.stdin.read())
+with zipfile.ZipFile(io.BytesIO(data)) as z:parts={n:z.read(n) for n in z.namelist()}
+xml=parts['word/document.xml'].decode()
+tracked='<w:del w:id="11" w:author="Unit"><w:r><w:delText>alpha</w:delText></w:r></w:del><w:ins w:id="12" w:author="Unit"><w:r><w:t>changed</w:t></w:r></w:ins>'
+xml,count=re.subn(r'<w:r\b[^>]*>(?:(?!</w:r>)[\s\S])*?<w:t\b[^>]*>alpha</w:t></w:r>',lambda _:tracked,xml,count=1);assert count==1
+starts=list(re.finditer(r'<w:bookmarkStart\b[^>]*/>',xml));assert len(starts)==4
+names=[re.search(r'w:name="([^"]+)"',m[0])[1] for m in starts]
+variants={'identity':xml,'missing':xml[:starts[0].start()]+xml[starts[0].end():],'duplicate':xml.replace(names[1],names[0]),'swapped':xml.replace(names[0],'TEMP_BOOKMARK').replace(names[1],names[0]).replace('TEMP_BOOKMARK',names[1]),'native-renumbered':re.sub(r'w14:(paraId|textId)="[^"]*"',r'w14:\1="ABCDEF01"',xml)}
+result={}
+for kind,body in variants.items():
+ out=io.BytesIO()
+ with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED) as z:
+  for n,b in parts.items():z.writestr(n,body.encode() if n=='word/document.xml' else b)
+ result[kind]=base64.b64encode(out.getvalue()).decode()
+print(json.dumps(result))
+`],{input:buildDocxReviewPacketBuffer(source).toString('base64'),encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});
+ assert.equal(child.status,0,child.stderr);const variants=JSON.parse(child.stdout);
+ for(const [kind,bytes] of Object.entries(variants)){
+  const r=bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(Buffer.from(bytes,'base64'),{projectId:'owned-anchor-guard',targetScope:{type:'scene',id:'first'},fullManuscriptExportMap:source.localAuthorityCapsule.exportMap});
+  assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.reviewPacket.textChanges.length,1,JSON.stringify(r));
+  const c=r.reviewPacket.textChanges[0];assert.equal(c.match.quote,'alpha');assert.equal(c.replacementText,'changed');
+  if(kind==='identity'||kind==='native-renumbered'){assert.equal(c.match.kind,'exact',kind);assert.equal(c.targetScope.id,'first');}
+  else {assert.equal(c.match.kind,'manual',kind);assert.equal(c.sourceAuthority,undefined);assert.ok(r.diagnostics.some(d=>d.diagnosticId.startsWith('docx-review-bookmark-'+({missing:'missing',duplicate:'duplicate',swapped:'locator-conflict'}[kind])+'-')),JSON.stringify(r.diagnostics));}
+ }
+});
+
 test('Real product exporter binds linked ranges to persisted locators; independent reader rejects coherent locator corruption',async()=>{
  const {buildWordManuscriptFixture}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
@@ -76,10 +109,10 @@ test('Identifier admission rejects lost stages, rebound links, incomplete contro
  const controls=['missing-bookmark','duplicate-bookmark','wrong-bookmark-end','partial-bookmark-range','renamed-bookmark','removed-link','swapped-link-targets','dangling-link','duplicate-relationship','unsafe-link','unreferenced-link'];
  const p={stages:Object.fromEntries(['rounds/1/export','rounds/1/word','rounds/1/review-probe','reexport','final-word-lifecycle'].map(n=>[n,{...structuredClone(stage),artifactSha256:n==='rounds/1/word'?h('returned'):h('export')}])),
   locators:Object.fromEntries(['rounds/1/export','reexport'].map(n=>[n,structuredClone(locator)])),negativeControls:controls.map(id=>({id,rejected:true,sha256:h(id)})),
-  intakeControls:['identity','missing-bookmark','duplicate-bookmark'].map(kind=>({kind,sourceSha256:h('returned'),mutantSha256:h(kind),intakeSha256:h(kind+'intake'),canonicalStateSha256:h('unchanged'),writerCalled:false,accepted:kind==='identity',code:kind==='identity'?null:'E_TYPED_IDENTITY',lostIdentifiers:kind==='missing-bookmark'?['YRTK_'+'a'.repeat(32)]:[],duplicateIdentifiers:kind==='duplicate-bookmark'?['YRTK_'+'a'.repeat(32)]:[]})),
+  intakeControls:['identity','missing-bookmark','duplicate-bookmark'].map(kind=>({kind,sourceSha256:h('returned'),mutantSha256:h(kind),intakeSha256:h(kind+'intake'),canonicalStateSha256:h('unchanged'),writerCalled:false,previewAccepted:true,exactMatchAllowed:kind==='identity',code:kind==='identity'?null:'DOCX_REVIEW_BOOKMARK_'+(kind==='missing-bookmark'?'MISSING':'DUPLICATE'),applyAttempted:kind!=='identity',applyCode:kind==='identity'?null:'E_REVIEW_EXACT_TEXT_APPLY_BATCH_BLOCKED',applyResultSha256:kind==='identity'?null:h(kind+'apply'),lostIdentifiers:kind==='missing-bookmark'?['YRTK_'+'a'.repeat(32)]:[],duplicateIdentifiers:kind==='duplicate-bookmark'?['YRTK_'+'a'.repeat(32)]:[]})),
   lossLedger:{lostIdentifiers:[],duplicateIdentifiers:[],unsafeHyperlinks:[],scope:'Every positive raw stage checked'}};
  assert.equal(check(p,'MULTI_SCENE',1,rounds),true);
- const mutations=[x=>delete x.stages['final-word-lifecycle'],x=>delete x.locators.reexport,x=>x.stages.reexport.links[1].href=MANUSCRIPT_LINK_TARGETS[0],x=>x.stages.reexport.links[0].startUtf16++,x=>x.stages.reexport.bookmarkCount--,x=>x.stages['rounds/1/word'].roundId='round-other',x=>x.locators['rounds/1/export'].exportId='wrong',x=>x.locators.reexport.sourceSceneHashes[0]=h('stale'),x=>x.locators.reexport.storeDigest='count-only',x=>x.negativeControls.pop(),x=>x.negativeControls[0].rejected=false,x=>x.intakeControls.pop(),x=>x.intakeControls[0].accepted=false,x=>x.intakeControls[1].accepted=true,x=>x.intakeControls[1].writerCalled=true,x=>x.intakeControls[1].code='',x=>x.intakeControls[1].lostIdentifiers=[],x=>x.intakeControls[2].canonicalStateSha256=h('mutated'),x=>x.intakeControls[2].duplicateIdentifiers=['YRTK_'+'b'.repeat(32)],x=>x.lossLedger.lostIdentifiers=['unexplained-loss']];
+ const mutations=[x=>delete x.stages['final-word-lifecycle'],x=>delete x.locators.reexport,x=>x.stages.reexport.links[1].href=MANUSCRIPT_LINK_TARGETS[0],x=>x.stages.reexport.links[0].startUtf16++,x=>x.stages.reexport.bookmarkCount--,x=>x.stages['rounds/1/word'].roundId='round-other',x=>x.locators['rounds/1/export'].exportId='wrong',x=>x.locators.reexport.sourceSceneHashes[0]=h('stale'),x=>x.locators.reexport.storeDigest='count-only',x=>x.negativeControls.pop(),x=>x.negativeControls[0].rejected=false,x=>x.intakeControls.pop(),x=>x.intakeControls[0].exactMatchAllowed=false,x=>x.intakeControls[1].exactMatchAllowed=true,x=>x.intakeControls[1].writerCalled=true,x=>x.intakeControls[1].code='',x=>x.intakeControls[1].applyAttempted=false,x=>x.intakeControls[1].applyCode='E_OTHER_FAILURE',x=>x.intakeControls[1].applyResultSha256=null,x=>x.intakeControls[1].lostIdentifiers=[],x=>x.intakeControls[2].canonicalStateSha256=h('mutated'),x=>x.intakeControls[2].duplicateIdentifiers=['YRTK_'+'b'.repeat(32)],x=>x.lossLedger.lostIdentifiers=['unexplained-loss']];
  for(const mutate of mutations){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,'MULTI_SCENE',1,rounds));}
  assert.throws(()=>check(p,'MULTI_SCENE',5,rounds));
 });

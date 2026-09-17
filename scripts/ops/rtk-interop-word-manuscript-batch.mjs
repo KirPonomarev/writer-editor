@@ -70,8 +70,9 @@ export function validateManuscriptIdentifierProof(p,volume,cycles,roundProofs){
   &&new Set(p.negativeControls.map(c=>c.sha256)).size===ids.length,'MANUSCRIPT_IDENTIFIER_CONTROLS');
  demand(Array.isArray(p.intakeControls)&&same(p.intakeControls.map(c=>c.kind),['identity','missing-bookmark','duplicate-bookmark']),'MANUSCRIPT_IDENTIFIER_INTAKES');
  for(const c of p.intakeControls)demand(c.sourceSha256===roundProofs[0].returnedSha256&&c.sourceSha256!==c.mutantSha256
-  &&[c.mutantSha256,c.intakeSha256,c.canonicalStateSha256].every(sha64)&&c.writerCalled===false&&c.accepted===(c.kind==='identity')
-  &&(c.accepted||typeof c.code==='string'&&c.code.length>0)
+  &&[c.mutantSha256,c.intakeSha256,c.canonicalStateSha256].every(sha64)&&c.writerCalled===false&&c.previewAccepted===true&&c.exactMatchAllowed===(c.kind==='identity')
+  &&c.applyAttempted===(c.kind!=='identity')&&(c.kind==='identity'?(c.code===null&&c.applyCode===null&&c.applyResultSha256===null):
+   c.code==='DOCX_REVIEW_BOOKMARK_'+(c.kind==='missing-bookmark'?'MISSING':'DUPLICATE')&&c.applyCode==='E_REVIEW_EXACT_TEXT_APPLY_BATCH_BLOCKED'&&sha64(c.applyResultSha256))
   &&c.lostIdentifiers?.length===(c.kind==='missing-bookmark'?1:0)&&c.duplicateIdentifiers?.length===(c.kind==='duplicate-bookmark'?1:0)
   &&[...c.lostIdentifiers,...c.duplicateIdentifiers].every(n=>/^YRTK_[a-f0-9]{32}$/u.test(n)),'MANUSCRIPT_IDENTIFIER_INTAKE_BINDING');
  demand(new Set(p.intakeControls.map(c=>c.canonicalStateSha256)).size===1&&new Set(p.intakeControls.map(c=>c.mutantSha256)).size===3
