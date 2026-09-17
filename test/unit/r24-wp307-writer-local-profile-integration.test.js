@@ -49,6 +49,7 @@ test('WP307 main revalidates profile before command/query dispatch and package l
   for (const commandId of [
     'cmd.project.review.openComments',
     'cmd.project.review.exportDocxReviewPacket',
+    'cmd.project.review.exportFullManuscriptDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
   ]) {
@@ -84,6 +85,7 @@ test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near ma
   const active = profile.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
   for (const commandId of [
     'cmd.project.review.exportDocxReviewPacket.v2',
+    'cmd.project.review.exportFullManuscriptDocxReviewPacket.extra',
     'cmd.project.review.activateDocxReviewPreviewSession.extra',
     'cmd.project.review.applyExactTextChangesBatchAll',
     'cmd.project.review.applyExactTextChange',

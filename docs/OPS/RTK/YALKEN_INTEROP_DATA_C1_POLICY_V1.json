@@ -86,7 +86,10 @@
     "test/contracts/rtk-interop-word-volume.contract.test.js",
     "test/unit/rtk-interop-word-volume.test.py",
     "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
-    "test/contracts/rtk-word-full-manuscript-volume.contract.test.js"
+    "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
+    "src/core/writer-local-profile-v1.cjs",
+    "test/unit/r24-wp307-writer-local-profile.test.js",
+    "test/unit/r24-wp307-writer-local-profile-mutants.test.js"
   ],
   "protectedFiles": [
     {
@@ -318,7 +321,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "4abc44c73b0df4ddc6e3deb4b0529e237574c1cf0a61bd1e60c1fe88815d9dbd"
+        "sha256": "88c1b93eab4ccf560642f80affd0e1809a8b3bd70ed903b842970adfcb4eb067"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -526,11 +529,23 @@
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
-        "sha256": "1dfd4650302a7964b0c913f30f176ca3c309953a9e6b66c51398843e6c64e235"
+        "sha256": "0ec5ae0bae64b128bca8d7f97f247223a664205b373778912a435416eeb97af3"
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
         "sha256": "a4e666e038843847802358667a2041f98046578e3c25ec014a698d6e0546283f"
+      },
+      {
+        "path": "src/core/writer-local-profile-v1.cjs",
+        "sha256": "19d5e5864ac9e1f0750f701e92f5ec2c159f1986259f80d70d8b8fcffcaf6b58"
+      },
+      {
+        "path": "test/unit/r24-wp307-writer-local-profile.test.js",
+        "sha256": "6e26db0fc686c1deea8da26489d73dd4aa305156f25126b30078e2e735a26f70"
+      },
+      {
+        "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+        "sha256": "02f70e54f16adb7d7dc84097dff8c7557d47dbbd6b5649139f178e8ee6ad978f"
       }
     ],
     "followupRepair": {
@@ -585,7 +600,7 @@
     },
     "wordTextOrderBatch": {
       "taskId": "WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
-      "bindingBaseSha": "b36472c48ce822e78c39d6c7e0659b56cc152033",
+      "bindingBaseSha": "3f0e3d92593cc897e4fc67fe466a245841c5c0f8",
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     }
   },

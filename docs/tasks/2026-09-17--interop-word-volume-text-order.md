@@ -37,6 +37,10 @@ Fixed synthetic volume fixtures, native full-manuscript journeys, independent co
 
 - src/main.js
 - src/io/revisionBridge/index.mjs
+- src/core/writer-local-profile-v1.cjs
+- test/unit/r24-wp307-writer-local-profile.test.js
+- test/unit/r24-wp307-writer-local-profile-mutants.test.js
+- test/unit/r24-wp307-writer-local-profile-integration.test.js
 
 ## DENYLIST
 Frozen denominator and historical accepted evidence, private manuscripts, other agents' work, renderer UI, new Core writers or authority channels, dependency changes, runtime network, weakening input limits, bypassing required gates, fixture-only cell claims.
@@ -113,6 +117,13 @@ resolving a main-owned reference. The resolved snapshot still passes the same
 schema, depth, provenance and admission checks; direct oversized input still
 fails. Novel and large-document C1 journeys select the actual owned file through
 the existing native dialog so their full bytes never cross the bounded IPC message.
+
+The actual packaged native probe rejects the existing full-manuscript export as
+an optional Review system. This owner-authorized volume implementation extends
+the local packaged DOCX survivor list by exactly that existing export command.
+The canonical kernel, entitlement, export validation and atomic adapter remain
+the execution path. Optional Review, Plan, Atlas and full-manuscript apply stay
+disabled; local certification does not add signing or public distribution.
 
 The independent reader accepts only an empty w:lastRenderedPageBreak as a
 cached pagination marker, as specified by ISO/IEC 29500 and Microsoft Learn:
