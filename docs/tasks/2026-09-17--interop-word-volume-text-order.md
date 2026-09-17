@@ -108,6 +108,12 @@ its 4.6 MB content preview into a 4 MiB internal reference entry. Main allows an
 limits, expiry, context checks, immutable snapshots and typed failure remain.
 This is internal derived-cache allocation, not a larger untrusted input budget.
 
+Preview command message-size validation measures the received wire payload before
+resolving a main-owned reference. The resolved snapshot still passes the same
+schema, depth, provenance and admission checks; direct oversized input still
+fails. Novel and large-document C1 journeys select the actual owned file through
+the existing native dialog so their full bytes never cross the bounded IPC message.
+
 The independent reader accepts only an empty w:lastRenderedPageBreak as a
 cached pagination marker, as specified by ISO/IEC 29500 and Microsoft Learn:
 https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.lastrenderedpagebreak

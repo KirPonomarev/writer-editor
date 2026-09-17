@@ -44,9 +44,17 @@ test('main-owned 500k content and plan references fit while total cache and inpu
  assert.ok(Buffer.byteLength(JSON.stringify(content))>4*1024*1024);
  const main=fs.readFileSync(path.join(root,'src/main.js'),'utf8');
  const section=main.slice(main.indexOf('// DOCX_IMPORT_PREVIEW_REFERENCES_START'),main.indexOf('// DOCX_IMPORT_PREVIEW_REFERENCES_END'));
- const context={createDocxImportPreviewReferences,getProjectRootPath:()=>'/owned-volume-test'};
+ const context={createDocxImportPreviewReferences,getProjectRootPath:()=>'/owned-volume-test',isPlainObjectValue:v=>Boolean(v)&&typeof v==='object'&&!Array.isArray(v),cloneJsonSafe:v=>JSON.parse(JSON.stringify(v))};
  require('node:vm').runInNewContext(section+'\nglobalThis.port={remember:rememberDocxImportPreviewReference,resolve:resolveDocxImportPreviewReference,capture:captureDocxImportPreviewContext};',context);
  const {port}=context,ref=port.remember('content',content,port.capture());assert.match(ref,/^[a-f0-9]{64}$/);
+ const previewSection=main.slice(main.indexOf('// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_START'),main.indexOf('// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END'));
+ require('node:vm').runInNewContext(previewSection+'\nglobalThis.validatePreview=validateDocxImportPreviewPayload;',context);
+ assert.equal(context.validatePreview({requestId:'bounded-reference',docxContentPreviewRef:ref}).ok,true);
+ assert.equal(context.validatePreview({docxContentPreviewReport:content}).error.reason,'DOCX_IMPORT_PREVIEW_PAYLOAD_TOO_LARGE');
+ assert.equal(context.validatePreview({docxContentPreviewRef:'f'.repeat(64)}).ok,false);
+ assert.equal(context.validatePreview({docxContentPreviewRef:ref,docxContentPreviewReport:content}).ok,false);
+ const poisoned=port.remember('content',{...content,projectRoot:'/forged'},port.capture());
+ assert.equal(context.validatePreview({docxContentPreviewRef:poisoned}).ok,false);
  const plan=buildDocxImportPreviewPlanFromContentPreview(port.resolve('content',ref));assert.equal(plan.ok,true);
  const planRef=port.remember('plan',plan,port.capture());assert.match(planRef,/^[a-f0-9]{64}$/);
  assert.equal(port.resolve('plan',planRef).candidateCreatePlan.entries[0].content,fixture.sourceParagraphs.join('\n'));

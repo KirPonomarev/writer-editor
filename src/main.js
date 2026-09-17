@@ -10297,6 +10297,9 @@ function validateDocxImportPreviewPayload(payload = {}) {
     );
   }
 
+  // Apply wire-payload limits to the received message. Resolved main-owned
+  // snapshots retain their cache, schema, depth and admission checks.
+  const receivedPayload = payload;
   if (payload.docxContentPreviewRef !== undefined) {
     if (payload.docxContentPreviewReport !== undefined) {
       return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID', 'DOCX_IMPORT_PREVIEW_MIXED_SOURCE');
@@ -10334,7 +10337,7 @@ function validateDocxImportPreviewPayload(payload = {}) {
     );
   }
 
-  const payloadChars = measureDocxImportPreviewPayloadChars(payload);
+  const payloadChars = measureDocxImportPreviewPayloadChars(receivedPayload);
   if (payloadChars < 0) {
     return makeDocxImportPreviewTypedError(
       'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',

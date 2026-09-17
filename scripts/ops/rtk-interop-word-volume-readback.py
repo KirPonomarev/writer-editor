@@ -270,7 +270,7 @@ def audit(request):
     else:
         im=read('import.json');r=im['result'];receipt=r['safeCreate']['receipt'];actual=r['importedScene'];require(im['before']==im['after']==[s['sha256'] for s in src] and im['save']['ok'] is True and r['ok']==1 and r['safeCreate']['commandOk'] is True and r['safeCreate']['commandId']=='cmd.project.docx.importSafeCreate','VOLUME_C1_SAFE_CREATE')
         require(receipt['projectId']==capsule['projectId'] and receipt['sourceArtifactSha256']==digest(raw('returned.docx')) and receipt['candidateContentSha256']==digest(raw('imported-scene.txt')) and receipt['manifestAuthority']['durablePublication'] is True and receipt['atomicEvidence']=={'sceneCount':1,'markerCleared':True},'VOLUME_C1_RECEIPT')
-        if volume=='LARGE_DOCUMENT':
+        if volume!='MULTI_SCENE':
             dialog=read('owned-docx-dialog.json');require(dialog['schemaVersion']=='WORD_VOLUME_OWNED_DIALOG_V1' and dialog['pid']==reopened['firstPid'] and dialog['sourceSha256']==dialog['chosenSha256']==digest(raw('returned.docx')) and dialog['interactionDriver']=='CODEX_CUA_NATIVE' and r['contentPreview']['commandId']==dialog['commandId']=='cmd.project.docx.previewLocalFile','VOLUME_OWNED_LOCAL_FILE')
         else:require(r['contentPreview']['commandId']=='cmd.project.docx.previewContent','VOLUME_BOUNDED_CONTENT_PREVIEW')
         require(r['rendererAccept']['directSafeCreateBridge'] is True and r['rendererAccept']['dialogRouteUsed'] is False,'VOLUME_C1_COMMAND_SCOPE')

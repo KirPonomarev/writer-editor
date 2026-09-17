@@ -251,7 +251,7 @@
     },
     {
       "path": "src/word-volume-text-order.mjs",
-      "sha256": "c2ab0f45cd281957f4bba6ddbbe137974f31be49fee8bfbaeb0e2b79ac25d2a6"
+      "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
     }
   ],
   "requirementIds": [
@@ -294,7 +294,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c3e6db0fb582e843406f4819a38d7b2319d62e8bf95f7352bcd3e881b565e23c"
+        "sha256": "c8f35d6672e66e368903ecca3ce42be4c28a02f439bbaf1a45d6877e88e7fa00"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -518,7 +518,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
-        "sha256": "0b0db8e7764e8fc9e774408196312cbfbf54998454c27c29778920cc858104a5"
+        "sha256": "28674f7ae620f2a8b95b86a8d1466472724ba3b0688fce21a99c5aa9eb4306c1"
       },
       {
         "path": "test/unit/rtk-interop-word-volume.test.py",
@@ -526,7 +526,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
-        "sha256": "8f7578e6d021f8b03d53d87a9c411727657fa92088ff5e393c9ec925bab74a61"
+        "sha256": "1dfd4650302a7964b0c913f30f176ca3c309953a9e6b66c51398843e6c64e235"
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
@@ -668,7 +668,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
-        "sha256": "a4c9b9398ff49fc73b16637e66df29d2c31625fa200eb93166d860958fc1ba44"
+        "sha256": "f8761815ad8cbd8f8bf4bba310631d488d368ca71f55688801de91f0fb890b91"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-fixtures.mjs",
@@ -683,7 +683,7 @@
     "reviewedParagraphSha256": "9661ff5f7b1218ad5517936e57162443470c53c85a5e697f8c54ff3129e02a50",
     "electronVersion": "41.10.3",
     "admission": "Read-only computation from exact current merged runtime, pinned Lab source, complete actual native hops and separate independent raw TEXT and ORDER proofs. No additional self-authored acceptance receipt.",
-    "packagedC1Scope": "Governed importSafeCreate after preview; LARGE_DOCUMENT uses the actual owned native local-file dialog, smaller volumes use bounded content preview. Generic C1 preserves TEXT/ORDER but declares bookmark and metadata loss.",
+    "packagedC1Scope": "Governed importSafeCreate after preview; FULL_SYNTHETIC_NOVEL and LARGE_DOCUMENT use the actual owned native local-file dialog, smaller volumes use bounded content preview. Generic C1 preserves TEXT/ORDER but declares bookmark and metadata loss.",
     "volumeParagraphHashes": {
       "MULTI_SCENE": {
         "sourceParagraphSha256": "693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1",
