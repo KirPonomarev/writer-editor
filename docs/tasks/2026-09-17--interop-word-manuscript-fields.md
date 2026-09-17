@@ -22,6 +22,7 @@ One bounded native manuscript fixture and journey driver, separate raw field ora
 - docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json
 - test/contracts/rtk-interop-word-manuscript.contract.test.js
 - test/unit/rtk-interop-word-manuscript.test.py
+- test/unit/sector-m-scene-rich-truth.test.js
 - docs/tasks/2026-09-17--interop-word-manuscript-fields.md
 - docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json
 - docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json
@@ -102,6 +103,8 @@ The native rich probe reproduced two persistence integration failures: post-Save
 The packaged single-scene probe additionally proved that a flat manuscript body is classified by existing path semantics as chapter-file. Atomic review publication and invalidation cover both existing manuscript body kinds, scene and chapter-file, while external files, static sections, materials and references remain rejected.
 
 The structure proof additionally found that the read-only Roman tree returned only static sections and Imported, omitting registered authored parts, chapters and scenes. Its existing query now projects those registered nodes from the current filesystem in physical order, retaining stable identities and excluding symlinks, deleted entries and unregistered paths. No UI layout or write authority changes.
+
+The complete CI unit lane found an existing literal five-argument signature check. It now verifies that exactly one canonical writer remains and permits the optional expected-input CAS argument; the actual atomic write, stale-input rejection and recovery behavior remain exercised by the manuscript contracts.
 
 The native token failure also exposed Word custom-string decoding: a random signed token contained literal `_x3eCC_`, which Word converted to a Unicode character. Custom properties now escape literal Xstring sequences; both authority readers decode once before the unchanged digest and signature checks.
 

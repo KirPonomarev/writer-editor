@@ -99,7 +99,8 @@
     "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
     "src/io/markdown/index.mjs",
     "src/core/project-transaction-v1.cjs",
-    "src/product/mainProjectManifestAuthority.mjs"
+    "src/product/mainProjectManifestAuthority.mjs",
+    "test/unit/sector-m-scene-rich-truth.test.js"
   ],
   "protectedFiles": [
     {
@@ -572,7 +573,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
-        "sha256": "51f280574b502a467f128c9d82488a06d2297a06309dd9f285265d66aa50b17d"
+        "sha256": "5c93239acbaab96bb91a7303e4fd0bec1f7ac1b1f89c1f805619976b5f2860e5"
       },
       {
         "path": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
@@ -589,6 +590,10 @@
       {
         "path": "src/product/mainProjectManifestAuthority.mjs",
         "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
+      },
+      {
+        "path": "test/unit/sector-m-scene-rich-truth.test.js",
+        "sha256": "29bca52d8ccb9f361baa539eba0b6615d584b061e21daffe101178163165c602"
       }
     ],
     "followupRepair": {
