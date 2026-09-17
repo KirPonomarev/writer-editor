@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "0c6834b5668be45d304042bbede31e6f850097fd247f78f321793b8e3570d0a9"
+      "sha256": "f24efa670189730ef230284fdca744b2366f2f16483d7c421b5418a5de759a5c"
     },
     {
       "approved": true,
@@ -339,7 +339,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "5b8b0c7fe1130c06e04eafdb1d7b0b4056b358d41ae4bf92c61282c51db74115"
+      "sha256": "2c474598e0a7fe90ab2b0bd13b143b94847a4c03aab9aefafe11ac333f420e3b"
     },
     {
       "approved": true,
@@ -453,7 +453,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "a4012c271c38f42d9b391e77bb2e487888c1c6926ab8c349dd38312aed40c5a4"
+      "sha256": "9659ab96fbaf60db4c604dfc0a89054b371ad5d00d0aa5710094f8635ff9f483"
     },
     {
       "approved": true,
@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "0c74415f25fc65e46869b449531b0ef48af526145b75accb54d030ed6ddfe364"
+      "sha256": "0ac498fb8b39f2a92f39f5b094b3c0bfb85ee39b5a3f741cdff63acbe73719ad"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "7bf54e67087f1787dc9b1a9372c136cba2df16692264c86f24d075b5fa748c91"
+      "sha256": "df44498d2ad482ed54607acfd0e812b91e1cb6deb5b1d3e831c71b3d0649f5c8"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1194,7 +1194,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "a852211bb23652afa1c8eb74af14e208dd562812c6b6352293a8d2554f68b9a2"
+      "sha256": "51f280574b502a467f128c9d82488a06d2297a06309dd9f285265d66aa50b17d"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1257,7 +1257,7 @@
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "6f37313525124d2c331cf02cd1173ea5b31e2ccf5dba240bc8fa146d709d0a9c"
+      "sha256": "bc4d926db3c49caa5a55c496fc1ec000088b83de49737b4fdd31ac9257c7e23e"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",

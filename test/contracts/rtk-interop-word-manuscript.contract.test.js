@@ -28,7 +28,7 @@ async function harness(t,options={}) {
   resolveProjectBindingForFile:async()=>({manifestPath,manifest:JSON.parse(await fsp.readFile(manifestPath,'utf8'))}),
   SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   isPlainObjectValue:v=>!!v&&typeof v==='object'&&!Array.isArray(v),
-  getDocumentContextFromPath:()=>({kind:'scene'}),getProjectRelativeFilePath:p=>path.relative(root,p),
+  getDocumentContextFromPath:()=>({kind:options.contextKind||'scene'}),getProjectRelativeFilePath:p=>path.relative(root,p),
   loadProRoundtripPreservationModule:async()=>options.missingInvalidation?{}:preservation,
   prepareBookProfileManifestForFile:async()=>{const raw=await fsp.readFile(manifestPath,'utf8');return {manifestPath,projectId:'fixture-project',expectedText:raw,nextText:raw};},
   getMainProjectManifestAuthority:async()=>({commitManifestText:async({expectedText,nextText,targetPath})=>{
@@ -207,4 +207,15 @@ test('Uncommitted cross-scene transaction rolls back safely through a fresh auth
  authority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});
  const recovered=await recoverProjectTransaction({scenePath:scenes[0],manifestPath,verifyManifestContinuation,publishManifest:publish});
  assert.equal(recovered.outcome,'UNCOMMITTED_ROLLED_BACK');assert.equal(await fsp.readFile(scenes[0],'utf8'),'edited-1');assert.equal(JSON.parse(await fsp.readFile(manifestPath,'utf8')).n,2);assert.equal((await commit(1,4)).success,true);
+});
+
+
+test('Flat manuscript chapter-file supports atomic Word apply and following Save without admitting non-body files',async t=>{
+ const h=await harness(t,{contextKind:'chapter-file'});assert.equal((await h.save('saved before Word',1)).success,true);
+ const {writeMarkdownWithTransactionRecovery}=await import(pathToFileURL(path.join(ROOT,'src/io/markdown/index.mjs')));
+ await writeMarkdownWithTransactionRecovery(h.scenePath,'returned from Word',{publishScene:h.publish,expectedText:'saved before Word'});
+ assert.equal((await h.save('returned from Word',8)).success,true);assert.equal(await fsp.readFile(h.scenePath,'utf8'),'returned from Word');
+ for(const kind of ['external','roman-section','material','reference']){
+  h.context.getDocumentContextFromPath=()=>({kind});await assert.rejects(h.publish(h.scenePath,'forbidden',{expectedText:'returned from Word'}),e=>e.code==='E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED');assert.equal(await fsp.readFile(h.scenePath,'utf8'),'returned from Word');
+ }
 });

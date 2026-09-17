@@ -20157,7 +20157,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
         // Invalidation is part of the same scene/manifest commit. Publishing it
         // after ACK would immediately invalidate the commit's manifest digest.
         let manifestContent = prepared.nextText;
-        if (expectedSceneContent !== content && getDocumentContextFromPath(filePath)?.kind === 'scene') {
+        if (expectedSceneContent !== content && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
           const sceneId = getProjectRelativeFilePath(filePath, prepared.manifestPath);
           const preservation = await loadProRoundtripPreservationModule();
           const invalidation = sceneId && typeof preservation?.applyFreeEditProDataInvalidation === 'function'
@@ -21984,7 +21984,7 @@ async function buildReviewExactTextApplyBatchInputFromMainState(request = {}) {
 
 async function publishReviewSceneWithProjectTransaction(filePath, content, options = {}) {
   if (typeof options.expectedText !== 'string' || !isAllowedFilePath(filePath)
-    || getDocumentContextFromPath(filePath)?.kind !== 'scene') {
+    || !['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
     throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
   }
   const binding = await resolveProjectBindingForFile(filePath);
