@@ -13,11 +13,15 @@ SUBCASES={
  'STYLES':['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  'NOVEL_SCENE_STRUCTURE':['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
 }
-HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N']}
+HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N'],'C5':['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE']}
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
 STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style']
 STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path']
-def fields(volume,route):return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])
+def fields(volume,route):
+    if route=='C5':
+        require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
+        return ['TEXT','ORDER','UNICODE_IME_LOCALE']
+    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -72,7 +76,7 @@ def scene(data):
     m=re.match(r'^\[doc-v2 length=(\d+)\]\n',s);require(m is not None,'SCENE_ENVELOPE');payload=s[m.end():].rstrip('\n')
     require(len(payload.encode('utf-16-le'))//2==int(m.group(1)),'SCENE_LENGTH');d=json.loads(payload);require(d.get('type')=='doc','SCENE_ROOT');paragraphs(d);return d
 
-def docx(data,round=0):
+def docx(data,round=0,google=False):
     with zipfile.ZipFile(io.BytesIO(data)) as z:
         entries=z.infolist();names=[e.filename for e in entries]
         require(0<len(entries)<=128 and len(set(names))==len(names),'ZIP_ENTRIES')
@@ -83,7 +87,13 @@ def docx(data,round=0):
         if name.endswith(('.xml','.rels')):require(b'<!DOCTYPE' not in b.upper() and b'<!ENTITY' not in b.upper(),'XML_DTD')
         if name.endswith('.rels'):require(all(e.attrib.get('TargetMode','Internal')!='External' for e in ET.fromstring(b)),'EXTERNAL_RELATIONSHIP')
     d=ET.fromstring(parts['word/document.xml']);body=d.find(W+'body')
-    require(d.tag==W+'document' and body is not None and all(n.tag in [W+'p',W+'sectPr'] for n in body),'DOCX_BODY')
+    allowed_body=[W+'p',W+'sectPr']+([W+'bookmarkStart',W+'bookmarkEnd'] if google else [])
+    require(d.tag==W+'document' and body is not None and all(n.tag in allowed_body for n in body),'DOCX_BODY')
+    if google:
+        starts=[n for n in body if n.tag==W+'bookmarkStart'];ends=[n for n in body if n.tag==W+'bookmarkEnd']
+        require(all(not list(n) and not n.text for n in starts+ends),'GOOGLE_BOOKMARK_TEXT')
+        a=[n.get(W+'id') for n in starts];b=[n.get(W+'id') for n in ends]
+        require(a==b and len(set(a))==len(a) and all(isinstance(i,str) and i.isdecimal() for i in a),'GOOGLE_BOOKMARK_PAIRING')
     for p in body.findall(W+'p'):
         require(all(n.tag in {W+x for x in ['pPr','r','ins','del','bookmarkStart','bookmarkEnd','proofErr']} for n in p),'DOCX_PARAGRAPH')
         for rev in [*p.findall(W+'ins'),*p.findall(W+'del')]:require(all(n.tag==W+'r' for n in rev),'DOCX_REVISION')
@@ -250,10 +260,78 @@ def controls(source,volume,route,ids,round_id):
             require(rejected,'FALSE_GREEN_'+name);structural.append({'id':name,'rejected':True,'sha256':digest(b)})
     return {'positiveControls':['identity','split-xml-runs'],'textMutants':results,'styleMutants':style_results,'structureMutants':structural}
 
+GOOGLE_NATIVE_MIME='application/vnd.google-apps.document'
+GOOGLE_DOCX_MIME='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+def google_native_paragraphs(doc,document_id):
+    require(doc.get('documentId')==document_id and isinstance(doc.get('revisionId'),str) and doc['revisionId'],'GOOGLE_NATIVE_ID_REVISION')
+    tabs=doc.get('tabs');require(isinstance(tabs,list) and len(tabs)==1 and not doc.get('body'),'GOOGLE_NATIVE_TABS')
+    tab=tabs[0];require(tab.get('documentId')==document_id and isinstance(tab.get('tabId'),str) and tab['tabId'] and not tab.get('parentTabId'),'GOOGLE_NATIVE_TAB_ID')
+    require(not any(tab.get(k) for k in ['headers','footers','footnotes','inlineObjects','positionedObjects','suggestedDocumentStyleChanges','suggestedNamedStylesChanges']),'GOOGLE_NATIVE_UNSUPPORTED_OBJECT')
+    content=tab.get('body',{}).get('content');require(isinstance(content,list) and 1<len(content)<=10000,'GOOGLE_NATIVE_BODY')
+    require(set(content[0])<={'startIndex','endIndex','sectionBreak'} and content[0].get('startIndex',0)==0 and content[0].get('endIndex')==1 and isinstance(content[0].get('sectionBreak'),dict),'GOOGLE_NATIVE_INITIAL_SECTION')
+    paragraphs=[];offset=1
+    for block in content[1:]:
+        require(set(block)=={'startIndex','endIndex','paragraph'} and block['startIndex']==offset,'GOOGLE_NATIVE_BLOCK')
+        paragraph=block['paragraph'];require(set(paragraph)<={'elements','paragraphStyle','bullet','positionedObjectIds'} and not paragraph.get('positionedObjectIds'),'GOOGLE_NATIVE_PARAGRAPH')
+        elements=paragraph.get('elements');require(isinstance(elements,list) and elements,'GOOGLE_NATIVE_ELEMENTS');pieces=[]
+        for element in elements:
+            require(set(element)=={'startIndex','endIndex','textRun'} and element['startIndex']==offset,'GOOGLE_NATIVE_RUN')
+            text_run=element['textRun'];require(set(text_run)<={'content','textStyle'} and isinstance(text_run.get('content'),str),'GOOGLE_NATIVE_TEXT')
+            text=text_run['content'];require(text and element['endIndex']==offset+len(text.encode('utf-16-le'))//2,'GOOGLE_NATIVE_UTF16_RANGE')
+            offset=element['endIndex'];pieces.append(text)
+        text=''.join(pieces);require(text.endswith('\n') and '\n' not in text[:-1] and block['endIndex']==offset,'GOOGLE_NATIVE_BOUNDARY')
+        paragraphs.append(text[:-1])
+    return paragraphs
+
+def google_exchange(response,request,source,returned):
+    require(request['schemaVersion']=='GOOGLE_NATIVE_REQUEST_V1' and request['sourceSha256']==digest(source) and request['profile']=='GOOGLE_NATIVE' and request['uploadMode']=='native_google_docs','GOOGLE_REQUEST_BINDING')
+    require(response['schemaVersion']=='GOOGLE_NATIVE_RETURN_V1' and response['runId']==request['runId'] and response['sourceSha256']==digest(source),'GOOGLE_REPLY_BINDING')
+    def ok(row):
+        require(isinstance(row,dict) and row.get('response',{}).get('isError') is False,'GOOGLE_TOOL_FAILED')
+        return row['response']['structuredContent']
+    imp=ok(response['import']);ident=imp.get('fileId')
+    require(isinstance(ident,str) and re.fullmatch('[A-Za-z0-9_-]{10,200}',ident) and imp.get('documentId')==ident and imp.get('success') is True and imp.get('converted') is True and imp.get('mimeType')==GOOGLE_NATIVE_MIME,'GOOGLE_NATIVE_IMPORT')
+    require(response['import']['request']['source_file']==request['source'] and response['import']['request']['upload_mode']=='native_google_docs','GOOGLE_IMPORT_SOURCE')
+    meta=ok(response['metadata']);require(response['metadata']['request']['fileId']==ident and meta.get('id')==ident and meta.get('mime_type')==GOOGLE_NATIVE_MIME,'GOOGLE_NATIVE_METADATA')
+    before=ok(response['nativeBefore']);after=ok(response['nativeAfter'])
+    for k in ['nativeBefore','nativeAfter']:require(response[k]['request']['document_id']==ident,'GOOGLE_READ_TARGET')
+    a=google_native_paragraphs(before,ident);b=google_native_paragraphs(after,ident)
+    require(before['revisionId']==after['revisionId'] and canonical(before)==canonical(after),'GOOGLE_CHANGED_DURING_EXPORT')
+    exp=ok(response['export']);require(response['export']['request']=={'url':'https://docs.google.com/document/d/'+ident,'download_raw_file':True,'include_base64':True,'raw_export_mime_type':GOOGLE_DOCX_MIME},'GOOGLE_EXPORT_REQUEST')
+    require(exp.get('id')==ident and exp.get('mime_type')==GOOGLE_DOCX_MIME and exp.get('file_size_bytes')==len(returned) and isinstance(exp.get('b64_string'),str),'GOOGLE_EXPORT_ID')
+    require(base64.b64decode(exp['b64_string'],validate=True)==returned and base64.b64encode(returned).decode()==exp['b64_string'],'GOOGLE_RETURN_BYTES')
+    cleanup=response['cleanup'];require(ok(cleanup['delete']).get('success') is True and cleanup['delete']['request']=={'url':'https://drive.google.com/file/d/'+ident+'/view'},'GOOGLE_DELETE')
+    readback=cleanup['readback'];error=readback['response'];require(readback['request']['fileId']==ident and error.get('isError') is True and error.get('structuredContent',{}).get('error_code')=='NOT_FOUND' and ident in error['structuredContent'].get('error',''),'GOOGLE_DELETE_READBACK')
+    return a,b,{'documentId':ident,'revisionId':before['revisionId'],'sourceSha256':digest(source),'returnedSha256':digest(returned),'nativeBodySha256':digest(canonical(a)),'cleanupVerified':True,'transport':'DIRECT_LOCAL_PATH_NATIVE_CONVERSION_V2','providerLocale':{'mode':'CONTENT_API_NO_PROVIDER_UI_SESSION','sourceLocaleBoundSeparately':True,'normalization':'LITERAL_CODEPOINTS_NO_NORMALIZATION'}}
+
+GOOGLE_CONTROLS=['wrong-source-binding','non-native-mime','mixed-document-id','changed-revision','missing-cleanup','missing-tab','coherent-native-text-loss','returned-byte-substitution']
+def google_controls(response,request,source,returned,expected):
+    out=[]
+    for name in GOOGLE_CONTROLS:
+        changed=copy.deepcopy(response);candidate=returned
+        if name=='wrong-source-binding':changed['sourceSha256']='0'*64
+        elif name=='non-native-mime':changed['metadata']['response']['structuredContent']['mime_type']=GOOGLE_DOCX_MIME
+        elif name=='mixed-document-id':changed['nativeBefore']['response']['structuredContent']['documentId']='different-document'
+        elif name=='changed-revision':changed['nativeAfter']['response']['structuredContent']['revisionId']+='different'
+        elif name=='missing-cleanup':changed['cleanup']['delete']['response']['structuredContent']['success']=False
+        elif name=='missing-tab':
+            for side in ['nativeBefore','nativeAfter']:changed[side]['response']['structuredContent']['tabs']=[]
+        elif name=='coherent-native-text-loss':
+            for side in ['nativeBefore','nativeAfter']:
+                run=changed[side]['response']['structuredContent']['tabs'][0]['body']['content'][1]['paragraph']['elements'][0]['textRun'];run['content']='X'+run['content'][1:]
+        else:candidate=returned[:-1]+bytes([returned[-1]^1])
+        rejected=False
+        try:
+            a,b,_=google_exchange(changed,request,source,candidate);exact(a,expected,'GOOGLE_CONTROL_BEFORE');exact(b,expected,'GOOGLE_CONTROL_AFTER')
+        except (ValueError,KeyError,TypeError):rejected=True
+        require(rejected,'FALSE_GREEN_GOOGLE_'+name);out.append({'id':name,'rejected':True,'sha256':digest(canonical([changed,digest(candidate)]))})
+    return out
+
 def audit(request):
     started=time.perf_counter();root=Path(request['root']);require(root.is_absolute() and root.resolve()==root and root.is_dir(),'MANUSCRIPT_RAW_ROOT')
-    run=request['runId'];m=re.fullmatch(r'ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[123])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}',run)
-    require(m is not None,'MANUSCRIPT_RUN_ID');volume,route,profile=m.groups();head,tree=request['productHead'],request['productTree']
+    run=request['runId'];m=re.fullmatch(r'ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}',run)
+    require(m is not None,'MANUSCRIPT_RUN_ID');volume,route,profile=m.groups();fields(volume,route);generic=route in ['C1','C5'];head,tree=request['productHead'],request['productTree']
     require(all(re.fullmatch('[a-f0-9]{40}',s) for s in (head,tree)),'MANUSCRIPT_HEAD_TREE')
     prefix='runs/'+run+'/';bindings=request['files']
     require(isinstance(bindings,list) and 0<len(bindings)<=2048 and len({b['path'] for b in bindings})==len(bindings),'MANUSCRIPT_INVENTORY')
@@ -267,7 +345,7 @@ def audit(request):
     require(len({b['path'] for b in descriptors})==len(descriptors) and set(files)=={b['path'] for b in descriptors}|{prefix+'observation.json'},'MANUSCRIPT_EXACT_FILES')
     for b in descriptors:require(len(files[b['path']])==b['bytes'] and digest(files[b['path']])==b['sha256'],'MANUSCRIPT_DESCRIPTOR')
     provider=read('provider-identity.json');require(provider==obs['provider'] and all(provider.get(k)==v for k,v in request['qualifiedProvider'].items()),'MANUSCRIPT_PROVIDER')
-    require(obs['providerExecution']=={'requested':'Microsoft Word','executed':True},'MANUSCRIPT_PROVIDER_EXECUTION')
+    require(obs['providerExecution']=={'requested':'Google Docs Native and terminal Microsoft Word' if route=='C5' else 'Microsoft Word','executed':True},'MANUSCRIPT_PROVIDER_EXECUTION')
     build=read('runtime-build.json');cp,tc=build['runtimeAppCopyProof'],build['toolchain']
     require((build['shadowHead'],build['shadowTree'])==(head,tree) and build['build']['status']==0,'MANUSCRIPT_BUILD')
     require(cp['ok'] is True and cp['sourceFileCount']==cp['copyFileCount']>0 and cp['sourceDigest']==cp['copyDigest'] and re.fullmatch('[a-f0-9]{64}',cp['sourceDigest']) and cp['failures']==[],'MANUSCRIPT_COPY')
@@ -278,7 +356,7 @@ def audit(request):
             p=proof[key];require(p['exists'] is True and p['bytes']>0 and re.fullmatch('[a-f0-9]{64}',p['sha256']) and p['path'].endswith(suffix),'MANUSCRIPT_PACKAGE_ARTIFACT')
         require(proof['executableProof']['sha256']==tc['electronBinarySha256'],'MANUSCRIPT_PACKAGE_EXECUTABLE')
     else:require(build['packagedBuild'] is None,'MANUSCRIPT_SOURCE_PROFILE')
-    cycles=5 if route=='C3' else 1;final_round=0 if route=='C1' else cycles
+    cycles=5 if route=='C3' else 1;final_round=0 if generic else cycles
     docs=expected_docs(volume,route);expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[]
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_docs(volume,route,round)],[])
@@ -286,9 +364,9 @@ def audit(request):
     def font_check(value,label):
         ff=value.get('fonts',[]);require(isinstance(ff,list) and ff and all(isinstance(f.get('familyName'),str) and isinstance(f.get('postScriptName'),str) and type(f.get('glyphCount')) is int and f['glyphCount']>=0 for f in ff) and sum(f['glyphCount'] for f in ff)>0,'FONT_PLATFORM_READBACK')
         require('Chromium' in value.get('scope',''),'FONT_FALLBACK_DECLARATION');font_ledger.append({'stage':label,'fonts':ff,'scope':value['scope']})
-    def renderer(s,doc,label):
+    def renderer(s,doc,label,check_styles=True):
         exact(s['renderer']['paragraphs'],paragraphs(doc),label);require(s['open']['ok'] is True and s['open']['documentId']==s['nodeId'],'DOCUMENT_OPEN_ID');font_check(s['fonts'],label)
-        if any(p.startswith('[inline]') for p in paragraphs(doc)):
+        if check_styles and any(p.startswith('[inline]') for p in paragraphs(doc)):
             probes={p['text']:p for p in s['renderer']['probes']}
             for i in range(1,7):require(probes[f'[heading-{i}] Authored heading.']['tag']=='H'+str(i),'RENDERER_HEADING')
             for a in ['left','center','right','justify']:require(probes[f'[align-{a}] Authored paragraph alignment.']['align']==a,'RENDERER_ALIGNMENT')
@@ -316,7 +394,7 @@ def audit(request):
             wanted.append((nodes[i],'scene','scene-'+str(i+1).zfill(2),anc))
         require(observed==wanted,'HIERARCHY_SCENE_CHAPTER_ORDER');structure_stages[label]={'hierarchySha256':digest(canonical(observed)),'sceneCount':len(observed)}
     # C1 retains its original sources during safe-create; structure is not claimed for that route.
-    if route!='C1':tree_check(source['tree'],'source-tree')
+    if not generic:tree_check(source['tree'],'source-tree')
     source_hashes=[]
     for i,(s,d) in enumerate(zip(src,docs)):
         require(s['file']==prefix+f'source-scenes/{i}.txt' and s['save']['ok'] is True,'SOURCE_SAVE_BINDING');b=files[s['file']];source_hashes.append(digest(b));require(digest(b)==s['sha256'],'SOURCE_FILE_HASH')
@@ -356,14 +434,33 @@ def audit(request):
         stage(name+'-native',v.native(raw(directory+'/word-native-readback.txt')),round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round)
         if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_docs(volume,route,round))}
-        else:require(route=='C1' and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
-        style_stages[name]=assert_docx_styles(parts,d)
+        else:require(generic and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
+        if route!='C5':style_stages[name]=assert_docx_styles(parts,d)
+    google_proof=None
     for ordinal in range(1,cycles+1):
-        base=f'rounds/{ordinal}';before_round=ordinal-1 if route!='C1' else 0;after_round=ordinal if route!='C1' else 0
+        base=f'rounds/{ordinal}';before_round=ordinal-1 if not generic else 0;after_round=ordinal if not generic else 0
         cap=export_check(base+'/export',base+'/source.docx',before_round,previous_hashes)
-        word_check(base+'/word',base+'/source.docx',base+'/returned.docx',base+'/word',after_round,route!='C1',cap)
+        if route=='C5':
+            response=read('google-response.json');request=read('google-request.json');require(request['runId']==run and request['source'].endswith('/'+run+'/'+base+'/source.docx'),'GOOGLE_RUN_SOURCE_PATH')
+            before,after,google_proof=google_exchange(response,request,raw(base+'/source.docx'),raw(base+'/returned.docx'))
+            stage(base+'/google-native-before',before);stage(base+'/google-native-after',after)
+            returned_ps,returned_parts,returned_document=docx(raw(base+'/returned.docx'),google=True);stage(base+'/google-docx',returned_ps)
+            life=read(base+'/google.json');require(life['status']=='PASS' and life['admissionCredit']==0 and life['cleanupOk'] is True and life['sourceSha256']==google_proof['sourceSha256'] and life['returnedSha256']==google_proof['returnedSha256'] and life['documentId']==google_proof['documentId'] and life['revisionId']==google_proof['revisionId'] and life['rawResponseSha256']==digest(raw('google-response.json')),'GOOGLE_NATIVE_HASH_CHAIN')
+            google_proof['rawResponseSha256']=life['rawResponseSha256']
+            google_proof['negativeControls']=google_controls(response,request,raw(base+'/source.docx'),raw(base+'/returned.docx'),expected)
+            # Bound and report unclaimed provider transformations; never award STYLES or anchor credit.
+            source_document=docx(raw(base+'/source.docx'))[2]
+            src_names=[n.get(W+'name') for n in source_document.iter(W+'bookmarkStart')];ret_names=[n.get(W+'name') for n in returned_document.iter(W+'bookmarkStart')]
+            cascade=StyleCascade(returned_parts);heading_changes=[]
+            for i,p in enumerate(returned_document.find(W+'body').findall(W+'p')):
+                text=v.visible(p);match=re.match(r'^\[heading-([1-6])\]',text)
+                if match:
+                    props=cascade.paragraph(p)[0];level=props.get(W+'outlineLvl',{}).get(W+'val');actual=int(level)+1 if level is not None and level.isdecimal() else None
+                    if actual!=int(match[1]):heading_changes.append({'paragraph':i,'expected':int(match[1]),'returned':actual})
+            google_proof['unclaimedFieldLedger']={'headingChanges':heading_changes,'bookmarkNamesChanged':src_names!=ret_names,'sourceBookmarkNamesSha256':digest(canonical(src_names)),'returnedBookmarkNamesSha256':digest(canonical(ret_names)),'notAdmitted':['STYLES','NOVEL_SCENE_STRUCTURE','IDENTIFIERS_ANCHORS'],'scope':'Literal text, order and Unicode only. Full returned style and metadata parts remain bound by the raw DOCX hash.'}
+        else:word_check(base+'/word',base+'/source.docx',base+'/returned.docx',base+'/word',after_round,route!='C1',cap)
         done=read(base+'/round.json');require(done=={'ordinal':ordinal,'reviewedOrdinal':after_round,'requiredCycles':cycles,'complete':True,'admissionCredit':0},'ROUND_COUNT')
-        if route!='C1':
+        if not generic:
             x=read(base+'/intake.json');r=x['result'];a=r['returnIntake'];require(x['before']==x['after']==previous_hashes and r['ok'] is True and r['commandId']=='cmd.project.review.activateDocxReviewPreviewSession','INTAKE_NO_WRITE')
             require(a['authenticated'] is True and a['returnedArtifactSha256']=='sha256:'+digest(raw(base+'/returned.docx')) and a['roundId']==cap['roundId'] and a['exportId']==cap['exportId'] and all(a['authority'].get(k) is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'RETURN_AUTHORITY')
             require(all(r[k] is False for k in ['canAutoApply','canImportMutate','canWriteStorage']),'INTAKE_NO_MUTATION_AUTHORITY')
@@ -380,7 +477,7 @@ def audit(request):
         round_proofs.append({'ordinal':ordinal,'exportId':cap['exportId'],'roundId':cap['roundId'],'exportSha256':digest(raw(base+'/source.docx')),'returnedSha256':digest(raw(base+'/returned.docx')),'savedSceneHashes':previous_hashes})
     reopened=read('reopen.json');close=read('close.json')
     require(reopened['firstPid']==boot['pid']==close['pid'] and reopened['pid']!=boot['pid'] and close['closed'] is True,'FRESH_PROCESS')
-    if route!='C1':
+    if not generic:
         require(len(reopened['scenes'])==count,'REOPEN_SCENE_COUNT');all_raw=[];all_render=[]
         for i,(s,d) in enumerate(zip(reopened['scenes'],expected_docs(volume,route,final_round))):
             require(s['sceneId']==ids[i] and s['nodeId']==nodes[i] and s['file']==prefix+f'reopened-scenes/{i}.txt','REOPEN_SCENE_BINDING')
@@ -404,20 +501,26 @@ def audit(request):
         require(rr['file']==prefix+'reopened-scenes/0.txt' and saved==files[rr['file']]==raw('runtime-project-snapshot/'+actual['sceneId']) and digest(b)==actual['sceneFileSha256'] and digest(saved)==rr['sha256'] and actual['sceneId']==rr['sceneId'] and actual['nodeId']==rr['nodeId'],'C1_DURABLE_BINDING')
         stage('import-renderer',actual['rendererReturnedParagraphs']);stage('imported-raw',paragraphs(scene(b)));stage('persisted',paragraphs(scene(saved)));stage('saved-renderer',im['renderer']['paragraphs']);font_check(im['fonts'],'import-renderer')
         imported_doc={'type':'doc','content':sum([d['content'] for d in docs],[])}
-        for data in [b,saved,files[rr['file']]]:require(normalize_doc(scene(data))==normalize_doc(imported_doc),'C1_RICH_PERSISTENCE')
-        renderer(rr,imported_doc,'reopened-renderer');stage('reopened-renderer',rr['renderer']['paragraphs'])
+        if route=='C1':
+            for data in [b,saved,files[rr['file']]]:require(normalize_doc(scene(data))==normalize_doc(imported_doc),'C1_RICH_PERSISTENCE')
+        renderer(rr,imported_doc,'reopened-renderer',check_styles=route!='C5');stage('reopened-renderer',rr['renderer']['paragraphs'])
         x=read('reexport.json');rmin=x['result'];exported=raw('reexport.docx')
         require(x['commandId']=='cmd.project.export.docxMin' and rmin['ok'] is True and rmin['bytesWritten']==len(exported) and x['before']==x['after']==[digest(saved)] and x['sha256']==digest(exported),'C1_REEXPORT_COMMAND_HASH')
-        ps,parts,d=docx(exported);stage('reexport-docx',ps);style_stages['reexport']=assert_docx_styles(parts,d)
+        ps,parts,d=docx(exported);stage('reexport-docx',ps)
+        if route=='C1':style_stages['reexport']=assert_docx_styles(parts,d)
         word_check('final-word-lifecycle','reexport.docx','final-word.docx','final-word',0,False,None)
-        require(len({s['semanticStyleSha256'] for s in style_stages.values()})==1,'STYLE_STAGE_CONTINUITY')
+        if route=='C1':require(len({s['semanticStyleSha256'] for s in style_stages.values()})==1,'STYLE_STAGE_CONTINUITY')
         for loss in [receipt['lossReport'],r['importPreview']['docxImportPreviewPlan']['lossReport']]:
-            require(loss['mode']=='block-styles-headings-lists-and-inline-marks' and loss['itemCount']==len(loss['items'])==6 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS','info')]+[('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]*2),'C1_DECLARED_LOSS')
-    for name in ['source.png','reopen.png']+(['saved.png'] if route=='C1' else []):require(raw(name).startswith(b'\x89PNG\r\n\x1a\n') and len(raw(name))>100,'PRODUCT_SCREENSHOT')
+            if route=='C1':
+                require(loss['mode']=='block-styles-headings-lists-and-inline-marks' and loss['itemCount']==len(loss['items'])==6 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS','info')]+[('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]*2),'C1_DECLARED_LOSS')
+            else:
+                require(loss['mode']=='lists-headings-and-inline-marks' and loss['itemCount']==len(loss['items'])==5 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS','info'),('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]),'C5_DECLARED_LOSS')
+                google_proof['productLossLedgerSha256']=digest(canonical(loss))
+    for name in ['source.png','reopen.png']+(['saved.png'] if generic else []):require(raw(name).startswith(b'\x89PNG\r\n\x1a\n') and len(raw(name))>100,'PRODUCT_SCREENSHOT')
     cleanup=read('cleanup.json');require(cleanup['ok'] is True and len(cleanup['ownedProcesses'])==2 and {p['pid'] for p in cleanup['ownedProcesses']}=={boot['pid'],reopened['pid']} and all(p['exitCode'] is not None or p['signalCode'] is not None for p in cleanup['ownedProcesses']),'RUNTIME_CLEANUP')
     result=read('result.json');require(result['ok'] is True and result['failure'] is None and result['admissionCredit']==0 and result['candidateDiagnosticOnly']==obs['candidateDiagnosticOnly'],'NATIVE_COMPLETION')
     first_cap=read('rounds/1/export.json')['result']['exportCapsule'];calibration=controls(raw('rounds/1/source.docx'),volume,route,ids,first_cap['roundId'])
-    if route!='C1' and volume!='SINGLE_SCENE':
+    if not generic and volume!='SINGLE_SCENE':
         # Corrupt the actual hierarchy, without changing text, and require the independent tree reader to reject it.
         for name in STRUCTURE_CONTROLS[3:]:
             value=copy.deepcopy(source['tree']);parents={};all_nodes=[]
@@ -435,7 +538,10 @@ def audit(request):
             require(rejected,'FALSE_GREEN_'+name);calibration['structureMutants'].append({'id':name,'rejected':True,'sha256':digest(canonical(value))})
     limitations={'ime':'Native Chromium composition, cancellation and committed typing on the bound macOS locale; other OS IME engines are unproved.','fonts':'Actual Chromium glyph fallback plus independent Word font declarations; pixel identity is not claimed.','styles':'Fixed declared styles only; unsupported objects and external relationships reject the whole proof.','structure':'Existing scene/chapter identities and order survive exact text editing; structural editing is outside these fixtures.'}
     unicode_proof={'probes':UNICODE,'locale':locale,'providerLocale':{k:provider[k] for k in ['locale','languages']},'compositionEventsSha256':digest(raw('composition-events.json')),'fontLedger':font_ledger,'limitations':limitations}
-    proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
+    if route=='C5':
+        unicode_proof['providerLocale']=google_proof['providerLocale']
+        limitations['fonts']='Actual Chromium glyph fallback on the bound source/return runtime. Google content API has no interactive UI font session; literal Unicode is read before and after export. Pixel identity is not claimed.'
+    proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
     return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 

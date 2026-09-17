@@ -1,7 +1,7 @@
 import {buildWordVolumeFixture,WORD_VOLUME_TEXT_PROBES} from './rtk-interop-word-volume-fixtures.mjs';
 
 export const MANUSCRIPT_VOLUMES=Object.freeze(['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']);
-export const MANUSCRIPT_ROUTES=Object.freeze(['C1','C2','C3']);
+export const MANUSCRIPT_ROUTES=Object.freeze(['C1','C2','C3','C5']);
 export const MANUSCRIPT_PROFILES=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME']);
 export const UNICODE_PROBES=Object.freeze([
  '[normalization] NFC é Å ö; NFD e\u0301 A\u030a o\u0308; Hangul 한 한.',
@@ -28,9 +28,13 @@ export function manuscriptParagraphs(doc){
 }
 export function manuscriptFields(volume,route){
  if(!MANUSCRIPT_VOLUMES.includes(volume)||!MANUSCRIPT_ROUTES.includes(route))throw new Error('MANUSCRIPT_SCOPE');
+ if(route==='C5'){
+  if(volume==='LARGE_DOCUMENT')throw new Error('GOOGLE_NATIVE_VOLUME_UNQUALIFIED');
+  return ['TEXT','ORDER','UNICODE_IME_LOCALE'];
+ }
  return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE'])];
 }
-export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptFields(volume,route).map(field=>`${field}__${volume}__${route}__${profile}`)))));
+export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.filter(route=>route!=='C5'||volume!=='LARGE_DOCUMENT').flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptFields(volume,route).map(field=>`${field}__${volume}__${route}__${profile}`)))));
 export function buildWordManuscriptFixture(volume,route){
  manuscriptFields(volume,route);
  const base=volume==='SINGLE_SCENE'?{minimumWords:0,scenes:[{paragraphs:[...WORD_VOLUME_TEXT_PROBES]}]}:buildWordVolumeFixture(volume);

@@ -140,14 +140,16 @@ test('Read-only manuscript tree exposes registered part/chapter/scene hierarchy 
  assert.equal(tree.length,1);assert.equal(tree[0].kind,'part');assert.equal(tree[0].children[0].kind,'chapter-folder');assert.deepEqual(tree[0].children[0].children.map(n=>[n.kind,n.name]),[['scene','first'],['scene','second']]);
 });
 
-test('Manuscript admission supports exactly 108 frozen whole cells and five real C3 rounds',async()=>{
+test('Manuscript admission targets 126 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,108);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,108);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,126);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,126);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
- for(const route of ['C1','C2','C3'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
+ for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
+ assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
+ assert.deepEqual(f.manuscriptFields('MULTI_SCENE','C5'),['TEXT','ORDER','UNICODE_IME_LOCALE']);
  const run='ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME__contract';assert.equal(m.validateManuscriptRuns([run]).length,1);
  for(const runs of [[],[run,run+'repeat'],[run.replace('C3','C4')],[run.replace('ORDER','STYLES')],[run+'../escape'],[null]])assert.throws(()=>m.validateManuscriptRuns(runs));
  const row=m.validateManuscriptRuns([run])[0],obs={type:'PHYSICAL_OBSERVATION',runId:run,cellId:row.cellId,artifactHash:'a'.repeat(64)};
@@ -161,6 +163,16 @@ test('Manuscript admission supports exactly 108 frozen whole cells and five real
 test('Independent manuscript Python tests reject semantic, style, structure and caller-authority corruption',()=>{
  const {spawnSync}=require('node:child_process');const child=spawnSync('python3',['-I','-B','test/unit/rtk-interop-word-manuscript.test.py'],{cwd:ROOT,encoding:'utf8',timeout:30000});
  assert.equal(child.status,0,child.stdout+child.stderr);assert.match(child.stderr,/Ran [1-9][0-9]* tests/);assert.match(child.stderr,/\nOK\n/);
+});
+
+test('Current Google qualification preserves archived transport bytes and cannot promote a conversion to cell credit',async()=>{
+ const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const policy=JSON.parse(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json'))),p=policy.wordManuscriptBatch.googleNativeTransport;
+ assert.equal(m.validateGoogleManuscriptTransport(p),true);
+ assert.equal(digest(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json'))),p.supersedesArchivedTransportAssumption.specSha256);
+ for(const mutate of [p=>p.directLocalPathImport.countsAsPass=true,p=>p.directLocalPathImport.supported=false,p=>p.requiredSteps.pop(),p=>p.routeQualificationCountsAsCellPass=true,p=>p.createdDriveFilesCleanup='OPTIONAL',p=>p.productRuntimeNetworkPolicy='NETWORK_ENABLED',p=>p.externalConnectorUse='USER_DOCUMENTS',p=>p.supersedesArchivedTransportAssumption.retainsHistoricalStagingReceipt=false]){
+  const changed=structuredClone(p);mutate(changed);assert.throws(()=>m.validateGoogleManuscriptTransport(changed),/GOOGLE_TRANSPORT_POLICY/);
+ }
 });
 
 test('Manuscript raw consumer rejects incomplete rounds, missing fields and coherently relabelled proof',async()=>{
