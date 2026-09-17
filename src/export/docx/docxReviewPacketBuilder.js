@@ -10,6 +10,7 @@ const { buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 const { buildDocxTypographyPropertiesXml } = require('./docxInlineTypography.js');
 const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
 const { docxBlockStyleId, buildDocxBlockStyleDefinitions } = require('./docxBlockStyles.js');
+const { commentPackageParts, commentMarkersForBlock } = require('./docxReviewPacketComments.js');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -176,10 +177,36 @@ function buildFormatIrRunsXml(block, hyperlinkByHref) {
   }).join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref) {
+function buildCommentedRunsXml(block, hyperlinkByHref, markers) {
+  const runs = block.formatIr?.runs?.length ? block.formatIr.runs : [{ text: block.text }];
+  if (runs.map(run => normalizeString(run.text)).join('') !== block.text) {
+    throw new Error('DOCX_REVIEW_PACKET_FORMAT_IR_TEXT_MISMATCH');
+  }
+  const boundaries = [...markers.keys()].sort((a, b) => a - b);
+  let offset = 0;
+  const output = [];
+  for (const run of runs) {
+    const end = offset + run.text.length;
+    const cuts = [offset, ...boundaries.filter(value => value > offset && value < end), end];
+    for (let index = 0; index < cuts.length - 1; index += 1) {
+      const start = cuts[index];
+      if (markers.has(start)) { output.push(markers.get(start)); markers.delete(start); }
+      const part = run.text.slice(start - offset, cuts[index + 1] - offset);
+      output.push(buildFormatIrRunsXml({ ...block, text: part, formatIr: { runs: [{ ...run, text: part }] } }, hyperlinkByHref));
+    }
+    offset = end;
+  }
+  if (markers.has(offset)) { output.push(markers.get(offset)); markers.delete(offset); }
+  if (markers.size) throw new Error('DOCX_COMMENT_ANCHOR_UNEMITTED');
+  return output.join('');
+}
+
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
-  const textRun = buildFormatIrRunsXml(block, hyperlinkByHref);
+  const markers = commentMarkersForBlock(commentExport, block);
+  const textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
+    : buildFormatIrRunsXml(block, hyperlinkByHref);
   const textAlign = toWordParagraphAlignment(block.formatIr?.paragraph?.textAlign);
   const headingLevel = Number(block.formatIr?.paragraph?.headingLevel);
   const paragraphPropertyParts = [];
@@ -225,8 +252,8 @@ function buildParagraphXml(block, index, hyperlinkByHref) {
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref) {
-  const paragraphs = blocks.map((block, index) => buildParagraphXml(block, index, hyperlinkByHref)).join('');
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport) {
+  const paragraphs = blocks.map((block, index) => buildParagraphXml(block, index, hyperlinkByHref, commentExport)).join('');
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="${WORD_MAIN_NS}" xmlns:w14="${W14_NS}" xmlns:r="${OFFICE_DOCUMENT_REL_NS}">
   <w:body>
@@ -292,7 +319,7 @@ function buildCustomXmlItemPropsXml() {
 </ds:datastoreItem>`;
 }
 
-function buildContentTypesXml() {
+function buildContentTypesXml(commentTypes = '') {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
@@ -302,6 +329,7 @@ function buildContentTypesXml() {
   <Override PartName="/word/numbering.xml" ContentType="${WORD_NUMBERING_CONTENT_TYPE}"/>
   <Override PartName="/word/styles.xml" ContentType="${WORD_STYLES_CONTENT_TYPE}"/>
   <Override PartName="/docProps/custom.xml" ContentType="application/vnd.openxmlformats-officedocument.custom-properties+xml"/>
+  ${commentTypes}
 </Types>`;
 }
 
@@ -314,7 +342,7 @@ function buildRootRelsXml() {
 </Relationships>`;
 }
 
-function buildDocumentRelsXml(hyperlinks = []) {
+function buildDocumentRelsXml(hyperlinks = [], commentRelationships = '') {
   // PARSER-01 (P9) hyperlink emission form: the exact-text product profile keeps
   // emitting TargetMode="External" hyperlink relationships so a physical Word
   // reopen shows a clickable link, AND the bounded parser
@@ -333,6 +361,7 @@ function buildDocumentRelsXml(hyperlinks = []) {
   <Relationship Id="rIdYrtkNumbering" Type="${WORD_NUMBERING_REL_TYPE}" Target="numbering.xml"/>
   <Relationship Id="rIdYrtkStyles" Type="${WORD_STYLES_REL_TYPE}" Target="styles.xml"/>
 ${hyperlinkRelationships}
+${commentRelationships}
 </Relationships>`;
 }
 
@@ -488,6 +517,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
   const hyperlinks = collectDocumentHyperlinks(blocks);
   const hyperlinkByHref = new Map(hyperlinks.map((entry) => [entry.href, entry.relationshipId]));
   const customProperties = normalizeCustomProperties(input.customProperties);
+  const comments = commentPackageParts(input.commentExport);
   if (customProperties.length === 0) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_REQUIRED');
   }
@@ -499,10 +529,10 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   const buffer = buildStoredZip([
-    { name: '[Content_Types].xml', data: buildContentTypesXml() },
+    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes) },
     { name: '_rels/.rels', data: buildRootRelsXml() },
-    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks) },
-    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref) },
+    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships) },
+    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
@@ -510,6 +540,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },
     { name: 'customXml/item1.xml', data: buildCustomXmlPayloadXml(input) },
     { name: 'customXml/itemProps1.xml', data: buildCustomXmlItemPropsXml() },
+    ...comments.entries,
   ]);
   const modernMode = validateDocxReviewPacketModernMode15(buffer);
   if (!modernMode.ok) throw new Error(modernMode.code);

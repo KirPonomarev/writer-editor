@@ -24,6 +24,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  STYLES:['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  NOVEL_SCENE_STRUCTURE:['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
  TRACKED_REVIEW_SEMANTICS:['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
+ COMMENTS:['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
 });
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
@@ -45,6 +46,25 @@ const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const same=(a,b)=>stableOrderJson(a)===stableOrderJson(b);
 const sha40=x=>typeof x==='string'&&/^[a-f0-9]{40}$/u.test(x);
 const sha64=x=>typeof x==='string'&&/^[a-f0-9]{64}$/u.test(x);
+export function validateManuscriptCommentProof(p,cycles,roundProofs){
+ const names=['rounds/1/review-probe','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
+ const queries=['source-comments','reopened-comments',...Array.from({length:cycles},(_,i)=>'rounds/'+(i+1)+'/comments')];
+ demand(p?.sourceKind==='OWNED_SAVED_PROJECT_FIXTURE'&&p.canonicalApplyClaim===false&&sha64(p.sourceStateSha256)&&typeof p.scope==='string'&&p.scope.length>0,'MANUSCRIPT_COMMENT_SCOPE');
+ demand(same(Object.keys(p.stages||{}).sort(),names.sort())&&same(Object.keys(p.queries||{}).sort(),queries.sort()),'MANUSCRIPT_COMMENT_STAGES');
+ for(const s of Object.values(p.stages))demand(s.messageCount===4&&s.threadCount===2&&s.intentionalDeletionCount===1&&sha64(s.artifactSha256)&&sha64(s.semanticSha256)
+  &&same(Object.keys(s.partsSha256),['comments','commentsExtended','commentsIds','commentsExtensible'])&&Object.values(s.partsSha256).every(sha64),'MANUSCRIPT_COMMENT_RAW');
+ demand(new Set(Object.values(p.stages).map(s=>s.semanticSha256)).size===1&&Object.values(p.queries).every(q=>q.rawStateSha256===p.sourceStateSha256&&sha64(q.querySha256)),'MANUSCRIPT_COMMENT_CONTINUITY');
+ for(const [i,r] of roundProofs.entries())demand(p.stages['rounds/'+(i+1)+'/export'].artifactSha256===r.exportSha256&&p.stages['rounds/'+(i+1)+'/word'].artifactSha256===r.returnedSha256,'MANUSCRIPT_COMMENT_ROUND_BYTES');
+ const controls=['missing-root','missing-reply','body-whitespace','wrong-author','wrong-date','wrong-utc-namespace','wrong-parent','wrong-status','wrong-anchor','missing-reference','duplicate-identity','deleted-reappeared'];
+ demand(Array.isArray(p.negativeControls)&&same(p.negativeControls.map(c=>c.id),controls)&&p.negativeControls.every(c=>c.rejected===true&&sha64(c.sha256))
+  &&new Set(p.negativeControls.map(c=>c.sha256)).size===controls.length,'MANUSCRIPT_COMMENT_CONTROLS');
+ const l=p.lossControl;
+ demand(l?.sourceSha256===roundProofs[0].returnedSha256&&sha64(l.mutantSha256)&&l.mutantSha256!==l.sourceSha256&&sha64(l.intakeSha256)
+  &&l.canonicalStateSha256===p.sourceStateSha256&&l.writerCalled===false
+  &&same(l.missing,['open','resolved'].map(status=>({threadId:'manuscript-comment-'+status,canonicalCommentId:'manuscript-comment-'+status+'-root',code:'COMMENT_ROOT_MISSING'}))),'MANUSCRIPT_COMMENT_LOSS');
+ demand(same(p.intentionalDeletionLedger,[{threadId:'manuscript-comment-deleted',status:'deleted',messageCount:2,outcome:'CANONICAL_DELETION_NOT_EXPORTED'}]),'MANUSCRIPT_COMMENT_DELETION');
+ return true;
+}
 export function validateGoogleManuscriptTransport(p){
  demand(p?.schemaVersion==='GOOGLE_NATIVE_DIRECT_TRANSPORT_V2'&&p.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
   &&same(p.directLocalPathImport,{supported:true,countsAsPass:false,qualification:'ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP'})
@@ -140,13 +160,15 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    demand(noWrite(b)&&text(b,1)&&b.sourceSha256===raw.roundProofs[0].exportSha256&&sha64(b.returnedSha256)&&b.returnedSha256!==raw.roundProofs[0].returnedSha256
     &&b.roundId===raw.roundProofs[0].roundId&&b.exportId===raw.roundProofs[0].exportId&&same(b.manualOnlyReasonCodes,['RTK_BLOCKED_STRUCTURAL'])
     &&b.propertyRevisions?.length===1&&revision(b.propertyRevisions[0])&&b.propertyRevisions[0].propertyKind==='rPrChange'&&b.propertyRevisions[0].classification==='MANUAL_REVIEW'&&b.propertyRevisions[0].reasonCode==='RTK_BLOCKED_STRUCTURAL'
-    &&same(b.canonicalBefore.sceneHashes,p.rounds[0].canonicalBefore)&&sha64(b.canonicalBefore.manifestSha256)&&b.canonicalBefore.commentStateSha256===null
+    &&same(b.canonicalBefore.sceneHashes,p.rounds[0].canonicalBefore)&&sha64(b.canonicalBefore.manifestSha256)&&sha64(b.canonicalBefore.commentStateSha256)
+    &&b.canonicalBefore.commentStateSha256===raw.fieldProofs.find(f=>f.field==='COMMENTS')?.commentProof?.sourceStateSha256
     &&controls(b.negativeControls,['missing-insert','missing-delete','missing-property','changed-author','changed-legacy-date','changed-utc-date','wrong-utc-namespace','missing-current-format','wrong-property-kind','missing-manual-reason','granted-write','silent-canonical-apply']),'MANUSCRIPT_REVIEW_PROPERTY_SUBCASE');
   }
   if(f.field==='STYLES'){
    const names=Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat().concat(['reexport','final-word-lifecycle']);
    demand(same(Object.keys(f.styleProofs).sort(),names.sort())&&Object.values(f.styleProofs).every(p=>p.semanticStyleSha256===batch.semanticStyleSha256&&sha64(p.stylePartsSha256['word/styles.xml'])&&sha64(p.stylePartsSha256['word/numbering.xml']))&&f.unsupportedStylesDeclared,'MANUSCRIPT_STYLE_CONTINUITY');
   }
+  if(f.field==='COMMENTS')validateManuscriptCommentProof(f.commentProof,cycles,raw.roundProofs);
   if(f.field==='NOVEL_SCENE_STRUCTURE'){
    const names=['source-tree','reopen-tree','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word','rounds/'+(i+1)+'/tree']).flat()];
    demand(same(Object.keys(f.structureProofs).sort(),names.sort())&&Object.entries(f.structureProofs).every(([name,p])=>name.endsWith('tree')?p.sceneCount===sceneCount&&sha64(p.hierarchySha256):sha64(p.bookmarkSha256))

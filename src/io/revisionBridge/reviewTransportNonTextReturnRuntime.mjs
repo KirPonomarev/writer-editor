@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
+import { normalizeCommentProvenance, compareCommentExportReadback } from '../../export/docx/docxReviewPacketComments.js';
 
 export const RTK_ROOT_COMMENT_RETURN_COMMAND_ID = 'cmd.rtk.review.applyRootCommentReturn';
 export const RTK_COMMENT_LIFECYCLE_RETURN_COMMAND_ID = 'cmd.rtk.review.applyCommentLifecycleReturn';
@@ -134,7 +135,18 @@ function normalizeRootCommentInput(input) {
       sourceChangeId: normalizeString(input.anchor.sourceChangeId),
     }
     : { sceneId: '', blockId: '', paragraphIndex: -1, authoritySource: '', sourceChangeId: '' };
-  return { projectId, projectRoot, operationId, sceneId, threadId, commentId, body, selectedText, sceneText, anchor };
+  const provenance = normalizeCommentProvenance(input.provenance);
+  if (isPlainObject(input.anchor?.canonicalRange)) {
+    const range = input.anchor.canonicalRange;
+    if (!Number.isSafeInteger(range.sceneParagraphIndex) || range.sceneParagraphIndex < 0
+      || !/^[a-f0-9]{64}$/u.test(range.blockTextSha256)
+      || !Number.isSafeInteger(range.startUtf16) || range.startUtf16 < 0) {
+      throw new Error('RTK_COMMENT_CANONICAL_RANGE_INVALID');
+    }
+    anchor.canonicalRange = { sceneParagraphIndex: range.sceneParagraphIndex,
+      blockTextSha256: range.blockTextSha256, startUtf16: range.startUtf16 };
+  }
+  return { projectId, projectRoot, operationId, sceneId, threadId, commentId, body, selectedText, sceneText, anchor, provenance };
 }
 
 function countOccurrences(text, needle) {
@@ -330,7 +342,9 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
     || input.commandAuthority?.intent !== 'rtk.nonTextReturn') {
     return blocked('RTK_ROOT_COMMENT_COMMAND_AUTHORITY_INVALID', 'commandAuthority');
   }
-  const normalized = normalizeRootCommentInput(input);
+  let normalized;
+  try { normalized = normalizeRootCommentInput(input); }
+  catch (error) { return blocked(error.message, 'provenanceOrAnchor'); }
   for (const field of ['projectId', 'projectRoot', 'operationId', 'sceneId', 'threadId', 'commentId']) {
     if (!normalized[field]) return blocked('RTK_ROOT_COMMENT_REQUIRED_FIELD_MISSING', field);
   }
@@ -355,12 +369,14 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
     commentId: normalized.commentId,
     body: normalized.body,
     selectedText: normalized.selectedText,
+    ...(Object.keys(normalized.provenance).length ? { provenance: normalized.provenance } : {}),
     anchor: {
       sceneId: normalized.anchor.sceneId,
       blockId: normalized.anchor.blockId,
       paragraphIndex: normalized.anchor.paragraphIndex,
       authoritySource: normalized.anchor.authoritySource,
       sourceChangeId: normalized.anchor.sourceChangeId,
+      ...(normalized.anchor.canonicalRange ? { canonicalRange: normalized.anchor.canonicalRange } : {}),
     },
   }));
   const port = options.port || createRtkNonTextReturnFilePort(options);
@@ -416,9 +432,11 @@ export async function applyRootCommentReturnRuntime(input = {}, options = {}) {
           hasBlockParagraphAuthority ? 'scene-block-paragraph-authority' : 'unique-selected-text'
         ),
         sourceChangeId: normalized.anchor.sourceChangeId,
+        ...(normalized.anchor.canonicalRange || {}),
       },
       rootCommentId: normalized.commentId,
-      messages: [{ commentId: normalized.commentId, kind: 'root', body: normalized.body }],
+      messages: [{ commentId: normalized.commentId, kind: 'root', body: normalized.body,
+        ...(Object.keys(normalized.provenance).length ? { provenance: normalized.provenance } : {}) }],
     }],
     events: [...before.events, event],
   };
@@ -466,6 +484,7 @@ export function createRtkRootCommentReturnCommandHandler(options = {}) {
 }
 
 function normalizeCommentLifecycleInput(input) {
+  const provenance = normalizeCommentProvenance(input.provenance);
   return {
     projectId: normalizeString(input.projectId),
     projectRoot: normalizeString(input.projectRoot),
@@ -475,6 +494,7 @@ function normalizeCommentLifecycleInput(input) {
     action: normalizeString(input.action),
     replyId: normalizeString(input.replyId),
     replyBody: typeof input.replyBody === 'string' ? input.replyBody : '',
+    ...(Object.keys(provenance).length ? { provenance } : {}),
   };
 }
 
@@ -489,7 +509,8 @@ function applyCommentLifecycleTransition(thread, input) {
     if (next.messages.some((message) => message.commentId === input.replyId)) {
       return blocked('RTK_COMMENT_REPLY_IDENTITY_COLLISION', 'replyId');
     }
-    next.messages.push({ commentId: input.replyId, kind: 'reply', body: input.replyBody });
+    next.messages.push({ commentId: input.replyId, kind: 'reply', body: input.replyBody,
+      ...(input.provenance ? { provenance: input.provenance } : {}) });
     return { ok: true, thread: next, eventKind: 'comment_reply_added', transitions: [next.status] };
   }
   if (input.action === 'resolve') {
@@ -526,7 +547,9 @@ export async function applyCommentLifecycleReturnRuntime(input = {}, options = {
     || input.commandAuthority?.intent !== 'rtk.nonTextReturn') {
     return blocked('RTK_COMMENT_LIFECYCLE_COMMAND_AUTHORITY_INVALID', 'commandAuthority');
   }
-  const normalized = normalizeCommentLifecycleInput(input);
+  let normalized;
+  try { normalized = normalizeCommentLifecycleInput(input); }
+  catch (error) { return blocked(error.message, 'provenance'); }
   for (const field of ['projectId', 'projectRoot', 'operationId', 'sceneId', 'threadId', 'action']) {
     if (!normalized[field]) return blocked('RTK_COMMENT_LIFECYCLE_REQUIRED_FIELD_MISSING', field);
   }
@@ -620,6 +643,28 @@ export function createRtkCommentLifecycleReturnCommandHandler(options = {}) {
   }, options);
 }
 
+function authenticatedCanonicalCommentRange(authority, sceneId, blockId, paragraphIndex, thread, change, selectedText) {
+  const scene = authority.exportMap?.scenes?.find((item) => item.sceneId === sceneId);
+  const blocks = scene?.blocks || [];
+  const sceneParagraphIndex = blocks.findIndex((block) => block.blockId === blockId);
+  if (sceneParagraphIndex < 0 || !blocks[sceneParagraphIndex].formatIr) return null;
+  const block = blocks[sceneParagraphIndex];
+  if (block.documentParagraphIndex !== paragraphIndex) throw new Error('RTK_COMMENT_CANONICAL_BLOCK_MISMATCH');
+  let blockText = block.formatIr.runs.map((run) => run.text).join('');
+  if (change) {
+    blockText = sceneTextAfterSourceTextChange(blockText, { ...change, match: { ...change.match,
+      ...(change.match?.blockRange ? { blockRange: { ...change.match.blockRange, sceneStart: 0 } } : {}) } });
+  }
+  const range = thread.finalTextAnchorRange;
+  if (!range || range.blockTextSha256 !== sha256(blockText) || range.selectedText !== selectedText
+    || !Number.isSafeInteger(range.startUtf16) || !Number.isSafeInteger(range.endUtf16)
+    || range.endUtf16 !== range.startUtf16 + selectedText.length
+    || blockText.slice(range.startUtf16, range.endUtf16) !== selectedText) {
+    throw new Error('RTK_COMMENT_CANONICAL_RANGE_MISMATCH');
+  }
+  return { sceneParagraphIndex, blockTextSha256: sha256(blockText), startUtf16: range.startUtf16 };
+}
+
 export function buildAuthenticatedCommentReturnCommands(input = {}) {
   if (input.authenticated !== true) return blocked('RTK_COMMENT_PRODUCT_RETURN_NOT_AUTHENTICATED', 'authenticated');
   const reviewIr = isPlainObject(input.reviewIr) ? input.reviewIr : {};
@@ -637,9 +682,21 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
   const textChanges = Array.isArray(reviewIr.textChanges) ? reviewIr.textChanges.filter(isPlainObject) : [];
   const commands = [];
   const typedBlocked = [];
+  const baseline = authority.commentExport;
+  const baselineReadback = compareCommentExportReadback(baseline, reviewIr.commentThreads);
+  if (!baselineReadback.ok) {
+    return { ...blocked('RTK_COMMENT_REEXPORT_RETURN_CHANGED_OR_MISSING', 'commentExport'),
+      commands: [], typedBlocked: [...baselineReadback.missing, ...baselineReadback.changed], baselineReadback };
+  }
+  const knownDurableIds = new Set((baseline?.threads || []).map(thread => thread.messages[0].durableId));
   for (const [threadIndex, thread] of (Array.isArray(reviewIr.commentThreads) ? reviewIr.commentThreads : []).entries()) {
     if (!isPlainObject(thread)) continue;
+    if (knownDurableIds.has(thread.durableId)) continue;
     const threadId = normalizeString(thread.threadId || thread.commentId || `comment-thread-${threadIndex + 1}`);
+    if (['UNSUPPORTED_BLOCKED', 'ORPHAN', 'LOST'].includes(thread.status)) {
+      typedBlocked.push({ threadId, code: 'RTK_COMMENT_PRODUCT_RETURN_UNSAFE_GRAPH_OR_ANCHOR' });
+      continue;
+    }
     const placement = placements.get(threadId) || {};
     if (isPlainObject(placement.sceneAuthorityMismatch)) {
       typedBlocked.push({
@@ -719,6 +776,26 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
     const commandSceneText = sourceTextChange
       ? sceneTextAfterSourceTextChange(sceneText, sourceTextChange)
       : sceneText;
+    let canonicalRange, rootProvenance, replyProvenance;
+    const replies = [
+      ...messages.slice(1),
+      ...(Array.isArray(thread.replies) ? thread.replies.filter(isPlainObject) : []),
+    ];
+    try {
+      canonicalRange = authenticatedCanonicalCommentRange(authority, sceneId, blockId, resolvedParagraphIndex,
+        thread, sourceTextChange, selectedText);
+      rootProvenance = normalizeCommentProvenance({
+        author: rootMessage.author || thread.authorPersonIdentity?.author || '',
+        initials: rootMessage.initials || thread.authorPersonIdentity?.initials || '',
+        date: rootMessage.date || thread.date || '',
+        dateUtc: rootMessage.dateUtc || thread.dateUtc || thread.modernMetadata?.dateUtc || '',
+      });
+      replyProvenance = replies.map((reply) => normalizeCommentProvenance({ author: reply.author || '',
+        initials: reply.initials || '', date: reply.date || '', dateUtc: reply.dateUtc || '' }));
+    } catch (error) {
+      typedBlocked.push({ threadId, code: error.message });
+      continue;
+    }
     commands.push({
       family: 'root_comment',
       payload: {
@@ -726,6 +803,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
         threadId: canonicalThreadId,
         commentId: canonicalRootCommentId,
         body: rootBody,
+        provenance: rootProvenance,
         anchor: {
           sceneId,
           blockId,
@@ -733,6 +811,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
           authoritySource,
           sourceChangeId: normalizeString(sourceTextChange?.changeId || sourceTextChange?.authorityCandidateId),
           nativeReplacementGroupId: normalizeString(sourceAssociation.nativeOwnership?.groupId),
+          ...(canonicalRange ? { canonicalRange } : {}),
         },
         returnArtifactId,
         sourceThreadId: threadId,
@@ -746,10 +825,6 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
           : 'parser-quote',
       },
     });
-    const replies = [
-      ...messages.slice(1),
-      ...(Array.isArray(thread.replies) ? thread.replies.filter(isPlainObject) : []),
-    ];
     replies.forEach((reply, replyIndex) => {
       const replyBody = typeof reply.body === 'string' ? reply.body : '';
       const sourceReplyId = normalizeString(reply.messageId || reply.commentId || reply.itemId)
@@ -762,6 +837,7 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
         payload: {
           projectId, projectRoot, sceneId, threadId: canonicalThreadId, action: 'reply',
           replyId: canonicalReplyId, replyBody,
+          provenance: replyProvenance[replyIndex],
           returnArtifactId,
           sourceThreadId: threadId,
           sourceReplyId,
@@ -795,13 +871,14 @@ export function buildAuthenticatedCommentReturnCommands(input = {}) {
     }
   }
   return {
-    ok: typedBlocked.length === 0 && commands.length > 0,
-    status: typedBlocked.length === 0 && commands.length > 0 ? 'ready' : 'blocked',
-    code: typedBlocked.length === 0 && commands.length > 0
+    ok: typedBlocked.length === 0 && (commands.length > 0 || baselineReadback.unchangedThreadIds.length > 0),
+    status: typedBlocked.length === 0 && (commands.length > 0 || baselineReadback.unchangedThreadIds.length > 0) ? 'ready' : 'blocked',
+    code: typedBlocked.length === 0 && (commands.length > 0 || baselineReadback.unchangedThreadIds.length > 0)
       ? 'RTK_COMMENT_PRODUCT_RETURN_COMMANDS_READY'
       : 'RTK_COMMENT_PRODUCT_RETURN_COMMANDS_BLOCKED',
     commands,
     typedBlocked,
+    baselineReadback,
     commandBusRequired: true,
     directPortDispatchForbidden: true,
   };

@@ -194,7 +194,7 @@ test('B03 modern comments infer reply graph from last paragraph w14 paraId only'
   const thread = result.reviewIr.commentThreads[0];
   assert.equal(result.ok, true);
   assert.deepEqual(thread.replies.map((reply) => [reply.rawId, reply.parentRawId]), [['22', '21'], ['23', '22']]);
-  assert.deepEqual([thread.body, ...thread.replies.map((reply) => reply.body)], ['leadroot', 'reply bob', 'reply carol']);
+  assert.deepEqual([thread.body, ...thread.replies.map((reply) => reply.body)], ['lead\nroot', 'reply bob', 'reply carol']);
   assert.deepEqual([thread.authorPersonIdentity.author, ...thread.replies.map((reply) => reply.author)], ['Alice', 'Bob', 'Carol']);
   assert.equal(result.reasons.some((reason) => reason.code.startsWith('RTK_COMMENT_PARENT_')), false);
 });
