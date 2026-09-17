@@ -185,7 +185,13 @@ function labRevision(labRoot,revision,policy){
   git(['merge-base','--is-ancestor',policy.labBaseHead,revision]);
   const delta=git(['diff','--name-only','--no-renames',policy.labBaseHead,revision,'--']).trim().split('\n').filter(Boolean);
   demand(delta.every(p=>policy.allowedLabDeltaPaths.includes(p)||/^data\/cases\/[a-z][a-z0-9-]{0,63}\.json$/u.test(p)),'MANUSCRIPT_BATCH_LAB_SCOPE');
-  for(const b of policy.labCodeBindings)demand(hash(git(['show',revision+':'+b.path]))===b.sha256,'MANUSCRIPT_BATCH_LAB_CODE');
+  const bindingSets=Array.isArray(policy.labCodeBindingSets)&&policy.labCodeBindingSets.length
+    ? policy.labCodeBindingSets.map(set=>set.bindings)
+    : [policy.labCodeBindings];
+  const pinned=bindingSets.some(bindings=>Array.isArray(bindings)&&bindings.every(b=>{
+    try{return hash(git(['show',revision+':'+b.path]))===b.sha256;}catch{return false;}
+  }));
+  demand(pinned,'MANUSCRIPT_BATCH_LAB_CODE');
 }
 export function selectManuscriptObservation(ledger,row){
   const candidates=ledger.filter(e=>e.type==='PHYSICAL_OBSERVATION'&&e.runId===row.runId);
