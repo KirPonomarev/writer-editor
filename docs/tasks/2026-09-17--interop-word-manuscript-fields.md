@@ -31,6 +31,7 @@ One bounded native manuscript fixture and journey driver, separate raw field ora
 - src/export/docx/fullManuscriptDocxReviewPacketSource.js
 - src/export/docx/docxReviewPacketBuilder.js
 - src/io/markdown/index.mjs
+- src/io/revisionBridge/reviewTransportPackageParserV2.mjs
 - src/io/revisionBridge/exactTextMinSafeWrite.mjs
 - src/main.js
 - src/io/revisionBridge/index.mjs
@@ -95,6 +96,10 @@ Composition uses the isolated real Chromium editable input path and records the 
 Styles and hierarchy require nonvacuous source fixtures, complete raw readback and mutation controls. A missing mandatory subcase keeps its field unproved. Existing simple text/order journeys and historical evidence remain unchanged. Only a directly reproduced product failure can justify a repair within the declared outcome.
 
 The native rich probe reproduced two persistence integration failures: post-Save invalidation changed the committed manifest, and accepted Word review changed the scene outside its existing WP201 commit. The fix includes invalidation in the scene/manifest transaction and injects the same main-owned publication port into the existing review recovery wrapper. Existing snapshots, journals, receipt/readback, input CAS and corruption checks remain mandatory. A stale or failed writer never acknowledges success.
+
+The native token failure also exposed Word custom-string decoding: a random signed token contained literal `_x3eCC_`, which Word converted to a Unicode character. Custom properties now escape literal Xstring sequences; both authority readers decode once before the unchanged digest and signature checks.
+
+https://learn.microsoft.com/en-us/openspecs/office_standards/ms-oi29500/d34ae755-c53f-4a44-a363-c6dd3ee018a4
 
 Technical references: Chromium Input protocol for composition and text insertion; Microsoft Open XML BasedOn and DocDefaults for style inheritance.
 https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/master/pdl/domains/Input.pdl

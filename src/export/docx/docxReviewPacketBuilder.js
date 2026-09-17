@@ -247,9 +247,12 @@ function normalizeCustomProperties(properties = []) {
 }
 
 function buildCustomPropertiesXml(properties) {
+  // Word interprets literal _xHHHH_ sequences in custom strings. Escape the
+  // leading underscore before XML encoding so opaque signed tokens survive.
+  const xstring = (value) => escapeXml(value.replace(/_(?=x[0-9a-fA-F]{4}_)/gu, '_x005F_'));
   const body = normalizeCustomProperties(properties)
     .map((property, index) => (
-      `<property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="${index + 2}" name="${escapeXml(property.name)}"><vt:lpwstr>${escapeXml(property.value)}</vt:lpwstr></property>`
+      `<property fmtid="{D5CDD505-2E9C-101B-9397-08002B2CF9AE}" pid="${index + 2}" name="${xstring(property.name)}"><vt:lpwstr>${xstring(property.value)}</vt:lpwstr></property>`
     ))
     .join('\n    ');
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

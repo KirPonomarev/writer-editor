@@ -95,3 +95,20 @@ for(const mode of ['Single','Batch'])test('Main '+mode+' review route injects pr
  await run(async(input,options)=>{assert.equal(options.publishScene,h.publish);return writeMarkdownWithTransactionRecovery(h.scenePath,'returned from Word',{...options,expectedText:'saved before Word'});},{},{});
  assert.equal((await h.save('returned from Word',8)).success,true);
 });
+
+test('Custom-property signed tokens escape Word Xstring decoding exactly once',()=>{
+ const builder=fs.readFileSync(path.join(ROOT,'src/export/docx/docxReviewPacketBuilder.js'),'utf8');
+ const fn=n=>builder.match(new RegExp('function '+n+'\\([^]*?\\n}'))[0];
+ const decoder=source.match(/function decodeDocxCustomPropertyText\([^]*?\n}/)[0];
+ const context=vm.createContext({docxReviewPreviewSessionDetailString:v=>v,normalizeString:v=>v,isPlainObjectValue:v=>v&&typeof v==='object',CUSTOM_PROPS_NS:'custom',CUSTOM_PROPS_VT_NS:'vt',escapeXml:v=>v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')});
+ vm.runInContext(fn('normalizeCustomProperties')+'\n'+fn('buildCustomPropertiesXml')+'\n'+decoder,context);
+ for(const original of ['WVJUMgF_x3eCC_token','_x005F_x3eCC_','_x0000_','a&b_x0041_<end>']){
+  const xml=context.buildCustomPropertiesXml([{name:'YRTK2_TOKEN',value:original}]);
+  const encoded=xml.match(/<vt:lpwstr>([^]*?)<\/vt:lpwstr>/)[1];
+  assert.ok(encoded.includes('_x005F_'));assert.equal(context.decodeDocxCustomPropertyText(encoded),original);
+  // Independent one-pass reference for Word's custom-string interpretation.
+  const word=encoded.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/_x([a-fA-F0-9]{4})_/g,(_,h)=>String.fromCharCode(Number('0x'+h)));
+  assert.equal(word,original);assert.notEqual(context.decodeDocxCustomPropertyText(encoded+'x'),original);
+ }
+ assert.equal(context.decodeDocxCustomPropertyText('_x005F_x0041_'),'_x0041_');
+});

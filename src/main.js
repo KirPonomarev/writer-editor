@@ -784,7 +784,8 @@ function decodeDocxCustomPropertyText(value) {
     .replace(/&gt;/gu, '>')
     .replace(/&quot;/gu, '"')
     .replace(/&apos;/gu, "'")
-    .replace(/&amp;/gu, '&');
+    .replace(/&amp;/gu, '&')
+    .replace(/_x([0-9a-fA-F]{4})_/gu, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
 
 function extractDocxCustomPropertyValue(customXml, propertyName) {

@@ -1269,17 +1269,18 @@ function base64UrlDecodeText(value) {
 }
 
 function customPropertyAuthorityCandidates(parts, budgets, cryptoPort, budgetState) {
+  const decodeXstring = (value) => value.replace(/_x([0-9a-fA-F]{4})_/gu, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
   const xml = rawString(parts['docProps/custom.xml']);
   if (!xml) return { candidates: [], reasons: [] };
   const scan = parseXmlPart('docProps/custom.xml', xml, budgets, cryptoPort, budgetState);
   const candidates = [];
   for (const token of scan.tokens.filter((item) => item.localName === 'property')) {
-    const propertyName = attr(token, 'name');
+    const propertyName = decodeXstring(attr(token, 'name'));
     if (!RTK_REVIEW_TRANSPORT_AUTHORITY_CUSTOM_PROPERTY_NAMES.includes(propertyName)) continue;
     const candidate = {
       carrier: 'customDocumentProperty',
       propertyName,
-      encoded: tokenText(xml, token),
+      encoded: decodeXstring(tokenText(xml, token)),
       sourceXmlProvenance: provenance(token),
     };
     if (
