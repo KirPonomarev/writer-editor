@@ -19,6 +19,8 @@ export function manuscriptStyleBlocks(){
   {type:'bulletList',content:[{type:'listItem',content:[paragraph('[bullet-1] First bullet item.')]},{type:'listItem',content:[paragraph('[bullet-2] Second bullet item.')]}]},
   {type:'blockquote',content:[paragraph('[quote] Authored quotation.')]},
   {type:'codeBlock',attrs:{language:''},content:[text('[code] const answer = 42;')]},
+  // Authored terminal paragraph required by the existing StarterKit TrailingNode.
+  paragraph(''),
  ];
 }
 export function manuscriptParagraphs(doc){
