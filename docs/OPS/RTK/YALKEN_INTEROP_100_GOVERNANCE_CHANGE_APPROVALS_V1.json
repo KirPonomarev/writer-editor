@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "bd16fffb14e696ee074e7906be93195718daf2d5758438a1415a4d47b35b2b01"
+      "sha256": "539765ace7754bf13b8a5eea2875f0c1d961c79233abbd61afa6ab14952dd698"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "a6bbeef46524ae63b4c413639d643c7a3ccec4df61963780a3ec1673e362d899"
+      "sha256": "d993fe96d56aa511ce9091f17012e977f1355a2f6ea78df4e464fe7382aed589"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
