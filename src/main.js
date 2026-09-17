@@ -784,7 +784,8 @@ function decodeDocxCustomPropertyText(value) {
     .replace(/&gt;/gu, '>')
     .replace(/&quot;/gu, '"')
     .replace(/&apos;/gu, "'")
-    .replace(/&amp;/gu, '&');
+    .replace(/&amp;/gu, '&')
+    .replace(/_x([0-9a-fA-F]{4})_/gu, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
 
 function extractDocxCustomPropertyValue(customXml, propertyName) {
@@ -20095,7 +20096,7 @@ async function persistBookProfileForFile(filePath, bookProfile, operationLabel =
 
 // R2.4 WP-202: old and new routing observations must agree before exactly one
 // existing WP-200 or WP-201 authority executes.
-async function commitWriterProjectSnapshot(filePath, content, revision, bookProfile, operationLabel) {
+async function commitWriterProjectSnapshot(filePath, content, revision, bookProfile, operationLabel, options = {}) {
   try {
     const prepared = await prepareBookProfileManifestForFile(filePath, bookProfile);
     const projectBound = Boolean(prepared && typeof prepared.expectedText === 'string');
@@ -20148,15 +20149,39 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
         } catch (error) {
           if (!error || error.code !== 'ENOENT') throw error;
         }
+        if (typeof options.expectedSceneContent === 'string' && expectedSceneContent !== options.expectedSceneContent) {
+          const error = new Error('PROJECT_TRANSACTION_SCENE_CAS');
+          error.code = 'E_PROJECT_TRANSACTION_SCENE_CAS';
+          throw error;
+        }
+        // Invalidation is part of the same scene/manifest commit. Publishing it
+        // after ACK would immediately invalidate the commit's manifest digest.
+        let manifestContent = prepared.nextText;
+        if (expectedSceneContent !== content && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
+          const sceneId = getProjectRelativeFilePath(filePath, prepared.manifestPath);
+          const preservation = await loadProRoundtripPreservationModule();
+          const invalidation = sceneId && typeof preservation?.applyFreeEditProDataInvalidation === 'function'
+            ? preservation.applyFreeEditProDataInvalidation(
+              JSON.parse(manifestContent), { changedSceneIds: [sceneId], deletedSceneIds: [] },
+            )
+            : null;
+          if (!invalidation || invalidation.ok !== true || !isPlainObjectValue(invalidation.manifest)) {
+            const error = new Error('PROJECT_SAVE_INVALIDATION_FAILED');
+            error.code = 'E_PROJECT_SAVE_INVALIDATION_FAILED';
+            throw error;
+          }
+          manifestContent = JSON.stringify(invalidation.manifest, null, 2);
+        }
         const authority = await getMainProjectManifestAuthority();
         const receipt = await commitProjectTransaction({
           scenePath: filePath,
           sceneContent: content,
           expectedSceneContent,
           manifestPath: prepared.manifestPath,
-          manifestContent: prepared.nextText,
+          manifestContent,
           expectedManifestContent: prepared.expectedText,
           revision,
+          verifyManifestContinuation: (request) => authority.verifyManifestContinuation({ ...request, projectId: prepared.projectId }),
           publishManifest: async ({ manifestPath, expectedText, nextText, reason }) => {
             if (manifestPath !== prepared.manifestPath) {
               const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');
@@ -20194,6 +20219,10 @@ async function recoverWriterProjectTransactionForFile(filePath) {
   return recoverProjectTransaction({
     scenePath: filePath,
     manifestPath,
+    verifyManifestContinuation: async (request) => {
+      const current = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+      return authority.verifyManifestContinuation({ ...request, projectId: normalizeStableProjectId(current.projectId) });
+    },
     publishManifest: async ({ manifestPath: targetPath, expectedText, nextText, reason }) => {
       if (targetPath !== manifestPath) {
         const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');
@@ -21071,9 +21100,10 @@ async function handleRtkNonOverlapTrackedReplacementCommandSurface(payload = {})
       },
     };
   }
-  return module.createRtkNonOverlapTrackedReplacementCommandHandler({
+  return queueDiskOperation(() => module.createRtkNonOverlapTrackedReplacementCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
-  })(payload);
+    exactWriterOptions: { publishScene: publishReviewSceneWithProjectTransaction },
+  })(payload), 'review tracked replacement project transaction');
 }
 
 let rtkMultiSceneNonOverlapTrackedReplacementModulePromise = null;
@@ -21952,6 +21982,27 @@ async function buildReviewExactTextApplyBatchInputFromMainState(request = {}) {
   };
 }
 
+async function publishReviewSceneWithProjectTransaction(filePath, content, options = {}) {
+  if (typeof options.expectedText !== 'string' || !isAllowedFilePath(filePath)
+    || !['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
+    throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
+  }
+  const binding = await resolveProjectBindingForFile(filePath);
+  if (!binding?.manifestPath || !binding.manifest?.projectId) {
+    throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
+  }
+  const receipt = await commitWriterProjectSnapshot(
+    filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
+    'review exact scene and manifest transaction', { expectedSceneContent: options.expectedText },
+  );
+  if (receipt.success !== true || receipt.projectTransaction !== true) {
+    throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
+      code: receipt.code || 'E_REVIEW_PROJECT_SCENE_SAVE_FAILED',
+    });
+  }
+  return { ok: 1, targetPath: filePath, bytesWritten: Buffer.byteLength(content, 'utf8'), safetyMode: 'strict', receipt };
+}
+
 async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWrite, input, safeWriteOptions = {}) {
   if (typeof applyExactTextMinSafeWrite !== 'function') {
     throw new Error('applyExactTextMinSafeWrite is required');
@@ -21974,7 +22025,7 @@ async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWri
           ],
         };
       }
-      return applyExactTextMinSafeWrite(input, safeWriteOptions);
+      return applyExactTextMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
     },
     'review exact text safe apply',
   );
@@ -22002,7 +22053,7 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
           ],
         };
       }
-      return applyExactTextBatchMinSafeWrite(input, safeWriteOptions);
+      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
     },
     'review exact text batch safe apply',
   );
@@ -26694,6 +26745,33 @@ async function buildImportedRomanTree(romanPath) {
   });
 }
 
+async function buildAuthoredRomanTree(romanPath, projectName) {
+  const record = await readProjectManifest(projectName);
+  const nodes = record?.manifest?.treeIdentity?.nodes || {};
+  const kinds = new Map();
+  for (const node of Object.values(nodes)) {
+    if (node?.present !== false && typeof node?.bindingKey === 'string') kinds.set(node.bindingKey, node.kind);
+  }
+  const projectRoot = path.dirname(romanPath);
+  let count = 0;
+  const visit = async (directory, depth) => {
+    if (depth > 32) throw new Error('PROJECT_TREE_DEPTH_BOUND');
+    const result = [];
+    for (const entry of await readDirectoryEntries(directory)) {
+      if (++count > 50000) throw new Error('PROJECT_TREE_NODE_BOUND');
+      if (depth === 0 && entry.name === 'Imported') continue;
+      const kind = kinds.get(toProjectTreeBindingKey(projectRoot, entry.path));
+      const folder = ['part', 'chapter-folder', 'folder'].includes(kind);
+      const file = ['scene', 'chapter-file'].includes(kind);
+      if ((!folder || !entry.isDirectory) && (!file || !entry.isFile || !entry.name.toLowerCase().endsWith('.txt'))) continue;
+      result.push(buildNode({ name: entry.baseName, label: entry.baseName, kind, nodePath: entry.path,
+        children: folder ? await visit(entry.path, depth + 1) : [] }));
+    }
+    return result;
+  };
+  return visit(romanPath, 0);
+}
+
 async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
   const romanPath = getProjectSectionPath('roman', projectName);
   const childNodes = ROMAN_SECTION_LABELS.map((label) =>
@@ -26707,6 +26785,7 @@ async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
       children: []
     })
   );
+  childNodes.push(...await buildAuthoredRomanTree(romanPath, projectName));
   const importedNode = await buildImportedRomanTree(romanPath);
   if (importedNode) {
     childNodes.push(importedNode);
@@ -29224,12 +29303,14 @@ async function runAutoSave() {
           return lifecycleSaveFailure(lifecycleSubjectId, 'SAVE_WRITE_FAILED', classify(false, null));
         }
         saveReceipt = saveResult;
-        try {
-          await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
-            operationLabel: 'autosave pro data invalidation',
-          });
-        } catch (error) {
-          logDevError('autoSave:proDataInvalidation', error);
+        if (saveResult.projectTransaction !== true) {
+          try {
+            await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
+              operationLabel: 'autosave pro data invalidation',
+            });
+          } catch (error) {
+            logDevError('autoSave:proDataInvalidation', error);
+          }
         }
       } else {
         saveReceipt = await queueDiskOperation(
@@ -29435,7 +29516,7 @@ async function handleSave() {
       'save existing project transaction'
     );
     if (saveResult.success) {
-      if (textChanged) {
+      if (textChanged && saveResult.projectTransaction !== true) {
         try {
           await persistFreeEditProDataInvalidationForFile(saveTargetPath, {
             operationLabel: 'save pro data invalidation',

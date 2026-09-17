@@ -1296,6 +1296,8 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
     });
 
     const writeResult = await writeMarkdownWithTransactionRecovery(scenePath, nextText, {
+      publishScene: options.publishScene,
+      expectedText: currentText,
       safetyMode: options.safetyMode,
       maxSnapshots: options.maxSnapshots,
       now: options.now,
@@ -1695,6 +1697,8 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
     });
 
     const writeResult = await writeMarkdownWithTransactionRecovery(scenePath, nextText, {
+      publishScene: options.publishScene,
+      expectedText: currentText,
       safetyMode: options.safetyMode,
       maxSnapshots: options.maxSnapshots,
       now: options.now,

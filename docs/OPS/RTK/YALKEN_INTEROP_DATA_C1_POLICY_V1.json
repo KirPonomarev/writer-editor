@@ -89,7 +89,18 @@
     "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
     "src/core/writer-local-profile-v1.cjs",
     "test/unit/r24-wp307-writer-local-profile.test.js",
-    "test/unit/r24-wp307-writer-local-profile-mutants.test.js"
+    "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+    "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
+    "scripts/ops/rtk-interop-word-manuscript-readback.py",
+    "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+    "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+    "test/unit/rtk-interop-word-manuscript.test.py",
+    "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
+    "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+    "src/io/markdown/index.mjs",
+    "src/core/project-transaction-v1.cjs",
+    "src/product/mainProjectManifestAuthority.mjs",
+    "test/unit/sector-m-scene-rich-truth.test.js"
   ],
   "protectedFiles": [
     {
@@ -209,7 +220,8 @@
     "dashboard/index.html",
     "test/data-c1-recipe.test.mjs",
     "test/solo-sequential.test.py",
-    "src/word-volume-text-order.mjs"
+    "src/word-volume-text-order.mjs",
+    "src/word-manuscript-fields.mjs"
   ],
   "labCodeBindings": [
     {
@@ -222,7 +234,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "1768ca3d80562f3fae9f25b66ac906da9484a88ef8ab599669b35171ff1415aa"
+      "sha256": "bde6d49141332c53120fce88c302b6a9c960ddb76dc317214389049c0de3e79c"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -255,6 +267,10 @@
     {
       "path": "src/word-volume-text-order.mjs",
       "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+    },
+    {
+      "path": "src/word-manuscript-fields.mjs",
+      "sha256": "973a1a903f48396df0e1f53c79176c8c3d80e25529c786b67dfec65b560e6b68"
     }
   ],
   "requirementIds": [
@@ -297,7 +313,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c8f35d6672e66e368903ecca3ce42be4c28a02f439bbaf1a45d6877e88e7fa00"
+        "sha256": "2c474598e0a7fe90ab2b0bd13b143b94847a4c03aab9aefafe11ac333f420e3b"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -409,11 +425,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "a5974e2e09bdbd69cea5b19be42af8d42652546ab490cc4d2ffde8fdab3d08e0"
+        "sha256": "c9137b053880dbceb7a17fc1951605671a3b34c30a74f16725a9291d9fb60fac"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "b31f99142e0846b056e4f4418cc452ea1cf9c54af93302f6d76ff2541323f1e0"
+        "sha256": "74229d0d0eed5970aca4de376824cd1c7e4eac2364526b75878193533f92ae12"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -546,6 +562,38 @@
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
         "sha256": "02f70e54f16adb7d7dc84097dff8c7557d47dbbd6b5649139f178e8ee6ad978f"
+      },
+      {
+        "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+        "sha256": "a44b505761fd4eee8d1643d23d20b1692b500d2d00ef4c1144dffeb47494f3bc"
+      },
+      {
+        "path": "test/unit/rtk-interop-word-manuscript.test.py",
+        "sha256": "90d59708e729d0532d302e477cfc91c68a8af7221f33f220527448b355f9c6a6"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
+        "sha256": "5c93239acbaab96bb91a7303e4fd0bec1f7ac1b1f89c1f805619976b5f2860e5"
+      },
+      {
+        "path": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+        "sha256": "3a72a6dfdcf7deb01a8b598bf2555b6bb48baa87fdaa6b1069a12751b7e59fc3"
+      },
+      {
+        "path": "src/io/markdown/index.mjs",
+        "sha256": "a9bef0c101d00ea350c999964756c264b3235e1060d619eec229ce439316ebdf"
+      },
+      {
+        "path": "src/core/project-transaction-v1.cjs",
+        "sha256": "fc0a94e224089562cbd9fcb101ca08e7cdb0a410f07d98a09bfc04701feed0ad"
+      },
+      {
+        "path": "src/product/mainProjectManifestAuthority.mjs",
+        "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
+      },
+      {
+        "path": "test/unit/sector-m-scene-rich-truth.test.js",
+        "sha256": "29bca52d8ccb9f361baa539eba0b6615d584b061e21daffe101178163165c602"
       }
     ],
     "followupRepair": {
@@ -602,6 +650,11 @@
       "taskId": "WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
       "bindingBaseSha": "3f0e3d92593cc897e4fc67fe466a245841c5c0f8",
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
+    },
+    "wordManuscriptBatch": {
+      "taskId": "WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "bindingBaseSha": "5ce698ae4f1378a8fe4323975a8a523e8b060aaa",
+      "scope": "Complete native manuscript field journeys on C1/C2/five-cycle C3. Repair directly reproduced Save/apply transaction integration, durable manifest succession, literal Word Xstring token escaping and missing authored tree projection. Preserve canonical authority and all corruption guards."
     }
   },
   "wordTextOrderBatch": {
@@ -719,5 +772,392 @@
       "files": 512,
       "scope": "Raw proof files only; existing product intake and IPC ceilings are unchanged."
     }
+  },
+  "wordManuscriptBatch": {
+    "schemaVersion": "WORD_MANUSCRIPT_BATCH_V1",
+    "cellIds": [
+      "TEXT__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "STYLES__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "STYLES__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "STYLES__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "TEXT__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "ORDER__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "STYLES__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "ORDER__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "STYLES__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "TEXT__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "STYLES__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "STYLES__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "TEXT__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "STYLES__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "STYLES__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "STYLES__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "STYLES__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "STYLES__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "STYLES__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "STYLES__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "STYLES__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "STYLES__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
+    ],
+    "requiredHops": {
+      "C1": [
+        "YALKEN_EXPORT",
+        "WORD_LIFECYCLE",
+        "YALKEN_RETURN_INTAKE"
+      ],
+      "C2": [
+        "YALKEN_EXPORT",
+        "WORD_LIFECYCLE",
+        "YALKEN_RETURN_INTAKE",
+        "YALKEN_APPLY",
+        "YALKEN_REEXPORT",
+        "WORD_REOPEN_READBACK"
+      ],
+      "C3": [
+        "YALKEN_EXPORT_ROUND_N",
+        "WORD_LIFECYCLE_ROUND_N",
+        "YALKEN_RETURN_INTAKE_ROUND_N",
+        "YALKEN_APPLY_ROUND_N"
+      ]
+    },
+    "requiredSubcases": {
+      "TEXT": [
+        "bodyTextReadbackIndependent",
+        "emptyParagraphsAccounted",
+        "lineBreakPolicyDeclared",
+        "paragraphBoundariesPreserved",
+        "plainTextPreserved",
+        "whitespaceEdgesPreserved"
+      ],
+      "ORDER": [
+        "blockOrderPreserved",
+        "providerTraversalStable",
+        "roundTripOrderStable",
+        "reorderDetected",
+        "sortKeysHashBound",
+        "orderDiffVisible"
+      ],
+      "UNICODE_IME_LOCALE": [
+        "unicodeNormalizationStable",
+        "bidiRunsAccounted",
+        "imeCompositionTextPreserved",
+        "localeProfileBound",
+        "fontScriptFallbackDeclared",
+        "unicodeReadbackIndependent"
+      ],
+      "STYLES": [
+        "inlineStylesAccounted",
+        "paragraphStylesAccounted",
+        "styleCascadeReadback",
+        "fontFallbackLedgered",
+        "unsupportedStylesDeclared",
+        "styleHashBound"
+      ],
+      "NOVEL_SCENE_STRUCTURE": [
+        "sceneBoundariesPreserved",
+        "chapterOrderPreserved",
+        "splitMergeDetected",
+        "projectHierarchyMapped",
+        "structureLossLedgered",
+        "sceneCountReadback"
+      ]
+    },
+    "notBeforeUtc": "2026-09-17T01:38:43.925088+00:00",
+    "readerBindings": [
+      {
+        "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+        "sha256": "8dcbddcbe2aa8b5351cef553a583f53960f98595006501f87992081ee301b8ec"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+        "sha256": "b4c1c348caafe5c2be30f5331fc149afa6dfc5ee411bb633297b3f981a85e593"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
+        "sha256": "226f233238edbda5eeeb1c155847281076c7e218020e1bd36b82ed8052e67316"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-volume-readback.py",
+        "sha256": "f8761815ad8cbd8f8bf4bba310631d488d368ca71f55688801de91f0fb890b91"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-volume-fixtures.mjs",
+        "sha256": "50b76308353c7e344e9080d02bb97e3147e30d329722ff94016276ff977cfaee"
+      },
+      {
+        "path": "scripts/ops/rtk-word-c5v2-portfolio-corpus.mjs",
+        "sha256": "70d5cd1504f1f5b7f7f0eb41d9d2ffb18e796c097076d33018fd3c164aa8864d"
+      }
+    ],
+    "paragraphHashes": {
+      "SINGLE_SCENE": {
+        "C1": [
+          {
+            "sha256": "ad6b665174fa4af66be3c5c35f63074c11c6ef6f8dc4ee6eacfb99b0157965c5",
+            "count": 15
+          }
+        ],
+        "C2": [
+          {
+            "sha256": "05f9e89a503228902b91ed543ca7889def8c3185e80926cf9e9d9d7bd852bc42",
+            "count": 34
+          },
+          {
+            "sha256": "72762bef91a30186b466949f928b69f2f005edd1563554f5b898929578697727",
+            "count": 34
+          }
+        ],
+        "C3": [
+          {
+            "sha256": "05f9e89a503228902b91ed543ca7889def8c3185e80926cf9e9d9d7bd852bc42",
+            "count": 34
+          },
+          {
+            "sha256": "72762bef91a30186b466949f928b69f2f005edd1563554f5b898929578697727",
+            "count": 34
+          },
+          {
+            "sha256": "88dcc20c6a4b489c4f6e021826e8f58731d1bba292762cb8aca8bb01b0b6c934",
+            "count": 34
+          },
+          {
+            "sha256": "b81b43683239169c9ebb1ed8fb34be01b384d1bf0922b7dcb0943bc1b0b90ecb",
+            "count": 34
+          },
+          {
+            "sha256": "a6d18ea0c7bb5cfec0c7e84d100f9797b7683d11d696a4a65f4c9218f5baee4c",
+            "count": 34
+          },
+          {
+            "sha256": "82816a50492821f0932bd02819d9ffda07f421a91c932783119514dff302983e",
+            "count": 34
+          }
+        ]
+      },
+      "MULTI_SCENE": {
+        "C1": [
+          {
+            "sha256": "a1307931a1bad67a19cf6429bf0df83eaef8ac4746427daedb026fa78502e051",
+            "count": 15
+          }
+        ],
+        "C2": [
+          {
+            "sha256": "111f5bfa3cd740daed05af46a4d60790a8bba555143f0762f13eb21757cc0965",
+            "count": 34
+          },
+          {
+            "sha256": "63c102ab6468dc03aaf3e5a2181b3736a6515a729a3ed7f632c7a7cd88274b06",
+            "count": 34
+          }
+        ],
+        "C3": [
+          {
+            "sha256": "111f5bfa3cd740daed05af46a4d60790a8bba555143f0762f13eb21757cc0965",
+            "count": 34
+          },
+          {
+            "sha256": "63c102ab6468dc03aaf3e5a2181b3736a6515a729a3ed7f632c7a7cd88274b06",
+            "count": 34
+          },
+          {
+            "sha256": "7e52520a683eb2f84163d602a2a39fb06aca745910965ff302d98e9a71529124",
+            "count": 34
+          },
+          {
+            "sha256": "a69ee227e37642f7d4d2aa90b6b32607c100a9e3e7b75334fc1a97d3f36f58c7",
+            "count": 34
+          },
+          {
+            "sha256": "7e4f3ceca69cccd15ba80607562f5ead0cc4aafc6ba905b6cf35b4162b0afe09",
+            "count": 34
+          },
+          {
+            "sha256": "b8f8a2254d214a917195e2055cbbec7d136ecbe1addbd9bedf8c419773b52094",
+            "count": 34
+          }
+        ]
+      },
+      "FULL_SYNTHETIC_NOVEL": {
+        "C1": [
+          {
+            "sha256": "732f90197f223c07aba805b52be567bd3d074edf8eab49c3c8e12412e916267e",
+            "count": 1716
+          }
+        ],
+        "C2": [
+          {
+            "sha256": "9b5f67052d47b266a4c5fb27180bff68e8f332870c200d6b57b48d3c6e48e301",
+            "count": 1735
+          },
+          {
+            "sha256": "d76d45738f03c1dc635019d85fd42c3e243434eebc5b2a1b978ede70ffb7b0e1",
+            "count": 1735
+          }
+        ],
+        "C3": [
+          {
+            "sha256": "9b5f67052d47b266a4c5fb27180bff68e8f332870c200d6b57b48d3c6e48e301",
+            "count": 1735
+          },
+          {
+            "sha256": "d76d45738f03c1dc635019d85fd42c3e243434eebc5b2a1b978ede70ffb7b0e1",
+            "count": 1735
+          },
+          {
+            "sha256": "3df6445ee25b6ba348c43b277659c5ff077c9d6314a1601f1cd51eebe913223d",
+            "count": 1735
+          },
+          {
+            "sha256": "23be2d5de3d1985c093c93f2e8275cc30eccdd5c168bba10c8540bf22da75649",
+            "count": 1735
+          },
+          {
+            "sha256": "6193a826f4a799c9b764a6c2b80357ee9630bc3b6c19f17d95f0de28b9be2890",
+            "count": 1735
+          },
+          {
+            "sha256": "b703f23914af8d3538d002aeb36ab348ef60895d892ccdb924708b9d7e5d0d3c",
+            "count": 1735
+          }
+        ]
+      },
+      "LARGE_DOCUMENT": {
+        "C1": [
+          {
+            "sha256": "f19ba10598345a9ba929c583c7bfa9bf0396a34e2e0d44f0890d5f5d8038bf84",
+            "count": 8394
+          }
+        ],
+        "C2": [
+          {
+            "sha256": "758633ac5988f0d1bd968ef229aa137391143a5013b14cd09bc0f0ac80acd708",
+            "count": 8413
+          },
+          {
+            "sha256": "7eef66f103e8159792f4af51acd8e3732ad7eba8c5de4f848ad6e276bce263ff",
+            "count": 8413
+          }
+        ],
+        "C3": [
+          {
+            "sha256": "758633ac5988f0d1bd968ef229aa137391143a5013b14cd09bc0f0ac80acd708",
+            "count": 8413
+          },
+          {
+            "sha256": "7eef66f103e8159792f4af51acd8e3732ad7eba8c5de4f848ad6e276bce263ff",
+            "count": 8413
+          },
+          {
+            "sha256": "7e143af0da794669a79d26a78a6711d7e14b40bda79eca7ad19e7cedec13644c",
+            "count": 8413
+          },
+          {
+            "sha256": "d2b593b0bc9be59d702f260105e6968f15ffa828de52958fc16d27022194e559",
+            "count": 8413
+          },
+          {
+            "sha256": "1e86b385b3807d8d1adb586362b72f45b5f5a361ad4c8df0af5a6c9e3828ec0d",
+            "count": 8413
+          },
+          {
+            "sha256": "a4f8f2cfc62d1f7110ae6a90835ed60c8aada8b3f6ffec81b88041df3b62249d",
+            "count": 8413
+          }
+        ]
+      }
+    },
+    "semanticStyleSha256": "291ebc4c981baccdcb940add69ef781e063430c98329d923583fedf59b37d693",
+    "electronVersion": "41.10.3",
+    "proofBounds": {
+      "fileBytes": 33554432,
+      "aggregateBytes": 402653184,
+      "files": 2048
+    },
+    "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
+    "scope": "C1 plain-text safe-create proves TEXT/ORDER/UNICODE; C2/C3 add declared rich styles and nonvacuous multi-scene hierarchy. C3 is exactly five Word cycles from the frozen canonical route, not the historical Lab C3 label.",
+    "limitations": [
+      "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
+      "Actual fallback fonts and Word declarations do not certify pixel identity.",
+      "Unsupported document objects reject the bounded proof; generic C1 declares metadata and bookmark loss."
+    ]
   }
 }
