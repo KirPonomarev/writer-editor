@@ -126,3 +126,16 @@ test('Actual manifest authority proves cross-scene succession and rejects an unr
  const before=await fsp.readFile(scenes[0],'utf8');await fsp.writeFile(manifestPath,JSON.stringify({projectId,n:999}));
  await assert.rejects(commit(0,7),e=>e.code==='E_PROJECT_COMMIT_CORRUPT');assert.equal(await fsp.readFile(scenes[0],'utf8'),before);
 });
+
+test('Read-only manuscript tree exposes registered part/chapter/scene hierarchy in physical order',async t=>{
+ const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manuscript-tree-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
+ const roman=path.join(root,'roman'),nodes={};
+ for(const [relative,kind] of [['01_part','part'],['01_part/01_chapter','chapter-folder'],['01_part/01_chapter/02_second.txt','scene'],['01_part/01_chapter/01_first.txt','scene']]){
+  const target=path.join(roman,relative);if(kind==='scene')await fsp.writeFile(target,'text');else await fsp.mkdir(target,{recursive:true});nodes[relative]={bindingKey:'file:roman/'+relative,kind,present:true};
+ }
+ const outside=path.join(root,'outside');await fsp.mkdir(outside);await fsp.writeFile(path.join(outside,'secret.txt'),'private');await fsp.symlink(outside,path.join(roman,'02_link'));nodes.link={bindingKey:'file:roman/02_link',kind:'part',present:true};
+ const context=vm.createContext({path,readProjectManifest:async()=>({manifest:{treeIdentity:{nodes}}}),toProjectTreeBindingKey:(base,p)=>'file:'+path.relative(base,p),buildNode:n=>n,readDirectoryEntries:async dir=>(await fsp.readdir(dir,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name)).map(e=>({name:e.name,baseName:e.name.replace(/^\d+_/,'').replace(/\.txt$/,''),path:path.join(dir,e.name),isDirectory:e.isDirectory(),isFile:e.isFile()}))});
+ vm.runInContext(source.match(/async function buildAuthoredRomanTree\([^]*?\n}/)[0],context);
+ const tree=JSON.parse(JSON.stringify(await context.buildAuthoredRomanTree(roman,'fixture')));
+ assert.equal(tree.length,1);assert.equal(tree[0].kind,'part');assert.equal(tree[0].children[0].kind,'chapter-folder');assert.deepEqual(tree[0].children[0].children.map(n=>[n.kind,n.name]),[['scene','first'],['scene','second']]);
+});

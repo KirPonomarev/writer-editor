@@ -26745,6 +26745,33 @@ async function buildImportedRomanTree(romanPath) {
   });
 }
 
+async function buildAuthoredRomanTree(romanPath, projectName) {
+  const record = await readProjectManifest(projectName);
+  const nodes = record?.manifest?.treeIdentity?.nodes || {};
+  const kinds = new Map();
+  for (const node of Object.values(nodes)) {
+    if (node?.present !== false && typeof node?.bindingKey === 'string') kinds.set(node.bindingKey, node.kind);
+  }
+  const projectRoot = path.dirname(romanPath);
+  let count = 0;
+  const visit = async (directory, depth) => {
+    if (depth > 32) throw new Error('PROJECT_TREE_DEPTH_BOUND');
+    const result = [];
+    for (const entry of await readDirectoryEntries(directory)) {
+      if (++count > 50000) throw new Error('PROJECT_TREE_NODE_BOUND');
+      if (depth === 0 && entry.name === 'Imported') continue;
+      const kind = kinds.get(toProjectTreeBindingKey(projectRoot, entry.path));
+      const folder = ['part', 'chapter-folder', 'folder'].includes(kind);
+      const file = ['scene', 'chapter-file'].includes(kind);
+      if ((!folder || !entry.isDirectory) && (!file || !entry.isFile || !entry.name.toLowerCase().endsWith('.txt'))) continue;
+      result.push(buildNode({ name: entry.baseName, label: entry.baseName, kind, nodePath: entry.path,
+        children: folder ? await visit(entry.path, depth + 1) : [] }));
+    }
+    return result;
+  };
+  return visit(romanPath, 0);
+}
+
 async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
   const romanPath = getProjectSectionPath('roman', projectName);
   const childNodes = ROMAN_SECTION_LABELS.map((label) =>
@@ -26758,6 +26785,7 @@ async function buildRomanTree(projectName = DEFAULT_PROJECT_NAME) {
       children: []
     })
   );
+  childNodes.push(...await buildAuthoredRomanTree(romanPath, projectName));
   const importedNode = await buildImportedRomanTree(romanPath);
   if (importedNode) {
     childNodes.push(importedNode);
