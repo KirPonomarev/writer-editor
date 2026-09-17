@@ -26,6 +26,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  TRACKED_REVIEW_SEMANTICS:['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
  COMMENTS:['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
  IDENTIFIERS_ANCHORS:['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
+ METADATA:['documentPropertiesAccounted','customPropertiesAccounted','authorshipPolicyDeclared','timestampPolicyDeclared','receiptIdentityBound','metadataLossLedgered'],
 });
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
@@ -99,6 +100,47 @@ export function validateManuscriptCommentProof(p,cycles,roundProofs){
   &&l.canonicalStateSha256===p.sourceStateSha256&&l.writerCalled===false
   &&same(l.missing,['open','resolved'].map(status=>({threadId:'manuscript-comment-'+status,canonicalCommentId:'manuscript-comment-'+status+'-root',code:'COMMENT_ROOT_MISSING'}))),'MANUSCRIPT_COMMENT_LOSS');
  demand(same(p.intentionalDeletionLedger,[{threadId:'manuscript-comment-deleted',status:'deleted',messageCount:2,outcome:'CANONICAL_DELETION_NOT_EXPORTED'}]),'MANUSCRIPT_COMMENT_DELETION');
+ return true;
+}
+export function validateManuscriptMetadataProof(p,cycles,roundProofs){
+ const names=['reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
+ const protectedKeys=['schemaVersion','projectId','title','createdAtUtc','creator'];
+ const publicKeys=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJECT_ID','YALKEN_PROJECT_TITLE','YALKEN_PROJECT_CREATED_AT_UTC','YALKEN_METADATA_DIGEST'];
+ demand(p?.schemaVersion==='WORD_MANUSCRIPT_METADATA_PROOF_V1'&&p.authority==='ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE'
+  &&p.policies?.authorship==='APPLICATION_CREATOR_IS_YALKEN_PROJECT_AUTHOR_NOT_INFERRED'
+  &&p.policies?.timestamps==='PROJECT_CREATED_AT_PROTECTED_MODIFIED_AT_PROVIDER_VOLATILE'
+  &&p.policies?.returnedAuthority==='ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE'
+  &&p.policies?.unknownCustomProperties==='LEDGER_ONLY_NO_AUTHORITY'
+  &&p.policies?.policyId==='CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','MANUSCRIPT_METADATA_POLICY');
+ demand(same(Object.keys(p.stages||{}).sort(),names.sort()),'MANUSCRIPT_METADATA_STAGES');
+ const expected=p.expected;
+ demand(expected&&same(Object.keys(expected.protectedProperties||{}),protectedKeys)&&expected.protectedProperties.creator==='Yalken'
+  &&expected.protectedProperties.schemaVersion==='yalken.rtk.word.document-metadata.v1'&&/^sha256:[a-f0-9]{64}$/u.test(expected.protectedDigest)
+  &&expected.protectedDigest===`sha256:${hash(stableOrderJson(expected.protectedProperties))}`
+  &&same(Object.keys(expected.publicCustomProperties||{}).sort(),publicKeys.sort()),'MANUSCRIPT_METADATA_EXPECTED');
+ for(const [name,s] of Object.entries(p.stages))demand(sha64(s.artifactSha256)&&s.protectedDigest===expected.protectedDigest
+  &&same(s.protectedProperties,expected.protectedProperties)&&same(s.publicCustomProperties,expected.publicCustomProperties)
+  &&s.createdTimestampType==='dcterms:W3CDTF'&&s.corePropertiesPresent===true&&s.customPropertiesPresent===true
+  &&same(s.duplicateCorePropertyNames,[])&&same(s.duplicateCustomPropertyNames,[])&&same(s.missingProtectedProperties,[])
+  &&same(s.unknownCustomPropertyNames,[])&&same(s.providerVolatileFields,['lastModifiedBy','modifiedAtUtc','revision'])
+  &&s.volatileCoreProperties&&typeof s.volatileCoreProperties.lastModifiedBy==='string'&&typeof s.volatileCoreProperties.modifiedAtUtc==='string'&&typeof s.volatileCoreProperties.revision==='string','MANUSCRIPT_METADATA_STAGE:'+name);
+ for(const [i,r] of roundProofs.entries())demand(p.stages['rounds/'+(i+1)+'/export'].artifactSha256===r.exportSha256
+  &&p.stages['rounds/'+(i+1)+'/word'].artifactSha256===r.returnedSha256,'MANUSCRIPT_METADATA_ROUND_BINDING');
+ demand(p.stages.reexport.artifactSha256!==''&&p.stages['final-word-lifecycle'].artifactSha256!==''
+  &&p.stages.reexport.protectedDigest===p.stages['final-word-lifecycle'].protectedDigest,'MANUSCRIPT_METADATA_REEXPORT');
+ demand(Array.isArray(p.intakeBindings)&&p.intakeBindings.length===cycles&&p.intakeBindings.every((x,i)=>x.ordinal===i+1
+  &&x.status==='VERIFIED_PROTECTED_DOCUMENT_METADATA'&&x.authority==='ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE'
+  &&x.protectedDigest===expected.protectedDigest&&same(x.protectedProperties,expected.protectedProperties)
+  &&same(x.before,x.after)&&sha64(x.manifestSha256)&&x.writerCalled===false),'MANUSCRIPT_METADATA_INTAKES');
+ const ids=['changed-title','changed-project-id','changed-created-at','missing-core-part','missing-custom-property','duplicate-protected-property','forged-signed-digest'];
+ demand(Array.isArray(p.negativeControls)&&same(p.negativeControls.map(x=>x.id),ids)&&p.negativeControls.every(x=>x.rejected===true
+  &&typeof x.code==='string'&&x.code.startsWith('RTK_RETURN_INTAKE_')&&sha64(x.mutantSha256)&&sha64(x.intakeSha256)&&sha64(x.canonicalStateSha256)
+  &&x.writerCalled===false&&same(x.before,x.after)&&Array.isArray(x.mismatches))
+  &&p.negativeControls.filter(x=>!['missing-core-part','forged-signed-digest'].includes(x.id)).every(x=>x.code==='RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH'&&x.mismatches.length>0)
+  &&new Set(p.negativeControls.map(x=>x.mutantSha256)).size===ids.length,'MANUSCRIPT_METADATA_CONTROLS');
+ demand(p.lossLedger&&same(p.lossLedger.missingProtectedProperties,[])&&same(p.lossLedger.duplicateCorePropertyNames,[])
+  &&same(p.lossLedger.duplicateCustomPropertyNames,[])&&same(p.lossLedger.unknownCustomPropertyNames,[])
+  &&same(p.lossLedger.providerVolatileFields,['lastModifiedBy','modifiedAtUtc','revision'])&&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_METADATA_LEDGER');
  return true;
 }
 export function validateGoogleManuscriptTransport(p){
@@ -208,6 +250,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
   }
   if(f.field==='COMMENTS')validateManuscriptCommentProof(f.commentProof,cycles,raw.roundProofs);
   if(f.field==='IDENTIFIERS_ANCHORS')validateManuscriptIdentifierProof(f.identifierProof,row.volume,cycles,raw.roundProofs);
+  if(f.field==='METADATA')validateManuscriptMetadataProof(f.metadataProof,cycles,raw.roundProofs);
   if(f.field==='NOVEL_SCENE_STRUCTURE'){
    const names=['source-tree','reopen-tree','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word','rounds/'+(i+1)+'/tree']).flat()];
    demand(same(Object.keys(f.structureProofs).sort(),names.sort())&&Object.entries(f.structureProofs).every(([name,p])=>name.endsWith('tree')?p.sceneCount===sceneCount&&sha64(p.hierarchySha256):sha64(p.bookmarkSha256))

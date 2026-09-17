@@ -19,6 +19,12 @@ const OFFICE_DOCUMENT_REL_NS = 'http://schemas.openxmlformats.org/officeDocument
 const CUSTOM_PROPS_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/custom-properties';
 const CUSTOM_PROPS_VT_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes';
 const CUSTOM_XML_PROPS_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/customXml';
+const CORE_PROPS_NS = 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties';
+const DC_NS = 'http://purl.org/dc/elements/1.1/';
+const DCTERMS_NS = 'http://purl.org/dc/terms/';
+const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
+const CORE_PROPS_CONTENT_TYPE = 'application/vnd.openxmlformats-package.core-properties+xml';
+const CORE_PROPS_REL_TYPE = 'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties';
 const WORD_SETTINGS_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml';
 const WORD_SETTINGS_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings';
 const WORD_NUMBERING_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml';
@@ -273,6 +279,55 @@ function normalizeCustomProperties(properties = []) {
     .filter((property) => property.name && property.value);
 }
 
+function normalizeDocumentMetadata(input) {
+  if (!isPlainObjectValue(input)) return null;
+  if (input.schemaVersion !== 'yalken.rtk.word.document-metadata.v1') {
+    throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_METADATA_SCHEMA_INVALID');
+  }
+  const core = isPlainObjectValue(input.coreProperties) ? input.coreProperties : {};
+  const coreProperties = {
+    title: normalizeString(core.title),
+    creator: normalizeString(core.creator),
+    lastModifiedBy: normalizeString(core.lastModifiedBy),
+    createdAtUtc: normalizeString(core.createdAtUtc),
+    modifiedAtUtc: normalizeString(core.modifiedAtUtc),
+    revision: normalizeString(core.revision),
+    identifier: normalizeString(core.identifier),
+  };
+  if (Object.values(coreProperties).some((value) => !value)) {
+    throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_METADATA_FIELD_REQUIRED');
+  }
+  const publicCustomProperties = normalizeCustomProperties(input.publicCustomProperties);
+  if (publicCustomProperties.length === 0) {
+    throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_METADATA_CUSTOM_PROPERTY_REQUIRED');
+  }
+  const names = publicCustomProperties.map((property) => property.name);
+  if (new Set(names).size !== names.length) {
+    throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_METADATA_CUSTOM_PROPERTY_DUPLICATE');
+  }
+  return {
+    schemaVersion: input.schemaVersion,
+    coreProperties,
+    publicCustomProperties,
+  };
+}
+
+function buildCorePropertiesXml(input) {
+  const metadata = normalizeDocumentMetadata(input);
+  if (!metadata) throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_METADATA_REQUIRED');
+  const core = metadata.coreProperties;
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="${CORE_PROPS_NS}" xmlns:dc="${DC_NS}" xmlns:dcterms="${DCTERMS_NS}" xmlns:xsi="${XSI_NS}">
+  <dc:title>${escapeXml(core.title)}</dc:title>
+  <dc:creator>${escapeXml(core.creator)}</dc:creator>
+  <cp:lastModifiedBy>${escapeXml(core.lastModifiedBy)}</cp:lastModifiedBy>
+  <dcterms:created xsi:type="dcterms:W3CDTF">${escapeXml(core.createdAtUtc)}</dcterms:created>
+  <dcterms:modified xsi:type="dcterms:W3CDTF">${escapeXml(core.modifiedAtUtc)}</dcterms:modified>
+  <cp:revision>${escapeXml(core.revision)}</cp:revision>
+  <dc:identifier>${escapeXml(core.identifier)}</dc:identifier>
+</cp:coreProperties>`;
+}
+
 function buildCustomPropertiesXml(properties) {
   // Word interprets literal _xHHHH_ sequences in custom strings. Escape the
   // leading underscore before XML encoding so opaque signed tokens survive.
@@ -319,7 +374,7 @@ function buildCustomXmlItemPropsXml() {
 </ds:datastoreItem>`;
 }
 
-function buildContentTypesXml(commentTypes = '') {
+function buildContentTypesXml(commentTypes = '', includeCoreProperties = false) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
@@ -329,15 +384,17 @@ function buildContentTypesXml(commentTypes = '') {
   <Override PartName="/word/numbering.xml" ContentType="${WORD_NUMBERING_CONTENT_TYPE}"/>
   <Override PartName="/word/styles.xml" ContentType="${WORD_STYLES_CONTENT_TYPE}"/>
   <Override PartName="/docProps/custom.xml" ContentType="application/vnd.openxmlformats-officedocument.custom-properties+xml"/>
+  ${includeCoreProperties ? `<Override PartName="/docProps/core.xml" ContentType="${CORE_PROPS_CONTENT_TYPE}"/>` : ''}
   ${commentTypes}
 </Types>`;
 }
 
-function buildRootRelsXml() {
+function buildRootRelsXml(includeCoreProperties = false) {
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="${WORD_REL_NS}">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
   <Relationship Id="rIdYrtkCustomProps" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties" Target="docProps/custom.xml"/>
+  ${includeCoreProperties ? `<Relationship Id="rIdYrtkCoreProps" Type="${CORE_PROPS_REL_TYPE}" Target="docProps/core.xml"/>` : ''}
   <Relationship Id="rIdYrtkCustomXml" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="customXml/item1.xml"/>
 </Relationships>`;
 }
@@ -516,7 +573,15 @@ function buildDocxReviewPacketBuffer(input = {}) {
   const numberingDefinitions = collectNumberingDefinitions(blocks);
   const hyperlinks = collectDocumentHyperlinks(blocks);
   const hyperlinkByHref = new Map(hyperlinks.map((entry) => [entry.href, entry.relationshipId]));
-  const customProperties = normalizeCustomProperties(input.customProperties);
+  const documentMetadata = normalizeDocumentMetadata(input.documentMetadata);
+  const customProperties = normalizeCustomProperties([
+    ...(Array.isArray(input.customProperties) ? input.customProperties : []),
+    ...(documentMetadata?.publicCustomProperties || []),
+  ]);
+  const customPropertyNames = customProperties.map((property) => property.name);
+  if (new Set(customPropertyNames).size !== customPropertyNames.length) {
+    throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_DUPLICATE');
+  }
   const comments = commentPackageParts(input.commentExport);
   if (customProperties.length === 0) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_REQUIRED');
@@ -529,13 +594,14 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   const buffer = buildStoredZip([
-    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes) },
-    { name: '_rels/.rels', data: buildRootRelsXml() },
+    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes, Boolean(documentMetadata)) },
+    { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
     { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships) },
     { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
+    ...(documentMetadata ? [{ name: 'docProps/core.xml', data: buildCorePropertiesXml(documentMetadata) }] : []),
     { name: 'docProps/custom.xml', data: buildCustomPropertiesXml(customProperties) },
     { name: 'customXml/_rels/item1.xml.rels', data: buildCustomXmlRelsXml() },
     { name: 'customXml/item1.xml', data: buildCustomXmlPayloadXml(input) },
@@ -550,7 +616,9 @@ function buildDocxReviewPacketBuffer(input = {}) {
 
 module.exports = {
   buildDocxReviewPacketBuffer,
+  buildCorePropertiesXml,
   buildSettingsXml,
+  normalizeDocumentMetadata,
   normalizeReviewPacketBlocks,
   validateDocxReviewPacketModernMode15,
   deriveWordBookmarkNameV1,

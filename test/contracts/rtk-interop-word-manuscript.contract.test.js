@@ -113,6 +113,39 @@ test('Custom-property signed tokens escape Word Xstring decoding exactly once',(
  assert.equal(context.decodeDocxCustomPropertyText('_x005F_x0041_'),'_x0041_');
 });
 
+test('Full-manuscript DOCX metadata is dual-carried, signed, parsed independently and rejects protected drift',async()=>{
+ const {buildFullManuscriptDocxReviewPacketSource,validateFullManuscriptDocumentMetadataReturn}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+ const {extractStoredZipEntries}=require('../../src/export/docx/docxArtifactValidator.js');
+ const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
+ const stable=value=>Array.isArray(value)?`[${value.map(stable).join(',')}]`:value&&typeof value==='object'?`{${Object.keys(value).sort().map(key=>`${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`:JSON.stringify(value);
+ const cryptoPort={sha256Text:value=>crypto.createHash('sha256').update(String(value||''),'utf8').digest('hex'),sha256Json(value){return 'sha256:'+this.sha256Text(stable(value));},hmacSha256Json(value,secret){return 'hmac-sha256:'+crypto.createHmac('sha256',String(secret||'')).update(stable(value),'utf8').digest('hex');},byteLength:value=>Buffer.byteLength(String(value||''),'utf8')};
+ const sourceMetadata={projectId:'project-metadata-contract',projectName:'Роман & Metadata',projectCreatedAtUtc:'2026-09-17T10:11:12Z',scenes:[{sceneId:'roman/one.txt',title:'One',text:'sentinel alpha',observableContent:'sentinel alpha',order:0}]};
+ const source=buildFullManuscriptDocxReviewPacketSource(sourceMetadata,{createdAtUtc:'2026-09-18T01:02:03Z',roundIdHex:'a'.repeat(32),keyIdHex:'b'.repeat(32),hmacSecret:'metadata-test-secret',cryptoPort});
+ const bytes=buildDocxReviewPacketBuffer(source),entries=extractStoredZipEntries(bytes);
+ assert.ok(entries.has('docProps/core.xml'));assert.match(entries.get('[Content_Types].xml').toString('utf8'),/PartName="\/docProps\/core\.xml"/u);assert.match(entries.get('_rels/.rels').toString('utf8'),/metadata\/core-properties/u);
+ const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+ assert.equal(parsed.ok,true);const metadata=parsed.reviewIr.documentMetadata,payload=parsed.authorityCarrier.selectedCarrier.payload;
+ assert.deepEqual(metadata.protectedProperties,{schemaVersion:'yalken.rtk.word.document-metadata.v1',projectId:sourceMetadata.projectId,title:sourceMetadata.projectName,createdAtUtc:'2026-09-17T10:11:12.000Z',creator:'Yalken'});
+ assert.equal(payload.documentMetadataDigest,source.documentMetadata.protectedDigest);assert.deepEqual(metadata.lossLedger.missingProtectedProperties,[]);assert.deepEqual(metadata.lossLedger.unknownCustomPropertyNames,[]);
+ const verify=value=>validateFullManuscriptDocumentMetadataReturn({expected:source.documentMetadata,returned:value,signedDigest:payload.documentMetadataDigest});
+ assert.equal(verify(metadata).ok,true);
+ const volatile=structuredClone(metadata);volatile.volatileCoreProperties={lastModifiedBy:'Native Word User',modifiedAtUtc:'2026-09-18T02:03:04Z',revision:'9'};volatile.lossLedger.unknownCustomPropertyNames=['WORD_PROVIDER_PROPERTY'];assert.equal(verify(volatile).ok,true);assert.deepEqual(verify(volatile).proof.lossLedger.unknownCustomPropertyNames,['WORD_PROVIDER_PROPERTY']);
+ const mutations=[
+  value=>value.protectedProperties.title='Changed title',
+  value=>value.protectedProperties.projectId='other-project',
+  value=>value.corePropertiesPresent=false,
+  value=>delete value.publicCustomProperties.YALKEN_PROJECT_TITLE,
+  value=>value.protectedProperties.createdAtUtc='2026-09-17T10:11:13.000Z',
+  value=>value.duplicateCustomPropertyNames=['YALKEN_PROJECT_ID'],
+ ];
+ for(const mutate of mutations){const changed=structuredClone(metadata);mutate(changed);assert.equal(verify(changed).ok,false);}
+ assert.equal(validateFullManuscriptDocumentMetadataReturn({expected:source.documentMetadata,returned:metadata,signedDigest:'sha256:'+'0'.repeat(64)}).ok,false);
+ const withUnknown=buildDocxReviewPacketBuffer({...source,customProperties:[...source.customProperties,{name:'WORD_PROVIDER_PROPERTY',value:'account me'}]});
+ const parsedUnknown=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:withUnknown},{cryptoPort});
+ assert.deepEqual(parsedUnknown.reviewIr.documentMetadata.lossLedger.unknownCustomPropertyNames,['WORD_PROVIDER_PROPERTY']);
+});
+
 test('Actual manifest authority proves cross-scene succession and rejects an unrecorded edit',async t=>{
  const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manifest-continuation-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
  const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
@@ -164,12 +197,24 @@ test('Comment admission rejects missing hops, weak controls, lost tombstones and
  assert.throws(()=>check(p,5,rounds));
 });
 
-test('Manuscript admission targets 204 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Metadata admission binds dual OOXML carriers, intake no-write state and seven corruptions',async()=>{
+ const {validateManuscriptMetadataProof:check}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const h=value=>crypto.createHash('sha256').update(value).digest('hex'),stable=value=>Array.isArray(value)?`[${value.map(stable).join(',')}]`:value&&typeof value==='object'?`{${Object.keys(value).sort().map(key=>`${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`:JSON.stringify(value),protectedProperties={schemaVersion:'yalken.rtk.word.document-metadata.v1',projectId:'project-unit',title:'Роман',createdAtUtc:'2026-09-18T01:02:03.000Z',creator:'Yalken'};
+ const protectedDigest='sha256:'+h(stable(protectedProperties)),publicCustomProperties={YALKEN_METADATA_SCHEMA:protectedProperties.schemaVersion,YALKEN_METADATA_POLICY:'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1',YALKEN_PROJECT_ID:protectedProperties.projectId,YALKEN_PROJECT_TITLE:protectedProperties.title,YALKEN_PROJECT_CREATED_AT_UTC:protectedProperties.createdAtUtc,YALKEN_METADATA_DIGEST:protectedDigest};
+ const policies={authorship:'APPLICATION_CREATOR_IS_YALKEN_PROJECT_AUTHOR_NOT_INFERRED',timestamps:'PROJECT_CREATED_AT_PROTECTED_MODIFIED_AT_PROVIDER_VOLATILE',returnedAuthority:'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',unknownCustomProperties:'LEDGER_ONLY_NO_AUTHORITY',policyId:'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1'};
+ const stage=artifactSha256=>({artifactSha256,protectedDigest,protectedProperties,publicCustomProperties,createdTimestampType:'dcterms:W3CDTF',corePropertiesPresent:true,customPropertiesPresent:true,duplicateCorePropertyNames:[],duplicateCustomPropertyNames:[],missingProtectedProperties:[],unknownCustomPropertyNames:[],providerVolatileFields:['lastModifiedBy','modifiedAtUtc','revision'],volatileCoreProperties:{lastModifiedBy:'Word User',modifiedAtUtc:'2026-09-18T02:03:04Z',revision:'9'}});
+ const exportSha=h('export'),returnedSha=h('returned'),state={sceneHashes:[h('scene')],manifestSha256:h('manifest')},ids=['changed-title','changed-project-id','changed-created-at','missing-core-part','missing-custom-property','duplicate-protected-property','forged-signed-digest'];
+ const p={schemaVersion:'WORD_MANUSCRIPT_METADATA_PROOF_V1',authority:'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',policies,expected:{protectedProperties,protectedDigest,publicCustomProperties},stages:{'rounds/1/export':stage(exportSha),'rounds/1/word':stage(returnedSha),reexport:stage(h('reexport')),'final-word-lifecycle':stage(h('final'))},intakeBindings:[{ordinal:1,status:'VERIFIED_PROTECTED_DOCUMENT_METADATA',authority:'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',protectedDigest,protectedProperties,before:[h('scene')],after:[h('scene')],manifestSha256:h('manifest'),writerCalled:false}],negativeControls:ids.map(id=>({id,rejected:true,code:['missing-core-part','forged-signed-digest'].includes(id)?'RTK_RETURN_INTAKE_PACKAGE_BLOCKED':'RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH',mismatches:['missing-core-part','forged-signed-digest'].includes(id)?[]:['protected'],mutantSha256:h('mutant-'+id),intakeSha256:h('intake-'+id),canonicalStateSha256:h('state-'+id),writerCalled:false,before:state,after:structuredClone(state)})),lossLedger:{missingProtectedProperties:[],duplicateCorePropertyNames:[],duplicateCustomPropertyNames:[],unknownCustomPropertyNames:[],providerVolatileFields:['lastModifiedBy','modifiedAtUtc','revision'],scope:'unit proof'}};
+ const rounds=[{exportSha256:exportSha,returnedSha256:returnedSha}];assert.equal(check(p,1,rounds),true);
+ for(const mutate of [x=>delete x.stages.reexport,x=>x.stages['rounds/1/word'].artifactSha256=h('wrong'),x=>x.expected.protectedProperties.title='Other',x=>x.intakeBindings[0].after=[],x=>x.negativeControls.pop(),x=>x.negativeControls[0].before.sceneHashes=[],x=>x.lossLedger.providerVolatileFields.pop()]){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,1,rounds));}
+});
+
+test('Manuscript admission targets 228 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,204);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,204);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,228);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,228);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
@@ -195,13 +240,13 @@ test('C1 review return cannot replace safe-create fields, reuse a recipe or masq
   if(route==='C1'){
    runs.push(base+'review-return-unit');
    assert.deepEqual(f.manuscriptFields(volume,route),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);
-   assert.deepEqual(f.manuscriptFields(volume,route,f.C1_REVIEW_RECIPE),[...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS']);
+   assert.deepEqual(f.manuscriptFields(volume,route,f.C1_REVIEW_RECIPE),[...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA']);
    assert.equal(f.manuscriptUsesSafeCreate(route),true);assert.equal(f.manuscriptUsesSafeCreate(route,f.C1_REVIEW_RECIPE),false);
   }else assert.throws(()=>f.buildWordManuscriptFixture(volume,route,f.C1_REVIEW_RECIPE),/MANUSCRIPT_RECIPE/);
  }
  const rows=m.validateManuscriptRuns(runs);assert.equal(rows.length,38);
  const cellIds=rows.flatMap(r=>f.manuscriptFields(r.volume,r.route,r.recipe).map(field=>`${field}__${r.volume}__${r.route}__${r.profile}`));
- assert.equal(new Set(cellIds).size,204);assert.equal(cellIds.length,204);
+ assert.equal(new Set(cellIds).size,228);assert.equal(cellIds.length,228);
  const review=rows.find(r=>r.recipe===f.C1_REVIEW_RECIPE);
  for(const bad of [[review.runId,review.runId+'repeat'],[review.runId.replace('__C1__','__C2__')]])assert.throws(()=>m.validateManuscriptRuns(bad));
  for(const recipe of ['',null,'review','DEFAULT_OTHER'])assert.throws(()=>f.manuscriptFields('SINGLE_SCENE','C1',recipe),/MANUSCRIPT_RECIPE/);

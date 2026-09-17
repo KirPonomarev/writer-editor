@@ -34,6 +34,26 @@ const W15_NS = 'http://schemas.microsoft.com/office/word/2012/wordml';
 const W16CID_NS = 'http://schemas.microsoft.com/office/word/2016/wordml/cid';
 const W16CEX_NS = 'http://schemas.microsoft.com/office/word/2018/wordml/cex';
 const W16DU_NS = 'http://schemas.microsoft.com/office/word/2023/wordml/word16du';
+const CORE_PROPS_NS = 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties';
+const DC_NS = 'http://purl.org/dc/elements/1.1/';
+const DCTERMS_NS = 'http://purl.org/dc/terms/';
+const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
+const CUSTOM_PROPS_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/custom-properties';
+const CUSTOM_PROPS_VT_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes';
+const WORD_DOCUMENT_METADATA_SCHEMA = 'yalken.rtk.word.document-metadata.v1';
+const WORD_DOCUMENT_METADATA_PUBLIC_PROPERTIES = Object.freeze([
+  'YALKEN_METADATA_SCHEMA',
+  'YALKEN_METADATA_POLICY',
+  'YALKEN_PROJECT_ID',
+  'YALKEN_PROJECT_TITLE',
+  'YALKEN_PROJECT_CREATED_AT_UTC',
+  'YALKEN_METADATA_DIGEST',
+]);
+const WORD_DOCUMENT_METADATA_AUTHORITY_PROPERTIES = Object.freeze([
+  'YRTK_C01_AUTH',
+  'YRTK2_TOKEN',
+  'YRTK_CORE_DIGEST',
+]);
 const SIGNED_SHA256_RE = /^sha256:[a-f0-9]{64}$/u;
 const HMAC_RE = /^hmac-sha256:[a-f0-9]{64}$/u;
 
@@ -49,6 +69,7 @@ const CORE_PARTS = Object.freeze([
   'word/commentsIds.xml',
   'word/people.xml',
   'docProps/custom.xml',
+  'docProps/core.xml',
 ]);
 const KNOWN_ADVISORY_PARTS = Object.freeze([
   'word/styles.xml',
@@ -56,7 +77,6 @@ const KNOWN_ADVISORY_PARTS = Object.freeze([
   'word/settings.xml',
   'word/fontTable.xml',
   'word/webSettings.xml',
-  'docProps/core.xml',
   'docProps/app.xml',
 ]);
 
@@ -1300,6 +1320,128 @@ function customPropertyAuthorityCandidates(parts, budgets, cryptoPort, budgetSta
     }
   }
   return { candidates, reasons: scan.diagnostics };
+}
+
+function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
+  const decodeXstring = (value) => rawString(value)
+    .replace(/_x([0-9a-fA-F]{4})_/gu, (_, hex) => String.fromCharCode(Number.parseInt(hex, 16)));
+  const coreXml = rawString(parts['docProps/core.xml']);
+  const customXml = rawString(parts['docProps/custom.xml']);
+  const coreScan = parseXmlPart('docProps/core.xml', coreXml, budgets, cryptoPort, budgetState);
+  const customScan = parseXmlPart('docProps/custom.xml', customXml, budgets, cryptoPort, budgetState);
+  const reasons = [...coreScan.diagnostics, ...customScan.diagnostics];
+  const coreRootValid = coreScan.tokens.some((token) => (
+    token.localName === 'coreProperties' && token.namespaceUri === CORE_PROPS_NS
+  ));
+  const customRootValid = customScan.tokens.some((token) => (
+    token.localName === 'Properties' && token.namespaceUri === CUSTOM_PROPS_NS
+  ));
+  const coreDefinitions = [
+    ['title', DC_NS, 'title'],
+    ['creator', DC_NS, 'creator'],
+    ['lastModifiedBy', CORE_PROPS_NS, 'lastModifiedBy'],
+    ['createdAtUtc', DCTERMS_NS, 'created'],
+    ['modifiedAtUtc', DCTERMS_NS, 'modified'],
+    ['revision', CORE_PROPS_NS, 'revision'],
+    ['identifier', DC_NS, 'identifier'],
+  ];
+  const coreProperties = {};
+  const duplicateCorePropertyNames = [];
+  const coreTokensByName = new Map();
+  for (const [name, namespaceUri, localName] of coreDefinitions) {
+    const tokens = coreScan.tokens.filter((token) => (
+      token.namespaceUri === namespaceUri && token.localName === localName
+    )).sort((left, right) => left.openStart - right.openStart);
+    coreTokensByName.set(name, tokens);
+    coreProperties[name] = tokens.length === 1 ? tokenText(coreXml, tokens[0]) : '';
+    if (tokens.length > 1) duplicateCorePropertyNames.push(name);
+  }
+  const customRows = [];
+  for (const token of customScan.tokens.filter((item) => (
+    item.localName === 'property' && item.namespaceUri === CUSTOM_PROPS_NS
+  ))) {
+    const name = decodeXstring(attr(token, 'name'));
+    const values = customScan.tokens.filter((item) => (
+      item.openStart > token.openStart
+      && item.closeEnd <= token.closeStart
+      && item.namespaceUri === CUSTOM_PROPS_VT_NS
+      && item.localName === 'lpwstr'
+    ));
+    customRows.push({
+      name,
+      value: values.length === 1 ? decodeXstring(tokenText(customXml, values[0])) : '',
+      valueType: values.length === 1 ? 'lpwstr' : '',
+      sourceXmlProvenance: provenance(token),
+    });
+  }
+  const customCounts = new Map();
+  for (const row of customRows) customCounts.set(row.name, (customCounts.get(row.name) || 0) + 1);
+  const duplicateCustomPropertyNames = [...customCounts.entries()]
+    .filter(([, count]) => count > 1)
+    .map(([name]) => name)
+    .sort();
+  const publicCustomProperties = {};
+  for (const name of WORD_DOCUMENT_METADATA_PUBLIC_PROPERTIES) {
+    const rows = customRows.filter((row) => row.name === name);
+    publicCustomProperties[name] = rows.length === 1 ? rows[0].value : '';
+  }
+  const authorityPropertyNamesPresent = WORD_DOCUMENT_METADATA_AUTHORITY_PROPERTIES
+    .filter((name) => customRows.some((row) => row.name === name));
+  const knownNames = new Set([
+    ...WORD_DOCUMENT_METADATA_PUBLIC_PROPERTIES,
+    ...WORD_DOCUMENT_METADATA_AUTHORITY_PROPERTIES,
+  ]);
+  const unknownCustomPropertyNames = [...new Set(customRows.map((row) => row.name)
+    .filter((name) => name && !knownNames.has(name)))].sort();
+  const protectedProperties = {
+    schemaVersion: publicCustomProperties.YALKEN_METADATA_SCHEMA,
+    projectId: coreProperties.identifier,
+    title: coreProperties.title,
+    createdAtUtc: coreProperties.createdAtUtc,
+    creator: coreProperties.creator,
+  };
+  const protectedDigest = cryptoPort.sha256Json(protectedProperties);
+  const createdToken = coreTokensByName.get('createdAtUtc')?.[0];
+  const modifiedToken = coreTokensByName.get('modifiedAtUtc')?.[0];
+  const missingProtectedProperties = Object.entries(protectedProperties)
+    .filter(([, value]) => !rawString(value))
+    .map(([name]) => name)
+    .sort();
+  return {
+    metadata: {
+      schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
+      authority: 'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',
+      corePropertiesPresent: Boolean(coreXml),
+      corePropertiesRootValid: coreRootValid,
+      customPropertiesPresent: Boolean(customXml),
+      customPropertiesRootValid: customRootValid,
+      protectedProperties,
+      protectedDigest,
+      publicCustomProperties,
+      authorityPropertyNamesPresent,
+      createdTimestampType: attr(createdToken, 'type', XSI_NS),
+      modifiedTimestampType: attr(modifiedToken, 'type', XSI_NS),
+      volatileCoreProperties: {
+        lastModifiedBy: coreProperties.lastModifiedBy,
+        modifiedAtUtc: coreProperties.modifiedAtUtc,
+        revision: coreProperties.revision,
+      },
+      duplicateCorePropertyNames,
+      duplicateCustomPropertyNames,
+      lossLedger: {
+        missingProtectedProperties,
+        duplicateCorePropertyNames,
+        duplicateCustomPropertyNames,
+        unknownCustomPropertyNames,
+        providerVolatileFields: ['lastModifiedBy', 'modifiedAtUtc', 'revision'],
+        customPropertyValueTypesAccounted: customRows.map((row) => ({
+          name: row.name,
+          valueType: row.valueType,
+        })),
+      },
+    },
+    reasons,
+  };
 }
 
 function isFullManuscriptAuthorityPayload(payload, expected = {}) {
@@ -2988,6 +3130,7 @@ function emptyReviewIr(diagnostics = []) {
     comments: [],
     formattingDeltas: [],
     formattingParagraphs: [],
+    documentMetadata: null,
     opaqueUnsupported: [],
     changes: [],
     diagnostics,
@@ -3053,6 +3196,9 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   reasons.push(...relationships.reasons, ...contentTypes.reasons);
   const authorityCarrier = analyzeAuthorityCarriers(input, parts, budgets, cryptoPort, budgetState);
   reasons.push(...authorityCarrier.reasons);
+  const documentMetadataResult = parseDocumentMetadata(parts, budgets, cryptoPort, budgetState);
+  reasons.push(...documentMetadataResult.reasons);
+  const documentMetadata = documentMetadataResult.metadata;
 
   const documentXml = rawString(parts['word/document.xml']);
   const documentScan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
@@ -3140,6 +3286,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   }
   const comments = parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort, budgetState, textRevisions);
   reasons.push(...comments.reasons);
+  admitWorkerOutput(budgetState, reasons, 'reviewIr.documentMetadata', documentMetadata);
   const semanticBudgetBlocked = blockingReason(reasons);
   if (semanticBudgetBlocked) {
     return {
@@ -3188,6 +3335,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     comments: comments.commentThreads,
     formattingDeltas,
     formattingParagraphs,
+    documentMetadata,
     opaqueUnsupported,
     authorityCarrier,
     commentGraphCapability,
@@ -3232,6 +3380,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       'comment-thread-graph',
       'formatting-delta-lane',
       'formatting-paragraph-projection-lane',
+      'document-metadata-projection-lane',
       'opaque-unsupported-lane',
       'hostile-package-gate',
       'custom-document-property-authority-carrier',
@@ -3310,6 +3459,14 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     formattingParagraphsDigest: cryptoPort.sha256Json(
       formattingParagraphsSemanticProjection(formattingParagraphs),
     ),
+    documentMetadata: {
+      schemaVersion: documentMetadata.schemaVersion,
+      protectedProperties: documentMetadata.protectedProperties,
+      protectedDigest: documentMetadata.protectedDigest,
+      publicCustomProperties: documentMetadata.publicCustomProperties,
+      volatileCoreProperties: documentMetadata.volatileCoreProperties,
+      lossLedger: documentMetadata.lossLedger,
+    },
     opaqueUnsupported: opaqueUnsupported.map((item) => ({
       partName: item.partName,
       elementName: item.elementName,

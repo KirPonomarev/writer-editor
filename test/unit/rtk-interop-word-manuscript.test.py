@@ -29,12 +29,22 @@ def identifier_archive():
     atom(p,'.')
    p.insert(0,ET.Element(m.W+'bookmarkStart',{m.W+'id':str(offset),m.W+'name':name}));p.append(ET.Element(m.W+'bookmarkEnd',{m.W+'id':str(offset)}));offset+=1
  parts={'word/_rels/document.xml.rels':ET.tostring(rels)};return archive(ET.tostring(d),parts),ids,docs
+def metadata_parts():
+ protected={'schemaVersion':'yalken.rtk.word.document-metadata.v1','projectId':'project-unit','title':'Роман & metadata','createdAtUtc':'2026-09-18T01:02:03.000Z','creator':'Yalken'};sha='sha256:'+m.digest(m.canonical(protected))
+ core=ET.Element(m.CORE+'coreProperties');values=[(m.DC+'title',protected['title']),(m.DC+'creator','Yalken'),(m.CORE+'lastModifiedBy','Word User'),(m.DCTERMS+'created',protected['createdAtUtc']),(m.DCTERMS+'modified','2026-09-18T02:03:04Z'),(m.CORE+'revision','9'),(m.DC+'identifier',protected['projectId'])]
+ for tag,value in values:
+  n=ET.SubElement(core,tag);n.text=value
+  if tag in [m.DCTERMS+'created',m.DCTERMS+'modified']:n.set(m.XSI+'type','dcterms:W3CDTF')
+ custom=ET.Element(m.CUSTOM+'Properties');props={'YALKEN_METADATA_SCHEMA':protected['schemaVersion'],'YALKEN_METADATA_POLICY':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','YALKEN_PROJECT_ID':protected['projectId'],'YALKEN_PROJECT_TITLE':protected['title'],'YALKEN_PROJECT_CREATED_AT_UTC':protected['createdAtUtc'],'YALKEN_METADATA_DIGEST':sha,'YRTK_C01_AUTH':'token','YRTK2_TOKEN':'token2','YRTK_CORE_DIGEST':'sha256:'+'f'*64}
+ for i,(name,value) in enumerate(props.items(),2):
+  p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
+ return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
 class ManuscriptOracle(unittest.TestCase):
  def test_c1_review_recipe_has_disjoint_credit_and_independent_rich_expectations(self):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')
    self.assertEqual(default,['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);self.assertFalse(set(default)&set(review))
-   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS'])
+   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA'])
    source=m.expected_docs(volume,'C1',recipe='C1_REVIEW_RETURN');returned=m.expected_docs(volume,'C1',1,'C1_REVIEW_RETURN')
    self.assertIn('[links] reference / reference / reference.',m.paragraphs(source[0]))
    self.assertNotIn('[links] reference / reference / reference.',m.paragraphs(m.expected_docs(volume,'C1')[0]))
@@ -47,6 +57,16 @@ class ManuscriptOracle(unittest.TestCase):
   self.assertEqual(m.decode_locator_store(encoded,m.digest(data),len(data)),data)
   for archive,sha,length in [(encoded,'0'*64,len(data)),(encoded,m.digest(data),len(data)-1),(encoded,m.digest(data),len(data)+1),(encoded,m.digest(data),128*1024*1024+1),(encoded[:-3],m.digest(data),len(data)),(encoded+encoded,m.digest(data),len(data)),(encoded,m.digest(data),True)]:
    with self.assertRaises((ValueError,OSError,EOFError)):m.decode_locator_store(archive,sha,length)
+ def test_metadata_oracle_reads_dual_carriers_and_ledgers_provider_changes(self):
+  parts,protected,sha=metadata_parts();proof=m.metadata_doc(parts,b'fixture')
+  self.assertEqual(proof['protectedProperties'],protected);self.assertEqual(proof['protectedDigest'],sha);self.assertEqual(proof['createdTimestampType'],'dcterms:W3CDTF')
+  self.assertEqual(proof['volatileCoreProperties'],{'lastModifiedBy':'Word User','modifiedAtUtc':'2026-09-18T02:03:04Z','revision':'9'})
+  self.assertEqual(proof['missingProtectedProperties'],[]);self.assertEqual(proof['unknownCustomPropertyNames'],[])
+  custom=ET.fromstring(parts['docProps/custom.xml']);p=ET.SubElement(custom,m.CUSTOM+'property',name='WORD_PROVIDER_PROPERTY',pid='99');ET.SubElement(p,m.VT+'lpwstr').text='visible'
+  changed=m.metadata_doc({**parts,'docProps/custom.xml':ET.tostring(custom)},b'changed');self.assertEqual(changed['protectedDigest'],sha);self.assertEqual(changed['unknownCustomPropertyNames'],['WORD_PROVIDER_PROPERTY'])
+  custom.append(copy.deepcopy(next(p for p in custom if p.get('name')=='YALKEN_PROJECT_ID')))
+  duplicate=m.metadata_doc({**parts,'docProps/custom.xml':ET.tostring(custom)},b'duplicate');self.assertEqual(duplicate['duplicateCustomPropertyNames'],['YALKEN_PROJECT_ID']);self.assertEqual(duplicate['publicCustomProperties']['YALKEN_PROJECT_ID'],'')
+  with self.assertRaisesRegex(ValueError,'METADATA_PARTS'):m.metadata_doc({'docProps/custom.xml':parts['docProps/custom.xml']},b'missing')
  def test_word_split_uri_fragment_preserves_full_target_and_rejects_fragment_loss(self):
   data,ids,docs=identifier_archive();_,parts,d=m.docx(data);rels=ET.fromstring(parts['word/_rels/document.xml.rels'])
   by_id={r.get('Id'):r for r in rels}
