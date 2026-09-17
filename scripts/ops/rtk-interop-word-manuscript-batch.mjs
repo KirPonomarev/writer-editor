@@ -23,6 +23,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  UNICODE_IME_LOCALE:['unicodeNormalizationStable','bidiRunsAccounted','imeCompositionTextPreserved','localeProfileBound','fontScriptFallbackDeclared','unicodeReadbackIndependent'],
  STYLES:['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  NOVEL_SCENE_STRUCTURE:['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
+ TRACKED_REVIEW_SEMANTICS:['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
 });
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
@@ -125,6 +126,23 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
     &&controls(g.negativeControls,['wrong-source-binding','non-native-mime','mixed-document-id','changed-revision','missing-cleanup','missing-tab','coherent-native-text-loss','returned-byte-substitution'])
     &&same(g.unclaimedFieldLedger?.notAdmitted,['STYLES','NOVEL_SCENE_STRUCTURE','IDENTIFIERS_ANCHORS'])&&Array.isArray(g.unclaimedFieldLedger.headingChanges)&&sha64(g.unclaimedFieldLedger.sourceBookmarkNamesSha256)&&sha64(g.unclaimedFieldLedger.returnedBookmarkNamesSha256),'MANUSCRIPT_GOOGLE_PROVIDER_BINDING');
   }else demand(u.providerLocale?.locale&&u.providerLocale?.languages&&!f.googleProof,'MANUSCRIPT_WORD_PROVIDER_LOCALE');
+  if(f.field==='TRACKED_REVIEW_SEMANTICS'){
+   const p=f.trackedReviewProof,b=p?.propertyProbe;
+   const noWrite=r=>r&&same(r.canonicalBefore,r.canonicalAfter)&&r.authority==='ADVISORY_ONLY'&&sha64(r.metadataSha256);
+   const revision=r=>typeof r.nativeRevisionId==='string'&&/^\d+$/u.test(r.nativeRevisionId)&&typeof r.author==='string'&&r.author.trim().length>0&&r.author.length<=1024
+    &&[r.date,r.dateUtc].every(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/u.test(x));
+   const text=(r,n)=>Array.isArray(r.textRevisions)&&r.textRevisions.length===2&&same(r.textRevisions.map(x=>x.operation).sort(),['delete','insert'])
+    &&r.textRevisions.every(x=>revision(x)&&x.classification==='TEXT_MANUAL'&&x.reasonCode==='RTK_MANUAL_DEGRADED_LOCATOR'&&x.text===(x.operation==='insert'?'sentinel round'+n:n===1?'sentinel alpha':'sentinel round'+(n-1)));
+   demand(p&&same(p.lostRevisionFootprints,[])&&p.unappliedPropertyPolicy==='VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED'
+    &&p.timestampPolicy==='LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'&&p.rounds?.length===cycles,'MANUSCRIPT_REVIEW_SCOPE');
+   for(const [i,r] of p.rounds.entries())demand(r.ordinal===i+1&&r.returnedSha256===raw.roundProofs[i].returnedSha256&&noWrite(r)&&text(r,i+1)&&same(r.propertyRevisions,[])&&same(r.manualOnlyReasonCodes,[])
+    &&Array.isArray(r.canonicalBefore)&&r.canonicalBefore.length===sceneCount&&r.canonicalBefore.every(sha64),'MANUSCRIPT_REVIEW_ROUND');
+   demand(noWrite(b)&&text(b,1)&&b.sourceSha256===raw.roundProofs[0].exportSha256&&sha64(b.returnedSha256)&&b.returnedSha256!==raw.roundProofs[0].returnedSha256
+    &&b.roundId===raw.roundProofs[0].roundId&&b.exportId===raw.roundProofs[0].exportId&&same(b.manualOnlyReasonCodes,['RTK_BLOCKED_STRUCTURAL'])
+    &&b.propertyRevisions?.length===1&&revision(b.propertyRevisions[0])&&b.propertyRevisions[0].propertyKind==='rPrChange'&&b.propertyRevisions[0].classification==='MANUAL_REVIEW'&&b.propertyRevisions[0].reasonCode==='RTK_BLOCKED_STRUCTURAL'
+    &&same(b.canonicalBefore.sceneHashes,p.rounds[0].canonicalBefore)&&sha64(b.canonicalBefore.manifestSha256)&&b.canonicalBefore.commentStateSha256===null
+    &&controls(b.negativeControls,['missing-insert','missing-delete','missing-property','changed-author','changed-legacy-date','changed-utc-date','wrong-utc-namespace','missing-current-format','wrong-property-kind','missing-manual-reason','granted-write','silent-canonical-apply']),'MANUSCRIPT_REVIEW_PROPERTY_SUBCASE');
+  }
   if(f.field==='STYLES'){
    const names=Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat().concat(['reexport','final-word-lifecycle']);
    demand(same(Object.keys(f.styleProofs).sort(),names.sort())&&Object.values(f.styleProofs).every(p=>p.semanticStyleSha256===batch.semanticStyleSha256&&sha64(p.stylePartsSha256['word/styles.xml'])&&sha64(p.stylePartsSha256['word/numbering.xml']))&&f.unsupportedStylesDeclared,'MANUSCRIPT_STYLE_CONTINUITY');

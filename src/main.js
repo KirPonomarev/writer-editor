@@ -8115,6 +8115,21 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
     : {};
   const payload = isPlainObjectValue(selectedCarrier.payload) ? selectedCarrier.payload : {};
   const reviewIr = isPlainObjectValue(parserResult.reviewIr) ? parserResult.reviewIr : {};
+  // Preserve review authorship and both Word timestamp carriers as literal
+  // advisory data. Never spread parsed objects or expose locator secrets/paths.
+  const revisionMetadata = (items, property) => (Array.isArray(items) ? items : []).map((item) => {
+    const value = isPlainObjectValue(item) ? item : {};
+    const string = (key) => typeof value[key] === 'string' ? value[key] : '';
+    return {
+      nativeRevisionId: string('nativeRevisionId'),
+      author: string('author'),
+      date: string('date'),
+      dateUtc: string('dateUtc'),
+      ...(property ? { propertyKind: string('propertyKind') } : { operation: string('operation'), text: string('text') }),
+      classification: string('classification'),
+      reasonCode: string('reasonCode'),
+    };
+  });
   return {
     schemaVersion: 'yalken.rtk.word.return-intake.v2.product-gate-result.v1',
     status: docxReviewPreviewSessionDetailString(intake.status),
@@ -8128,6 +8143,13 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
     semanticReturnId: docxReviewPreviewSessionDetailString(payload.semanticReturnId),
     sceneId: docxReviewPreviewSessionDetailString(payload.sceneId),
     sourceMode: docxReviewPreviewSessionDetailString(parserResult.sourceMode),
+    reviewMetadata: {
+      sourceArtifactSha256: docxReviewPreviewSessionDetailString(intake.returnedArtifactSha256),
+      authority: 'ADVISORY_ONLY',
+      timestampPolicy: 'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION',
+      textRevisions: revisionMetadata(reviewIr.textRevisions, false),
+      propertyRevisions: revisionMetadata(reviewIr.propertyRevisions, true),
+    },
     counts: {
       textRevisions: Array.isArray(reviewIr.textRevisions) ? reviewIr.textRevisions.length : 0,
       moveRevisions: Array.isArray(reviewIr.moveRevisions) ? reviewIr.moveRevisions.length : 0,

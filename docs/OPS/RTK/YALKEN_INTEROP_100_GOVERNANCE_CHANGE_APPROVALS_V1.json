@@ -86,16 +86,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "74229d0d0eed5970aca4de376824cd1c7e4eac2364526b75878193533f92ae12"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "8341ede2bd14b52c5fca26c9663333891efa5f75829140b2ecb92f530516d7f6"
     },
     {
       "approved": true,
@@ -237,29 +237,29 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-11T03:05:00Z",
-      "approvedBy": "owner-directive:R24_EMBEDDED_FONT_ADMISSION_2026_09_11 | owner-directive:YALKEN_R2_4_FULL_PORTABILITY_WORD_GOOGLE_DOCS_SUPERVISOR_RESUME_2026_09_11",
-      "authority": "SUPERVISOR_DIRECTIVE_R24_EMBEDDED_FONT_ADMISSION_AUTONOMOUS_DELIVERY",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "rationale": "Approve exact bounded embedded-font DOCX admission bytes: legitimate Microsoft Word word/fonts/*.odttf package parts are classified as metadata-only font diagnostics so zero-write DOCX import preview can proceed with explicit embedded-font loss items, while unknown font-like parts remain quarantined by hostile ZIP intake. No font rendering or preservation claim, no project write/apply authority, no UI, dependency, runtime network, direct Google API/OAuth, full 1120-cell denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "ffb088b3554fcddb9cdc6a780dc42dd6db7cda44e422e2df12d3395b2663f721"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "8fbe38a4800c98ef4031ff680851d66c23cb8cf42c8ef66f53bc62a039bc908f"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "1d3421d4eb744c4b78707e238a19f8f4890dad25024f1cf9b1f1cf66b155b39b"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "f1396221dd1954332f787c376d88d635f60e50e22891df0a5c0d613483fdf243"
     },
     {
       "approved": true,
@@ -334,12 +334,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
-      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "88b41ea7d9d0178242b71c1876c7b377a8128ecf92e3487df8efa75cf1983a5c"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "c474d07779592a4da9e8d7ab380ef177c4e64fdcf0120ce9dd2803f9676233eb"
     },
     {
       "approved": true,
@@ -442,18 +442,6 @@
       "filePath": "test/unit/sector-m-preload-workspace-query-bridge.test.js",
       "rationale": "Secondary registry current-byte hygiene for the owner-approved C1 admission repair. This artifact is unchanged from the clean already-delivered f4a7d654 base; bind its existing bytes so the strict registry can validate. No additional source change, provider action, cell evidence, or portability claim is authorized by this metadata repair.",
       "sha256": "aa655f9a71b754a215c797cbf3f67a5793b43fa13785b9a0632bd554374ceb42"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
-      ],
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "e8282bd334389056020256b27a20a87af89f328c015c99284a88dac71c63d910"
     },
     {
       "approved": true,
@@ -668,11 +656,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "583b029d74eb422dc6d4a54e17965108c5d2b9ff7c879acf20017853c86035d8"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "2093a16fb44e48808321fbaf33efd2a92cd3a357b090de9987c96debc4b3b7b3"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +674,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "90c565907fbfaf40007a61525f0a61b8c31d2cf7cfa9254ff26488179689e37a"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "db3a31d7b78e2ed898a0fe7b825ab4e32d149aab4b9e2f8c3986331e586236fe"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1199,20 +1187,20 @@
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "bf725ee084e69f3e6eae098052fdcdc9bcd46bdd2457895151ca1607fbee6dd2"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "0395e3f0bfdbeceb79b4b5b21e542997cacf3ddd7ea38dd778759f3ba06a5f97"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "16f325da9bfef12751c9245f34a54c1c85a551e6d1dae2503c3ad4e758552841"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "103b8aad134d66734c014b31a07b7390565e5e8f9cb13c58069f1265684ad846"
     },
     {
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1253,29 +1241,29 @@
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "1069b3ec38d082c771fd839adc29826ef9b0fe7edf69e96ee7f744dddcb04121"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "2e32972371fa7aef3ddb776db39f33a0ce227828f8c287c9491380833e75aa3a"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "9c69efa813218dfc680b00607f6591e62139a3206ce6a9cc2b619ec835bea019"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "999ec74698d8e53800561147648070027997e24f2897c365d2a94db37c531f03"
     },
     {
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T08:30:04.086250+00:00",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "554781e7344034eb66c88bd931b96d9c878717f2fbb029a1c2c9d1132d451fa2"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "7bc7e6888092fb2a9ddea6a2f5a2299b3052f69d0c114a5b0f77e50bebac8cad"
     },
     {
       "filePath": "test/unit/sector-m-scene-rich-truth.test.js",
@@ -1321,6 +1309,27 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C5 Google native proof retains all C1/C2/C3 native predicates and adds complete native-body, ID/revision, raw returned-file and exact-created-ID cleanup checks. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
       "sha256": "3ff4078b43220e918951cd0561085db2d1c3ec3097ef1e3975c4af96549ed292"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-17--word-review-semantics.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "0833f12d6c42583d9e93d3f4b1ac6c3bf5ffe4caf41c1771843287bad5b77dfc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
+      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
+      ],
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "11c6eedb3038d03dc7316f4858669d9623a3dee653f7a9f18e40a3b2ec7e13ea"
     }
   ],
   "evidenceStampIds": [

@@ -105,7 +105,9 @@
     "docs/tasks/2026-09-17--c1-word-block-styles.md",
     "src/export/docx/docxBlockStyles.js",
     "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
-    "docs/tasks/2026-09-17--c5-google-native-manuscript.md"
+    "docs/tasks/2026-09-17--c5-google-native-manuscript.md",
+    "docs/tasks/2026-09-17--word-review-semantics.md",
+    "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -239,7 +241,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "4cb2b4989bbbe31466d85db9ed90f95bf2a6f9cc8b75feae037ff43dd92a12a3"
+      "sha256": "993b0c760b20ea08efab0d78b5b4eb115baf9a80ac774291257de7dec3a8eae3"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -275,7 +277,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "98278e67c145f5965c0879963fc1588a7a9bb7adcae0795c6356da321847da61"
+      "sha256": "d8610b7df0886afc89099105c054b2f891fd23ede8080266a7c68d83c1c490e3"
     }
   ],
   "requirementIds": [
@@ -318,7 +320,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "88b41ea7d9d0178242b71c1876c7b377a8128ecf92e3487df8efa75cf1983a5c"
+        "sha256": "c474d07779592a4da9e8d7ab380ef177c4e64fdcf0120ce9dd2803f9676233eb"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -434,7 +436,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "74229d0d0eed5970aca4de376824cd1c7e4eac2364526b75878193533f92ae12"
+        "sha256": "8341ede2bd14b52c5fca26c9663333891efa5f75829140b2ecb92f530516d7f6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -570,11 +572,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "1069b3ec38d082c771fd839adc29826ef9b0fe7edf69e96ee7f744dddcb04121"
+        "sha256": "2e32972371fa7aef3ddb776db39f33a0ce227828f8c287c9491380833e75aa3a"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "554781e7344034eb66c88bd931b96d9c878717f2fbb029a1c2c9d1132d451fa2"
+        "sha256": "7bc7e6888092fb2a9ddea6a2f5a2299b3052f69d0c114a5b0f77e50bebac8cad"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -615,6 +617,14 @@
       {
         "path": "docs/tasks/2026-09-17--c5-google-native-manuscript.md",
         "sha256": "3ff4078b43220e918951cd0561085db2d1c3ec3097ef1e3975c4af96549ed292"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--word-review-semantics.md",
+        "sha256": "0833f12d6c42583d9e93d3f4b1ac6c3bf5ffe4caf41c1771843287bad5b77dfc"
+      },
+      {
+        "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+        "sha256": "8fbe38a4800c98ef4031ff680851d66c23cb8cf42c8ef66f53bc62a039bc908f"
       }
     ],
     "followupRepair": {
@@ -673,9 +683,9 @@
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     },
     "wordManuscriptBatch": {
-      "taskId": "C5_GOOGLE_NATIVE_MANUSCRIPT_20260917",
-      "bindingBaseSha": "96af7e5cb7e756e6203f5866f218db751df71c2b",
-      "scope": "Complete C5 native Google conversion, durable canonical return and independent text/order/Unicode proof. Preserve all 108 Word predicates; current direct transport is separately versioned from immutable historical staging qualification. No denominator-axis change or evidence-created mutation authority."
+      "taskId": "WORD_REVIEW_SEMANTICS_20260917",
+      "bindingBaseSha": "de1a662d0804c5afa50cc4af9efd91bf32deaa6f",
+      "scope": "Complete tracked-review insert/delete, property semantics, metadata and no-silent-apply proof through native Word and canonical product commands. All 126 previous predicates remain mandatory; no denominator or authority change."
     }
   },
   "wordTextOrderBatch": {
@@ -809,18 +819,22 @@
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "STYLES__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "STYLES__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "STYLES__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C5__SOURCE_RUNTIME",
@@ -840,21 +854,25 @@
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "STYLES__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "STYLES__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "STYLES__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C5__SOURCE_RUNTIME",
@@ -874,21 +892,25 @@
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
@@ -908,21 +930,25 @@
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "STYLES__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "STYLES__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "STYLES__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "STYLES__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
-      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
     ],
     "requiredHops": {
       "C1": [
@@ -991,21 +1017,29 @@
         "projectHierarchyMapped",
         "structureLossLedgered",
         "sceneCountReadback"
+      ],
+      "TRACKED_REVIEW_SEMANTICS": [
+        "trackedInsertDetected",
+        "trackedDeleteDetected",
+        "moveOrPropertyChangeTyped",
+        "reviewAuthorMetadataAccounted",
+        "noSilentApplyProof",
+        "manualOnlyReasonsLedgered"
       ]
     },
-    "notBeforeUtc": "2026-09-17T08:30:04.086250+00:00",
+    "notBeforeUtc": "2026-09-17T10:19:30.010313+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "9c69efa813218dfc680b00607f6591e62139a3206ce6a9cc2b619ec835bea019"
+        "sha256": "999ec74698d8e53800561147648070027997e24f2897c365d2a94db37c531f03"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "16f325da9bfef12751c9245f34a54c1c85a551e6d1dae2503c3ad4e758552841"
+        "sha256": "103b8aad134d66734c014b31a07b7390565e5e8f9cb13c58069f1265684ad846"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "bf725ee084e69f3e6eae098052fdcdc9bcd46bdd2457895151ca1607fbee6dd2"
+        "sha256": "0395e3f0bfdbeceb79b4b5b21e542997cacf3ddd7ea38dd778759f3ba06a5f97"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -1224,11 +1258,12 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "C5 adds real Google native conversion and durable safe-create for TEXT/ORDER/UNICODE in three supported volumes; no C5 style, hierarchy or identifier admission. C1 safe-create preserves the fixed rich style corpus through save, fresh reopen and current-document re-export to Word. All three routes prove TEXT/ORDER/UNICODE/STYLES; C2/C3 retain nonvacuous multi-scene hierarchy. C3 is exactly five actual Word cycles.",
+    "scope": "C2/C3 add complete tracked-review insertion/deletion and native property classification, literal author/Word-date/UTC metadata, explicit apply and durable return. The property subcase remains visibly manual-only with retained raw bytes and no canonical mutation. All 126 prior Word and Google predicates remain mandatory. No comment, general metadata or broad-formatting admission.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",
-      "Unsupported document objects reject the bounded proof; generic C1 declares metadata and bookmark loss."
+      "Unsupported document objects reject the bounded proof; generic C1 declares metadata and bookmark loss.",
+      "Tracked property changes are explicitly classified and preserved as manual-review information; this does not claim automatic formatting acceptance or comment export."
     ],
     "googleNativeTransport": {
       "status": "ROUTE_QUALIFIED_NOT_CELL_PASS",

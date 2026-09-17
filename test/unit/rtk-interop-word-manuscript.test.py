@@ -94,4 +94,17 @@ class ManuscriptOracle(unittest.TestCase):
   for bad in [xml.replace(b'<w:bookmarkEnd w:id="0"/>',b'<w:bookmarkEnd w:id="1"/>'),xml.replace(b'w:name="provider"/>',b'w:name="provider"><w:t>hidden</w:t></w:bookmarkStart>')]:
    with self.assertRaises(ValueError):m.docx(archive(bad),google=True)
   with self.assertRaises(ValueError):m.fields('LARGE_DOCUMENT','C5')
+ def test_tracked_review_requires_literal_native_metadata_property_diagnostic_and_no_write(self):
+  attrs='w:author="Synthetic Ada" w:date="2026-09-17T13:23:00Z" u:dateUtc="2026-09-17T10:23:00Z"'
+  xml=('<w:document xmlns:w="'+NS+'" xmlns:u="http://schemas.microsoft.com/office/word/2023/wordml/word16du"><w:body><w:p><w:r><w:rPr><w:b/><w:rPrChange w:id="1" '+attrs+'><w:rPr/></w:rPrChange></w:rPr><w:t>prefix</w:t></w:r><w:del w:id="2" '+attrs+'><w:r><w:delText>sentinel alpha</w:delText></w:r></w:del><w:ins w:id="3" '+attrs+'><w:r><w:t>sentinel round1</w:t></w:r></w:ins></w:p></w:body></w:document>').encode()
+  d=ET.fromstring(xml);common={'author':'Synthetic Ada','date':'2026-09-17T13:23:00Z','dateUtc':'2026-09-17T10:23:00Z'}
+  text=[{**common,'nativeRevisionId':str(i),'operation':op,'text':value,'classification':'TEXT_MANUAL','reasonCode':'RTK_MANUAL_DEGRADED_LOCATOR'} for i,op,value in [(2,'delete','sentinel alpha'),(3,'insert','sentinel round1')]]
+  props=[{**common,'nativeRevisionId':'1','propertyKind':'rPrChange','classification':'MANUAL_REVIEW','reasonCode':'RTK_BLOCKED_STRUCTURAL'}]
+  returned={'authenticated':True,'sourceMode':'TRACKED','returnedArtifactSha256':'sha256:'+m.digest(xml),'counts':{'textRevisions':2,'propertyRevisions':1,'moveRevisions':0},'canAutoApply':False,'canImportMutate':False,'canWriteStorage':False,'reviewMetadata':{'sourceArtifactSha256':'sha256:'+m.digest(xml),'authority':'ADVISORY_ONLY','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION','textRevisions':text,'propertyRevisions':props}}
+  value={'before':{'sceneHashes':['a'*64]},'after':{'sceneHashes':['a'*64]},'explicitCanonicalApplyConfirmed':False,'result':{'ok':True,'commandId':'cmd.project.review.activateDocxReviewPreviewSession','canAutoApply':False,'canImportMutate':False,'canWriteStorage':False,'returnIntake':returned,'formattingProductPath':{'writerCalled':False},'reviewSurface':{'revisionSession':{'reviewGraph':{'textChanges':[{'match':{'quote':'sentinel alpha'},'replacementText':'sentinel round1','createdAt':common['date']}],'diagnosticItems':[{'diagnosticId':'docx-review-diagnostic-RTK_BLOCKED_STRUCTURAL','severity':'warning','message':'Structure and property changes require manual review.'}]}}}}}
+  proof=m.review_revision_proof(d,value,1,True);self.assertEqual(proof['textRevisions'],text);self.assertEqual(proof['propertyRevisions'],props)
+  rows=m.review_controls(d,value);self.assertEqual([r['id'] for r in rows],m.REVIEW_CONTROLS);self.assertTrue(all(r['rejected'] for r in rows));self.assertEqual(len({r['sha256'] for r in rows}),len(rows))
+  for mutate in [lambda v:v['result']['returnIntake']['reviewMetadata'].update(sourceArtifactSha256='sha256:'+'0'*64),lambda v:v['result']['returnIntake']['reviewMetadata'].update(authority='CAN_WRITE'),lambda v:v['result']['returnIntake']['reviewMetadata']['textRevisions'].reverse(),lambda v:v['result']['returnIntake']['counts'].update(propertyRevisions=0)]:
+   bad=copy.deepcopy(value);mutate(bad)
+   with self.assertRaises(ValueError):m.review_revision_proof(d,bad,1,True)
 if __name__=='__main__':unittest.main()

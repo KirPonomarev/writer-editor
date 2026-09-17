@@ -140,12 +140,12 @@ test('Read-only manuscript tree exposes registered part/chapter/scene hierarchy 
  assert.equal(tree.length,1);assert.equal(tree[0].kind,'part');assert.equal(tree[0].children[0].kind,'chapter-folder');assert.deepEqual(tree[0].children[0].children.map(n=>[n.kind,n.name]),[['scene','first'],['scene','second']]);
 });
 
-test('Manuscript admission targets 126 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Manuscript admission targets 142 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,126);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,126);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,142);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,142);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
@@ -242,4 +242,20 @@ for(const code of ['EISDIR','EINVAL','EPERM','EIO'])test('Manifest transition re
  if(code==='EIO')await assert.rejects(publish(),e=>e.code==='EIO');
  else{await publish();assert.equal((await authority.verifyManifestContinuation({projectId,manifestPath:targetPath,fromDigest:digest(before),toDigest:digest(after)})).ok,true);}
  assert.equal(reached,1);assert.equal(await fsp.readFile(targetPath,'utf8'),after);
+});
+
+test('Actual intake result preserves revision metadata without sharing state, secrets or mutation authority',()=>{
+ const fn=source.match(/function sanitizeDocxReviewReturnIntakeForResult\([^]*?\n}/)[0];
+ const context=vm.createContext({isPlainObjectValue:v=>v!==null&&typeof v==='object'&&!Array.isArray(v),docxReviewPreviewSessionDetailString:v=>typeof v==='string'?v.trim():''});vm.runInContext(fn,context);
+ const meta={nativeRevisionId:'7',author:' A é ',date:'2026-09-17T13:23:00Z',dateUtc:'2026-09-17T10:23:00Z',classification:'MANUAL_REVIEW',reasonCode:'RTK_BLOCKED_STRUCTURAL'};
+ const intake={authenticated:true,returnedArtifactSha256:'sha256:'+'a'.repeat(64),canWriteStorage:true,parserResult:{reviewIr:{textRevisions:[{...meta,operation:'insert',text:'new',hmacSecret:'never-public',path:'/private/secret',canWriteStorage:true}],propertyRevisions:[{...meta,propertyKind:'rPrChange',rawXml:'do-not-publish'}]}}};
+ const result=JSON.parse(JSON.stringify(context.sanitizeDocxReviewReturnIntakeForResult(intake))),p=result.reviewMetadata;
+ assert.deepEqual(p.textRevisions,[{...meta,operation:'insert',text:'new'}]);assert.deepEqual(p.propertyRevisions,[{...meta,propertyKind:'rPrChange'}]);
+ assert.equal(p.sourceArtifactSha256,intake.returnedArtifactSha256);assert.equal(p.authority,'ADVISORY_ONLY');assert.equal(p.timestampPolicy,'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION');
+ for(const name of ['canAutoApply','canImportMutate','canWriteStorage'])assert.equal(result[name],false);
+ assert.doesNotMatch(JSON.stringify(result),/never-public|private|do-not-publish/);
+ p.textRevisions[0].author='mutated';assert.equal(intake.parserResult.reviewIr.textRevisions[0].author,' A é ');
+ intake.parserResult.reviewIr.textRevisions[0].dateUtc='later';assert.equal(p.textRevisions[0].dateUtc,'2026-09-17T10:23:00Z');
+ const empty=context.sanitizeDocxReviewReturnIntakeForResult({parserResult:{reviewIr:{textRevisions:[null,{author:{toString:()=> 'authority'}}]}}});
+ assert.equal(empty.reviewMetadata.textRevisions.length,2);assert.equal(empty.reviewMetadata.textRevisions[1].author,'');assert.equal(empty.counts.textRevisions,2);
 });

@@ -32,6 +32,7 @@ const CONTENT_TYPES_NS = 'http://schemas.openxmlformats.org/package/2006/content
 const W14_NS = 'http://schemas.microsoft.com/office/word/2010/wordml';
 const W15_NS = 'http://schemas.microsoft.com/office/word/2012/wordml';
 const W16CID_NS = 'http://schemas.microsoft.com/office/word/2016/wordml/cid';
+const W16DU_NS = 'http://schemas.microsoft.com/office/word/2023/wordml/word16du';
 const SIGNED_SHA256_RE = /^sha256:[a-f0-9]{64}$/u;
 const HMAC_RE = /^hmac-sha256:[a-f0-9]{64}$/u;
 
@@ -1512,9 +1513,10 @@ function parseTextRevisions(documentXml, documentScan, cryptoPort, budgets, budg
     const revision = {
       kind: 'TextRevision',
       operation,
-      nativeRevisionId: attr(token, 'id'),
-      author: attr(token, 'author'),
-      date: attr(token, 'date'),
+      nativeRevisionId: attr(token, 'id', W_NS),
+      author: attr(token, 'author', W_NS),
+      date: attr(token, 'date', W_NS),
+      dateUtc: attr(token, 'dateUtc', W16DU_NS),
       text,
       textDigest: semanticAtomsDigest(cryptoPort, atoms),
       // PARSER-01 (P7): a revision that is NOT part of a replacement group
@@ -1620,9 +1622,10 @@ function parsePropertyRevisions(documentXml, documentScan, budgetState, reasons)
     const revision = {
       kind: 'PropertyRevision',
       propertyKind: token.localName,
-      nativeRevisionId: attr(token, 'id'),
-      author: attr(token, 'author'),
-      date: attr(token, 'date'),
+      nativeRevisionId: attr(token, 'id', W_NS),
+      author: attr(token, 'author', W_NS),
+      date: attr(token, 'date', W_NS),
+      dateUtc: attr(token, 'dateUtc', W16DU_NS),
       sourceXmlProvenance: provenance(token),
       rawTextExcerpt: tokenText(documentXml, token).slice(0, 96),
       classification: 'MANUAL_REVIEW',
