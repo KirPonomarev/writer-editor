@@ -259,7 +259,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "2b3fb917eaf502ae5b4855f9b80f523b0252bd440cd53787114bb679c3abdab9"
+      "sha256": "58120943bd7b4db92bb160af5cda450d0c45b5a2748280579dc8334aaf86dc11"
     },
     {
       "approved": true,
@@ -660,7 +660,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "22eccaba171b170aac4b66c2704e7311f6f77e316f464b9f0cc467497c24e6c3"
+      "sha256": "1ca2c67cf5c784611d2e561f7a5577a491ffa8e37d122461428c78bf6caa9815"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -678,7 +678,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "b838c5da5988ff13836ff3ccd262ccab9b7ba7ef43537c90bfba8efb2522f2ea"
+      "sha256": "2079933d5d22a7bd293fbce470da9096f4ad30eae6a7000bb8e16c9202ab39ba"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1329,7 +1329,7 @@
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "042bb897077f0680f4f77c76711d19ad4a9ba5a3bdb16dbad28c715b84c16309"
+      "sha256": "c835231bf8ecaa5182f0730c40202f01a5a8980202b9cd9788961c45dc1c1b4f"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -1411,6 +1411,15 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
       "sha256": "76e77bc3fa80895b8e03a62a4960d6b49f80328a6fd444a5855096870d3a4ab8"
+    },
+    {
+      "filePath": "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "1dc01c48a76154f5de60bf4c03b5f0604d6d1652f6acff6912430c7a4d36aac0"
     }
   ],
   "evidenceStampIds": [
