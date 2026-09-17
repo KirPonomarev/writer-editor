@@ -660,7 +660,7 @@
       "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "e28fac0d9d527c60ff06d4a321bc86e8cee6c53a265020906df30e774ed451fb"
+      "sha256": "2093a16fb44e48808321fbaf33efd2a92cd3a357b090de9987c96debc4b3b7b3"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -678,7 +678,7 @@
       "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "40d92f5f6403e29ed9ed3ae1c48e4b85e5a92645c60754fa00e86ddd0e760fbe"
+      "sha256": "db3a31d7b78e2ed898a0fe7b825ab4e32d149aab4b9e2f8c3986331e586236fe"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1317,7 +1317,7 @@
       "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "faf927c68fce5f1e4da8a106a0ceb2dda3db73c06fb5e043525578e68ba8b469"
+      "sha256": "0833f12d6c42583d9e93d3f4b1ac6c3bf5ffe4caf41c1771843287bad5b77dfc"
     },
     {
       "approved": true,

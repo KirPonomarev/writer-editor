@@ -241,7 +241,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "3356e8f592a3dd364515a3e435ff841d3d9157d686d9b3289eb4bb142391b730"
+      "sha256": "993b0c760b20ea08efab0d78b5b4eb115baf9a80ac774291257de7dec3a8eae3"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -277,7 +277,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "4df51ba23cd6f6f24fc2c1cfa3a4f4a5e0108968b75929078805e0b52d5e7659"
+      "sha256": "d8610b7df0886afc89099105c054b2f891fd23ede8080266a7c68d83c1c490e3"
     }
   ],
   "requirementIds": [
@@ -620,7 +620,7 @@
       },
       {
         "path": "docs/tasks/2026-09-17--word-review-semantics.md",
-        "sha256": "faf927c68fce5f1e4da8a106a0ceb2dda3db73c06fb5e043525578e68ba8b469"
+        "sha256": "0833f12d6c42583d9e93d3f4b1ac6c3bf5ffe4caf41c1771843287bad5b77dfc"
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
