@@ -74,15 +74,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
-      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
       ],
       "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "0c7a0ac850d1ac17b9b02da3a940944c871297fce7c5d7245ce10fbb53b93fbb"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "51534894fce47f3d4ba321ffa057255911955ea5c67a3fa67db37a89076b3bff"
     },
     {
       "approved": true,
@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "b36e638b1575e331e3eeb78a3c7080d4d47af099f6cee03300b79a2e5e50c81e"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "f6498bfda364c6b25906b20fb4516af4446f304af814e59a570a7bfdcd8e9ce4"
     },
     {
       "approved": true,
@@ -334,12 +334,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "2c474598e0a7fe90ab2b0bd13b143b94847a4c03aab9aefafe11ac333f420e3b"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "e606cd8a9d721a9025bd1c874e977c7c04a49f986ea85777c8b773b6af0fb00d"
     },
     {
       "approved": true,
@@ -445,15 +445,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "68016b722b2f33abecb1b66c95d19d931bdf234ded10c9cbadb9db0d717c9d5c"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "950b00ba39195fb2ff0a60fb135a8cff2cba3ca4324d877e3aa21214f1373437"
     },
     {
       "approved": true,
@@ -478,15 +478,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "src/utils/docxImportLocalFilePreview.js",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "c401191a04d89689020b15657fa8087119ff01a144f152b64bf2166e38ed6133"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "0493b893d3b452051a8db83bee751648825142b62cfa584ffc1155b31e7d9c64"
     },
     {
       "approved": true,
@@ -668,11 +668,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "d7b395b0960c37dafdec1098f65a1d8083e1af7ceff2cd6f0c04151785aec5bf"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "cb1a73b673fa0004344b6c5f2a605bbaea5e721dfb75afd7cfdceefc931ee222"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -686,11 +686,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "9e9bbd2c072955fb4c218505ef19dea8aa406466cd8e06b1a36913b1150b67dd"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "2d936ed1bd1e1488dd2628ee1e0af9a2cbd55f38afbd5c68f3daeb1b1ee5d2e0"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -749,11 +749,11 @@
     {
       "filePath": "src/export/docx/docxMinBuilder.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-16T19:44:40.693353+00:00",
-      "approvedBy": "owner-direct-task:DOCX_PARAGRAPH_ALIGNMENT_C1_20260916",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner requested continued personal product import/export development. This bounded paragraph alignment repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
-      "sha256": "cb7f57f0e0be1041c3f657bec5ec66ee8f24c90271872108eb85b512df939ded"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "31dacbeaaab87d0649fb548e1ad75ca99be791d9babf1701a4b0d8fc21255eb6"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -884,11 +884,11 @@
     {
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "c9137b053880dbceb7a17fc1951605671a3b34c30a74f16725a9291d9fb60fac"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "3151e953cf29f7a6c02ede85ea2f9f4c78e083a8f4f757e8ee348a52def74118"
     },
     {
       "filePath": "docs/tasks/2026-09-16--docx-colors-roundtrip.md",
@@ -1199,20 +1199,20 @@
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "226f233238edbda5eeeb1c155847281076c7e218020e1bd36b82ed8052e67316"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "d4b2755997e4b71f7887c4d393c1b0a256ddf1accf15c4248c9086e1fa095e19"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "b4c1c348caafe5c2be30f5331fc149afa6dfc5ee411bb633297b3f981a85e593"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "79cd3fcac42a46fa7d31664ec299fe50806d01e09c7005bbac3b1b62a9523dc0"
     },
     {
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1253,29 +1253,29 @@
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "a44b505761fd4eee8d1643d23d20b1692b500d2d00ef4c1144dffeb47494f3bc"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "a780eeedd28dbb617d8f16f55a8c3741c4e930889acc7bc99807a48983359ac3"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "8dcbddcbe2aa8b5351cef553a583f53960f98595006501f87992081ee301b8ec"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "dbd1feaa9a34d361db60bcb56c74f44005cd1fef2dd267ab941ce15ce8cf1c5e"
     },
     {
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "90d59708e729d0532d302e477cfc91c68a8af7221f33f220527448b355f9c6a6"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "1071c7312ed32adc77a5df8ef30a8ae3404844a0db1ad4259e4bf645b71faf6b"
     },
     {
       "filePath": "test/unit/sector-m-scene-rich-truth.test.js",
@@ -1285,6 +1285,33 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
       "sha256": "29bca52d8ccb9f361baa539eba0b6615d584b061e21daffe101178163165c602"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-17--c1-word-block-styles.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "3359f92c8a657f089a636eb8c577b72f19f477fc74e273c3e633c2748c76db19"
+    },
+    {
+      "filePath": "src/export/docx/docxBlockStyles.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "1a03db3538aa2eb5323d3c0491cb37ee95c8c40cc4adb3e9f5e8bea3c6a06fba"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-block-styles.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T06:14:54.969Z",
+      "approvedBy": "owner-direct-task:C1_WORD_BLOCK_STYLES_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 quote/code repair retains all native C1/C2/C3 stages and adds C1 rich persistence and terminal re-export. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "e860aaee873ff53abecc2bbe9020eee9c3361e4c04e3aae75a88cb96c65c1640"
     }
   ],
   "evidenceStampIds": [

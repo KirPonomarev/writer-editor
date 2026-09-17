@@ -10195,6 +10195,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'headingLevel',
                 'textAlign',
                 'list',
+                'blockKind',
+                'blockquoteDepth',
               ])
             ))
           : sourceReport.contentPreview.paragraphs,

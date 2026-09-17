@@ -191,6 +191,8 @@ function sanitizeContentPreviewReport(report) {
                 'headingLevel',
                 'textAlign',
                 'list',
+                'blockKind',
+                'blockquoteDepth',
               ]))
               .filter(isPlainObject)
             : [],

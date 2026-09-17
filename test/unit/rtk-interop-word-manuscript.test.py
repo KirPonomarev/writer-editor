@@ -18,7 +18,7 @@ class ManuscriptOracle(unittest.TestCase):
    for route in ['C1','C2','C3']:
     docs=m.expected_docs(volume,route);ps=sum([m.paragraphs(d) for d in docs],[])
     self.assertTrue(all(p in ps for p in m.UNICODE));self.assertEqual(len(docs),1 if volume=='SINGLE_SCENE' else 3 if volume=='MULTI_SCENE' else 21)
-    if route!='C1':self.assertTrue(any(p.startswith('[heading-6]') for p in ps));self.assertIn('[ordered-4] Second numbered item.',ps)
+    self.assertTrue(any(p.startswith('[heading-6]') for p in ps));self.assertIn('[ordered-4] Second numbered item.',ps)
   for n in range(1,6):
    a=m.paragraphs(m.expected_docs('MULTI_SCENE','C3',n-1)[0]);b=m.paragraphs(m.expected_docs('MULTI_SCENE','C3',n)[0]);self.assertEqual([i for i,(x,y) in enumerate(zip(a,b)) if x!=y],[0]);self.assertIn('round'+str(n),b[0])
  def test_unicode_must_not_normalize_or_drop_ime_or_bidi(self):

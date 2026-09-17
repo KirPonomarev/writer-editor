@@ -18,6 +18,7 @@ const {
 const { normalizeOpaqueRgb, buildDocxColorPropertiesXml } = require('./docxInlineColors.js');
 const { buildDocxTypographyPropertiesXml, readRunTypography } = require('./docxInlineTypography.js');
 const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
+const { docxBlockStyleId, buildDocxBlockStyleDefinitions } = require('./docxBlockStyles.js');
 
 function isPlainObjectValue(value) {
   return Boolean(value && typeof value === 'object' && !Array.isArray(value));
@@ -170,30 +171,48 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
     }
   };
 
-  for (const node of doc.content) {
-    if (!isPlainObjectValue(node)) continue;
+  const visit = (node, blockquoteDepth = 0) => {
+    if (!isPlainObjectValue(node)) return;
+    if (node.type === 'blockquote') {
+      if (blockquoteDepth >= 8 || !Array.isArray(node.content) || !node.content.length
+        || node.content.some(child => !['paragraph', 'heading', 'codeBlock', 'blockquote'].includes(child?.type))) {
+        throw new Error('DOCX_BLOCKQUOTE_SHAPE_UNSUPPORTED');
+      }
+      for (const child of node.content) visit(child, blockquoteDepth + 1);
+      return;
+    }
     if (node.type === 'bulletList' || node.type === 'orderedList') {
       visitList(node, 0);
-      continue;
+      return;
     }
     const text = readDocumentNodeText(node);
     const runs = readDocumentInlineRuns(node);
     if (node.type === 'pageBreak' || (node.type === 'paragraph' && text.trim() === pageBreakToken)) {
       blocks.push({ kind: 'pageBreak', text: pageBreakToken });
-      continue;
+      return;
     }
     if (node.type === 'heading') {
       const headingLevel = Number(node.attrs?.level);
       if (!Number.isInteger(headingLevel) || headingLevel < 1 || headingLevel > 6) {
         throw new Error('DOCX_HEADING_LEVEL_INVALID');
       }
-      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
-      continue;
+      blocks.push({ kind: headingLevel === 2 ? 'sceneHeading' : 'heading', headingLevel, text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
+      return;
+    }
+    if (node.type === 'codeBlock') {
+      if ((node.attrs?.language != null && node.attrs.language !== '')
+        || (node.content || []).some(child => child?.type !== 'text' || child.marks?.length)
+        || (node.attrs?.textAlign != null && node.attrs.textAlign !== 'left')) {
+        throw new Error('DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
+      }
+      blocks.push({ kind: 'codeBlock', text, runs, blockquoteDepth });
+      return;
     }
     if (text || node.type === 'paragraph') {
-      blocks.push({ kind: 'paragraph', text, runs, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
+      blocks.push({ kind: 'paragraph', text, runs, blockquoteDepth, textAlign: toWordParagraphAlignment(node.attrs?.textAlign) });
     }
-  }
+  };
+  for (const node of doc.content) visit(node);
 
   return blocks;
 }
@@ -269,15 +288,18 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const sectionPropertiesXml = deps.docxPageSetupBindModule.buildDocxSectionPropertiesXml(snapshot.bookProfile);
   const entries = Array.isArray(semanticMap.entries) ? semanticMap.entries : [];
   const headingLevels = new Set();
+  const blockStyles = new Set();
   const numberings = new Map();
   const paragraphs = entries.length > 0
     ? entries.map((entry, index) => {
       const semanticKind = normalizeSemanticKind(entry && entry.kind);
       const styleDescriptor = styleMap.resolve(entry);
       const headingLevel = semanticBlocks?.[index]?.headingLevel;
-      const styleId = headingLevel ? `Heading${headingLevel}` : resolveDocxParagraphStyleId(styleDescriptor, semanticKind);
+      const blockStyle = docxBlockStyleId(semanticKind === 'codeBlock', semanticBlocks?.[index]?.blockquoteDepth || 0);
+      const styleId = blockStyle || (headingLevel ? `Heading${headingLevel}` : resolveDocxParagraphStyleId(styleDescriptor, semanticKind));
+      if (blockStyle) blockStyles.add(blockStyle);
       if (/^Heading[1-6]$/u.test(styleId)) headingLevels.add(Number(styleId.slice(-1)));
-      if (semanticKind === 'pageBreak' || String(entry?.text || '').trim() === pageBreakToken) {
+      if (semanticKind === 'pageBreak' || (semanticKind !== 'codeBlock' && String(entry?.text || '').trim() === pageBreakToken)) {
         return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
       }
 
@@ -286,6 +308,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       if (numbering) numberings.set(numbering.numId, numbering);
       const textAlign = semanticBlocks?.[index]?.textAlign;
       const properties = (styleId ? `<w:pStyle w:val="${escapeXml(styleId)}"/>` : '')
+        + (blockStyle && headingLevel ? `<w:outlineLvl w:val="${headingLevel - 1}"/>` : '')
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
       const styleXml = properties ? `<w:pPr>${properties}</w:pPr>` : '';
@@ -310,7 +333,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
+${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
   <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
@@ -323,8 +346,8 @@ ${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="app
   </w:body>
 </w:document>`;
 
-  const styleParts = headingLevels.size ? [
-    { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}</w:styles>` },
+  const styleParts = headingLevels.size || blockStyles.size ? [
+    { name: 'word/styles.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${[...headingLevels].sort().map((level) => `<w:style w:type="paragraph" w:styleId="Heading${level}"><w:name w:val="heading ${level}"/><w:pPr><w:outlineLvl w:val="${level - 1}"/></w:pPr></w:style>`).join('')}${buildDocxBlockStyleDefinitions(blockStyles)}</w:styles>` },
   ] : [];
   if (numberings.size) {
     const definitions = [...numberings.values()].map(({ numId, level, kind, start }) => {
@@ -335,8 +358,8 @@ ${headingLevels.size ? '  <Override PartName="/word/styles.xml" ContentType="app
     const instances = [...numberings.keys()].map((numId) => `<w:num w:numId="${numId}"><w:abstractNumId w:val="${numId}"/></w:num>`).join('');
     styleParts.push({ name: 'word/numbering.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${definitions}${instances}</w:numbering>` });
   }
-  if (headingLevels.size || numberings.size) {
-    const relationships = (headingLevels.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
+  if (headingLevels.size || blockStyles.size || numberings.size) {
+    const relationships = (headingLevels.size || blockStyles.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
       + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '');
     styleParts.push({ name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>` });
   }
