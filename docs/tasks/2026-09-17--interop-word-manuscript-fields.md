@@ -30,6 +30,8 @@ One bounded native manuscript fixture and journey driver, separate raw field ora
 - docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json
 - src/export/docx/fullManuscriptDocxReviewPacketSource.js
 - src/export/docx/docxReviewPacketBuilder.js
+- src/io/markdown/index.mjs
+- src/io/revisionBridge/exactTextMinSafeWrite.mjs
 - src/main.js
 - src/io/revisionBridge/index.mjs
 - test/contracts/rtk-word-full-manuscript-volume.contract.test.js
@@ -88,9 +90,11 @@ I: Declared exact base, clean code and Lab identities, source copies, package ha
 
 The additional scope targets Unicode and committed composition text, styles, and nonvacuous multi-scene chapter structure. Single-scene journeys do not claim multi-chapter structure. C3 executes exactly five actual Word edit/return/apply cycles, using fresh authenticated export identities. The terminal process is fresh and final Word readback covers the full document. Intermediate cycles retain all scene bytes and Word full-body text while opening only the edited scene.
 
-Composition uses the isolated real Chromium editable input path and records trusted composition events, cancellation, candidate commit and durable save. It does not certify every operating-system IME engine. Unicode codepoints, normal forms, bidi controls and ZWJ sequences are compared independently; font fallback is observed and declared per provider.
+Composition uses the isolated real Chromium editable input path and records the native event sequence, trusted start/update/input, cancellation, candidate commit confirmed by subsequent trusted non-composing input, and durable save (Chromium reports compositionend as untrusted). It does not certify every operating-system IME engine. Unicode codepoints, normal forms, bidi controls and ZWJ sequences are compared independently; font fallback is observed and declared per provider.
 
 Styles and hierarchy require nonvacuous source fixtures, complete raw readback and mutation controls. A missing mandatory subcase keeps its field unproved. Existing simple text/order journeys and historical evidence remain unchanged. Only a directly reproduced product failure can justify a repair within the declared outcome.
+
+The native rich probe reproduced two persistence integration failures: post-Save invalidation changed the committed manifest, and accepted Word review changed the scene outside its existing WP201 commit. The fix includes invalidation in the scene/manifest transaction and injects the same main-owned publication port into the existing review recovery wrapper. Existing snapshots, journals, receipt/readback, input CAS and corruption checks remain mandatory. A stale or failed writer never acknowledges success.
 
 Technical references: Chromium Input protocol for composition and text insertion; Microsoft Open XML BasedOn and DocDefaults for style inheritance.
 https://raw.githubusercontent.com/ChromeDevTools/devtools-protocol/master/pdl/domains/Input.pdl

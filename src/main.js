@@ -20095,7 +20095,7 @@ async function persistBookProfileForFile(filePath, bookProfile, operationLabel =
 
 // R2.4 WP-202: old and new routing observations must agree before exactly one
 // existing WP-200 or WP-201 authority executes.
-async function commitWriterProjectSnapshot(filePath, content, revision, bookProfile, operationLabel) {
+async function commitWriterProjectSnapshot(filePath, content, revision, bookProfile, operationLabel, options = {}) {
   try {
     const prepared = await prepareBookProfileManifestForFile(filePath, bookProfile);
     const projectBound = Boolean(prepared && typeof prepared.expectedText === 'string');
@@ -20147,6 +20147,11 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
           expectedSceneContent = await fs.readFile(filePath, 'utf8');
         } catch (error) {
           if (!error || error.code !== 'ENOENT') throw error;
+        }
+        if (typeof options.expectedSceneContent === 'string' && expectedSceneContent !== options.expectedSceneContent) {
+          const error = new Error('PROJECT_TRANSACTION_SCENE_CAS');
+          error.code = 'E_PROJECT_TRANSACTION_SCENE_CAS';
+          throw error;
         }
         // Invalidation is part of the same scene/manifest commit. Publishing it
         // after ACK would immediately invalidate the commit's manifest digest.
@@ -21091,6 +21096,7 @@ async function handleRtkNonOverlapTrackedReplacementCommandSurface(payload = {})
   }
   return module.createRtkNonOverlapTrackedReplacementCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
+    exactWriterOptions: { publishScene: publishReviewSceneWithProjectTransaction },
   })(payload);
 }
 
@@ -21968,6 +21974,29 @@ async function buildReviewExactTextApplyBatchInputFromMainState(request = {}) {
       },
     },
   };
+}
+
+async function publishReviewSceneWithProjectTransaction(filePath, content, options = {}) {
+  if (typeof options.expectedText !== 'string' || !isAllowedFilePath(filePath)
+    || getDocumentContextFromPath(filePath)?.kind !== 'scene') {
+    throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
+  }
+  return queueDiskOperation(async () => {
+    const binding = await resolveProjectBindingForFile(filePath);
+    if (!binding?.manifestPath || !binding.manifest?.projectId) {
+      throw Object.assign(new Error('REVIEW_PROJECT_SCENE_BINDING_REQUIRED'), { code: 'E_REVIEW_PROJECT_SCENE_BINDING_REQUIRED' });
+    }
+    const receipt = await commitWriterProjectSnapshot(
+      filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
+      'review exact scene and manifest transaction', { expectedSceneContent: options.expectedText },
+    );
+    if (receipt.success !== true || receipt.projectTransaction !== true) {
+      throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
+        code: receipt.code || 'E_REVIEW_PROJECT_SCENE_SAVE_FAILED',
+      });
+    }
+    return { ok: 1, targetPath: filePath, bytesWritten: Buffer.byteLength(content, 'utf8'), safetyMode: 'strict', receipt };
+  }, 'review exact scene and manifest publication');
 }
 
 async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWrite, input, safeWriteOptions = {}) {

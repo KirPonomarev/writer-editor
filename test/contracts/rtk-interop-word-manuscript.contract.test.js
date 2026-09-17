@@ -23,7 +23,9 @@ async function harness(t,options={}) {
  await fsp.writeFile(manifestPath,JSON.stringify({projectId:'fixture-project',proUnknown:{comments:[{sceneId:'scene.txt',body:'preserve me'}]}}));
  const preservation=await import(pathToFileURL(path.join(ROOT,'src/core/proRoundtripPreservation.mjs')));
  let publications=0;
- const context=vm.createContext({fs:fsp,commitProjectTransaction,durableSaveTransaction,...gateway,
+ const context=vm.createContext({fs:fsp,Buffer,commitProjectTransaction,durableSaveTransaction,...gateway,
+  lastSignaledEditGeneration:7,isAllowedFilePath:p=>p===scenePath,queueDiskOperation:fn=>fn(),
+  resolveProjectBindingForFile:async()=>({manifestPath,manifest:JSON.parse(await fsp.readFile(manifestPath,'utf8'))}),
   SAVE_AUTHORITY_OBSERVER_IDS:gateway.OBSERVER_IDS,
   isPlainObjectValue:v=>!!v&&typeof v==='object'&&!Array.isArray(v),
   getDocumentContextFromPath:()=>({kind:'scene'}),getProjectRelativeFilePath:p=>path.relative(root,p),
@@ -36,8 +38,8 @@ async function harness(t,options={}) {
    await durableSaveTransaction({filePath:targetPath,content:nextText,revision:publications});
   }}),
  });
- vm.runInContext(adapter,context);
- return {root,scenePath,manifestPath,save:(content,revision)=>context.commitWriterProjectSnapshot(scenePath,content,revision,{},'test atomic invalidation'),publications:()=>publications};
+ vm.runInContext(adapter+'\n'+source.match(/async function publishReviewSceneWithProjectTransaction\([^]*?\n}/)[0],context);
+ return {root,scenePath,manifestPath,publish:context.publishReviewSceneWithProjectTransaction,save:(content,revision)=>context.commitWriterProjectSnapshot(scenePath,content,revision,{},'test atomic invalidation'),publications:()=>publications};
 }
 test('Actual Writer adapter preserves atomic invalidation across changed, identical and subsequent saves',async t=>{
  const h=await harness(t);
@@ -67,4 +69,21 @@ test('Missing invalidation transformer fails before any scene or manifest public
 test('Rejected manifest publication never acknowledges or publishes the changed scene',async t=>{
  const h=await harness(t,{failPublication:true});const result=await h.save('new',1);
  assert.equal(result.success,false);assert.equal(await fsp.readFile(h.scenePath,'utf8'),'original');
+});
+
+test('Existing review recovery wrapper publishes through the actual main project writer and preserves the next Save',async t=>{
+ const h=await harness(t);assert.equal((await h.save('before review',1)).success,true);
+ const {writeMarkdownWithTransactionRecovery}=await import(pathToFileURL(path.join(ROOT,'src/io/markdown/index.mjs')));
+ const stages=[];let afterRename=0;
+ const written=await writeMarkdownWithTransactionRecovery(h.scenePath,'after review',{expectedText:'before review',publishScene:h.publish,afterStage:e=>stages.push(e.stage),afterRename:()=>{afterRename++;}});
+ assert.equal(written.snapshotCreated,true);assert.equal(await fsp.readFile(written.snapshotPath,'utf8'),'before review');
+ assert.deepEqual(stages,['INTENT_CREATED','SNAPSHOT_CREATED','WRITE_COMMITTED']);assert.equal(afterRename,1);
+ const commit=JSON.parse(await fsp.readFile(commitPathFor(h.scenePath)));
+ assert.equal(commit.sceneDigest,digest(Buffer.from('after review')));assert.equal(commit.manifestDigest,digest(await fsp.readFile(h.manifestPath)));
+ assert.equal((await h.save('after review',8)).success,true,'Save after accepted review must retain valid commit');
+});
+test('Main review publication refuses stale expected input before writing or invalidating',async t=>{
+ const h=await harness(t);const before=await fsp.readFile(h.manifestPath);
+ await assert.rejects(h.publish(h.scenePath,'overwrite',{expectedText:'obsolete'}),e=>e.code==='E_PROJECT_TRANSACTION_SCENE_CAS');
+ assert.equal(await fsp.readFile(h.scenePath,'utf8'),'original');assert.deepEqual(await fsp.readFile(h.manifestPath),before);assert.equal(h.publications(),0);
 });

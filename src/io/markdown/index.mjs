@@ -454,6 +454,10 @@ export async function restoreMarkdownRecoveryDrill(recoveryPackPathRaw, options 
 }
 
 export async function writeMarkdownWithTransactionRecovery(targetPath, markdown, options = {}) {
+  const publishScene = typeof options.publishScene === 'function' ? options.publishScene : null;
+  if (publishScene && (typeof options.beforeRename === 'function' || typeof options.afterTempWrite === 'function')) {
+    throw Object.assign(new Error('PROJECT_SCENE_PUBLISH_HOOK_UNSUPPORTED'), { code: 'E_PROJECT_SCENE_PUBLISH_HOOK_UNSUPPORTED' });
+  }
   const text = normalizeMarkdownInput(markdown);
   const resolvedPath = resolveSourcePath(targetPath);
   const safetyMode = normalizeSafetyMode(options.safetyMode);
@@ -498,12 +502,18 @@ export async function writeMarkdownWithTransactionRecovery(targetPath, markdown,
     snapshotCreated: snapshot.snapshotCreated,
   });
 
-  const writeResult = await atomicWriteFile(resolvedPath, text, {
+  const writeResult = publishScene ? await publishScene(resolvedPath, text, {
+    expectedText: options.expectedText,
+    safetyMode,
+  }) : await atomicWriteFile(resolvedPath, text, {
     safetyMode,
     beforeRename: options.beforeRename,
     afterTempWrite: options.afterTempWrite,
     afterRename: options.afterRename,
   });
+  if (publishScene && typeof options.afterRename === 'function') {
+    await options.afterRename({ targetPath: resolvedPath, bytesWritten: writeResult.bytesWritten });
+  }
 
   const committedIntent = {
     ...snapshotIntent,
