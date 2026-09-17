@@ -233,7 +233,8 @@ function mainHarness(names, globals={}) {
   const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
   const helpers=['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256',
     'buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText',
-    'extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','verifyDocxReviewReturnYrtk2Binding'];
+    'extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml',
+    'extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding'];
   const declarations=[...new Set([...helpers,...names])].map(name=>{
     const match=main.match(new RegExp('(?:async )?function '+name+'\\([^]*?\\n}(?=\\n|$)'));
     assert.ok(match,name);return match[0];

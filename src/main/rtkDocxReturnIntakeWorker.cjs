@@ -189,9 +189,12 @@ function buildPacketFromParserResult(message, parserResult, port) {
   const diagnostics = Array.isArray(parserResult.reasons) ? parserResult.reasons : [];
   if (isPlainObject(parserResult.laneCompleteness)) diagnostics.push(parserResult.laneCompleteness);
   const workerBuildDigest = String(parserResult.parserProfileDigest || '');
+  const structuredBinding = isPlainObject(returnedProjection?.documentMetadata?.transportBindingProperties)
+    ? returnedProjection.documentMetadata.transportBindingProperties
+    : {};
   const yrtk2Evidence = {
-    token: extractCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK2_TOKEN'),
-    coreManifestDigest: extractCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK_CORE_DIGEST'),
+    token: String(structuredBinding.yrtk2Token || extractCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK2_TOKEN')),
+    coreManifestDigest: String(structuredBinding.coreManifestDigest || extractCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK_CORE_DIGEST')),
   };
   return revisionBridgeBuildPacket({
     requestId: String(message?.requestId || ''),

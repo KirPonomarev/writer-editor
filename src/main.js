@@ -818,6 +818,18 @@ function extractDocxReviewReturnYrtk2PropertiesFromCustomXml(customXml) {
   return { ok: true, token, coreManifestDigest };
 }
 
+function extractDocxReviewReturnYrtk2PropertiesFromParserResult(parserResult = {}) {
+  const binding = isPlainObjectValue(parserResult?.reviewIr?.documentMetadata?.transportBindingProperties)
+    ? parserResult.reviewIr.documentMetadata.transportBindingProperties
+    : {};
+  const fallback = extractDocxReviewReturnYrtk2PropertiesFromCustomXml(parserResult?.docPropsCustomXml);
+  return {
+    ok: true,
+    token: docxReviewPreviewSessionDetailString(binding.yrtk2Token) || fallback.token,
+    coreManifestDigest: docxReviewPreviewSessionDetailString(binding.coreManifestDigest) || fallback.coreManifestDigest,
+  };
+}
+
 function decodeDocxXmlText(value) {
   return docxReviewPreviewSessionDetailString(value)
     .replace(/&lt;/gu, '<')
@@ -1087,7 +1099,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     revisionBridge,
     hmacSecret,
     returnedArtifactSha256: finalArtifactSha256,
-    yrtk2Evidence: extractDocxReviewReturnYrtk2PropertiesFromCustomXml(finalParse.docPropsCustomXml),
+    yrtk2Evidence: extractDocxReviewReturnYrtk2PropertiesFromParserResult(finalParse),
   });
   if (!yrtk2Verification.ok) {
     return {
@@ -8750,10 +8762,7 @@ function resolveReturnEvidencePacketFromProbe(probe, {
     ? parserResult.authorityCarrier
     : {};
   const returnedProjection = isPlainObjectValue(parserResult.reviewIr) ? parserResult.reviewIr : {};
-  const yrtk2Evidence = {
-    token: extractDocxCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK2_TOKEN'),
-    coreManifestDigest: extractDocxCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK_CORE_DIGEST'),
-  };
+  const yrtk2Evidence = extractDocxReviewReturnYrtk2PropertiesFromParserResult(parserResult);
   const cryptoPort = createRtkReviewTransportCryptoPort();
   let packetFromLegacy;
   try {

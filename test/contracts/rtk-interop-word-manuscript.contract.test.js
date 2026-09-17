@@ -127,6 +127,7 @@ test('Full-manuscript DOCX metadata is dual-carried, signed, parsed independentl
  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
  assert.equal(parsed.ok,true);const metadata=parsed.reviewIr.documentMetadata,payload=parsed.authorityCarrier.selectedCarrier.payload;
  assert.deepEqual(metadata.protectedProperties,{schemaVersion:'yalken.rtk.word.document-metadata.v1',projectId:sourceMetadata.projectId,title:sourceMetadata.projectName,createdAtUtc:'2026-09-17T10:11:12.000Z',creator:'Yalken'});
+ assert.equal(metadata.transportBindingProperties.yrtk2Token,source.customProperties.find(row=>row.name==='YRTK2_TOKEN').value);assert.equal(metadata.transportBindingProperties.coreManifestDigest,source.localAuthorityCapsule.coreManifestDigest);
  assert.equal(payload.documentMetadataDigest,source.documentMetadata.protectedDigest);assert.deepEqual(metadata.lossLedger.missingProtectedProperties,[]);assert.deepEqual(metadata.lossLedger.unknownCustomPropertyNames,[]);
  const verify=value=>validateFullManuscriptDocumentMetadataReturn({expected:source.documentMetadata,returned:value,signedDigest:payload.documentMetadataDigest});
  assert.equal(verify(metadata).ok,true);

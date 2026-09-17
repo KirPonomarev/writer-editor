@@ -1386,6 +1386,14 @@ function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
     const rows = customRows.filter((row) => row.name === name);
     publicCustomProperties[name] = rows.length === 1 ? rows[0].value : '';
   }
+  const transportBindingProperties = {
+    yrtk2Token: customCounts.get('YRTK2_TOKEN') === 1
+      ? customRows.find((row) => row.name === 'YRTK2_TOKEN')?.value || ''
+      : '',
+    coreManifestDigest: customCounts.get('YRTK_CORE_DIGEST') === 1
+      ? customRows.find((row) => row.name === 'YRTK_CORE_DIGEST')?.value || ''
+      : '',
+  };
   const authorityPropertyNamesPresent = WORD_DOCUMENT_METADATA_AUTHORITY_PROPERTIES
     .filter((name) => customRows.some((row) => row.name === name));
   const knownNames = new Set([
@@ -1438,6 +1446,7 @@ function parseDocumentMetadata(parts, budgets, cryptoPort, budgetState) {
       coreProtectedProperties,
       protectedDigest,
       publicCustomProperties,
+      transportBindingProperties,
       authorityPropertyNamesPresent,
       createdTimestampType: attr(createdToken, 'type', XSI_NS),
       modifiedTimestampType: attr(modifiedToken, 'type', XSI_NS),
@@ -3487,6 +3496,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       coreProtectedProperties: documentMetadata.coreProtectedProperties,
       protectedDigest: documentMetadata.protectedDigest,
       publicCustomProperties: documentMetadata.publicCustomProperties,
+      transportBindingProperties: documentMetadata.transportBindingProperties,
       volatileCoreProperties: documentMetadata.volatileCoreProperties,
       lossLedger: documentMetadata.lossLedger,
     },
