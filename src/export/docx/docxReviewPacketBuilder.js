@@ -259,7 +259,22 @@ function buildCustomPropertiesXml(properties) {
 }
 
 function buildCustomXmlPayloadXml(input = {}) {
-  const payload = isPlainObjectValue(input.advisoryManifest) ? input.advisoryManifest : {};
+  const source = isPlainObjectValue(input.advisoryManifest) ? input.advisoryManifest : {};
+  // Full baseline maps already live in the authenticated main-owned capsule.
+  // They are not a return-authority carrier, and duplicating them into advisory
+  // XML can exceed the unchanged 10 MiB part limit on ordinary large books.
+  // Keep signed carriers untouched; expose their public correlation digests.
+  const compact = source.schemaVersion === 'yalken.rtk.word.product-review-docx-export.advisory-manifest.v1'
+    && source.scope === 'full-manuscript'
+    && isPlainObjectValue(source.coreManifest) && isPlainObjectValue(source.transportManifest);
+  const { coreManifest, transportManifest, ...publicFields } = source;
+  const payload = compact ? {
+    ...publicFields,
+    schemaVersion: 'yalken.rtk.word.product-review-docx-export.compact-advisory.v1',
+    coreManifestDigest: coreManifest.coreManifestDigest,
+    transportManifestDigest: transportManifest.payloadDigest,
+    baselineStorage: 'MAIN_OWNED_AUTHENTICATED_LOCAL_CAPSULE',
+  } : source;
   const json = JSON.stringify(payload);
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <yrtk:reviewTransport xmlns:yrtk="urn:yalken:rtk:word-review-packet:v1" authorityRole="advisory-not-apply-authority">

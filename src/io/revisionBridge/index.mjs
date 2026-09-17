@@ -3552,7 +3552,7 @@ function shouldExtractDocxReviewTransportAnalysisPart(entryId) {
 // the DOCX carries no inter-scene boundary marker; grouping paragraphs by their
 // declared bookmark→block→scene reconstructs the ordered scene texts.
 function decodeXmlTextEntities(value) {
-  return normalizeString(value)
+  return preserveString(value)
     .replace(/&lt;/gu, '<')
     .replace(/&gt;/gu, '>')
     .replace(/&quot;/gu, '"')
@@ -3566,22 +3566,32 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap) {
   const sceneOrderBySceneId = new Map();
   const sceneIdByBookmarkName = new Map();
   const orderedSceneIds = [];
+  const orderedBookmarks = [];
   for (const scene of scenes) {
     const sceneId = normalizeString(scene?.sceneId);
-    if (!sceneId || sceneOrderBySceneId.has(sceneId)) continue;
+    if (!sceneId || sceneOrderBySceneId.has(sceneId)) {
+      return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_SCENE_MAP_INVALID' };
+    }
     sceneOrderBySceneId.set(sceneId, orderedSceneIds.length);
     orderedSceneIds.push(sceneId);
     const blocks = Array.isArray(scene?.blocks) ? scene.blocks : [];
     for (const block of blocks) {
+      const declaredNames = [];
       const signals = Array.isArray(block?.wordSignals) ? block.wordSignals : [];
       for (const signal of signals) {
         if (isPlainObject(signal) && signal.kind === 'bookmarkName') {
           const name = normalizeString(signal.value?.name).toLowerCase();
-          if (name) sceneIdByBookmarkName.set(name, sceneId);
+          if (name) declaredNames.push(name);
         }
       }
+      if (declaredNames.length !== 1 || sceneIdByBookmarkName.has(declaredNames[0])) {
+        return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_BLOCK_MAP_INVALID' };
+      }
+      orderedBookmarks.push(declaredNames[0]);
+      sceneIdByBookmarkName.set(declaredNames[0], sceneId);
     }
   }
+  let paragraphOrdinal = 0;
   const paragraphRe = /<w:p\b[\s\S]*?<\/w:p>/gu;
   const blocksBySceneId = new Map();
   for (const sceneId of orderedSceneIds) blocksBySceneId.set(sceneId, []);
@@ -3595,6 +3605,11 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap) {
       bookmarkNames.push(normalizeString(bookmarkMatch[1]));
       bookmarkMatch = bookmarkRe.exec(paragraphXml);
     }
+    const declared = bookmarkNames.filter((name) => sceneIdByBookmarkName.has(name.toLowerCase()));
+    if (declared.length !== 1 || declared[0].toLowerCase() !== orderedBookmarks[paragraphOrdinal]) {
+      return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_ORDER_MISMATCH' };
+    }
+    paragraphOrdinal += 1;
     const runs = [];
     const textRe = /<w:(?:t|delText)\b[^>]*>([\s\S]*?)<\/w:(?:t|delText)>/gu;
     let textMatch = textRe.exec(paragraphXml);
@@ -3637,6 +3652,9 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap) {
       };
     }
     paragraphMatch = paragraphRe.exec(xml);
+  }
+  if (paragraphOrdinal !== orderedBookmarks.length || paragraphOrdinal === 0) {
+    return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_COUNT_MISMATCH' };
   }
   const sceneTexts = orderedSceneIds.map((sceneId) => blocksBySceneId.get(sceneId).join('\n'));
   return { ok: true, sceneTexts };

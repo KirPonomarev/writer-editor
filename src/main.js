@@ -906,8 +906,7 @@ function buildFullManuscriptProvisionalSelfParse({ source, revisionBridge, crypt
       provisionalDocxSha256,
     };
   }
-  const documentText = sceneProjection.sceneTexts.join('\n\n')
-    .replace(/\n{3,}/gu, '\n\n').replace(/^\n+/u, '').replace(/\n+$/u, '');
+  const documentText = sceneProjection.sceneTexts.join('\n\n');
   const documentTextSha256 = cryptoPort.sha256Json({ sceneText: documentText });
   const expectedDocumentTextSha256 = normalizeRtkSignedSha256(artifact.expectedDocumentTextSha256);
   if (!expectedDocumentTextSha256 || documentTextSha256 !== expectedDocumentTextSha256) {
@@ -1045,6 +1044,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
   const finalArtifactSha256 = `sha256:${sha256DocxReviewPreviewSessionBytes(documentBuffer)}`;
   const finalParse = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes({
     bytes: documentBuffer,
+    // Same already-declared full-manuscript profile as the return intake.
+    budgets: docxReviewReturnIntakeProductBudgets(),
     hmacSecret,
     expectedAuthority,
     returnedArtifactSha256: finalArtifactSha256,
@@ -9665,7 +9666,12 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
 // DOCX_REVIEW_PREVIEW_SESSION_LOCAL_FILE_COMMAND_SURFACE_END
 
 // DOCX_IMPORT_PREVIEW_REFERENCES_START
-const docxImportPreviewReferences = createDocxImportPreviewReferences();
+// A 500k-word content preview is about 4.6 MB. Let one snapshot use up to
+// half of the existing 16 MiB cache; total retention, TTL and input limits stay fixed.
+const docxImportPreviewReferences = createDocxImportPreviewReferences({
+  maxSnapshotBytes: 8 * 1024 * 1024,
+  maxTotalBytes: 16 * 1024 * 1024,
+});
 let docxImportPreviewProjectGeneration = 0;
 
 function captureDocxImportPreviewContext() {
@@ -10291,6 +10297,9 @@ function validateDocxImportPreviewPayload(payload = {}) {
     );
   }
 
+  // Apply wire-payload limits to the received message. Resolved main-owned
+  // snapshots retain their cache, schema, depth and admission checks.
+  const receivedPayload = payload;
   if (payload.docxContentPreviewRef !== undefined) {
     if (payload.docxContentPreviewReport !== undefined) {
       return makeDocxImportPreviewTypedError('E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID', 'DOCX_IMPORT_PREVIEW_MIXED_SOURCE');
@@ -10328,7 +10337,7 @@ function validateDocxImportPreviewPayload(payload = {}) {
     );
   }
 
-  const payloadChars = measureDocxImportPreviewPayloadChars(payload);
+  const payloadChars = measureDocxImportPreviewPayloadChars(receivedPayload);
   if (payloadChars < 0) {
     return makeDocxImportPreviewTypedError(
       'E_DOCX_IMPORT_PREVIEW_PAYLOAD_INVALID',
@@ -23612,7 +23621,9 @@ async function readFullManuscriptDocxReviewExportDocumentContent(sceneCandidate)
     );
   }
   return {
-    text: parsed.text,
+    // Unwrapped plain scenes retain literal paragraph boundaries. Legacy metadata
+    // and cards still use the envelope parser so those blocks cannot leak into DOCX.
+    text: !parsed.doc && !parsed.hasMetaBlock && !parsed.hasCardsBlock ? observableContent : parsed.text,
     doc: parsed.doc,
     observableContent,
   };

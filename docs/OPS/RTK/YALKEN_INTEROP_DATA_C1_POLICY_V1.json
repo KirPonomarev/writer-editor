@@ -80,7 +80,16 @@
     "test/unit/rtk-interop-c2-final-hops.test.py",
     "docs/tasks/2026-09-17--interop-word-text-order-batch.md",
     "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json"
+    "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+    "scripts/ops/rtk-interop-word-volume-fixtures.mjs",
+    "scripts/ops/rtk-interop-word-volume-readback.py",
+    "test/contracts/rtk-interop-word-volume.contract.test.js",
+    "test/unit/rtk-interop-word-volume.test.py",
+    "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
+    "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
+    "src/core/writer-local-profile-v1.cjs",
+    "test/unit/r24-wp307-writer-local-profile.test.js",
+    "test/unit/r24-wp307-writer-local-profile-mutants.test.js"
   ],
   "protectedFiles": [
     {
@@ -199,7 +208,8 @@
     "data/evidence/ledger.jsonl",
     "dashboard/index.html",
     "test/data-c1-recipe.test.mjs",
-    "test/solo-sequential.test.py"
+    "test/solo-sequential.test.py",
+    "src/word-volume-text-order.mjs"
   ],
   "labCodeBindings": [
     {
@@ -212,7 +222,7 @@
     },
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
-      "sha256": "287f965fbfd36e1630d26346ca5dbca84abcabd132a4836a124f4b65e8bf41d0"
+      "sha256": "1768ca3d80562f3fae9f25b66ac906da9484a88ef8ab599669b35171ff1415aa"
     },
     {
       "path": "src/c1-data-case.mjs",
@@ -241,6 +251,10 @@
     {
       "path": "scripts/check-physical-run.mjs",
       "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+    },
+    {
+      "path": "src/word-volume-text-order.mjs",
+      "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
     }
   ],
   "requirementIds": [
@@ -283,7 +297,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "344c76f392fa449d15cd637db15e152d58b1d5984f40a6d30fac122f114af9dc"
+        "sha256": "c8f35d6672e66e368903ecca3ce42be4c28a02f439bbaf1a45d6877e88e7fa00"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -307,7 +321,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "4abc44c73b0df4ddc6e3deb4b0529e237574c1cf0a61bd1e60c1fe88815d9dbd"
+        "sha256": "88c1b93eab4ccf560642f80affd0e1809a8b3bd70ed903b842970adfcb4eb067"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -319,7 +333,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "d986de7b6ee01990fc028aec1243e6215429eabdae1d2acfdb37a0c0e530ffb7"
+        "sha256": "0c7a0ac850d1ac17b9b02da3a940944c871297fce7c5d7245ce10fbb53b93fbb"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -395,7 +409,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "3d25f9967a6b32b3c213ef08340e236a567feaa4339341ae3d232b800c05a05d"
+        "sha256": "a5974e2e09bdbd69cea5b19be42af8d42652546ab490cc4d2ffde8fdab3d08e0"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -419,7 +433,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "6d8928ebdd67a61266f2cd01d76e3efc587a63957f2e1e90b112c495d217c7eb"
+        "sha256": "4bcfec1c1506b2d23ed48050ed82a5e32c05d5efc0f8d98ce4aa9c36c1b094c9"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -487,7 +501,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-text-order-batch.contract.test.js",
-        "sha256": "0238d1878b264e5af4b1218be87e2ef6b05717b99ae6a54e23cbf334b49962cd"
+        "sha256": "c38b0feb059c552ce6bd75e74200807f2cdb1f4336bc712a4e996903d5351f28"
       },
       {
         "path": "test/unit/rtk-interop-c2-final-hops.test.py",
@@ -504,6 +518,34 @@
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
         "sha256": "cd76893405ab2d3098b4884d0f07eb884c0e1c64e98234cd6834eb342f4c5d84"
+      },
+      {
+        "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
+        "sha256": "28674f7ae620f2a8b95b86a8d1466472724ba3b0688fce21a99c5aa9eb4306c1"
+      },
+      {
+        "path": "test/unit/rtk-interop-word-volume.test.py",
+        "sha256": "624c6e0420294b2cf8a7189d306ce1cce99b27c2e6c9aef0bbb3d216d35cdf8e"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
+        "sha256": "0ec5ae0bae64b128bca8d7f97f247223a664205b373778912a435416eeb97af3"
+      },
+      {
+        "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
+        "sha256": "a4e666e038843847802358667a2041f98046578e3c25ec014a698d6e0546283f"
+      },
+      {
+        "path": "src/core/writer-local-profile-v1.cjs",
+        "sha256": "19d5e5864ac9e1f0750f701e92f5ec2c159f1986259f80d70d8b8fcffcaf6b58"
+      },
+      {
+        "path": "test/unit/r24-wp307-writer-local-profile.test.js",
+        "sha256": "6e26db0fc686c1deea8da26489d73dd4aa305156f25126b30078e2e735a26f70"
+      },
+      {
+        "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
+        "sha256": "02f70e54f16adb7d7dc84097dff8c7557d47dbbd6b5649139f178e8ee6ad978f"
       }
     ],
     "followupRepair": {
@@ -557,9 +599,9 @@
       "scope": "Product repair: resolve supported Word theme selections through bounded existing readers and admitted import; preserve text, explicit overrides and loss diagnostics. No full-STYLES credit."
     },
     "wordTextOrderBatch": {
-      "taskId": "WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
-      "bindingBaseSha": "cd20513262277f292d7ff446dadd6eb97a2ae618",
-      "scope": "Decode saved rich-scene envelope for review reexport; admit complete single-scene C1/C2 TEXT and ORDER on source and packaged profiles only after fresh merged native execution. No other field or route credit."
+      "taskId": "WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "bindingBaseSha": "3f0e3d92593cc897e4fc67fe466a245841c5c0f8",
+      "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     }
   },
   "wordTextOrderBatch": {
@@ -572,7 +614,31 @@
       "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
-      "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME"
+      "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "ORDER__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "TEXT__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "TEXT__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "TEXT__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME"
     ],
     "requiredHops": {
       "C1": [
@@ -589,11 +655,11 @@
         "WORD_REOPEN_READBACK"
       ]
     },
-    "notBeforeUtc": "2026-09-16T21:52:26.361685+00:00",
+    "notBeforeUtc": "2026-09-16T23:15:31.159139+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-text-order-batch.mjs",
-        "sha256": "9b3c5b31baf9a7a54799fdab137ede68102bc9c78d9ff930759482bc2ff8f3a7"
+        "sha256": "6a19cc0c4fc976cd439fb6306ba13291c0a73a86c791bbe486cb9a34ba1a4a71"
       },
       {
         "path": "scripts/ops/rtk-interop-word-text-order-readback.py",
@@ -614,12 +680,44 @@
       {
         "path": "scripts/ops/rtk-interop-c1-raw-readback.py",
         "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-volume-readback.py",
+        "sha256": "f8761815ad8cbd8f8bf4bba310631d488d368ca71f55688801de91f0fb890b91"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-volume-fixtures.mjs",
+        "sha256": "50b76308353c7e344e9080d02bb97e3147e30d329722ff94016276ff977cfaee"
+      },
+      {
+        "path": "scripts/ops/rtk-word-c5v2-portfolio-corpus.mjs",
+        "sha256": "70d5cd1504f1f5b7f7f0eb41d9d2ffb18e796c097076d33018fd3c164aa8864d"
       }
     ],
     "sourceParagraphSha256": "693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1",
     "reviewedParagraphSha256": "9661ff5f7b1218ad5517936e57162443470c53c85a5e697f8c54ff3129e02a50",
     "electronVersion": "41.10.3",
     "admission": "Read-only computation from exact current merged runtime, pinned Lab source, complete actual native hops and separate independent raw TEXT and ORDER proofs. No additional self-authored acceptance receipt.",
-    "packagedC1Scope": "Governed importSafeCreate command after admitted preview; no native file-dialog claim."
+    "packagedC1Scope": "Governed importSafeCreate after preview; FULL_SYNTHETIC_NOVEL and LARGE_DOCUMENT use the actual owned native local-file dialog, smaller volumes use bounded content preview. Generic C1 preserves TEXT/ORDER but declares bookmark and metadata loss.",
+    "volumeParagraphHashes": {
+      "MULTI_SCENE": {
+        "sourceParagraphSha256": "693edfc41dd7963622bb9c5e6ea1a2766ea05245e8e390781e8c64988df278e1",
+        "reviewedParagraphSha256": "9661ff5f7b1218ad5517936e57162443470c53c85a5e697f8c54ff3129e02a50"
+      },
+      "FULL_SYNTHETIC_NOVEL": {
+        "sourceParagraphSha256": "e1f34ab0fd091e32062e8dbc5f98136b61c07a9c0e3643f5b90f4557302e4b9d",
+        "reviewedParagraphSha256": "eb34b8aef64c89979a58177a93b8982e5d91acf17503b12e7bc6a1e114f4f137"
+      },
+      "LARGE_DOCUMENT": {
+        "sourceParagraphSha256": "22516bedb9359dcec1f02c217f1c05e17d60a94a5ed3f238f2942ac8296a569c",
+        "reviewedParagraphSha256": "52e6e781aa5c3b72caaf2133dd2ae48badab2076dd252ce66b7ab73204b5d0c2"
+      }
+    },
+    "volumeProofBounds": {
+      "fileBytes": 33554432,
+      "aggregateBytes": 134217728,
+      "files": 512,
+      "scope": "Raw proof files only; existing product intake and IPC ceilings are unchanged."
+    }
   }
 }

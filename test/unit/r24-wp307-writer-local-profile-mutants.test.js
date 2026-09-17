@@ -18,6 +18,20 @@ test('WP307 independent oracles kill activation and optional-system mutants', (t
 
   const mutants = [
     {
+      id: 'full-manuscript-export-denied',
+      transform: (value) => value.replace(
+        "  'cmd.project.review.exportFullManuscriptDocxReviewPacket',",
+        "  'cmd.project.review.exportFullManuscriptDocxReviewPacket.disabled',",
+      ),
+      oracle: (module) => {
+        const profile = module.createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
+        assert.equal(module.evaluateWriterLocalCommandAccess({
+          profile,
+          commandId: 'cmd.project.review.exportFullManuscriptDocxReviewPacket',
+        }).allowed, true);
+      },
+    },
+    {
       id: 'unpackaged-activation',
       transform: (value) => value.replace(
         "const active = isPackaged === true && normalizedPlatform === 'darwin';",

@@ -8,16 +8,16 @@ const root=path.resolve(__dirname,'../..');
 const load=()=>import(pathToFileURL(path.join(root,'scripts/ops/rtk-interop-word-text-order-batch.mjs')).href);
 const run='ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME__contract';
 
-test('Word batch supports exactly eight frozen cells and all six C2 hops',async()=>{
+test('Word batch supports exactly thirty-two frozen cells and all six C2 hops',async()=>{
   const m=await load();
   const d=await import(pathToFileURL(path.join(root,'scripts/ops/rtk-interop-100-denominator-v1.mjs')).href);
   const cells=d.buildRequiredCells(d.readInterop100Denominator(root));
-  assert.equal(cells.length,1120);assert.equal(m.WORD_BATCH_CELLS.length,8);
-  assert.equal(new Set(m.WORD_BATCH_CELLS).size,8);
+  assert.equal(cells.length,1120);assert.equal(m.WORD_BATCH_CELLS.length,32);
+  assert.equal(new Set(m.WORD_BATCH_CELLS).size,32);
   for(const cellId of m.WORD_BATCH_CELLS)assert.ok(cells.some(c=>c.cellId===cellId));
   assert.deepEqual(m.WORD_BATCH_HOPS.C2,['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE','YALKEN_APPLY','YALKEN_REEXPORT','WORD_REOPEN_READBACK']);
 });
-test('one to four named journeys are allowed, repetitions cannot grow credit',async()=>{
+test('one to sixteen named journeys are allowed, repetitions cannot grow credit',async()=>{
   const {validateWordBatchRuns}=await load();
   assert.equal(validateWordBatchRuns([run]).length,1);
   assert.throws(()=>validateWordBatchRuns([run,run.replace('contract','repeat')]),/DUPLICATE_JOURNEY/);

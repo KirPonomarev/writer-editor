@@ -9,14 +9,17 @@ import {TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-text-order-readback.py';
+const VOLUME_READER='scripts/ops/rtk-interop-word-volume-readback.py';
+export const WORD_BATCH_VOLUMES=Object.freeze(['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']);
+export const WORD_VOLUME_CONTROLS=Object.freeze(['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene']);
 const SPEC='docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 export const WORD_BATCH_MODE='WORD_TEXT_ORDER_BATCH_V1';
 export const WORD_BATCH_HOPS=Object.freeze({
   C1:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE'],
   C2:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE','YALKEN_APPLY','YALKEN_REEXPORT','WORD_REOPEN_READBACK'],
 });
-export const WORD_BATCH_CELLS=Object.freeze(['C1','C2'].flatMap(route=>['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME']
-  .flatMap(profile=>['TEXT','ORDER'].map(field=>`${field}__SINGLE_SCENE__${route}__${profile}`))));
+export const WORD_BATCH_CELLS=Object.freeze(WORD_BATCH_VOLUMES.flatMap(volume=>['C1','C2'].flatMap(route=>['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME']
+  .flatMap(profile=>['TEXT','ORDER'].map(field=>`${field}__${volume}__${route}__${profile}`)))));
 const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const same=(a,b)=>stableOrderJson(a)===stableOrderJson(b);
 const sha40=x=>typeof x==='string'&&/^[a-f0-9]{40}$/u.test(x);
@@ -30,11 +33,11 @@ function clean(root){
   demand(sha40(head)&&sha40(tree),'WORD_BATCH_GIT_IDENTITY');return {head,tree};
 }
 export function validateWordBatchRuns(runIds){
-  demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=4,'WORD_BATCH_RUN_SET');
+  demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=16,'WORD_BATCH_RUN_SET');
   const rows=runIds.map(runId=>{
     demand(typeof runId==='string','WORD_BATCH_RUN_ID');
-    const m=/^ORDER__SINGLE_SCENE__(C[12])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}$/u.exec(runId);
-    demand(m,'WORD_BATCH_RUN_ID');return {runId,route:m[1],profile:m[2],cellId:runId.slice(0,runId.lastIndexOf('__'))};
+    const m=/^ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[12])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}$/u.exec(runId);
+    demand(m,'WORD_BATCH_RUN_ID');return {runId,volume:m[1],route:m[2],profile:m[3],cellId:runId.slice(0,runId.lastIndexOf('__'))};
   });
   demand(new Set(rows.map(x=>x.cellId)).size===rows.length,'WORD_BATCH_DUPLICATE_JOURNEY');return rows;
 }
@@ -55,22 +58,30 @@ export function selectWordBatchObservation(ledger,row){
   return obs;
 }
 export function validateWordBatchRaw(raw,{row,head,tree,observationSha256,files,policy}){
-  demand(raw?.ok===true&&raw.schemaVersion==='WORD_TEXT_ORDER_RAW_READBACK_V1'&&raw.admissionCredit===0
+  const volumeProof=row.volume!=='SINGLE_SCENE';
+  demand(raw?.ok===true&&raw.schemaVersion===(volumeProof?'WORD_VOLUME_RAW_READBACK_V1':'WORD_TEXT_ORDER_RAW_READBACK_V1')&&raw.admissionCredit===0
     &&raw.runId===row.runId&&raw.productHead===head&&raw.productTree===tree
     &&raw.observationSha256===observationSha256&&raw.filesVerified===files.length,'WORD_BATCH_RAW_BINDING');
   demand(Array.isArray(raw.fieldProofs)&&same(raw.fieldProofs.map(f=>f.field),['TEXT','ORDER']),'WORD_BATCH_FIELD_SET');
   for(const f of raw.fieldProofs){
-    demand(f.runId===row.runId&&f.cellId===`${f.field}__SINGLE_SCENE__${row.route}__${row.profile}`&&f.status==='PASS'
+    demand(f.runId===row.runId&&f.cellId===`${f.field}__${row.volume}__${row.route}__${row.profile}`&&f.status==='PASS'
       &&same(f.requiredHops,WORD_BATCH_HOPS[row.route])&&same(f.oracles,policy.requiredOracles),'WORD_BATCH_FIELD_SCOPE');
     const expectedStages=row.route==='C1'?['source','export-docx','word-native','returned-docx','source-renderer','import-renderer','persisted','reopened']:
       ['source','export-docx','returned-docx','source-renderer','applied-renderer','persisted','reopened-renderer','reexport-docx','final-word-docx','final-word-native'];
+    if(volumeProof&&row.route==='C2')expectedStages.push('word-native');
     demand(same(Object.keys(f.stageProofs).sort(),expectedStages.sort()),'WORD_BATCH_STAGE_SET');
     for(const [name,stage] of Object.entries(f.stageProofs)){
       const reviewed=row.route==='C2'&&!['source','export-docx','source-renderer'].includes(name);
-      demand(stage.reviewed===reviewed&&stage.paragraphSha256===policy.wordTextOrderBatch[reviewed?'reviewedParagraphSha256':'sourceParagraphSha256']
+      demand(stage.reviewed===reviewed&&stage.paragraphSha256===(volumeProof?policy.wordTextOrderBatch.volumeParagraphHashes[row.volume]:policy.wordTextOrderBatch)[reviewed?'reviewedParagraphSha256':'sourceParagraphSha256']
         &&sha64(stage.sortKeysSha256),'WORD_BATCH_STAGE_HASH');
     }
-    if(f.field==='TEXT'){
+    if(volumeProof){
+      demand(same(f.subcases,f.field==='TEXT'?TEXT_SUBCASES:policy.requiredSubcases)
+        &&same(f.controls.positiveControls,['identity','split-xml-runs'])
+        &&same(f.controls.rawMutantsExecuted.map(x=>x.id),WORD_VOLUME_CONTROLS)
+        &&f.controls.rawMutantsExecuted.every(x=>x.rejected===true&&sha64(x.sha256))
+        &&new Set(f.controls.rawMutantsExecuted.map(x=>x.sha256)).size===WORD_VOLUME_CONTROLS.length,'WORD_BATCH_VOLUME_CONTROLS');
+    }else if(f.field==='TEXT'){
       demand(same(f.subcases,TEXT_SUBCASES)&&same(f.controls.positiveControls,['identity','split-xml-runs'])
         &&same(f.controls.rawMutantsExecuted.map(x=>x.id),TEXT_CONTROL_IDS)
         &&f.controls.rawMutantsExecuted.every(x=>x.rejected===true&&sha64(x.sha256)),'WORD_BATCH_TEXT_CONTROLS');
@@ -119,13 +130,14 @@ export function verifyWordTextOrderBatch({repoRoot=ROOT,labRoot,runIds,requiredC
       const snapshot=json(labRoot,prefix+'runtime-project-snapshot.json');
       const files=[...obs.artifacts,...snapshot.files].map(({path:p,bytes,sha256})=>({path:p,bytes,sha256}));
       files.push(obsFile.binding);
-      demand(files.length<=128&&new Set(files.map(f=>f.path)).size===files.length,'WORD_BATCH_INVENTORY');
-      demand(files.every(f=>f.path.startsWith(prefix)&&Number.isSafeInteger(f.bytes)&&f.bytes>=0&&f.bytes<=8*1024*1024&&sha64(f.sha256))
-        &&files.reduce((n,f)=>n+f.bytes,0)<=64*1024*1024,'WORD_BATCH_FILE_SCOPE');
+      const volumeProof=row.volume!=='SINGLE_SCENE';
+      demand(files.length<=(volumeProof?512:128)&&new Set(files.map(f=>f.path)).size===files.length,'WORD_BATCH_INVENTORY');
+      demand(files.every(f=>f.path.startsWith(prefix)&&Number.isSafeInteger(f.bytes)&&f.bytes>=0&&f.bytes<=(volumeProof?32:8)*1024*1024&&sha64(f.sha256))
+        &&files.reduce((n,f)=>n+f.bytes,0)<=(volumeProof?128:64)*1024*1024,'WORD_BATCH_FILE_SCOPE');
       const request={root:fs.realpathSync(labRoot),runId:row.runId,productHead:identity.head,productTree:identity.tree,files,
         qualifiedProvider:policy.qualifiedProvider,packageJsonSha256:hash(readOrderFile(ROOT,'package.json').bytes),
         packageLockSha256:hash(readOrderFile(ROOT,'package-lock.json').bytes),electronVersion:batch.electronVersion};
-      const process=spawnSync('python3',['-I','-B',path.join(ROOT,READER)],{input:JSON.stringify(request),encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});
+      const process=spawnSync('python3',['-I','-B',path.join(ROOT,volumeProof?VOLUME_READER:READER)],{input:JSON.stringify(request),encoding:'utf8',timeout:60000,maxBuffer:4*1024*1024});
       demand(!process.error&&process.status===0,'WORD_BATCH_RAW_FAILED:'+String(process.stdout||process.stderr||process.error));
       const raw=JSON.parse(process.stdout);
       validateWordBatchRaw(raw,{row,...identity,observationSha256:obsFile.binding.sha256,files,policy});
@@ -144,7 +156,7 @@ export function verifyWordTextOrderBatch({repoRoot=ROOT,labRoot,runIds,requiredC
     currentHead:identity?.head||null,currentTree:identity?.tree||null,percentage:acceptedCellIds.length/1120*100,
     cellDecisions:fieldProofs.map(f=>({cellId:f.cellId,status:'PASS',outcome:f.outcome,sourceRunId:f.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(f)))})),
     policySha256:DATA_POLICY_SHA256,rawReadbacks:ok?reviews:[],seconds:(performance.now()-started)/1000,
-    limitations:['Exact observed single-scene paragraph grammar on C1/C2 and the named runtime profiles.',
-      'Packaged C1 uses the governed command bridge after preview; native import dialog coverage is separate.',
+    limitations:['Exact observed paragraph grammar at the named fixed volumes on C1/C2 and the named runtime profiles.',
+      'Single-scene packaged C1 uses the governed command bridge after preview; volume C1 uses the owned native local-file preview. Content import does not preserve scene structure or metadata.',
       'Each actual journey yields independently checked TEXT and ORDER only; repeats never add cell IDs.']};
 }
