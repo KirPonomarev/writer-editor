@@ -672,7 +672,7 @@
       "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "029e95bdd886d581a3d9e7271ea3a3cec0191a1dfeb18fd1f2eb7fe209b2d10d"
+      "sha256": "51bb9cd862702e325e31b6156690f90d919a3f1998b0e83a2fb5efe663d6c6c0"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -690,7 +690,7 @@
       "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "da0b565914b0f3c966fe02c16a0fa6de20b94840d536fef19edbeb6444e4286d"
+      "sha256": "dbc0f930204467d91cc2e0e58e5f11a3e5f4be364641fb5a7feb1737c4dd316b"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
