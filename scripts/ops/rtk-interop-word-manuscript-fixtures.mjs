@@ -4,6 +4,15 @@ import {createHash} from 'node:crypto';
 export const MANUSCRIPT_VOLUMES=Object.freeze(['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']);
 export const MANUSCRIPT_ROUTES=Object.freeze(['C1','C2','C3','C5']);
 export const MANUSCRIPT_PROFILES=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME']);
+export const C1_REVIEW_RECIPE='C1_REVIEW_RETURN';
+export function manuscriptRecipes(route){
+ if(!MANUSCRIPT_ROUTES.includes(route))throw new Error('MANUSCRIPT_SCOPE');
+ return route==='C1'?['DEFAULT',C1_REVIEW_RECIPE]:['DEFAULT'];
+}
+export function manuscriptUsesSafeCreate(route,recipe='DEFAULT'){
+ if(!manuscriptRecipes(route).includes(recipe))throw new Error('MANUSCRIPT_RECIPE');
+ return route==='C5'||(route==='C1'&&recipe==='DEFAULT');
+}
 export const UNICODE_PROBES=Object.freeze([
  '[normalization] NFC é Å ö; NFD e\u0301 A\u030a o\u0308; Hangul 한 한.',
  '[bidi] LTR abc \u2067שלום 123\u2069 xyz العربية.',
@@ -32,19 +41,23 @@ export function manuscriptLinkBlock(){
  const link=href=>({type:'link',attrs:{href,target:'_blank',rel:'noopener noreferrer nofollow'}});
  return {type:'paragraph',content:[text('[links] '),text('reference',[link(MANUSCRIPT_LINK_TARGETS[0])]),text(' / '),text('reference',[link(MANUSCRIPT_LINK_TARGETS[1])]),text(' / '),text('reference',[link(MANUSCRIPT_LINK_TARGETS[0])]),text('.')]};
 }
-export function manuscriptFields(volume,route){
+export function manuscriptFields(volume,route,recipe='DEFAULT'){
  if(!MANUSCRIPT_VOLUMES.includes(volume)||!MANUSCRIPT_ROUTES.includes(route))throw new Error('MANUSCRIPT_SCOPE');
+ manuscriptUsesSafeCreate(route,recipe);
+ // These fields have a different return command; ordinary C1 content import
+ // keeps its existing four-field proof and never receives review-field credit.
+ if(recipe===C1_REVIEW_RECIPE)return [...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS'];
  if(route==='C5'){
   if(volume==='LARGE_DOCUMENT')throw new Error('GOOGLE_NATIVE_VOLUME_UNQUALIFIED');
   return ['TEXT','ORDER','UNICODE_IME_LOCALE'];
  }
  return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),...(route==='C1'?[]:['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS'])];
 }
-export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.filter(route=>route!=='C5'||volume!=='LARGE_DOCUMENT').flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptFields(volume,route).map(field=>`${field}__${volume}__${route}__${profile}`)))));
-export function buildWordManuscriptFixture(volume,route){
- manuscriptFields(volume,route);
+export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.filter(route=>route!=='C5'||volume!=='LARGE_DOCUMENT').flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptRecipes(route).flatMap(recipe=>manuscriptFields(volume,route,recipe).map(field=>`${field}__${volume}__${route}__${profile}`))))));
+export function buildWordManuscriptFixture(volume,route,recipe='DEFAULT'){
+ manuscriptFields(volume,route,recipe);
  const base=volume==='SINGLE_SCENE'?{minimumWords:0,scenes:[{paragraphs:[...WORD_VOLUME_TEXT_PROBES]}]}:buildWordVolumeFixture(volume);
- const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0){content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());if(['C2','C3'].includes(route))content.splice(content.length-1,0,manuscriptLinkBlock());}const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
+ const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0){content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());if(!manuscriptUsesSafeCreate(route,recipe))content.splice(content.length-1,0,manuscriptLinkBlock());}const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
  const forRound=round=>scenes.map(s=>s.paragraphs.map(p=>round?p.replace('sentinel alpha','sentinel round'+round):p));
  return {schemaVersion:'WORD_MANUSCRIPT_FIXTURE_V1',volume,route,minimumWords:base.minimumWords,requiredCycles:route==='C3'?5:1,scenes,forRound,paragraphsForRound:round=>forRound(round).flat(),sourceTokenForRound:round=>round===1?'sentinel alpha':'sentinel round'+(round-1),replacementTokenForRound:round=>'sentinel round'+round,imeText:'日本語.',imePrefix:'[ime] '};
 }

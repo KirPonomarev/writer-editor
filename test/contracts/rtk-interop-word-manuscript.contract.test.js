@@ -164,24 +164,52 @@ test('Comment admission rejects missing hops, weak controls, lost tombstones and
  assert.throws(()=>check(p,5,rounds));
 });
 
-test('Manuscript admission targets 174 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Manuscript admission targets 204 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,174);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,174);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,204);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,204);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
  assert.deepEqual(f.manuscriptFields('MULTI_SCENE','C5'),['TEXT','ORDER','UNICODE_IME_LOCALE']);
  const run='ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME__contract';assert.equal(m.validateManuscriptRuns([run]).length,1);
  for(const runs of [[],[run,run+'repeat'],[run.replace('C3','C4')],[run.replace('ORDER','STYLES')],[run+'../escape'],[null]])assert.throws(()=>m.validateManuscriptRuns(runs));
- const row=m.validateManuscriptRuns([run])[0],obs={type:'PHYSICAL_OBSERVATION',runId:run,cellId:row.cellId,artifactHash:'a'.repeat(64)};
+ const row=m.validateManuscriptRuns([run])[0],obs={type:'PHYSICAL_OBSERVATION',runId:run,cellId:row.cellId,recipe:'DEFAULT',artifactHash:'a'.repeat(64)};
  assert.equal(m.selectManuscriptObservation([obs],row),obs);
  for(const ledger of [[],[obs,obs],[obs,{type:'EVIDENCE_SUPERSEDES',supersedesRunId:run}],[obs,{type:'PRIVACY_INVALIDATED',runId:run}]])assert.throws(()=>m.selectManuscriptObservation(ledger,row));
  for(const extra of [{wordTextOrderLabRoot:ROOT},{wordTextOrderRunIds:[run]},{spec},{ledger:[]},{dataC1RunId:run},{orderRunId:run},{textOrderRunId:run},{freshC1EvidenceRoot:ROOT},{requireExternalEvidencePackage:true}]){
   const result=d.verifyInterop100(ROOT,{wordManuscriptLabRoot:ROOT,wordManuscriptRunIds:[run],...extra});assert.equal(result.passedRequiredCells,0);assert.equal(result.authoritativeAdmission,false);assert.ok(result.errors.includes('WORD_MANUSCRIPT_MODE_OPTIONS_CONFLICT'));
  }
+});
+
+test('C1 review return cannot replace safe-create fields, reuse a recipe or masquerade as another route',async()=>{
+ const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
+ const runs=[];
+ for(const volume of f.MANUSCRIPT_VOLUMES)for(const route of f.MANUSCRIPT_ROUTES)for(const profile of f.MANUSCRIPT_PROFILES){
+  if(volume==='LARGE_DOCUMENT'&&route==='C5')continue;
+  const base=`ORDER__${volume}__${route}__${profile}__`;
+  runs.push(base+'unit');
+  if(route==='C1'){
+   runs.push(base+'review-return-unit');
+   assert.deepEqual(f.manuscriptFields(volume,route),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);
+   assert.deepEqual(f.manuscriptFields(volume,route,f.C1_REVIEW_RECIPE),[...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS']);
+   assert.equal(f.manuscriptUsesSafeCreate(route),true);assert.equal(f.manuscriptUsesSafeCreate(route,f.C1_REVIEW_RECIPE),false);
+  }else assert.throws(()=>f.buildWordManuscriptFixture(volume,route,f.C1_REVIEW_RECIPE),/MANUSCRIPT_RECIPE/);
+ }
+ const rows=m.validateManuscriptRuns(runs);assert.equal(rows.length,38);
+ const cellIds=rows.flatMap(r=>f.manuscriptFields(r.volume,r.route,r.recipe).map(field=>`${field}__${r.volume}__${r.route}__${r.profile}`));
+ assert.equal(new Set(cellIds).size,204);assert.equal(cellIds.length,204);
+ const review=rows.find(r=>r.recipe===f.C1_REVIEW_RECIPE);
+ for(const bad of [[review.runId,review.runId+'repeat'],[review.runId.replace('__C1__','__C2__')]])assert.throws(()=>m.validateManuscriptRuns(bad));
+ for(const recipe of ['',null,'review','DEFAULT_OTHER'])assert.throws(()=>f.manuscriptFields('SINGLE_SCENE','C1',recipe),/MANUSCRIPT_RECIPE/);
+ const obs={type:'PHYSICAL_OBSERVATION',runId:review.runId,cellId:review.cellId,recipe:'DEFAULT'};
+ assert.throws(()=>m.selectManuscriptObservation([obs],review),/EXACT_OBSERVATION/);
+ assert.equal(m.manuscriptStages('C1')['imported-raw'],0);
+ assert.equal(m.manuscriptStages('C1',f.C1_REVIEW_RECIPE)['rounds/1/persisted'],1);
+ assert.equal(m.manuscriptStages('C1',f.C1_REVIEW_RECIPE)['imported-raw'],undefined);
 });
 
 test('Independent manuscript Python tests reject semantic, style, structure and caller-authority corruption',()=>{
@@ -206,9 +234,9 @@ test('Manuscript raw consumer rejects incomplete rounds, missing fields and cohe
  const ids=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
  const stageProofs=Object.fromEntries(Object.entries(m.manuscriptStages('C1')).map(([k,round])=>[k,{round,paragraphCount:15,paragraphSha256:h,sortKeysSha256:h}]));
  const unicodeProof={probes:f.UNICODE_PROBES,compositionEventsSha256:h,locale:{language:'ru',languages:['ru'],intl:{locale:'ru',timeZone:'Europe/Helsinki'}},providerLocale:{locale:'ru',languages:['ru']},fontLedger:Array.from({length:3},()=>({fonts:[{glyphCount:1}],scope:'Chromium actual platform fonts'})),limitations:{ime:'Bounded Chromium composition',fonts:'Actual glyph fallback'}};
- const raw={ok:true,schemaVersion:'WORD_MANUSCRIPT_RAW_READBACK_V1',admissionCredit:0,runId:run,productHead:head,productTree:tree,observationSha256:h,filesVerified:1,roundProofs:[{ordinal:1,exportId:'export-a',roundId:'round-a',exportSha256:h,returnedSha256:h,savedSceneHashes:[h]}],finalHops:{ok:true,acceptanceCredit:0},fieldProofs:['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES'].map(field=>({field,cellId:field+'__SINGLE_SCENE__C1__SOURCE_RUNTIME',runId:run,status:'PASS',subcases:m.MANUSCRIPT_SUBCASES[field],requiredHops:m.MANUSCRIPT_HOPS.C1,requiredCycles:1,oracles:policy.requiredOracles,stageProofs,unicodeProof,styleProofs:Object.fromEntries(['rounds/1/export','rounds/1/word','reexport','final-word-lifecycle'].map(k=>[k,{semanticStyleSha256:h,stylePartsSha256:{'word/styles.xml':h,'word/numbering.xml':h}}])),unsupportedStylesDeclared:'Fixed supported corpus',controls:{positiveControls:['identity','split-xml-runs'],textMutants:ids.map((id,i)=>({id,rejected:true,sha256:crypto.createHash('sha256').update(String(i)).digest('hex')})),styleMutants:['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'].map((id,i)=>({id,rejected:true,sha256:crypto.createHash('sha256').update('style'+i).digest('hex')})),structureMutants:[]}}))};
+ const raw={ok:true,schemaVersion:'WORD_MANUSCRIPT_RAW_READBACK_V1',admissionCredit:0,runId:run,recipe:'DEFAULT',productHead:head,productTree:tree,observationSha256:h,filesVerified:1,roundProofs:[{ordinal:1,exportId:'export-a',roundId:'round-a',exportSha256:h,returnedSha256:h,savedSceneHashes:[h]}],finalHops:{ok:true,acceptanceCredit:0},fieldProofs:['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES'].map(field=>({field,cellId:field+'__SINGLE_SCENE__C1__SOURCE_RUNTIME',runId:run,status:'PASS',subcases:m.MANUSCRIPT_SUBCASES[field],requiredHops:m.MANUSCRIPT_HOPS.C1,requiredCycles:1,oracles:policy.requiredOracles,stageProofs,unicodeProof,styleProofs:Object.fromEntries(['rounds/1/export','rounds/1/word','reexport','final-word-lifecycle'].map(k=>[k,{semanticStyleSha256:h,stylePartsSha256:{'word/styles.xml':h,'word/numbering.xml':h}}])),unsupportedStylesDeclared:'Fixed supported corpus',controls:{positiveControls:['identity','split-xml-runs'],textMutants:ids.map((id,i)=>({id,rejected:true,sha256:crypto.createHash('sha256').update(String(i)).digest('hex')})),styleMutants:['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'].map((id,i)=>({id,rejected:true,sha256:crypto.createHash('sha256').update('style'+i).digest('hex')})),structureMutants:[]}}))};
  const options={row,head,tree,observationSha256:h,files:[{}],policy};assert.equal(m.validateManuscriptRaw(raw,options),true);
- const mutants=[r=>r.admissionCredit=3,r=>r.productHead='d'.repeat(40),r=>r.filesVerified=0,r=>r.roundProofs=[],r=>r.roundProofs[0].ordinal=5,r=>r.fieldProofs.pop(),r=>r.fieldProofs[0].requiredCycles=5,r=>r.fieldProofs[0].subcases.pop(),r=>delete r.fieldProofs[0].stageProofs['reopened-renderer'],r=>r.fieldProofs[0].stageProofs.source.paragraphSha256='e'.repeat(64),r=>r.fieldProofs[0].controls.textMutants[0].rejected=false,r=>r.fieldProofs[0].unicodeProof.fontLedger=[],r=>r.finalHops=null,r=>delete r.fieldProofs[0].stageProofs['reexport-docx'],r=>r.fieldProofs[0].controls.styleMutants.pop(),r=>r.fieldProofs.at(-1).styleProofs.reexport.semanticStyleSha256='f'.repeat(64)];
+ const mutants=[r=>delete r.recipe,r=>r.recipe='C1_REVIEW_RETURN',r=>r.admissionCredit=3,r=>r.productHead='d'.repeat(40),r=>r.filesVerified=0,r=>r.roundProofs=[],r=>r.roundProofs[0].ordinal=5,r=>r.fieldProofs.pop(),r=>r.fieldProofs[0].requiredCycles=5,r=>r.fieldProofs[0].subcases.pop(),r=>delete r.fieldProofs[0].stageProofs['reopened-renderer'],r=>r.fieldProofs[0].stageProofs.source.paragraphSha256='e'.repeat(64),r=>r.fieldProofs[0].controls.textMutants[0].rejected=false,r=>r.fieldProofs[0].unicodeProof.fontLedger=[],r=>r.finalHops=null,r=>delete r.fieldProofs[0].stageProofs['reexport-docx'],r=>r.fieldProofs[0].controls.styleMutants.pop(),r=>r.fieldProofs.at(-1).styleProofs.reexport.semanticStyleSha256='f'.repeat(64)];
  for(const mutate of mutants){const changed=JSON.parse(JSON.stringify(raw));mutate(changed);assert.throws(()=>m.validateManuscriptRaw(changed,options));}
 });
 

@@ -20,7 +20,10 @@ HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RE
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
 STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style']
 STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path']
-def fields(volume,route):
+def fields(volume,route,recipe='DEFAULT'):
+    require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT'] and route in ['C1','C2','C3','C5'],'MANUSCRIPT_SCOPE')
+    require(recipe=='DEFAULT' or (route=='C1' and recipe=='C1_REVIEW_RETURN'),'MANUSCRIPT_RECIPE')
+    if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS']
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
         return ['TEXT','ORDER','UNICODE_IME_LOCALE']
@@ -38,11 +41,12 @@ def styles():
     out += [{'type':'orderedList','attrs':{'start':3},'content':[item(para('[ordered-3] First numbered item.')),item(para('[ordered-4] Second numbered item.'),{'type':'bulletList','content':[item(para('[nested-bullet] Nested bullet item.'))]})]}, {'type':'bulletList','content':[item(para('[bullet-1] First bullet item.')),item(para('[bullet-2] Second bullet item.'))]}, {'type':'blockquote','content':[para('[quote] Authored quotation.')]}, {'type':'codeBlock','attrs':{'language':''},'content':[{'type':'text','text':'[code] const answer = 42;'}]},para('')]
     return out
 
-def expected_docs(volume,route,round=0):
+def expected_docs(volume,route,round=0,recipe='DEFAULT'):
+    fields(volume,route,recipe)
     ps=[list(v.PROBES)] if volume=='SINGLE_SCENE' else v.expected_scenes(volume)
     docs=[{'type':'doc','content':[para(p.replace('sentinel alpha','sentinel round'+str(round)) if round else p) for p in s]} for s in ps]
     docs[0]['content'] += [para(p) for p in UNICODE]+styles()
-    if route in ['C2','C3']:
+    if route in ['C2','C3'] or recipe=='C1_REVIEW_RETURN':
         runs=[{'type':'text','text':'[links] '}]
         for i,target in enumerate([LINK_TARGETS[0],LINK_TARGETS[1],LINK_TARGETS[0]]):
             if i:runs.append({'type':'text','text':' / '})
@@ -266,8 +270,8 @@ COMMENT_RELATIONSHIPS=[
  'http://schemas.microsoft.com/office/2016/09/relationships/commentsIds',
  'http://schemas.microsoft.com/office/2018/08/relationships/commentsExtensible']
 COMMENT_CONTROLS=['missing-root','missing-reply','body-whitespace','wrong-author','wrong-date','wrong-utc-namespace','wrong-parent','wrong-status','wrong-anchor','missing-reference','duplicate-identity','deleted-reappeared']
-def comment_expected(volume,route,pid,scene_id):
-    ps=paragraphs(expected_docs(volume,route)[0]);out=[]
+def comment_expected(volume,route,pid,scene_id,recipe='DEFAULT'):
+    ps=paragraphs(expected_docs(volume,route,recipe=recipe)[0]);out=[]
     for status,quote in [('open','[quote] Authored quotation.'),('resolved','[code] const answer = 42;'),('deleted','[heading-1] Authored heading.')]:
         ident='manuscript-comment-'+status;index=ps.index(quote)
         messages=[{'commentId':ident+'-root','kind':'root','body':'  Root '+status+' & <замечание>\n\t尾 ','provenance':{'author':'Alice & editor','initials':'AE','date':'2026-09-17T10:00:00Z','dateUtc':'2026-09-17T10:00:00Z'}},
@@ -531,8 +535,8 @@ def replace_part(original,name,data):
         for n in src.namelist():dst.writestr(n,data if n==name else src.read(n))
     return out.getvalue()
 
-def controls(source,volume,route,ids,round_id):
-    ps,parts,template=docx(source);docs=expected_docs(volume,route);expected=sum([paragraphs(d) for d in docs],[]);exact(ps,expected,'CONTROL_IDENTITY');results=[]
+def controls(source,volume,route,ids,round_id,recipe='DEFAULT'):
+    ps,parts,template=docx(source);docs=expected_docs(volume,route,recipe=recipe);expected=sum([paragraphs(d) for d in docs],[]);exact(ps,expected,'CONTROL_IDENTITY');results=[]
     # A run split preserves both exact text and inherited style semantics.
     d=copy.deepcopy(template);p=d.find(W+'body/'+W+'p');r=next(r for r in p.findall(W+'r') if r.find(W+'t') is not None);t=r.find(W+'t');clone=copy.deepcopy(r);original=t.text;t.text=original[:5];clone.find(W+'t').text=original[5:];p.insert(list(p).index(r)+1,clone)
     b=replace_part(source,'word/document.xml',ET.tostring(d,encoding='utf-8'));exact(docx(b)[0],expected,'CONTROL_SPLIT_RUN')
@@ -670,13 +674,17 @@ def google_controls(response,request,source,returned,expected):
 def audit(request):
     started=time.perf_counter();root=Path(request['root']);require(root.is_absolute() and root.resolve()==root and root.is_dir(),'MANUSCRIPT_RAW_ROOT')
     run=request['runId'];m=re.fullmatch(r'ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}',run)
-    require(m is not None,'MANUSCRIPT_RUN_ID');volume,route,profile=m.groups();fields(volume,route);generic=route in ['C1','C5'];head,tree=request['productHead'],request['productTree']
+    require(m is not None,'MANUSCRIPT_RUN_ID');volume,route,profile=m.groups()
+    recipe='C1_REVIEW_RETURN' if run.rsplit('__',1)[1].startswith('review-return-') else 'DEFAULT'
+    fields(volume,route,recipe);generic=route=='C5' or (route=='C1' and recipe=='DEFAULT');head,tree=request['productHead'],request['productTree']
+    expected_round=lambda n=0:expected_docs(volume,route,n,recipe)
     require(all(re.fullmatch('[a-f0-9]{40}',s) for s in (head,tree)),'MANUSCRIPT_HEAD_TREE')
     prefix='runs/'+run+'/';bindings=request['files']
     require(isinstance(bindings,list) and 0<len(bindings)<=2048 and len({b['path'] for b in bindings})==len(bindings),'MANUSCRIPT_INVENTORY')
     require(all(b['path'].startswith(prefix) for b in bindings) and sum(b['bytes'] for b in bindings)<=384*1024*1024,'MANUSCRIPT_INVENTORY_BOUND')
     files={b['path']:v.checked_read(root,b) for b in bindings};raw=lambda name:files[prefix+name];read=lambda name:json.loads(raw(name))
     obs=read('observation.json');require((obs['runId'],obs['cellId'],obs['field'],obs['volume'],obs['route'],obs['profile'])==(run,run.rsplit('__',1)[0],'ORDER',volume,route,profile),'MANUSCRIPT_OBSERVATION')
+    require(obs.get('recipe')==recipe,'MANUSCRIPT_RECIPE_BINDING')
     require(obs['manuscriptProofVersion']=='WORD_MANUSCRIPT_NATIVE_V1' and obs['status']=='PASS' and (request.get('diagnosticOnly') is True or obs['candidateDiagnosticOnly'] is False),'MANUSCRIPT_CANDIDATE')
     require(obs['candidateOverlay']=={'id':'baseline','changed':False} and (obs['yalkenShadowHead'],obs['yalkenShadowTree'])==(head,tree),'MANUSCRIPT_ACTUAL_SOURCE')
     rt=obs['yalkenShadowRuntime'];require(rt['headBefore']==rt['headAfter']==head and rt['treeBefore']==rt['treeAfter']==tree and rt['statusBefore']==rt['statusAfter']=='','MANUSCRIPT_CLEAN_RUNTIME')
@@ -697,9 +705,9 @@ def audit(request):
         require(proof['executableProof']['sha256']==tc['electronBinarySha256'],'MANUSCRIPT_PACKAGE_EXECUTABLE')
     else:require(build['packagedBuild'] is None,'MANUSCRIPT_SOURCE_PROFILE')
     cycles=5 if route=='C3' else 1;final_round=0 if generic else cycles
-    docs=expected_docs(volume,route);expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[]
+    docs=expected_round();expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[]
     def stage(name,ps,round=0):
-        es=sum([paragraphs(d) for d in expected_docs(volume,route,round)],[])
+        es=sum([paragraphs(d) for d in expected_round(round)],[])
         stages[name]={**exact(ps,es,name),'round':round,'sortKeysSha256':digest(canonical([[i,digest(p.encode())] for i,p in enumerate(ps)]))}
     def font_check(value,label):
         ff=value.get('fonts',[]);require(isinstance(ff,list) and ff and all(isinstance(f.get('familyName'),str) and isinstance(f.get('postScriptName'),str) and type(f.get('glyphCount')) is int and f['glyphCount']>=0 for f in ff) and sum(f['glyphCount'] for f in ff)>0,'FONT_PLATFORM_READBACK')
@@ -751,7 +759,7 @@ def audit(request):
     stage('composition',sum([ime['afterCommit']['paragraphs']]+[paragraphs(d) for d in docs[1:]],[]))
     export_ids=set();previous_hashes=source_hashes;round_proofs=[];review_rounds=[];review_probe=None
     comment_stages={};comment_queries={};comment_negative=[];comment_loss=None;comment_state_sha=None
-    expected_comments=comment_expected(volume,route,pid,ids[0]) if not generic else None
+    expected_comments=comment_expected(volume,route,pid,ids[0],recipe) if not generic else None
     def comment_query(name):
         value=read(name+'.json');b=raw(name+'-state.json');p=value['result']['rtkNonTextReturnState']
         require(value['file']==prefix+name+'-state.json' and digest(b)==value['sha256']==comment_state_sha
@@ -783,7 +791,7 @@ def audit(request):
             require(cap['commentSummary']=={'stateRevision':1,'exportedThreadCount':2,'exportedMessageCount':4,'intentionalDeletionCount':1}
                     and r['publicationGate']['commentPreservationVerified'] is True and r['publicationGate']['intentionalDeletionCount']==1,'COMMENT_EXPORT_PUBLICATION')
         # Bind physical bookmark partitions to each separately saved scene.
-        structure_stages[name]={'bookmarkSha256':bookmark_partition(doc,cap['roundId'],ids,expected_docs(volume,route,round))}
+        structure_stages[name]={'bookmarkSha256':bookmark_partition(doc,cap['roundId'],ids,expected_round(round))}
         style_stages[name]=assert_docx_styles(parts,doc)
         custom=ET.fromstring(parts['docProps/custom.xml']);properties={n.get('name'):re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m[1],16)),n[0].text or '') for n in custom}
         token=properties['YRTK_C01_AUTH'];require(token.startswith('YRTK1.'),'AUTHORITY_CARRIER');encoded=token[6:];payload=json.loads(base64.urlsafe_b64decode(encoded+'='*((-len(encoded))%4)))['payload']
@@ -792,9 +800,9 @@ def audit(request):
             encoded=raw(name+'-authority-store.json.gz')
             require(x['authorityStoreFile']==prefix+name+'-authority-store.json.gz' and x['authorityStoreEncoding']=='gzip','LOCATOR_STORE_FILE')
             data=decode_locator_store(encoded,x['authorityStoreSha256'],x['authorityStoreUncompressedBytes'])
-            locator_stages[name]=locator_store(data,r['activation'],cap,ids,expected_docs(volume,route,round),hashes)
+            locator_stages[name]=locator_store(data,r['activation'],cap,ids,expected_round(round),hashes)
             locator_stages[name]['storage']={'encoding':'gzip','encodedSha256':digest(encoded),'encodedBytes':len(encoded),'decodedBytes':len(data)}
-            identifier_stages[name]={**identifier_doc(parts,doc,cap['roundId'],ids,expected_docs(volume,route,round)),'artifactSha256':digest(b),'roundId':cap['roundId']}
+            identifier_stages[name]={**identifier_doc(parts,doc,cap['roundId'],ids,expected_round(round)),'artifactSha256':digest(b),'roundId':cap['roundId']}
         return cap
     def word_check(name,source_file,returned_file,directory,round,tracked,cap):
         life=read(name+'.json');require(life['status']=='PASS' and life['process']['status']==life['compileProcess']['status']==0 and life['cleanupOk'] is True,'WORD_LIFECYCLE')
@@ -806,10 +814,10 @@ def audit(request):
         stage(name+'-native',v.native(raw(directory+'/word-native-readback.txt')),round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round)
         if not generic:comment_doc(name,parts,d,raw(returned_file))
-        if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_docs(volume,route,round))}
+        if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_round(round))}
         else:require(generic and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
         if not generic:
-            identifier_stages[name]={**identifier_doc(parts,d,cap['roundId'],ids,expected_docs(volume,route,round)),'artifactSha256':digest(raw(returned_file)),'roundId':cap['roundId']}
+            identifier_stages[name]={**identifier_doc(parts,d,cap['roundId'],ids,expected_round(round)),'artifactSha256':digest(raw(returned_file)),'roundId':cap['roundId']}
         if route!='C5':style_stages[name]=assert_docx_styles(parts,d)
     google_proof=None
     for ordinal in range(1,cycles+1):
@@ -833,7 +841,7 @@ def audit(request):
                     props=cascade.paragraph(p)[0];level=props.get(W+'outlineLvl',{}).get(W+'val');actual=int(level)+1 if level is not None and level.isdecimal() else None
                     if actual!=int(match[1]):heading_changes.append({'paragraph':i,'expected':int(match[1]),'returned':actual})
             google_proof['unclaimedFieldLedger']={'headingChanges':heading_changes,'bookmarkNamesChanged':src_names!=ret_names,'sourceBookmarkNamesSha256':digest(canonical(src_names)),'returnedBookmarkNamesSha256':digest(canonical(ret_names)),'notAdmitted':['STYLES','NOVEL_SCENE_STRUCTURE','IDENTIFIERS_ANCHORS'],'scope':'Literal text, order and Unicode only. Full returned style and metadata parts remain bound by the raw DOCX hash.'}
-        else:word_check(base+'/word',base+'/source.docx',base+'/returned.docx',base+'/word',after_round,route!='C1',cap)
+        else:word_check(base+'/word',base+'/source.docx',base+'/returned.docx',base+'/word',after_round,not generic,cap)
         done=read(base+'/round.json');require(done=={'ordinal':ordinal,'reviewedOrdinal':after_round,'requiredCycles':cycles,'complete':True,'admissionCredit':0},'ROUND_COUNT')
         if not generic:
             x=read(base+'/intake.json');r=x['result'];a=r['returnIntake'];require(x['before']==x['after']==previous_hashes and r['ok'] is True and r['commandId']=='cmd.project.review.activateDocxReviewPreviewSession','INTAKE_NO_WRITE')
@@ -848,7 +856,7 @@ def audit(request):
             review_rounds.append({'ordinal':ordinal,'returnedSha256':digest(raw(base+'/returned.docx')),**review_revision_proof(reviewed_document,x,ordinal)})
             if ordinal==1:
                 source_doc=docx(raw(base+'/source.docx'))[2]
-                identifier_negative=identifier_controls(raw(base+'/source.docx'),cap['roundId'],ids,expected_docs(volume,route))
+                identifier_negative=identifier_controls(raw(base+'/source.docx'),cap['roundId'],ids,expected_round())
                 original=docx(raw(base+'/returned.docx'),1);original_starts=[n.get(W+'name') for n in original[2].findall('.//'+W+'bookmarkStart')]
                 for kind in ['identity','missing-bookmark','duplicate-bookmark']:
                     control=read(base+'/identifier-'+kind+'-intake.json');mutant=raw(base+'/identifiers-'+kind+'.docx');mps,mparts,mdoc=docx(mutant,1)
@@ -878,12 +886,12 @@ def audit(request):
                                 and error['op']==attempt['commandId'] and error['details']['changeIds']==[attempt['changeId']],'IDENTIFIER_ACTUAL_APPLY_REJECTION')
                         apply_code=error['code'];apply_hash=digest(canonical(ar))
                     identifier_intakes.append({'kind':kind,'sourceSha256':control['sourceSha256'],'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/identifier-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(before)),'writerCalled':False,'previewAccepted':True,'exactMatchAllowed':kind=='identity','code':code,'applyAttempted':kind!='identity','applyCode':apply_code,'applyResultSha256':apply_hash,'lostIdentifiers':[original_starts[0]] if kind=='missing-bookmark' else [],'duplicateIdentifiers':[original_starts[0]] if kind=='duplicate-bookmark' else []})
-                probe_file=base+'/review-probe/returned.docx';probe=raw(probe_file);ps,parts,pdoc=docx(probe,1);exact(ps,sum([paragraphs(d) for d in expected_docs(volume,route,1)],[]),'REVIEW_PROBE_FULL_TEXT')
+                probe_file=base+'/review-probe/returned.docx';probe=raw(probe_file);ps,parts,pdoc=docx(probe,1);exact(ps,sum([paragraphs(d) for d in expected_round(1)],[]),'REVIEW_PROBE_FULL_TEXT')
                 lifecycle=read(base+'/review-probe-word.json');require(lifecycle['status']=='PASS' and lifecycle['cleanupOk'] is True and lifecycle['compileProcess']['status']==lifecycle['process']['status']==0,'REVIEW_PROBE_WORD_LIFECYCLE')
                 require(lifecycle['sourceDocxHash']==lifecycle['preOpenHash']==digest(raw(base+'/source.docx')) and lifecycle['postWordHash']==lifecycle['copiedBackHash']==digest(probe),'REVIEW_PROBE_BYTES')
                 for k,value in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','3'),('COMMENT_COUNT','4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lifecycle['process']['stdout'].splitlines() if line.startswith(k+'=')]==[k+'='+value],'REVIEW_PROBE_'+k)
                 comment_doc(base+'/review-probe',parts,pdoc,probe)
-                identifier_stages[base+'/review-probe']={**identifier_doc(parts,pdoc,cap['roundId'],ids,expected_docs(volume,route,1)),'artifactSha256':digest(probe),'roundId':cap['roundId']}
+                identifier_stages[base+'/review-probe']={**identifier_doc(parts,pdoc,cap['roundId'],ids,expected_round(1)),'artifactSha256':digest(probe),'roundId':cap['roundId']}
                 require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
                 exact(v.native(raw(base+'/review-probe/word-native-readback.txt')),ps,'REVIEW_PROBE_NATIVE_TEXT')
                 require(lifecycle['evidencePath'].endswith('/'+run+'/'+probe_file) and lifecycle['nativeReadbackPath'].endswith('/'+run+'/'+base+'/review-probe/word-native-readback.txt'),'REVIEW_PROBE_NATIVE_PATH')
@@ -910,7 +918,7 @@ def audit(request):
             ap=read(base+'/apply.json');result=ap['result'];receipt=result['result']['receipt'];require(result==read(base+'/apply-command-result.json'),'APPLY_RAW_RESULT')
             require(ap['commandId']=='cmd.project.review.applyExactTextChangesBatch' and result['ok'] is True and result['applied'] is True and result['totals']=={'requested':1,'applied':1,'blocked':0,'failed':0,'skipped':0} and ap['changeId']==changes[0]['changeId'],'EXPLICIT_APPLY')
             require(ap['before']==previous_hashes and ap['afterApply'][0]!=previous_hashes[0] and ap['afterApply'][1:]==previous_hashes[1:] and receipt['sceneId']==ids[0] and receipt['projectId']==pid and receipt['changeIds']==[ap['changeId']] and receipt['writeStatus']=='applied' and result['editorSync']['ok'] is True and ap['save']['ok'] is True,'APPLY_CANONICAL_MUTATION')
-            new_docs=expected_docs(volume,route,ordinal);saved=ap['scenes'];require(len(saved)==count and [s['sceneId'] for s in saved]==ids and [s['nodeId'] for s in saved]==nodes,'APPLY_ALL_SCENES')
+            new_docs=expected_round(ordinal);saved=ap['scenes'];require(len(saved)==count and [s['sceneId'] for s in saved]==ids and [s['nodeId'] for s in saved]==nodes,'APPLY_ALL_SCENES')
             hashes=[];all_ps=[]
             for i,(s,d) in enumerate(zip(saved,new_docs)):
                 require(s['file']==prefix+base+f'/saved-scenes/{i}.txt','APPLY_SCENE_PATH');b=files[s['file']];actual=scene(b);require(digest(b)==s['sha256'] and normalize_doc(actual)==normalize_doc(d),'APPLY_RAW_RICH_SCENE');hashes.append(digest(b));all_ps+=paragraphs(actual)
@@ -924,7 +932,7 @@ def audit(request):
         comment_query('reopened-comments')
         require(raw('reopened-comments-state.json')==raw('runtime-project-snapshot/.yalken/word-review/non-text-return-state.v1.json'),'COMMENT_FRESH_PROCESS_DURABILITY')
         require(len(reopened['scenes'])==count,'REOPEN_SCENE_COUNT');all_raw=[];all_render=[]
-        for i,(s,d) in enumerate(zip(reopened['scenes'],expected_docs(volume,route,final_round))):
+        for i,(s,d) in enumerate(zip(reopened['scenes'],expected_round(final_round))):
             require(s['sceneId']==ids[i] and s['nodeId']==nodes[i] and s['file']==prefix+f'reopened-scenes/{i}.txt','REOPEN_SCENE_BINDING')
             b=files[s['file']];require(b==raw('runtime-project-snapshot/'+ids[i]) and digest(b)==s['sha256']==previous_hashes[i],'REOPEN_DURABLE_BYTES')
             actual=scene(b);require(normalize_doc(actual)==normalize_doc(d),'REOPEN_RICH_DOCUMENT');renderer(s,d,'reopen-renderer-'+str(i));all_raw+=paragraphs(actual);all_render+=s['renderer']['paragraphs']
@@ -964,7 +972,7 @@ def audit(request):
     for name in ['source.png','reopen.png']+(['saved.png'] if generic else []):require(raw(name).startswith(b'\x89PNG\r\n\x1a\n') and len(raw(name))>100,'PRODUCT_SCREENSHOT')
     cleanup=read('cleanup.json');require(cleanup['ok'] is True and len(cleanup['ownedProcesses'])==2 and {p['pid'] for p in cleanup['ownedProcesses']}=={boot['pid'],reopened['pid']} and all(p['exitCode'] is not None or p['signalCode'] is not None for p in cleanup['ownedProcesses']),'RUNTIME_CLEANUP')
     result=read('result.json');require(result['ok'] is True and result['failure'] is None and result['admissionCredit']==0 and result['candidateDiagnosticOnly']==obs['candidateDiagnosticOnly'],'NATIVE_COMPLETION')
-    first_cap=read('rounds/1/export.json')['result']['exportCapsule'];calibration=controls(raw('rounds/1/source.docx'),volume,route,ids,first_cap['roundId'])
+    first_cap=read('rounds/1/export.json')['result']['exportCapsule'];calibration=controls(raw('rounds/1/source.docx'),volume,route,ids,first_cap['roundId'],recipe)
     if not generic and volume!='SINGLE_SCENE':
         # Corrupt the actual hierarchy, without changing text, and require the independent tree reader to reject it.
         for name in STRUCTURE_CONTROLS[3:]:
@@ -993,12 +1001,12 @@ def audit(request):
                        'stages':comment_stages,'queries':comment_queries,'negativeControls':comment_negative,'lossControl':comment_loss,
                        'intentionalDeletionLedger':[{'threadId':'manuscript-comment-deleted','status':'deleted','messageCount':2,'outcome':'CANONICAL_DELETION_NOT_EXPORTED'}],
                        'scope':'Two existing canonical root threads with one reply each, open/resolved states, one intentional tombstone; exact body, provenance and anchors. Edited existing comments return a typed block; automatic conflict resolution is not claimed.'}
-    proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
+    proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route,recipe)]
     for proof in proofs:
         if proof['field']=='COMMENTS':proof['commentProof']=comment_proof
         if proof['field']=='IDENTIFIERS_ANCHORS':proof['identifierProof']={'stages':identifier_stages,'locators':locator_stages,'negativeControls':identifier_negative,'intakeControls':identifier_intakes,'lossLedger':{'lostIdentifiers':[],'duplicateIdentifiers':[],'unsafeHyperlinks':[],'scope':'Declared per-round locator names and all three explicit hyperlink ranges across saved, applied and reopened project state; intentional negative-control losses are recorded separately.'}}
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
-    return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
+    return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'recipe':recipe,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 
 if __name__=='__main__':
     try:
