@@ -5455,6 +5455,65 @@ function docxReviewPreviewSessionTrackedStructuralChange(kind, summary, options 
   };
 }
 
+// Both raw-byte and verified-worker projections use this final identity gate.
+// A paragraph index can corroborate a declared identity, never rescue its loss.
+function docxReviewPreviewSessionBookmarkGuard(exportMap, paragraphs, options = {}) {
+  const scenes = Array.isArray(exportMap?.scenes) ? exportMap.scenes : [];
+  const blocks = scenes.flatMap((scene) => Array.isArray(scene?.blocks) ? scene.blocks : []);
+  const names = blocks.flatMap((block) => (Array.isArray(block?.wordSignals) ? block.wordSignals : [])
+    .filter((signal) => signal?.kind === 'bookmarkName')
+    .map((signal) => normalizeString(signal.value?.name).toLowerCase())).filter(Boolean);
+  if (names.length === 0) return null;
+  const diagnostics = [];
+  const bounds = docxReviewPreviewSessionCandidateBounds(options);
+  const report = (code, message, relatedItemId = '') => {
+    if (diagnostics.length >= bounds.maxDiagnostics) return;
+    diagnostics.push(docxReviewPreviewSessionDiagnostic(code, {
+      diagnosticId: `${code.toLowerCase().replace(/[^a-z0-9]+/gu, '-')}-${diagnostics.length}`,
+      message, relatedItemId, severity: 'warning', targetScope: options.targetScope, createdAt: options.createdAt,
+    }));
+  };
+  const counts = new Map();
+  const returnedByIndex = new Map();
+  for (const paragraph of Array.isArray(paragraphs) ? paragraphs : []) {
+    if (Number.isSafeInteger(paragraph?.paragraphIndex)) {
+      const atIndex = returnedByIndex.get(paragraph.paragraphIndex) || [];
+      atIndex.push(paragraph);
+      returnedByIndex.set(paragraph.paragraphIndex, atIndex);
+    }
+    for (const name of Array.isArray(paragraph?.bookmarkNames) ? paragraph.bookmarkNames : []) {
+      const key = normalizeString(name).toLowerCase();
+      counts.set(key, (counts.get(key) || 0) + 1);
+    }
+  }
+  let complete = new Set(names).size === names.length;
+  if (!complete) report('DOCX_REVIEW_BOOKMARK_SOURCE_AMBIGUOUS', 'The local manuscript map declares duplicate bookmark identities.');
+  for (const name of new Set(names)) {
+    const count = counts.get(name) || 0;
+    if (count === 1) continue;
+    complete = false;
+    report(count === 0 ? 'DOCX_REVIEW_BOOKMARK_MISSING' : 'DOCX_REVIEW_BOOKMARK_DUPLICATE',
+      `Declared bookmark ${name} has ${count} returned occurrences; exact apply is unavailable.`, name);
+  }
+  const resolveBlock = docxReviewFormattingBuildFullManuscriptBlockResolver(exportMap);
+  const positionsDeclared = blocks.every((block) => Number.isSafeInteger(block.documentParagraphIndex) && block.documentParagraphIndex >= 0);
+  return { diagnostics, resolve(signal = {}) {
+    if (!complete) return null;
+    // The revision's index locates its already-parsed returned paragraph. Only
+    // that paragraph's declared identities can resolve a source block.
+    const returned = returnedByIndex.get(signal.paragraphIndex) || [];
+    const resolution = returned.length === 1
+      ? resolveBlock({ ...returned[0], paragraphIndex: positionsDeclared ? signal.paragraphIndex : -1 })
+      : null;
+    if (resolution?.ok !== true) {
+      report('DOCX_REVIEW_BOOKMARK_LOCATOR_CONFLICT', 'Returned paragraph identity conflicts with the authenticated manuscript map; exact apply is unavailable.');
+      return null;
+    }
+    const a = resolution.authority;
+    return { type: 'scene', id: a.sceneId, blockId: a.blockId, paragraphIndex: a.documentParagraphIndex, documentParagraphIndex: a.documentParagraphIndex };
+  } };
+}
+
 function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}) {
   const bounds = docxReviewPreviewSessionCandidateBounds(options);
   const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
@@ -5711,45 +5770,14 @@ function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}
     return { textChanges: [], structuralChanges: [], diagnostics, malformed: true };
   }
 
-  // A signed manuscript map may declare stable bookmark identities. An index
-  // or still-known native id must not rescue a lost/duplicated bookmark, and a
-  // later paragraph must not retroactively duplicate an earlier revision's
-  // identity. Validate the completed document before producing exact matches.
-  const mapScenes = Array.isArray(options.fullManuscriptExportMap?.scenes) ? options.fullManuscriptExportMap.scenes : [];
-  const mapBlocks = mapScenes.flatMap((scene) => Array.isArray(scene?.blocks) ? scene.blocks : []);
-  const declaredBookmarks = mapBlocks.flatMap((block) => (Array.isArray(block?.wordSignals) ? block.wordSignals : [])
-      .filter((signal) => signal?.kind === 'bookmarkName')
-      .map((signal) => normalizeString(signal.value?.name).toLowerCase()))
-    .filter(Boolean);
-  if (declaredBookmarks.length > 0) {
-    const counts = new Map();
-    for (const paragraph of paragraphRecords) {
-      for (const name of paragraph?.bookmarkNames || []) {
-        const key = normalizeString(name).toLowerCase();
-        counts.set(key, (counts.get(key) || 0) + 1);
-      }
-    }
-    let complete = new Set(declaredBookmarks).size === declaredBookmarks.length;
-    if (!complete) addDiagnostic('DOCX_REVIEW_BOOKMARK_SOURCE_AMBIGUOUS', 'The local manuscript map declares duplicate bookmark identities.', 'error');
-    for (const name of new Set(declaredBookmarks)) {
-      const count = counts.get(name) || 0;
-      if (count === 1) continue;
-      complete = false;
-      addDiagnostic(count === 0 ? 'DOCX_REVIEW_BOOKMARK_MISSING' : 'DOCX_REVIEW_BOOKMARK_DUPLICATE',
-        `Declared bookmark ${name} has ${count} returned occurrences; exact apply is unavailable.`, 'warning', name);
-    }
-    const resolveBlock = docxReviewFormattingBuildFullManuscriptBlockResolver(options.fullManuscriptExportMap);
-    const positionsDeclared = mapBlocks.every((block) => Number.isSafeInteger(block.documentParagraphIndex) && block.documentParagraphIndex >= 0);
+  const bookmarkGuard = docxReviewPreviewSessionBookmarkGuard(options.fullManuscriptExportMap, paragraphRecords, { targetScope, createdAt });
+  if (bookmarkGuard) {
     for (const revision of revisions) {
-      const paragraph = paragraphRecords[revision.paragraphIndex] || {};
-      const resolution = resolveBlock({ ...paragraph, paragraphIndex: positionsDeclared ? paragraph.paragraphIndex : -1 });
-      revision.fullManuscriptResolved = complete && resolution?.ok === true;
-      if (revision.fullManuscriptResolved) {
-        revision.targetScope = { type: 'scene', id: resolution.authority.sceneId };
-      } else if (complete) {
-        addDiagnostic('DOCX_REVIEW_BOOKMARK_LOCATOR_CONFLICT', 'Returned paragraph identity conflicts with the authenticated manuscript map; exact apply is unavailable.', 'warning', `docx-revision-${revision.revisionId}`);
-      }
+      const resolved = bookmarkGuard.resolve(paragraphRecords[revision.paragraphIndex] || {});
+      revision.fullManuscriptResolved = Boolean(resolved);
+      if (resolved) revision.targetScope = resolved;
     }
+    diagnostics.push(...bookmarkGuard.diagnostics.slice(0, Math.max(0, bounds.maxDiagnostics - diagnostics.length)));
   }
 
   const textChanges = [];
@@ -6180,9 +6208,10 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
   const fullManuscriptExportMap = isPlainObject(options.fullManuscriptExportMap)
     ? options.fullManuscriptExportMap
     : null;
-  const fullManuscriptScopeResolver = fullManuscriptExportMap
+  const bookmarkGuard = docxReviewPreviewSessionBookmarkGuard(fullManuscriptExportMap, projection?.formattingParagraphs, options);
+  const fullManuscriptScopeResolver = bookmarkGuard ? bookmarkGuard.resolve : (fullManuscriptExportMap
     ? docxReviewPreviewSessionBuildFullManuscriptBlockScopeResolver(fullManuscriptExportMap)
-    : null;
+    : null);
   const authorityOptions = {
     ...options,
     fullManuscriptExportMap,
@@ -6275,6 +6304,7 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
     }
     textChanges.push(returnEvidenceTextChangeFromRevision(current, authorityOptions));
   }
+  if (bookmarkGuard && Array.isArray(options.bookmarkDiagnostics)) options.bookmarkDiagnostics.push(...bookmarkGuard.diagnostics);
   return textChanges;
 }
 
@@ -6367,10 +6397,12 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
   const fullManuscriptExportMap = isPlainObject(options.fullManuscriptExportMap)
     ? options.fullManuscriptExportMap
     : null;
+  const bookmarkDiagnostics = [];
   const textChanges = returnEvidenceTextChangesFromProjection(projection, {
     targetScope,
     createdAt,
     fullManuscriptExportMap,
+    bookmarkDiagnostics,
   });
   const commentThreads = returnEvidenceCommentThreadsFromProjection(projection);
   const commentTopologyDiagnostics = returnEvidenceCommentTopologyDiagnosticsFromProjection(projection, {
@@ -6484,7 +6516,7 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       },
     ));
   });
-  diagnostics.push(...commentTopologyDiagnostics, ...trackedDiagnostics);
+  diagnostics.push(...bookmarkDiagnostics, ...commentTopologyDiagnostics, ...trackedDiagnostics);
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;

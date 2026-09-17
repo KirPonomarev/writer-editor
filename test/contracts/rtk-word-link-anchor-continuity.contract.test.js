@@ -9,6 +9,13 @@ const {spawnSync}=require('node:child_process');
 const {pathToFileURL}=require('node:url');
 const ROOT=path.resolve(__dirname,'../..');
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
+function productCryptoPort(){
+ const main=fs.readFileSync(path.join(ROOT,'src/main.js'),'utf8');
+ const context=vm.createContext({crypto,Buffer,isPlainObjectValue:v=>v!==null&&typeof v==='object'&&!Array.isArray(v)});
+ for(const name of ['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort'])vm.runInContext(main.match(new RegExp('function '+name+'\\([^]*?\\n}'))[0],context);
+ return context.createRtkReviewTransportCryptoPort();
+}
+
 
 test('Authenticated manuscript preview never promotes missing, duplicate or conflicting bookmarks through paragraph position',async()=>{
  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
@@ -35,11 +42,15 @@ print(json.dumps(result))
 `],{input:buildDocxReviewPacketBuffer(source).toString('base64'),encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});
  assert.equal(child.status,0,child.stderr);const variants=JSON.parse(child.stdout);
  for(const [kind,bytes] of Object.entries(variants)){
-  const r=bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(Buffer.from(bytes,'base64'),{projectId:'owned-anchor-guard',targetScope:{type:'scene',id:'first'},fullManuscriptExportMap:source.localAuthorityCapsule.exportMap});
+  const actualBytes=Buffer.from(bytes,'base64'),options={projectId:'owned-anchor-guard',targetScope:{type:'scene',id:'first'},fullManuscriptExportMap:source.localAuthorityCapsule.exportMap};
+  const analysis=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:actualBytes},{cryptoPort:productCryptoPort()});
+  assert.equal(analysis.ok,true,JSON.stringify(analysis));
+  for(const r of [bridge.buildDocxReviewPreviewSessionCandidateFromZipBytes(actualBytes,options),bridge.buildDocxReviewPreviewSessionCandidateFromEvidence({returnedProjection:analysis.reviewIr,diagnostics:analysis.reasons},options)]){
   assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.reviewPacket.textChanges.length,1,JSON.stringify(r));
   const c=r.reviewPacket.textChanges[0];assert.equal(c.match.quote,'alpha');assert.equal(c.replacementText,'changed');
-  if(kind==='identity'||kind==='native-renumbered'){assert.equal(c.match.kind,'exact',kind);assert.equal(c.targetScope.id,'first');}
+  if(kind==='identity'||kind==='native-renumbered'){assert.equal(c.match.kind,'exact',JSON.stringify({kind,diagnostics:r.diagnostics,paragraphs:analysis.reviewIr.formattingParagraphs,revisions:analysis.reviewIr.textRevisions}));assert.equal(c.targetScope.id,'first');}
   else {assert.equal(c.match.kind,'manual',kind);assert.equal(c.sourceAuthority,undefined);assert.ok(r.diagnostics.some(d=>d.diagnosticId.startsWith('docx-review-bookmark-'+({missing:'missing',duplicate:'duplicate',swapped:'locator-conflict'}[kind])+'-')),JSON.stringify(r.diagnostics));}
+  }
  }
 });
 

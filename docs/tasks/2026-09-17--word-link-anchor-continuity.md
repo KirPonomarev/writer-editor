@@ -15,6 +15,7 @@ Preserve exact safe hyperlink targets and authored ranges, declared per-round bo
 One bounded extension of the current Word recipe and independent product admission, with corrections to the existing export/return path only if observed necessary. Qualify the companion background Word driver and omit root test and documentation outside required docs/OPS/STATUS from disposable runtime copies while retaining full runtime-source equality and mandatory product tests.
 
 ## ALLOWLIST
+- test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js
 - src/export/docx/docxReviewPacketBuilder.js
 - src/export/docx/docxReviewPacketExportHandler.js
 - src/export/docx/fullManuscriptDocxReviewPacketSource.js
@@ -105,3 +106,5 @@ Fix one observed cause inside scope. No self-PASS, cross-head inheritance or fab
 
 ## OBSERVED CORRECTION
 The native missing-bookmark control exposed exact-match promotion through paragraph index in the manual review candidate path. Exact matches now require a complete unique declared bookmark set and agreement with the existing strict block resolver; lost, duplicated or conflicting identities stay manual. Real negative controls invoke the canonical batch-apply command and require its typed exact-match rejection plus unchanged scene, manifest and comment state.
+
+SCOPE_EXTENSION: Correct one existing current-profile positive fixture to carry the actual declared bookmark. It previously certified exact matching from a signed carrier and paragraph position despite omitting the locator. Its exact-lane assertion remains; new independent negative controls prove missing and duplicate anchors cannot apply. This is the same authority defect and delivery chain.

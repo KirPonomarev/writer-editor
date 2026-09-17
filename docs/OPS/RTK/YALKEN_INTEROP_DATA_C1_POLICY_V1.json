@@ -120,7 +120,8 @@
     "docs/tasks/2026-09-17--word-canonical-comment-reexport.md",
     "src/io/revisionBridge/reviewTransportMatchProofV1.mjs",
     "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
-    "docs/tasks/2026-09-17--word-link-anchor-continuity.md"
+    "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
+    "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -369,7 +370,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "be2d3457596b8f4ad0098c6d0323ed664b827e125b12cd2c0ddb52756139d79f"
+        "sha256": "51f7f79a5a5ce5525dda4545b46e1cc91a9e03d0a8ea4012803a1dacb87c6563"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -685,11 +686,15 @@
       },
       {
         "path": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
-        "sha256": "31e473ab346882bb5f34550aca5c983e717ed1ebd33f9ad36c818461929feaae"
+        "sha256": "ced617d71f6b06bea3251fb8bd70c0d8cc20bc1ddef0ed20dd8d2e5e3fe0b136"
       },
       {
         "path": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
-        "sha256": "bf00ff5877defe518f23920609ac70d25eef166837f264198838b6af71601fc2"
+        "sha256": "938e9c2206a81c9cf3db96835ac31978cf10b1747b715b53507dd0f38af6b215"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+        "sha256": "a307bf57040078f0a9a371de6a4158523200e45c6d3dcdb66541cc1aced7038c"
       }
     ],
     "followupRepair": {
