@@ -139,3 +139,72 @@ test('Read-only manuscript tree exposes registered part/chapter/scene hierarchy 
  const tree=JSON.parse(JSON.stringify(await context.buildAuthoredRomanTree(roman,'fixture')));
  assert.equal(tree.length,1);assert.equal(tree[0].kind,'part');assert.equal(tree[0].children[0].kind,'chapter-folder');assert.deepEqual(tree[0].children[0].children.map(n=>[n.kind,n.name]),[['scene','first'],['scene','second']]);
 });
+
+test('Manuscript admission supports exactly 100 frozen whole cells and five real C3 rounds',async()=>{
+ const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
+ const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
+ const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,100);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,100);
+ for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
+ for(const route of ['C1','C2','C3'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
+ const run='ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME__contract';assert.equal(m.validateManuscriptRuns([run]).length,1);
+ for(const runs of [[],[run,run+'repeat'],[run.replace('C3','C4')],[run.replace('ORDER','STYLES')],[run+'../escape'],[null]])assert.throws(()=>m.validateManuscriptRuns(runs));
+ const row=m.validateManuscriptRuns([run])[0],obs={type:'PHYSICAL_OBSERVATION',runId:run,cellId:row.cellId,artifactHash:'a'.repeat(64)};
+ assert.equal(m.selectManuscriptObservation([obs],row),obs);
+ for(const ledger of [[],[obs,obs],[obs,{type:'EVIDENCE_SUPERSEDES',supersedesRunId:run}],[obs,{type:'PRIVACY_INVALIDATED',runId:run}]])assert.throws(()=>m.selectManuscriptObservation(ledger,row));
+ for(const extra of [{wordTextOrderLabRoot:ROOT},{wordTextOrderRunIds:[run]},{spec},{ledger:[]},{dataC1RunId:run},{orderRunId:run},{textOrderRunId:run},{freshC1EvidenceRoot:ROOT},{requireExternalEvidencePackage:true}]){
+  const result=d.verifyInterop100(ROOT,{wordManuscriptLabRoot:ROOT,wordManuscriptRunIds:[run],...extra});assert.equal(result.passedRequiredCells,0);assert.equal(result.authoritativeAdmission,false);assert.ok(result.errors.includes('WORD_MANUSCRIPT_MODE_OPTIONS_CONFLICT'));
+ }
+});
+
+test('Independent manuscript Python tests reject semantic, style, structure and caller-authority corruption',()=>{
+ const {spawnSync}=require('node:child_process');const child=spawnSync('python3',['-I','-B','test/unit/rtk-interop-word-manuscript.test.py'],{cwd:ROOT,encoding:'utf8',timeout:30000});
+ assert.equal(child.status,0,child.stdout+child.stderr);assert.match(child.stderr,/Ran [1-9][0-9]* tests/);assert.match(child.stderr,/\nOK\n/);
+});
+
+test('Manuscript raw consumer rejects incomplete rounds, missing fields and coherently relabelled proof',async()=>{
+ const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs'))),f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
+ const run='ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME__test',row=m.validateManuscriptRuns([run])[0],h='a'.repeat(64),head='b'.repeat(40),tree='c'.repeat(40);
+ const policy={requiredOracles:['unit-validator-fixture'],wordManuscriptBatch:{paragraphHashes:{SINGLE_SCENE:{C1:[{sha256:h,count:15}]}}}};
+ const ids=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
+ const stageProofs=Object.fromEntries(Object.entries(m.manuscriptStages('C1')).map(([k,round])=>[k,{round,paragraphCount:15,paragraphSha256:h,sortKeysSha256:h}]));
+ const unicodeProof={probes:f.UNICODE_PROBES,compositionEventsSha256:h,locale:{language:'ru',languages:['ru'],intl:{locale:'ru',timeZone:'Europe/Helsinki'}},providerLocale:{locale:'ru',languages:['ru']},fontLedger:Array.from({length:3},()=>({fonts:[{glyphCount:1}],scope:'Chromium actual platform fonts'})),limitations:{ime:'Bounded Chromium composition',fonts:'Actual glyph fallback'}};
+ const raw={ok:true,schemaVersion:'WORD_MANUSCRIPT_RAW_READBACK_V1',admissionCredit:0,runId:run,productHead:head,productTree:tree,observationSha256:h,filesVerified:1,roundProofs:[{ordinal:1,exportId:'export-a',roundId:'round-a',exportSha256:h,returnedSha256:h,savedSceneHashes:[h]}],finalHops:null,fieldProofs:['TEXT','ORDER','UNICODE_IME_LOCALE'].map(field=>({field,cellId:field+'__SINGLE_SCENE__C1__SOURCE_RUNTIME',runId:run,status:'PASS',subcases:m.MANUSCRIPT_SUBCASES[field],requiredHops:m.MANUSCRIPT_HOPS.C1,requiredCycles:1,oracles:policy.requiredOracles,stageProofs,unicodeProof,controls:{positiveControls:['identity','split-xml-runs'],textMutants:ids.map((id,i)=>({id,rejected:true,sha256:crypto.createHash('sha256').update(String(i)).digest('hex')})),styleMutants:[],structureMutants:[]}}))};
+ const options={row,head,tree,observationSha256:h,files:[{}],policy};assert.equal(m.validateManuscriptRaw(raw,options),true);
+ const mutants=[r=>r.admissionCredit=3,r=>r.productHead='d'.repeat(40),r=>r.filesVerified=0,r=>r.roundProofs=[],r=>r.roundProofs[0].ordinal=5,r=>r.fieldProofs.pop(),r=>r.fieldProofs[0].requiredCycles=5,r=>r.fieldProofs[0].subcases.pop(),r=>delete r.fieldProofs[0].stageProofs['reopened-renderer'],r=>r.fieldProofs[0].stageProofs.source.paragraphSha256='e'.repeat(64),r=>r.fieldProofs[0].controls.textMutants[0].rejected=false,r=>r.fieldProofs[0].unicodeProof.fontLedger=[],r=>r.finalHops={ok:true}];
+ for(const mutate of mutants){const changed=JSON.parse(JSON.stringify(raw));mutate(changed);assert.throws(()=>m.validateManuscriptRaw(changed,options));}
+});
+
+for(const mutation of ['missing','corrupt','wrong-project','wrong-path','symbolic-link','hard-link','directory-link'])test('Durable manifest succession rejects '+mutation+' after fresh authority restart',async t=>{
+ const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manifest-proof-negative-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
+ const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
+ const anchorRoot=path.join(root,'anchors'),manifestPath=path.join(root,'project.json'),projectId='fixture-project',a=JSON.stringify({projectId,n:0}),b=JSON.stringify({projectId,n:1}),c=JSON.stringify({projectId,n:2});
+ const authority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});await fsp.writeFile(manifestPath,a);
+ await authority.commitManifestText({projectId,targetPath:manifestPath,expectedText:a,nextText:b});await authority.commitManifestText({projectId,targetPath:manifestPath,expectedText:b,nextText:c});
+ const fresh=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});const req={projectId,manifestPath,fromDigest:digest(a),toDigest:digest(c)};assert.equal((await fresh.verifyManifestContinuation(req)).ok,true);
+ const dir=path.join(anchorRoot,'manifest-transitions',digest(projectId+'\0'+manifestPath),digest(a)),file=path.join(dir,digest(b)+'.json');const before=await fsp.readFile(file,'utf8');
+ if(mutation==='missing')await fsp.unlink(file);
+ if(mutation==='corrupt')await fsp.writeFile(file,'{broken');
+ if(mutation==='wrong-project'||mutation==='wrong-path'){const value=JSON.parse(before);value[mutation==='wrong-project'?'projectId':'targetPath']='other';await fsp.writeFile(file,JSON.stringify(value));}
+ if(mutation==='symbolic-link'){const other=path.join(root,'other.json');await fsp.writeFile(other,before);await fsp.unlink(file);await fsp.symlink(other,file);}
+ if(mutation==='hard-link')await fsp.link(file,path.join(root,'hard.json'));
+ if(mutation==='directory-link'){const other=path.join(root,'other-dir');await fsp.rename(dir,other);await fsp.symlink(other,dir);}
+ assert.equal((await fresh.verifyManifestContinuation(req)).ok,false);assert.equal(await fsp.readFile(manifestPath,'utf8'),c);
+});
+
+test('Uncommitted cross-scene transaction rolls back safely through a fresh authority',async t=>{
+ const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manifest-proof-recovery-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
+ const {createMainProjectManifestAuthority}=await import(pathToFileURL(path.join(ROOT,'src/product/mainProjectManifestAuthority.mjs')));
+ const {recoverProjectTransaction}=require('../../src/core/project-transaction-v1.cjs');
+ const anchorRoot=path.join(root,'anchors'),manifestPath=path.join(root,'project.json'),projectId='fixture-project',scenes=['a','b'].map(n=>path.join(root,n+'.txt'));
+ let authority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});await fsp.writeFile(manifestPath,JSON.stringify({projectId,n:0}));for(const p of scenes)await fsp.writeFile(p,'initial');
+ const verifyManifestContinuation=req=>authority.verifyManifestContinuation({...req,projectId});
+ const publish=({manifestPath:targetPath,expectedText,nextText})=>authority.commitManifestText({projectId,targetPath,expectedText,nextText});
+ const commit=async(i,n,publishManifest=publish)=>commitProjectTransaction({scenePath:scenes[i],sceneContent:'edited-'+n,expectedSceneContent:await fsp.readFile(scenes[i],'utf8'),manifestPath,expectedManifestContent:await fsp.readFile(manifestPath,'utf8'),manifestContent:JSON.stringify({projectId,n}),revision:n,verifyManifestContinuation,publishManifest});
+ await commit(0,1);await commit(1,2);
+ await assert.rejects(commit(0,3,async args=>{await publish(args);throw new Error('simulated interruption after manifest publication');}),/simulated interruption/);
+ authority=createMainProjectManifestAuthority({anchorRoot,useLeaseHeartbeatWorker:false});
+ const recovered=await recoverProjectTransaction({scenePath:scenes[0],manifestPath,verifyManifestContinuation,publishManifest:publish});
+ assert.equal(recovered.outcome,'UNCOMMITTED_ROLLED_BACK');assert.equal(await fsp.readFile(scenes[0],'utf8'),'edited-1');assert.equal(JSON.parse(await fsp.readFile(manifestPath,'utf8')).n,2);assert.equal((await commit(1,4)).success,true);
+});

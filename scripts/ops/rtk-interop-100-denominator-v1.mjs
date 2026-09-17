@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import {verifyDataC1} from './rtk-interop-data-c1.mjs';
 import {verifyWordTextOrderBatch} from './rtk-interop-word-text-order-batch.mjs';
+import {verifyWordManuscriptBatch} from './rtk-interop-word-manuscript-batch.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -1465,6 +1466,15 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if(Object.hasOwn(options,'wordManuscriptLabRoot')||Object.hasOwn(options,'wordManuscriptRunIds')){
+    const specErrors=[];validateSpec(spec,specErrors);
+    if(options.spec||options.envelope||options.ledger||['wordTextOrderLabRoot','wordTextOrderRunIds','freshC1EvidenceRoot','dataC1LabRoot','dataC1RunId',
+      'textOrderC1LabRoot','textOrderRunId','orderC1LabRoot','orderRunId'].some(k=>Object.hasOwn(options,k))
+      ||options.requireLocalPhysicalPackage||options.requireExternalEvidencePackage||options.externalEvidencePackageRoot)
+      specErrors.push('WORD_MANUSCRIPT_MODE_OPTIONS_CONFLICT');
+    return verifyWordManuscriptBatch({repoRoot,labRoot:options.wordManuscriptLabRoot,runIds:options.wordManuscriptRunIds,
+      currentHead:options.currentHead||currentGitHead(repoRoot),requiredCells:buildRequiredCells(spec),specErrors});
+  }
   if(Object.hasOwn(options,'wordTextOrderLabRoot')||Object.hasOwn(options,'wordTextOrderRunIds')){
     const specErrors=[];validateSpec(spec,specErrors);
     if(options.spec||options.envelope||options.ledger||['freshC1EvidenceRoot','dataC1LabRoot','dataC1RunId',
@@ -1527,6 +1537,7 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 }
 
 function main() {
+  const manuscriptIndex=process.argv.indexOf('--word-manuscript-lab-root');
   const wordBatchIndex=process.argv.indexOf('--word-text-order-lab-root');
   const wordBatchRunsIndex=process.argv.indexOf('--run-ids');
   const dataIndex=process.argv.indexOf('--data-c1-lab-root');
@@ -1539,8 +1550,9 @@ function main() {
     ? ''
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
+    ...(manuscriptIndex===-1?{}:{wordManuscriptLabRoot:String(process.argv[manuscriptIndex+1]||'').trim()}),
     ...(wordBatchIndex===-1?{}:{wordTextOrderLabRoot:String(process.argv[wordBatchIndex+1]||'').trim()}),
-    ...(wordBatchRunsIndex===-1?{}:{wordTextOrderRunIds:String(process.argv[wordBatchRunsIndex+1]||'').trim().split(',')}),
+    ...(wordBatchRunsIndex===-1?{}:{[manuscriptIndex===-1?'wordTextOrderRunIds':'wordManuscriptRunIds']:String(process.argv[wordBatchRunsIndex+1]||'').trim().split(',')}),
     ...(dataIndex===-1?{}:{dataC1LabRoot:String(process.argv[dataIndex+1]||'').trim()}),
     ...(textOrderIndex === -1 ? {} : {textOrderC1LabRoot:String(process.argv[textOrderIndex+1] || '').trim()}),
     ...(orderIndex === -1 ? {} : {orderC1LabRoot:String(process.argv[orderIndex+1] || '').trim()}),

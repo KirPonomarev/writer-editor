@@ -134,7 +134,8 @@ export function createMainProjectManifestAuthority(input = {}) {
     const pending = [fromDigest], visited = new Set();
     try {
       const anchor = await fs.realpath(anchorRoot), actualRoot = await fs.realpath(root);
-      if (!actualRoot.startsWith(`${anchor}${path.sep}`)) return no;
+      if (actualRoot !== path.join(anchor, 'manifest-transitions', hashText(`${projectId}\0${manifestPath}`))) return no;
+      const sameFile = (a, b) => ['dev', 'ino', 'size', 'mtimeMs', 'ctimeMs', 'nlink'].every(key => a[key] === b[key]);
       while (pending.length && visited.size < 4096) {
         const previousHash = pending.shift();
         if (visited.has(previousHash)) continue;
@@ -150,12 +151,15 @@ export function createMainProjectManifestAuthority(input = {}) {
         if (entries.length > 256) return no;
         for (const entry of entries) {
           if (!/^[a-f0-9]{64}\.json$/u.test(entry)) return no;
-          const handle = await fs.open(path.join(dir, entry), fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_NONBLOCK);
+          const file = path.join(dir, entry);
+          const handle = await fs.open(file, fsConstants.O_RDONLY | fsConstants.O_NOFOLLOW | fsConstants.O_NONBLOCK);
           let record;
           try {
             const st = await handle.stat();
             if (!st.isFile() || st.nlink !== 1 || st.size > 4096) return no;
             record = JSON.parse(await handle.readFile('utf8'));
+            if (!sameFile(st, await handle.stat()) || !sameFile(st, await fs.lstat(file))
+              || await fs.realpath(dir) !== path.join(actualRoot, previousHash)) return no;
           } finally { await handle.close(); }
           const nextHash = entry.slice(0, -5);
           if (record.schemaVersion !== 'yalken.manifest-transition.v1' || record.projectId !== projectId
