@@ -291,7 +291,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "55aa5f0e0bba09098aae7edf2dce90db66fac98cf659d73598a66e50621f4674"
+      "sha256": "484df407fdd371b6e1af04792261ff5c61d977c7accecbca95f01b4ad62c259f"
     }
   ],
   "requirementIds": [
@@ -1153,7 +1153,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "3da08362a857e704e960325143a8a070aaae73e66e57c9098c5bf6f93d14f871"
+        "sha256": "0780a39805ae9efcaee07f73cf42c1e29703cd37123d1ce13bf61d5d363bd2f2"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",

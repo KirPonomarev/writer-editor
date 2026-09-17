@@ -660,7 +660,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "eb78f42b57fb58a90793366f6f4411a67f9d402b70718810bae1d96367390663"
+      "sha256": "c679d473337c889ca4307ace44f92de342adfb173aed0b0a9e9a02dbcd956eba"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -678,7 +678,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "27b31554df0a5d3873ce13a27c624d88d114ae805685e6d8fd0d2a4e4d32f884"
+      "sha256": "4fd0b8913572dc659906cc0d92988167346e4b4595f7299d22d461852c01973c"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1200,7 +1200,7 @@
       "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "3da08362a857e704e960325143a8a070aaae73e66e57c9098c5bf6f93d14f871"
+      "sha256": "0780a39805ae9efcaee07f73cf42c1e29703cd37123d1ce13bf61d5d363bd2f2"
     },
     {
       "filePath": "src/core/project-transaction-v1.cjs",
