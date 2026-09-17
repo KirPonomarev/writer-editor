@@ -14,6 +14,7 @@ SUBCASES={
  'NOVEL_SCENE_STRUCTURE':['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
  'TRACKED_REVIEW_SEMANTICS':['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
  'COMMENTS':['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
+ 'IDENTIFIERS_ANCHORS':['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
 }
 HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N'],'C5':['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE']}
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
@@ -23,7 +24,7 @@ def fields(volume,route):
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
         return ['TEXT','ORDER','UNICODE_IME_LOCALE']
-    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS'])
+    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -41,7 +42,18 @@ def expected_docs(volume,route,round=0):
     ps=[list(v.PROBES)] if volume=='SINGLE_SCENE' else v.expected_scenes(volume)
     docs=[{'type':'doc','content':[para(p.replace('sentinel alpha','sentinel round'+str(round)) if round else p) for p in s]} for s in ps]
     docs[0]['content'] += [para(p) for p in UNICODE]+styles()
+    if route in ['C2','C3']:
+        runs=[{'type':'text','text':'[links] '}]
+        for i,target in enumerate([LINK_TARGETS[0],LINK_TARGETS[1],LINK_TARGETS[0]]):
+            if i:runs.append({'type':'text','text':' / '})
+            runs.append({'type':'text','text':'reference','marks':[{'type':'link','attrs':{'href':target,'target':'_blank','rel':'noopener noreferrer nofollow'}}]})
+        runs.append({'type':'text','text':'.'});docs[0]['content'].insert(-1,{'type':'paragraph','content':runs})
     return docs
+
+LINK_TARGETS=['https://example.test/research?a=1&b=%D1%91#chapter-2','https://example.test/other?q=%F0%9F%A7%AD#note']
+REL='{http://schemas.openxmlformats.org/package/2006/relationships}'
+OFFICE_REL='{http://schemas.openxmlformats.org/officeDocument/2006/relationships}'
+LINK_REL='http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink'
 
 def paragraphs(doc):
     out=[]
@@ -87,7 +99,9 @@ def docx(data,round=0,google=False):
         parts={n:z.read(n) for n in names}
     for name,b in parts.items():
         if name.endswith(('.xml','.rels')):require(b'<!DOCTYPE' not in b.upper() and b'<!ENTITY' not in b.upper(),'XML_DTD')
-        if name.endswith('.rels'):require(all(e.attrib.get('TargetMode','Internal')!='External' for e in ET.fromstring(b)),'EXTERNAL_RELATIONSHIP')
+        if name.endswith('.rels'):
+            for e in ET.fromstring(b):
+                if e.attrib.get('TargetMode','Internal')=='External':require(name=='word/_rels/document.xml.rels' and e.tag==REL+'Relationship' and e.get('Type')==LINK_REL and e.get('Target') in LINK_TARGETS,'EXTERNAL_RELATIONSHIP')
     d=ET.fromstring(parts['word/document.xml']);body=d.find(W+'body')
     allowed_body=[W+'p',W+'sectPr']+([W+'bookmarkStart',W+'bookmarkEnd'] if google else [])
     require(d.tag==W+'document' and body is not None and all(n.tag in allowed_body for n in body),'DOCX_BODY')
@@ -97,7 +111,9 @@ def docx(data,round=0,google=False):
         a=[n.get(W+'id') for n in starts];b=[n.get(W+'id') for n in ends]
         require(a==b and len(set(a))==len(a) and all(isinstance(i,str) and i.isdecimal() for i in a),'GOOGLE_BOOKMARK_PAIRING')
     for p in body.findall(W+'p'):
-        require(all(n.tag in {W+x for x in ['pPr','r','ins','del','bookmarkStart','bookmarkEnd','proofErr','commentRangeStart','commentRangeEnd']} for n in p),'DOCX_PARAGRAPH')
+        require(all(n.tag in {W+x for x in ['pPr','r','ins','del','bookmarkStart','bookmarkEnd','proofErr','commentRangeStart','commentRangeEnd','hyperlink']} for n in p),'DOCX_PARAGRAPH')
+        for link in p.findall(W+'hyperlink'):
+            require(set(link.attrib)<={OFFICE_REL+'id',W+'history'} and link.get(OFFICE_REL+'id') and all(n.tag==W+'r' for n in link),'DOCX_HYPERLINK_SHAPE')
         for rev in [*p.findall(W+'ins'),*p.findall(W+'del')]:require(all(n.tag==W+'r' for n in rev),'DOCX_REVISION')
         for r in p.iter(W+'r'):
             require(all(n.tag in {W+x for x in ['rPr','t','delText','lastRenderedPageBreak','commentReference']} for n in r),'DOCX_RUN')
@@ -109,7 +125,120 @@ def docx(data,round=0,google=False):
         require(len(ins)==len(dele)==1,'TRACKED_PAIR_COUNT');require(''.join(n.text or '' for n in ins[0].iter(W+'t'))=='sentinel round'+str(round),'TRACKED_INSERT')
         require(''.join(n.text or '' for n in dele[0].iter(W+'delText'))==('sentinel alpha' if round==1 else 'sentinel round'+str(round-1)),'TRACKED_DELETE')
     else:require(not ins and not dele,'UNEXPECTED_TRACKED_EDIT')
+    raw_links(parts,d)
     return [v.visible(p) for p in body.findall(W+'p')],parts,d
+
+def raw_links(parts,document):
+    relationships={}
+    if 'word/_rels/document.xml.rels' in parts:
+        root=ET.fromstring(parts['word/_rels/document.xml.rels'])
+        require(root.tag==REL+'Relationships','LINK_RELATIONSHIPS_NAMESPACE')
+        for item in root:
+            ident=item.get('Id')
+            require(item.tag==REL+'Relationship' and ident and ident not in relationships,'LINK_RELATIONSHIP_ID')
+            relationships[ident]=item
+    rows=[];used=set()
+    for index,p in enumerate(document.findall(W+'body/'+W+'p')):
+        offset=0
+        for child in p:
+            text=v.visible(child);size=len(text.encode('utf-16-le'))//2
+            if child.tag==W+'hyperlink':
+                ident=child.get(OFFICE_REL+'id');rel=relationships.get(ident)
+                require(rel is not None and rel.get('Type')==LINK_REL and rel.get('TargetMode')=='External' and rel.get('Target') in LINK_TARGETS and size>0,'LINK_RELATIONSHIP_TARGET')
+                used.add(ident);row={'paragraphIndex':index,'startUtf16':offset,'endUtf16':offset+size,'text':text,'href':rel.get('Target')}
+                if rows and all(rows[-1][k]==row[k] for k in ['paragraphIndex','href']) and rows[-1]['endUtf16']==offset:
+                    rows[-1]['endUtf16']=offset+size;rows[-1]['text']+=text
+                else:rows.append(row)
+            offset+=size
+    require(used=={ident for ident,r in relationships.items() if r.get('Type')==LINK_REL},'LINK_UNREFERENCED_RELATIONSHIP')
+    return rows
+
+def expected_links(docs):
+    result=[];index=0
+    def visit(n):
+        nonlocal index
+        if n.get('type') in ['paragraph','heading','codeBlock']:
+            offset=0
+            for run in n.get('content',[]):
+                value=run['text'];end=offset+len(value.encode('utf-16-le'))//2
+                links=[m for m in run.get('marks',[]) if m['type']=='link']
+                require(len(links)<=1,'LINK_EXPECTED_UNIQUE_MARK')
+                if links:result.append({'paragraphIndex':index,'startUtf16':offset,'endUtf16':end,'text':value,'href':links[0]['attrs']['href']})
+                offset=end
+            index+=1
+        else:
+            for c in n.get('content',[]):visit(c)
+    for doc in docs:visit(doc)
+    return result
+
+def identifier_doc(parts,document,round_id,ids,docs):
+    bookmarks=bookmark_partition(document,round_id,ids,docs)
+    actual=raw_links(parts,document);expected=expected_links(docs)
+    require(len(expected)==3 and actual==expected,'IDENTIFIER_LINK_RANGES_AND_TARGETS')
+    return {'bookmarkSha256':bookmarks,'bookmarkCount':sum(len(paragraphs(d)) for d in docs),
+            'links':actual,'linkSemanticSha256':digest(canonical(actual)),
+            'relationshipsSha256':digest(parts['word/_rels/document.xml.rels']),
+            'scope':'Declared YRTK per-round locators and literal safe hyperlink ranges; native relationship renumbering is allowed only with unchanged range-to-target mapping.'}
+
+def locator_store(data,activation,cap,ids,docs,hashes):
+    store=json.loads(data);unsigned={k:v for k,v in store.items() if k!='authorityStoreDigest'}
+    require(store['authorityStoreDigest']==activation['authorityStoreDigest']=='sha256:'+digest(canonical(unsigned)),'LOCATOR_STORE_DIGEST')
+    require(store['lastRoundId']==cap['roundId'] and store['secretExposedToRenderer'] is False and store['secretEmbeddedInDocx'] is False,'LOCATOR_STORE_ROUND')
+    local=store['roundsById'][cap['roundId']];mapping=local['exportMap']
+    require('hmacSecret' not in local and local['roundId']==mapping['roundId']==cap['roundId'] and mapping['scope']=='full-manuscript','LOCATOR_MAP_IDENTITY')
+    require([s['sceneId'] for s in mapping['scenes']]==ids and local['coreManifestDigest']==cap['coreManifestDigest'],'LOCATOR_MAP_SCENES')
+    keys=[];position=0;map_links=[]
+    for ordinal,(s,doc,raw_hash) in enumerate(zip(mapping['scenes'],docs,hashes)):
+        ps=paragraphs(doc)
+        require(s['sceneOrdinal']==ordinal and s['rawSha256']=='sha256:'+raw_hash and s['sceneRevision']=='sha256:'+raw_hash and len(s['blocks'])==len(ps),'LOCATOR_SCENE_BASELINE')
+        for index,(b,text) in enumerate(zip(s['blocks'],ps)):
+            seed=digest((s['sceneId']+'\n'+str(ordinal)+'\n'+str(index)+'\n'+text).encode())
+            expected_name='YRTK_'+digest(b'word-bookmark-v1'+canonical({'roundBlockOccurrenceId':str(index),'roundId':cap['roundId'],'sceneId':s['sceneId']}))[:32]
+            require(b['blockId']==f'scene-{ordinal+1:02d}-block-{index+1:04d}-'+seed[:16] and b['paragraphId']==f'yrtk-{ordinal+1:02d}-p-'+seed[:16] and b['documentParagraphIndex']==position,'LOCATOR_BLOCK_IDENTITY')
+            require(b['canonicalTextSha256']=='sha256:'+digest(text.encode()) and b['canonicalMarksSha256']=='sha256:'+digest(canonical(b['formatIr'])),'LOCATOR_BLOCK_HASH')
+            require([x['value']['name'] for x in b['wordSignals'] if x['kind']=='bookmarkName']==[expected_name] and ''.join(x['text'] for x in b['formatIr']['runs'])==text,'LOCATOR_DECLARED_BOOKMARK')
+            offset=0
+            for run in b['formatIr']['runs']:
+                end=offset+len(run['text'].encode('utf-16-le'))//2
+                require(run['from']==offset and run['to']==end,'LOCATOR_RUN_RANGE')
+                links=[mark for mark in run.get('preservedMarks',[]) if mark.get('type')=='link'];require(len(links)<=1,'LOCATOR_LINK_MARK')
+                if links:map_links.append({'paragraphIndex':position,'startUtf16':offset,'endUtf16':end,'text':run['text'],'href':links[0]['attrs']['href']})
+                offset=end
+            keys.append([s['sceneId'],b['blockId'],b['paragraphId'],expected_name,b['canonicalTextSha256'],b['canonicalMarksSha256']]);position+=1
+    require(len(keys)==cap['blockCount'] and len({k[1] for k in keys})==len(keys) and len({k[3] for k in keys})==len(keys),'LOCATOR_BIJECTION')
+    require(map_links==expected_links(docs),'LOCATOR_LINK_BINDING')
+    return {'artifactSha256':digest(data),'storeDigest':store['authorityStoreDigest'],'roundId':cap['roundId'],'exportId':cap['exportId'],'coreManifestDigest':cap['coreManifestDigest'],
+            'locatorSha256':digest(canonical(keys)),'sourceMapSha256':digest(canonical(mapping)),'blockCount':len(keys),'sceneCount':len(ids),'sourceSceneHashes':hashes}
+
+IDENTIFIER_CONTROLS=['missing-bookmark','duplicate-bookmark','wrong-bookmark-end','partial-bookmark-range','renamed-bookmark','removed-link','swapped-link-targets','dangling-link','duplicate-relationship','unsafe-link','unreferenced-link']
+def identifier_controls(source,round_id,ids,docs):
+    _,parts,template=docx(source);identifier_doc(parts,template,round_id,ids,docs);rows=[]
+    for name in IDENTIFIER_CONTROLS:
+        d=copy.deepcopy(template);changed=dict(parts);ps=d.findall(W+'body/'+W+'p');first=ps[0];starts=d.findall('.//'+W+'bookmarkStart');links=d.findall('.//'+W+'hyperlink')
+        rels=ET.fromstring(parts['word/_rels/document.xml.rels']);link_rels=[r for r in rels if r.get('Type')==LINK_REL]
+        if name=='missing-bookmark':first.remove(first.find(W+'bookmarkStart'))
+        elif name=='duplicate-bookmark':ps[1].find(W+'bookmarkStart').set(W+'name',starts[0].get(W+'name'))
+        elif name=='wrong-bookmark-end':first.find(W+'bookmarkEnd').set(W+'id','unknown')
+        elif name=='partial-bookmark-range':
+            x=first.find(W+'bookmarkStart');first.remove(x);first.insert(len(first)-1,x)
+        elif name=='renamed-bookmark':starts[0].set(W+'name',starts[0].get(W+'name')+'X')
+        elif name=='removed-link':
+            p=next(p for p in ps if links[0] in list(p));at=list(p).index(links[0]);p.remove(links[0])
+            for c in list(links[0]):p.insert(at,c);at+=1
+        elif name=='swapped-link-targets':
+            left,right=link_rels[:2];one=left.get('Target');left.set('Target',right.get('Target'));right.set('Target',one)
+        elif name=='dangling-link':links[0].set(OFFICE_REL+'id','not-present')
+        elif name=='duplicate-relationship':rels.append(copy.deepcopy(link_rels[0]))
+        elif name=='unsafe-link':link_rels[0].set('Target','file:///not-authorized')
+        elif name=='unreferenced-link':
+            item=copy.deepcopy(link_rels[0]);item.set('Id','unused-link');rels.append(item)
+        changed['word/document.xml']=ET.tostring(d);changed['word/_rels/document.xml.rels']=ET.tostring(rels)
+        rejected=False
+        try:identifier_doc(changed,d,round_id,ids,docs)
+        except ValueError:rejected=True
+        require(rejected,'FALSE_GREEN_IDENTIFIER_'+name)
+        rows.append({'id':name,'rejected':True,'sha256':digest(canonical({n:digest(b) for n,b in changed.items()}))})
+    return rows
 
 
 # Independent comment oracle. Fixed source data and raw OOXML, not a product
@@ -378,7 +507,10 @@ def bookmark_partition(document,round_id,ids,docs):
     actual=[];used_ids=set()
     for p in ps:
         starts=[n for n in p.findall(W+'bookmarkStart') if n.get(W+'name','').startswith('YRTK_')];require(len(starts)==1,'STRUCTURE_ONE_BOOKMARK_PER_BLOCK');start=starts[0];ident=start.get(W+'id');require(ident not in used_ids,'STRUCTURE_BOOKMARK_ID');used_ids.add(ident)
-        require(len([n for n in p.findall(W+'bookmarkEnd') if n.get(W+'id')==ident])==1,'STRUCTURE_BOOKMARK_END');actual.append(start.get(W+'name'))
+        ends=[n for n in p.findall(W+'bookmarkEnd') if n.get(W+'id')==ident];require(len(ends)==1,'STRUCTURE_BOOKMARK_END')
+        begin,finish=list(p).index(start),list(p).index(ends[0])
+        require(begin<finish and ''.join(v.visible(n) for n in list(p)[begin+1:finish])==v.visible(p),'STRUCTURE_BOOKMARK_FULL_RANGE')
+        actual.append(start.get(W+'name'))
     require(actual==expected,'STRUCTURE_BOOKMARK_PARTITIONS');return digest(canonical(actual))
 
 def replace_part(original,name,data):
@@ -544,6 +676,7 @@ def audit(request):
     build=read('runtime-build.json');cp,tc=build['runtimeAppCopyProof'],build['toolchain']
     require((build['shadowHead'],build['shadowTree'])==(head,tree) and build['build']['status']==0,'MANUSCRIPT_BUILD')
     require(cp['ok'] is True and cp['sourceFileCount']==cp['copyFileCount']>0 and cp['sourceDigest']==cp['copyDigest'] and re.fullmatch('[a-f0-9]{64}',cp['sourceDigest']) and cp['failures']==[],'MANUSCRIPT_COPY')
+    require(cp['excluded']==['.git','node_modules','dist','/docs/','/test/'],'MANUSCRIPT_COPY_SCOPE')
     require(tc['compatibleWithShadowManifests'] is True and tc['shadowPackageJsonSha256']==tc['dependencyPackageJsonSha256']==request['packageJsonSha256'] and tc['shadowPackageLockSha256']==tc['dependencyPackageLockSha256']==request['packageLockSha256'] and tc['electronPackageVersion']==request['electronVersion'],'MANUSCRIPT_TOOLCHAIN')
     if profile=='PACKAGED_BUILD_RUNTIME':
         pkg=build['packagedBuild'];proof=pkg['proof'];require(pkg['built'] is True and pkg['build']['status']==0 and proof['ok'] is True and proof['failures']==[],'MANUSCRIPT_PACKAGED_BUILD')
@@ -552,7 +685,7 @@ def audit(request):
         require(proof['executableProof']['sha256']==tc['electronBinarySha256'],'MANUSCRIPT_PACKAGE_EXECUTABLE')
     else:require(build['packagedBuild'] is None,'MANUSCRIPT_SOURCE_PROFILE')
     cycles=5 if route=='C3' else 1;final_round=0 if generic else cycles
-    docs=expected_docs(volume,route);expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[]
+    docs=expected_docs(volume,route);expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[]
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_docs(volume,route,round)],[])
         stages[name]={**exact(ps,es,name),'round':round,'sortKeysSha256':digest(canonical([[i,digest(p.encode())] for i,p in enumerate(ps)]))}
@@ -643,6 +776,11 @@ def audit(request):
         custom=ET.fromstring(parts['docProps/custom.xml']);properties={n.get('name'):re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m[1],16)),n[0].text or '') for n in custom}
         token=properties['YRTK_C01_AUTH'];require(token.startswith('YRTK1.'),'AUTHORITY_CARRIER');encoded=token[6:];payload=json.loads(base64.urlsafe_b64decode(encoded+'='*((-len(encoded))%4)))['payload']
         require(payload['projectId']==pid and payload['orderedSceneIds']==ids and [s['sceneId'] for s in payload['sceneRevisions']]==ids and [s['rawSha256'] for s in payload['sceneRevisions']]==['sha256:'+h for h in hashes] and payload['roundId']==cap['roundId'],'EXPORTED_RAW_SCENE_PARTITION')
+        if not generic:
+            data=raw(name+'-authority-store.json')
+            require(x['authorityStoreFile']==prefix+name+'-authority-store.json' and x['authorityStoreSha256']==digest(data),'LOCATOR_STORE_FILE')
+            locator_stages[name]=locator_store(data,r['activation'],cap,ids,expected_docs(volume,route,round),hashes)
+            identifier_stages[name]={**identifier_doc(parts,doc,cap['roundId'],ids,expected_docs(volume,route,round)),'artifactSha256':digest(b),'roundId':cap['roundId']}
         return cap
     def word_check(name,source_file,returned_file,directory,round,tracked,cap):
         life=read(name+'.json');require(life['status']=='PASS' and life['process']['status']==life['compileProcess']['status']==0 and life['cleanupOk'] is True,'WORD_LIFECYCLE')
@@ -656,6 +794,8 @@ def audit(request):
         if not generic:comment_doc(name,parts,d,raw(returned_file))
         if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_docs(volume,route,round))}
         else:require(generic and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
+        if not generic:
+            identifier_stages[name]={**identifier_doc(parts,d,cap['roundId'],ids,expected_docs(volume,route,round)),'artifactSha256':digest(raw(returned_file)),'roundId':cap['roundId']}
         if route!='C5':style_stages[name]=assert_docx_styles(parts,d)
     google_proof=None
     for ordinal in range(1,cycles+1):
@@ -693,11 +833,29 @@ def audit(request):
             reviewed_document=docx(raw(base+'/returned.docx'),ordinal)[2]
             review_rounds.append({'ordinal':ordinal,'returnedSha256':digest(raw(base+'/returned.docx')),**review_revision_proof(reviewed_document,x,ordinal)})
             if ordinal==1:
+                source_doc=docx(raw(base+'/source.docx'))[2]
+                identifier_negative=identifier_controls(raw(base+'/source.docx'),cap['roundId'],ids,expected_docs(volume,route))
+                original=docx(raw(base+'/returned.docx'),1);original_starts=[n.get(W+'name') for n in original[2].findall('.//'+W+'bookmarkStart')]
+                for kind in ['identity','missing-bookmark','duplicate-bookmark']:
+                    control=read(base+'/identifier-'+kind+'-intake.json');mutant=raw(base+'/identifiers-'+kind+'.docx');mps,mparts,mdoc=docx(mutant,1)
+                    require(control==read(base+'/identifier-'+kind+'-intake-observed.json') and control['kind']==kind and control['sourceSha256']==digest(raw(base+'/returned.docx')) and control['mutantSha256']==digest(mutant),'IDENTIFIER_CONTROL_BYTES')
+                    require(mps==original[0] and raw_links(mparts,mdoc)==raw_links(original[1],original[2]),'IDENTIFIER_CONTROL_TEXT_UNCHANGED')
+                    names=[n.get(W+'name') for n in mdoc.findall('.//'+W+'bookmarkStart')]
+                    wanted=original_starts[:] if kind=='identity' else original_starts[1:] if kind=='missing-bookmark' else [original_starts[0],original_starts[0]]+original_starts[2:]
+                    require(names==wanted,'IDENTIFIER_INDEPENDENT_CORRUPTION')
+                    before=control['before'];result=control['result']
+                    require(before==control['after'] and before['sceneHashes']==source_hashes and before['commentStateSha256']==comment_state_sha and re.fullmatch('[a-f0-9]{64}',before['manifestSha256']),'IDENTIFIER_CONTROL_NO_WRITE')
+                    require(all(result.get(k) is not True for k in ['canAutoApply','canImportMutate','canWriteStorage']),'IDENTIFIER_CONTROL_NO_AUTHORITY')
+                    if kind=='identity':
+                        require(result['ok'] is True and result['returnIntake']['authenticated'] is True and result['returnIntake']['returnedArtifactSha256']=='sha256:'+digest(mutant),'IDENTIFIER_POSITIVE_CONTROL')
+                    else:require(result['ok'] is False and isinstance(result.get('code'),str) and result['code'],'IDENTIFIER_TYPED_REJECTION')
+                    identifier_intakes.append({'kind':kind,'sourceSha256':control['sourceSha256'],'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/identifier-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(before)),'writerCalled':False,'accepted':kind=='identity','code':result.get('code'),'lostIdentifiers':[original_starts[0]] if kind=='missing-bookmark' else [],'duplicateIdentifiers':[original_starts[0]] if kind=='duplicate-bookmark' else []})
                 probe_file=base+'/review-probe/returned.docx';probe=raw(probe_file);ps,parts,pdoc=docx(probe,1);exact(ps,sum([paragraphs(d) for d in expected_docs(volume,route,1)],[]),'REVIEW_PROBE_FULL_TEXT')
                 lifecycle=read(base+'/review-probe-word.json');require(lifecycle['status']=='PASS' and lifecycle['cleanupOk'] is True and lifecycle['compileProcess']['status']==lifecycle['process']['status']==0,'REVIEW_PROBE_WORD_LIFECYCLE')
                 require(lifecycle['sourceDocxHash']==lifecycle['preOpenHash']==digest(raw(base+'/source.docx')) and lifecycle['postWordHash']==lifecycle['copiedBackHash']==digest(probe),'REVIEW_PROBE_BYTES')
                 for k,value in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','3'),('COMMENT_COUNT','4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lifecycle['process']['stdout'].splitlines() if line.startswith(k+'=')]==[k+'='+value],'REVIEW_PROBE_'+k)
                 comment_doc(base+'/review-probe',parts,pdoc,probe)
+                identifier_stages[base+'/review-probe']={**identifier_doc(parts,pdoc,cap['roundId'],ids,expected_docs(volume,route,1)),'artifactSha256':digest(probe),'roundId':cap['roundId']}
                 require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
                 exact(v.native(raw(base+'/review-probe/word-native-readback.txt')),ps,'REVIEW_PROBE_NATIVE_TEXT')
                 require(lifecycle['evidencePath'].endswith('/'+run+'/'+probe_file) and lifecycle['nativeReadbackPath'].endswith('/'+run+'/'+base+'/review-probe/word-native-readback.txt'),'REVIEW_PROBE_NATIVE_PATH')
@@ -810,6 +968,7 @@ def audit(request):
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route)]
     for proof in proofs:
         if proof['field']=='COMMENTS':proof['commentProof']=comment_proof
+        if proof['field']=='IDENTIFIERS_ANCHORS':proof['identifierProof']={'stages':identifier_stages,'locators':locator_stages,'negativeControls':identifier_negative,'intakeControls':identifier_intakes,'lossLedger':{'lostIdentifiers':[],'duplicateIdentifiers':[],'unsafeHyperlinks':[],'scope':'Declared per-round locator names and all three explicit hyperlink ranges across saved, applied and reopened project state; intentional negative-control losses are recorded separately.'}}
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
     return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 

@@ -12,7 +12,40 @@ def archive(xml,extra=None):
   for n,b in (extra or {}).items():z.writestr(n,b)
  return out.getvalue()
 def document(ps):return ('<w:document xmlns:w="'+NS+'"><w:body>'+''.join('<w:p><w:r><w:t xml:space="preserve">'+escape(p)+'</w:t></w:r></w:p>' for p in ps)+'</w:body></w:document>').encode()
+def identifier_archive():
+ docs=m.expected_docs('MULTI_SCENE','C2');ids=m.expected_ids('MULTI_SCENE',len(docs));d=ET.fromstring(document(sum([m.paragraphs(x) for x in docs],[])));ps=d.find(m.W+'body').findall(m.W+'p');offset=0
+ rels=ET.Element(m.REL+'Relationships')
+ for i,href in enumerate(m.LINK_TARGETS):ET.SubElement(rels,m.REL+'Relationship',Id='link'+str(i),Type=m.LINK_REL,Target=href,TargetMode='External')
+ for ident,doc in zip(ids,docs):
+  for i,text in enumerate(m.paragraphs(doc)):
+   p=ps[offset];name='YRTK_'+m.digest(b'word-bookmark-v1'+m.canonical({'roundBlockOccurrenceId':str(i),'roundId':'round-unit','sceneId':ident}))[:32]
+   if text.startswith('[links]'):
+    p.clear()
+    def atom(parent,value):ET.SubElement(ET.SubElement(parent,m.W+'r'),m.W+'t').text=value
+    atom(p,'[links] ')
+    for j,target in enumerate([0,1,0]):
+     if j:atom(p,' / ')
+     atom(ET.SubElement(p,m.W+'hyperlink',{m.OFFICE_REL+'id':'link'+str(target)}),'reference')
+    atom(p,'.')
+   p.insert(0,ET.Element(m.W+'bookmarkStart',{m.W+'id':str(offset),m.W+'name':name}));p.append(ET.Element(m.W+'bookmarkEnd',{m.W+'id':str(offset)}));offset+=1
+ parts={'word/_rels/document.xml.rels':ET.tostring(rels)};return archive(ET.tostring(d),parts),ids,docs
 class ManuscriptOracle(unittest.TestCase):
+ def test_identifier_ranges_relationships_and_eleven_corruptions(self):
+  data,ids,docs=identifier_archive();ps,parts,d=m.docx(data)
+  proof=m.identifier_doc(parts,d,'round-unit',ids,docs)
+  self.assertEqual([x['href'] for x in proof['links']],[m.LINK_TARGETS[0],m.LINK_TARGETS[1],m.LINK_TARGETS[0]])
+  self.assertEqual([(x['startUtf16'],x['endUtf16']) for x in proof['links']],[(8,17),(20,29),(32,41)])
+  controls=m.identifier_controls(data,'round-unit',ids,docs)
+  self.assertEqual([x['id'] for x in controls],m.IDENTIFIER_CONTROLS);self.assertTrue(all(x['rejected'] for x in controls));self.assertEqual(len({x['sha256'] for x in controls}),11)
+ def test_identifier_native_id_renumbering_and_split_runs_preserve_semantics(self):
+  data,ids,docs=identifier_archive();_,parts,d=m.docx(data);original=m.identifier_doc(parts,d,'round-unit',ids,docs)
+  for n in [*d.iter(m.W+'bookmarkStart'),*d.iter(m.W+'bookmarkEnd')]:n.set(m.W+'id',str(int(n.get(m.W+'id'))+7000))
+  rels=ET.fromstring(parts['word/_rels/document.xml.rels'])
+  for r in rels:r.set('Id','new-'+r.get('Id'))
+  for link in d.iter(m.W+'hyperlink'):
+   link.set(m.OFFICE_REL+'id','new-'+link.get(m.OFFICE_REL+'id'));run=link[0];run[0].text='ref';clone=copy.deepcopy(run);clone[0].text='erence';link.append(clone)
+  changed=m.identifier_doc({**parts,'word/_rels/document.xml.rels':ET.tostring(rels)},d,'round-unit',ids,docs)
+  self.assertEqual(original['bookmarkSha256'],changed['bookmarkSha256']);self.assertEqual(original['linkSemanticSha256'],changed['linkSemanticSha256'])
  def test_all_volumes_have_literal_unicode_and_five_distinct_rounds(self):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    for route in ['C1','C2','C3']:

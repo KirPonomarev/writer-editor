@@ -20,12 +20,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "faeabfafc84d85c23326a025e17e012db124499d093845426d4f73d03f647ce4"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "7743703d48514e70e4388ee184cce95aae96669b051b97b7bc4792c45c86c84b"
     },
     {
       "approved": true,
@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "bda4ad12cbb849c80a0e112fc49dc186d46b3869dd927833868fd7576c36e6ce"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "1684eeb3c76127bc0c1c99fd4742b22e80d0e40ece1c8e5b9494c8e112d1612f"
     },
     {
       "approved": true,
@@ -656,11 +656,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "c6556d2751327861e719a742e6511f47777f030777211e7a15838132d6099643"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "5953af4c6cf893c3ba99abdae705a86c15dd8b64bd6431d2c99c4ad31ee4b3f5"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -674,11 +674,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "a41603666de86b99e60e1b8572ac67ae8446ca81207213c7c7cd4641315eb71f"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "a8af12c9c5854a4f25b87046657a41384006eb9892be72a6a8d7ae82ee7859f3"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1187,20 +1187,20 @@
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "27b3bf5d6a444705769a4f30f65a63113856fa0512dda8209dcd1d0b99722a3d"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "527c4e3f1a138bd0f32b9a9efe8dbe6cbd4c9248feb788016034f638cfb7d6ff"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "5d39154437a86c3ab1b5f295e2929b68f1e398440789b17cf25b624daa5d9d60"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "d06ab3a9b034289430a5f06f5ceddae2249b4ad2c4370a6a3e3ddf4bfaf3bce1"
     },
     {
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1241,29 +1241,29 @@
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "5addfe35a29a41910eed06ed489269603880a5061b681e97ad095b9b4fc1d575"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "c0308ed1345abc2d9caf4ce1c3e4ff631c6cd38bf4ba311b2512155aa6a58ac2"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "507bbbdb51c056aaeb0a9ae124d635fdda54ed418e9372915080f41ad926c146"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "6ab5f1fd66fee754b7e6612ad12a4076e3a6dc143c5e846fd070317940a97fdc"
     },
     {
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "4016045240f5ef826f522c335a02724375fe00841698680238b2012e81f54e79"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "46b8f39db0be4e6d197e4015865a1c72090316221cc6fc7a1d8b0f35baee7738"
     },
     {
       "filePath": "test/unit/sector-m-scene-rich-truth.test.js",
@@ -1321,15 +1321,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "1fd1154fd18a2675bb7dac61a0061eb0c792f22f0f218e906c149a6e1781955f"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "f33b1a9ad54ecccc323df0ff96a59abbac2219d38afa186837b6261fcb428dab"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -1384,6 +1384,24 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
       "sha256": "f85141a01e4a08961c0a120d24195a78bfd5b619f8b4588fa0845b6b1c007e94"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "e23ad3b9a3753f074a48a946d9e78cd9ef5baf85dacd151590585e7069985a9c"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "e9a99d064fe054cc22843440784e7b9c0789755a569cb84bad9d914699f21130"
     }
   ],
   "evidenceStampIds": [
