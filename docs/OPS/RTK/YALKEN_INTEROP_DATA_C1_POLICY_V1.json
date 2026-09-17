@@ -694,7 +694,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-        "sha256": "a307bf57040078f0a9a371de6a4158523200e45c6d3dcdb66541cc1aced7038c"
+        "sha256": "76e77bc3fa80895b8e03a62a4960d6b49f80328a6fd444a5855096870d3a4ab8"
       }
     ],
     "followupRepair": {

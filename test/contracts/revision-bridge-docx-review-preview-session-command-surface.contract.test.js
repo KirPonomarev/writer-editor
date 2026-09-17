@@ -2184,12 +2184,15 @@ test('DOCX review preview session command: current-profile YRTK carrier authenti
     fullSource.localAuthorityCapsule.hmacSecret,
   );
   fullSource.localAuthorityCapsule.lifecycleState = 'PUBLISHED_ACTIVE';
+  const declaredBookmark = fullSource.localAuthorityCapsule.exportMap.scenes[0].blocks[0].wordSignals.find((signal) => signal.kind === 'bookmarkName').value.name;
   const returnedBytes = cleanDocxZip([
     '<w:p>',
+    `<w:bookmarkStart w:id="7" w:name="${declaredBookmark}"/>`,
     '<w:r><w:t>Alpha </w:t></w:r>',
     '<w:del w:id="1"><w:r><w:delText>beta</w:delText></w:r></w:del>',
     '<w:ins w:id="2"><w:r><w:t>delta</w:t></w:r></w:ins>',
     '<w:r><w:t> gamma.</w:t></w:r>',
+    '<w:bookmarkEnd w:id="7"/>',
     '</w:p>',
   ].join(''), [
     {
