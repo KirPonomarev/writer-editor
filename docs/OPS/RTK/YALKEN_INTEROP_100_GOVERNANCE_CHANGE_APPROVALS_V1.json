@@ -250,16 +250,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "58120943bd7b4db92bb160af5cda450d0c45b5a2748280579dc8334aaf86dc11"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "78ab03ca5be1a474f8e1fdccf7c29e9c5aadd1dbd26ebb1553e5d933367106a0"
     },
     {
       "approved": true,
@@ -656,11 +656,11 @@
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "6f46192f59f48b7474153d96ab949baddbcb8fb430711bab05349bc576ecf99d"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "4db97026a9711a4941faa51a73a94425b86edb25a41e6df56343f3430e1692e5"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
@@ -674,11 +674,11 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "d84fc54880bcfd8a3b3ab6a700905d7fc0fda8c4aaef87331547ae8b9f6182d0"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "20029ca232b6fc02c41eb12ffe0a4236f00b657f160af8d3aa31099ffcaeaceb"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1-readback.py",
@@ -1187,20 +1187,20 @@
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "527c4e3f1a138bd0f32b9a9efe8dbe6cbd4c9248feb788016034f638cfb7d6ff"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "ec2f04f53d6cc508bfb88c628ed7aebb87aa6f896f4a6934277c70be321e9a8a"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "6c50aeb4dd578773363bdd627028568d6ea426a6faf5503b4a9825baca31fef1"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "7b302afeba86c370f88a5d53279dbefc8ec45a56da9cffa2e6a4b9d5b13ec14d"
     },
     {
       "filePath": "src/core/project-transaction-v1.cjs",
@@ -1241,29 +1241,29 @@
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "c0308ed1345abc2d9caf4ce1c3e4ff631c6cd38bf4ba311b2512155aa6a58ac2"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "ea07f1408117eec88f5ae09071a54ee11f53ab3700093ae0e42664f8e0a1ac03"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "ec1254dd676f73f9e20fdc83e7a5c0a857e3b140604cad9a575d04eb6355a445"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "1eb32e7d2e4bfae6b1126908016d31cec0316f9f463d242265f31e3f35d5a6fb"
     },
     {
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "bad3f6c26b2631865f0dbfe0ca207c16c79b68537474472f276f7d7d44175e53"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "cd7ce728cae27af6cf67577be58f56b5c721b55f1a13fbab480097672fd9bbd1"
     },
     {
       "filePath": "test/unit/sector-m-scene-rich-truth.test.js",
@@ -1321,15 +1321,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "c835231bf8ecaa5182f0730c40202f01a5a8980202b9cd9788961c45dc1c1b4f"
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "b7b6a88e184ecab8fc4b3f5235352f36218e45e783680fa44da2bfc0b3caedde"
     },
     {
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -1420,6 +1420,15 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
       "sha256": "1dc01c48a76154f5de60bf4c03b5f0604d6d1652f6acff6912430c7a4d36aac0"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-17--c1-review-intake-fields.md",
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T19:14:49.868757+00:00",
+      "approvedBy": "owner-direct-task:C1_REVIEW_INTAKE_FIELDS_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded C1 review-return proof retains all174 prior predicates and the original safe-create path. Distinct recipes grant disjoint field credit, with complete native provider evidence, independent raw readback and existing corruption/zero-mutation controls. No product runtime change. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "bccc3d5dcc49c0288a60ca78d3a907efa958ab8d409de17e0c0ce546f5cbe45f"
     }
   ],
   "evidenceStampIds": [

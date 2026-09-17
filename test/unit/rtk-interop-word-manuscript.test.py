@@ -30,6 +30,18 @@ def identifier_archive():
    p.insert(0,ET.Element(m.W+'bookmarkStart',{m.W+'id':str(offset),m.W+'name':name}));p.append(ET.Element(m.W+'bookmarkEnd',{m.W+'id':str(offset)}));offset+=1
  parts={'word/_rels/document.xml.rels':ET.tostring(rels)};return archive(ET.tostring(d),parts),ids,docs
 class ManuscriptOracle(unittest.TestCase):
+ def test_c1_review_recipe_has_disjoint_credit_and_independent_rich_expectations(self):
+  for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
+   default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')
+   self.assertEqual(default,['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);self.assertFalse(set(default)&set(review))
+   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS'])
+   source=m.expected_docs(volume,'C1',recipe='C1_REVIEW_RETURN');returned=m.expected_docs(volume,'C1',1,'C1_REVIEW_RETURN')
+   self.assertIn('[links] reference / reference / reference.',m.paragraphs(source[0]))
+   self.assertNotIn('[links] reference / reference / reference.',m.paragraphs(m.expected_docs(volume,'C1')[0]))
+   self.assertEqual([i for i,(a,b) in enumerate(zip(m.paragraphs(source[0]),m.paragraphs(returned[0]))) if a!=b],[0])
+   self.assertIn('sentinel round1',m.paragraphs(returned[0])[0]);self.assertEqual(source[1:],returned[1:])
+  for route,recipe in [('C1','unknown'),('C1',None),('C2','C1_REVIEW_RETURN'),('C3','C1_REVIEW_RETURN'),('C5','C1_REVIEW_RETURN')]:
+   with self.assertRaisesRegex(ValueError,'MANUSCRIPT_RECIPE'):m.expected_docs('SINGLE_SCENE',route,recipe=recipe)
  def test_lossless_locator_archive_rejects_wrong_hash_length_truncation_and_bombs(self):
   data=b'{"owned":"'+b'x'*2048+b'"}';encoded=m.gzip.compress(data)
   self.assertEqual(m.decode_locator_store(encoded,m.digest(data),len(data)),data)

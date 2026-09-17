@@ -122,7 +122,8 @@
     "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
     "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
     "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-    "test/contracts/rtk-export01-unified-bookmark.contract.test.js"
+    "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
+    "docs/tasks/2026-09-17--c1-review-intake-fields.md"
   ],
   "protectedFiles": [
     {
@@ -292,7 +293,7 @@
     },
     {
       "path": "src/word-manuscript-fields.mjs",
-      "sha256": "80e53d10c91014059a1c84a8e6931af9c256b6a1e89a53e7c02417c4b80d69b1"
+      "sha256": "a071acd1d523a8a0631b87797a406e3fec8c7ae4ede2e68d783e261dfe9d7d44"
     }
   ],
   "requirementIds": [
@@ -587,11 +588,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "c0308ed1345abc2d9caf4ce1c3e4ff631c6cd38bf4ba311b2512155aa6a58ac2"
+        "sha256": "ea07f1408117eec88f5ae09071a54ee11f53ab3700093ae0e42664f8e0a1ac03"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "bad3f6c26b2631865f0dbfe0ca207c16c79b68537474472f276f7d7d44175e53"
+        "sha256": "cd7ce728cae27af6cf67577be58f56b5c721b55f1a13fbab480097672fd9bbd1"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -700,6 +701,10 @@
       {
         "path": "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
         "sha256": "1dc01c48a76154f5de60bf4c03b5f0604d6d1652f6acff6912430c7a4d36aac0"
+      },
+      {
+        "path": "docs/tasks/2026-09-17--c1-review-intake-fields.md",
+        "sha256": "bccc3d5dcc49c0288a60ca78d3a907efa958ab8d409de17e0c0ce546f5cbe45f"
       }
     ],
     "followupRepair": {
@@ -758,9 +763,9 @@
       "scope": "Preserve authored full-manuscript paragraphs and physical order; compact redundant public advisory while retaining authenticated local baselines and existing budgets. Admit TEXT/ORDER for the four named volumes on native C1/C2 source/packaged journeys only after independent complete-body proof on fresh merged runtime."
     },
     "wordManuscriptBatch": {
-      "taskId": "WORD_LINK_ANCHOR_CONTINUITY_20260917",
-      "bindingBaseSha": "fa441bffb44b30aa00e85d6a5e0a528051633c0b",
-      "scope": "Exact safe link targets/ranges and declared per-round identity/locator continuity through native Word, with actual zero-mutation negative intakes. All 158 previous predicates remain mandatory; no denominator or authority change."
+      "taskId": "C1_REVIEW_INTAKE_FIELDS_20260917",
+      "bindingBaseSha": "6c9b97f5bb9e284f266477c7370f00558234d103",
+      "scope": "C1 review-return independently exercises the existing canonical path. All174 prior predicates remain mandatory; safe-create and review recipe fields are disjoint. No denominator, runtime or authority change."
     }
   },
   "wordTextOrderBatch": {
@@ -886,10 +891,16 @@
       "ORDER__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "STYLES__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "COMMENTS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "STYLES__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
@@ -928,10 +939,18 @@
       "ORDER__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "STYLES__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "COMMENTS__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "STYLES__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
@@ -974,10 +993,18 @@
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "COMMENTS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "STYLES__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
@@ -1020,10 +1047,18 @@
       "ORDER__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "STYLES__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "COMMENTS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "STYLES__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
@@ -1150,19 +1185,19 @@
         "identifierLossLedgered"
       ]
     },
-    "notBeforeUtc": "2026-09-17T16:43:21.237482+00:00",
+    "notBeforeUtc": "2026-09-17T19:14:49.868757+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "ec1254dd676f73f9e20fdc83e7a5c0a857e3b140604cad9a575d04eb6355a445"
+        "sha256": "1eb32e7d2e4bfae6b1126908016d31cec0316f9f463d242265f31e3f35d5a6fb"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "6c50aeb4dd578773363bdd627028568d6ea426a6faf5503b4a9825baca31fef1"
+        "sha256": "7b302afeba86c370f88a5d53279dbefc8ec45a56da9cffa2e6a4b9d5b13ec14d"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "527c4e3f1a138bd0f32b9a9efe8dbe6cbd4c9248feb788016034f638cfb7d6ff"
+        "sha256": "ec2f04f53d6cc508bfb88c628ed7aebb87aa6f896f4a6934277c70be321e9a8a"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -1381,13 +1416,55 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "C2/C3 add complete declared bookmark identity, paragraph anchor bijection, exact hyperlink range-to-target relationships, hash-bound local locators and actual missing/duplicate anchor rejection with unchanged canonical state. Independent raw proof includes every native export, return, explicit apply, fresh-process reopen and reexport. All 158 previous predicates remain mandatory. Background Word and reduced disposable copies are qualified by exact source pins; no denominator change.",
+    "scope": "C1 adds a separate full-manuscript review-return recipe with complete comments, tracked semantics, identifiers and multi-scene hierarchy. Original C1 safe-create retains its four disjoint fields. Recipe identity binds runId, native observation and independent raw output; no cell credit is duplicated. Independent raw proof includes every native export, return, explicit apply, fresh-process reopen and reexport. All174 previous predicates remain mandatory. Background Word and reduced disposable copies are qualified by exact source pins; no denominator change.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",
       "Unsupported document objects reject the bounded proof; generic C1 declares metadata and bookmark loss.",
       "Tracked property changes are explicitly classified and preserved as manual-review information; this does not claim automatic formatting acceptance or merging edited existing comments."
     ],
+    "reviewReturnParagraphHashes": {
+      "SINGLE_SCENE": [
+        {
+          "sha256": "34a3fb43939d11c1457bf1f1634f2349ee760ed976cba8d3f9cad95f64fe6266",
+          "count": 35
+        },
+        {
+          "sha256": "1263f2af133916d27da9e8d264242306d62d156d767f6e5b6e5e218ae109d868",
+          "count": 35
+        }
+      ],
+      "MULTI_SCENE": [
+        {
+          "sha256": "386d0ff8a3bfde9283cb5a8ef323f39a4edaa977862c59d052bb6f83429ba5fb",
+          "count": 35
+        },
+        {
+          "sha256": "1da4895c0654e956743a235bf6ebd056c817c7b1a29ac1e0812320d594119a8c",
+          "count": 35
+        }
+      ],
+      "FULL_SYNTHETIC_NOVEL": [
+        {
+          "sha256": "53eda8ec60737a3fb5158dab3fb6fcd51fe28e761ce462310f128a1619b3e366",
+          "count": 1736
+        },
+        {
+          "sha256": "4aa04d812b4d79acbab0ede95195aab09f802cc8ef2c07ba9440f4b3c0bfc719",
+          "count": 1736
+        }
+      ],
+      "LARGE_DOCUMENT": [
+        {
+          "sha256": "2befc1e16c8471e18b7fa80be29885476d494f528fc022c8609a2cfd27af094e",
+          "count": 8414
+        },
+        {
+          "sha256": "6a63e9c7e7638709c5f1f84669a754230d7c3ae0aeb23d3d76a7ec60ff63f59f",
+          "count": 8414
+        }
+      ]
+    },
     "googleNativeTransport": {
       "status": "ROUTE_QUALIFIED_NOT_CELL_PASS",
       "directLocalPathImport": {
