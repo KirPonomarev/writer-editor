@@ -123,7 +123,9 @@
     "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
     "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
     "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
-    "docs/tasks/2026-09-17--c1-review-intake-fields.md"
+    "docs/tasks/2026-09-17--c1-review-intake-fields.md",
+    "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
+    "src/main/rtkDocxReturnIntakeWorker.cjs"
   ],
   "protectedFiles": [
     {
@@ -244,7 +246,8 @@
     "test/data-c1-recipe.test.mjs",
     "test/solo-sequential.test.py",
     "src/word-volume-text-order.mjs",
-    "src/word-manuscript-fields.mjs"
+    "src/word-manuscript-fields.mjs",
+    "src/word-metadata-mutant.py"
   ],
   "labCodeBindings": [
     {
@@ -336,7 +339,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "8ab7e7cd56fa013b316d2f96facf56b2939523e9c3032bb8744df45d47acb915"
+        "sha256": "0200fc8f00c2b98664f9109b851a9f5052dae5ffa7fd59dcd00bb34c04a20579"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -448,11 +451,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "8b9744281dc465c256cc5feb9898b6fc425d1ea2bb7ecc2f9ea50e90adc2d470"
+        "sha256": "18ffb9d06339422eeaf6ac23e4a400148426f71fcd2c6b2dd46dda15f979e161"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "e1cdb505a46e746976cd663757ccdae9b727c28f592c7c37d0149c130770786b"
+        "sha256": "808d970d827bbf99fe9e71edb3a9894458838934d502601652a3d83c2064441c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -472,7 +475,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "1e36dcc5c3ec4ce32de3892b80b3b0770dee43dfa3c2b8f9a8457875e5722634"
+        "sha256": "ce174918aaaac60d1b666a2651e76a076695e75c7eba2129558e9888351f0615"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -572,7 +575,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "a4e666e038843847802358667a2041f98046578e3c25ec014a698d6e0546283f"
+        "sha256": "be1f8b3def1c68c652993692c6dd74f7610c4115ba6d1cc7d19060c3856396c6"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
@@ -588,11 +591,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "ea07f1408117eec88f5ae09071a54ee11f53ab3700093ae0e42664f8e0a1ac03"
+        "sha256": "d1068fe4f0c48d3ff43e7e41a14a213eb493229b7b442db39d965ec2e122b439"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "cd7ce728cae27af6cf67577be58f56b5c721b55f1a13fbab480097672fd9bbd1"
+        "sha256": "84f46208a280bede5827ed8d669a3196d5d6e16e074061f13a0356823b736d8b"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -644,7 +647,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "acc84bc1d6fc8fd05295bdcdd2a6869788276c6b02279963caf39f51deab8931"
+        "sha256": "e08d122288163576f069a20c592018c85dadd2d71fc9b40b1f76409c40eb5a07"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
@@ -656,7 +659,7 @@
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
-        "sha256": "f85141a01e4a08961c0a120d24195a78bfd5b619f8b4588fa0845b6b1c007e94"
+        "sha256": "a3afc34e3549a0e4970ce57c8ec5c012e8525a34a689ce11da96240ab2f26a30"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js",
@@ -676,7 +679,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js",
-        "sha256": "c3480cc67033b35b70a30d160b77d91eb6884db58b69a518ceaac3164aeb187d"
+        "sha256": "5b91e63033b150546198971507bea79662dad2aa6308812eb31292d014d0e03e"
       },
       {
         "path": "docs/tasks/2026-09-17--word-canonical-comment-reexport.md",
@@ -705,6 +708,14 @@
       {
         "path": "docs/tasks/2026-09-17--c1-review-intake-fields.md",
         "sha256": "bccc3d5dcc49c0288a60ca78d3a907efa958ab8d409de17e0c0ce546f5cbe45f"
+      },
+      {
+        "path": "src/main/rtkDocxReturnIntakeWorker.cjs",
+        "sha256": "3cc1766f1f0e6a48fd8bb217a6d5ce36ae9fbca84eeba81e937182797bf8f0e1"
+      },
+      {
+        "path": "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
+        "sha256": "f6e7012a493e36608fc0a093b87a3fe2e36c0ac9b3d9255577bf4f80173ff254"
       }
     ],
     "followupRepair": {
@@ -766,6 +777,11 @@
       "taskId": "C1_REVIEW_INTAKE_FIELDS_20260917",
       "bindingBaseSha": "6c9b97f5bb9e284f266477c7370f00558234d103",
       "scope": "C1 review-return independently exercises the existing canonical path. All174 prior predicates remain mandatory; safe-create and review recipe fields are disjoint. No denominator, runtime or authority change."
+    },
+    "wordMetadataRoundtrip": {
+      "taskId": "WORD_METADATA_ROUNDTRIP_20260918",
+      "bindingBaseSha": "2cc4a5f69daf29a3859799e3fa75543bbd3a4bcd",
+      "scope": "Preserve protected project metadata through native Word with exact signed custom values, independently checked core carriers, explicit provider-normalization ledger, seven typed corruptions and no returned metadata write authority."
     }
   },
   "wordTextOrderBatch": {
@@ -894,6 +910,7 @@
       "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "COMMENTS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "METADATA__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
@@ -901,6 +918,7 @@
       "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "METADATA__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
@@ -908,6 +926,7 @@
       "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "COMMENTS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "METADATA__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
@@ -915,6 +934,7 @@
       "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "METADATA__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__SOURCE_RUNTIME",
@@ -922,6 +942,7 @@
       "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "COMMENTS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "METADATA__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
@@ -929,6 +950,7 @@
       "TRACKED_REVIEW_SEMANTICS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "METADATA__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C5__SOURCE_RUNTIME",
@@ -943,6 +965,7 @@
       "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "COMMENTS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "METADATA__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
@@ -951,6 +974,7 @@
       "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "METADATA__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
@@ -959,6 +983,7 @@
       "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "COMMENTS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "METADATA__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
@@ -967,6 +992,7 @@
       "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "METADATA__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__SOURCE_RUNTIME",
@@ -975,6 +1001,7 @@
       "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "COMMENTS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "METADATA__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
@@ -983,6 +1010,7 @@
       "TRACKED_REVIEW_SEMANTICS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "METADATA__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C5__SOURCE_RUNTIME",
@@ -997,6 +1025,7 @@
       "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "METADATA__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
@@ -1005,6 +1034,7 @@
       "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "METADATA__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
@@ -1013,6 +1043,7 @@
       "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "METADATA__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
@@ -1021,6 +1052,7 @@
       "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "METADATA__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
@@ -1029,6 +1061,7 @@
       "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "METADATA__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
@@ -1037,6 +1070,7 @@
       "TRACKED_REVIEW_SEMANTICS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "METADATA__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
@@ -1051,6 +1085,7 @@
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "METADATA__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
@@ -1059,6 +1094,7 @@
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "METADATA__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
@@ -1067,6 +1103,7 @@
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "METADATA__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
@@ -1075,6 +1112,7 @@
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "METADATA__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
@@ -1083,6 +1121,7 @@
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "METADATA__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
@@ -1090,7 +1129,8 @@
       "NOVEL_SCENE_STRUCTURE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
-      "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
+      "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "METADATA__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
     ],
     "requiredHops": {
       "C1": [
@@ -1183,21 +1223,29 @@
         "duplicateAnchorRejected",
         "locatorHashBound",
         "identifierLossLedgered"
+      ],
+      "METADATA": [
+        "documentPropertiesAccounted",
+        "customPropertiesAccounted",
+        "authorshipPolicyDeclared",
+        "timestampPolicyDeclared",
+        "receiptIdentityBound",
+        "metadataLossLedgered"
       ]
     },
     "notBeforeUtc": "2026-09-17T19:14:49.868757+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "1eb32e7d2e4bfae6b1126908016d31cec0316f9f463d242265f31e3f35d5a6fb"
+        "sha256": "10cefbc4f150f68e2794b4f47cdde4864eb6c10c1a7601f9dbc16367af38cd3b"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "7b302afeba86c370f88a5d53279dbefc8ec45a56da9cffa2e6a4b9d5b13ec14d"
+        "sha256": "c70f5fe2bef9c79e6b446a28b27991abb7032a71e8ea3da8de82c942df132133"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "ec2f04f53d6cc508bfb88c628ed7aebb87aa6f896f4a6934277c70be321e9a8a"
+        "sha256": "e45c653f71921086ed446efeb96a50fc81dafc7f2a303313abedff5b42e43c55"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -1416,12 +1464,13 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "C1 adds a separate full-manuscript review-return recipe with complete comments, tracked semantics, identifiers and multi-scene hierarchy. Original C1 safe-create retains its four disjoint fields. Recipe identity binds runId, native observation and independent raw output; no cell credit is duplicated. Independent raw proof includes every native export, return, explicit apply, fresh-process reopen and reexport. All174 previous predicates remain mandatory. Background Word and reduced disposable copies are qualified by exact source pins; no denominator change.",
+    "scope": "C1 review-return, C2 and C3 preserve protected project metadata through native Word in addition to the prior admitted fields. Original C1 safe-create retains its four disjoint fields. Recipe identity binds runId, native observation and independent raw output; no cell credit is duplicated. Independent raw proof includes every native export, return, explicit apply, fresh-process reopen and reexport. All 204 previously accepted cells remain mandatory; the frozen denominator and mutation authority are unchanged.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",
       "Unsupported document objects reject the bounded proof; generic C1 declares metadata and bookmark loss.",
-      "Tracked property changes are explicitly classified and preserved as manual-review information; this does not claim automatic formatting acceptance or merging edited existing comments."
+      "Tracked property changes are explicitly classified and preserved as manual-review information; this does not claim automatic formatting acceptance or merging edited existing comments.",
+      "Native Word truncates core created timestamps to UTC minute precision; the signed custom property retains the exact canonical instant and cross-minute drift is rejected."
     ],
     "reviewReturnParagraphHashes": {
       "SINGLE_SCENE": [
@@ -1506,5 +1555,117 @@
         "retainsHistoricalStagingReceipt": true
       }
     }
-  }
+  },
+  "labCodeBindingSets": [
+    {
+      "id": "WORD_MANUSCRIPT_LEGACY_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "125c8b7eddb85bdc818b977bbd6e801af904f2ec111d6af728629a06b27d2c57"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "a071acd1d523a8a0631b87797a406e3fec8c7ae4ede2e68d783e261dfe9d7d44"
+        }
+      ]
+    },
+    {
+      "id": "WORD_METADATA_ROUNDTRIP_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "125c8b7eddb85bdc818b977bbd6e801af904f2ec111d6af728629a06b27d2c57"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "fcfd0e0691784aae5a010c780b25f8e5259f007efb7adb36cf19e52fef891390"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        }
+      ]
+    }
+  ]
 }

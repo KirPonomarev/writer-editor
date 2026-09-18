@@ -233,6 +233,7 @@ const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   buildFullManuscriptDocxReviewPacketSource,
   buildFormatIrParagraphs,
+  validateFullManuscriptDocumentMetadataReturn,
 } = require('./export/docx/fullManuscriptDocxReviewPacketSource');
 const {
   buildFullManuscriptReviewReturnApplyPlan,
@@ -817,6 +818,18 @@ function extractDocxReviewReturnYrtk2PropertiesFromCustomXml(customXml) {
   return { ok: true, token, coreManifestDigest };
 }
 
+function extractDocxReviewReturnYrtk2PropertiesFromParserResult(parserResult = {}) {
+  const binding = isPlainObjectValue(parserResult?.reviewIr?.documentMetadata?.transportBindingProperties)
+    ? parserResult.reviewIr.documentMetadata.transportBindingProperties
+    : {};
+  const fallback = extractDocxReviewReturnYrtk2PropertiesFromCustomXml(parserResult?.docPropsCustomXml);
+  return {
+    ok: true,
+    token: docxReviewPreviewSessionDetailString(binding.yrtk2Token) || fallback.token,
+    coreManifestDigest: docxReviewPreviewSessionDetailString(binding.coreManifestDigest) || fallback.coreManifestDigest,
+  };
+}
+
 function decodeDocxXmlText(value) {
   return docxReviewPreviewSessionDetailString(value)
     .replace(/&lt;/gu, '<')
@@ -1086,7 +1099,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     revisionBridge,
     hmacSecret,
     returnedArtifactSha256: finalArtifactSha256,
-    yrtk2Evidence: extractDocxReviewReturnYrtk2PropertiesFromCustomXml(finalParse.docPropsCustomXml),
+    yrtk2Evidence: extractDocxReviewReturnYrtk2PropertiesFromParserResult(finalParse),
   });
   if (!yrtk2Verification.ok) {
     return {
@@ -4659,7 +4672,8 @@ async function readFullManuscriptDocxReviewPacketExportSource() {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_ID_REQUIRED');
   }
   const projectRoot = docxReviewPreviewSessionDetailString(scope.projectRoot) || getProjectRootPath();
-  const manifestPath = getProjectManifestPath(DEFAULT_PROJECT_NAME);
+  const manifestPath = docxReviewPreviewSessionDetailString(scope.manifestPath)
+    || getProjectManifestPath(DEFAULT_PROJECT_NAME);
   const scenes = [];
   for (let index = 0; index < sceneCandidates.length; index += 1) {
     const candidate = sceneCandidates[index];
@@ -4687,6 +4701,8 @@ async function readFullManuscriptDocxReviewPacketExportSource() {
   }
   const source = buildFullManuscriptDocxReviewPacketSource({
     projectId,
+    projectName: docxReviewPreviewSessionDetailString(scope.projectName),
+    projectCreatedAtUtc: docxReviewPreviewSessionDetailString(scope.projectCreatedAtUtc),
     projectRoot,
     manifestPath,
     scenes,
@@ -4741,6 +4757,13 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   const scope = await buildFullManuscriptDocxReviewExportScope();
   if (scope.projectId !== source.commentExport.projectId || scope.projectRoot !== capsule.projectRoot) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_PROJECT_STALE');
+  }
+  const expectedMetadata = isPlainObjectValue(capsule.documentMetadata?.protectedProperties)
+    ? capsule.documentMetadata.protectedProperties
+    : {};
+  if (docxReviewPreviewSessionDetailString(scope.projectName) !== docxReviewPreviewSessionDetailString(expectedMetadata.title)
+    || docxReviewPreviewSessionDetailString(scope.projectCreatedAtUtc) !== docxReviewPreviewSessionDetailString(expectedMetadata.createdAtUtc)) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DOCUMENT_METADATA_STALE');
   }
   const candidates = scope.sceneCandidates || [];
   const expected = capsule.exportMap.scenes;
@@ -8205,6 +8228,9 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
     : {};
   const payload = isPlainObjectValue(selectedCarrier.payload) ? selectedCarrier.payload : {};
   const reviewIr = isPlainObjectValue(parserResult.reviewIr) ? parserResult.reviewIr : {};
+  const documentMetadataBinding = isPlainObjectValue(parserResult.documentMetadataBinding)
+    ? parserResult.documentMetadataBinding
+    : {};
   // Preserve review authorship and both Word timestamp carriers as literal
   // advisory data. Never spread parsed objects or expose locator secrets/paths.
   const revisionMetadata = (items, property) => (Array.isArray(items) ? items : []).map((item) => {
@@ -8239,6 +8265,59 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
       timestampPolicy: 'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION',
       textRevisions: revisionMetadata(reviewIr.textRevisions, false),
       propertyRevisions: revisionMetadata(reviewIr.propertyRevisions, true),
+    },
+    documentMetadata: {
+      status: docxReviewPreviewSessionDetailString(documentMetadataBinding.status),
+      authority: docxReviewPreviewSessionDetailString(documentMetadataBinding.authority),
+      protectedDigest: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedDigest),
+      protectedProperties: {
+        schemaVersion: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.schemaVersion),
+        projectId: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.projectId),
+        title: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.title),
+        createdAtUtc: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.createdAtUtc),
+        creator: docxReviewPreviewSessionDetailString(documentMetadataBinding.protectedProperties?.creator),
+      },
+      coreProtectedProperties: {
+        projectId: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.projectId),
+        title: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.title),
+        createdAtUtc: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.createdAtUtc),
+        creator: docxReviewPreviewSessionDetailString(documentMetadataBinding.coreProtectedProperties?.creator),
+      },
+      policies: {
+        authorship: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.authorship),
+        timestamps: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.timestamps),
+        returnedAuthority: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.returnedAuthority),
+        unknownCustomProperties: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.unknownCustomProperties),
+        policyId: docxReviewPreviewSessionDetailString(documentMetadataBinding.policies?.policyId),
+      },
+      volatileCoreProperties: {
+        lastModifiedBy: docxReviewPreviewSessionDetailString(documentMetadataBinding.volatileCoreProperties?.lastModifiedBy),
+        modifiedAtUtc: docxReviewPreviewSessionDetailString(documentMetadataBinding.volatileCoreProperties?.modifiedAtUtc),
+        revision: docxReviewPreviewSessionDetailString(documentMetadataBinding.volatileCoreProperties?.revision),
+      },
+      lossLedger: {
+        missingProtectedProperties: Array.isArray(documentMetadataBinding.lossLedger?.missingProtectedProperties)
+          ? documentMetadataBinding.lossLedger.missingProtectedProperties.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        missingCoreProtectedProperties: Array.isArray(documentMetadataBinding.lossLedger?.missingCoreProtectedProperties)
+          ? documentMetadataBinding.lossLedger.missingCoreProtectedProperties.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        duplicateCorePropertyNames: Array.isArray(documentMetadataBinding.lossLedger?.duplicateCorePropertyNames)
+          ? documentMetadataBinding.lossLedger.duplicateCorePropertyNames.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        duplicateCustomPropertyNames: Array.isArray(documentMetadataBinding.lossLedger?.duplicateCustomPropertyNames)
+          ? documentMetadataBinding.lossLedger.duplicateCustomPropertyNames.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        unknownCustomPropertyNames: Array.isArray(documentMetadataBinding.lossLedger?.unknownCustomPropertyNames)
+          ? documentMetadataBinding.lossLedger.unknownCustomPropertyNames.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        providerVolatileFields: Array.isArray(documentMetadataBinding.lossLedger?.providerVolatileFields)
+          ? documentMetadataBinding.lossLedger.providerVolatileFields.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+        providerNormalizedFields: Array.isArray(documentMetadataBinding.lossLedger?.providerNormalizedFields)
+          ? documentMetadataBinding.lossLedger.providerNormalizedFields.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+      },
     },
     counts: {
       textRevisions: Array.isArray(reviewIr.textRevisions) ? reviewIr.textRevisions.length : 0,
@@ -8683,10 +8762,7 @@ function resolveReturnEvidencePacketFromProbe(probe, {
     ? parserResult.authorityCarrier
     : {};
   const returnedProjection = isPlainObjectValue(parserResult.reviewIr) ? parserResult.reviewIr : {};
-  const yrtk2Evidence = {
-    token: extractDocxCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK2_TOKEN'),
-    coreManifestDigest: extractDocxCustomPropertyValue(parserResult.docPropsCustomXml, 'YRTK_CORE_DIGEST'),
-  };
+  const yrtk2Evidence = extractDocxReviewReturnYrtk2PropertiesFromParserResult(parserResult);
   const cryptoPort = createRtkReviewTransportCryptoPort();
   let packetFromLegacy;
   try {
@@ -8994,6 +9070,22 @@ async function inspectDocxReviewReturnIntakeV2({
     parserResult: verifiedParserResult,
   });
   if (!localBinding.ok) return localBinding;
+  const documentMetadataBinding = validateFullManuscriptDocumentMetadataReturn({
+    expected: localAuthority.documentMetadata,
+    returned: verifiedParserResult.reviewIr?.documentMetadata,
+    signedDigest: payload.documentMetadataDigest,
+  });
+  if (!documentMetadataBinding.ok) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH', {
+      mismatches: Array.isArray(documentMetadataBinding.mismatches)
+        ? documentMetadataBinding.mismatches.slice(0, 16)
+        : [],
+    });
+  }
+  if (documentMetadataBinding.applicable === true) {
+    verifiedParserResult.documentMetadataBinding = documentMetadataBinding.proof;
+    verifiedParserResult.documentMetadataBinding.status = documentMetadataBinding.status;
+  }
   // ROUND-01 (V3): build the session-time capsule WITH the vault-resolved
   // hmacSecret so the downstream full-manuscript return-router proof binding
   // can compute its HMAC during the live session. The secret lives only in
@@ -23528,8 +23620,18 @@ async function buildFullManuscriptDocxReviewExportScope() {
     );
   }
 
+  const rawProjectCreatedAtUtc = manifest && typeof manifest.createdAtUtc === 'string'
+    ? manifest.createdAtUtc.trim()
+    : '';
+  const projectCreatedAtMilliseconds = Date.parse(rawProjectCreatedAtUtc);
+
   return {
     projectId: manifest && typeof manifest.projectId === 'string' ? manifest.projectId : '',
+    projectName: manifest && typeof manifest.projectName === 'string' ? manifest.projectName : '',
+    projectCreatedAtUtc: Number.isFinite(projectCreatedAtMilliseconds)
+      ? new Date(projectCreatedAtMilliseconds).toISOString()
+      : rawProjectCreatedAtUtc,
+    manifestPath,
     projectRoot,
     sceneCandidates,
     defaultSceneIds: [],

@@ -457,6 +457,7 @@ test('C5V2 full-manuscript export handler writes one DOCX and sanitizes full-boo
   assert.equal(result.exportCapsule.returnIntakeWired, true);
   assert.equal(result.exportCapsule.fullBookRawSha256.startsWith('sha256:'), true);
   assert.equal(result.exportCapsule.capabilityManifestDigest.startsWith('sha256:'), true);
+  assert.equal(result.exportCapsule.documentMetadataDigest.startsWith('sha256:'), true);
   assert.equal(result.publicationGate.publishAllowed, true);
   assert.equal(result.publicationGate.code, 'RTK_V4_DOUBLE_SELF_PARSE_PASS');
   assert.equal(JSON.stringify(result).includes('local-secret-for-test-only'), false);

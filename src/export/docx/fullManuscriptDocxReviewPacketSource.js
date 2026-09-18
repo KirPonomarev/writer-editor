@@ -11,6 +11,9 @@ const FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID = 'word-mac-16.112-26081010-product
 const REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME = 'YRTK_C01_AUTH';
 const REVIEW_DOCX_PACKET_YRTK2_PROPERTY_NAME = 'YRTK2_TOKEN';
 const REVIEW_DOCX_PACKET_CORE_DIGEST_PROPERTY_NAME = 'YRTK_CORE_DIGEST';
+const WORD_DOCUMENT_METADATA_SCHEMA = 'yalken.rtk.word.document-metadata.v1';
+const WORD_DOCUMENT_METADATA_POLICY = 'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1';
+const WORD_DOCUMENT_METADATA_CREATOR = 'Yalken';
 const FULL_MANUSCRIPT_FORMAT_IR_SCHEMA = 'yalken.rtk.format-ir.v1';
 const FORMAT_IR_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
 const FORMAT_IR_TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize']);
@@ -388,8 +391,142 @@ function makeError(code, details = {}) {
   return error;
 }
 
+function normalizeMetadataUtcTimestamp(value, code) {
+  const text = normalizeString(value);
+  const milliseconds = Date.parse(text);
+  if (!text || !Number.isFinite(milliseconds)) throw makeError(code, { value: text });
+  return new Date(milliseconds).toISOString();
+}
+
+function buildFullManuscriptDocumentMetadata(input = {}, cryptoPort = createDefaultCryptoPort()) {
+  const projectId = normalizeString(input.projectId);
+  const title = normalizeString(input.projectName) || projectId;
+  const createdAtUtc = normalizeMetadataUtcTimestamp(
+    input.projectCreatedAtUtc || input.exportedAtUtc,
+    'FULL_MANUSCRIPT_DOCUMENT_METADATA_CREATED_AT_INVALID',
+  );
+  const modifiedAtUtc = normalizeMetadataUtcTimestamp(
+    input.exportedAtUtc,
+    'FULL_MANUSCRIPT_DOCUMENT_METADATA_MODIFIED_AT_INVALID',
+  );
+  if (!projectId) throw makeError('FULL_MANUSCRIPT_DOCUMENT_METADATA_PROJECT_ID_REQUIRED');
+  if (!title) throw makeError('FULL_MANUSCRIPT_DOCUMENT_METADATA_TITLE_REQUIRED');
+  const protectedProperties = {
+    schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
+    projectId,
+    title,
+    createdAtUtc,
+    creator: WORD_DOCUMENT_METADATA_CREATOR,
+  };
+  const protectedDigest = cryptoPort.sha256Json(protectedProperties);
+  const policies = {
+    authorship: 'APPLICATION_CREATOR_IS_YALKEN_PROJECT_AUTHOR_NOT_INFERRED',
+    timestamps: 'PROJECT_CREATED_AT_PROTECTED_MODIFIED_AT_PROVIDER_VOLATILE',
+    returnedAuthority: 'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',
+    unknownCustomProperties: 'LEDGER_ONLY_NO_AUTHORITY',
+    policyId: WORD_DOCUMENT_METADATA_POLICY,
+  };
+  return {
+    schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
+    protectedProperties,
+    protectedDigest,
+    policies,
+    coreProperties: {
+      title,
+      creator: WORD_DOCUMENT_METADATA_CREATOR,
+      lastModifiedBy: WORD_DOCUMENT_METADATA_CREATOR,
+      createdAtUtc,
+      modifiedAtUtc,
+      revision: '1',
+      identifier: projectId,
+    },
+    publicCustomProperties: [
+      { name: 'YALKEN_METADATA_SCHEMA', value: WORD_DOCUMENT_METADATA_SCHEMA },
+      { name: 'YALKEN_METADATA_POLICY', value: WORD_DOCUMENT_METADATA_POLICY },
+      { name: 'YALKEN_PROJECT_ID', value: projectId },
+      { name: 'YALKEN_PROJECT_TITLE', value: title },
+      { name: 'YALKEN_PROJECT_CREATED_AT_UTC', value: createdAtUtc },
+      { name: 'YALKEN_APPLICATION_CREATOR', value: WORD_DOCUMENT_METADATA_CREATOR },
+      { name: 'YALKEN_METADATA_DIGEST', value: protectedDigest },
+    ],
+  };
+}
+
+function validateFullManuscriptDocumentMetadataReturn(input = {}) {
+  const expected = isPlainObjectValue(input.expected) ? input.expected : null;
+  if (!expected) {
+    return { ok: true, applicable: false, status: 'DOCUMENT_METADATA_NOT_APPLICABLE' };
+  }
+  const returned = isPlainObjectValue(input.returned) ? input.returned : {};
+  const mismatches = [];
+  const expect = isPlainObjectValue(expected.protectedProperties) ? expected.protectedProperties : {};
+  const actual = isPlainObjectValue(returned.protectedProperties) ? returned.protectedProperties : {};
+  const signedDigest = normalizeString(input.signedDigest);
+  const coreProtected = isPlainObjectValue(returned.coreProtectedProperties)
+    ? returned.coreProtectedProperties
+    : {};
+  if (returned.schemaVersion !== WORD_DOCUMENT_METADATA_SCHEMA) mismatches.push('schemaVersion');
+  if (returned.corePropertiesPresent !== true || returned.corePropertiesRootValid !== true) mismatches.push('coreProperties');
+  if (returned.customPropertiesPresent !== true || returned.customPropertiesRootValid !== true) mismatches.push('customProperties');
+  for (const key of ['schemaVersion', 'projectId', 'title', 'createdAtUtc', 'creator']) {
+    if (normalizeString(actual[key]) !== normalizeString(expect[key])) mismatches.push(`protectedProperties.${key}`);
+  }
+  for (const key of ['projectId', 'title', 'creator']) {
+    if (normalizeString(coreProtected[key]) !== normalizeString(expect[key])) mismatches.push(`coreProtectedProperties.${key}`);
+  }
+  const expectedCreatedAt = Date.parse(normalizeString(expect.createdAtUtc));
+  const coreCreatedAt = Date.parse(normalizeString(coreProtected.createdAtUtc));
+  if (!Number.isFinite(expectedCreatedAt) || !Number.isFinite(coreCreatedAt)
+    || Math.floor(expectedCreatedAt / 60_000) !== Math.floor(coreCreatedAt / 60_000)) {
+    mismatches.push('coreProtectedProperties.createdAtUtc');
+  }
+  if (returned.createdTimestampType !== 'dcterms:W3CDTF') mismatches.push('createdTimestampType');
+  if (normalizeString(returned.protectedDigest) !== normalizeString(expected.protectedDigest)) mismatches.push('protectedDigest');
+  if (signedDigest !== normalizeString(expected.protectedDigest)) mismatches.push('signedDigest');
+  const expectedCustom = Object.fromEntries((Array.isArray(expected.publicCustomProperties)
+    ? expected.publicCustomProperties : []).map((property) => [property.name, property.value]));
+  const actualCustom = isPlainObjectValue(returned.publicCustomProperties) ? returned.publicCustomProperties : {};
+  for (const [name, value] of Object.entries(expectedCustom)) {
+    if (normalizeString(actualCustom[name]) !== normalizeString(value)) mismatches.push(`publicCustomProperties.${name}`);
+  }
+  const duplicateNames = Array.isArray(returned.duplicateCustomPropertyNames)
+    ? returned.duplicateCustomPropertyNames.map(normalizeString).filter(Boolean)
+    : [];
+  if (duplicateNames.some((name) => Object.hasOwn(expectedCustom, name))) {
+    mismatches.push('duplicateCustomPropertyNames');
+  }
+  if (mismatches.length > 0) {
+    return {
+      ok: false,
+      applicable: true,
+      status: 'DOCUMENT_METADATA_MISMATCH',
+      code: 'FULL_MANUSCRIPT_DOCUMENT_METADATA_MISMATCH',
+      mismatches: [...new Set(mismatches)].sort(),
+    };
+  }
+  return {
+    ok: true,
+    applicable: true,
+    status: 'VERIFIED_PROTECTED_DOCUMENT_METADATA',
+    proof: {
+      schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
+      authority: 'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',
+      protectedDigest: expected.protectedDigest,
+      protectedProperties: cloneJson(actual),
+      coreProtectedProperties: cloneJson(coreProtected),
+      policies: cloneJson(expected.policies),
+      volatileCoreProperties: isPlainObjectValue(returned.volatileCoreProperties)
+        ? cloneJson(returned.volatileCoreProperties)
+        : {},
+      lossLedger: isPlainObjectValue(returned.lossLedger) ? cloneJson(returned.lossLedger) : {},
+    },
+  };
+}
+
 function normalizeFullManuscriptScenes(input = {}) {
   const projectId = normalizeString(input.projectId);
+  const projectName = normalizeString(input.projectName);
+  const projectCreatedAtUtc = normalizeString(input.projectCreatedAtUtc);
   const projectRoot = normalizeString(input.projectRoot);
   const manifestPath = normalizeString(input.manifestPath);
   const sourceScenes = Array.isArray(input.scenes) ? input.scenes : [];
@@ -457,6 +594,8 @@ function normalizeFullManuscriptScenes(input = {}) {
   }
   return {
     projectId,
+    projectName,
+    projectCreatedAtUtc,
     projectRoot,
     manifestPath,
     scenes,
@@ -742,9 +881,18 @@ function buildFallbackYrtk2Token({ keyIdHex, roundIdHex, coreManifestDigest, hma
 function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const cryptoPort = deps.cryptoPort || createDefaultCryptoPort();
   const normalized = normalizeFullManuscriptScenes(input);
-  const { projectId, projectRoot, manifestPath, scenes } = normalized;
+  const { projectId, projectName, projectCreatedAtUtc, projectRoot, manifestPath, scenes } = normalized;
   const orderedSceneIds = scenes.map((scene) => scene.sceneId);
-  const createdAtUtc = typeof deps.createdAtUtc === 'string' ? deps.createdAtUtc : new Date().toISOString();
+  const createdAtUtc = normalizeMetadataUtcTimestamp(
+    typeof deps.createdAtUtc === 'string' ? deps.createdAtUtc : new Date().toISOString(),
+    'FULL_MANUSCRIPT_EXPORT_CREATED_AT_INVALID',
+  );
+  const documentMetadata = buildFullManuscriptDocumentMetadata({
+    projectId,
+    projectName,
+    projectCreatedAtUtc,
+    exportedAtUtc: createdAtUtc,
+  }, cryptoPort);
   const roundIdHex = typeof deps.roundIdHex === 'string' && /^[a-f0-9]{32}$/iu.test(deps.roundIdHex)
     ? deps.roundIdHex.toLowerCase()
     : crypto.randomBytes(16).toString('hex');
@@ -841,6 +989,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     sceneText,
     blocks,
     commentExport,
+    documentMetadata,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: 'YRTK1.provisional' },
       { name: REVIEW_DOCX_PACKET_YRTK2_PROPERTY_NAME, value: 'YRTK2.provisional' },
@@ -887,6 +1036,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     semanticReturnId,
     createdAtUtc,
     compileIrDigest: cryptoPort.sha256Json({ scope: 'full-manuscript', orderedSceneIds, blocks: blocks.map((block) => block.blockId),
+      documentMetadataDigest: documentMetadata.protectedDigest,
       ...(commentExport ? { commentExportDigest: cryptoPort.sha256Json(commentExport) } : {}) }),
     actualBaselineDigest: fullBookRawSha256,
     parserProfileDigest,
@@ -948,6 +1098,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     transportManifestDigest: transportManifestResult.manifest.payloadDigest,
     yrtk2TokenDigest: cryptoPort.sha256Text(yrtk2Result.token),
     capabilityManifestDigest,
+    documentMetadataDigest: documentMetadata.protectedDigest,
     blockCount: blocks.length,
     ...(commentExport ? { commentSummary: {
       stateRevision: commentExport.stateRevision,
@@ -979,6 +1130,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     transportManifestDigest: transportManifestResult.manifest.payloadDigest,
     yrtk2TokenLength: yrtk2Result.tokenLength,
     capabilityManifestDigest,
+    documentMetadataDigest: documentMetadata.protectedDigest,
     blockCount: blocks.length,
     authorityCarrier: 'customDocumentProperty',
     authorityPropertyName: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME,
@@ -1021,11 +1173,13 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       roundId,
       exportId,
       capabilityManifestDigest,
+      documentMetadataDigest: documentMetadata.protectedDigest,
     },
     roundId,
     exportIdentity: exportId,
     manifestDigest: transportManifestResult.manifest.payloadDigest,
     coreManifestDigest: coreManifestResult.coreManifestDigest,
+    documentMetadata: cloneJson(documentMetadata),
     parserProfileDigest,
     yrtk2: {
       schemaVersion: yrtk2Result.schemaVersion,
@@ -1043,6 +1197,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     sceneText,
     blocks,
     commentExport,
+    documentMetadata,
     forbiddenSecret: hmacSecret,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: authorityEncoded },
@@ -1054,6 +1209,12 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       scope: 'full-manuscript',
       capabilityManifest,
       capabilityManifestDigest,
+      documentMetadata: {
+        schemaVersion: documentMetadata.schemaVersion,
+        protectedProperties: documentMetadata.protectedProperties,
+        protectedDigest: documentMetadata.protectedDigest,
+        policies: documentMetadata.policies,
+      },
       coreManifest: coreManifestResult.manifest,
       transportManifest: transportManifestResult.manifest,
       yrtk2: {
@@ -1121,8 +1282,10 @@ module.exports = {
   REVIEW_DOCX_PACKET_CORE_DIGEST_PROPERTY_NAME,
   buildFullManuscriptCapabilityManifest,
   buildFullManuscriptDocxReviewPacketSource,
+  buildFullManuscriptDocumentMetadata,
   buildFullManuscriptBlocks,
   buildFormatIrParagraphs,
   normalizeFullManuscriptScenes,
+  validateFullManuscriptDocumentMetadataReturn,
   validateFullManuscriptAuthorityReturn,
 };

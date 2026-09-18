@@ -15,19 +15,29 @@ SUBCASES={
  'TRACKED_REVIEW_SEMANTICS':['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
  'COMMENTS':['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
  'IDENTIFIERS_ANCHORS':['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
+ 'METADATA':['documentPropertiesAccounted','customPropertiesAccounted','authorshipPolicyDeclared','timestampPolicyDeclared','receiptIdentityBound','metadataLossLedgered'],
 }
 HOPS={**v.HOPS,'C3':['YALKEN_EXPORT_ROUND_N','WORD_LIFECYCLE_ROUND_N','YALKEN_RETURN_INTAKE_ROUND_N','YALKEN_APPLY_ROUND_N'],'C5':['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE']}
 TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character']
 STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style']
 STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path']
+METADATA_CONTROLS=['changed-title','changed-project-id','changed-created-at','missing-core-part','missing-custom-property','duplicate-protected-property','forged-signed-digest']
+CORE='{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}'
+DC='{http://purl.org/dc/elements/1.1/}'
+DCTERMS='{http://purl.org/dc/terms/}'
+XSI='{http://www.w3.org/2001/XMLSchema-instance}'
+CUSTOM='{http://schemas.openxmlformats.org/officeDocument/2006/custom-properties}'
+VT='{http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes}'
+METADATA_PUBLIC=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJECT_ID','YALKEN_PROJECT_TITLE','YALKEN_PROJECT_CREATED_AT_UTC','YALKEN_APPLICATION_CREATOR','YALKEN_METADATA_DIGEST']
+METADATA_AUTHORITY=['YRTK_C01_AUTH','YRTK2_TOKEN','YRTK_CORE_DIGEST']
 def fields(volume,route,recipe='DEFAULT'):
     require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT'] and route in ['C1','C2','C3','C5'],'MANUSCRIPT_SCOPE')
     require(recipe=='DEFAULT' or (route=='C1' and recipe=='C1_REVIEW_RETURN'),'MANUSCRIPT_RECIPE')
-    if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS']
+    if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA']
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
         return ['TEXT','ORDER','UNICODE_IME_LOCALE']
-    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS'])
+    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -132,6 +142,46 @@ def docx(data,round=0,google=False):
     else:require(not ins and not dele,'UNEXPECTED_TRACKED_EDIT')
     raw_links(parts,d)
     return [v.visible(p) for p in body.findall(W+'p')],parts,d
+
+def decode_xstring(value):
+    return re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m.group(1),16)),value or '')
+
+def metadata_doc(parts,data):
+    require('docProps/core.xml' in parts and 'docProps/custom.xml' in parts,'METADATA_PARTS')
+    core=ET.fromstring(parts['docProps/core.xml']);custom=ET.fromstring(parts['docProps/custom.xml'])
+    require(core.tag==CORE+'coreProperties' and custom.tag==CUSTOM+'Properties','METADATA_ROOT')
+    definitions={
+      'title':DC+'title','creator':DC+'creator','lastModifiedBy':CORE+'lastModifiedBy',
+      'createdAtUtc':DCTERMS+'created','modifiedAtUtc':DCTERMS+'modified','revision':CORE+'revision','identifier':DC+'identifier',
+    }
+    core_values={};duplicate_core=[]
+    for name,tag in definitions.items():
+        rows=core.findall(tag);core_values[name]=(rows[0].text or '') if len(rows)==1 else ''
+        if len(rows)>1:duplicate_core.append(name)
+    created=core.findall(DCTERMS+'created');created_type=created[0].get(XSI+'type','') if len(created)==1 else ''
+    custom_rows=[]
+    for prop in list(custom):
+        require(prop.tag==CUSTOM+'property' and prop.get('name') and len(prop)==1 and prop[0].tag==VT+'lpwstr','METADATA_CUSTOM_PROPERTY')
+        custom_rows.append({'name':decode_xstring(prop.get('name')),'value':decode_xstring(prop[0].text or ''),'valueType':'lpwstr'})
+    counts={name:sum(r['name']==name for r in custom_rows) for name in {r['name'] for r in custom_rows}}
+    duplicate_custom=sorted(name for name,count in counts.items() if count>1)
+    public={name:next((r['value'] for r in custom_rows if r['name']==name),'') if counts.get(name)==1 else '' for name in METADATA_PUBLIC}
+    core_protected={'projectId':core_values['identifier'],'title':core_values['title'],'createdAtUtc':core_values['createdAtUtc'],'creator':core_values['creator']}
+    protected={'schemaVersion':public['YALKEN_METADATA_SCHEMA'],'projectId':public['YALKEN_PROJECT_ID'],'title':public['YALKEN_PROJECT_TITLE'],'createdAtUtc':public['YALKEN_PROJECT_CREATED_AT_UTC'],'creator':public['YALKEN_APPLICATION_CREATOR']}
+    missing=sorted(name for name,value in protected.items() if not value)
+    missing_core=sorted(name for name,value in core_protected.items() if not value)
+    unknown=sorted({r['name'] for r in custom_rows if r['name'] not in METADATA_PUBLIC+METADATA_AUTHORITY})
+    expected_created=protected['createdAtUtc'];core_created=core_protected['createdAtUtc']
+    normalized=['createdAtUtc.minutePrecision'] if expected_created!=core_created and expected_created[:16]==core_created[:16] and expected_created.endswith('Z') and core_created.endswith('Z') else []
+    return {
+      'artifactSha256':digest(data),'corePropertiesPresent':True,'customPropertiesPresent':True,
+      'protectedProperties':protected,'coreProtectedProperties':core_protected,'protectedDigest':'sha256:'+digest(canonical(protected)),
+      'publicCustomProperties':public,'createdTimestampType':created_type,
+      'volatileCoreProperties':{'lastModifiedBy':core_values['lastModifiedBy'],'modifiedAtUtc':core_values['modifiedAtUtc'],'revision':core_values['revision']},
+      'missingProtectedProperties':missing,'missingCoreProtectedProperties':missing_core,'duplicateCorePropertyNames':sorted(duplicate_core),'duplicateCustomPropertyNames':duplicate_custom,
+      'unknownCustomPropertyNames':unknown,'providerVolatileFields':['lastModifiedBy','modifiedAtUtc','revision'],'providerNormalizedFields':normalized,
+      'customPropertyValueTypesAccounted':[{'name':r['name'],'valueType':r['valueType']} for r in custom_rows],
+    }
 
 def raw_links(parts,document):
     relationships={}
@@ -705,7 +755,7 @@ def audit(request):
         require(proof['executableProof']['sha256']==tc['electronBinarySha256'],'MANUSCRIPT_PACKAGE_EXECUTABLE')
     else:require(build['packagedBuild'] is None,'MANUSCRIPT_SOURCE_PROFILE')
     cycles=5 if route=='C3' else 1;final_round=0 if generic else cycles
-    docs=expected_round();expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[]
+    docs=expected_round();expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[];metadata_stages={};metadata_intakes=[];metadata_negative=[]
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_round(round)],[])
         stages[name]={**exact(ps,es,name),'round':round,'sortKeysSha256':digest(canonical([[i,digest(p.encode())] for i,p in enumerate(ps)]))}
@@ -727,6 +777,10 @@ def audit(request):
     source=read('source.json');src=source['scenes'];count=len(docs);ids=expected_ids(volume,count);nodes=[s['nodeId'] for s in src]
     require(len(src)==count and [s['sceneId'] for s in src]==ids and len(set(nodes))==count and all(nodes),'SCENE_IDENTITIES')
     project=read('source-project.json');pid=project['projectId'];registry=project['treeIdentity']['nodes'];by_binding={r['bindingKey']:n for n,r in registry.items() if r.get('present') is not False}
+    metadata_protected={'schemaVersion':'yalken.rtk.word.document-metadata.v1','projectId':pid,'title':project['projectName'],'createdAtUtc':project['createdAtUtc'],'creator':'Yalken'}
+    metadata_digest='sha256:'+digest(canonical(metadata_protected))
+    metadata_public={'YALKEN_METADATA_SCHEMA':metadata_protected['schemaVersion'],'YALKEN_METADATA_POLICY':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1','YALKEN_PROJECT_ID':pid,'YALKEN_PROJECT_TITLE':project['projectName'],'YALKEN_PROJECT_CREATED_AT_UTC':project['createdAtUtc'],'YALKEN_APPLICATION_CREATOR':'Yalken','YALKEN_METADATA_DIGEST':metadata_digest}
+    metadata_policies={'authorship':'APPLICATION_CREATOR_IS_YALKEN_PROJECT_AUTHOR_NOT_INFERRED','timestamps':'PROJECT_CREATED_AT_PROTECTED_MODIFIED_AT_PROVIDER_VOLATILE','returnedAuthority':'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE','unknownCustomProperties':'LEDGER_ONLY_NO_AUTHORITY','policyId':'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1'}
     require([by_binding['file:'+s] for s in ids]==nodes,'PROJECT_SCENE_REGISTRY')
     def tree_check(value,label):
         require(value['ok'] is True and value['projectId']==pid,'TREE_PROJECT')
@@ -779,6 +833,14 @@ def audit(request):
     def comment_doc(name,parts,document,data):
         proof=comment_parts(parts,document,expected_comments)
         comment_stages[name]={**proof,'artifactSha256':digest(data)}
+    def metadata_check(name,parts,data):
+        proof=metadata_doc(parts,data)
+        require(proof['protectedProperties']==metadata_protected and proof['protectedDigest']==metadata_digest
+                and proof['publicCustomProperties']==metadata_public and proof['createdTimestampType']=='dcterms:W3CDTF'
+                and all(proof['coreProtectedProperties'][k]==metadata_protected[k] for k in ['projectId','title','creator'])
+                and proof['coreProtectedProperties']['createdAtUtc'][:16]==metadata_protected['createdAtUtc'][:16]
+                and proof['missingProtectedProperties']==proof['duplicateCorePropertyNames']==proof['duplicateCustomPropertyNames']==proof['unknownCustomPropertyNames']==[],'METADATA_STAGE:'+name)
+        metadata_stages[name]=proof
     def export_check(name,filename,round,hashes):
         x=read(name+'.json');r=x['result'];cap=r['exportCapsule'];b=raw(filename)
         require(x['before']==x['after']==hashes and r['ok'] is True and r['exported'] is True and r['commandId']=='cmd.project.review.exportFullManuscriptDocxReviewPacket' and r['bytesWritten']==len(b) and x['sha256']==digest(b),'EXPORT_COMMAND_HASH_CHAIN')
@@ -788,8 +850,10 @@ def audit(request):
         ps,parts,doc=docx(b);stage(name+'-docx',ps,round)
         if not generic:
             comment_doc(name,parts,doc,b)
+            metadata_check(name,parts,b)
             require(cap['commentSummary']=={'stateRevision':1,'exportedThreadCount':2,'exportedMessageCount':4,'intentionalDeletionCount':1}
                     and r['publicationGate']['commentPreservationVerified'] is True and r['publicationGate']['intentionalDeletionCount']==1,'COMMENT_EXPORT_PUBLICATION')
+            require(cap['documentMetadataDigest']==metadata_digest,'METADATA_EXPORT_CAPSULE')
         # Bind physical bookmark partitions to each separately saved scene.
         structure_stages[name]={'bookmarkSha256':bookmark_partition(doc,cap['roundId'],ids,expected_round(round))}
         style_stages[name]=assert_docx_styles(parts,doc)
@@ -813,7 +877,8 @@ def audit(request):
         require(life['nativeReadbackPath'].endswith('/'+run+'/'+directory+'/word-native-readback.txt') and life['evidencePath'].endswith('/'+run+'/'+returned_file),'WORD_FILE_BINDING')
         stage(name+'-native',v.native(raw(directory+'/word-native-readback.txt')),round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round)
-        if not generic:comment_doc(name,parts,d,raw(returned_file))
+        if not generic:
+            comment_doc(name,parts,d,raw(returned_file));metadata_check(name,parts,raw(returned_file))
         if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_round(round))}
         else:require(generic and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
         if not generic:
@@ -851,6 +916,13 @@ def audit(request):
                     and cp['baselineReadback']=={'ok':True,'unchangedThreadIds':['manuscript-comment-open','manuscript-comment-resolved'],'missing':[],'changed':[]},'COMMENT_NO_DUPLICATE_APPLY')
             require(a['authenticated'] is True and a['returnedArtifactSha256']=='sha256:'+digest(raw(base+'/returned.docx')) and a['roundId']==cap['roundId'] and a['exportId']==cap['exportId'] and all(a['authority'].get(k) is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'RETURN_AUTHORITY')
             require(all(r[k] is False for k in ['canAutoApply','canImportMutate','canWriteStorage']),'INTAKE_NO_MUTATION_AUTHORITY')
+            dm=a['documentMetadata']
+            require(dm['status']=='VERIFIED_PROTECTED_DOCUMENT_METADATA' and dm['authority']=='ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE'
+                    and dm['protectedDigest']==metadata_digest and dm['protectedProperties']==metadata_protected and dm['policies']==metadata_policies
+                    and dm['lossLedger']['missingProtectedProperties']==dm['lossLedger']['duplicateCorePropertyNames']==dm['lossLedger']['duplicateCustomPropertyNames']==dm['lossLedger']['unknownCustomPropertyNames']==[]
+                    and dm['lossLedger']['providerVolatileFields']==['lastModifiedBy','modifiedAtUtc','revision'] and dm['lossLedger']['providerNormalizedFields'] in [[],['createdAtUtc.minutePrecision']],'METADATA_INTAKE_BINDING')
+            require(x['manifestBeforeSha256']==x['manifestAfterSha256'] and re.fullmatch('[a-f0-9]{64}',x['manifestBeforeSha256']),'METADATA_INTAKE_MANIFEST_NO_WRITE')
+            metadata_intakes.append({'ordinal':ordinal,'status':dm['status'],'authority':dm['authority'],'protectedDigest':dm['protectedDigest'],'protectedProperties':dm['protectedProperties'],'before':x['before'],'after':x['after'],'manifestSha256':x['manifestBeforeSha256'],'writerCalled':False})
             changes=r['reviewSurface']['revisionSession']['reviewGraph']['textChanges'];require(len(changes)==1 and changes[0]['match']['quote']==('sentinel alpha' if ordinal==1 else 'sentinel round'+str(ordinal-1)) and changes[0]['replacementText']=='sentinel round'+str(ordinal),'EXACT_ROUND_CHANGE')
             reviewed_document=docx(raw(base+'/returned.docx'),ordinal)[2]
             review_rounds.append({'ordinal':ordinal,'returnedSha256':digest(raw(base+'/returned.docx')),**review_revision_proof(reviewed_document,x,ordinal)})
@@ -915,6 +987,25 @@ def audit(request):
                         and lp['applyReceipts']==lp['replayReceipts']==[]
                         and lp['typedBlocked']==[{'threadId':t['threadId'],'canonicalCommentId':t['rootCommentId'],'code':'COMMENT_ROOT_MISSING'} for t in expected_comments['threads'][:2]],'COMMENT_VISIBLE_LOSS_LEDGER')
                 comment_loss={'sourceSha256':loss['sourceSha256'],'mutantSha256':digest(lb),'intakeSha256':digest(raw(base+'/comment-loss-intake.json')),'canonicalStateSha256':comment_state_sha,'missing':lp['typedBlocked'],'writerCalled':False}
+                original_metadata=metadata_doc(original[1],raw(base+'/returned.docx'))
+                for kind in METADATA_CONTROLS:
+                    control=read(base+'/metadata-'+kind+'-intake.json');mutant=raw(base+'/metadata-'+kind+'.docx');mps,mparts,mdoc=docx(mutant,1)
+                    require(mps==original[0] and control['kind']==kind and control['sourceSha256']==digest(raw(base+'/returned.docx')) and control['mutantSha256']==digest(mutant),'METADATA_CONTROL_BYTES')
+                    if kind=='missing-core-part':require('docProps/core.xml' not in mparts,'METADATA_CONTROL_MISSING_CORE')
+                    else:
+                        changed=metadata_doc(mparts,mutant)
+                        if kind=='changed-title':require(changed['coreProtectedProperties']['title']!=metadata_protected['title'],'METADATA_CONTROL_TITLE')
+                        elif kind=='changed-project-id':require(changed['coreProtectedProperties']['projectId']!=metadata_protected['projectId'],'METADATA_CONTROL_PROJECT_ID')
+                        elif kind=='changed-created-at':require(changed['coreProtectedProperties']['createdAtUtc'][:16]!=metadata_protected['createdAtUtc'][:16],'METADATA_CONTROL_CREATED')
+                        elif kind=='missing-custom-property':require(changed['publicCustomProperties']['YALKEN_PROJECT_TITLE']=='','METADATA_CONTROL_CUSTOM_MISSING')
+                        elif kind=='duplicate-protected-property':require(changed['duplicateCustomPropertyNames']==['YALKEN_PROJECT_ID'],'METADATA_CONTROL_DUPLICATE')
+                        elif kind=='forged-signed-digest':require(changed['protectedProperties']==original_metadata['protectedProperties'] and changed['publicCustomProperties']==original_metadata['publicCustomProperties'] and mparts['docProps/custom.xml']!=original[1]['docProps/custom.xml'],'METADATA_CONTROL_FORGED_SIGNED')
+                    require(control['before']==control['after'] and control['before']['sceneHashes']==source_hashes and re.fullmatch('[a-f0-9]{64}',control['before']['manifestSha256']),'METADATA_CONTROL_NO_WRITE')
+                    result=control['result'];code=result.get('code') or result.get('reason') or result.get('value',{}).get('code') or result.get('value',{}).get('reason')
+                    details=(result.get('details') or result.get('value',{}).get('details')
+                             or result.get('value',{}).get('error',{}).get('details') or {})
+                    require(result.get('ok') is not True and isinstance(code,str) and code.startswith('RTK_RETURN_INTAKE_') and all(result.get(k) is not True for k in ['canOpenReviewSession','canAutoApply','canImportMutate','canWriteStorage']),'METADATA_CONTROL_REJECTED:'+kind)
+                    metadata_negative.append({'id':kind,'rejected':True,'code':code,'mismatches':details.get('mismatches',[]),'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/metadata-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(control['before'])),'writerCalled':False,'before':control['before'],'after':control['after']})
             ap=read(base+'/apply.json');result=ap['result'];receipt=result['result']['receipt'];require(result==read(base+'/apply-command-result.json'),'APPLY_RAW_RESULT')
             require(ap['commandId']=='cmd.project.review.applyExactTextChangesBatch' and result['ok'] is True and result['applied'] is True and result['totals']=={'requested':1,'applied':1,'blocked':0,'failed':0,'skipped':0} and ap['changeId']==changes[0]['changeId'],'EXPLICIT_APPLY')
             require(ap['before']==previous_hashes and ap['afterApply'][0]!=previous_hashes[0] and ap['afterApply'][1:]==previous_hashes[1:] and receipt['sceneId']==ids[0] and receipt['projectId']==pid and receipt['changeIds']==[ap['changeId']] and receipt['writeStatus']=='applied' and result['editorSync']['ok'] is True and ap['save']['ok'] is True,'APPLY_CANONICAL_MUTATION')
@@ -1001,10 +1092,17 @@ def audit(request):
                        'stages':comment_stages,'queries':comment_queries,'negativeControls':comment_negative,'lossControl':comment_loss,
                        'intentionalDeletionLedger':[{'threadId':'manuscript-comment-deleted','status':'deleted','messageCount':2,'outcome':'CANONICAL_DELETION_NOT_EXPORTED'}],
                        'scope':'Two existing canonical root threads with one reply each, open/resolved states, one intentional tombstone; exact body, provenance and anchors. Edited existing comments return a typed block; automatic conflict resolution is not claimed.'}
+        require(len(metadata_stages)==2*cycles+2 and len(metadata_intakes)==cycles and len(metadata_negative)==len(METADATA_CONTROLS),'METADATA_COMPLETE_PATH')
+        require(len({p['protectedDigest'] for p in metadata_stages.values()})==1,'METADATA_ALL_STAGE_CONTINUITY')
+        metadata_proof={'schemaVersion':'WORD_MANUSCRIPT_METADATA_PROOF_V1','authority':'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE','policies':metadata_policies,
+                        'expected':{'protectedProperties':metadata_protected,'protectedDigest':metadata_digest,'publicCustomProperties':metadata_public},
+                        'stages':metadata_stages,'intakeBindings':metadata_intakes,'negativeControls':metadata_negative,
+                        'lossLedger':{'missingProtectedProperties':[],'missingCoreProtectedProperties':[],'duplicateCorePropertyNames':[],'duplicateCustomPropertyNames':[],'unknownCustomPropertyNames':[],'providerVolatileFields':['lastModifiedBy','modifiedAtUtc','revision'],'providerNormalizedFieldsObserved':sorted({x for p in metadata_stages.values() for x in p['providerNormalizedFields']}),'providerNormalizationPolicy':'WORD_CORE_CREATED_AT_MINUTE_PRECISION_CUSTOM_PROPERTY_RETAINS_EXACT','scope':'Protected project identity is dual-carried and digest-bound. Word minute-precision core timestamps are accounted while the signed custom property retains the exact canonical instant; provider-volatile fields are observed without project write; unknown custom properties are ledger-only.'}}
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route,recipe)]
     for proof in proofs:
         if proof['field']=='COMMENTS':proof['commentProof']=comment_proof
         if proof['field']=='IDENTIFIERS_ANCHORS':proof['identifierProof']={'stages':identifier_stages,'locators':locator_stages,'negativeControls':identifier_negative,'intakeControls':identifier_intakes,'lossLedger':{'lostIdentifiers':[],'duplicateIdentifiers':[],'unsafeHyperlinks':[],'scope':'Declared per-round locator names and all three explicit hyperlink ranges across saved, applied and reopened project state; intentional negative-control losses are recorded separately.'}}
+        if proof['field']=='METADATA':proof['metadataProof']=metadata_proof
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
     return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'recipe':recipe,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
 
