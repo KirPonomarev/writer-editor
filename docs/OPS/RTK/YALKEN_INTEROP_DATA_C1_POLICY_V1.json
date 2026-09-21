@@ -250,7 +250,8 @@
     "src/word-manuscript-fields.mjs",
     "src/word-metadata-mutant.py",
     "src/word-sections-mutant.py",
-    "test/m0-audit-repair.test.mjs"
+    "test/m0-audit-repair.test.mjs",
+    "test/word-manuscript-fields.test.mjs"
   ],
   "labCodeBindings": [
     {
@@ -1775,6 +1776,75 @@
         {
           "path": "test/m0-audit-repair.test.mjs",
           "sha256": "63364c710ab92be6dfce51709c5e85b72cfcc659cb1407747def502f27d4be57"
+        }
+      ]
+    },
+    {
+      "id": "WORD_GENERIC_SECTIONS_REPAIR_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "39e6c513c7dbd85e8d186ebceaf099ab25b8f56d669b253b2714d0954f604149"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "dcc26729f899d8a1f6bec5b6b55f376a60fa5aee18c62dd802494be4c8d4733b"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        },
+        {
+          "path": "src/word-sections-mutant.py",
+          "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
+        },
+        {
+          "path": "test/m0-audit-repair.test.mjs",
+          "sha256": "63364c710ab92be6dfce51709c5e85b72cfcc659cb1407747def502f27d4be57"
+        },
+        {
+          "path": "test/word-manuscript-fields.test.mjs",
+          "sha256": "fbb5df211824f07707ad83f2515ab4586c41169191a00b390c2d67956a498379"
         }
       ]
     }
