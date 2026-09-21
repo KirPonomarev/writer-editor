@@ -1726,7 +1726,7 @@
         },
         {
           "path": "src/m1-text-single-scene-source-runtime.mjs",
-          "sha256": "0b29f209b2d0094ee3dc4b85786c81e39ebcef6113e39df13be21a1d9ec683fd"
+          "sha256": "39e6c513c7dbd85e8d186ebceaf099ab25b8f56d669b253b2714d0954f604149"
         },
         {
           "path": "src/c1-data-case.mjs",
@@ -1774,7 +1774,7 @@
         },
         {
           "path": "test/m0-audit-repair.test.mjs",
-          "sha256": "283aa642d839036dfde691bbd8b308ee1f761e04861b719fa93e7adf8879f1ee"
+          "sha256": "63364c710ab92be6dfce51709c5e85b72cfcc659cb1407747def502f27d4be57"
         }
       ]
     }
