@@ -570,7 +570,7 @@
       },
       {
         "path": "test/unit/rtk-interop-word-volume.test.py",
-        "sha256": "624c6e0420294b2cf8a7189d306ce1cce99b27c2e6c9aef0bbb3d216d35cdf8e"
+        "sha256": "8c17412594f10468fc3b3d19674d184e3e820734a538842fd46575ff2990963a"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-volume-text-order.md",
@@ -875,7 +875,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
-        "sha256": "f8761815ad8cbd8f8bf4bba310631d488d368ca71f55688801de91f0fb890b91"
+        "sha256": "721f5a4353c94fa529328699a763bbc84ad7081bf5976108dc56e054e61d2244"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-fixtures.mjs",
@@ -1295,7 +1295,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
-        "sha256": "f8761815ad8cbd8f8bf4bba310631d488d368ca71f55688801de91f0fb890b91"
+        "sha256": "721f5a4353c94fa529328699a763bbc84ad7081bf5976108dc56e054e61d2244"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-fixtures.mjs",

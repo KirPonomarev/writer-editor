@@ -33,6 +33,7 @@ class VolumeOracle(unittest.TestCase):
         with self.assertRaises(ValueError):v.exact(x,v.expected_paragraphs('LARGE_DOCUMENT'),'TAIL')
     def test_native_cr_and_spaces_are_literal(self):
         ps=list(v.PROBES);self.assertEqual(v.native(('\r'.join(ps)+'\r').encode()),ps)
+        self.assertEqual(v.native(b'first\r\x0csecond\x0cthird\r'),['first','','second','third'])
         for b in [b'no final mark',b'a\n\r']:
             with self.assertRaises(ValueError):v.native(b)
     def test_utf16_envelope_and_optional_metadata(self):
