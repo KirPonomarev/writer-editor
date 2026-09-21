@@ -250,16 +250,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedAtUtc": "2026-09-21T17:55:00.000Z",
       "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
-        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
-      ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "1f0a13ee923ebc0fabac010cde44a79d8d258caf1bc5129652d129c52ced7e2c"
+      "sha256": "21456c1d6470bd0f47dee9b95fe379fc79c1744c91ec30737440afdaa7ed0406"
     },
     {
       "approved": true,
@@ -655,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedAtUtc": "2026-09-21T17:59:00.000Z",
       "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "0f1941e76ebe04c7d7b2c56e3697d31c7883d095fa7150d75c167ea30218a2f4"
+      "sha256": "15b053a956657fa5a6e6649bd0023f1fe24e12aba7b2b61f2219f097cff2f0dd"
     },
     {
       "approved": true,
@@ -673,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedAtUtc": "2026-09-21T17:59:00.000Z",
       "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "bad32e34dea6050d1e0638316d67d32ba0f84b49499e30b477bec1f37559137d"
+      "sha256": "ce219460e20dac6f69d65834c99433699f57074e9c49593618bb6cdf0d3e4a88"
     },
     {
       "approved": true,
@@ -1321,15 +1317,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedAtUtc": "2026-09-21T17:55:00.000Z",
       "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
-      ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "adda814a5c171d410cdc076a38c0e2830a9de5d7366fdfe43fd16fabdc15bd7d"
+      "sha256": "e1f0bf341741ec7646c65568ed8818307f874ca728f69de42c50c7785f54268d"
     },
     {
       "approved": true,
@@ -1378,7 +1371,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:51:00.000Z",
+      "approvedAtUtc": "2026-09-21T17:55:00.000Z",
       "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
