@@ -250,12 +250,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
-      "sha256": "7fc672d85157d688e081ad68d636d552fa75c5e73ce49e02c98d7da1e0b116c3"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "40b0e4c360a1a752cb1561add85068e48999640a9a2699f2db30a6fcc53cbf4c"
     },
     {
       "approved": true,
@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
-      "sha256": "9362b9cccc1af1dffd5293da195d51cf9396667e97822e68321601a582cc8634"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "231d357c310b6a9e4b3a32f8dd58c75a2d38b7b9f3018b884c187036c722549f"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
-      "sha256": "468c4f8a93b1cb9b5c2ddeb1be1fc482ad1cf1799aeaab8153ae286a0f247084"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "f8db1671c9a25f146f249f99b74fd1cd221eb7949befacdce4e2b84ca69baf70"
     },
     {
       "approved": true,
@@ -1191,12 +1191,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "cf5e7fe9051b7474c9f6ff89433c9580c2ba7ce1e2bd556b85370cfa92a2df88"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "c96326d6817637a756d2eca154789a2330dfb2a74f50cc1abccab148dd675ba2"
     },
     {
       "approved": true,
@@ -1236,21 +1236,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "83eb826f370278bbcfdb1e94baf3cfa7696c6dd9643e132b0401b1769e53a042"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "7fc0e71f0cf81109a548acdd4daf186074d7b377ff1f3e5a24c97b9e5563d8f6"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "7232e1758f54bfd6ba2f18858d20fa14c0c4595f17ee80bcf25ef28785166e28"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "0ed39e79221aecfdd1ffb44ef10a1593fcaa225e0bd0f2d7e0a0f9760e8ee99e"
     },
     {
       "approved": true,
@@ -1317,12 +1317,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
-      "sha256": "9b1c5a75b7caf0b77f206f98699b42c1030713a75ae3099aa334bd70de570c75"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
+      "sha256": "09aed5c7ceaf4d76adb80b1eac61fffd84caca66b8e7fa864117315901eebe60"
     },
     {
       "approved": true,

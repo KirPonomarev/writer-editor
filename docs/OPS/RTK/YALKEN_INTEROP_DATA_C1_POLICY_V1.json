@@ -594,7 +594,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "83eb826f370278bbcfdb1e94baf3cfa7696c6dd9643e132b0401b1769e53a042"
+        "sha256": "7fc0e71f0cf81109a548acdd4daf186074d7b377ff1f3e5a24c97b9e5563d8f6"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1283,11 +1283,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "7232e1758f54bfd6ba2f18858d20fa14c0c4595f17ee80bcf25ef28785166e28"
+        "sha256": "0ed39e79221aecfdd1ffb44ef10a1593fcaa225e0bd0f2d7e0a0f9760e8ee99e"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "cf5e7fe9051b7474c9f6ff89433c9580c2ba7ce1e2bd556b85370cfa92a2df88"
+        "sha256": "c96326d6817637a756d2eca154789a2330dfb2a74f50cc1abccab148dd675ba2"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",

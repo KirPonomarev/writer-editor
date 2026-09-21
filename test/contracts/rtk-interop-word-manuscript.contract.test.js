@@ -213,7 +213,7 @@ test('Metadata admission binds dual OOXML carriers, intake no-write state and se
 });
 
 test('Section admission binds canonical boundaries, protected geometry, no-write intake and seven corruptions',async()=>{
- const {validateManuscriptSectionsProof:check}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const {validateManuscriptSectionsProof:check,MANUSCRIPT_SECTION_CONTROL_CODES:controlCodes}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const h=value=>crypto.createHash('sha256').update(value).digest('hex'),stable=value=>Array.isArray(value)?`[${value.map(stable).join(',')}]`:value&&typeof value==='object'?`{${Object.keys(value).sort().map(key=>`${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`:JSON.stringify(value);
  const properties={type:'nextPage',pageSize:{widthTwips:11906,heightTwips:16838,orientation:'portrait'},margins:{topTwips:1440,rightTwips:1440,bottomTwips:1440,leftTwips:1440,headerTwips:720,footerTwips:720,gutterTwips:0},columns:{count:1,spaceTwips:720}};
  const protectedSections=[[0,1],[2,3],[4,5]].map(([startParagraphIndex,endParagraphIndex],ordinal)=>({ordinal,startParagraphIndex,endParagraphIndex,breakPlacement:ordinal===2?'BODY_FINAL':'PARAGRAPH_PROPERTIES',carriers:{sectionProperties:true,pageSize:true,margins:true,columns:true},properties:structuredClone(properties)}));
@@ -221,14 +221,14 @@ test('Section admission binds canonical boundaries, protected geometry, no-write
  const sourceBindings=protectedSections.map((_,ordinal)=>({ordinal,sectionId:'section-'+String(ordinal+1).padStart(3,'0')+'-'+h('chapter-'+ordinal).slice(0,12),groupKey:'roman/part/chapter-'+ordinal,sceneIds:['roman/part/chapter-'+ordinal+'/scene.txt']}));
  const policies={policyId:'CANONICAL_SCENE_GROUPS_TO_WORD_SECTIONS_V1',sourceAuthority:'CANONICAL_ORDERED_SCENE_DIRECTORY_GROUPS',returnedAuthority:'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',providerExtensions:'LOSS_LEDGER_ONLY_NO_AUTHORITY'};
  const expected={schemaVersion,protectedSections,protectedDigest,sourceBindings,policies},artifact=value=>h(value),stage=value=>({artifactSha256:artifact(value),schemaVersion,protectedSections:structuredClone(protectedSections),protectedDigest,providerExtensionElements:[]});
- const exportSha=artifact('export'),returnedSha=artifact('returned'),state={sceneHashes:[artifact('scene')],manifestSha256:artifact('manifest')},ids=['missing-section','duplicate-section','move-boundary','change-page-size','change-orientation','change-margin','forged-signed-digest'];
+ const exportSha=artifact('export'),returnedSha=artifact('returned'),state={sceneHashes:[artifact('scene')],manifestSha256:artifact('manifest')},ids=Object.keys(controlCodes);
  const p={schemaVersion:'WORD_MANUSCRIPT_SECTIONS_PROOF_V1',authority:'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',policies,expected,
   stages:{'rounds/1/export':stage('export'),'rounds/1/word':stage('returned'),reexport:stage('reexport'),'final-word-lifecycle':stage('final')},
   intakeBindings:[{ordinal:1,status:'VERIFIED_PROTECTED_DOCUMENT_SECTIONS',authority:'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',protectedDigest,protectedSections,sourceBindings,before:state,after:structuredClone(state),manifestSha256:state.manifestSha256,writerCalled:false}],
-  negativeControls:ids.map(id=>({id,rejected:true,code:'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',mutantSha256:artifact('mutant-'+id),intakeSha256:artifact('intake-'+id),canonicalStateSha256:artifact('state-'+id),writerCalled:false,before:state,after:structuredClone(state)})),
+  negativeControls:ids.map(id=>({id,rejected:true,code:controlCodes[id],mutantSha256:artifact('mutant-'+id),intakeSha256:artifact('intake-'+id),canonicalStateSha256:artifact('state-'+id),writerCalled:false,before:state,after:structuredClone(state)})),
   lossLedger:{providerExtensionElementsObserved:[],scope:'unit proof'}};
  assert.equal(check(p,'MULTI_SCENE',1,[{exportSha256:exportSha,returnedSha256:returnedSha}]),true);
- for(const mutate of [x=>delete x.stages.reexport,x=>x.expected.protectedSections[0].endParagraphIndex=2,x=>x.intakeBindings[0].after.sceneHashes=[],x=>x.negativeControls.pop(),x=>x.negativeControls[0].writerCalled=true,x=>x.lossLedger.scope='']){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,'MULTI_SCENE',1,[{exportSha256:exportSha,returnedSha256:returnedSha}]));}
+ for(const mutate of [x=>delete x.stages.reexport,x=>x.expected.protectedSections[0].endParagraphIndex=2,x=>x.intakeBindings[0].after.sceneHashes=[],x=>x.negativeControls.pop(),x=>x.negativeControls[0].writerCalled=true,x=>x.negativeControls[1].code='RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',x=>x.lossLedger.scope='']){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,'MULTI_SCENE',1,[{exportSha256:exportSha,returnedSha256:returnedSha}]));}
 });
 
 test('Manuscript admission targets 252 distinct frozen whole cells and five real C3 rounds',async()=>{
