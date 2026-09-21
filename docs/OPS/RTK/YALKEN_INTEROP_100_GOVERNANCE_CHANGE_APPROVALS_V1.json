@@ -1322,7 +1322,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "6381634156a0643c6a1df8f3aaad3c20cc3d1ac04debd7e44b1ae23237c9b43d"
+      "sha256": "09aed5c7ceaf4d76adb80b1eac61fffd84caca66b8e7fa864117315901eebe60"
     },
     {
       "approved": true,
