@@ -150,7 +150,9 @@ def checked_read(root,binding):
 
 def native(data):
     require(data.endswith(b'\r') and b'\n' not in data,'NATIVE_PARAGRAPH_TERMINATOR')
-    return data[:-1].decode('utf8').split('\r')
+    # Word exposes a section break as form feed in the native text stream.
+    # It is a boundary between paragraphs, not authored paragraph content.
+    return data[:-1].decode('utf8').replace('\f','\r').split('\r')
 
 def rewrite(original,document):
     out=io.BytesIO()

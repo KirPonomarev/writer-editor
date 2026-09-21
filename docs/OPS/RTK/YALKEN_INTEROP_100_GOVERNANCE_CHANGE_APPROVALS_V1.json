@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T20:42:43Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_SECTION_BREAK_ORACLE_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "231d357c310b6a9e4b3a32f8dd58c75a2d38b7b9f3018b884c187036c722549f"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Fresh exact-merged physical Word evidence preserved all 35 multi-scene paragraphs and both section boundaries, while the independent native-text oracle misread Word form-feed section markers as authored text. This bounded proof-only repair parses form feed as a paragraph boundary, adds a focused literal control, preserves fail-closed text and order comparison, and grants no cell credit until fresh merged physical evidence passes complete admission.",
+      "sha256": "fe86bc9530ea6e742dca9be1535f7000947ee2498deb13b5f6dbc82f2cfde833"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T20:42:43Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_SECTION_BREAK_ORACLE_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "f8db1671c9a25f146f249f99b74fd1cd221eb7949befacdce4e2b84ca69baf70"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Fresh exact-merged physical Word evidence preserved all 35 multi-scene paragraphs and both section boundaries, while the independent native-text oracle misread Word form-feed section markers as authored text. This bounded proof-only repair parses form feed as a paragraph boundary, adds a focused literal control, preserves fail-closed text and order comparison, and grants no cell credit until fresh merged physical evidence passes complete admission.",
+      "sha256": "e50c93297807c9b5d614c3d695aba30d78c1da456cd5330fb0c6e7e843bd326b"
     },
     {
       "approved": true,
@@ -1137,12 +1137,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
-      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "approvedAtUtc": "2026-09-21T20:42:43Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_SECTION_BREAK_ORACLE_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-volume-readback.py",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "f8761815ad8cbd8f8bf4bba310631d488d368ca71f55688801de91f0fb890b91"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Fresh exact-merged physical Word evidence preserved all 35 multi-scene paragraphs and both section boundaries, while the independent native-text oracle misread Word form-feed section markers as authored text. This bounded proof-only repair parses form feed as a paragraph boundary, adds a focused literal control, preserves fail-closed text and order comparison, and grants no cell credit until fresh merged physical evidence passes complete admission.",
+      "sha256": "721f5a4353c94fa529328699a763bbc84ad7081bf5976108dc56e054e61d2244"
     },
     {
       "approved": true,
@@ -1164,12 +1164,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
-      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "approvedAtUtc": "2026-09-21T20:42:43Z",
+      "approvedBy": "owner-direct-task:WORD_NATIVE_SECTION_BREAK_ORACLE_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-volume.test.py",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "624c6e0420294b2cf8a7189d306ce1cce99b27c2e6c9aef0bbb3d216d35cdf8e"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Fresh exact-merged physical Word evidence preserved all 35 multi-scene paragraphs and both section boundaries, while the independent native-text oracle misread Word form-feed section markers as authored text. This bounded proof-only repair parses form feed as a paragraph boundary, adds a focused literal control, preserves fail-closed text and order comparison, and grants no cell credit until fresh merged physical evidence passes complete admission.",
+      "sha256": "8c17412594f10468fc3b3d19674d184e3e820734a538842fd46575ff2990963a"
     },
     {
       "approved": true,
