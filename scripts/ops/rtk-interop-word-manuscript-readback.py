@@ -24,6 +24,15 @@ STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','cha
 STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path']
 METADATA_CONTROLS=['changed-title','changed-project-id','changed-created-at','missing-core-part','missing-custom-property','duplicate-protected-property','forged-signed-digest']
 SECTION_CONTROLS=['missing-section','duplicate-section','move-boundary','change-page-size','change-orientation','change-margin','forged-signed-digest']
+SECTION_CONTROL_CODES={
+ 'missing-section':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'duplicate-section':'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+ 'move-boundary':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'change-page-size':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'change-orientation':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'change-margin':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'forged-signed-digest':'RTK_RETURN_INTAKE_AUTHORITY_NOT_VERIFIED',
+}
 CORE='{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}'
 DC='{http://purl.org/dc/elements/1.1/}'
 DCTERMS='{http://purl.org/dc/terms/}'
@@ -1099,7 +1108,7 @@ def audit(request):
                     require(control['before']==control['after'] and control['before']['sceneHashes']==source_hashes and re.fullmatch('[a-f0-9]{64}',control['before']['manifestSha256']),'SECTIONS_CONTROL_NO_WRITE')
                     result=control['result'];code=result.get('code') or result.get('reason') or result.get('value',{}).get('code') or result.get('value',{}).get('reason')
                     details=(result.get('details') or result.get('value',{}).get('details') or result.get('value',{}).get('error',{}).get('details') or {})
-                    require(result.get('ok') is not True and isinstance(code,str) and code.startswith('RTK_RETURN_INTAKE_') and all(result.get(k) is not True for k in ['canOpenReviewSession','canAutoApply','canImportMutate','canWriteStorage']),'SECTIONS_CONTROL_REJECTED:'+kind)
+                    require(result.get('ok') is not True and code==SECTION_CONTROL_CODES[kind] and all(result.get(k) is not True for k in ['canOpenReviewSession','canAutoApply','canImportMutate','canWriteStorage']),'SECTIONS_CONTROL_REJECTED:'+kind)
                     section_negative.append({'id':kind,'rejected':True,'code':code,'mismatches':details.get('mismatches',[]),'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/section-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(control['before'])),'writerCalled':False,'before':control['before'],'after':control['after']})
             ap=read(base+'/apply.json');result=ap['result'];receipt=result['result']['receipt'];require(result==read(base+'/apply-command-result.json'),'APPLY_RAW_RESULT')
             require(ap['commandId']=='cmd.project.review.applyExactTextChangesBatch' and result['ok'] is True and result['applied'] is True and result['totals']=={'requested':1,'applied':1,'blocked':0,'failed':0,'skipped':0} and ap['changeId']==changes[0]['changeId'],'EXPLICIT_APPLY')

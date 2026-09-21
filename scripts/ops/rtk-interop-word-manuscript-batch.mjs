@@ -32,6 +32,15 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
 const STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path'];
+export const MANUSCRIPT_SECTION_CONTROL_CODES=Object.freeze({
+ 'missing-section':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'duplicate-section':'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+ 'move-boundary':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'change-page-size':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'change-orientation':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'change-margin':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
+ 'forged-signed-digest':'RTK_RETURN_INTAKE_AUTHORITY_NOT_VERIFIED',
+});
 export function manuscriptStages(route,recipe='DEFAULT'){
  const stages={source:0,'source-renderer':0,composition:0},cycles=route==='C3'?5:1,generic=manuscriptUsesSafeCreate(route,recipe);
  for(let n=1;n<=cycles;n++){
@@ -170,9 +179,9 @@ export function validateManuscriptSectionsProof(p,volume,cycles,roundProofs){
  demand(p.intakeBindings?.length===cycles&&p.intakeBindings.every((x,i)=>x.ordinal===i+1&&x.status==='VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
   &&x.authority==='ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE'&&x.protectedDigest===expected.protectedDigest&&same(x.protectedSections,expected.protectedSections)
   &&same(x.sourceBindings,expected.sourceBindings)&&same(x.before,x.after)&&sha64(x.manifestSha256)&&x.writerCalled===false),'MANUSCRIPT_SECTIONS_INTAKES');
- const ids=['missing-section','duplicate-section','move-boundary','change-page-size','change-orientation','change-margin','forged-signed-digest'];
+ const ids=Object.keys(MANUSCRIPT_SECTION_CONTROL_CODES);
  demand(Array.isArray(p.negativeControls)&&same(p.negativeControls.map(x=>x.id),ids)&&p.negativeControls.every(x=>x.rejected===true&&typeof x.code==='string'
-  &&x.code.startsWith('RTK_RETURN_INTAKE_')&&sha64(x.mutantSha256)&&sha64(x.intakeSha256)&&sha64(x.canonicalStateSha256)&&x.writerCalled===false&&same(x.before,x.after))
+  &&x.code===MANUSCRIPT_SECTION_CONTROL_CODES[x.id]&&sha64(x.mutantSha256)&&sha64(x.intakeSha256)&&sha64(x.canonicalStateSha256)&&x.writerCalled===false&&same(x.before,x.after))
   &&new Set(p.negativeControls.map(x=>x.mutantSha256)).size===ids.length,'MANUSCRIPT_SECTIONS_CONTROLS');
  demand(p.lossLedger&&Array.isArray(p.lossLedger.providerExtensionElementsObserved)&&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_SECTIONS_LEDGER');
  return true;
