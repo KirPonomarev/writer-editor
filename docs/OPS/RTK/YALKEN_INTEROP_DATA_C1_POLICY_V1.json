@@ -249,7 +249,8 @@
     "src/word-volume-text-order.mjs",
     "src/word-manuscript-fields.mjs",
     "src/word-metadata-mutant.py",
-    "src/word-sections-mutant.py"
+    "src/word-sections-mutant.py",
+    "test/m0-audit-repair.test.mjs"
   ],
   "labCodeBindings": [
     {
@@ -1725,7 +1726,7 @@
         },
         {
           "path": "src/m1-text-single-scene-source-runtime.mjs",
-          "sha256": "125c8b7eddb85bdc818b977bbd6e801af904f2ec111d6af728629a06b27d2c57"
+          "sha256": "0b29f209b2d0094ee3dc4b85786c81e39ebcef6113e39df13be21a1d9ec683fd"
         },
         {
           "path": "src/c1-data-case.mjs",
@@ -1761,7 +1762,7 @@
         },
         {
           "path": "src/word-manuscript-fields.mjs",
-          "sha256": "e423595268d95f9c8e3b4cf718b9ec421954c48c4fe0a2cbe66b8ad18bbc46ed"
+          "sha256": "b6f602779abc3b7ed83da7b05a5bb7353ad52daf0fee3480e5182be16614b4cf"
         },
         {
           "path": "src/word-metadata-mutant.py",
@@ -1770,6 +1771,10 @@
         {
           "path": "src/word-sections-mutant.py",
           "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
+        },
+        {
+          "path": "test/m0-audit-repair.test.mjs",
+          "sha256": "283aa642d839036dfde691bbd8b308ee1f761e04861b719fa93e7adf8879f1ee"
         }
       ]
     }
