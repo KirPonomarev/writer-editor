@@ -41,6 +41,7 @@ const XSI_NS = 'http://www.w3.org/2001/XMLSchema-instance';
 const CUSTOM_PROPS_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/custom-properties';
 const CUSTOM_PROPS_VT_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes';
 const WORD_DOCUMENT_METADATA_SCHEMA = 'yalken.rtk.word.document-metadata.v1';
+const WORD_DOCUMENT_SECTIONS_SCHEMA = 'yalken.rtk.word.document-sections.v1';
 const WORD_DOCUMENT_METADATA_PUBLIC_PROPERTIES = Object.freeze([
   'YALKEN_METADATA_SCHEMA',
   'YALKEN_METADATA_POLICY',
@@ -103,7 +104,6 @@ const DOCUMENT_UNSUPPORTED_ELEMENTS = Object.freeze([
   'drawing',
   'pict',
   'tbl',
-  'sectPr',
   'footnoteReference',
   'endnoteReference',
   'fldSimple',
@@ -1815,11 +1815,18 @@ function parsePropertyRevisions(documentXml, documentScan, budgetState, reasons)
 function parseStructureChanges(documentScan, budgetState, reasons) {
   const changes = [];
   for (const token of documentScan.tokens) {
-    const bodyLevelSectionProperties = token.localName === 'sectPr'
-      && token.path.length === 3
-      && token.path[0] === 'document'
-      && token.path[1] === 'body';
-    if (bodyLevelSectionProperties) continue;
+    const declaredSectionProperties = token.localName === 'sectPr'
+      && (
+        (token.path.length === 3
+          && token.path[0] === 'document'
+          && token.path[1] === 'body')
+        || (token.path.length === 5
+          && token.path[0] === 'document'
+          && token.path[1] === 'body'
+          && token.path[2] === 'p'
+          && token.path[3] === 'pPr')
+      );
+    if (declaredSectionProperties) continue;
     if (['pPrChange', 'tbl', 'sectPr', 'footnoteReference', 'endnoteReference'].includes(token.localName)) {
       const change = {
         kind: 'StructureChange',
@@ -3031,6 +3038,210 @@ function buildCommentGraphCapability(input, partNames, commentThreads) {
   };
 }
 
+function directChildTokensWithin(documentScan, parent) {
+  return documentScan.tokens.filter((token) => (
+    token.openStart >= parent.openEnd
+    && token.closeEnd <= parent.closeStart
+    && token.depth === parent.depth + 1
+  )).sort((left, right) => left.openStart - right.openStart);
+}
+
+function sectionIntegerAttribute(token, localName) {
+  const value = attr(token, localName, W_NS);
+  if (!/^[0-9]{1,9}$/u.test(value)) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
+
+function parseDocumentSections(documentScan, cryptoPort) {
+  const reasons = [];
+  const allSectionTokens = documentScan.tokens
+    .filter((token) => isWordToken(token, 'sectPr'))
+    .sort((left, right) => left.openStart - right.openStart);
+  if (allSectionTokens.length === 0) {
+    return {
+      sections: {
+        schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA,
+        authority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
+        applicable: false,
+        protectedSections: [],
+        protectedDigest: '',
+        lossLedger: { providerExtensionElements: [] },
+      },
+      reasons,
+    };
+  }
+  const bodyFinalTokens = allSectionTokens.filter((token) => (
+    token.path.length === 3
+    && token.path[0] === 'document'
+    && token.path[1] === 'body'
+    && token.path[2] === 'sectPr'
+  ));
+  const paragraphSectionTokens = allSectionTokens.filter((token) => (
+    token.path.length === 5
+    && token.path[0] === 'document'
+    && token.path[1] === 'body'
+    && token.path[2] === 'p'
+    && token.path[3] === 'pPr'
+    && token.path[4] === 'sectPr'
+  ));
+  const validLocations = new Set([...bodyFinalTokens, ...paragraphSectionTokens]);
+  if (bodyFinalTokens.length !== 1 || validLocations.size !== allSectionTokens.length) {
+    reasons.push(reason(
+      'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+      'reviewIr.documentSections',
+      'Word section properties require exactly one body-final section and only supported paragraph boundary locations.',
+      {
+        sectionCount: allSectionTokens.length,
+        bodyFinalCount: bodyFinalTokens.length,
+        unsupportedLocationCount: allSectionTokens.length - validLocations.size,
+      },
+    ));
+  }
+  const paragraphs = documentScan.tokens.filter((token) => (
+    isWordToken(token, 'p')
+    && token.path.length === 3
+    && token.path[0] === 'document'
+    && token.path[1] === 'body'
+  )).sort((left, right) => left.openStart - right.openStart);
+  const seenBoundaryParagraphs = new Set();
+  const records = [];
+  const providerExtensionElements = [];
+  const ordered = [...paragraphSectionTokens, ...bodyFinalTokens]
+    .sort((left, right) => left.openStart - right.openStart);
+  for (const [ordinal, sectionToken] of ordered.entries()) {
+    const bodyFinal = bodyFinalTokens.includes(sectionToken);
+    const paragraphIndex = bodyFinal
+      ? paragraphs.length - 1
+      : paragraphs.findIndex((paragraph) => (
+        sectionToken.openStart >= paragraph.openEnd
+        && sectionToken.closeEnd <= paragraph.closeStart
+      ));
+    if (paragraphIndex < 0 || (!bodyFinal && seenBoundaryParagraphs.has(paragraphIndex))) {
+      reasons.push(reason(
+        'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+        'reviewIr.documentSections.boundaries',
+        'Word section boundary does not resolve to one unique document paragraph.',
+        { ordinal, paragraphIndex },
+      ));
+    }
+    if (!bodyFinal) seenBoundaryParagraphs.add(paragraphIndex);
+    const children = directChildTokensWithin(documentScan, sectionToken);
+    const byName = (name) => children.filter((token) => isWordToken(token, name));
+    const typeTokens = byName('type');
+    const pageSizeTokens = byName('pgSz');
+    const marginTokens = byName('pgMar');
+    const columnTokens = byName('cols');
+    for (const [name, tokens] of [
+      ['type', typeTokens],
+      ['pgSz', pageSizeTokens],
+      ['pgMar', marginTokens],
+      ['cols', columnTokens],
+    ]) {
+      if (tokens.length > 1) {
+        reasons.push(reason(
+          'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+          `reviewIr.documentSections.${ordinal}.${name}`,
+          'Duplicate protected Word section property is ambiguous.',
+          { ordinal, property: name, count: tokens.length },
+        ));
+      }
+    }
+    const protectedNames = new Set(['type', 'pgSz', 'pgMar', 'cols']);
+    for (const child of children.filter((token) => !protectedNames.has(token.localName))) {
+      providerExtensionElements.push({
+        sectionOrdinal: ordinal,
+        namespaceUri: child.namespaceUri,
+        elementName: child.localName,
+      });
+    }
+    const typeToken = typeTokens[0];
+    const pageSizeToken = pageSizeTokens[0];
+    const marginToken = marginTokens[0];
+    const columnToken = columnTokens[0];
+    const widthTwips = sectionIntegerAttribute(pageSizeToken, 'w');
+    const heightTwips = sectionIntegerAttribute(pageSizeToken, 'h');
+    const declaredOrientation = attr(pageSizeToken, 'orient', W_NS);
+    const orientation = declaredOrientation || (
+      Number.isSafeInteger(widthTwips) && Number.isSafeInteger(heightTwips)
+        ? (widthTwips > heightTwips ? 'landscape' : 'portrait')
+        : ''
+    );
+    const previousEnd = records.at(-1)?.endParagraphIndex;
+    records.push({
+      ordinal,
+      startParagraphIndex: ordinal === 0 ? 0 : (Number.isSafeInteger(previousEnd) ? previousEnd + 1 : null),
+      endParagraphIndex: paragraphIndex,
+      breakPlacement: bodyFinal ? 'BODY_FINAL' : 'PARAGRAPH_PROPERTIES',
+      carriers: {
+        sectionProperties: true,
+        pageSize: pageSizeTokens.length === 1,
+        margins: marginTokens.length === 1,
+        columns: columnTokens.length === 1,
+      },
+      properties: {
+        type: attr(typeToken, 'val', W_NS) || 'nextPage',
+        pageSize: {
+          widthTwips,
+          heightTwips,
+          orientation,
+        },
+        margins: {
+          topTwips: sectionIntegerAttribute(marginToken, 'top'),
+          rightTwips: sectionIntegerAttribute(marginToken, 'right'),
+          bottomTwips: sectionIntegerAttribute(marginToken, 'bottom'),
+          leftTwips: sectionIntegerAttribute(marginToken, 'left'),
+          headerTwips: sectionIntegerAttribute(marginToken, 'header'),
+          footerTwips: sectionIntegerAttribute(marginToken, 'footer'),
+          gutterTwips: sectionIntegerAttribute(marginToken, 'gutter'),
+        },
+        columns: {
+          count: sectionIntegerAttribute(columnToken, 'num') ?? 1,
+          spaceTwips: sectionIntegerAttribute(columnToken, 'space'),
+        },
+      },
+    });
+  }
+  for (const [index, record] of records.entries()) {
+    const final = index === records.length - 1;
+    if (!Number.isSafeInteger(record.startParagraphIndex)
+      || !Number.isSafeInteger(record.endParagraphIndex)
+      || record.startParagraphIndex < 0
+      || record.endParagraphIndex < record.startParagraphIndex
+      || (final ? record.endParagraphIndex !== paragraphs.length - 1 : record.endParagraphIndex >= paragraphs.length - 1)) {
+      reasons.push(reason(
+        'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+        `reviewIr.documentSections.${index}.boundary`,
+        'Word section boundaries must be contiguous, ordered, non-empty and end at the final document paragraph.',
+        {
+          startParagraphIndex: record.startParagraphIndex,
+          endParagraphIndex: record.endParagraphIndex,
+          paragraphCount: paragraphs.length,
+        },
+      ));
+    }
+  }
+  const protectedProjection = {
+    schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA,
+    protectedSections: records,
+  };
+  return {
+    sections: {
+      ...protectedProjection,
+      authority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
+      applicable: true,
+      protectedDigest: cryptoPort.sha256Json(protectedProjection),
+      lossLedger: {
+        providerExtensionElements: providerExtensionElements.sort((left, right) => (
+          `${left.sectionOrdinal}|${left.namespaceUri}|${left.elementName}`
+            .localeCompare(`${right.sectionOrdinal}|${right.namespaceUri}|${right.elementName}`)
+        )),
+      },
+    },
+    reasons,
+  };
+}
+
 function collectUnsupportedElements(documentScan, budgetState, reasons) {
   const unsupported = [];
   for (const token of documentScan.tokens) {
@@ -3101,6 +3312,7 @@ function blockingReason(reasons) {
     'RTK_ZIP_LOCAL_CENTRAL_MISMATCH',
     'RTK_ZIP_REGION_OVERLAP',
     'RTK_ZIP_FAKE_EOCD',
+    'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
   ].includes(item.code));
 }
 
@@ -3122,6 +3334,7 @@ const RTK_V2_BLOCKING_CODES = Object.freeze(new Set([
   'RTK_ZIP_LOCAL_CENTRAL_MISMATCH',
   'RTK_ZIP_REGION_OVERLAP',
   'RTK_ZIP_FAKE_EOCD',
+  'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
 ]));
 
 function v2LaneStatus(reasons, laneFields) {
@@ -3162,6 +3375,7 @@ function emptyReviewIr(diagnostics = []) {
     formattingDeltas: [],
     formattingParagraphs: [],
     documentMetadata: null,
+    documentSections: null,
     opaqueUnsupported: [],
     changes: [],
     diagnostics,
@@ -3234,6 +3448,9 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const documentXml = rawString(parts['word/document.xml']);
   const documentScan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
   reasons.push(...documentScan.diagnostics);
+  const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort);
+  reasons.push(...documentSectionsResult.reasons);
+  const documentSections = documentSectionsResult.sections;
   const scans = {
     comments: {
       xml: rawString(parts['word/comments.xml']),
@@ -3318,6 +3535,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const comments = parseCommentThreads(input, documentXml, documentScan, scans, cryptoPort, budgetState, textRevisions);
   reasons.push(...comments.reasons);
   admitWorkerOutput(budgetState, reasons, 'reviewIr.documentMetadata', documentMetadata);
+  admitWorkerOutput(budgetState, reasons, 'reviewIr.documentSections', documentSections);
   const semanticBudgetBlocked = blockingReason(reasons);
   if (semanticBudgetBlocked) {
     return {
@@ -3367,6 +3585,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     formattingDeltas,
     formattingParagraphs,
     documentMetadata,
+    documentSections,
     opaqueUnsupported,
     authorityCarrier,
     commentGraphCapability,
@@ -3412,6 +3631,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       'formatting-delta-lane',
       'formatting-paragraph-projection-lane',
       'document-metadata-projection-lane',
+      'document-sections-projection-lane',
       'opaque-unsupported-lane',
       'hostile-package-gate',
       'custom-document-property-authority-carrier',
@@ -3499,6 +3719,13 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       transportBindingProperties: documentMetadata.transportBindingProperties,
       volatileCoreProperties: documentMetadata.volatileCoreProperties,
       lossLedger: documentMetadata.lossLedger,
+    },
+    documentSections: {
+      schemaVersion: documentSections.schemaVersion,
+      applicable: documentSections.applicable,
+      protectedSections: documentSections.protectedSections,
+      protectedDigest: documentSections.protectedDigest,
+      lossLedger: documentSections.lossLedger,
     },
     opaqueUnsupported: opaqueUnsupported.map((item) => ({
       partName: item.partName,

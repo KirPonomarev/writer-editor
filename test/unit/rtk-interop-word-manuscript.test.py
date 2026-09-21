@@ -44,7 +44,7 @@ class ManuscriptOracle(unittest.TestCase):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')
    self.assertEqual(default,['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);self.assertFalse(set(default)&set(review))
-   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA'])
+   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS'])
    source=m.expected_docs(volume,'C1',recipe='C1_REVIEW_RETURN');returned=m.expected_docs(volume,'C1',1,'C1_REVIEW_RETURN')
    self.assertIn('[links] reference / reference / reference.',m.paragraphs(source[0]))
    self.assertNotIn('[links] reference / reference / reference.',m.paragraphs(m.expected_docs(volume,'C1')[0]))
@@ -68,6 +68,30 @@ class ManuscriptOracle(unittest.TestCase):
   custom.append(copy.deepcopy(next(p for p in custom if p.get('name')=='YALKEN_PROJECT_ID')))
   duplicate=m.metadata_doc({**parts,'docProps/custom.xml':ET.tostring(custom)},b'duplicate');self.assertEqual(duplicate['duplicateCustomPropertyNames'],['YALKEN_PROJECT_ID']);self.assertEqual(duplicate['publicCustomProperties']['YALKEN_PROJECT_ID'],'')
   with self.assertRaisesRegex(ValueError,'METADATA_PARTS'):m.metadata_doc({'docProps/custom.xml':parts['docProps/custom.xml']},b'missing')
+ def test_section_oracle_derives_scene_groups_and_reads_protected_word_geometry(self):
+  docs=m.expected_docs('MULTI_SCENE','C2');ids=m.expected_ids('MULTI_SCENE',len(docs));expected=m.expected_section_contract(ids,docs)
+  root=ET.fromstring(document(sum([m.paragraphs(x) for x in docs],[])));body=root.find(m.W+'body');ps=body.findall(m.W+'p')
+  def props(section):
+   s=ET.Element(m.W+'sectPr')
+   if section['breakPlacement']!='BODY_FINAL':ET.SubElement(s,m.W+'type',{m.W+'val':'nextPage'})
+   ET.SubElement(s,m.W+'pgSz',{m.W+'w':'11906',m.W+'h':'16838',m.W+'orient':'portrait'})
+   ET.SubElement(s,m.W+'pgMar',{m.W+'top':'1440',m.W+'right':'1440',m.W+'bottom':'1440',m.W+'left':'1440',m.W+'header':'720',m.W+'footer':'720',m.W+'gutter':'0'})
+   ET.SubElement(s,m.W+'cols',{m.W+'num':'1',m.W+'space':'720'});return s
+  for section in expected['protectedSections'][:-1]:
+   p=ps[section['endParagraphIndex']];ppr=ET.Element(m.W+'pPr');p.insert(0,ppr);ppr.append(props(section))
+  body.append(props(expected['protectedSections'][-1]));proof=m.section_doc(root,b'sections')
+  self.assertEqual(proof['protectedSections'],expected['protectedSections']);self.assertEqual(proof['protectedDigest'],expected['protectedDigest']);self.assertEqual(len(expected['sourceBindings']),3)
+  for mutate in ['boundary','page','margin','duplicate']:
+   changed=copy.deepcopy(root)
+   if mutate=='boundary':
+    first=changed.find('.//'+m.W+'pPr/'+m.W+'sectPr');parent=next(p.find(m.W+'pPr') for p in changed.findall('.//'+m.W+'p') if p.find(m.W+'pPr/'+m.W+'sectPr') is first);parent.remove(first);target=changed.findall('.//'+m.W+'p')[expected['protectedSections'][0]['endParagraphIndex']+1];ppr=target.find(m.W+'pPr') or ET.Element(m.W+'pPr');target.insert(0,ppr) if ppr not in list(target) else None;ppr.append(first)
+   elif mutate=='page':changed.find('.//'+m.W+'sectPr/'+m.W+'pgSz').set(m.W+'w','11907')
+   elif mutate=='margin':changed.find('.//'+m.W+'sectPr/'+m.W+'pgMar').set(m.W+'left','1441')
+   else:
+    first=changed.find('.//'+m.W+'pPr/'+m.W+'sectPr');parent=next(p.find(m.W+'pPr') for p in changed.findall('.//'+m.W+'p') if p.find(m.W+'pPr/'+m.W+'sectPr') is first);parent.append(copy.deepcopy(first))
+   if mutate=='duplicate':
+    with self.assertRaises(ValueError):m.section_doc(changed,b'changed')
+   else:self.assertNotEqual(m.section_doc(changed,b'changed')['protectedDigest'],expected['protectedDigest'])
  def test_word_split_uri_fragment_preserves_full_target_and_rejects_fragment_loss(self):
   data,ids,docs=identifier_archive();_,parts,d=m.docx(data);rels=ET.fromstring(parts['word/_rels/document.xml.rels'])
   by_id={r.get('Id'):r for r in rels}

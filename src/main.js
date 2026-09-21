@@ -234,6 +234,7 @@ const {
   buildFullManuscriptDocxReviewPacketSource,
   buildFormatIrParagraphs,
   validateFullManuscriptDocumentMetadataReturn,
+  validateFullManuscriptDocumentSectionsReturn,
 } = require('./export/docx/fullManuscriptDocxReviewPacketSource');
 const {
   buildFullManuscriptReviewReturnApplyPlan,
@@ -1111,6 +1112,22 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     };
   }
   const finalPayload = finalParse.authorityCarrier?.selectedCarrier?.payload || {};
+  const documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
+    expected: localAuthority.documentSections,
+    returned: finalParse.reviewIr?.documentSections,
+    signedDigest: finalPayload.documentSectionsDigest,
+  });
+  if (!documentSectionsBinding.ok) {
+    return {
+      ok: false,
+      code: 'RTK_V4_PUBLICATION_DOCUMENT_SECTIONS_MISMATCH',
+      publishAllowed: false,
+      finalArtifactSha256,
+      documentSectionsMismatches: Array.isArray(documentSectionsBinding.mismatches)
+        ? documentSectionsBinding.mismatches.slice(0, 16)
+        : [],
+    };
+  }
   const semanticEquivalent = finalParse.authorityCarrier?.status === 'verified-baseline-bound'
     && normalizeRtkSignedSha256(finalPayload.coreManifestDigest) === normalizeRtkSignedSha256(coreManifest.coreManifestDigest)
     && docxReviewPreviewSessionDetailString(finalPayload.scope) === 'full-manuscript';
@@ -1132,6 +1149,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     finalArtifactSha256,
     coreManifestDigest: yrtk2Verification.coreManifestDigest,
     ...(source.commentExport ? { commentProofs, commentTombstones: cloneJsonSafe(source.commentExport.tombstones) } : {}),
+    documentSectionsBinding: documentSectionsBinding.proof,
     yrtk2Verification,
     provisionalSelfParse: {
       verified: provisionalSelfParse.verified === true,
@@ -4768,6 +4786,24 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   const candidates = scope.sceneCandidates || [];
   const expected = capsule.exportMap.scenes;
   if (candidates.length !== expected.length) throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SCENE_SET_STALE');
+  const expectedSectionBindings = Array.isArray(capsule.documentSections?.sourceBindings)
+    ? capsule.documentSections.sourceBindings
+    : [];
+  const currentSectionGroups = [];
+  for (const candidate of candidates) {
+    const sceneId = docxReviewPreviewSessionDetailString(candidate?.sceneId).replace(/\\/gu, '/');
+    const groupKey = path.posix.dirname(sceneId) || '.';
+    const last = currentSectionGroups.at(-1);
+    if (last && last.groupKey === groupKey) last.sceneIds.push(sceneId);
+    else currentSectionGroups.push({ groupKey, sceneIds: [sceneId] });
+  }
+  if (expectedSectionBindings.length !== currentSectionGroups.length
+    || expectedSectionBindings.some((binding, index) => (
+      docxReviewPreviewSessionDetailString(binding?.groupKey) !== currentSectionGroups[index]?.groupKey
+      || JSON.stringify(binding?.sceneIds || []) !== JSON.stringify(currentSectionGroups[index]?.sceneIds || [])
+    ))) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DOCUMENT_SECTIONS_STALE');
+  }
   for (const [index, candidate] of candidates.entries()) {
     const content = await readFullManuscriptDocxReviewExportDocumentContent(candidate);
     if (candidate.sceneId !== expected[index].sceneId
@@ -8231,6 +8267,31 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
   const documentMetadataBinding = isPlainObjectValue(parserResult.documentMetadataBinding)
     ? parserResult.documentMetadataBinding
     : {};
+  const documentSectionsBinding = isPlainObjectValue(parserResult.documentSectionsBinding)
+    ? parserResult.documentSectionsBinding
+    : {};
+  const nonNegativeInteger = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : null);
+  const sanitizedSectionProperties = (value) => ({
+    type: docxReviewPreviewSessionDetailString(value?.type),
+    pageSize: {
+      widthTwips: nonNegativeInteger(value?.pageSize?.widthTwips),
+      heightTwips: nonNegativeInteger(value?.pageSize?.heightTwips),
+      orientation: docxReviewPreviewSessionDetailString(value?.pageSize?.orientation),
+    },
+    margins: {
+      topTwips: nonNegativeInteger(value?.margins?.topTwips),
+      rightTwips: nonNegativeInteger(value?.margins?.rightTwips),
+      bottomTwips: nonNegativeInteger(value?.margins?.bottomTwips),
+      leftTwips: nonNegativeInteger(value?.margins?.leftTwips),
+      headerTwips: nonNegativeInteger(value?.margins?.headerTwips),
+      footerTwips: nonNegativeInteger(value?.margins?.footerTwips),
+      gutterTwips: nonNegativeInteger(value?.margins?.gutterTwips),
+    },
+    columns: {
+      count: nonNegativeInteger(value?.columns?.count),
+      spaceTwips: nonNegativeInteger(value?.columns?.spaceTwips),
+    },
+  });
   // Preserve review authorship and both Word timestamp carriers as literal
   // advisory data. Never spread parsed objects or expose locator secrets/paths.
   const revisionMetadata = (items, property) => (Array.isArray(items) ? items : []).map((item) => {
@@ -8319,6 +8380,48 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
           : [],
       },
     },
+    documentSections: {
+      status: docxReviewPreviewSessionDetailString(documentSectionsBinding.status),
+      authority: docxReviewPreviewSessionDetailString(documentSectionsBinding.authority),
+      protectedDigest: docxReviewPreviewSessionDetailString(documentSectionsBinding.protectedDigest),
+      protectedSections: (Array.isArray(documentSectionsBinding.protectedSections)
+        ? documentSectionsBinding.protectedSections : []).map((section) => ({
+        ordinal: nonNegativeInteger(section?.ordinal),
+        startParagraphIndex: nonNegativeInteger(section?.startParagraphIndex),
+        endParagraphIndex: nonNegativeInteger(section?.endParagraphIndex),
+        breakPlacement: docxReviewPreviewSessionDetailString(section?.breakPlacement),
+        carriers: {
+          sectionProperties: section?.carriers?.sectionProperties === true,
+          pageSize: section?.carriers?.pageSize === true,
+          margins: section?.carriers?.margins === true,
+          columns: section?.carriers?.columns === true,
+        },
+        properties: sanitizedSectionProperties(section?.properties),
+      })),
+      sourceBindings: (Array.isArray(documentSectionsBinding.sourceBindings)
+        ? documentSectionsBinding.sourceBindings : []).map((binding) => ({
+        ordinal: nonNegativeInteger(binding?.ordinal),
+        sectionId: docxReviewPreviewSessionDetailString(binding?.sectionId),
+        groupKey: docxReviewPreviewSessionDetailString(binding?.groupKey),
+        sceneIds: Array.isArray(binding?.sceneIds)
+          ? binding.sceneIds.map(docxReviewPreviewSessionDetailString).filter(Boolean)
+          : [],
+      })),
+      policies: {
+        policyId: docxReviewPreviewSessionDetailString(documentSectionsBinding.policies?.policyId),
+        sourceAuthority: docxReviewPreviewSessionDetailString(documentSectionsBinding.policies?.sourceAuthority),
+        returnedAuthority: docxReviewPreviewSessionDetailString(documentSectionsBinding.policies?.returnedAuthority),
+        providerExtensions: docxReviewPreviewSessionDetailString(documentSectionsBinding.policies?.providerExtensions),
+      },
+      lossLedger: {
+        providerExtensionElements: (Array.isArray(documentSectionsBinding.lossLedger?.providerExtensionElements)
+          ? documentSectionsBinding.lossLedger.providerExtensionElements : []).map((item) => ({
+          sectionOrdinal: nonNegativeInteger(item?.sectionOrdinal),
+          namespaceUri: docxReviewPreviewSessionDetailString(item?.namespaceUri),
+          elementName: docxReviewPreviewSessionDetailString(item?.elementName),
+        })),
+      },
+    },
     counts: {
       textRevisions: Array.isArray(reviewIr.textRevisions) ? reviewIr.textRevisions.length : 0,
       moveRevisions: Array.isArray(reviewIr.moveRevisions) ? reviewIr.moveRevisions.length : 0,
@@ -8327,6 +8430,9 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
       commentThreads: Array.isArray(reviewIr.commentThreads) ? reviewIr.commentThreads.length : 0,
       formattingDeltas: Array.isArray(reviewIr.formattingDeltas) ? reviewIr.formattingDeltas.length : 0,
       opaqueUnsupported: Array.isArray(reviewIr.opaqueUnsupported) ? reviewIr.opaqueUnsupported.length : 0,
+      documentSections: Array.isArray(reviewIr.documentSections?.protectedSections)
+        ? reviewIr.documentSections.protectedSections.length
+        : 0,
     },
     authority: {
       validSignedLocator: parserResult.exactAuthority?.validSignedLocator === true,
@@ -9085,6 +9191,22 @@ async function inspectDocxReviewReturnIntakeV2({
   if (documentMetadataBinding.applicable === true) {
     verifiedParserResult.documentMetadataBinding = documentMetadataBinding.proof;
     verifiedParserResult.documentMetadataBinding.status = documentMetadataBinding.status;
+  }
+  const documentSectionsBinding = validateFullManuscriptDocumentSectionsReturn({
+    expected: localAuthority.documentSections,
+    returned: verifiedParserResult.reviewIr?.documentSections,
+    signedDigest: payload.documentSectionsDigest,
+  });
+  if (!documentSectionsBinding.ok) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH', {
+      mismatches: Array.isArray(documentSectionsBinding.mismatches)
+        ? documentSectionsBinding.mismatches.slice(0, 16)
+        : [],
+    });
+  }
+  if (documentSectionsBinding.applicable === true) {
+    verifiedParserResult.documentSectionsBinding = documentSectionsBinding.proof;
+    verifiedParserResult.documentSectionsBinding.status = documentSectionsBinding.status;
   }
   // ROUND-01 (V3): build the session-time capsule WITH the vault-resolved
   // hmacSecret so the downstream full-manuscript return-router proof binding

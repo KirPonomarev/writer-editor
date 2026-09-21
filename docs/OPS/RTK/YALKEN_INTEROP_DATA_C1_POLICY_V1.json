@@ -125,6 +125,7 @@
     "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
     "docs/tasks/2026-09-17--c1-review-intake-fields.md",
     "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
+    "docs/tasks/2026-09-18--word-document-parts-roundtrip.md",
     "src/main/rtkDocxReturnIntakeWorker.cjs"
   ],
   "protectedFiles": [
@@ -247,7 +248,8 @@
     "test/solo-sequential.test.py",
     "src/word-volume-text-order.mjs",
     "src/word-manuscript-fields.mjs",
-    "src/word-metadata-mutant.py"
+    "src/word-metadata-mutant.py",
+    "src/word-sections-mutant.py"
   ],
   "labCodeBindings": [
     {
@@ -339,7 +341,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "0200fc8f00c2b98664f9109b851a9f5052dae5ffa7fd59dcd00bb34c04a20579"
+        "sha256": "6bbafeeae9530d3e87395b060a93f2e03202f91658e1cb05e941e9736e659a18"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -451,11 +453,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "18ffb9d06339422eeaf6ac23e4a400148426f71fcd2c6b2dd46dda15f979e161"
+        "sha256": "053cc7c9c40f5d391e926c0f82ca09babd9ec4435e9e76cab091a8c140024e49"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "808d970d827bbf99fe9e71edb3a9894458838934d502601652a3d83c2064441c"
+        "sha256": "e3a3f3d1445a88f6b246dd8809c20f9f104dcfec45552abb0bd4831d3181c8b2"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -475,7 +477,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "ce174918aaaac60d1b666a2651e76a076695e75c7eba2129558e9888351f0615"
+        "sha256": "c56b4a6a8800228ed11b379530a4d97b2f5b230ed352e23807947893899d03c6"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -575,7 +577,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "be1f8b3def1c68c652993692c6dd74f7610c4115ba6d1cc7d19060c3856396c6"
+        "sha256": "8f4881f52b50ef1e2681ca127658703383a585b8e1758b8cf01ca162a0082d8a"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
@@ -591,11 +593,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "d1068fe4f0c48d3ff43e7e41a14a213eb493229b7b442db39d965ec2e122b439"
+        "sha256": "83eb826f370278bbcfdb1e94baf3cfa7696c6dd9643e132b0401b1769e53a042"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "84f46208a280bede5827ed8d669a3196d5d6e16e074061f13a0356823b736d8b"
+        "sha256": "8be03fdac31dfe90f066b4294411a5de7146c426d9d2890be998508f2b9c7179"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -643,7 +645,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-        "sha256": "8fbe38a4800c98ef4031ff680851d66c23cb8cf42c8ef66f53bc62a039bc908f"
+        "sha256": "062a1eb0c26ab61559202fdb6411dc7c93268034721dec670c3733bcc7078eb5"
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -716,6 +718,10 @@
       {
         "path": "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
         "sha256": "f6e7012a493e36608fc0a093b87a3fe2e36c0ac9b3d9255577bf4f80173ff254"
+      },
+      {
+        "path": "docs/tasks/2026-09-18--word-document-parts-roundtrip.md",
+        "sha256": "fe309daaee9cf0715b94840a90010e0ccdab42935079ea54fdb9aece4b6a437b"
       }
     ],
     "followupRepair": {
@@ -782,6 +788,11 @@
       "taskId": "WORD_METADATA_ROUNDTRIP_20260918",
       "bindingBaseSha": "2cc4a5f69daf29a3859799e3fa75543bbd3a4bcd",
       "scope": "Preserve protected project metadata through native Word with exact signed custom values, independently checked core carriers, explicit provider-normalization ledger, seven typed corruptions and no returned metadata write authority."
+    },
+    "wordDocumentSectionsRoundtrip": {
+      "taskId": "WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "bindingBaseSha": "af5da809d9cbf60b8eb471f0f3be977ea6a4c489",
+      "scope": "Preserve canonical consecutive scene-directory groups as exact Word section boundaries with signed protected page geometry, independent raw OOXML readback, provider-extension loss ledger, seven typed corruptions and no returned structure write authority."
     }
   },
   "wordTextOrderBatch": {
@@ -911,6 +922,7 @@
       "COMMENTS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "METADATA__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "SECTIONS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
@@ -919,6 +931,7 @@
       "COMMENTS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
@@ -927,6 +940,7 @@
       "COMMENTS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "METADATA__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "SECTIONS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
@@ -935,6 +949,7 @@
       "COMMENTS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__SOURCE_RUNTIME",
@@ -943,6 +958,7 @@
       "COMMENTS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "METADATA__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "SECTIONS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
@@ -951,6 +967,7 @@
       "COMMENTS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C5__SOURCE_RUNTIME",
@@ -966,6 +983,7 @@
       "COMMENTS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "METADATA__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "SECTIONS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
@@ -975,6 +993,7 @@
       "COMMENTS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
@@ -984,6 +1003,7 @@
       "COMMENTS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "METADATA__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "SECTIONS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
@@ -993,6 +1013,7 @@
       "COMMENTS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__SOURCE_RUNTIME",
@@ -1002,6 +1023,7 @@
       "COMMENTS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "METADATA__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "SECTIONS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
@@ -1011,6 +1033,7 @@
       "COMMENTS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C5__SOURCE_RUNTIME",
@@ -1026,6 +1049,7 @@
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "SECTIONS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
@@ -1035,6 +1059,7 @@
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
@@ -1044,6 +1069,7 @@
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "SECTIONS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
@@ -1053,6 +1079,7 @@
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
@@ -1062,6 +1089,7 @@
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "SECTIONS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
@@ -1071,6 +1099,7 @@
       "COMMENTS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
@@ -1086,6 +1115,7 @@
       "COMMENTS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "SECTIONS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
@@ -1095,6 +1125,7 @@
       "COMMENTS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
@@ -1104,6 +1135,7 @@
       "COMMENTS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "SECTIONS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
@@ -1113,6 +1145,7 @@
       "COMMENTS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
@@ -1122,6 +1155,7 @@
       "COMMENTS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "SECTIONS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
@@ -1130,7 +1164,8 @@
       "TRACKED_REVIEW_SEMANTICS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "COMMENTS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
-      "METADATA__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
+      "METADATA__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
     ],
     "requiredHops": {
       "C1": [
@@ -1231,21 +1266,31 @@
         "timestampPolicyDeclared",
         "receiptIdentityBound",
         "metadataLossLedgered"
+      ],
+      "SECTIONS": [
+        "sectionCountPreserved",
+        "paragraphBoundarySequencePreserved",
+        "canonicalSceneCoverageBound",
+        "pageSizeAndOrientationPreserved",
+        "pageMarginsPreserved",
+        "sectionBreakPolicyPreserved",
+        "signedSectionDigestBound",
+        "sectionLossLedgered"
       ]
     },
     "notBeforeUtc": "2026-09-17T19:14:49.868757+00:00",
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "10cefbc4f150f68e2794b4f47cdde4864eb6c10c1a7601f9dbc16367af38cd3b"
+        "sha256": "7232e1758f54bfd6ba2f18858d20fa14c0c4595f17ee80bcf25ef28785166e28"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "c70f5fe2bef9c79e6b446a28b27991abb7032a71e8ea3da8de82c942df132133"
+        "sha256": "cf5e7fe9051b7474c9f6ff89433c9580c2ba7ce1e2bd556b85370cfa92a2df88"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "e45c653f71921086ed446efeb96a50fc81dafc7f2a303313abedff5b42e43c55"
+        "sha256": "bcc9a843fa66815404e861e54b67e9f7abef2b9094ce1a94ff579c00fff5557f"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -1464,7 +1509,7 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "C1 review-return, C2 and C3 preserve protected project metadata through native Word in addition to the prior admitted fields. Original C1 safe-create retains its four disjoint fields. Recipe identity binds runId, native observation and independent raw output; no cell credit is duplicated. Independent raw proof includes every native export, return, explicit apply, fresh-process reopen and reexport. All 204 previously accepted cells remain mandatory; the frozen denominator and mutation authority are unchanged.",
+    "scope": "Complete actual native manuscript journeys with independent raw evidence. Existing fields remain mandatory; SECTIONS adds canonical scene-group boundaries and protected page semantics without project structure write authority.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",
@@ -1664,6 +1709,67 @@
         {
           "path": "src/word-metadata-mutant.py",
           "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        }
+      ]
+    },
+    {
+      "id": "WORD_SECTIONS_ROUNDTRIP_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "125c8b7eddb85bdc818b977bbd6e801af904f2ec111d6af728629a06b27d2c57"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "e423595268d95f9c8e3b4cf718b9ec421954c48c4fe0a2cbe66b8ad18bbc46ed"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        },
+        {
+          "path": "src/word-sections-mutant.py",
+          "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
         }
       ]
     }

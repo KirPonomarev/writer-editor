@@ -33,6 +33,7 @@ const WORD_STYLES_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.
 const WORD_STYLES_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles';
 const WORD_COMPATIBILITY_URI = 'http://schemas.microsoft.com/office/word';
 const FORMAT_IR_SCHEMA = 'yalken.rtk.format-ir.v1';
+const WORD_DOCUMENT_SECTIONS_SCHEMA = 'yalken.rtk.word.document-sections.v1';
 const RTK_WORD_BOOKMARK_V1_DOMAIN = 'word-bookmark-v1';
 
 // EXPORT-01 (P0-20): the builder is FORBIDDEN from inventing a bookmark name.
@@ -207,7 +208,96 @@ function buildCommentedRunsXml(block, hyperlinkByHref, markers) {
   return output.join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport) {
+function sectionInteger(value, code, minimum = 0) {
+  if (!Number.isSafeInteger(value) || value < minimum) throw new Error(code);
+  return value;
+}
+
+function normalizeDocumentSections(input, blockCount) {
+  if (!isPlainObjectValue(input)) return null;
+  if (input.schemaVersion !== WORD_DOCUMENT_SECTIONS_SCHEMA) {
+    throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_SECTIONS_SCHEMA_INVALID');
+  }
+  const source = Array.isArray(input.protectedSections) ? input.protectedSections : [];
+  if (source.length < 1 || !Number.isSafeInteger(blockCount) || blockCount < 1) {
+    throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_SECTIONS_REQUIRED');
+  }
+  const sections = source.map((section, index) => {
+    if (!isPlainObjectValue(section) || section.ordinal !== index) {
+      throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_SECTION_ORDINAL_INVALID');
+    }
+    const startParagraphIndex = sectionInteger(
+      section.startParagraphIndex,
+      'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_START_INVALID',
+    );
+    const endParagraphIndex = sectionInteger(
+      section.endParagraphIndex,
+      'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_END_INVALID',
+    );
+    const final = index === source.length - 1;
+    if (endParagraphIndex < startParagraphIndex
+      || startParagraphIndex !== (index === 0 ? 0 : source[index - 1].endParagraphIndex + 1)
+      || (final ? endParagraphIndex !== blockCount - 1 : endParagraphIndex >= blockCount - 1)
+      || section.breakPlacement !== (final ? 'BODY_FINAL' : 'PARAGRAPH_PROPERTIES')) {
+      throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_SECTION_BOUNDARY_INVALID');
+    }
+    const properties = isPlainObjectValue(section.properties) ? section.properties : {};
+    const pageSize = isPlainObjectValue(properties.pageSize) ? properties.pageSize : {};
+    const margins = isPlainObjectValue(properties.margins) ? properties.margins : {};
+    const columns = isPlainObjectValue(properties.columns) ? properties.columns : {};
+    const type = normalizeString(properties.type);
+    const orientation = normalizeString(pageSize.orientation);
+    if (!['nextPage', 'continuous', 'evenPage', 'oddPage'].includes(type)
+      || !['portrait', 'landscape'].includes(orientation)) {
+      throw new Error('DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PROPERTIES_INVALID');
+    }
+    return {
+      ordinal: index,
+      startParagraphIndex,
+      endParagraphIndex,
+      breakPlacement: section.breakPlacement,
+      properties: {
+        type,
+        pageSize: {
+          widthTwips: sectionInteger(pageSize.widthTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PAGE_SIZE_INVALID', 1),
+          heightTwips: sectionInteger(pageSize.heightTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_PAGE_SIZE_INVALID', 1),
+          orientation,
+        },
+        margins: {
+          topTwips: sectionInteger(margins.topTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+          rightTwips: sectionInteger(margins.rightTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+          bottomTwips: sectionInteger(margins.bottomTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+          leftTwips: sectionInteger(margins.leftTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+          headerTwips: sectionInteger(margins.headerTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+          footerTwips: sectionInteger(margins.footerTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+          gutterTwips: sectionInteger(margins.gutterTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_MARGINS_INVALID'),
+        },
+        columns: {
+          count: sectionInteger(columns.count, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_COLUMNS_INVALID', 1),
+          spaceTwips: sectionInteger(columns.spaceTwips, 'DOCX_REVIEW_PACKET_DOCUMENT_SECTION_COLUMNS_INVALID'),
+        },
+      },
+    };
+  });
+  return { schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA, protectedSections: sections };
+}
+
+function buildSectionPropertiesXml(section, options = {}) {
+  const properties = section.properties;
+  const pageSize = properties.pageSize;
+  const margins = properties.margins;
+  const columns = properties.columns;
+  return [
+    '<w:sectPr>',
+    ...(options.final === true ? [] : [`<w:type w:val="${escapeXml(properties.type)}"/>`]),
+    `<w:pgSz w:w="${pageSize.widthTwips}" w:h="${pageSize.heightTwips}" w:orient="${escapeXml(pageSize.orientation)}"/>`,
+    `<w:pgMar w:top="${margins.topTwips}" w:right="${margins.rightTwips}" w:bottom="${margins.bottomTwips}" w:left="${margins.leftTwips}" w:header="${margins.headerTwips}" w:footer="${margins.footerTwips}" w:gutter="${margins.gutterTwips}"/>`,
+    `<w:cols w:num="${columns.count}" w:space="${columns.spaceTwips}"/>`,
+    '</w:sectPr>',
+  ].join('');
+}
+
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
@@ -245,6 +335,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport) {
   if (block.formatIr?.paragraph?.nodeType === 'horizontalRule') {
     paragraphPropertyParts.push('<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/></w:pBdr>');
   }
+  if (sectionBreak) paragraphPropertyParts.push(buildSectionPropertiesXml(sectionBreak));
   const paragraphProperties = paragraphPropertyParts.length > 0
     ? `<w:pPr>${paragraphPropertyParts.join('')}</w:pPr>`
     : '';
@@ -258,13 +349,27 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport) {
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref, commentExport) {
-  const paragraphs = blocks.map((block, index) => buildParagraphXml(block, index, hyperlinkByHref, commentExport)).join('');
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections) {
+  const normalizedSections = normalizeDocumentSections(documentSections, blocks.length);
+  const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
+    .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
+    .map((section) => [section.endParagraphIndex, section]));
+  const paragraphs = blocks.map((block, index) => buildParagraphXml(
+    block,
+    index,
+    hyperlinkByHref,
+    commentExport,
+    paragraphBreaks.get(index) || null,
+  )).join('');
+  const finalSection = normalizedSections?.protectedSections?.at(-1);
+  const finalSectionXml = finalSection
+    ? buildSectionPropertiesXml(finalSection, { final: true })
+    : '<w:sectPr/>';
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="${WORD_MAIN_NS}" xmlns:w14="${W14_NS}" xmlns:r="${OFFICE_DOCUMENT_REL_NS}">
   <w:body>
     ${paragraphs || '<w:p/>'}
-    <w:sectPr/>
+    ${finalSectionXml}
   </w:body>
 </w:document>`;
 }
@@ -597,7 +702,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes, Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
     { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships) },
-    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport) },
+    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
@@ -619,6 +724,7 @@ module.exports = {
   buildCorePropertiesXml,
   buildSettingsXml,
   normalizeDocumentMetadata,
+  normalizeDocumentSections,
   normalizeReviewPacketBlocks,
   validateDocxReviewPacketModernMode15,
   deriveWordBookmarkNameV1,

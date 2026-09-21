@@ -197,10 +197,10 @@ test('B02 parser treats Word-normalized insert-delete replacements as tracked-on
   assert.match(result.reviewIr.textRevisions[0].replacementGroupId, /^[a-f0-9]{64}$/u);
   assert.equal(result.reviewIr.textRevisions[0].replacementGroupId, result.reviewIr.textRevisions[1].replacementGroupId);
   assert.equal(result.reviewIr.structureChanges.some((item) => item.structureKind === 'sectPr'), false);
-  assert.equal(result.reviewIr.opaqueUnsupported.some((item) => (
-    item.typedDiagnostic === 'RTK_WORD_BODY_SECTION_PROPERTIES_INVENTORY'
-    && item.writerAuthorityImpact === 'inventory-only'
-  )), true);
+  assert.equal(result.reviewIr.documentSections.applicable, true);
+  assert.equal(result.reviewIr.documentSections.protectedSections.length, 1);
+  assert.equal(result.reviewIr.documentSections.protectedSections[0].breakPlacement, 'BODY_FINAL');
+  assert.equal(result.reviewIr.documentSections.protectedSections[0].carriers.pageSize, false);
   assert.equal(result.reviewIr.opaqueUnsupported.some((item) => (
     item.partName === 'word/styles.xml'
     && item.writerAuthorityImpact === 'inventory-only'

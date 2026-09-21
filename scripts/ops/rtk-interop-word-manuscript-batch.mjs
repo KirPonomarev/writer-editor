@@ -27,6 +27,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  COMMENTS:['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
  IDENTIFIERS_ANCHORS:['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
  METADATA:['documentPropertiesAccounted','customPropertiesAccounted','authorshipPolicyDeclared','timestampPolicyDeclared','receiptIdentityBound','metadataLossLedgered'],
+ SECTIONS:['sectionCountPreserved','paragraphBoundarySequencePreserved','canonicalSceneCoverageBound','pageSizeAndOrientationPreserved','pageMarginsPreserved','sectionBreakPolicyPreserved','signedSectionDigestBound','sectionLossLedgered'],
 });
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
@@ -149,6 +150,33 @@ export function validateManuscriptMetadataProof(p,cycles,roundProofs){
   &&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_METADATA_LEDGER');
  return true;
 }
+export function validateManuscriptSectionsProof(p,volume,cycles,roundProofs){
+ const names=['reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
+ const sectionCount=volume==='SINGLE_SCENE'?1:3;
+ const policies={policyId:'CANONICAL_SCENE_GROUPS_TO_WORD_SECTIONS_V1',sourceAuthority:'CANONICAL_ORDERED_SCENE_DIRECTORY_GROUPS',returnedAuthority:'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',providerExtensions:'LOSS_LEDGER_ONLY_NO_AUTHORITY'};
+ demand(p?.schemaVersion==='WORD_MANUSCRIPT_SECTIONS_PROOF_V1'&&p.authority==='ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE'&&same(p.policies,policies),'MANUSCRIPT_SECTIONS_POLICY');
+ demand(same(Object.keys(p.stages||{}).sort(),names.sort()),'MANUSCRIPT_SECTIONS_STAGES');
+ const expected=p.expected;
+ demand(expected?.schemaVersion==='yalken.rtk.word.document-sections.v1'&&expected.protectedSections?.length===sectionCount
+  &&expected.sourceBindings?.length===sectionCount&&/^sha256:[a-f0-9]{64}$/u.test(expected.protectedDigest)
+  &&expected.protectedDigest===`sha256:${hash(stableOrderJson({schemaVersion:expected.schemaVersion,protectedSections:expected.protectedSections}))}`,'MANUSCRIPT_SECTIONS_EXPECTED');
+ for(const [index,section] of expected.protectedSections.entries())demand(section.ordinal===index&&section.startParagraphIndex===(index?expected.protectedSections[index-1].endParagraphIndex+1:0)
+  &&section.endParagraphIndex>=section.startParagraphIndex&&section.breakPlacement===(index===sectionCount-1?'BODY_FINAL':'PARAGRAPH_PROPERTIES')
+  &&same(section.carriers,{sectionProperties:true,pageSize:true,margins:true,columns:true})
+  &&same(section.properties,{type:'nextPage',pageSize:{widthTwips:11906,heightTwips:16838,orientation:'portrait'},margins:{topTwips:1440,rightTwips:1440,bottomTwips:1440,leftTwips:1440,headerTwips:720,footerTwips:720,gutterTwips:0},columns:{count:1,spaceTwips:720}}),'MANUSCRIPT_SECTIONS_BOUNDARY');
+ for(const [name,s] of Object.entries(p.stages))demand(sha64(s.artifactSha256)&&s.protectedDigest===expected.protectedDigest&&same(s.protectedSections,expected.protectedSections)
+  &&Array.isArray(s.providerExtensionElements)&&s.providerExtensionElements.every(x=>Number.isSafeInteger(x.sectionOrdinal)&&typeof x.namespaceUri==='string'&&typeof x.elementName==='string'),'MANUSCRIPT_SECTIONS_STAGE:'+name);
+ for(const [i,r] of roundProofs.entries())demand(p.stages['rounds/'+(i+1)+'/export'].artifactSha256===r.exportSha256&&p.stages['rounds/'+(i+1)+'/word'].artifactSha256===r.returnedSha256,'MANUSCRIPT_SECTIONS_ROUND_BINDING');
+ demand(p.intakeBindings?.length===cycles&&p.intakeBindings.every((x,i)=>x.ordinal===i+1&&x.status==='VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
+  &&x.authority==='ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE'&&x.protectedDigest===expected.protectedDigest&&same(x.protectedSections,expected.protectedSections)
+  &&same(x.sourceBindings,expected.sourceBindings)&&same(x.before,x.after)&&sha64(x.manifestSha256)&&x.writerCalled===false),'MANUSCRIPT_SECTIONS_INTAKES');
+ const ids=['missing-section','duplicate-section','move-boundary','change-page-size','change-orientation','change-margin','forged-signed-digest'];
+ demand(Array.isArray(p.negativeControls)&&same(p.negativeControls.map(x=>x.id),ids)&&p.negativeControls.every(x=>x.rejected===true&&typeof x.code==='string'
+  &&x.code.startsWith('RTK_RETURN_INTAKE_')&&sha64(x.mutantSha256)&&sha64(x.intakeSha256)&&sha64(x.canonicalStateSha256)&&x.writerCalled===false&&same(x.before,x.after))
+  &&new Set(p.negativeControls.map(x=>x.mutantSha256)).size===ids.length,'MANUSCRIPT_SECTIONS_CONTROLS');
+ demand(p.lossLedger&&Array.isArray(p.lossLedger.providerExtensionElementsObserved)&&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_SECTIONS_LEDGER');
+ return true;
+}
 export function validateGoogleManuscriptTransport(p){
  demand(p?.schemaVersion==='GOOGLE_NATIVE_DIRECT_TRANSPORT_V2'&&p.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
   &&same(p.directLocalPathImport,{supported:true,countsAsPass:false,qualification:'ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP'})
@@ -263,6 +291,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
   if(f.field==='COMMENTS')validateManuscriptCommentProof(f.commentProof,cycles,raw.roundProofs);
   if(f.field==='IDENTIFIERS_ANCHORS')validateManuscriptIdentifierProof(f.identifierProof,row.volume,cycles,raw.roundProofs);
   if(f.field==='METADATA')validateManuscriptMetadataProof(f.metadataProof,cycles,raw.roundProofs);
+  if(f.field==='SECTIONS')validateManuscriptSectionsProof(f.sectionsProof,row.volume,cycles,raw.roundProofs);
   if(f.field==='NOVEL_SCENE_STRUCTURE'){
    const names=['source-tree','reopen-tree','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word','rounds/'+(i+1)+'/tree']).flat()];
    demand(same(Object.keys(f.structureProofs).sort(),names.sort())&&Object.entries(f.structureProofs).every(([name,p])=>name.endsWith('tree')?p.sceneCount===sceneCount&&sha64(p.hierarchySha256):sha64(p.bookmarkSha256))
