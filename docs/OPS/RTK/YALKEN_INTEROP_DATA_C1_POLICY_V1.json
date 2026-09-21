@@ -578,7 +578,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "8f4881f52b50ef1e2681ca127658703383a585b8e1758b8cf01ca162a0082d8a"
+        "sha256": "9c99b293e9e8d681c0ca13e1efb788d7dbd3fcc1969d91b64df980629cad6561"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
@@ -650,7 +650,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "e08d122288163576f069a20c592018c85dadd2d71fc9b40b1f76409c40eb5a07"
+        "sha256": "5886fbcd743bedeb14179f0045de339ed50ac5baa1e3ba1b5f8bd247f1c0489a"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",

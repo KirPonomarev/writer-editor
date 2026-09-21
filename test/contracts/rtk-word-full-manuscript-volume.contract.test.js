@@ -13,6 +13,7 @@ const {
   validateFullManuscriptDocumentSectionsReturn,
 }=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
 const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder');
+const {sanitizeReviewDocxExportCapsule}=require('../../src/export/docx/docxReviewPacketExportHandler');
 const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder');
 const hash=b=>'sha256:'+crypto.createHash('sha256').update(b).digest('hex');
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -83,6 +84,12 @@ test('Full manuscript Word sections bind canonical scene groups to exact OOXML b
   assert.equal(binding.ok,true,JSON.stringify(binding));
   assert.equal(binding.proof.protectedSections[0].properties.pageSize.orientation,'portrait');
   assert.equal(binding.proof.protectedSections[0].properties.margins.leftTwips,1440);
+});
+test('Public export capsule preserves only a typed signed section digest',async()=>{
+  const {source}=await sectionFixture();
+  const capsule=sanitizeReviewDocxExportCapsule(source.exportCapsule);
+  assert.equal(capsule.documentSectionsDigest,source.documentSections.protectedDigest);
+  assert.equal(sanitizeReviewDocxExportCapsule({...source.exportCapsule,documentSectionsDigest:{value:source.documentSections.protectedDigest}}).documentSectionsDigest,'');
 });
 test('Full manuscript Word sections reject boundary and protected-layout drift even when the DOCX remains parseable',async()=>{
   const {source,parse,validate}=await sectionFixture();

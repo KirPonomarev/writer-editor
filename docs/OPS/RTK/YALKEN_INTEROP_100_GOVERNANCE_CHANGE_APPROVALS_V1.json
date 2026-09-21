@@ -250,12 +250,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:55:00.000Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "21456c1d6470bd0f47dee9b95fe379fc79c1744c91ec30737440afdaa7ed0406"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
+      "sha256": "7fc672d85157d688e081ad68d636d552fa75c5e73ce49e02c98d7da1e0b116c3"
     },
     {
       "approved": true,
@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:59:00.000Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "15b053a956657fa5a6e6649bd0023f1fe24e12aba7b2b61f2219f097cff2f0dd"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
+      "sha256": "9362b9cccc1af1dffd5293da195d51cf9396667e97822e68321601a582cc8634"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:59:00.000Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "ce219460e20dac6f69d65834c99433699f57074e9c49593618bb6cdf0d3e4a88"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
+      "sha256": "468c4f8a93b1cb9b5c2ddeb1be1fc482ad1cf1799aeaab8153ae286a0f247084"
     },
     {
       "approved": true,
@@ -1155,12 +1155,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "8f4881f52b50ef1e2681ca127658703383a585b8e1758b8cf01ca162a0082d8a"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
+      "sha256": "9c99b293e9e8d681c0ca13e1efb788d7dbd3fcc1969d91b64df980629cad6561"
     },
     {
       "approved": true,
@@ -1317,21 +1317,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:55:00.000Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "e1f0bf341741ec7646c65568ed8818307f874ca728f69de42c50c7785f54268d"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
+      "sha256": "9b1c5a75b7caf0b77f206f98699b42c1030713a75ae3099aa334bd70de570c75"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
+      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "e08d122288163576f069a20c592018c85dadd2d71fc9b40b1f76409c40eb5a07"
+      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
+      "sha256": "5886fbcd743bedeb14179f0045de339ed50ac5baa1e3ba1b5f8bd247f1c0489a"
     },
     {
       "approved": true,

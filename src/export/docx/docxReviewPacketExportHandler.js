@@ -35,6 +35,7 @@ function sanitizeReviewDocxExportCapsule(value) {
     fullBookRawSha256: typeof source.fullBookRawSha256 === 'string' ? source.fullBookRawSha256 : '',
     capabilityManifestDigest: typeof source.capabilityManifestDigest === 'string' ? source.capabilityManifestDigest : '',
     documentMetadataDigest: typeof source.documentMetadataDigest === 'string' ? source.documentMetadataDigest : '',
+    documentSectionsDigest: typeof source.documentSectionsDigest === 'string' ? source.documentSectionsDigest : '',
     roundId: typeof source.roundId === 'string' ? source.roundId : '',
     exportId: typeof source.exportId === 'string' ? source.exportId : '',
     exportArtifactId: typeof source.exportArtifactId === 'string' ? source.exportArtifactId : '',
