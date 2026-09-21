@@ -1378,12 +1378,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:51:00.000Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "a3afc34e3549a0e4970ce57c8ec5c012e8525a34a689ce11da96240ab2f26a30"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "d5417c3097412d0cbeee684441027a6ab7c8fb33ebd5cd75fa9a45b067428a14"
     },
     {
       "approved": true,
