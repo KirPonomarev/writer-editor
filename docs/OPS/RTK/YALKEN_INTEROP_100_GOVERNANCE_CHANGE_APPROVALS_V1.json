@@ -86,16 +86,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "808d970d827bbf99fe9e71edb3a9894458838934d502601652a3d83c2064441c"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "e3a3f3d1445a88f6b246dd8809c20f9f104dcfec45552abb0bd4831d3181c8b2"
     },
     {
       "approved": true,
@@ -237,29 +237,29 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T10:19:30.010313+00:00",
-      "approvedBy": "owner-direct-task:WORD_REVIEW_SEMANTICS_20260917",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "8fbe38a4800c98ef4031ff680851d66c23cb8cf42c8ef66f53bc62a039bc908f"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "062a1eb0c26ab61559202fdb6411dc7c93268034721dec670c3733bcc7078eb5"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "5997a52b0073ca6bb77760e7f0dc83f554b9518a828eca48254ae303812f03ba"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "1f0a13ee923ebc0fabac010cde44a79d8d258caf1bc5129652d129c52ced7e2c"
     },
     {
       "approved": true,
@@ -334,12 +334,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "0200fc8f00c2b98664f9109b851a9f5052dae5ffa7fd59dcd00bb34c04a20579"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "6bbafeeae9530d3e87395b060a93f2e03202f91658e1cb05e941e9736e659a18"
     },
     {
       "approved": true,
@@ -655,12 +655,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "7dfa9c874472646a4f1d1c00adbfbfcd9092f4e99ec3b9b39481df79d80f86a6"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "0f1941e76ebe04c7d7b2c56e3697d31c7883d095fa7150d75c167ea30218a2f4"
     },
     {
       "approved": true,
@@ -673,12 +673,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "f83df701542b0a64c110f6bb3f4a74390491c01df69b10afebf1b7c66f91922a"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "bad32e34dea6050d1e0638316d67d32ba0f84b49499e30b477bec1f37559137d"
     },
     {
       "approved": true,
@@ -871,12 +871,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "18ffb9d06339422eeaf6ac23e4a400148426f71fcd2c6b2dd46dda15f979e161"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "053cc7c9c40f5d391e926c0f82ca09babd9ec4435e9e76cab091a8c140024e49"
     },
     {
       "approved": true,
@@ -907,12 +907,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "ce174918aaaac60d1b666a2651e76a076695e75c7eba2129558e9888351f0615"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "c56b4a6a8800228ed11b379530a4d97b2f5b230ed352e23807947893899d03c6"
     },
     {
       "approved": true,
@@ -1159,12 +1159,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "be1f8b3def1c68c652993692c6dd74f7610c4115ba6d1cc7d19060c3856396c6"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "8f4881f52b50ef1e2681ca127658703383a585b8e1758b8cf01ca162a0082d8a"
     },
     {
       "approved": true,
@@ -1186,21 +1186,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "e45c653f71921086ed446efeb96a50fc81dafc7f2a303313abedff5b42e43c55"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "bcc9a843fa66815404e861e54b67e9f7abef2b9094ce1a94ff579c00fff5557f"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "c70f5fe2bef9c79e6b446a28b27991abb7032a71e8ea3da8de82c942df132133"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "cf5e7fe9051b7474c9f6ff89433c9580c2ba7ce1e2bd556b85370cfa92a2df88"
     },
     {
       "approved": true,
@@ -1240,30 +1240,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "d1068fe4f0c48d3ff43e7e41a14a213eb493229b7b442db39d965ec2e122b439"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "83eb826f370278bbcfdb1e94baf3cfa7696c6dd9643e132b0401b1769e53a042"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "10cefbc4f150f68e2794b4f47cdde4864eb6c10c1a7601f9dbc16367af38cd3b"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "7232e1758f54bfd6ba2f18858d20fa14c0c4595f17ee80bcf25ef28785166e28"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "84f46208a280bede5827ed8d669a3196d5d6e16e074061f13a0356823b736d8b"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "8be03fdac31dfe90f066b4294411a5de7146c426d9d2890be998508f2b9c7179"
     },
     {
       "approved": true,
@@ -1321,15 +1321,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR"
       ],
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "100295427f801f6198f95a68657fc06d10115f743934f2032d4394549ae14caa"
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "2d91dfe09bc6f4750cd615a26573131dae5481616859487d61c7684a7b50cd64"
     },
     {
       "approved": true,
@@ -1456,6 +1456,15 @@
       "filePath": "test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js",
       "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
       "sha256": "5b91e63033b150546198971507bea79662dad2aa6308812eb31292d014d0e03e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
+      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "docs/tasks/2026-09-18--word-document-parts-roundtrip.md",
+      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
+      "sha256": "fe309daaee9cf0715b94840a90010e0ccdab42935079ea54fdb9aece4b6a437b"
     }
   ],
   "evidenceStampIds": [
