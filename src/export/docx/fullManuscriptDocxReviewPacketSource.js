@@ -14,6 +14,8 @@ const REVIEW_DOCX_PACKET_CORE_DIGEST_PROPERTY_NAME = 'YRTK_CORE_DIGEST';
 const WORD_DOCUMENT_METADATA_SCHEMA = 'yalken.rtk.word.document-metadata.v1';
 const WORD_DOCUMENT_METADATA_POLICY = 'CANONICAL_PROJECT_METADATA_PROTECTED_PROVIDER_VOLATILE_V1';
 const WORD_DOCUMENT_METADATA_CREATOR = 'Yalken';
+const WORD_DOCUMENT_SECTIONS_SCHEMA = 'yalken.rtk.word.document-sections.v1';
+const WORD_DOCUMENT_SECTIONS_POLICY = 'CANONICAL_SCENE_GROUPS_TO_WORD_SECTIONS_V1';
 const FULL_MANUSCRIPT_FORMAT_IR_SCHEMA = 'yalken.rtk.format-ir.v1';
 const FORMAT_IR_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
 const FORMAT_IR_TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize']);
@@ -523,6 +525,153 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
   };
 }
 
+function canonicalSectionProperties() {
+  return {
+    type: 'nextPage',
+    pageSize: {
+      widthTwips: 11906,
+      heightTwips: 16838,
+      orientation: 'portrait',
+    },
+    margins: {
+      topTwips: 1440,
+      rightTwips: 1440,
+      bottomTwips: 1440,
+      leftTwips: 1440,
+      headerTwips: 720,
+      footerTwips: 720,
+      gutterTwips: 0,
+    },
+    columns: {
+      count: 1,
+      spaceTwips: 720,
+    },
+  };
+}
+
+function sceneSectionGroupKey(sceneId) {
+  const segments = normalizeString(sceneId).replaceAll('\\', '/').split('/').filter(Boolean);
+  if (segments.some((segment) => segment === '.' || segment === '..')) {
+    throw makeError('FULL_MANUSCRIPT_DOCUMENT_SECTION_SCENE_ID_INVALID', { sceneId });
+  }
+  return segments.length > 1 ? segments.slice(0, -1).join('/') : '.';
+}
+
+function buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort = createDefaultCryptoPort()) {
+  if (!Array.isArray(scenes) || scenes.length < 1 || !Array.isArray(blocks) || blocks.length < 1) {
+    throw makeError('FULL_MANUSCRIPT_DOCUMENT_SECTION_SOURCE_REQUIRED');
+  }
+  const groups = [];
+  for (const scene of scenes) {
+    const groupKey = sceneSectionGroupKey(scene.sceneId);
+    const last = groups.at(-1);
+    if (last && last.groupKey === groupKey) last.sceneIds.push(scene.sceneId);
+    else groups.push({ groupKey, sceneIds: [scene.sceneId] });
+  }
+  const protectedSections = groups.map((group, ordinal) => {
+    const sceneIdSet = new Set(group.sceneIds);
+    const groupBlocks = blocks.filter((block) => sceneIdSet.has(block.sceneId));
+    if (groupBlocks.length < 1) {
+      throw makeError('FULL_MANUSCRIPT_DOCUMENT_SECTION_BLOCK_REQUIRED', { ordinal });
+    }
+    return {
+      ordinal,
+      startParagraphIndex: groupBlocks[0].documentParagraphIndex,
+      endParagraphIndex: groupBlocks.at(-1).documentParagraphIndex,
+      breakPlacement: ordinal === groups.length - 1 ? 'BODY_FINAL' : 'PARAGRAPH_PROPERTIES',
+      carriers: {
+        sectionProperties: true,
+        pageSize: true,
+        margins: true,
+        columns: true,
+      },
+      properties: canonicalSectionProperties(),
+    };
+  });
+  for (let index = 0; index < protectedSections.length; index += 1) {
+    const section = protectedSections[index];
+    const expectedStart = index === 0 ? 0 : protectedSections[index - 1].endParagraphIndex + 1;
+    if (section.startParagraphIndex !== expectedStart
+      || section.endParagraphIndex < section.startParagraphIndex
+      || (index === protectedSections.length - 1 && section.endParagraphIndex !== blocks.length - 1)) {
+      throw makeError('FULL_MANUSCRIPT_DOCUMENT_SECTION_BOUNDARY_INVALID', { index });
+    }
+  }
+  const sourceBindings = groups.map((group, ordinal) => ({
+    ordinal,
+    sectionId: `section-${String(ordinal + 1).padStart(3, '0')}-${cryptoPort.sha256Text(group.groupKey).replace(/^sha256:/u, '').slice(0, 12)}`,
+    groupKey: group.groupKey,
+    sceneIds: [...group.sceneIds],
+    firstSceneId: group.sceneIds[0],
+    lastSceneId: group.sceneIds.at(-1),
+  }));
+  const protectedProjection = {
+    schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA,
+    protectedSections,
+  };
+  return {
+    ...protectedProjection,
+    protectedDigest: cryptoPort.sha256Json(protectedProjection),
+    policies: {
+      policyId: WORD_DOCUMENT_SECTIONS_POLICY,
+      sourceAuthority: 'CANONICAL_ORDERED_SCENE_DIRECTORY_GROUPS',
+      returnedAuthority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
+      providerExtensions: 'LOSS_LEDGER_ONLY_NO_AUTHORITY',
+    },
+    sourceBindings,
+  };
+}
+
+function validateFullManuscriptDocumentSectionsReturn(input = {}) {
+  const expected = isPlainObjectValue(input.expected) ? input.expected : null;
+  if (!expected) {
+    return { ok: true, applicable: false, status: 'DOCUMENT_SECTIONS_NOT_APPLICABLE' };
+  }
+  const returned = isPlainObjectValue(input.returned) ? input.returned : {};
+  const mismatches = [];
+  const expectedSections = Array.isArray(expected.protectedSections) ? expected.protectedSections : [];
+  const returnedSections = Array.isArray(returned.protectedSections) ? returned.protectedSections : [];
+  const expectedProjection = {
+    schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA,
+    protectedSections: expectedSections,
+  };
+  const returnedProjection = {
+    schemaVersion: returned.schemaVersion,
+    protectedSections: returnedSections,
+  };
+  const expectedDigest = normalizeString(expected.protectedDigest);
+  const signedDigest = normalizeString(input.signedDigest);
+  if (returned.schemaVersion !== WORD_DOCUMENT_SECTIONS_SCHEMA) mismatches.push('schemaVersion');
+  if (returned.applicable !== true) mismatches.push('applicable');
+  if (returnedSections.length !== expectedSections.length) mismatches.push('sectionCount');
+  if (JSON.stringify(returnedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
+  if (normalizeString(returned.protectedDigest) !== expectedDigest) mismatches.push('protectedDigest');
+  if (signedDigest !== expectedDigest) mismatches.push('signedDigest');
+  if (mismatches.length > 0) {
+    return {
+      ok: false,
+      applicable: true,
+      status: 'DOCUMENT_SECTIONS_MISMATCH',
+      code: 'FULL_MANUSCRIPT_DOCUMENT_SECTIONS_MISMATCH',
+      mismatches: [...new Set(mismatches)].sort(),
+    };
+  }
+  return {
+    ok: true,
+    applicable: true,
+    status: 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS',
+    proof: {
+      schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA,
+      authority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
+      protectedDigest: expectedDigest,
+      protectedSections: cloneJson(returnedSections),
+      sourceBindings: Array.isArray(expected.sourceBindings) ? cloneJson(expected.sourceBindings) : [],
+      policies: isPlainObjectValue(expected.policies) ? cloneJson(expected.policies) : {},
+      lossLedger: isPlainObjectValue(returned.lossLedger) ? cloneJson(returned.lossLedger) : {},
+    },
+  };
+}
+
 function normalizeFullManuscriptScenes(input = {}) {
   const projectId = normalizeString(input.projectId);
   const projectName = normalizeString(input.projectName);
@@ -922,6 +1071,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       ? deps.deriveWordBookmarkNameV1
       : undefined,
   });
+  const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
@@ -990,6 +1140,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     blocks,
     commentExport,
     documentMetadata,
+    documentSections,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: 'YRTK1.provisional' },
       { name: REVIEW_DOCX_PACKET_YRTK2_PROPERTY_NAME, value: 'YRTK2.provisional' },
@@ -1037,6 +1188,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     createdAtUtc,
     compileIrDigest: cryptoPort.sha256Json({ scope: 'full-manuscript', orderedSceneIds, blocks: blocks.map((block) => block.blockId),
       documentMetadataDigest: documentMetadata.protectedDigest,
+      documentSectionsDigest: documentSections.protectedDigest,
       ...(commentExport ? { commentExportDigest: cryptoPort.sha256Json(commentExport) } : {}) }),
     actualBaselineDigest: fullBookRawSha256,
     parserProfileDigest,
@@ -1099,6 +1251,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     yrtk2TokenDigest: cryptoPort.sha256Text(yrtk2Result.token),
     capabilityManifestDigest,
     documentMetadataDigest: documentMetadata.protectedDigest,
+    documentSectionsDigest: documentSections.protectedDigest,
     blockCount: blocks.length,
     ...(commentExport ? { commentSummary: {
       stateRevision: commentExport.stateRevision,
@@ -1131,6 +1284,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     yrtk2TokenLength: yrtk2Result.tokenLength,
     capabilityManifestDigest,
     documentMetadataDigest: documentMetadata.protectedDigest,
+    documentSectionsDigest: documentSections.protectedDigest,
     blockCount: blocks.length,
     authorityCarrier: 'customDocumentProperty',
     authorityPropertyName: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME,
@@ -1174,12 +1328,14 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       exportId,
       capabilityManifestDigest,
       documentMetadataDigest: documentMetadata.protectedDigest,
+      documentSectionsDigest: documentSections.protectedDigest,
     },
     roundId,
     exportIdentity: exportId,
     manifestDigest: transportManifestResult.manifest.payloadDigest,
     coreManifestDigest: coreManifestResult.coreManifestDigest,
     documentMetadata: cloneJson(documentMetadata),
+    documentSections: cloneJson(documentSections),
     parserProfileDigest,
     yrtk2: {
       schemaVersion: yrtk2Result.schemaVersion,
@@ -1198,6 +1354,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     blocks,
     commentExport,
     documentMetadata,
+    documentSections,
     forbiddenSecret: hmacSecret,
     customProperties: [
       { name: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME, value: authorityEncoded },
@@ -1214,6 +1371,13 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
         protectedProperties: documentMetadata.protectedProperties,
         protectedDigest: documentMetadata.protectedDigest,
         policies: documentMetadata.policies,
+      },
+      documentSections: {
+        schemaVersion: documentSections.schemaVersion,
+        protectedDigest: documentSections.protectedDigest,
+        protectedSections: documentSections.protectedSections,
+        sourceBindings: documentSections.sourceBindings,
+        policies: documentSections.policies,
       },
       coreManifest: coreManifestResult.manifest,
       transportManifest: transportManifestResult.manifest,
@@ -1277,15 +1441,18 @@ module.exports = {
   FULL_MANUSCRIPT_REVIEW_DOCX_CAPABILITY_ID,
   FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID,
   FULL_MANUSCRIPT_FORMAT_IR_SCHEMA,
+  WORD_DOCUMENT_SECTIONS_SCHEMA,
   REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME,
   REVIEW_DOCX_PACKET_YRTK2_PROPERTY_NAME,
   REVIEW_DOCX_PACKET_CORE_DIGEST_PROPERTY_NAME,
   buildFullManuscriptCapabilityManifest,
   buildFullManuscriptDocxReviewPacketSource,
   buildFullManuscriptDocumentMetadata,
+  buildFullManuscriptDocumentSections,
   buildFullManuscriptBlocks,
   buildFormatIrParagraphs,
   normalizeFullManuscriptScenes,
   validateFullManuscriptDocumentMetadataReturn,
+  validateFullManuscriptDocumentSectionsReturn,
   validateFullManuscriptAuthorityReturn,
 };

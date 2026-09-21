@@ -239,12 +239,14 @@ function mainHarness(names, globals={}) {
     const match=main.match(new RegExp('(?:async )?function '+name+'\\([^]*?\\n}(?=\\n|$)'));
     assert.ok(match,name);return match[0];
   });
-  const ctx=vm.createContext({crypto,Buffer,
+  const ctx=vm.createContext({crypto,Buffer,path,
     isPlainObjectValue:v=>v!==null&&typeof v==='object'&&!Array.isArray(v),
     docxReviewPreviewSessionDetailString:v=>typeof v==='string'?v:'',
     sha256DocxReviewPreviewSessionBytes:sha,cloneJsonSafe:v=>JSON.parse(JSON.stringify(v)),
     docxReviewReturnIntakeBlocked:code=>({ok:false,code}),
-    ...require('../../src/export/docx/docxReviewPacketComments.js'),...globals});
+    ...require('../../src/export/docx/docxReviewPacketComments.js'),
+    ...require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js'),
+    ...globals});
   vm.runInContext(main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n\}\);/u)[0]
     +'\n'+declarations.join('\n'),ctx);
   return ctx;

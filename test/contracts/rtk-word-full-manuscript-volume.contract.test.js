@@ -8,8 +8,12 @@ const {pathToFileURL}=require('node:url');
 const path=require('node:path');
 const ROOT=path.resolve(__dirname,'../..');
 const main=fs.readFileSync(path.join(ROOT,'src/main.js'),'utf8');
-const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+const {
+  buildFullManuscriptDocxReviewPacketSource,
+  validateFullManuscriptDocumentSectionsReturn,
+}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
 const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder');
+const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder');
 const hash=b=>'sha256:'+crypto.createHash('sha256').update(b).digest('hex');
 const clone=v=>JSON.parse(JSON.stringify(v));
 function declaration(name){const match=main.match(new RegExp('function '+name+'\\([^]*?\\n}(?=\\n|$)'));assert.ok(match,name);return match[0];}
@@ -18,6 +22,7 @@ function harness(){
     isPlainObjectValue:x=>!!x&&typeof x==='object'&&!Array.isArray(x),
     docxReviewPreviewSessionDetailString:x=>typeof x==='string'?x:'',
     sha256DocxReviewPreviewSessionBytes:b=>hash(b).slice(7),cloneJsonSafe:clone,docxReviewReturnIntakeBlocked:code=>({ok:false,code}),
+    validateFullManuscriptDocumentSectionsReturn,
   });
   vm.runInContext(main.match(/const DOCX_REVIEW_RETURN_INTAKE_FULL_MANUSCRIPT_PRODUCT_BUDGETS = Object.freeze\([^]*?\n}\);/)[0]+'\n'+['stableRtkReviewTransportJson','createRtkReviewTransportCryptoPort','normalizeRtkSignedSha256','buildFullManuscriptProvisionalSelfParse','docxReviewReturnIntakeProductBudgets','decodeDocxCustomPropertyText','extractDocxCustomPropertyValue','extractDocxReviewReturnYrtk2PropertiesFromCustomXml','extractDocxReviewReturnYrtk2PropertiesFromParserResult','verifyDocxReviewReturnYrtk2Binding','buildFullManuscriptPublicationGate'].map(declaration).join('\n'),context);
   return context;
@@ -36,12 +41,82 @@ async function fixture(paragraphs,{rich=false}={}){
   const gate=s=>context.buildFullManuscriptProvisionalSelfParse({source:s,revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),coreManifest:s.advisoryManifest.coreManifest});
   return {source,gate,bridge,context};
 }
+async function sectionFixture(){
+  const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
+  const context=harness();
+  const scenes=[
+    {sceneId:'roman/part-01/chapter-01/a.txt',scenePath:'/synthetic/roman/part-01/chapter-01/a.txt',text:'a-1\na-2',order:0},
+    {sceneId:'roman/part-01/chapter-01/b.txt',scenePath:'/synthetic/roman/part-01/chapter-01/b.txt',text:'b-1',order:1},
+    {sceneId:'roman/part-01/chapter-02/c.txt',scenePath:'/synthetic/roman/part-01/chapter-02/c.txt',text:'c-1\nc-2',order:2},
+  ];
+  const source=buildFullManuscriptDocxReviewPacketSource({projectId:'section-project',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes,expectedOrderedSceneIds:scenes.map(s=>s.sceneId)},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),createdAtUtc:'2026-09-18T00:00:00Z',roundIdHex:'c'.repeat(32),keyIdHex:'d'.repeat(32),hmacSecret:'section-local-key-never-published'});
+  const parse=bytes=>bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+  const validate=parsed=>validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:parsed.reviewIr?.documentSections,signedDigest:parsed.authorityCarrier?.selectedCarrier?.payload?.documentSectionsDigest});
+  const repack=mutate=>{
+    const extracted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:buildDocxReviewPacketBuffer(source)},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+    assert.equal(extracted.ok,true,JSON.stringify(extracted));
+    const parts={...extracted.parts,'word/document.xml':mutate(extracted.parts['word/document.xml'])};
+    return buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+  };
+  return {source,bridge,context,parse,validate,repack};
+}
 for(const rich of [false,true])test('Full manuscript provisional gate preserves all authored paragraph boundaries, rich='+rich,async()=>{
   const ps=[['','  Привет Café 🧑‍💻  ','','','end-a',''],['','שלום 中文','end-b'],['Καλημέρα','final  ','']];
   const {source,gate}=await fixture(ps,{rich});
   assert.deepEqual(source.blocks.map(b=>b.text),ps.flat());
   assert.equal(source.sceneText,ps.map(s=>s.join('\n')).join('\n\n'));
   assert.equal(gate(source).ok,true,JSON.stringify(gate(source)));
+});
+test('Full manuscript Word sections bind canonical scene groups to exact OOXML boundaries and protected page semantics',async()=>{
+  const {source,parse,validate}=await sectionFixture();
+  assert.deepEqual(source.documentSections.sourceBindings.map(section=>section.sceneIds),[
+    ['roman/part-01/chapter-01/a.txt','roman/part-01/chapter-01/b.txt'],
+    ['roman/part-01/chapter-02/c.txt'],
+  ]);
+  assert.deepEqual(source.documentSections.protectedSections.map(section=>[section.startParagraphIndex,section.endParagraphIndex,section.breakPlacement]),[
+    [0,2,'PARAGRAPH_PROPERTIES'],[3,4,'BODY_FINAL'],
+  ]);
+  const parsed=parse(buildDocxReviewPacketBuffer(source));
+  assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  assert.equal(parsed.reviewIr.structureChanges.some(change=>change.structureKind==='sectPr'),false);
+  const binding=validate(parsed);
+  assert.equal(binding.ok,true,JSON.stringify(binding));
+  assert.equal(binding.proof.protectedSections[0].properties.pageSize.orientation,'portrait');
+  assert.equal(binding.proof.protectedSections[0].properties.margins.leftTwips,1440);
+});
+test('Full manuscript Word sections reject boundary and protected-layout drift even when the DOCX remains parseable',async()=>{
+  const {source,parse,validate}=await sectionFixture();
+  for(const kind of ['boundary','page-size','margin']){
+    const documentSections=clone(source.documentSections);
+    if(kind==='boundary'){
+      documentSections.protectedSections[0].endParagraphIndex-=1;
+      documentSections.protectedSections[1].startParagraphIndex-=1;
+    }
+    if(kind==='page-size')documentSections.protectedSections[0].properties.pageSize.widthTwips+=1;
+    if(kind==='margin')documentSections.protectedSections[0].properties.margins.leftTwips+=1;
+    const parsed=parse(buildDocxReviewPacketBuffer({...source,documentSections}));
+    assert.equal(parsed.ok,true,kind+':'+JSON.stringify(parsed));
+    const binding=validate(parsed);
+    assert.equal(binding.ok,false,kind);
+    assert.ok(binding.mismatches.includes('protectedSections'),kind+':'+JSON.stringify(binding));
+  }
+});
+test('Full manuscript Word sections account provider extensions and block missing duplicate or forged carriers',async()=>{
+  const {source,parse,validate,repack}=await sectionFixture();
+  const extended=parse(repack(xml=>xml.replaceAll('</w:sectPr>','<w:docGrid w:linePitch="360"/></w:sectPr>')));
+  assert.equal(extended.ok,true,JSON.stringify(extended));
+  assert.equal(validate(extended).ok,true);
+  assert.equal(extended.reviewIr.documentSections.lossLedger.providerExtensionElements.every(item=>item.elementName==='docGrid'),true);
+  const missing=parse(repack(xml=>xml.replace(/<w:sectPr>[\s\S]*?<\/w:sectPr>/u,'')));
+  assert.equal(missing.ok,true,JSON.stringify(missing));
+  assert.equal(validate(missing).ok,false);
+  const duplicate=parse(repack(xml=>xml.replace(/(<w:sectPr>[\s\S]*?<\/w:sectPr>)/u,'$1$1')));
+  assert.equal(duplicate.ok,false,JSON.stringify(duplicate));
+  assert.equal(duplicate.code,'RTK_WORD_SECTIONS_MALFORMED_BLOCKED');
+  const identity=parse(buildDocxReviewPacketBuffer(source));
+  const forged=validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,returned:identity.reviewIr.documentSections,signedDigest:'sha256:'+'0'.repeat(64)});
+  assert.equal(forged.ok,false);
+  assert.ok(forged.mismatches.includes('signedDigest'));
 });
 for(const mutant of ['drop-empty','duplicate','swap-paragraphs','swap-scenes','change-codepoint'])test('Coherently rehashed provisional '+mutant+' is rejected',async()=>{
   const {source,gate}=await fixture([['alpha','','beta'],['gamma','delta']]);
@@ -51,7 +126,13 @@ for(const mutant of ['drop-empty','duplicate','swap-paragraphs','swap-scenes','c
   if(mutant==='swap-paragraphs')[blocks[0],blocks[2]]=[blocks[2],blocks[0]];
   if(mutant==='swap-scenes')blocks=[...blocks.slice(3),...blocks.slice(0,3)];
   if(mutant==='change-codepoint'){blocks[0].text='Alpha';blocks[0].formatIr.runs[0].text='Alpha';}
-  const bytes=buildDocxReviewPacketBuffer({...source,blocks});
+  let bytes;
+  try {
+    bytes=buildDocxReviewPacketBuffer({...source,blocks});
+  } catch (error) {
+    assert.match(error.message,/DOCX_REVIEW_PACKET_DOCUMENT_SECTION_BOUNDARY_INVALID/u);
+    return;
+  }
   const altered={...source,advisoryManifest:clone(source.advisoryManifest),provisionalSelfParseArtifact:{...source.provisionalSelfParseArtifact,bytes}};
   altered.advisoryManifest.coreManifest.artifactIdentities.provisionalDocxSha256=hash(bytes);
   assert.equal(gate(altered).ok,false,'semantic verification must reject '+mutant+' even after digest rebinding');
