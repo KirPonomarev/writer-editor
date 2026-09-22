@@ -188,16 +188,28 @@ def c1_declared_loss(document,loss):
     require(isinstance(items,list) and all(isinstance(item,dict) and isinstance(item.get('code'),str) and isinstance(item.get('severity'),str) for item in items),'C1_DECLARED_LOSS')
     require(loss.get('mode')=='block-styles-headings-lists-and-inline-marks' and loss.get('itemCount')==len(items)==len(expected) and sorted((item['code'],item['severity']) for item in items)==sorted(expected),'C1_DECLARED_LOSS')
 
-def c5_declared_loss(document,loss):
+def c5_declared_loss(document,loss,omitted_empty_carrier_indexes):
     require(document.tag==W+'document' and isinstance(loss,dict),'C5_DECLARED_LOSS')
     body=document.find(W+'body');require(body is not None,'C5_DECLARED_LOSS')
-    empty_section_carriers=0
-    for paragraph in body.findall(W+'p'):
+    section_types=set()
+    for section in document.iter(W+'sectPr'):
+        kind=section.find(W+'type')
+        if kind is not None:
+            require(kind.get(W+'val')=='nextPage','C5_SECTION_BREAK_TYPE')
+            section_types.add(kind.get(W+'val'))
+    empty_section_carriers=[]
+    for index,paragraph in enumerate(body.findall(W+'p')):
         ppr=paragraph.find(W+'pPr');section=ppr.find(W+'sectPr') if ppr is not None else None
-        if section is not None and v.visible(paragraph)=='':empty_section_carriers+=1
+        if section is not None and v.visible(paragraph)=='':empty_section_carriers.append(index)
+    require(isinstance(omitted_empty_carrier_indexes,list) and all(type(index) is int for index in omitted_empty_carrier_indexes)
+            and omitted_empty_carrier_indexes in [[],empty_section_carriers],'C5_RECOVERY_BOUNDARY')
     items=loss.get('items')
     require(isinstance(items,list) and all(isinstance(item,dict) and isinstance(item.get('code'),str) and isinstance(item.get('severity'),str) for item in items),'C5_DECLARED_LOSS')
-    expected=C5_BASE_DECLARED_LOSSES+[C5_SECTION_BREAK_DECLARED_LOSS]*empty_section_carriers
+    # The product reports each section-break kind once, regardless of its count.
+    # Recovery changes that diagnostic only for independently proved omissions,
+    # not merely because the source contains an empty carrier.
+    section_loss=C5_SECTION_BREAK_DECLARED_LOSS if omitted_empty_carrier_indexes else C1_SECTION_BREAK_DECLARED_LOSSES['nextPage']
+    expected=C5_BASE_DECLARED_LOSSES+([section_loss] if section_types else [])
     require(loss.get('mode')=='lists-headings-and-inline-marks' and loss.get('itemCount')==len(items)==len(expected) and sorted((item['code'],item['severity']) for item in items)==sorted(expected),'C5_DECLARED_LOSS')
 
 def decode_xstring(value):
@@ -1283,7 +1295,7 @@ def audit(request):
             if route=='C1':
                 c1_declared_loss(loss_document,loss)
             else:
-                c5_declared_loss(loss_document,loss)
+                c5_declared_loss(loss_document,loss,google_proof['providerLossLedger']['omittedEmptySectionCarrierIndexes'])
                 google_proof['productLossLedgerSha256']=digest(canonical(loss))
     for name in ['source.png','reopen.png']+(['saved.png'] if generic else []):require(raw(name).startswith(b'\x89PNG\r\n\x1a\n') and len(raw(name))>100,'PRODUCT_SCREENSHOT')
     cleanup=read('cleanup.json');require(cleanup['ok'] is True and len(cleanup['ownedProcesses'])==2 and {p['pid'] for p in cleanup['ownedProcesses']}=={boot['pid'],reopened['pid']} and all(p['exitCode'] is not None or p['signalCode'] is not None for p in cleanup['ownedProcesses']),'RUNTIME_CLEANUP')

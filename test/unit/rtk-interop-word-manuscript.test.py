@@ -60,13 +60,33 @@ class ManuscriptOracle(unittest.TestCase):
   paragraph=root.find(m.W+'body').findall(m.W+'p')[1];ppr=ET.SubElement(paragraph,m.W+'pPr');section=ET.SubElement(ppr,m.W+'sectPr');ET.SubElement(section,m.W+'type',{m.W+'val':'nextPage'})
   expected=m.C5_BASE_DECLARED_LOSSES+[m.C5_SECTION_BREAK_DECLARED_LOSS]
   loss={'mode':'lists-headings-and-inline-marks','itemCount':len(expected),'items':[{'code':code,'severity':severity} for code,severity in expected]}
-  m.c5_declared_loss(root,loss)
+  m.c5_declared_loss(root,loss,[1])
   missing=copy.deepcopy(loss);missing['items'].pop();missing['itemCount']-=1
-  with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,missing)
+  with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,missing,[1])
   wrong=copy.deepcopy(loss);wrong['items'][-1]={'code':'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED','severity':'warning'}
-  with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,wrong)
+  with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,wrong,[1])
+  m.c5_declared_loss(root,wrong,[])
+  for indexes in [[0],[1,1],[True],'1']:
+   with self.assertRaisesRegex(ValueError,'C5_RECOVERY_BOUNDARY'):m.c5_declared_loss(root,loss,indexes)
   plain=ET.fromstring(document(['one']));base={'mode':loss['mode'],'itemCount':len(m.C5_BASE_DECLARED_LOSSES),'items':[{'code':code,'severity':severity} for code,severity in m.C5_BASE_DECLARED_LOSSES]}
-  m.c5_declared_loss(plain,base)
+  m.c5_declared_loss(plain,base,[])
+ def test_c5_section_diagnostics_are_deduplicated_and_recovery_is_source_bound(self):
+  for texts,recovered in [(['one','two','three'],False),(['one','','three'],True),(['','two',''],True)]:
+   root=ET.fromstring(document(texts))
+   for paragraph in root.find(m.W+'body').findall(m.W+'p'):
+    ppr=ET.SubElement(paragraph,m.W+'pPr');section=ET.SubElement(ppr,m.W+'sectPr');ET.SubElement(section,m.W+'type',{m.W+'val':'nextPage'})
+   diagnostic=m.C5_SECTION_BREAK_DECLARED_LOSS if recovered else m.C1_SECTION_BREAK_DECLARED_LOSSES['nextPage']
+   omitted=[i for i,text in enumerate(texts) if text=='']
+   expected=m.C5_BASE_DECLARED_LOSSES+[diagnostic]
+   loss={'mode':'lists-headings-and-inline-marks','itemCount':len(expected),'items':[{'code':code,'severity':severity} for code,severity in expected]}
+   with self.subTest(texts=texts):
+    m.c5_declared_loss(root,loss,omitted)
+    for mutate in [lambda x:x['items'].pop(),lambda x:x['items'].append(copy.deepcopy(x['items'][-1])),lambda x:x['items'][-1].update(severity='info'),lambda x:x['items'][-1].update(code=(m.C1_SECTION_BREAK_DECLARED_LOSSES['nextPage'] if recovered else m.C5_SECTION_BREAK_DECLARED_LOSS)[0])]:
+     changed=copy.deepcopy(loss);mutate(changed);changed['itemCount']=len(changed['items'])
+     with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,changed,omitted)
+    for value in ['continuous','oddPage','']:
+     changed=copy.deepcopy(root);changed.find('.//'+m.W+'type').set(m.W+'val',value)
+     with self.assertRaisesRegex(ValueError,'C5_SECTION_BREAK_TYPE'):m.c5_declared_loss(changed,loss,omitted)
  def test_c1_review_recipe_has_disjoint_credit_and_independent_rich_expectations(self):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')
