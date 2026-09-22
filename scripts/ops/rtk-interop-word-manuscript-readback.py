@@ -33,6 +33,18 @@ SECTION_CONTROL_CODES={
  'change-margin':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
  'forged-signed-digest':'RTK_RETURN_INTAKE_AUTHORITY_NOT_VERIFIED',
 }
+C1_BASE_DECLARED_LOSSES=[
+ ('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS','info'),
+ ('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning'),
+]
+C1_SECTION_BREAK_DECLARED_LOSSES={
+ 'nextPage':('DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED','warning'),
+ 'continuous':('DOCX_IMPORT_PREVIEW_SECTION_BREAK_CONTINUOUS_NOT_IMPORTED','warning'),
+}
 CORE='{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}'
 DC='{http://purl.org/dc/elements/1.1/}'
 DCTERMS='{http://purl.org/dc/terms/}'
@@ -153,6 +165,20 @@ def docx(data,round=0,google=False):
     else:require(not ins and not dele,'UNEXPECTED_TRACKED_EDIT')
     raw_links(parts,d)
     return [v.visible(p) for p in body.findall(W+'p')],parts,d
+
+def c1_declared_loss(document,loss):
+    require(document.tag==W+'document' and isinstance(loss,dict),'C1_DECLARED_LOSS')
+    section_types=set()
+    for properties in document.iter(W+'sectPr'):
+        kind=properties.find(W+'type')
+        if kind is None:continue
+        value=kind.get(W+'val','')
+        require(value in C1_SECTION_BREAK_DECLARED_LOSSES,'C1_SECTION_BREAK_TYPE')
+        section_types.add(value)
+    expected=C1_BASE_DECLARED_LOSSES+[C1_SECTION_BREAK_DECLARED_LOSSES[value] for value in sorted(section_types)]
+    items=loss.get('items')
+    require(isinstance(items,list) and all(isinstance(item,dict) and isinstance(item.get('code'),str) and isinstance(item.get('severity'),str) for item in items),'C1_DECLARED_LOSS')
+    require(loss.get('mode')=='block-styles-headings-lists-and-inline-marks' and loss.get('itemCount')==len(items)==len(expected) and sorted((item['code'],item['severity']) for item in items)==sorted(expected),'C1_DECLARED_LOSS')
 
 def decode_xstring(value):
     return re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m.group(1),16)),value or '')
@@ -1158,9 +1184,10 @@ def audit(request):
         if route=='C1':style_stages['reexport']=assert_docx_styles(parts,d)
         word_check('final-word-lifecycle','reexport.docx','final-word.docx','final-word',0,False,None)
         if route=='C1':require(len({s['semanticStyleSha256'] for s in style_stages.values()})==1,'STYLE_STAGE_CONTINUITY')
+        loss_document=docx(raw(returned))[2] if route=='C1' else None
         for loss in [receipt['lossReport'],r['importPreview']['docxImportPreviewPlan']['lossReport']]:
             if route=='C1':
-                require(loss['mode']=='block-styles-headings-lists-and-inline-marks' and loss['itemCount']==len(loss['items'])==6 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS','info')]+[('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]*2),'C1_DECLARED_LOSS')
+                c1_declared_loss(loss_document,loss)
             else:
                 require(loss['mode']=='lists-headings-and-inline-marks' and loss['itemCount']==len(loss['items'])==5 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS','info'),('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]),'C5_DECLARED_LOSS')
                 google_proof['productLossLedgerSha256']=digest(canonical(loss))

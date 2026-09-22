@@ -40,6 +40,21 @@ def metadata_parts():
   p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
  return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
 class ManuscriptOracle(unittest.TestCase):
+ def test_c1_declared_loss_is_derived_from_raw_section_break_types(self):
+  root=ET.fromstring(document(['one','two','three']))
+  paragraphs=root.find(m.W+'body').findall(m.W+'p')
+  for paragraph,value in [(paragraphs[0],'nextPage'),(paragraphs[1],'nextPage'),(paragraphs[2],'continuous')]:
+   ppr=ET.SubElement(paragraph,m.W+'pPr');sect=ET.SubElement(ppr,m.W+'sectPr');ET.SubElement(sect,m.W+'type',{m.W+'val':value})
+  expected=m.C1_BASE_DECLARED_LOSSES+[m.C1_SECTION_BREAK_DECLARED_LOSSES['nextPage'],m.C1_SECTION_BREAK_DECLARED_LOSSES['continuous']]
+  loss={'mode':'block-styles-headings-lists-and-inline-marks','itemCount':len(expected),'items':[{'code':code,'severity':severity} for code,severity in expected]}
+  m.c1_declared_loss(root,loss)
+  for mutate in [lambda x:x['items'].pop(),lambda x:x['items'].append({'code':'EXTRA','severity':'warning'}),lambda x:x.update(itemCount=0)]:
+   changed=copy.deepcopy(loss);mutate(changed)
+   with self.assertRaisesRegex(ValueError,'C1_DECLARED_LOSS'):m.c1_declared_loss(root,changed)
+  unknown=copy.deepcopy(root);unknown.find('.//'+m.W+'type').set(m.W+'val','oddPage')
+  with self.assertRaisesRegex(ValueError,'C1_SECTION_BREAK_TYPE'):m.c1_declared_loss(unknown,loss)
+  plain=ET.fromstring(document(['one']));base={'mode':loss['mode'],'itemCount':len(m.C1_BASE_DECLARED_LOSSES),'items':[{'code':code,'severity':severity} for code,severity in m.C1_BASE_DECLARED_LOSSES]}
+  m.c1_declared_loss(plain,base)
  def test_c1_review_recipe_has_disjoint_credit_and_independent_rich_expectations(self):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')

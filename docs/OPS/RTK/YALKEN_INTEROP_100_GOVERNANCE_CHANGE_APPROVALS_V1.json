@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T22:12:15Z",
-      "approvedBy": "owner-direct-task:LAB_GENERIC_SECTIONS_BINDING_20260922",
+      "approvedAtUtc": "2026-09-21T23:33:56Z",
+      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Physical case 27 preserved the complete multi-scene document and authored section boundaries, while the generic Lab runner falsely required zero sections. This bounded proof-policy repair admits only the exact tested Lab revision that verifies those boundaries, retains all prior binding sets and fail-closed scope checks, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
-      "sha256": "66302664846be3200044919c1d963c9068de41ff5ee3fcf065b0538c3e10b223"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
+      "sha256": "4965cc373cc4effd54356ca7dbd9205fbedc2326deec90f4b900481fdd1d2229"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T22:12:15Z",
-      "approvedBy": "owner-direct-task:LAB_GENERIC_SECTIONS_BINDING_20260922",
+      "approvedAtUtc": "2026-09-21T23:33:56Z",
+      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Physical case 27 preserved the complete multi-scene document and authored section boundaries, while the generic Lab runner falsely required zero sections. This bounded proof-policy repair admits only the exact tested Lab revision that verifies those boundaries, retains all prior binding sets and fail-closed scope checks, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
-      "sha256": "294a3baaf533a39f8926abf532040c4e19e6ae00e1ec5976eb0da2694e9725a5"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
+      "sha256": "f260221dce9dcc5649bd1581699624e44b82c0d8f5fd252538ac9968639f7f42"
     },
     {
       "approved": true,
@@ -1191,12 +1191,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-21T23:33:56Z",
+      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "c96326d6817637a756d2eca154789a2330dfb2a74f50cc1abccab148dd675ba2"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
+      "sha256": "a4a034714c66aa841f96b0a3b20a372b526142163913aeccd8370c18725795c0"
     },
     {
       "approved": true,
@@ -1254,12 +1254,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-21T23:33:56Z",
+      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "8be03fdac31dfe90f066b4294411a5de7146c426d9d2890be998508f2b9c7179"
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
+      "sha256": "66e957195d06b13c772513d0b11d351ceba4ad04e6ee8daee61892ab1b86736b"
     },
     {
       "approved": true,
