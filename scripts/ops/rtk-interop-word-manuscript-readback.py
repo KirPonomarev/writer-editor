@@ -45,6 +45,14 @@ C1_SECTION_BREAK_DECLARED_LOSSES={
  'nextPage':('DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED','warning'),
  'continuous':('DOCX_IMPORT_PREVIEW_SECTION_BREAK_CONTINUOUS_NOT_IMPORTED','warning'),
 }
+C5_BASE_DECLARED_LOSSES=[
+ ('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),
+ ('DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS','info'),
+ ('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning'),
+]
+C5_SECTION_BREAK_DECLARED_LOSS=('DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_PARAGRAPH_BOUNDARY_RECOVERED','warning')
 CORE='{http://schemas.openxmlformats.org/package/2006/metadata/core-properties}'
 DC='{http://purl.org/dc/elements/1.1/}'
 DCTERMS='{http://purl.org/dc/terms/}'
@@ -179,6 +187,18 @@ def c1_declared_loss(document,loss):
     items=loss.get('items')
     require(isinstance(items,list) and all(isinstance(item,dict) and isinstance(item.get('code'),str) and isinstance(item.get('severity'),str) for item in items),'C1_DECLARED_LOSS')
     require(loss.get('mode')=='block-styles-headings-lists-and-inline-marks' and loss.get('itemCount')==len(items)==len(expected) and sorted((item['code'],item['severity']) for item in items)==sorted(expected),'C1_DECLARED_LOSS')
+
+def c5_declared_loss(document,loss):
+    require(document.tag==W+'document' and isinstance(loss,dict),'C5_DECLARED_LOSS')
+    body=document.find(W+'body');require(body is not None,'C5_DECLARED_LOSS')
+    empty_section_carriers=0
+    for paragraph in body.findall(W+'p'):
+        ppr=paragraph.find(W+'pPr');section=ppr.find(W+'sectPr') if ppr is not None else None
+        if section is not None and v.visible(paragraph)=='':empty_section_carriers+=1
+    items=loss.get('items')
+    require(isinstance(items,list) and all(isinstance(item,dict) and isinstance(item.get('code'),str) and isinstance(item.get('severity'),str) for item in items),'C5_DECLARED_LOSS')
+    expected=C5_BASE_DECLARED_LOSSES+[C5_SECTION_BREAK_DECLARED_LOSS]*empty_section_carriers
+    require(loss.get('mode')=='lists-headings-and-inline-marks' and loss.get('itemCount')==len(items)==len(expected) and sorted((item['code'],item['severity']) for item in items)==sorted(expected),'C5_DECLARED_LOSS')
 
 def decode_xstring(value):
     return re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m.group(1),16)),value or '')
@@ -1258,12 +1278,12 @@ def audit(request):
         if route=='C1':style_stages['reexport']=assert_docx_styles(parts,d)
         word_check('final-word-lifecycle','reexport.docx','final-word.docx','final-word',0,False,None)
         if route=='C1':require(len({s['semanticStyleSha256'] for s in style_stages.values()})==1,'STYLE_STAGE_CONTINUITY')
-        loss_document=docx(raw(returned))[2] if route=='C1' else None
+        loss_document=docx(raw(returned))[2] if route=='C1' else docx(raw('rounds/1/source.docx'))[2]
         for loss in [receipt['lossReport'],r['importPreview']['docxImportPreviewPlan']['lossReport']]:
             if route=='C1':
                 c1_declared_loss(loss_document,loss)
             else:
-                require(loss['mode']=='lists-headings-and-inline-marks' and loss['itemCount']==len(loss['items'])==5 and sorted((x['code'],x['severity']) for x in loss['items'])==sorted([('DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED','warning')]*2+[('DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED','warning'),('DOCX_IMPORT_PREVIEW_LISTS_HEADINGS_AND_INLINE_MARKS','info'),('DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED','warning')]),'C5_DECLARED_LOSS')
+                c5_declared_loss(loss_document,loss)
                 google_proof['productLossLedgerSha256']=digest(canonical(loss))
     for name in ['source.png','reopen.png']+(['saved.png'] if generic else []):require(raw(name).startswith(b'\x89PNG\r\n\x1a\n') and len(raw(name))>100,'PRODUCT_SCREENSHOT')
     cleanup=read('cleanup.json');require(cleanup['ok'] is True and len(cleanup['ownedProcesses'])==2 and {p['pid'] for p in cleanup['ownedProcesses']}=={boot['pid'],reopened['pid']} and all(p['exitCode'] is not None or p['signalCode'] is not None for p in cleanup['ownedProcesses']),'RUNTIME_CLEANUP')
