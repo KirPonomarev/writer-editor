@@ -656,7 +656,7 @@
       "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "4516b2d2dbb5d87d12a8a1726f035b95b9edf04e6ed4ea46a59679b565646f31"
+      "sha256": "f3384b5f68a3698bf229dae388dbdc11daed1345fcabc7b4c2964dc7924cbdad"
     },
     {
       "approved": true,
@@ -674,7 +674,7 @@
       "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "2ee95768275ab03eff2320b3a0489239389a2e1fc9e9ffed673bf61c46fb8db1"
+      "sha256": "d63143a3296b32da7c4b290400de5763652c5b7bdb463a33293772f5295424b2"
     },
     {
       "approved": true,

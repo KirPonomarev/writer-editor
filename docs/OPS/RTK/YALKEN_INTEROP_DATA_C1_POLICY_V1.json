@@ -1614,6 +1614,8 @@
       "scripts/ops/rtk-interop-data-c1.mjs",
       "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
+      "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
       "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "test/unit/rtk-interop-word-manuscript.test.py"
     ]
