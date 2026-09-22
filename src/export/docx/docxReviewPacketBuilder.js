@@ -11,6 +11,7 @@ const { buildDocxTypographyPropertiesXml } = require('./docxInlineTypography.js'
 const { toWordParagraphAlignment } = require('../../io/paragraphAlignment.cjs');
 const { docxBlockStyleId, buildDocxBlockStyleDefinitions } = require('./docxBlockStyles.js');
 const { commentPackageParts, commentMarkersForBlock } = require('./docxReviewPacketComments.js');
+const { notePackageParts, noteMarkersForBlock } = require('./docxReviewPacketNotes.js');
 
 const WORD_MAIN_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const WORD_REL_NS = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -297,10 +298,13 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
+  for (const [offset, xml] of noteMarkersForBlock(documentNotes, block)) {
+    markers.set(offset, (markers.get(offset) || '') + xml);
+  }
   const textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(block, hyperlinkByHref);
   const textAlign = toWordParagraphAlignment(block.formatIr?.paragraph?.textAlign);
@@ -349,7 +353,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections) {
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes) {
   const normalizedSections = normalizeDocumentSections(documentSections, blocks.length);
   const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
     .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
@@ -360,6 +364,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     hyperlinkByHref,
     commentExport,
     paragraphBreaks.get(index) || null,
+    documentNotes,
   )).join('');
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
@@ -688,6 +693,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_DUPLICATE');
   }
   const comments = commentPackageParts(input.commentExport);
+  const notes = notePackageParts(input.documentNotes);
   if (customProperties.length === 0) {
     throw new Error('DOCX_REVIEW_PACKET_CUSTOM_PROPERTY_REQUIRED');
   }
@@ -699,10 +705,10 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   const buffer = buildStoredZip([
-    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes, Boolean(documentMetadata)) },
+    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes, Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
-    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships) },
-    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections) },
+    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships) },
+    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
@@ -712,6 +718,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'customXml/item1.xml', data: buildCustomXmlPayloadXml(input) },
     { name: 'customXml/itemProps1.xml', data: buildCustomXmlItemPropsXml() },
     ...comments.entries,
+    ...notes.entries,
   ]);
   const modernMode = validateDocxReviewPacketModernMode15(buffer);
   if (!modernMode.ok) throw new Error(modernMode.code);

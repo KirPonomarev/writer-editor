@@ -129,7 +129,10 @@
     "docs/tasks/2026-09-18--word-document-parts-roundtrip.md",
     "src/main/rtkDocxReturnIntakeWorker.cjs",
     "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
-    "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs"
+    "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
+    "src/export/docx/docxReviewPacketNotes.js",
+    "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
+    "docs/tasks/2026-09-22--word-notes-footnotes.md"
   ],
   "protectedFiles": [
     {
@@ -254,7 +257,8 @@
     "src/word-metadata-mutant.py",
     "src/word-sections-mutant.py",
     "test/m0-audit-repair.test.mjs",
-    "test/word-manuscript-fields.test.mjs"
+    "test/word-manuscript-fields.test.mjs",
+    "src/word-notes-mutant.py"
   ],
   "labCodeBindings": [
     {
@@ -346,7 +350,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "06f842ddfe901094c157307c5d90baff568968648fe669541a9f7028f43a75da"
+        "sha256": "03affdad01c35dec2fb95e91936ca65e5810482dd1453f457e3276e46e0354f7"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -458,11 +462,11 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "053cc7c9c40f5d391e926c0f82ca09babd9ec4435e9e76cab091a8c140024e49"
+        "sha256": "8d5eaa7c318996653d24877234581cb81670858168c1817bf8f6272b5b2a9384"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "e3a3f3d1445a88f6b246dd8809c20f9f104dcfec45552abb0bd4831d3181c8b2"
+        "sha256": "fa9d096da34f29a915de815931e9c7225da69689da35daeb3ffc7c55488e3c4e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -482,7 +486,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "c56b4a6a8800228ed11b379530a4d97b2f5b230ed352e23807947893899d03c6"
+        "sha256": "0192de4fc2b5941569ed076eb2d70d65df310bc044de8c20d5d2db5227db297c"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -598,11 +602,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
+        "sha256": "da26426dc4f0e09c9040ddf7f17c236a4183900a7b28f20799aac8aff8b5a644"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "256a417f316636c1b9b0ca194a2a40c08dd5ee37581e81ebda2f348467e166ce"
+        "sha256": "33b6442f1dcf51866bb77c37f177f48fac3318e6bd3feb4370ab49d609634884"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -654,7 +658,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
-        "sha256": "5886fbcd743bedeb14179f0045de339ed50ac5baa1e3ba1b5f8bd247f1c0489a"
+        "sha256": "39abceedb4e10432398063b7190c6f3544c57b322ae0dba0386b639f9e08cfec"
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
@@ -727,6 +731,18 @@
       {
         "path": "docs/tasks/2026-09-18--word-document-parts-roundtrip.md",
         "sha256": "fe309daaee9cf0715b94840a90010e0ccdab42935079ea54fdb9aece4b6a437b"
+      },
+      {
+        "path": "src/export/docx/docxReviewPacketNotes.js",
+        "sha256": "3ec2eeb7b7ffdd73ebef90ec15c7b1aa5523d23a14eb69e4b61b2e3d41833c03"
+      },
+      {
+        "path": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
+        "sha256": "e1b2c65e0a1a76599ce7824b02ca69b276f0dd8d82dfdc1de395f241dac04523"
+      },
+      {
+        "path": "docs/tasks/2026-09-22--word-notes-footnotes.md",
+        "sha256": "44171c284df79b1628a351e2313c280eee8e90fbd19f624f525f1293119159aa"
       }
     ],
     "followupRepair": {
@@ -798,6 +814,11 @@
       "taskId": "WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
       "bindingBaseSha": "af5da809d9cbf60b8eb471f0f3be977ea6a4c489",
       "scope": "Preserve canonical consecutive scene-directory groups as exact Word section boundaries with signed protected page geometry, independent raw OOXML readback, provider-extension loss ledger, seven typed corruptions and no returned structure write authority."
+    },
+    "wordNotesRoundtrip": {
+      "taskId": "WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "bindingBaseSha": "67183b1c89f41e256018452526bc9d76766e2004",
+      "scope": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite."
     }
   },
   "wordTextOrderBatch": {
@@ -928,6 +949,8 @@
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "METADATA__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "SECTIONS__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "NOTES__SINGLE_SCENE__C1__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__SINGLE_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
@@ -937,6 +960,8 @@
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "NOTES__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__SINGLE_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__SOURCE_RUNTIME",
@@ -946,6 +971,8 @@
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "METADATA__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "SECTIONS__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "NOTES__SINGLE_SCENE__C2__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__SINGLE_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
@@ -955,6 +982,8 @@
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "NOTES__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__SINGLE_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__SOURCE_RUNTIME",
@@ -964,6 +993,8 @@
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "METADATA__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "SECTIONS__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "NOTES__SINGLE_SCENE__C3__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__SINGLE_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
@@ -973,6 +1004,8 @@
       "IDENTIFIERS_ANCHORS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "NOTES__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__SINGLE_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__SINGLE_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__SINGLE_SCENE__C5__SOURCE_RUNTIME",
@@ -989,6 +1022,8 @@
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "METADATA__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "SECTIONS__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "NOTES__MULTI_SCENE__C1__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MULTI_SCENE__C1__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
@@ -999,6 +1034,8 @@
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "NOTES__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MULTI_SCENE__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__SOURCE_RUNTIME",
@@ -1009,6 +1046,8 @@
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "METADATA__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "SECTIONS__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "NOTES__MULTI_SCENE__C2__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MULTI_SCENE__C2__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
@@ -1019,6 +1058,8 @@
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "NOTES__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MULTI_SCENE__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__SOURCE_RUNTIME",
@@ -1029,6 +1070,8 @@
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "METADATA__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "SECTIONS__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "NOTES__MULTI_SCENE__C3__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MULTI_SCENE__C3__SOURCE_RUNTIME",
       "TEXT__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
@@ -1039,6 +1082,8 @@
       "IDENTIFIERS_ANCHORS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "NOTES__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MULTI_SCENE__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "ORDER__MULTI_SCENE__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__MULTI_SCENE__C5__SOURCE_RUNTIME",
@@ -1055,6 +1100,8 @@
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "SECTIONS__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "NOTES__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__FULL_SYNTHETIC_NOVEL__C1__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
@@ -1065,6 +1112,8 @@
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "NOTES__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__FULL_SYNTHETIC_NOVEL__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
@@ -1075,6 +1124,8 @@
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "SECTIONS__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "NOTES__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__FULL_SYNTHETIC_NOVEL__C2__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
@@ -1085,6 +1136,8 @@
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "NOTES__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__FULL_SYNTHETIC_NOVEL__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
@@ -1095,6 +1148,8 @@
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "SECTIONS__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "NOTES__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__FULL_SYNTHETIC_NOVEL__C3__SOURCE_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
@@ -1105,6 +1160,8 @@
       "IDENTIFIERS_ANCHORS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "NOTES__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__FULL_SYNTHETIC_NOVEL__C3__PACKAGED_BUILD_RUNTIME",
       "TEXT__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "ORDER__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__FULL_SYNTHETIC_NOVEL__C5__SOURCE_RUNTIME",
@@ -1121,6 +1178,8 @@
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "SECTIONS__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "NOTES__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__LARGE_DOCUMENT__C1__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
@@ -1131,6 +1190,8 @@
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "NOTES__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__LARGE_DOCUMENT__C1__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
@@ -1141,6 +1202,8 @@
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "SECTIONS__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "NOTES__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__LARGE_DOCUMENT__C2__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
@@ -1151,6 +1214,8 @@
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "SECTIONS__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "NOTES__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__LARGE_DOCUMENT__C2__PACKAGED_BUILD_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
@@ -1161,6 +1226,8 @@
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "SECTIONS__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "NOTES__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__LARGE_DOCUMENT__C3__SOURCE_RUNTIME",
       "TEXT__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "ORDER__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "UNICODE_IME_LOCALE__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
@@ -1170,7 +1237,9 @@
       "COMMENTS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "IDENTIFIERS_ANCHORS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
       "METADATA__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
-      "SECTIONS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
+      "SECTIONS__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "NOTES__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__LARGE_DOCUMENT__C3__PACKAGED_BUILD_RUNTIME"
     ],
     "requiredHops": {
       "C1": [
@@ -1248,6 +1317,22 @@
         "noSilentApplyProof",
         "manualOnlyReasonsLedgered"
       ],
+      "NOTES": [
+        "noteBodiesPreserved",
+        "noteAnchorsPreserved",
+        "sidecarBoundaryMaintained",
+        "noteVisibilityDeclared",
+        "noteLossLedgered",
+        "noteReadbackIndependent"
+      ],
+      "FOOTNOTES_ENDNOTES": [
+        "footnoteRefsPreserved",
+        "footnoteBodiesPreserved",
+        "endnoteRefsPreserved",
+        "endnoteBodiesPreserved",
+        "noteOrderPreserved",
+        "unsupportedNoteLossDeclared"
+      ],
       "COMMENTS": [
         "commentBodiesPreserved",
         "commentAnchorsPreserved",
@@ -1287,15 +1372,15 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "8a827d4888ddb8a5c8c75fd7f20b5a8f2d1a4175fdefc8971fa0d5ea0006c90d"
+        "sha256": "aac9a1196098e7f6fd4668d376133aab75762d5150061dd94db95b308cd2cda6"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "eaab96e76bef6726b51643ae05ef7cf10bc45cc2c5e80a0ca7dcbd8ac46f9283"
+        "sha256": "ac1882459362a8414b7f694085f2bc5cf2c83265ecb4b7f97dfa30f910a2a10c"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-        "sha256": "bcc9a843fa66815404e861e54b67e9f7abef2b9094ce1a94ff579c00fff5557f"
+        "sha256": "46dd3d21e941a54fa2ce45ed07a025c4ec8e8778e56deeace49bc09a83e4f34c"
       },
       {
         "path": "scripts/ops/rtk-interop-word-volume-readback.py",
@@ -1514,7 +1599,7 @@
       "files": 2048
     },
     "admission": "Read-only result from current merged runtime, pinned native driver, all raw scene/DOCX/Word/renderer hops, independent field oracles and coherent negative controls. Candidate observations always grant zero admission.",
-    "scope": "Complete actual native manuscript journeys with independent raw evidence. Existing fields remain mandatory; SECTIONS adds canonical scene-group boundaries and protected page semantics without project structure write authority.",
+    "scope": "Complete native manuscript journeys, including explicitly selected canonical notes carried by native footnotes and endnotes, independent raw body/anchor/order readback, actual Word text readback and sidecar no-write continuity. Existing fields remain mandatory.",
     "limitations": [
       "Native Chromium composition on the bound macOS locale does not certify every OS IME engine.",
       "Actual fallback fonts and Word declarations do not certify pixel identity.",
@@ -1862,6 +1947,79 @@
         {
           "path": "test/word-manuscript-fields.test.mjs",
           "sha256": "fbb5df211824f07707ad83f2515ab4586c41169191a00b390c2d67956a498379"
+        }
+      ]
+    },
+    {
+      "id": "WORD_CANONICAL_NOTES_ROUNDTRIP_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "0fd2c8a94214f4192c0d6254db9dfdb297174e9d0bb204ec9ee2d8a7612c391f"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "1813227f46e61c120a135736a316b277bd3f55b439ff9f358120bf4adffa37d1"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        },
+        {
+          "path": "src/word-sections-mutant.py",
+          "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
+        },
+        {
+          "path": "test/m0-audit-repair.test.mjs",
+          "sha256": "63364c710ab92be6dfce51709c5e85b72cfcc659cb1407747def502f27d4be57"
+        },
+        {
+          "path": "test/word-manuscript-fields.test.mjs",
+          "sha256": "b6a88ebc1e4f10cd8d9f5b6e14505ff0aa367eaa3218312d7f36aa7ea30cfb85"
+        },
+        {
+          "path": "src/word-notes-mutant.py",
+          "sha256": "cd128e05ee6d080a12ab8f5009f7b9ef5d36fffaeb30c363613008028b12f40c"
         }
       ]
     }

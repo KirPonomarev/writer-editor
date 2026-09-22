@@ -24,6 +24,8 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
  STYLES:['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  NOVEL_SCENE_STRUCTURE:['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
  TRACKED_REVIEW_SEMANTICS:['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
+ NOTES:['noteBodiesPreserved','noteAnchorsPreserved','sidecarBoundaryMaintained','noteVisibilityDeclared','noteLossLedgered','noteReadbackIndependent'],
+ FOOTNOTES_ENDNOTES:['footnoteRefsPreserved','footnoteBodiesPreserved','endnoteRefsPreserved','endnoteBodiesPreserved','noteOrderPreserved','unsupportedNoteLossDeclared'],
  COMMENTS:['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
  IDENTIFIERS_ANCHORS:['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
  METADATA:['documentPropertiesAccounted','customPropertiesAccounted','authorshipPolicyDeclared','timestampPolicyDeclared','receiptIdentityBound','metadataLossLedgered'],
@@ -186,6 +188,50 @@ export function validateManuscriptSectionsProof(p,volume,cycles,roundProofs){
  demand(p.lossLedger&&Array.isArray(p.lossLedger.providerExtensionElementsObserved)&&typeof p.lossLedger.scope==='string'&&p.lossLedger.scope.length>0,'MANUSCRIPT_SECTIONS_LEDGER');
  return true;
 }
+export function validateManuscriptNotesProof(p,cycles,roundProofs){
+ const names=['rounds/1/review-probe','reexport','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat()];
+ const snapshots=['source-notes','reopened-notes',...Array.from({length:cycles},(_,i)=>'rounds/'+(i+1)+'/notes')];
+ const native=['rounds/1/review-probe','final-word-lifecycle',...Array.from({length:cycles},(_,i)=>'rounds/'+(i+1)+'/word')];
+ const exports=['reexport',...Array.from({length:cycles},(_,i)=>'rounds/'+(i+1)+'/export')];
+ demand(p?.schemaVersion==='WORD_MANUSCRIPT_NOTES_PROOF_V1'&&p.policy==='EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1'
+  &&p.authority==='ADVISORY_ONLY_NO_CANONICAL_NOTE_WRITE'&&sha64(p.sourceStateSha256),'MANUSCRIPT_NOTES_POLICY');
+ const e=p.expected;
+ demand(e?.document?.schemaVersion===1&&typeof e.document.projectId==='string'&&e.document.notes?.length===6&&e.notes?.length===4
+  &&same(e.selections,[{noteId:'note-foot-scene',kind:'footnote'},{noteId:'note-end-project',kind:'endnote'},{noteId:'note-foot-selection',kind:'footnote'},{noteId:'note-end-last',kind:'endnote'}])
+  &&e.protectedDigest===`sha256:${hash(stableOrderJson({schemaVersion:'yalken.rtk.word.document-notes.v1',notes:e.notes}))}`,'MANUSCRIPT_NOTES_EXPECTED');
+ demand(same(Object.keys(p.stages||{}).sort(),names.sort())&&same(Object.keys(p.snapshots||{}).sort(),snapshots.sort())
+  &&same(Object.keys(p.nativeReadbacks||{}).sort(),native.sort())&&same(Object.keys(p.locators||{}).sort(),exports.sort()),'MANUSCRIPT_NOTES_STAGES');
+ for(const [name,s] of Object.entries(p.stages)){
+  demand(sha64(s.artifactSha256)&&s.schemaVersion==='yalken.rtk.word.document-notes.v1'&&same(s.notes,e.notes)&&s.protectedDigest===e.protectedDigest
+   &&same(Object.keys(s.partsSha256||{}),['word/footnotes.xml','word/endnotes.xml'])&&Object.values(s.partsSha256).every(sha64)
+   &&s.references?.length===4&&new Set(s.references.map(r=>r.kind+':'+r.nativeId)).size===4
+   &&s.references.every((r,i)=>/^[1-9][0-9]*$/u.test(r.nativeId)&&r.kind===e.notes[i].kind&&r.paragraphIndex===e.notes[i].paragraphIndex&&r.offsetUtf16===e.notes[i].offsetUtf16),'MANUSCRIPT_NOTES_STAGE:'+name);
+ }
+ for(const s of Object.values(p.snapshots))demand(s.stateSha256===p.sourceStateSha256&&sha64(s.recordSha256),'MANUSCRIPT_NOTES_SIDECAR');
+ const normalizedHash=hash(stableOrderJson(e.document));
+ for(const l of Object.values(p.locators))demand(sha64(l.storeSha256)&&sha64(l.sourceBindingsSha256)&&l.stateDigest===normalizedHash,'MANUSCRIPT_NOTES_LOCATOR');
+ for(const [name,n] of Object.entries(p.nativeReadbacks))demand(sha64(n.bodySha256)&&n.notes?.length===4
+  &&same(n.notes.map(x=>[x.kind,x.index]),[['footnote',1],['footnote',2],['endnote',1],['endnote',2]])&&n.notes.every(x=>sha64(x.sha256)),'MANUSCRIPT_NOTES_NATIVE:'+name);
+ demand(new Set(Object.values(p.nativeReadbacks).map(n=>stableOrderJson(n.notes))).size===1,'MANUSCRIPT_NOTES_NATIVE_CONTINUITY');
+ demand(p.intakeBindings?.length===cycles,'MANUSCRIPT_NOTES_INTAKES');
+ for(const [i,r] of roundProofs.entries()){
+  demand(p.stages['rounds/'+(i+1)+'/export'].artifactSha256===r.exportSha256&&p.stages['rounds/'+(i+1)+'/word'].artifactSha256===r.returnedSha256,'MANUSCRIPT_NOTES_ROUND_BINDING');
+  const x=p.intakeBindings[i];
+  demand(x.ordinal===i+1&&x.status==='VERIFIED_PROTECTED_DOCUMENT_NOTES'&&x.authority===p.authority&&x.protectedDigest===e.protectedDigest
+   &&x.noteCount===4&&x.policy===p.policy&&x.stateSha256===p.sourceStateSha256&&x.returnedSha256===r.returnedSha256&&x.writerCalled===false,'MANUSCRIPT_NOTES_INTAKE');
+ }
+ const codes={'changed-body':'RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH','changed-title':'RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH',
+  'moved-reference':'RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH','missing-reference':'RTK_WORD_NOTES_MALFORMED_BLOCKED',
+  'duplicate-reference':'RTK_WORD_NOTES_MALFORMED_BLOCKED','unsupported-content':'RTK_WORD_NOTES_MALFORMED_BLOCKED','forged-signed-digest':'RTK_RETURN_INTAKE_AUTHORITY_NOT_VERIFIED'};
+ demand(Array.isArray(p.negativeControls)&&same(p.negativeControls.map(x=>x.id),Object.keys(codes))&&p.negativeControls.every(x=>x.rejected===true&&x.code===codes[x.id]
+  &&sha64(x.mutantSha256)&&sha64(x.intakeSha256)&&sha64(x.canonicalStateSha256)&&x.canonicalStateSha256===hash(stableOrderJson(x.before))
+  &&x.before.noteStateSha256===p.sourceStateSha256&&same(x.before,x.after)&&x.writerCalled===false)
+  &&new Set(p.negativeControls.map(x=>x.mutantSha256)).size===7,'MANUSCRIPT_NOTES_CONTROLS');
+ demand(p.lossLedger&&same(p.lossLedger.excludedPrivateNoteIds,['note-private'])&&same(p.lossLedger.excludedDeletedNoteIds,['note-deleted'])&&same(p.lossLedger.missingNotes,[])
+  &&p.lossLedger.formattingPolicy==='NATIVE_NOTE_TEXT_AND_PLACEMENT_PROTECTED_FORMATTING_ADVISORY'&&p.lossLedger.scope?.length>0,'MANUSCRIPT_NOTES_LOSS');
+ return true;
+}
+
 export function validateGoogleManuscriptTransport(p){
  demand(p?.schemaVersion==='GOOGLE_NATIVE_DIRECT_TRANSPORT_V2'&&p.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
   &&same(p.directLocalPathImport,{supported:true,countsAsPass:false,qualification:'ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP'})
@@ -319,6 +365,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    const names=Array.from({length:cycles},(_,i)=>['rounds/'+(i+1)+'/export','rounds/'+(i+1)+'/word']).flat().concat(['reexport','final-word-lifecycle']);
    demand(same(Object.keys(f.styleProofs).sort(),names.sort())&&Object.values(f.styleProofs).every(p=>p.semanticStyleSha256===batch.semanticStyleSha256&&sha64(p.stylePartsSha256['word/styles.xml'])&&sha64(p.stylePartsSha256['word/numbering.xml']))&&f.unsupportedStylesDeclared,'MANUSCRIPT_STYLE_CONTINUITY');
   }
+  if(['NOTES','FOOTNOTES_ENDNOTES'].includes(f.field))validateManuscriptNotesProof(f.notesProof,cycles,raw.roundProofs);
   if(f.field==='COMMENTS')validateManuscriptCommentProof(f.commentProof,cycles,raw.roundProofs);
   if(f.field==='IDENTIFIERS_ANCHORS')validateManuscriptIdentifierProof(f.identifierProof,row.volume,cycles,raw.roundProofs);
   if(f.field==='METADATA')validateManuscriptMetadataProof(f.metadataProof,cycles,raw.roundProofs);

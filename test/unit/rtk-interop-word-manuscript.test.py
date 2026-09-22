@@ -40,6 +40,51 @@ def metadata_parts():
   p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
  return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
 class ManuscriptOracle(unittest.TestCase):
+ def test_native_note_reader_preserves_bodies_order_and_typed_corruption(self):
+  d=ET.fromstring(document(['Before 🧭 after.','last']))
+  rel=ET.Element(m.REL+'Relationships');ct=ET.Element('{http://schemas.openxmlformats.org/package/2006/content-types}Types');parts={}
+  for kind,paragraph,offset,title,body in [('footnote',0,9,'Foot & <title>','  Body\n\t尾 e\u0301 🧭  '),('endnote',1,0,'','End body')]:
+   root=ET.Element(m.W+kind+'s');note=ET.SubElement(root,m.W+kind,{m.W+'id':'4'})
+   for i,value in enumerate([title,body]):
+    p=ET.SubElement(note,m.W+'p');r=ET.SubElement(p,m.W+'r')
+    if i==0:ET.SubElement(r,m.W+kind+'Ref')
+    for atom in m.re.split(r'([\n\t])',value):
+     if atom=='\n':ET.SubElement(r,m.W+'br')
+     elif atom=='\t':ET.SubElement(r,m.W+'tab')
+     else:ET.SubElement(r,m.W+'t').text=atom
+   name='word/'+kind+'s.xml';parts[name]=ET.tostring(root)
+   ET.SubElement(rel,m.REL+'Relationship',Id=kind,Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/'+kind+'s',Target=kind+'s.xml')
+   ET.SubElement(ct,'{http://schemas.openxmlformats.org/package/2006/content-types}Override',PartName='/'+name,ContentType='application/vnd.openxmlformats-officedocument.wordprocessingml.'+kind+'s+xml')
+   p=d.find(m.W+'body').findall(m.W+'p')[paragraph];text=m.v.visible(p);p.clear();raw=text.encode('utf-16-le');a=raw[:offset*2].decode('utf-16-le');b=raw[offset*2:].decode('utf-16-le')
+   ET.SubElement(ET.SubElement(p,m.W+'r'),m.W+'t').text=a
+   ET.SubElement(ET.SubElement(p,m.W+'r'),m.W+kind+'Reference',{m.W+'id':'4'})
+   ET.SubElement(ET.SubElement(p,m.W+'r'),m.W+'t').text=b
+  parts['word/_rels/document.xml.rels']=ET.tostring(rel);parts['[Content_Types].xml']=ET.tostring(ct)
+  proof=m.notes_doc(parts,d,b'owned-native-bytes');self.assertEqual([x['offsetUtf16'] for x in proof['notes']],[9,0]);self.assertEqual(proof['notes'][0]['paragraphs'],['Foot & <title>','  Body\n\t尾 e\u0301 🧭  '])
+  actual='Before 🧭\x02 after.\rlast\r'.replace('last','\x02last').encode();self.assertEqual(m.native_note_body(actual,['Before 🧭 after.','last'],proof['notes']),['Before 🧭 after.','last'])
+  for raw in [actual.replace(b'\x02',b'',1),actual.replace(b'\x02',b'\x02\x02',1),actual.replace(b'\x02 after',b' after\x02')]:
+   with self.assertRaises(ValueError):m.native_note_body(raw,['Before 🧭 after.','last'],proof['notes'])
+  for kind in ['missing','duplicate','dangling','orphan','foreign','drawing','external','moved','changed-body']:
+   changed=copy.deepcopy(d);pp=copy.deepcopy(parts);p=changed.find(m.W+'body').findall(m.W+'p')[0];r=p.findall(m.W+'r')[1]
+   if kind=='missing':p.remove(r)
+   elif kind=='duplicate':p.insert(1,copy.deepcopy(r))
+   elif kind=='dangling':r[0].set(m.W+'id','999')
+   elif kind=='orphan':
+    root=ET.fromstring(pp['word/footnotes.xml']);n=copy.deepcopy(root[0]);n.set(m.W+'id','6');root.append(n);pp['word/footnotes.xml']=ET.tostring(root)
+   elif kind in ['foreign','drawing','changed-body']:
+    root=ET.fromstring(pp['word/footnotes.xml']);node=root.find('.//'+m.W+'t')
+    if kind=='changed-body':node.text='Changed'
+    elif kind=='foreign':node.tag='{urn:foreign}t'
+    else:ET.SubElement(root.find('.//'+m.W+'r'),m.W+'drawing')
+    pp['word/footnotes.xml']=ET.tostring(root)
+   elif kind=='external':
+    root=ET.fromstring(pp['word/_rels/document.xml.rels']);root[0].set('TargetMode','External');pp['word/_rels/document.xml.rels']=ET.tostring(root)
+   elif kind=='moved':p.remove(r);changed.find(m.W+'body').findall(m.W+'p')[1].append(r)
+   with self.subTest(kind=kind):
+    if kind in ['moved','changed-body']:self.assertNotEqual(m.notes_doc(pp,changed,b'mutant')['protectedDigest'],proof['protectedDigest'])
+    else:
+     with self.assertRaises(ValueError):m.notes_doc(pp,changed,b'mutant')
+
  def test_c1_declared_loss_is_derived_from_raw_section_break_types(self):
   root=ET.fromstring(document(['one','two','three']))
   paragraphs=root.find(m.W+'body').findall(m.W+'p')
@@ -91,7 +136,7 @@ class ManuscriptOracle(unittest.TestCase):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')
    self.assertEqual(default,['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);self.assertFalse(set(default)&set(review))
-   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS'])
+   self.assertEqual(review,([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES'])
    source=m.expected_docs(volume,'C1',recipe='C1_REVIEW_RETURN');returned=m.expected_docs(volume,'C1',1,'C1_REVIEW_RETURN')
    self.assertIn('[links] reference / reference / reference.',m.paragraphs(source[0]))
    self.assertNotIn('[links] reference / reference / reference.',m.paragraphs(m.expected_docs(volume,'C1')[0]))
