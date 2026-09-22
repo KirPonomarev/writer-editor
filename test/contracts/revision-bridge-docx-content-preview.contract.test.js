@@ -1149,7 +1149,7 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
   ]);
   assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
   assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
-  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[0], 'sectionBreakType'), false);
+  assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
   assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
   assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'nextPage');
   assert.equal(result.contentPreview.paragraphs[3].zeroLengthBookmarkCount, 1);

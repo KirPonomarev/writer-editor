@@ -8819,7 +8819,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   let activeParagraphMetadata = null;
   let activeInlineRun = null;
   const inlineBudget = { count: 0 };
-  let sectionPropertiesDepth = 0;
+  const sectionPropertiesFrames = [];
   let unsupportedDepth = 0;
   let textDepth = 0;
   let fieldInstructionTextDepth = 0;
@@ -9010,17 +9010,36 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
 
     if (tagName === 'w:sectPr') {
       if (closing) {
-        sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
+        const frame = sectionPropertiesFrames.pop();
+        const sectionBreakType = frame?.explicitTypeSeen
+          ? frame.sectionBreakType
+          : (frame?.insideParagraph ? 'nextPage' : '');
+        if (frame?.insideParagraph && frame.paragraphMetadata && sectionBreakType) {
+          frame.paragraphMetadata.sectionBreakType = sectionBreakType;
+        }
+        docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
       } else {
-        sectionPropertiesDepth += 1;
-        if (selfClosing) sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
+        const frame = {
+          explicitTypeSeen: false,
+          sectionBreakType: '',
+          insideParagraph,
+          paragraphMetadata: insideParagraph ? activeParagraphMetadata : null,
+        };
+        sectionPropertiesFrames.push(frame);
+        if (selfClosing) {
+          sectionPropertiesFrames.pop();
+          const sectionBreakType = frame.insideParagraph ? 'nextPage' : '';
+          if (frame.insideParagraph && frame.paragraphMetadata) {
+            frame.paragraphMetadata.sectionBreakType = sectionBreakType;
+          }
+          docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
+        }
       }
-    } else if (sectionPropertiesDepth > 0 && tagName === 'w:type' && !closing) {
+    } else if (sectionPropertiesFrames.length > 0 && tagName === 'w:type' && !closing) {
       const sectionBreakType = docxContentPreviewNormalizeSectionBreakType(token, tokenNamespaceMap);
-      if (insideParagraph && activeParagraphMetadata && sectionBreakType) {
-        activeParagraphMetadata.sectionBreakType = sectionBreakType;
-      }
-      docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
+      const frame = sectionPropertiesFrames.at(-1);
+      frame.explicitTypeSeen = true;
+      frame.sectionBreakType = sectionBreakType;
     }
 
     if (tagName === 'w:p' && !closing) {
