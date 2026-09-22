@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T04:20:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "579e93821f14f6ac04d650482e0c5a62aa34024b601af2e831e983edf36eac53"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "f4da4c5dda13c8672f53a5d5d2321c40f41957410c2f2e3c5a335cc645a95074"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T04:20:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "1b13f9b4e94bbf42c32c8f8b493643b876f28d7a6155f0261c009ec3660aad2d"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "e92f90c34c66b527c1ac84e184a3053385075c106c40ade93e9995b0ee34259e"
     },
     {
       "approved": true,
@@ -1191,11 +1191,11 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T04:20:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
       "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
     },
     {
@@ -1236,29 +1236,29 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "7fc0e71f0cf81109a548acdd4daf186074d7b377ff1f3e5a24c97b9e5563d8f6"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "0ed39e79221aecfdd1ffb44ef10a1593fcaa225e0bd0f2d7e0a0f9760e8ee99e"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T04:20:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
       "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
     },
     {

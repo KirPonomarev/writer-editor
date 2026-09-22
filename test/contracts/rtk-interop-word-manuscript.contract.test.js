@@ -7,6 +7,7 @@ const path = require('node:path');
 const os = require('node:os');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
+const {execFileSync} = require('node:child_process');
 const {pathToFileURL} = require('node:url');
 const {commitProjectTransaction,commitPathFor} = require('../../src/core/project-transaction-v1.cjs');
 const {durableSaveTransaction} = require('../../src/core/save-coordinator-v1.cjs');
@@ -249,6 +250,23 @@ test('Manuscript admission targets 252 distinct frozen whole cells and five real
  for(const extra of [{wordTextOrderLabRoot:ROOT},{wordTextOrderRunIds:[run]},{spec},{ledger:[]},{dataC1RunId:run},{orderRunId:run},{textOrderRunId:run},{freshC1EvidenceRoot:ROOT},{requireExternalEvidencePackage:true}]){
   const result=d.verifyInterop100(ROOT,{wordManuscriptLabRoot:ROOT,wordManuscriptRunIds:[run],...extra});assert.equal(result.passedRequiredCells,0);assert.equal(result.authoritativeAdmission,false);assert.ok(result.errors.includes('WORD_MANUSCRIPT_MODE_OPTIONS_CONFLICT'));
  }
+});
+
+test('Manuscript verifier promotion preserves evidence only across allowlisted descendant verifier changes',async t=>{
+ const root=await fsp.mkdtemp(path.join(os.tmpdir(),'manuscript-verifier-promotion-'));t.after(()=>fsp.rm(root,{recursive:true,force:true}));
+ const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+ git('init');git('config','user.email','test@example.invalid');git('config','user.name','Yalken Test');
+ await fsp.writeFile(path.join(root,'product.txt'),'runtime-v1\n');await fsp.writeFile(path.join(root,'oracle.txt'),'oracle-v1\n');git('add','.');git('commit','-m','base');
+ const identity=()=>({head:git('rev-parse','HEAD'),tree:git('rev-parse','HEAD^{tree}')}),runtimeIdentity=identity();
+ await fsp.writeFile(path.join(root,'oracle.txt'),'oracle-v2\n');git('add','oracle.txt');git('commit','-m','verifier only');const verifierIdentity=identity();
+ const {validateManuscriptVerifierPromotion:check}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ assert.deepEqual(check({repoRoot:root,runtimeIdentity,verifierIdentity,allowedPaths:['oracle.txt']}),['oracle.txt']);
+ for(const bad of [[],['/oracle.txt'],['../oracle.txt'],['oracle.txt','oracle.txt']])assert.throws(()=>check({repoRoot:root,runtimeIdentity,verifierIdentity,allowedPaths:bad}));
+ assert.throws(()=>check({repoRoot:root,runtimeIdentity,verifierIdentity,allowedPaths:['product.txt']}),/PROMOTION_SCOPE/);
+ await fsp.writeFile(path.join(root,'product.txt'),'runtime-v2\n');git('add','product.txt');git('commit','-m','runtime changed');
+ assert.throws(()=>check({repoRoot:root,runtimeIdentity,verifierIdentity:identity(),allowedPaths:['oracle.txt']}),/PROMOTION_SCOPE/);
+ git('checkout','-b','divergent',runtimeIdentity.head);await fsp.writeFile(path.join(root,'oracle.txt'),'oracle-divergent\n');git('add','oracle.txt');git('commit','-m','divergent verifier');
+ assert.throws(()=>check({repoRoot:root,runtimeIdentity:verifierIdentity,verifierIdentity:identity(),allowedPaths:['oracle.txt']}),/PROMOTION_NOT_DESCENDANT/);
 });
 
 test('C1 review return cannot replace safe-create fields, reuse a recipe or masquerade as another route',async()=>{

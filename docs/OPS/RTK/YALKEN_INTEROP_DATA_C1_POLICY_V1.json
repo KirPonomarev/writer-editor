@@ -596,7 +596,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "7fc0e71f0cf81109a548acdd4daf186074d7b377ff1f3e5a24c97b9e5563d8f6"
+        "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1285,7 +1285,7 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "0ed39e79221aecfdd1ffb44ef10a1593fcaa225e0bd0f2d7e0a0f9760e8ee99e"
+        "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
@@ -1602,7 +1602,17 @@
         "field": "providerTransportPolicy.googleLocalDocxToNativeImport",
         "retainsHistoricalStagingReceipt": true
       }
-    }
+    },
+    "verifierPromotionPaths": [
+      "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "scripts/ops/rtk-interop-data-c1.mjs",
+      "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "test/unit/rtk-interop-word-manuscript.test.py"
+    ]
   },
   "labCodeBindingSets": [
     {
