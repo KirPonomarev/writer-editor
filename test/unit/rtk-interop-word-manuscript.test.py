@@ -189,13 +189,20 @@ class ManuscriptOracle(unittest.TestCase):
   ps=['  é e\u0301 日本語 🧑‍💻  ','','end'];ident='native-test-document'
   def native():
    body=[{'endIndex':1,'sectionBreak':{}}];offset=1
-   for text in ps:
+   for index,text in enumerate(ps):
     run=text+'\n';end=offset+len(run.encode('utf-16-le'))//2;body.append({'startIndex':offset,'endIndex':end,'paragraph':{'elements':[{'startIndex':offset,'endIndex':end,'textRun':{'content':run}}]}});offset=end
+    if index==0:
+     body.append({'startIndex':offset,'endIndex':offset+1,'sectionBreak':{'sectionStyle':{'sectionType':'NEXT_PAGE','contentDirection':'LEFT_TO_RIGHT','columnSeparatorStyle':'NONE','marginTop':{'magnitude':72,'unit':'PT'},'useFirstPageHeaderFooter':False,'flipPageOrientation':False}}});offset+=1
    return {'documentId':ident,'revisionId':'revision-test','body':None,'tabs':[{'documentId':ident,'tabId':'t.0','parentTabId':None,'body':{'content':body}}]}
   doc=native();self.assertEqual(m.google_native_paragraphs(doc,ident),ps)
   mutations=[lambda d:d['tabs'].append(copy.deepcopy(d['tabs'][0])),lambda d:d['tabs'][0].update(headers={'hidden':'text'}),lambda d:d['tabs'][0]['body']['content'][1]['paragraph']['elements'][0].update(inlineObjectElement={'id':'hidden'}),lambda d:d['tabs'][0]['body']['content'][1].update(startIndex=2),lambda d:d['tabs'][0]['body']['content'][1]['paragraph']['elements'][0]['textRun'].update(suggestedInsertionIds=['hidden']),lambda d:d.update(documentId='other')]
   for mutate in mutations:
    changed=native();mutate(changed)
+   with self.assertRaises(ValueError):m.google_native_paragraphs(changed,ident)
+  section_index=2
+  section_mutations=[lambda b:b.update(startIndex=b['startIndex']+1),lambda b:b.update(endIndex=b['endIndex']+1),lambda b:b.update(hidden='text'),lambda b:b.update(sectionBreak={}),lambda b:b['sectionBreak']['sectionStyle'].update(sectionType='UNKNOWN'),lambda b:b['sectionBreak']['sectionStyle'].update(marginTop={'magnitude':-1,'unit':'PT'})]
+  for mutate in section_mutations:
+   changed=native();mutate(changed['tabs'][0]['body']['content'][section_index])
    with self.assertRaises(ValueError):m.google_native_paragraphs(changed,ident)
  def test_google_exchange_binds_actual_bytes_and_rejects_coherent_text_loss_and_forged_cleanup(self):
   import base64
