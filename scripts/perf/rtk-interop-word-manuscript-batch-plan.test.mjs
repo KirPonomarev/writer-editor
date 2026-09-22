@@ -10,7 +10,7 @@ import {
 
 test('candidate matrix is bounded and deterministic', () => {
   assert.equal(CANDIDATE_JOBS.length, 38);
-  assert.equal(SUPPORTED_CELL_IDS.length, 252);
+  assert.equal(SUPPORTED_CELL_IDS.length, 300);
   assert.equal(FULL_DENOMINATOR_CELLS, 1120);
   assert.deepEqual(CANDIDATE_JOBS, [...CANDIDATE_JOBS].sort((left, right) => left.key.localeCompare(right.key)));
 });
@@ -25,13 +25,13 @@ test('planner reaches a 100-cell target without duplicate cell credit', () => {
 });
 
 test('planner exposes unreachable work instead of repeating accepted cells', () => {
-  const accepted = SUPPORTED_CELL_IDS.slice(0, 228);
+  const accepted = SUPPORTED_CELL_IDS.slice(0, -24);
   const plan = planBatch({ acceptedCellIds: accepted, targetNewCells: 100 });
   assert.equal(plan.targetReached, false);
   assert.equal(plan.plannedNewCells, 24);
   assert.equal(plan.unreachableTarget, 76);
   assert.equal(plan.supportedUncoveredCells, 24);
-  assert.equal(plan.missingRecipeCells, 868);
+  assert.equal(plan.missingRecipeCells, 820);
   assert.equal(new Set(plan.jobs.flatMap((job) => job.newCellIds)).size, 24);
 });
 
@@ -67,4 +67,21 @@ test('historical state timings stay separate from fixed delivery overhead', () =
   assert.equal(plan.fixedOverheadSeconds, 60);
   assert.equal(plan.estimatedTotalSeconds, 75);
   assert.equal(plan.withinTargetBudget, true);
+});
+
+
+test('note extension plans exactly 48 unique new cells in 24 physical jobs', () => {
+  const accepted = SUPPORTED_CELL_IDS.filter(id => !/^(?:NOTES|FOOTNOTES_ENDNOTES)__/.test(id));
+  assert.equal(accepted.length, 252);
+  const plan = planBatch({ acceptedCellIds: accepted, targetNewCells: 48 });
+  assert.equal(plan.targetReached, true);
+  assert.equal(plan.plannedNewCells, 48);
+  assert.equal(plan.jobs.length, 24);
+  assert.equal(plan.jobs.every(job => job.newCells === 2), true);
+  assert.equal(plan.jobs.every(job => job.newCellIds.every(id => /^(?:NOTES|FOOTNOTES_ENDNOTES)__/.test(id))), true);
+  assert.deepEqual(plan.remainingSupportedCellIds, []);
+  const complete = planBatch({ acceptedCellIds: SUPPORTED_CELL_IDS, targetNewCells: 48 });
+  assert.equal(complete.plannedNewCells, 0);
+  assert.equal(complete.targetReached, false);
+  assert.deepEqual(complete.jobs, []);
 });
