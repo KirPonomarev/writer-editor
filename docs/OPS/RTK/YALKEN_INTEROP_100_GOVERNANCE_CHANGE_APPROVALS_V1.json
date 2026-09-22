@@ -1304,7 +1304,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "214b038ee142e1c5620c826d94749a286a4b389981a280b02fa7f4e8b7a6c1a4"
+      "sha256": "ab1b4ec0b70c0d336e8a136e2cda7086e502193e045e73ffa89230fc39eb37b8"
     },
     {
       "approved": true,
