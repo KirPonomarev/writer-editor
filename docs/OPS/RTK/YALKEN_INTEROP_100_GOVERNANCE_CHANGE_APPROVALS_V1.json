@@ -250,12 +250,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:11:05Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery distinguishes an implicit relocated next-page carrier from an explicit Word section boundary and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound for the changed files; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "8bfc90cd793dd72ce2a87b62f9c26ce094dee6cd0d66522c1f26cda26ecace98"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "aafe0ccb44b33e4248488449c3b797befe11c1157dffbd39128e6dae438b82fc"
     },
     {
       "approved": true,
@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
       "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "f4da4c5dda13c8672f53a5d5d2321c40f41957410c2f2e3c5a335cc645a95074"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "cde0513cea5cb3dd61552d50b672ec9050349ae0979136d51774518f8518e0a2"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
       "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "e92f90c34c66b527c1ac84e184a3053385075c106c40ade93e9995b0ee34259e"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "c88d118e0f6cb58166d58ab93a0f44bbb554a809eda0fb5e13cbae797e64a14d"
     },
     {
       "approved": true,
@@ -1191,11 +1191,11 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
       "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
       "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
     },
     {
@@ -1236,29 +1236,29 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
       "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
       "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
       "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
       "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:15:00Z",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
       "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
       "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
     },
     {
