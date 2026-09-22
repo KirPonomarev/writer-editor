@@ -621,7 +621,8 @@ test('C5V2 full-manuscript product export is reachable through command kernel, r
   assert.match(mainSource, /verifyYrtk2RoundLocatorToken/u);
   assert.equal(mainSource.includes('collectFullManuscriptDocxReviewExportCandidates'), true);
   assert.equal(mainSource.includes('readFullManuscriptDocxReviewExportDocumentContent'), true);
-  const readFullExportSourceStart = mainSource.indexOf('async function readFullManuscriptDocxReviewPacketExportSource()');
+  const readFullExportSourceStart = mainSource.search(/async function readFullManuscriptDocxReviewPacketExportSource\(payload = \{\}\)/u);
+  assert.ok(readFullExportSourceStart >= 0, 'explicit source selector payload reaches the main reader');
   const readFullExportSourceEnd = mainSource.indexOf('async function buildDocxReviewPacketBuffer', readFullExportSourceStart);
   const readFullExportSourceBody = mainSource.slice(readFullExportSourceStart, readFullExportSourceEnd);
   assert.match(readFullExportSourceBody, /const scope = await buildFullManuscriptDocxReviewExportScope\(\);/u);

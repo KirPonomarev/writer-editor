@@ -690,7 +690,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js",
-        "sha256": "5b91e63033b150546198971507bea79662dad2aa6308812eb31292d014d0e03e"
+        "sha256": "d086935b8c51390201714db55829617c3c4eb70fb8a015148fa5f6409b3241a9"
       },
       {
         "path": "docs/tasks/2026-09-17--word-canonical-comment-reexport.md",
