@@ -8,7 +8,7 @@ import {
   MANUSCRIPT_VOLUMES,
   manuscriptFields,
   manuscriptRecipes,
-} from './rtk-interop-word-manuscript-fixtures.mjs';
+} from '../ops/rtk-interop-word-manuscript-fixtures.mjs';
 
 /**
  * Build an execution plan from uncovered cells.
