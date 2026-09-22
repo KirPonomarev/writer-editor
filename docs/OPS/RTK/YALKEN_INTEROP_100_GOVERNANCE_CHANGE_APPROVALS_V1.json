@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T14:25:00Z",
-      "approvedBy": "owner-direct-task:INTEROP_THROUGHPUT_MARGINAL_BATCH_PLANNER_ADMISSION_20260922",
-      "authority": "DIRECT_OWNER_READ_ONLY_INTEROP_PLANNER_ADMISSION",
+      "approvedAtUtc": "2026-09-22T15:25:30Z",
+      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
+      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized admission of the bounded read-only marginal batch planner carrier. The planner selects uncovered recipe jobs and reports unreachable targets; it never writes product state, evidence, denominator or cell credit. This row binds the exact carrier verifier bytes and preserves fail-closed policy and immutable runtime pins.",
-      "sha256": "41c4e947584200467ffccce662f119a7d90b2b7e7aa7ce088adedc64046c0688"
+      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
+      "sha256": "f3384b5f68a3698bf229dae388dbdc11daed1345fcabc7b4c2964dc7924cbdad"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:INTEROP_THROUGHPUT_MARGINAL_BATCH_PLANNER_ADMISSION_20260922",
-      "authority": "DIRECT_OWNER_READ_ONLY_INTEROP_PLANNER_ADMISSION",
+      "approvedAtUtc": "2026-09-22T15:25:30Z",
+      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
+      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized admission of the bounded read-only marginal batch planner carrier. The planner selects uncovered recipe jobs and reports unreachable targets; it never writes product state, evidence, denominator or cell credit. This row binds the exact carrier verifier bytes and preserves fail-closed policy and immutable runtime pins.",
-      "sha256": "734ad6a1dc1e65aee7b5a3874fe2e6a76f34536791bae51906bd13d68555e8cd"
+      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
+      "sha256": "d63143a3296b32da7c4b290400de5763652c5b7bdb463a33293772f5295424b2"
     },
     {
       "approved": true,
@@ -1191,12 +1191,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-22T15:25:30Z",
+      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
+      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
+      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
+      "sha256": "d835945cccfac21fa2487f2d329ca1ff90372e5cb29fa4abe67e9861fd2cc386"
     },
     {
       "approved": true,
@@ -1245,21 +1245,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-22T15:25:30Z",
+      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
+      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
+      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
+      "sha256": "8a827d4888ddb8a5c8c75fd7f20b5a8f2d1a4175fdefc8971fa0d5ea0006c90d"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-22T15:25:30Z",
+      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
+      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
+      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
+      "sha256": "0eb99a7b3bcad802ca01e5bc98738c4de52cf29e617e9dfa1f62c312f35bd0aa"
     },
     {
       "approved": true,

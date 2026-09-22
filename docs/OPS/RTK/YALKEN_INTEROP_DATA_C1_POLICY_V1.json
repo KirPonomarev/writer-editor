@@ -602,7 +602,7 @@
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
+        "sha256": "0eb99a7b3bcad802ca01e5bc98738c4de52cf29e617e9dfa1f62c312f35bd0aa"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -1287,11 +1287,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
+        "sha256": "8a827d4888ddb8a5c8c75fd7f20b5a8f2d1a4175fdefc8971fa0d5ea0006c90d"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
+        "sha256": "d835945cccfac21fa2487f2d329ca1ff90372e5cb29fa4abe67e9861fd2cc386"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1614,6 +1614,8 @@
       "scripts/ops/rtk-interop-data-c1.mjs",
       "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
+      "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
       "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "test/unit/rtk-interop-word-manuscript.test.py"
     ]

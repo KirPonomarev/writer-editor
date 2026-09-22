@@ -204,6 +204,15 @@ class ManuscriptOracle(unittest.TestCase):
   for mutate in section_mutations:
    changed=native();mutate(changed['tabs'][0]['body']['content'][section_index])
    with self.assertRaises(ValueError):m.google_native_paragraphs(changed,ident)
+ def test_google_provider_loss_reconciles_only_source_bound_empty_section_carriers(self):
+  root=ET.fromstring(document(['before','','after']));body=root.find(m.W+'body');carrier=body.findall(m.W+'p')[1];ppr=ET.Element(m.W+'pPr');ppr.append(ET.Element(m.W+'sectPr'));ppr.find(m.W+'sectPr').append(ET.Element(m.W+'type',{m.W+'val':'nextPage'}));carrier.insert(0,ppr);body.append(ET.Element(m.W+'sectPr'))
+  source=archive(ET.tostring(root));expected,ledger=m.google_provider_reconcile(source,['before','after'],[1],['NEXT_PAGE'])
+  self.assertEqual(expected,['before','','after']);self.assertEqual(ledger['omittedEmptySectionCarrierIndexes'],[1]);self.assertEqual(ledger['mode'],'SOURCE_BOUND_EMPTY_SECTION_CARRIER_RELOCATION')
+  returned_root=ET.fromstring(document(['before','after']));returned_body=returned_root.find(m.W+'body');returned_body.findall(m.W+'p')[0].insert(0,copy.deepcopy(ppr));returned_body.append(ET.Element(m.W+'sectPr'));returned=archive(ET.tostring(returned_root));self.assertEqual(m.google_provider_reconcile_docx(source,returned),(expected,ledger))
+  for observed,positions,types in [(['before'],[1],['NEXT_PAGE']),(['before','after'],[2],['NEXT_PAGE']),(['before','after'],[1],['CONTINUOUS'])]:
+   with self.assertRaises(ValueError):m.google_provider_reconcile(source,observed,positions,types)
+  ambiguous=ET.fromstring(document(['before','','','after']));ambiguous_body=ambiguous.find(m.W+'body');ambiguous_body.findall(m.W+'p')[2].insert(0,copy.deepcopy(ppr));ambiguous_body.append(ET.Element(m.W+'sectPr'))
+  with self.assertRaisesRegex(ValueError,'GOOGLE_SOURCE_SECTION_CARRIER_AMBIGUOUS'):m.google_provider_reconcile(archive(ET.tostring(ambiguous)),['before','','after'],[2],['NEXT_PAGE'])
  def test_google_exchange_binds_actual_bytes_and_rejects_coherent_text_loss_and_forged_cleanup(self):
   import base64
   ident='native-test-document';ps=['sentinel',''];offset=1;body=[{'endIndex':1,'sectionBreak':{}}]

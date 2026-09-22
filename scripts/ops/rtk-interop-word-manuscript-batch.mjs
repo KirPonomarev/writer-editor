@@ -288,6 +288,10 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    const g=f.googleProof;
    demand(g?.transport==='DIRECT_LOCAL_PATH_NATIVE_CONVERSION_V2'&&g.cleanupVerified===true&&typeof g.documentId==='string'&&/^[A-Za-z0-9_-]{10,200}$/u.test(g.documentId)&&typeof g.revisionId==='string'&&g.revisionId.length>0
     &&sha64(g.sourceSha256)&&sha64(g.returnedSha256)&&sha64(g.rawResponseSha256)&&sha64(g.productLossLedgerSha256)&&g.sourceSha256===raw.roundProofs[0].exportSha256&&g.returnedSha256===raw.roundProofs[0].returnedSha256
+    &&g.providerLossLedger?.schemaVersion==='GOOGLE_NATIVE_PROVIDER_LOSS_V1'&&g.providerLossLedger.sourceSha256===g.sourceSha256
+    &&Number.isSafeInteger(g.providerLossLedger.sourceParagraphCount)&&Number.isSafeInteger(g.providerLossLedger.observedParagraphCount)
+    &&Array.isArray(g.providerLossLedger.omittedEmptySectionCarrierIndexes)&&Array.isArray(g.providerLossLedger.sectionBreaks)
+    &&sha64(g.providerLossLedgerSha256)&&g.providerLossLedgerSha256===hash(stableOrderJson(g.providerLossLedger))
     &&g.nativeBodySha256===f.stageProofs['rounds/1/google-native-before'].paragraphSha256&&same(u.providerLocale,g.providerLocale)
     &&same(g.providerLocale,{mode:'CONTENT_API_NO_PROVIDER_UI_SESSION',sourceLocaleBoundSeparately:true,normalization:'LITERAL_CODEPOINTS_NO_NORMALIZATION'})
     &&controls(g.negativeControls,['wrong-source-binding','non-native-mime','mixed-document-id','changed-revision','missing-cleanup','missing-tab','coherent-native-text-loss','returned-byte-substitution'])
