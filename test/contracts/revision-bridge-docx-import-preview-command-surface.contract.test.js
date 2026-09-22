@@ -256,6 +256,15 @@ test('DOCX import preview command surface: clean content report returns wrapped 
     contentPreviewReport(['Alpha', '', 'Bravo']),
   ));
   assert.equal(withEmptyParagraph.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
+  const relocatedSectionReport = contentPreviewReport(['Alpha', 'Bravo']);
+  relocatedSectionReport.contentPreview.paragraphs[0].sectionBreakType = 'nextPage';
+  const withRelocatedSectionBoundary = await port.handleDocxImportPreviewCommandSurface(toPayload(
+    relocatedSectionReport,
+  ));
+  assert.equal(
+    withRelocatedSectionBoundary.docxImportPreviewPlan.candidateCreatePlan.entries[0].content,
+    'Alpha\n\nBravo',
+  );
   assertNoForbiddenCommandFields(result);
 });
 
