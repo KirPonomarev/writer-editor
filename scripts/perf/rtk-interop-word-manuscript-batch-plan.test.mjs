@@ -6,7 +6,7 @@ import {
   SUPPORTED_CELL_IDS,
   durationOverridesFromState,
   planBatch,
-} from '../../scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs';
+} from './rtk-interop-word-manuscript-batch-plan.mjs';
 
 test('candidate matrix is bounded and deterministic', () => {
   assert.equal(CANDIDATE_JOBS.length, 38);
