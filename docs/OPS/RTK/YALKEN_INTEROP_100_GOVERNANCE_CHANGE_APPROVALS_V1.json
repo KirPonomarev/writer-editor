@@ -656,7 +656,7 @@
       "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "67b259f8123c11e3767bddc6bd204d2b47b3c8580aa6a9167b34659d407d9145"
+      "sha256": "1de0b3063233dec1ea61412467544820888f311d8a43a15a9924ba8b574cd95b"
     },
     {
       "approved": true,
@@ -674,7 +674,7 @@
       "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "f48c3032000f2e899a9a937dbe0c1913056fab65bf9f54884723c855c3a019e4"
+      "sha256": "7ad4594aa4dabf9f371b7bf7834cce2f162acc4fc6722914eebfae7f91dfa4ce"
     },
     {
       "approved": true,
@@ -1196,7 +1196,7 @@
       "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "f2671c01560c1155f3df4107c9d0f9c2e238978d6bfd0932e1a1d7d3839901e1"
+      "sha256": "0e2a533518e7b13cb02fa1f5344faa4f1d08d50357c10946a7b32f8a19d04fc3"
     },
     {
       "approved": true,
@@ -1259,7 +1259,7 @@
       "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
       "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "c2c3390770cb257c77b488e73f92610bdee9ff1027ec353731672a157187780a"
+      "sha256": "d1792146316b3eaeb0ec93bd9c90b58259609086cab79a764700a1737c40c8cd"
     },
     {
       "approved": true,

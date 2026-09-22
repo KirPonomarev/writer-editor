@@ -191,13 +191,23 @@ def c1_declared_loss(document,loss):
 def c5_declared_loss(document,loss):
     require(document.tag==W+'document' and isinstance(loss,dict),'C5_DECLARED_LOSS')
     body=document.find(W+'body');require(body is not None,'C5_DECLARED_LOSS')
-    empty_section_carriers=0
+    section_types=set()
+    for section in document.iter(W+'sectPr'):
+        kind=section.find(W+'type')
+        if kind is not None:
+            require(kind.get(W+'val')=='nextPage','C5_SECTION_BREAK_TYPE')
+            section_types.add(kind.get(W+'val'))
+    empty_section_carriers=False
     for paragraph in body.findall(W+'p'):
         ppr=paragraph.find(W+'pPr');section=ppr.find(W+'sectPr') if ppr is not None else None
-        if section is not None and v.visible(paragraph)=='':empty_section_carriers+=1
+        if section is not None and v.visible(paragraph)=='':empty_section_carriers=True
     items=loss.get('items')
     require(isinstance(items,list) and all(isinstance(item,dict) and isinstance(item.get('code'),str) and isinstance(item.get('severity'),str) for item in items),'C5_DECLARED_LOSS')
-    expected=C5_BASE_DECLARED_LOSSES+[C5_SECTION_BREAK_DECLARED_LOSS]*empty_section_carriers
+    # The product reports each section-break kind once, regardless of its count.
+    # Recovery changes that diagnostic only when a source empty carrier exists;
+    # native and returned section continuity is independently checked above.
+    section_loss=C5_SECTION_BREAK_DECLARED_LOSS if empty_section_carriers else C1_SECTION_BREAK_DECLARED_LOSSES['nextPage']
+    expected=C5_BASE_DECLARED_LOSSES+([section_loss] if section_types else [])
     require(loss.get('mode')=='lists-headings-and-inline-marks' and loss.get('itemCount')==len(items)==len(expected) and sorted((item['code'],item['severity']) for item in items)==sorted(expected),'C5_DECLARED_LOSS')
 
 def decode_xstring(value):
