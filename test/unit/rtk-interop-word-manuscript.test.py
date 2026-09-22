@@ -55,6 +55,18 @@ class ManuscriptOracle(unittest.TestCase):
   with self.assertRaisesRegex(ValueError,'C1_SECTION_BREAK_TYPE'):m.c1_declared_loss(unknown,loss)
   plain=ET.fromstring(document(['one']));base={'mode':loss['mode'],'itemCount':len(m.C1_BASE_DECLARED_LOSSES),'items':[{'code':code,'severity':severity} for code,severity in m.C1_BASE_DECLARED_LOSSES]}
   m.c1_declared_loss(plain,base)
+ def test_c5_declared_loss_allows_only_source_bound_empty_section_carriers(self):
+  root=ET.fromstring(document(['one','','three']))
+  paragraph=root.find(m.W+'body').findall(m.W+'p')[1];ppr=ET.SubElement(paragraph,m.W+'pPr');section=ET.SubElement(ppr,m.W+'sectPr');ET.SubElement(section,m.W+'type',{m.W+'val':'nextPage'})
+  expected=m.C5_BASE_DECLARED_LOSSES+[m.C5_SECTION_BREAK_DECLARED_LOSS]
+  loss={'mode':'lists-headings-and-inline-marks','itemCount':len(expected),'items':[{'code':code,'severity':severity} for code,severity in expected]}
+  m.c5_declared_loss(root,loss)
+  missing=copy.deepcopy(loss);missing['items'].pop();missing['itemCount']-=1
+  with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,missing)
+  wrong=copy.deepcopy(loss);wrong['items'][-1]={'code':'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED','severity':'warning'}
+  with self.assertRaisesRegex(ValueError,'C5_DECLARED_LOSS'):m.c5_declared_loss(root,wrong)
+  plain=ET.fromstring(document(['one']));base={'mode':loss['mode'],'itemCount':len(m.C5_BASE_DECLARED_LOSSES),'items':[{'code':code,'severity':severity} for code,severity in m.C5_BASE_DECLARED_LOSSES]}
+  m.c5_declared_loss(plain,base)
  def test_c1_review_recipe_has_disjoint_credit_and_independent_rich_expectations(self):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    default=m.fields(volume,'C1');review=m.fields(volume,'C1','C1_REVIEW_RETURN')
