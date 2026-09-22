@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-22T14:25:00Z",
+      "approvedBy": "owner-direct-task:INTEROP_THROUGHPUT_MARGINAL_BATCH_PLANNER_ADMISSION_20260922",
+      "authority": "DIRECT_OWNER_READ_ONLY_INTEROP_PLANNER_ADMISSION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "47a3e16878aad168415835e27fe3b49d6d9bbe85aa1bfc1c9fe1adeb1b0c6806"
+      "rationale": "Owner authorized admission of the bounded read-only marginal batch planner carrier. The planner selects uncovered recipe jobs and reports unreachable targets; it never writes product state, evidence, denominator or cell credit. This row binds the exact carrier verifier bytes and preserves fail-closed policy and immutable runtime pins.",
+      "sha256": "41c4e947584200467ffccce662f119a7d90b2b7e7aa7ce088adedc64046c0688"
     },
     {
       "approved": true,
@@ -670,11 +670,11 @@
     {
       "approved": true,
       "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "approvedBy": "owner-direct-task:INTEROP_THROUGHPUT_MARGINAL_BATCH_PLANNER_ADMISSION_20260922",
+      "authority": "DIRECT_OWNER_READ_ONLY_INTEROP_PLANNER_ADMISSION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "9f3a964b7ab6137866b8fd3e378e98256e273b36890fce84460b77304e302abe"
+      "rationale": "Owner authorized admission of the bounded read-only marginal batch planner carrier. The planner selects uncovered recipe jobs and reports unreachable targets; it never writes product state, evidence, denominator or cell credit. This row binds the exact carrier verifier bytes and preserves fail-closed policy and immutable runtime pins.",
+      "sha256": "734ad6a1dc1e65aee7b5a3874fe2e6a76f34536791bae51906bd13d68555e8cd"
     },
     {
       "approved": true,

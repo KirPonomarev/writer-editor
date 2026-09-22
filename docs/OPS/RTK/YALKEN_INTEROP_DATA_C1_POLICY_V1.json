@@ -127,7 +127,9 @@
     "docs/tasks/2026-09-17--c1-review-intake-fields.md",
     "docs/tasks/2026-09-18--word-metadata-roundtrip.md",
     "docs/tasks/2026-09-18--word-document-parts-roundtrip.md",
-    "src/main/rtkDocxReturnIntakeWorker.cjs"
+    "src/main/rtkDocxReturnIntakeWorker.cjs",
+    "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
+    "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs"
   ],
   "protectedFiles": [
     {
