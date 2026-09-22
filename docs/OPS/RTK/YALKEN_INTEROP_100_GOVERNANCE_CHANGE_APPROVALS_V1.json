@@ -1494,6 +1494,15 @@
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
       "sha256": "bfb6011cb3b8b8197f6cc744d5d1a3f084dcf77915927cfffcfbc85327630136"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T19:03:04.655Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Bounded current-byte approval for the existing PK1R1 registry after deterministic C2A regeneration. The former reverse PK1R1-to-interop registry binding is retired to avoid an impossible content-hash cycle; historical Git bytes remain preserved. No product scope, release, or cell-credit authority added.",
+      "sha256": "573e26bbbdfde637604ab9a59cd22c36d409e6832de05395ceb508246397f2b9"
     }
   ],
   "evidenceStampIds": [
