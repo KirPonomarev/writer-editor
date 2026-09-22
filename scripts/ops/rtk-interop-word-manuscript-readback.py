@@ -754,14 +754,14 @@ def controls(source,volume,route,ids,round_id,recipe='DEFAULT'):
 GOOGLE_NATIVE_MIME='application/vnd.google-apps.document'
 GOOGLE_DOCX_MIME='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
-def google_native_paragraphs(doc,document_id):
+def _google_native_body(doc,document_id):
     require(doc.get('documentId')==document_id and isinstance(doc.get('revisionId'),str) and doc['revisionId'],'GOOGLE_NATIVE_ID_REVISION')
     tabs=doc.get('tabs');require(isinstance(tabs,list) and len(tabs)==1 and not doc.get('body'),'GOOGLE_NATIVE_TABS')
     tab=tabs[0];require(tab.get('documentId')==document_id and isinstance(tab.get('tabId'),str) and tab['tabId'] and not tab.get('parentTabId'),'GOOGLE_NATIVE_TAB_ID')
     require(not any(tab.get(k) for k in ['headers','footers','footnotes','inlineObjects','positionedObjects','suggestedDocumentStyleChanges','suggestedNamedStylesChanges']),'GOOGLE_NATIVE_UNSUPPORTED_OBJECT')
     content=tab.get('body',{}).get('content');require(isinstance(content,list) and 1<len(content)<=10000,'GOOGLE_NATIVE_BODY')
     require(set(content[0])<={'startIndex','endIndex','sectionBreak'} and content[0].get('startIndex',0)==0 and content[0].get('endIndex')==1 and isinstance(content[0].get('sectionBreak'),dict),'GOOGLE_NATIVE_INITIAL_SECTION')
-    paragraphs=[];offset=1
+    paragraphs=[];sections=[];offset=1
     for block in content[1:]:
         if 'sectionBreak' in block:
             require(set(block)=={'startIndex','endIndex','sectionBreak'} and block['startIndex']==offset and block['endIndex']==offset+1,'GOOGLE_NATIVE_SECTION_BLOCK')
@@ -772,6 +772,7 @@ def google_native_paragraphs(doc,document_id):
             for key in ['marginTop','marginBottom','marginRight','marginLeft','marginHeader','marginFooter']:
                 if key in style:
                     value=style[key];require(isinstance(value,dict) and set(value)<={'magnitude','unit'} and value.get('unit')=='PT' and isinstance(value.get('magnitude'),(int,float)) and not isinstance(value.get('magnitude'),bool) and 0<=value['magnitude']<=10000,'GOOGLE_NATIVE_SECTION_MARGIN')
+            sections.append({'paragraphCount':len(paragraphs),'sectionType':style['sectionType']})
             offset=block['endIndex'];continue
         require(set(block)=={'startIndex','endIndex','paragraph'} and block['startIndex']==offset,'GOOGLE_NATIVE_BLOCK')
         paragraph=block['paragraph'];require(set(paragraph)<={'elements','paragraphStyle','bullet','positionedObjectIds'} and not paragraph.get('positionedObjectIds'),'GOOGLE_NATIVE_PARAGRAPH')
@@ -783,7 +784,63 @@ def google_native_paragraphs(doc,document_id):
             offset=element['endIndex'];pieces.append(text)
         text=''.join(pieces);require(text.endswith('\n') and '\n' not in text[:-1] and block['endIndex']==offset,'GOOGLE_NATIVE_BOUNDARY')
         paragraphs.append(text[:-1])
-    return paragraphs
+    return paragraphs,sections
+
+def google_native_paragraphs(doc,document_id):
+    return _google_native_body(doc,document_id)[0]
+
+def _google_source_contract(source):
+    source_paragraphs,_,source_document=docx(source)
+    sections=[] if not list(source_document.iter(W+'sectPr')) else section_doc(source_document,source)['protectedSections']
+    carriers=[section for section in sections if section['breakPlacement']=='PARAGRAPH_PROPERTIES']
+    require(all(0<=section['endParagraphIndex']<len(source_paragraphs) for section in carriers),'GOOGLE_SOURCE_SECTION_CARRIER')
+    empty=[section['endParagraphIndex'] for section in carriers if source_paragraphs[section['endParagraphIndex']]=='']
+    require(len(empty)==len(set(empty)),'GOOGLE_SOURCE_SECTION_CARRIER_DUPLICATE')
+    require(all((index==0 or source_paragraphs[index-1]!='') and (index+1==len(source_paragraphs) or source_paragraphs[index+1]!='') for index in empty),'GOOGLE_SOURCE_SECTION_CARRIER_AMBIGUOUS')
+    return {'paragraphs':source_paragraphs,'sections':sections,'carriers':carriers,'emptyCarriers':empty}
+
+def _google_provider_reconcile(contract,observed,section_positions,section_types):
+    source=contract['paragraphs'];carriers=contract['carriers'];empty=set(contract['emptyCarriers'])
+    filtered=[text for index,text in enumerate(source) if index not in empty]
+    candidates=[]
+    if observed==source:candidates.append(set())
+    if observed==filtered and empty:candidates.append(empty)
+    require(len(candidates)==1,'GOOGLE_PROVIDER_TEXT_SEQUENCE')
+    omitted=candidates[0]
+    positions=[sum(1 for index in range(section['endParagraphIndex']+1) if index not in omitted) for section in carriers]
+    expected_types=[]
+    for section in carriers:
+        value=section['properties']['type']
+        expected_types.append({'nextPage':'NEXT_PAGE','continuous':'CONTINUOUS'}.get(value))
+    require(all(value is not None for value in expected_types),'GOOGLE_SOURCE_SECTION_TYPE')
+    require(len(section_positions)==len(positions)==len(section_types),'GOOGLE_PROVIDER_SECTION_COUNT')
+    require(section_positions==positions and section_types==expected_types,'GOOGLE_PROVIDER_SECTION_BOUNDARY')
+    return source,omitted,positions,expected_types
+
+def _google_provider_loss_ledger(contract,observed,section_positions,section_types,source_hash):
+    source,omitted,positions,expected_types=_google_provider_reconcile(contract,observed,section_positions,section_types)
+    ledger={'schemaVersion':'GOOGLE_NATIVE_PROVIDER_LOSS_V1','sourceSha256':source_hash,'sourceParagraphCount':len(source),
+            'observedParagraphCount':len(observed),'omittedEmptySectionCarrierIndexes':sorted(omitted),
+            'sectionBreaks':[{'sourceParagraphIndex':section['endParagraphIndex'],'observedParagraphCount':position,'sectionType':section_type}
+                             for section,position,section_type in zip(contract['carriers'],positions,expected_types)],
+            'mode':'SOURCE_BOUND_EMPTY_SECTION_CARRIER_RELOCATION' if omitted else 'NO_PROVIDER_PARAGRAPH_LOSS',
+            'authority':'DERIVED_PROVIDER_LOSS_ONLY_NO_PRODUCT_WRITE'}
+    return source,ledger
+
+def google_provider_reconcile(source,observed,section_positions,section_types):
+    """Reconcile provider paragraphs against the exact source DOCX contract."""
+    contract=_google_source_contract(source)
+    return _google_provider_loss_ledger(contract,observed,section_positions,section_types,digest(source))
+
+def google_provider_reconcile_docx(source,returned):
+    contract=_google_source_contract(source)
+    observed,_,document=docx(returned,google=True);returned_sections=section_doc(document,returned)['protectedSections']
+    require(len(returned_sections)==len(contract['sections']),'GOOGLE_RETURN_SECTION_COUNT')
+    nonfinal=returned_sections[:-1];positions=[section['endParagraphIndex']+1 for section in nonfinal]
+    types=[section['properties']['type'] for section in nonfinal]
+    source,ledger=_google_provider_loss_ledger(contract,observed,positions,[{'nextPage':'NEXT_PAGE','continuous':'CONTINUOUS'}.get(value) for value in types],digest(source))
+    require(returned_sections[-1]['endParagraphIndex']==len(observed)-1,'GOOGLE_RETURN_FINAL_SECTION')
+    return source,ledger
 
 def google_exchange(response,request,source,returned):
     require(request['schemaVersion']=='GOOGLE_NATIVE_REQUEST_V1' and request['sourceSha256']==digest(source) and request['profile']=='GOOGLE_NATIVE' and request['uploadMode']=='native_google_docs','GOOGLE_REQUEST_BINDING')
@@ -797,14 +854,18 @@ def google_exchange(response,request,source,returned):
     meta=ok(response['metadata']);require(response['metadata']['request']['fileId']==ident and meta.get('id')==ident and meta.get('mime_type')==GOOGLE_NATIVE_MIME,'GOOGLE_NATIVE_METADATA')
     before=ok(response['nativeBefore']);after=ok(response['nativeAfter'])
     for k in ['nativeBefore','nativeAfter']:require(response[k]['request']['document_id']==ident,'GOOGLE_READ_TARGET')
-    a=google_native_paragraphs(before,ident);b=google_native_paragraphs(after,ident)
+    contract=_google_source_contract(source)
+    raw_a,sections_a=_google_native_body(before,ident);raw_b,sections_b=_google_native_body(after,ident)
+    a,loss_a=_google_provider_loss_ledger(contract,raw_a,[x['paragraphCount'] for x in sections_a],[x['sectionType'] for x in sections_a],digest(source))
+    b,loss_b=_google_provider_loss_ledger(contract,raw_b,[x['paragraphCount'] for x in sections_b],[x['sectionType'] for x in sections_b],digest(source))
+    require(loss_a==loss_b,'GOOGLE_PROVIDER_LOSS_CHANGED')
     require(before['revisionId']==after['revisionId'] and canonical(before)==canonical(after),'GOOGLE_CHANGED_DURING_EXPORT')
     exp=ok(response['export']);require(response['export']['request']=={'url':'https://docs.google.com/document/d/'+ident,'download_raw_file':True,'include_base64':True,'raw_export_mime_type':GOOGLE_DOCX_MIME},'GOOGLE_EXPORT_REQUEST')
     require(exp.get('id')==ident and exp.get('mime_type')==GOOGLE_DOCX_MIME and exp.get('file_size_bytes')==len(returned) and isinstance(exp.get('b64_string'),str),'GOOGLE_EXPORT_ID')
     require(base64.b64decode(exp['b64_string'],validate=True)==returned and base64.b64encode(returned).decode()==exp['b64_string'],'GOOGLE_RETURN_BYTES')
     cleanup=response['cleanup'];require(ok(cleanup['delete']).get('success') is True and cleanup['delete']['request']=={'url':'https://drive.google.com/file/d/'+ident+'/view'},'GOOGLE_DELETE')
     readback=cleanup['readback'];error=readback['response'];require(readback['request']['fileId']==ident and error.get('isError') is True and error.get('structuredContent',{}).get('error_code')=='NOT_FOUND' and ident in error['structuredContent'].get('error',''),'GOOGLE_DELETE_READBACK')
-    return a,b,{'documentId':ident,'revisionId':before['revisionId'],'sourceSha256':digest(source),'returnedSha256':digest(returned),'nativeBodySha256':digest(canonical(a)),'cleanupVerified':True,'transport':'DIRECT_LOCAL_PATH_NATIVE_CONVERSION_V2','providerLocale':{'mode':'CONTENT_API_NO_PROVIDER_UI_SESSION','sourceLocaleBoundSeparately':True,'normalization':'LITERAL_CODEPOINTS_NO_NORMALIZATION'}}
+    return a,b,{'documentId':ident,'revisionId':before['revisionId'],'sourceSha256':digest(source),'returnedSha256':digest(returned),'nativeBodySha256':digest(canonical(a)),'cleanupVerified':True,'transport':'DIRECT_LOCAL_PATH_NATIVE_CONVERSION_V2','providerLocale':{'mode':'CONTENT_API_NO_PROVIDER_UI_SESSION','sourceLocaleBoundSeparately':True,'normalization':'LITERAL_CODEPOINTS_NO_NORMALIZATION'},'providerLossLedger':loss_a,'providerLossLedgerSha256':digest(canonical(loss_a))}
 
 GOOGLE_CONTROLS=['wrong-source-binding','non-native-mime','mixed-document-id','changed-revision','missing-cleanup','missing-tab','coherent-native-text-loss','returned-byte-substitution']
 def google_controls(response,request,source,returned,expected):
@@ -1007,7 +1068,10 @@ def audit(request):
             response=read('google-response.json');request=read('google-request.json');require(request['runId']==run and request['source'].endswith('/'+run+'/'+base+'/source.docx'),'GOOGLE_RUN_SOURCE_PATH')
             before,after,google_proof=google_exchange(response,request,raw(base+'/source.docx'),raw(base+'/returned.docx'))
             stage(base+'/google-native-before',before);stage(base+'/google-native-after',after)
-            returned_ps,returned_parts,returned_document=docx(raw(base+'/returned.docx'),google=True);stage(base+'/google-docx',returned_ps)
+            returned_ps,returned_parts,returned_document=docx(raw(base+'/returned.docx'),google=True)
+            returned_reconciled,returned_loss=google_provider_reconcile_docx(raw(base+'/source.docx'),raw(base+'/returned.docx'))
+            require(returned_loss==google_proof['providerLossLedger'],'GOOGLE_PROVIDER_LOSS_CONTINUITY')
+            stage(base+'/google-docx',returned_reconciled)
             life=read(base+'/google.json');require(life['status']=='PASS' and life['admissionCredit']==0 and life['cleanupOk'] is True and life['sourceSha256']==google_proof['sourceSha256'] and life['returnedSha256']==google_proof['returnedSha256'] and life['documentId']==google_proof['documentId'] and life['revisionId']==google_proof['revisionId'] and life['rawResponseSha256']==digest(raw('google-response.json')),'GOOGLE_NATIVE_HASH_CHAIN')
             google_proof['rawResponseSha256']=life['rawResponseSha256']
             google_proof['negativeControls']=google_controls(response,request,raw(base+'/source.docx'),raw(base+'/returned.docx'),expected)
