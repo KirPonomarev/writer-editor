@@ -665,7 +665,6 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     'T04_PARAGRAPH_ONE',
     'T04_PARAGRAPH_TWO',
     'T04_SECTION_ONE',
-    '',
     'T04_SECTION_TWO',
   ].join('\n'));
   for (const expected of [
@@ -673,7 +672,7 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     ['DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY', 'pageBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE'],
     ['DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY', 'columnBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'],
     [
-      'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_PARAGRAPH_BOUNDARY_RECOVERED',
+      'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED',
       'sectionBreak',
       'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
     ],
@@ -1150,8 +1149,11 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
   assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
   assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
   assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
+  assert.equal(result.contentPreview.paragraphs[0].sectionBreakTypeImplicit, true);
   assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[2], 'sectionBreakTypeImplicit'), false);
   assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'nextPage');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[3], 'sectionBreakTypeImplicit'), false);
   assert.equal(result.contentPreview.paragraphs[3].zeroLengthBookmarkCount, 1);
   assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[5], 'sectionBreakType'), false);
   assert.equal(importPreview.ok, true);

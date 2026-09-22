@@ -8723,6 +8723,9 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
   }
+  if (metadata.sectionBreakTypeImplicit === true) {
+    paragraph.sectionBreakTypeImplicit = true;
+  }
   if (Number.isInteger(metadata.zeroLengthBookmarkCount) && metadata.zeroLengthBookmarkCount > 0) {
     paragraph.zeroLengthBookmarkCount = metadata.zeroLengthBookmarkCount;
   }
@@ -9016,6 +9019,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
           : (frame?.insideParagraph ? 'nextPage' : '');
         if (frame?.insideParagraph && frame.paragraphMetadata && sectionBreakType) {
           frame.paragraphMetadata.sectionBreakType = sectionBreakType;
+          if (!frame.explicitTypeSeen) frame.paragraphMetadata.sectionBreakTypeImplicit = true;
         }
         docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
       } else {
@@ -9031,6 +9035,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
           const sectionBreakType = frame.insideParagraph ? 'nextPage' : '';
           if (frame.insideParagraph && frame.paragraphMetadata) {
             frame.paragraphMetadata.sectionBreakType = sectionBreakType;
+            frame.paragraphMetadata.sectionBreakTypeImplicit = true;
           }
           docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
         }
@@ -9779,6 +9784,7 @@ function docxImportPreviewProjectNextPageBoundaries(paragraphs) {
       typeof paragraph?.text === 'string'
       && paragraph.text !== ''
       && docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage'
+      && paragraph.sectionBreakTypeImplicit === true
     ) {
       // Google Docs moves a next-page section carrier onto the preceding
       // non-empty paragraph and removes the empty carrier on DOCX export.

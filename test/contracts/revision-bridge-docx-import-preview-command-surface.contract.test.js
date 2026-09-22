@@ -258,6 +258,7 @@ test('DOCX import preview command surface: clean content report returns wrapped 
   assert.equal(withEmptyParagraph.docxImportPreviewPlan.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo');
   const relocatedSectionReport = contentPreviewReport(['Alpha', 'Bravo']);
   relocatedSectionReport.contentPreview.paragraphs[0].sectionBreakType = 'nextPage';
+  relocatedSectionReport.contentPreview.paragraphs[0].sectionBreakTypeImplicit = true;
   const withRelocatedSectionBoundary = await port.handleDocxImportPreviewCommandSurface(toPayload(
     relocatedSectionReport,
   ));

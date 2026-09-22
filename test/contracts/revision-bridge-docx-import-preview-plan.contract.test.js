@@ -628,24 +628,24 @@ test('DOCX import preview plan: ordinary title sections do not trigger Google Do
 
   assertDocxImportPreviewShell(singleTitle);
   assert.equal(singleTitle.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\n\nChapter body');
+  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\nChapter body');
   assert.equal(singleTitle.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 
   assertDocxImportPreviewShell(repeatedTitleWithoutSeparators);
   assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\nChapter Two\n\nBravo body');
+  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\nChapter Two\nBravo body');
   assert.equal(repeatedTitleWithoutSeparators.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 
   assertDocxImportPreviewShell(sameTopologyWithoutBookmarks);
   assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\n\nChapter Two\n\nBravo body\n');
+  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\n\nChapter Two\nBravo body\n');
   assert.equal(sameTopologyWithoutBookmarks.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 });
 
 test('DOCX import preview plan: relocated next-page carrier recovers one empty paragraph only', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
-    { text: 'Alpha', sectionBreakType: 'nextPage' },
+    { text: 'Alpha', sectionBreakType: 'nextPage', sectionBreakTypeImplicit: true },
     { text: 'Bravo' },
     { text: '', sectionBreakType: 'nextPage' },
     { text: 'Charlie', sectionBreakType: 'continuous' },
