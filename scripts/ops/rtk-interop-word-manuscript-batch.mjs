@@ -206,6 +206,24 @@ function clean(root){
   const [head,tree]=git(['rev-parse','HEAD','HEAD^{tree}']).trim().split('\n');
   demand(sha40(head)&&sha40(tree),'MANUSCRIPT_BATCH_GIT_IDENTITY');return {head,tree};
 }
+export function validateManuscriptVerifierPromotion({repoRoot=ROOT,runtimeIdentity,verifierIdentity,allowedPaths}){
+  demand(runtimeIdentity&&verifierIdentity&&sha40(runtimeIdentity.head)&&sha40(runtimeIdentity.tree)
+    &&sha40(verifierIdentity.head)&&sha40(verifierIdentity.tree),'MANUSCRIPT_BATCH_PROMOTION_IDENTITY');
+  demand(Array.isArray(allowedPaths)&&allowedPaths.length>0&&new Set(allowedPaths).size===allowedPaths.length
+    &&allowedPaths.every(p=>typeof p==='string'&&p.length>0&&!path.isAbsolute(p)&&!p.split('/').includes('..')),'MANUSCRIPT_BATCH_PROMOTION_POLICY');
+  if(runtimeIdentity.head===verifierIdentity.head){
+    demand(runtimeIdentity.tree===verifierIdentity.tree,'MANUSCRIPT_BATCH_PROMOTION_TREE');
+    return [];
+  }
+  const git=gitAt(repoRoot);
+  let ancestor=false;
+  try{git(['merge-base','--is-ancestor',runtimeIdentity.head,verifierIdentity.head]);ancestor=true;}catch{}
+  demand(ancestor,'MANUSCRIPT_BATCH_PROMOTION_NOT_DESCENDANT');
+  const changed=git(['diff','--name-only','--no-renames',runtimeIdentity.head+'..'+verifierIdentity.head,'--']).trim().split('\n').filter(Boolean);
+  const allowed=new Set(allowedPaths);
+  demand(changed.length>0&&changed.every(p=>allowed.has(p)),'MANUSCRIPT_BATCH_PROMOTION_SCOPE');
+  return changed;
+}
 export function validateManuscriptRuns(runIds){
   demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=38,'MANUSCRIPT_BATCH_RUN_SET');
   const rows=runIds.map(runId=>{
@@ -312,7 +330,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
 }
 
 export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,requiredCells,specErrors=[],currentHead}={}){
-  const started=performance.now(),errors=[...specErrors];let identity=null,reviews=[];
+  const started=performance.now(),errors=[...specErrors];let identity=null,runtimeIdentity=null,runtimeRoot=null,promotionPaths=[],reviews=[];
   try{
     demand(!errors.length,'MANUSCRIPT_BATCH_SPEC_OR_MODE');
     const rows=validateManuscriptRuns(runIds);
@@ -326,8 +344,10 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
       &&MANUSCRIPT_CELLS.every(id=>requiredCells.some(c=>c.cellId===id)),'MANUSCRIPT_BATCH_DENOMINATOR');
     for(const b of batch.readerBindings)demand(hash(readOrderFile(ROOT,b.path).bytes)===b.sha256,'MANUSCRIPT_BATCH_READER_PIN');
     const manifest=json(labRoot,'LAB_MANIFEST.json'),shadow=manifest.shadow.yalken;
-    demand(fs.realpathSync(shadow.root)===ROOT&&shadow.readOnly===true&&shadow.head===identity.head&&shadow.tree===identity.tree
-      &&shadow.declaredOriginMainHead===identity.head&&shadow.declaredOriginMainTree===identity.tree,'MANUSCRIPT_BATCH_SHADOW');
+    runtimeRoot=fs.realpathSync(shadow.root);runtimeIdentity=clean(runtimeRoot);
+    demand(shadow.readOnly===true&&shadow.head===runtimeIdentity.head&&shadow.tree===runtimeIdentity.tree
+      &&shadow.declaredOriginMainHead===runtimeIdentity.head&&shadow.declaredOriginMainTree===runtimeIdentity.tree,'MANUSCRIPT_BATCH_SHADOW');
+    promotionPaths=validateManuscriptVerifierPromotion({runtimeIdentity,verifierIdentity:identity,allowedPaths:batch.verifierPromotionPaths});
     demand(hash(readOrderFile(labRoot,'data/registry/frozen-denominator-registry-v2.json').bytes)===policy.labRegistrySha256,'MANUSCRIPT_BATCH_REGISTRY');
     labRevision(labRoot,labIdentity.head,policy);
     const ledgerFile=readOrderFile(labRoot,'data/evidence/ledger.jsonl',64*1024*1024);
@@ -339,7 +359,7 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
       for(const k of ['labHead','labTree','createdAt','status','recipe','yalkenShadowHead','yalkenShadowTree'])demand(obs[k]===entry[k],'MANUSCRIPT_BATCH_LEDGER_BINDING');
       const withoutHash={...obs};delete withoutHash.artifactHash;
       demand(obs.artifactHashScope==='observation_without_artifactHash'&&hashOrderObservation(withoutHash)===obs.artifactHash,'MANUSCRIPT_BATCH_OBSERVATION_HASH');
-      demand(obs.yalkenShadowHead===identity.head&&obs.yalkenShadowTree===identity.tree&&obs.candidateDiagnosticOnly===false,'MANUSCRIPT_BATCH_ACTUAL_RUNTIME');
+      demand(obs.yalkenShadowHead===runtimeIdentity.head&&obs.yalkenShadowTree===runtimeIdentity.tree&&obs.candidateDiagnosticOnly===false,'MANUSCRIPT_BATCH_ACTUAL_RUNTIME');
       demand(Date.parse(obs.createdAt)>=Date.parse(batch.notBeforeUtc)&&Date.parse(obs.createdAt)<=Date.now(),'MANUSCRIPT_BATCH_OBSERVATION_TIME');
       labRevision(labRoot,obs.labHead,policy);
       demand(gitAt(labRoot)(['rev-parse',obs.labHead+'^{tree}']).trim()===obs.labTree,'MANUSCRIPT_BATCH_LAB_TREE');
@@ -349,19 +369,19 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
       demand(files.length<=2048&&new Set(files.map(f=>f.path)).size===files.length,'MANUSCRIPT_BATCH_INVENTORY');
       demand(files.every(f=>f.path.startsWith(prefix)&&Number.isSafeInteger(f.bytes)&&f.bytes>=0&&f.bytes<=32*1024*1024&&sha64(f.sha256))
         &&files.reduce((n,f)=>n+f.bytes,0)<=384*1024*1024,'MANUSCRIPT_BATCH_FILE_SCOPE');
-      const request={root:fs.realpathSync(labRoot),runId:row.runId,productHead:identity.head,productTree:identity.tree,files,
-        qualifiedProvider:policy.qualifiedProvider,packageJsonSha256:hash(readOrderFile(ROOT,'package.json').bytes),
-        packageLockSha256:hash(readOrderFile(ROOT,'package-lock.json').bytes),electronVersion:batch.electronVersion};
+      const request={root:fs.realpathSync(labRoot),runId:row.runId,productHead:runtimeIdentity.head,productTree:runtimeIdentity.tree,files,
+        qualifiedProvider:policy.qualifiedProvider,packageJsonSha256:hash(readOrderFile(runtimeRoot,'package.json').bytes),
+        packageLockSha256:hash(readOrderFile(runtimeRoot,'package-lock.json').bytes),electronVersion:batch.electronVersion};
       const process=spawnSync('python3',['-I','-B',path.join(ROOT,READER)],{input:JSON.stringify(request),encoding:'utf8',timeout:180000,maxBuffer:16*1024*1024});
       demand(!process.error&&process.status===0,'MANUSCRIPT_BATCH_RAW_FAILED:'+String(process.stdout||process.stderr||process.error));
       const raw=JSON.parse(process.stdout);
-      validateManuscriptRaw(raw,{row,...identity,observationSha256:obsFile.binding.sha256,files,policy});
+      validateManuscriptRaw(raw,{row,...runtimeIdentity,observationSha256:obsFile.binding.sha256,files,policy});
       reviews.push({runId:row.runId,observationArtifactHash:obs.artifactHash,raw});
     }
     const proved=reviews.flatMap(r=>r.raw.fieldProofs.map(f=>f.cellId));
     demand(new Set(proved).size===proved.length,'MANUSCRIPT_BATCH_DUPLICATE_CELL_CREDIT');
     demand(readOrderFile(labRoot,'data/evidence/ledger.jsonl',64*1024*1024).bytes.equals(ledgerFile.bytes)
-      &&same(clean(ROOT),identity)&&same(clean(labRoot),labIdentity),'MANUSCRIPT_BATCH_CHANGED_DURING_REVIEW');
+      &&same(clean(ROOT),identity)&&same(clean(runtimeRoot),runtimeIdentity)&&same(clean(labRoot),labIdentity),'MANUSCRIPT_BATCH_CHANGED_DURING_REVIEW');
   }catch(error){errors.push(String(error.message));}
   const ok=!errors.length,fieldProofs=ok?reviews.flatMap(r=>r.raw.fieldProofs):[];
   const acceptedCellIds=[...new Set(fieldProofs.map(f=>f.cellId))].sort();
@@ -370,7 +390,9 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     acceptedCellIds,diagnosticPassedRequiredCells:0,broadPassClaim:false,
     claimVerdict:ok?'NEEDS_MORE_EVIDENCE':'FAIL_WORD_MANUSCRIPT_EVIDENCE',
     statusCounts:{PASS:acceptedCellIds.length,NOT_EXECUTED:1120-acceptedCellIds.length},
-    currentHead:identity?.head||null,currentTree:identity?.tree||null,percentage:acceptedCellIds.length/1120*100,
+    currentHead:identity?.head||null,currentTree:identity?.tree||null,
+    evidenceRuntimeHead:runtimeIdentity?.head||null,evidenceRuntimeTree:runtimeIdentity?.tree||null,verifierPromotionPaths:promotionPaths,
+    percentage:acceptedCellIds.length/1120*100,
     cellDecisions:fieldProofs.map(f=>({cellId:f.cellId,status:'PASS',outcome:f.outcome,sourceRunId:f.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(f)))})),
     policySha256:DATA_POLICY_SHA256,rawReadbacks:ok?reviews:[],seconds:(performance.now()-started)/1000,
     limitations:['Only complete named field subcases at executed fixed volumes and actual source/packaged profiles.',

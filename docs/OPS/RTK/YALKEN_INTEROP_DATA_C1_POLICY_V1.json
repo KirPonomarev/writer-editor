@@ -596,11 +596,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "7fc0e71f0cf81109a548acdd4daf186074d7b377ff1f3e5a24c97b9e5563d8f6"
+        "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "66e957195d06b13c772513d0b11d351ceba4ad04e6ee8daee61892ab1b86736b"
+        "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -1285,11 +1285,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "0ed39e79221aecfdd1ffb44ef10a1593fcaa225e0bd0f2d7e0a0f9760e8ee99e"
+        "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "a4a034714c66aa841f96b0a3b20a372b526142163913aeccd8370c18725795c0"
+        "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1602,7 +1602,18 @@
         "field": "providerTransportPolicy.googleLocalDocxToNativeImport",
         "retainsHistoricalStagingReceipt": true
       }
-    }
+    },
+    "verifierPromotionPaths": [
+      "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "scripts/ops/rtk-interop-data-c1.mjs",
+      "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "test/unit/rtk-interop-word-manuscript.test.py"
+    ]
   },
   "labCodeBindingSets": [
     {

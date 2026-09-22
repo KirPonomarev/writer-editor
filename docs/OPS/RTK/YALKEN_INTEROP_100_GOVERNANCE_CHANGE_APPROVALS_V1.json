@@ -250,12 +250,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:11:05Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery distinguishes an implicit relocated next-page carrier from an explicit Word section boundary and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound for the changed files; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "8bfc90cd793dd72ce2a87b62f9c26ce094dee6cd0d66522c1f26cda26ecace98"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "aafe0ccb44b33e4248488449c3b797befe11c1157dffbd39128e6dae438b82fc"
     },
     {
       "approved": true,
@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:17:00Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery admits the exact import-plan contract alongside the already governed import path, distinguishes implicit relocated and explicit Word section boundaries, and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "73c1fdc62b7d54b4b6097f11d06374457c2502a72527ee2df8bdf36bfca561b5"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "cde0513cea5cb3dd61552d50b672ec9050349ae0979136d51774518f8518e0a2"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:17:00Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery admits the exact import-plan contract alongside the already governed import path, distinguishes implicit relocated and explicit Word section boundaries, and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "bf559ac4c532bfa12ed40ebe55b4503ba6bb5cdbace66960d567a465a795df0d"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "c88d118e0f6cb58166d58ab93a0f44bbb554a809eda0fb5e13cbae797e64a14d"
     },
     {
       "approved": true,
@@ -1191,12 +1191,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T23:33:56Z",
-      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
-      "sha256": "a4a034714c66aa841f96b0a3b20a372b526142163913aeccd8370c18725795c0"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
     },
     {
       "approved": true,
@@ -1236,30 +1236,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "7fc0e71f0cf81109a548acdd4daf186074d7b377ff1f3e5a24c97b9e5563d8f6"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T19:27:26.805077Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_NEGATIVE_ORACLE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh exact-merged physical evidence proved the product duplicate-section fail-closed result RTK_WORD_SECTIONS_MALFORMED_BLOCKED while the independent oracle wrongly required an RTK_RETURN_INTAKE_ prefix. This bounded repair binds each of seven section mutants to one exact expected rejection code, retains zero-write and artifact-integrity checks, and grants no cell credit until fresh merged evidence passes complete admission.",
-      "sha256": "0ed39e79221aecfdd1ffb44ef10a1593fcaa225e0bd0f2d7e0a0f9760e8ee99e"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "8ecd722fc669e270e8dc677770bd6078b98762cfb0aae076499787cbb6cd06c3"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T23:33:56Z",
-      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T05:00:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
-      "sha256": "66e957195d06b13c772513d0b11d351ceba4ad04e6ee8daee61892ab1b86736b"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
     },
     {
       "approved": true,
@@ -1322,7 +1322,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This deterministic C2A artifact refresh binds the current exhaustive test-inventory bytes after the bounded Google section-boundary recovery. The two cross-registry rows are rebound to the generated artifact; no product behavior, dependency, runtime network, denominator change, or cell credit is added.",
-      "sha256": "4dc7676004ef9f47a835e9b20b83772f447bc8ea45c953328b7ca4d70dee4cdb"
+      "sha256": "69baaf8a3f14462389c48abaf2201613329e46f61b03f93ef52b515c532780b8"
     },
     {
       "approved": true,

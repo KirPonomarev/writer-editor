@@ -763,6 +763,16 @@ def google_native_paragraphs(doc,document_id):
     require(set(content[0])<={'startIndex','endIndex','sectionBreak'} and content[0].get('startIndex',0)==0 and content[0].get('endIndex')==1 and isinstance(content[0].get('sectionBreak'),dict),'GOOGLE_NATIVE_INITIAL_SECTION')
     paragraphs=[];offset=1
     for block in content[1:]:
+        if 'sectionBreak' in block:
+            require(set(block)=={'startIndex','endIndex','sectionBreak'} and block['startIndex']==offset and block['endIndex']==offset+1,'GOOGLE_NATIVE_SECTION_BLOCK')
+            section=block['sectionBreak'];require(isinstance(section,dict) and set(section)=={'sectionStyle'},'GOOGLE_NATIVE_SECTION')
+            style=section['sectionStyle'];require(isinstance(style,dict) and set(style)<={'columnSeparatorStyle','contentDirection','marginTop','marginBottom','marginRight','marginLeft','marginHeader','marginFooter','sectionType','useFirstPageHeaderFooter','flipPageOrientation'},'GOOGLE_NATIVE_SECTION_STYLE')
+            require(style.get('sectionType') in {'CONTINUOUS','NEXT_PAGE'} and style.get('contentDirection') in {None,'LEFT_TO_RIGHT','RIGHT_TO_LEFT'} and style.get('columnSeparatorStyle') in {None,'NONE','BETWEEN_EACH_COLUMN'},'GOOGLE_NATIVE_SECTION_KIND')
+            require(all(isinstance(style.get(k),bool) for k in ['useFirstPageHeaderFooter','flipPageOrientation'] if k in style),'GOOGLE_NATIVE_SECTION_BOOL')
+            for key in ['marginTop','marginBottom','marginRight','marginLeft','marginHeader','marginFooter']:
+                if key in style:
+                    value=style[key];require(isinstance(value,dict) and set(value)<={'magnitude','unit'} and value.get('unit')=='PT' and isinstance(value.get('magnitude'),(int,float)) and not isinstance(value.get('magnitude'),bool) and 0<=value['magnitude']<=10000,'GOOGLE_NATIVE_SECTION_MARGIN')
+            offset=block['endIndex'];continue
         require(set(block)=={'startIndex','endIndex','paragraph'} and block['startIndex']==offset,'GOOGLE_NATIVE_BLOCK')
         paragraph=block['paragraph'];require(set(paragraph)<={'elements','paragraphStyle','bullet','positionedObjectIds'} and not paragraph.get('positionedObjectIds'),'GOOGLE_NATIVE_PARAGRAPH')
         elements=paragraph.get('elements');require(isinstance(elements,list) and elements,'GOOGLE_NATIVE_ELEMENTS');pieces=[]
