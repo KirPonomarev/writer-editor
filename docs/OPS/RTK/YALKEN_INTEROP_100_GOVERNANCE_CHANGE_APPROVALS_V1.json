@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:17:00Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T04:20:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery admits the exact import-plan contract alongside the already governed import path, distinguishes implicit relocated and explicit Word section boundaries, and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "73c1fdc62b7d54b4b6097f11d06374457c2502a72527ee2df8bdf36bfca561b5"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "579e93821f14f6ac04d650482e0c5a62aa34024b601af2e831e983edf36eac53"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:17:00Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T04:20:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery admits the exact import-plan contract alongside the already governed import path, distinguishes implicit relocated and explicit Word section boundaries, and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "bf559ac4c532bfa12ed40ebe55b4503ba6bb5cdbace66960d567a465a795df0d"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "1b13f9b4e94bbf42c32c8f8b493643b876f28d7a6155f0261c009ec3660aad2d"
     },
     {
       "approved": true,
@@ -1191,12 +1191,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T23:33:56Z",
-      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T04:20:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
-      "sha256": "a4a034714c66aa841f96b0a3b20a372b526142163913aeccd8370c18725795c0"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "c6355ffb3cec8d6b9af6c67843d48ea68605acd5726d6a01cbc6c42092c8478d"
     },
     {
       "approved": true,
@@ -1254,12 +1254,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T23:33:56Z",
-      "approvedBy": "owner-direct-task:C1_SECTION_LOSS_ORACLE_20260922",
+      "approvedAtUtc": "2026-09-22T04:20:00Z",
+      "approvedBy": "owner-direct-task:C5_GOOGLE_NATIVE_INTERNAL_SECTION_ORACLE_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. Exact-head physical multi-scene C1 passed while the independent oracle still required the pre-section six-item loss set. This bounded repair derives the exact unique next-page and continuous section-loss declarations from raw DOCX XML, rejects missing, extra and unknown losses, changes no product runtime, and grants no cell credit until the complete fresh merged batch passes.",
-      "sha256": "66e957195d06b13c772513d0b11d351ceba4ad04e6ee8daee61892ab1b86736b"
+      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. Fresh Google C5 multi-scene evidence exposed that the independent native oracle rejected valid internal sectionBreak blocks. This bounded verifier repair accepts only contiguous one-unit section blocks with an allowlisted style schema, retains exact paragraph, revision, exported-byte and deletion checks, and adds malformed-section rejection tests. Exact-byte policy and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
+      "sha256": "e0d703b49a8068d5d54817966f72eba8f8406b15b801703fa9a511b326ff5c2c"
     },
     {
       "approved": true,
