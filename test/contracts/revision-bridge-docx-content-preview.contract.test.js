@@ -597,7 +597,7 @@ test('DOCX content preview: XML character data follows parser legality and prese
   }
 });
 
-test('DOCX content preview: typed breaks and section types have exact plain text loss items', async () => {
+test('DOCX content preview: typed breaks and section types have exact plain text projections', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
     '<w:p><w:r><w:t>T04_LINE_BEFORE</w:t><w:br/><w:t>T04_LINE_AFTER</w:t></w:r></w:p>',
@@ -665,6 +665,7 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     'T04_PARAGRAPH_ONE',
     'T04_PARAGRAPH_TWO',
     'T04_SECTION_ONE',
+    '',
     'T04_SECTION_TWO',
   ].join('\n'));
   for (const expected of [
@@ -672,7 +673,7 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     ['DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY', 'pageBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE'],
     ['DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY', 'columnBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'],
     [
-      'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED',
+      'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_PARAGRAPH_BOUNDARY_RECOVERED',
       'sectionBreak',
       'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
     ],
