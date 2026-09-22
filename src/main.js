@@ -229,6 +229,7 @@ const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
 const { buildDocxReviewPacketBuffer: buildDocxReviewPacketBufferCore, deriveWordBookmarkNameV1: deriveWordBookmarkNameV1Cjs } = require('./export/docx/docxReviewPacketBuilder');
 const { runDocxReviewPacketExport } = require('./export/docx/docxReviewPacketExportHandler');
 const { commentStateDigest, normalizeCommentProvenance, compareCommentExportReadback } = require('./export/docx/docxReviewPacketComments.js');
+const { normalizeDocumentNoteSelections, notesStateDigest, validateDocumentNotesReturn } = require('./export/docx/docxReviewPacketNotes.js');
 const {
   FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
   buildFullManuscriptDocxReviewPacketSource,
@@ -1128,6 +1129,16 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
         : [],
     };
   }
+  let documentNotesBinding = null;
+  if (source.documentNotes) {
+    documentNotesBinding = validateDocumentNotesReturn({
+      expected: localAuthority.documentNotes,
+      returned: finalParse.reviewIr?.documentNotes,
+      signedDigest: finalPayload.documentNotesDigest,
+    });
+    if (!documentNotesBinding.ok) return { ok: false, publishAllowed: false,
+      code: 'RTK_V4_PUBLICATION_DOCUMENT_NOTES_MISMATCH', mismatches: documentNotesBinding.mismatches };
+  }
   const semanticEquivalent = finalParse.authorityCarrier?.status === 'verified-baseline-bound'
     && normalizeRtkSignedSha256(finalPayload.coreManifestDigest) === normalizeRtkSignedSha256(coreManifest.coreManifestDigest)
     && docxReviewPreviewSessionDetailString(finalPayload.scope) === 'full-manuscript';
@@ -1150,6 +1161,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     coreManifestDigest: yrtk2Verification.coreManifestDigest,
     ...(source.commentExport ? { commentProofs, commentTombstones: cloneJsonSafe(source.commentExport.tombstones) } : {}),
     documentSectionsBinding: documentSectionsBinding.proof,
+    ...(documentNotesBinding ? { documentNotesBinding: documentNotesBinding.proof } : {}),
     yrtk2Verification,
     provisionalSelfParse: {
       verified: provisionalSelfParse.verified === true,
@@ -4676,7 +4688,16 @@ async function readDocxReviewPacketExportSource() {
   };
 }
 
-async function readFullManuscriptDocxReviewPacketExportSource() {
+async function readCanonicalNotesForDocxExport(projectId, projectRoot) {
+  const notesStorage = await loadNotesStorageModule();
+  const read = await readProjectNotesDocument({ projectId, projectRoot, notesStorage });
+  if (!read.ok || read.current.state !== 'ready' || !read.current.sourceExists) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_NOTES_NOT_READY');
+  }
+  return read.current.document;
+}
+
+async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
@@ -4717,7 +4738,12 @@ async function readFullManuscriptDocxReviewPacketExportSource() {
   ) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_RTK_BUILDERS_UNAVAILABLE');
   }
+  const documentNoteSelections = normalizeDocumentNoteSelections(payload.options?.documentNotes);
+  const notesDocument = documentNoteSelections.length
+    ? await readCanonicalNotesForDocxExport(projectId, projectRoot) : undefined;
   const source = buildFullManuscriptDocxReviewPacketSource({
+    documentNoteSelections,
+    notesDocument,
     projectId,
     projectName: docxReviewPreviewSessionDetailString(scope.projectName),
     projectCreatedAtUtc: docxReviewPreviewSessionDetailString(scope.projectCreatedAtUtc),
@@ -4809,6 +4835,12 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
     if (candidate.sceneId !== expected[index].sceneId
       || `sha256:${createRtkReviewTransportCryptoPort().sha256Text(content.observableContent)}` !== expected[index].rawSha256) {
       throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SCENE_STALE');
+    }
+  }
+  if (source.documentNotes) {
+    const notes = await readCanonicalNotesForDocxExport(scope.projectId, scope.projectRoot);
+    if (notesStateDigest(notes) !== source.documentNotes.stateDigest) {
+      throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_NOTES_STALE');
     }
   }
   const bridge = await loadRevisionBridgeModule();
@@ -8327,6 +8359,13 @@ function sanitizeDocxReviewReturnIntakeForResult(intake = {}) {
       textRevisions: revisionMetadata(reviewIr.textRevisions, false),
       propertyRevisions: revisionMetadata(reviewIr.propertyRevisions, true),
     },
+    ...(isPlainObjectValue(parserResult.documentNotesBinding) ? { documentNotes: {
+      status: docxReviewPreviewSessionDetailString(parserResult.documentNotesBinding.status),
+      authority: 'ADVISORY_ONLY_NO_CANONICAL_NOTE_WRITE',
+      protectedDigest: docxReviewPreviewSessionDetailString(parserResult.documentNotesBinding.protectedDigest),
+      noteCount: Array.isArray(parserResult.documentNotesBinding.notes) ? parserResult.documentNotesBinding.notes.length : 0,
+      policy: docxReviewPreviewSessionDetailString(parserResult.documentNotesBinding.policy),
+    } } : {}),
     documentMetadata: {
       status: docxReviewPreviewSessionDetailString(documentMetadataBinding.status),
       authority: docxReviewPreviewSessionDetailString(documentMetadataBinding.authority),
@@ -9207,6 +9246,17 @@ async function inspectDocxReviewReturnIntakeV2({
   if (documentSectionsBinding.applicable === true) {
     verifiedParserResult.documentSectionsBinding = documentSectionsBinding.proof;
     verifiedParserResult.documentSectionsBinding.status = documentSectionsBinding.status;
+  }
+  if (localAuthority.documentNotes || verifiedParserResult.reviewIr?.documentNotes?.notes?.length || payload.documentNotesDigest) {
+    const binding = validateDocumentNotesReturn({
+      expected: localAuthority.documentNotes,
+      returned: verifiedParserResult.reviewIr?.documentNotes,
+      signedDigest: payload.documentNotesDigest,
+    });
+    if (!binding.ok) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH', {
+      mismatches: binding.mismatches,
+    });
+    verifiedParserResult.documentNotesBinding = { ...binding.proof, status: binding.status };
   }
   // ROUND-01 (V3): build the session-time capsule WITH the vault-resolved
   // hmacSecret so the downstream full-manuscript return-router proof binding

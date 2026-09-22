@@ -252,9 +252,19 @@ test('B02 parser does not form replacement groups across visible run boundaries'
   ];
 
   for (const [caseId, gap] of boundaryCases) {
-    const result = parser.parseReviewTransportPackageV2({
-      parts: baseParts(documentXml(trackedReplacementParagraph(gap))),
-    }, { cryptoPort });
+    const parts = baseParts(documentXml(trackedReplacementParagraph(gap)));
+    if (['footnote-reference', 'endnote-reference'].includes(caseId)) {
+      const dangling = parser.parseReviewTransportPackageV2({ parts }, { cryptoPort });
+      assert.equal(dangling.ok, false, `${caseId}: a missing note part must reject`);
+      assert.equal(dangling.canApply, false);
+      assert.equal(dangling.reasons.some(item => item.code === 'RTK_WORD_NOTES_MALFORMED_BLOCKED'), true);
+      const kind = caseId === 'footnote-reference' ? 'footnote' : 'endnote';
+      const id = kind === 'footnote' ? '2' : '3';
+      parts[`word/${kind}s.xml`] = `<w:${kind}s xmlns:w="${W_NS}"><w:${kind} w:id="${id}"><w:p><w:r><w:${kind}Ref/><w:t>Boundary note</w:t></w:r></w:p></w:${kind}></w:${kind}s>`;
+      parts['word/_rels/document.xml.rels'] = `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="native-note" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/${kind}s" Target="${kind}s.xml"/></Relationships>`;
+      parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace('</Types>', `<Override PartName="/word/${kind}s.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml"/></Types>`);
+    }
+    const result = parser.parseReviewTransportPackageV2({ parts }, { cryptoPort });
     assertReviewAnalysisOnly(result);
     assert.equal(result.reviewIr.textRevisions.length, 2, caseId);
     assert.equal(replacementGroupIds(result).length, 0, caseId);

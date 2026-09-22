@@ -232,12 +232,12 @@ test('Section admission binds canonical boundaries, protected geometry, no-write
  for(const mutate of [x=>delete x.stages.reexport,x=>x.expected.protectedSections[0].endParagraphIndex=2,x=>x.intakeBindings[0].after.sceneHashes=[],x=>x.negativeControls.pop(),x=>x.negativeControls[0].writerCalled=true,x=>x.negativeControls[1].code='RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',x=>x.lossLedger.scope='']){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,'MULTI_SCENE',1,[{exportSha256:exportSha,returnedSha256:returnedSha}]));}
 });
 
-test('Manuscript admission targets 252 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Manuscript admission targets 300 distinct frozen whole cells and five real C3 rounds',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,252);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,252);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,300);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,300);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
@@ -280,13 +280,13 @@ test('C1 review return cannot replace safe-create fields, reuse a recipe or masq
   if(route==='C1'){
    runs.push(base+'review-return-unit');
    assert.deepEqual(f.manuscriptFields(volume,route),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);
-   assert.deepEqual(f.manuscriptFields(volume,route,f.C1_REVIEW_RECIPE),[...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS']);
+   assert.deepEqual(f.manuscriptFields(volume,route,f.C1_REVIEW_RECIPE),[...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']);
    assert.equal(f.manuscriptUsesSafeCreate(route),true);assert.equal(f.manuscriptUsesSafeCreate(route,f.C1_REVIEW_RECIPE),false);
   }else assert.throws(()=>f.buildWordManuscriptFixture(volume,route,f.C1_REVIEW_RECIPE),/MANUSCRIPT_RECIPE/);
  }
  const rows=m.validateManuscriptRuns(runs);assert.equal(rows.length,38);
  const cellIds=rows.flatMap(r=>f.manuscriptFields(r.volume,r.route,r.recipe).map(field=>`${field}__${r.volume}__${r.route}__${r.profile}`));
- assert.equal(new Set(cellIds).size,252);assert.equal(cellIds.length,252);
+ assert.equal(new Set(cellIds).size,300);assert.equal(cellIds.length,300);
  const review=rows.find(r=>r.recipe===f.C1_REVIEW_RECIPE);
  for(const bad of [[review.runId,review.runId+'repeat'],[review.runId.replace('__C1__','__C2__')]])assert.throws(()=>m.validateManuscriptRuns(bad));
  for(const recipe of ['',null,'review','DEFAULT_OTHER'])assert.throws(()=>f.manuscriptFields('SINGLE_SCENE','C1',recipe),/MANUSCRIPT_RECIPE/);

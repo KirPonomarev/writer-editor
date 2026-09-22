@@ -46,12 +46,12 @@ export function manuscriptFields(volume,route,recipe='DEFAULT'){
  manuscriptUsesSafeCreate(route,recipe);
  // These fields have a different return command; ordinary C1 content import
  // keeps its existing four-field proof and never receives review-field credit.
- if(recipe===C1_REVIEW_RECIPE)return [...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS'];
+ if(recipe===C1_REVIEW_RECIPE)return [...(volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),'TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES'];
  if(route==='C5'){
   if(volume==='LARGE_DOCUMENT')throw new Error('GOOGLE_NATIVE_VOLUME_UNQUALIFIED');
   return ['TEXT','ORDER','UNICODE_IME_LOCALE'];
  }
- return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),...(route==='C1'?[]:['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS'])];
+ return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),...(route==='C1'?[]:['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES'])];
 }
 export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.filter(route=>route!=='C5'||volume!=='LARGE_DOCUMENT').flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptRecipes(route).flatMap(recipe=>manuscriptFields(volume,route,recipe).map(field=>`${field}__${volume}__${route}__${profile}`))))));
 export function buildWordManuscriptFixture(volume,route,recipe='DEFAULT'){
@@ -78,4 +78,26 @@ export function buildWordManuscriptCommentState({fixture,projectId,sceneId}){
     startUtf16:0,selectedText:blockText,selectedTextSha256:sha(blockText),authoritySource:'saved-project-exact-paragraph-range'},messages};
  });
  return {schemaVersion:'yalken.rtk.word.non-text-return-state.v1',projectId,revision:1,threads,events:[]};
+}
+
+// Sidecar fixtures are explicit source data, never a provider observation.
+export function buildWordManuscriptNoteState({fixture,projectId,scenes}){
+ const stamp='2026-09-22T10:00:00.000Z',first=scenes[0],last=scenes.at(-1);
+ const make=(id,scope,title,body,scene=first)=>({schemaVersion:1,id,scope,title,body,
+  createdAtUtc:stamp,updatedAtUtc:stamp,deleted:false,
+  attachment:{scope,...(['scene','selection'].includes(scope)?{sceneId:scene.sceneId,nodeId:scene.nodeId}:{})},
+  ...(['scene','selection'].includes(scope)?{sceneId:scene.sceneId,nodeId:scene.nodeId}:{})});
+ const notes=[make('note-foot-scene','scene','Foot & <title>','  Foot body\n\t尾 e\u0301 🧭  '),
+  make('note-end-project','project','','Project endnote — שלום.'),
+  make('note-foot-selection','selection','Selection','Literal _x0041_ & second footnote.'),
+  make('note-end-last','scene','Last scene','Endnote Ω 日本語.',last),
+  make('note-private','inbox','Private','PRIVATE_NOTE_MUST_NOT_LEAVE_PROJECT'),
+  {...make('note-deleted','scene','Deleted','DELETED_NOTE_MUST_NOT_LEAVE_PROJECT'),deleted:true,deletedAtUtc:stamp}];
+ notes[2].attachment.anchor={kind:'text-range',start:0,end:6,quoteHash:createHash('sha256').update(fixture.scenes[0].paragraphs[0].slice(0,6)).digest('hex')};
+ const selections=[{noteId:'note-foot-scene',kind:'footnote'},{noteId:'note-end-project',kind:'endnote'},
+  {noteId:'note-foot-selection',kind:'footnote'},{noteId:'note-end-last',kind:'endnote'}];
+ const lastParagraph=fixture.scenes.slice(0,-1).reduce((n,s)=>n+s.paragraphs.length,0);
+ const projection=selections.map((s,i)=>({kind:s.kind,paragraphIndex:i===3?lastParagraph:0,offsetUtf16:i===2?6:0,paragraphs:[notes[i].title,notes[i].body],ordinal:i}))
+  .sort((a,b)=>a.paragraphIndex-b.paragraphIndex||a.offsetUtf16-b.offsetUtf16||a.ordinal-b.ordinal).map(({ordinal,...n})=>n);
+ return {document:{schemaVersion:1,projectId,notes:notes.sort((a,b)=>a.id.localeCompare(b.id))},selections,projection};
 }

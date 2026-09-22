@@ -70,6 +70,8 @@ const CORE_PARTS = Object.freeze([
   'word/commentsExtensible.xml',
   'word/commentsIds.xml',
   'word/people.xml',
+  'word/footnotes.xml',
+  'word/endnotes.xml',
   'docProps/custom.xml',
   'docProps/core.xml',
 ]);
@@ -104,8 +106,6 @@ const DOCUMENT_UNSUPPORTED_ELEMENTS = Object.freeze([
   'drawing',
   'pict',
   'tbl',
-  'footnoteReference',
-  'endnoteReference',
   'fldSimple',
   'instrText',
 ]);
@@ -1827,7 +1827,7 @@ function parseStructureChanges(documentScan, budgetState, reasons) {
           && token.path[3] === 'pPr')
       );
     if (declaredSectionProperties) continue;
-    if (['pPrChange', 'tbl', 'sectPr', 'footnoteReference', 'endnoteReference'].includes(token.localName)) {
+    if (['pPrChange', 'tbl', 'sectPr'].includes(token.localName)) {
       const change = {
         kind: 'StructureChange',
         structureKind: token.localName,
@@ -3046,6 +3046,116 @@ function directChildTokensWithin(documentScan, parent) {
   )).sort((left, right) => left.openStart - right.openStart);
 }
 
+
+// Native IDs are a package-local bijection only. The signed semantic baseline
+// binds body text and source positions; no note returned here grants write authority.
+function parseDocumentNotes(parts, documentXml, documentScan, relationships, contentTypes, budgets, cryptoPort, budgetState) {
+  const schemaVersion = 'yalken.rtk.word.document-notes.v1';
+  const reasons = [], notes = [], references = [], formatting = [];
+  const refs = documentScan.tokens.filter(token => ['footnoteReference', 'endnoteReference'].includes(token.localName))
+    .sort((a, b) => a.openStart - b.openStart);
+  if (!refs.length && !parts['word/footnotes.xml'] && !parts['word/endnotes.xml']) return { documentNotes: null, reasons };
+  const requireNote = (ok, detail) => {
+    if (!ok) throw new Error(detail);
+  };
+  try {
+    requireNote(refs.length <= 256, 'REFERENCE_COUNT');
+    const paragraphs = documentScan.tokens.filter(token => isWordToken(token, 'p')
+      && token.path.join('/') === 'document/body/p').sort((a, b) => a.openStart - b.openStart);
+    const insertedRanges = documentScan.tokens.filter(token => isWordToken(token, 'ins') || isWordToken(token, 'moveTo'));
+    const noteByKey = new Map();
+    let textBytes = 0;
+    for (const kind of ['footnote', 'endnote']) {
+      const partName = `word/${kind}s.xml`, xml = parts[partName];
+      const matchingRefs = refs.filter(token => token.localName === `${kind}Reference`);
+      const rels = relationships.filter(item => item.type === `http://schemas.openxmlformats.org/officeDocument/2006/relationships/${kind}s`);
+      if (xml === undefined) {
+        requireNote(matchingRefs.length === 0 && rels.length === 0, 'MISSING_PART_OR_REFERENCE');
+        continue;
+      }
+      requireNote(rels.length === 1 && rels[0].partName === 'word/_rels/document.xml.rels'
+        && rels[0].target === `${kind}s.xml` && ['', 'Internal'].includes(rels[0].targetMode), 'PART_RELATIONSHIP');
+      requireNote(relationships.filter(item => item.partName === 'word/_rels/document.xml.rels' && item.id === rels[0].id).length === 1, 'DUPLICATE_RELATIONSHIP_ID');
+      requireNote(!relationships.some(item => item.partName === `word/_rels/${kind}s.xml.rels`), 'NOTE_RELATIONSHIP_UNSUPPORTED');
+      const types = contentTypes.filter(item => item.partName === `/${partName}`);
+      requireNote(types.length === 1 && types[0].contentType === `application/vnd.openxmlformats-officedocument.wordprocessingml.${kind}s+xml`, 'PART_CONTENT_TYPE');
+      const scan = parseXmlPart(partName, xml, budgets, cryptoPort, budgetState);
+      reasons.push(...scan.diagnostics);
+      const roots = scan.tokens.filter(token => token.depth === 0);
+      requireNote(roots.length === 1 && isWordToken(roots[0], `${kind}s`), 'PART_ROOT');
+      const ids = new Set();
+      for (const entry of directChildTokensWithin(scan, roots[0])) {
+        requireNote(isWordToken(entry, kind), 'PART_CHILD');
+        const id = attr(entry, 'id', W_NS), type = attr(entry, 'type', W_NS);
+        requireNote(/^-?[0-9]{1,9}$/u.test(id) && !ids.has(id), 'DUPLICATE_OR_INVALID_ID');
+        ids.add(id);
+        if (type) {
+          requireNote(['separator', 'continuationSeparator'].includes(type), 'SPECIAL_NOTE_UNSUPPORTED');
+          const descendants = childTokensWithin(scan, entry);
+          requireNote(descendants.filter(token => isWordToken(token, type)).length === 1
+            && !descendants.some(token => ['t', 'delText', 'footnoteReference', 'endnoteReference'].includes(token.localName)), 'SPECIAL_NOTE_CONTENT');
+          continue;
+        }
+        requireNote(Number(id) > 0, 'NORMAL_NOTE_ID');
+        const ps = directChildTokensWithin(scan, entry);
+        requireNote(ps.length > 0 && ps.length <= 128 && ps.every(token => isWordToken(token, 'p')), 'NOTE_PARAGRAPH_STRUCTURE');
+        let markCount = 0;
+        const body = ps.map(paragraph => {
+          for (const token of childTokensWithin(scan, paragraph)) {
+            const property = token.path.includes('pPr') || token.path.includes('rPr');
+            if (['t', 'tab', 'br', 'cr', `${kind}Ref`].includes(token.localName)) {
+              requireNote(token.namespaceUri === W_NS && token.path.at(-2) === 'r' && !property, 'NOTE_ATOM_LOCATION');
+              if (token.localName === `${kind}Ref`) markCount++;
+              if (token.localName === 'br') requireNote(['', 'textWrapping'].includes(attr(token, 'type', W_NS)), 'NOTE_BREAK_KIND');
+              requireNote(token.localName !== 'cr', 'NOTE_NON_CANONICAL_NEWLINE');
+            } else if (['r', 'rPr', 'pPr', 'proofErr', 'bookmarkStart', 'bookmarkEnd'].includes(token.localName)) {
+              requireNote(token.namespaceUri === W_NS, 'NOTE_ELEMENT_NAMESPACE');
+            } else if (property && token.namespaceUri === W_NS) {
+              formatting.push({ kind, elementName: token.localName });
+            } else {
+              requireNote(false, 'NOTE_CONTENT_UNSUPPORTED');
+            }
+          }
+          const value = tokenTextSemantic(xml, scan, paragraph);
+          textBytes += cryptoPort.byteLength(value);
+          requireNote(textBytes <= 1024 * 1024, 'NOTE_TEXT_BUDGET');
+          return value;
+        });
+        requireNote(markCount === 1, 'NOTE_REFERENCE_MARK');
+        noteByKey.set(`${kind}:${id}`, body);
+        requireNote(noteByKey.size <= 256, 'NOTE_COUNT');
+      }
+    }
+    const used = new Set();
+    for (const reference of refs) {
+      const kind = reference.localName === 'footnoteReference' ? 'footnote' : 'endnote';
+      requireNote(reference.namespaceUri === W_NS && reference.path.join('/') === `document/body/p/r/${kind}Reference`
+        && !attr(reference, 'customMarkFollows', W_NS), 'REFERENCE_LOCATION_OR_CUSTOM_MARK');
+      const id = attr(reference, 'id', W_NS), key = `${kind}:${id}`;
+      requireNote(noteByKey.has(key) && !used.has(key), 'DANGLING_OR_DUPLICATE_REFERENCE');
+      used.add(key);
+      const paragraphIndex = paragraphs.findIndex(p => reference.openStart >= p.openEnd && reference.closeEnd <= p.closeStart);
+      requireNote(paragraphIndex >= 0, 'REFERENCE_PARAGRAPH');
+      // Offsets use original text for a tracked return: inserted text confers no
+      // new anchor authority. A later canonical export resolves its own revision.
+      const before = { ...paragraphs[paragraphIndex], closeStart: reference.openStart };
+      const atoms = extractSemanticAtoms(documentXml, documentScan, before).filter(atom =>
+        !insertedRanges.some(range => atom.order >= range.openStart && atom.order < range.closeEnd));
+      const offsetUtf16 = semanticAtomsToText(atoms).length;
+      notes.push({ kind, paragraphIndex, offsetUtf16, paragraphs: noteByKey.get(key) });
+      references.push({ kind, nativeId: id, paragraphIndex, offsetUtf16 });
+    }
+    requireNote(used.size === noteByKey.size, 'ORPHAN_NOTE');
+  } catch (error) {
+    reasons.push(reason('RTK_WORD_NOTES_MALFORMED_BLOCKED', 'reviewIr.documentNotes',
+      'Native note parts and references require bounded, complete semantic correspondence.', { detail: error.message }));
+  }
+  return { documentNotes: { schemaVersion, notes, references,
+    protectedDigest: cryptoPort.sha256Json({ schemaVersion, notes }),
+    lossLedger: { formattingPolicy: 'NATIVE_NOTE_TEXT_AND_PLACEMENT_PROTECTED_FORMATTING_ADVISORY',
+      providerFormattingElements: [...new Map(formatting.map(item => [`${item.kind}:${item.elementName}`, item])).values()] } }, reasons };
+}
+
 function sectionIntegerAttribute(token, localName) {
   const value = attr(token, localName, W_NS);
   if (!/^[0-9]{1,9}$/u.test(value)) return null;
@@ -3313,6 +3423,7 @@ function blockingReason(reasons) {
     'RTK_ZIP_REGION_OVERLAP',
     'RTK_ZIP_FAKE_EOCD',
     'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+    'RTK_WORD_NOTES_MALFORMED_BLOCKED',
   ].includes(item.code));
 }
 
@@ -3335,6 +3446,7 @@ const RTK_V2_BLOCKING_CODES = Object.freeze(new Set([
   'RTK_ZIP_REGION_OVERLAP',
   'RTK_ZIP_FAKE_EOCD',
   'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
+  'RTK_WORD_NOTES_MALFORMED_BLOCKED',
 ]));
 
 function v2LaneStatus(reasons, laneFields) {
@@ -3451,6 +3563,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort);
   reasons.push(...documentSectionsResult.reasons);
   const documentSections = documentSectionsResult.sections;
+  const documentNotesResult = parseDocumentNotes(parts, documentXml, documentScan,
+    relationships.relationships, contentTypes.contentTypes, budgets, cryptoPort, budgetState);
+  reasons.push(...documentNotesResult.reasons);
+  const documentNotes = documentNotesResult.documentNotes;
   const scans = {
     comments: {
       xml: rawString(parts['word/comments.xml']),
@@ -3536,6 +3652,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   reasons.push(...comments.reasons);
   admitWorkerOutput(budgetState, reasons, 'reviewIr.documentMetadata', documentMetadata);
   admitWorkerOutput(budgetState, reasons, 'reviewIr.documentSections', documentSections);
+  if (documentNotes) admitWorkerOutput(budgetState, reasons, 'reviewIr.documentNotes', documentNotes);
   const semanticBudgetBlocked = blockingReason(reasons);
   if (semanticBudgetBlocked) {
     return {
@@ -3586,6 +3703,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     formattingParagraphs,
     documentMetadata,
     documentSections,
+    ...(documentNotes ? { documentNotes } : {}),
     opaqueUnsupported,
     authorityCarrier,
     commentGraphCapability,
@@ -3727,6 +3845,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       protectedDigest: documentSections.protectedDigest,
       lossLedger: documentSections.lossLedger,
     },
+    ...(documentNotes ? { documentNotes } : {}),
     opaqueUnsupported: opaqueUnsupported.map((item) => ({
       partName: item.partName,
       elementName: item.elementName,

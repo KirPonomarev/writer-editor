@@ -13,6 +13,8 @@ SUBCASES={
  'STYLES':['inlineStylesAccounted','paragraphStylesAccounted','styleCascadeReadback','fontFallbackLedgered','unsupportedStylesDeclared','styleHashBound'],
  'NOVEL_SCENE_STRUCTURE':['sceneBoundariesPreserved','chapterOrderPreserved','splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback'],
  'TRACKED_REVIEW_SEMANTICS':['trackedInsertDetected','trackedDeleteDetected','moveOrPropertyChangeTyped','reviewAuthorMetadataAccounted','noSilentApplyProof','manualOnlyReasonsLedgered'],
+ 'NOTES':['noteBodiesPreserved','noteAnchorsPreserved','sidecarBoundaryMaintained','noteVisibilityDeclared','noteLossLedgered','noteReadbackIndependent'],
+ 'FOOTNOTES_ENDNOTES':['footnoteRefsPreserved','footnoteBodiesPreserved','endnoteRefsPreserved','endnoteBodiesPreserved','noteOrderPreserved','unsupportedNoteLossDeclared'],
  'COMMENTS':['commentBodiesPreserved','commentAnchorsPreserved','threadShapeAccounted','resolvedDeletedStateDeclared','lostCommentsLedgered','commentReadbackIndependent'],
  'IDENTIFIERS_ANCHORS':['bookmarkIdentityPreserved','anchorBijectionVerified','hyperlinkRelationshipsValidated','duplicateAnchorRejected','locatorHashBound','identifierLossLedgered'],
  'METADATA':['documentPropertiesAccounted','customPropertiesAccounted','authorshipPolicyDeclared','timestampPolicyDeclared','receiptIdentityBound','metadataLossLedgered'],
@@ -64,11 +66,11 @@ METADATA_AUTHORITY=['YRTK_C01_AUTH','YRTK2_TOKEN','YRTK_CORE_DIGEST']
 def fields(volume,route,recipe='DEFAULT'):
     require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT'] and route in ['C1','C2','C3','C5'],'MANUSCRIPT_SCOPE')
     require(recipe=='DEFAULT' or (route=='C1' and recipe=='C1_REVIEW_RETURN'),'MANUSCRIPT_RECIPE')
-    if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS']
+    if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
         return ['TEXT','ORDER','UNICODE_IME_LOCALE']
-    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS'])
+    return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']+([] if route=='C1' or volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+([] if route=='C1' else ['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES'])
 def para(text,**attrs):return {'type':'paragraph',**({'attrs':attrs} if attrs else {}),**({'content':[{'type':'text','text':text}]} if text else {})}
 def styles():
     out=[{'type':'heading','attrs':{'level':i},'content':[{'type':'text','text':f'[heading-{i}] Authored heading.'}]} for i in range(1,7)]
@@ -162,7 +164,7 @@ def docx(data,round=0,google=False):
             require(set(link.attrib)<={OFFICE_REL+'id',W+'history',W+'anchor'} and link.get(OFFICE_REL+'id') and all(n.tag==W+'r' for n in link),'DOCX_HYPERLINK_SHAPE')
         for rev in [*p.findall(W+'ins'),*p.findall(W+'del')]:require(all(n.tag==W+'r' for n in rev),'DOCX_REVISION')
         for r in p.iter(W+'r'):
-            require(all(n.tag in {W+x for x in ['rPr','t','delText','lastRenderedPageBreak','commentReference']} for n in r),'DOCX_RUN')
+            require(all(n.tag in {W+x for x in ['rPr','t','delText','lastRenderedPageBreak','commentReference','footnoteReference','endnoteReference']} for n in r),'DOCX_RUN')
             for n in r:
                 if n.tag in [W+'t',W+'delText']:require(not list(n),'DOCX_TEXT_LEAF')
                 if n.tag==W+'lastRenderedPageBreak':require(not list(n) and not n.attrib and not n.text,'DOCX_PAGE_CACHE')
@@ -214,6 +216,103 @@ def c5_declared_loss(document,loss,omitted_empty_carrier_indexes):
 
 def decode_xstring(value):
     return re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m.group(1),16)),value or '')
+
+NOTES_SCHEMA='yalken.rtk.word.document-notes.v1'
+NOTES_POLICY='EXPLICIT_SELECTION_NATIVE_NOTES_SIGNED_READ_ONLY_RETURN_V1'
+NOTE_CONTROL_CODES={
+ 'changed-body':'RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH',
+ 'changed-title':'RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH',
+ 'moved-reference':'RTK_RETURN_INTAKE_DOCUMENT_NOTES_MISMATCH',
+ 'missing-reference':'RTK_WORD_NOTES_MALFORMED_BLOCKED',
+ 'duplicate-reference':'RTK_WORD_NOTES_MALFORMED_BLOCKED',
+ 'unsupported-content':'RTK_WORD_NOTES_MALFORMED_BLOCKED',
+ 'forged-signed-digest':'RTK_RETURN_INTAKE_AUTHORITY_NOT_VERIFIED',
+}
+def note_expected(docs,pid,ids,nodes):
+    stamp='2026-09-22T10:00:00.000Z'
+    def make(ident,scope,title,body,scene=0):
+        r={'schemaVersion':1,'id':ident,'scope':scope,'title':title,'body':body,'createdAtUtc':stamp,'updatedAtUtc':stamp,'deleted':False,'attachment':{'scope':scope}}
+        if scope in ['scene','selection']:
+            r.update(sceneId=ids[scene],nodeId=nodes[scene]);r['attachment'].update(sceneId=ids[scene],nodeId=nodes[scene])
+        return r
+    ns=[make('note-foot-scene','scene','Foot & <title>','  Foot body\n\t尾 e\u0301 🧭  '),
+        make('note-end-project','project','','Project endnote — שלום.'),
+        make('note-foot-selection','selection','Selection','Literal _x0041_ & second footnote.'),
+        make('note-end-last','scene','Last scene','Endnote Ω 日本語.',len(ids)-1),
+        make('note-private','inbox','Private','PRIVATE_NOTE_MUST_NOT_LEAVE_PROJECT'),
+        make('note-deleted','scene','Deleted','DELETED_NOTE_MUST_NOT_LEAVE_PROJECT')]
+    ns[2]['attachment']['anchor']={'kind':'text-range','start':0,'end':6,'quoteHash':digest(paragraphs(docs[0])[0][:6].encode())}
+    ns[5].update(deleted=True,deletedAtUtc=stamp)
+    sels=[{'noteId':ns[i]['id'],'kind':kind} for i,kind in enumerate(['footnote','endnote','footnote','endnote'])]
+    last=sum(len(paragraphs(d)) for d in docs[:-1])
+    projection=[{'kind':kind,'paragraphIndex':last if i==3 else 0,'offsetUtf16':6 if i==2 else 0,'paragraphs':[ns[i]['title'],ns[i]['body']]} for i,kind in enumerate(['footnote','endnote','footnote','endnote'])]
+    projection.sort(key=lambda x:(x['paragraphIndex'],x['offsetUtf16']))
+    return {'document':{'schemaVersion':1,'projectId':pid,'notes':sorted(ns,key=lambda n:n['id'])},'selections':sels,'notes':projection,
+            'protectedDigest':'sha256:'+digest(canonical({'schemaVersion':NOTES_SCHEMA,'notes':projection}))}
+
+def notes_doc(parts,document,data):
+    rels=ET.fromstring(parts['word/_rels/document.xml.rels']);ct=ET.fromstring(parts['[Content_Types].xml'])
+    bodies={};parts_hash={}
+    for kind in ['footnote','endnote']:
+        name='word/'+kind+'s.xml';require(name in parts,'NOTES_MISSING_PART')
+        rr=[r for r in rels if r.get('Type')=='http://schemas.openxmlformats.org/officeDocument/2006/relationships/'+kind+'s']
+        require(len(rr)==1 and rr[0].get('Target')==kind+'s.xml' and rr[0].get('TargetMode','Internal')=='Internal','NOTES_RELATIONSHIP')
+        types=[n for n in ct if n.get('PartName')=='/'+name]
+        require(len(types)==1 and types[0].get('ContentType')=='application/vnd.openxmlformats-officedocument.wordprocessingml.'+kind+'s+xml','NOTES_CONTENT_TYPE')
+        require('word/_rels/'+kind+'s.xml.rels' not in parts,'NOTES_EXTRA_RELATIONSHIPS')
+        root=ET.fromstring(parts[name]);require(root.tag==W+kind+'s','NOTES_ROOT');seen=set()
+        for note in root:
+            ident=note.get(W+'id');require(note.tag==W+kind and re.fullmatch(r'-?[0-9]{1,9}',ident or '') and ident not in seen,'NOTES_IDENTITIES');seen.add(ident)
+            typ=note.get(W+'type')
+            if typ:
+                require(typ in ['separator','continuationSeparator'] and len(list(note.iter(W+typ)))==1 and not list(note.iter(W+'t')),'NOTES_SEPARATOR');continue
+            require(int(ident)>0 and 0<len(note)<=128 and all(p.tag==W+'p' for p in note),'NOTES_PARAGRAPHS')
+            texts=[];marks=0
+            for p in note:
+                out=[]
+                for child in p:
+                    require(child.tag in [W+'pPr',W+'r',W+'proofErr',W+'bookmarkStart',W+'bookmarkEnd'],'NOTES_CONTENT')
+                    if child.tag!=W+'r':continue
+                    for atom in child:
+                        if atom.tag==W+'rPr':continue
+                        require(atom.tag in [W+'t',W+'br',W+'tab',W+kind+'Ref'] and len(atom)==0,'NOTES_ATOM')
+                        if atom.tag==W+'t':out.append(atom.text or '')
+                        elif atom.tag==W+'tab':out.append('\t')
+                        elif atom.tag==W+'br':require(atom.get(W+'type','textWrapping')=='textWrapping','NOTES_BREAK');out.append('\n')
+                        else:marks+=1
+                texts.append(''.join(out))
+            require(marks==1 and sum(len(t.encode()) for t in texts)<=1024*1024,'NOTES_MARK_OR_BUDGET');bodies[(kind,ident)]=texts
+        parts_hash[name]=digest(parts[name])
+    refs=[];used=set();notes=[]
+    def original_text(n):
+        if n.tag in [W+'ins',W+'moveTo',W+'pPr',W+'rPr']:return ''
+        if n.tag in [W+'t',W+'delText']:return n.text or ''
+        if n.tag==W+'tab':return '\t'
+        if n.tag in [W+'br',W+'cr']:return '\n'
+        return ''.join(original_text(c) for c in n)
+    for index,p in enumerate(document.findall(W+'body/'+W+'p')):
+        offset=0
+        for child in p:
+            if child.tag==W+'r':
+                for atom in child:
+                    if atom.tag in [W+'footnoteReference',W+'endnoteReference']:
+                        kind=atom.tag.removeprefix(W).removesuffix('Reference');key=(kind,atom.get(W+'id'))
+                        require(key in bodies and key not in used and set(atom.attrib)=={W+'id'} and len(atom)==0,'NOTES_REFERENCE');used.add(key)
+                        refs.append({'kind':kind,'nativeId':key[1],'paragraphIndex':index,'offsetUtf16':offset})
+                        notes.append({'kind':kind,'paragraphIndex':index,'offsetUtf16':offset,'paragraphs':bodies[key]})
+                    else:offset+=len(original_text(atom).encode('utf-16-le'))//2
+            else:offset+=len(original_text(child).encode('utf-16-le'))//2
+    require(len(refs)==sum(len(list(document.iter(W+k+'Reference'))) for k in ['footnote','endnote']) and len(refs)==len(bodies)<=256,'NOTES_BIJECTION')
+    projection={'schemaVersion':NOTES_SCHEMA,'notes':notes}
+    return {'artifactSha256':digest(data),**projection,'references':refs,'partsSha256':parts_hash,'protectedDigest':'sha256:'+digest(canonical(projection))}
+
+def native_note_body(data,expected,notes):
+    actual=v.native(data);wanted=list(expected)
+    for n in reversed(notes):
+        i=n['paragraphIndex'];raw=wanted[i].encode('utf-16-le');at=2*n['offsetUtf16'];wanted[i]=(raw[:at]+b'\x02\x00'+raw[at:]).decode('utf-16-le')
+    exact(actual,wanted,'NATIVE_NOTE_REFERENCE_POSITIONS')
+    return [text.replace('\x02','') for text in actual]
+
 
 def metadata_doc(parts,data):
     require('docProps/core.xml' in parts and 'docProps/custom.xml' in parts,'METADATA_PARTS')
@@ -956,7 +1055,7 @@ def audit(request):
         require(proof['executableProof']['sha256']==tc['electronBinarySha256'],'MANUSCRIPT_PACKAGE_EXECUTABLE')
     else:require(build['packagedBuild'] is None,'MANUSCRIPT_SOURCE_PROFILE')
     cycles=5 if route=='C3' else 1;final_round=0 if generic else cycles
-    docs=expected_round();expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[];metadata_stages={};metadata_intakes=[];metadata_negative=[];section_stages={};section_intakes=[];section_negative=[]
+    docs=expected_round();expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[];metadata_stages={};metadata_intakes=[];metadata_negative=[];section_stages={};section_intakes=[];section_negative=[];note_stages={};note_intakes=[];note_negative=[];note_snapshots={};note_locators={};note_native={}
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_round(round)],[])
         stages[name]={**exact(ps,es,name),'round':round,'sortKeysSha256':digest(canonical([[i,digest(p.encode())] for i,p in enumerate(ps)]))}
@@ -1031,6 +1130,36 @@ def audit(request):
     if not generic:
         comment_state_sha=digest(raw('source-comments-state.json'));comment_query('source-comments')
         require(read('comment-origin.json')=={'kind':'OWNED_SAVED_PROJECT_FIXTURE','canonicalApplyClaim':False,'sourceSha256':comment_state_sha},'COMMENT_SOURCE_AUTHORITY')
+    note_contract=note_expected(docs,pid,ids,nodes) if not generic else None
+    note_state_sha=digest(raw('source-notes-state.json')) if not generic else None
+    def note_snapshot(name):
+        x=read(name+'.json');b=raw(name+'-state.json')
+        require(x['file']==prefix+name+'-state.json' and x['sha256']==digest(b)==note_state_sha and json.loads(b)==note_contract['document'],'NOTES_CANONICAL_BYTES')
+        note_snapshots[name]={'stateSha256':digest(b),'recordSha256':digest(raw(name+'.json'))}
+    if not generic:
+        note_snapshot('source-notes')
+        require(read('note-origin.json')=={'kind':'OWNED_SAVED_PROJECT_FIXTURE','canonicalApplyClaim':False,'selections':note_contract['selections'],'sourceSha256':note_state_sha},'NOTES_SOURCE_AUTHORITY')
+    def note_check(name,parts,document,data):
+        proof=notes_doc(parts,document,data)
+        require(proof['notes']==note_contract['notes'] and proof['protectedDigest']==note_contract['protectedDigest'],'NOTES_STAGE:'+name)
+        require(not any(marker in b for b in parts.values() for marker in [b'PRIVATE_NOTE_MUST_NOT_LEAVE_PROJECT',b'DELETED_NOTE_MUST_NOT_LEAVE_PROJECT']),'NOTES_PRIVATE_EXCLUSION')
+        note_stages[name]=proof
+    def native_note_check(name,directory,life,ps):
+        actual=raw(directory+'/word-native-readback.txt')
+        result=native_note_body(actual,ps,note_contract['notes']);rows=[]
+        require(len(life.get('nativeNotes',[]))==4,'NOTES_NATIVE_COUNT')
+        for kind in ['footnote','endnote']:
+            wanted=[n for n in note_contract['notes'] if n['kind']==kind]
+            require([line for line in life['process']['stdout'].splitlines() if line.startswith(kind.upper()+'_COUNT=')]==[kind.upper()+'_COUNT=2'],'NOTES_NATIVE_KIND_COUNT')
+            for i,n in enumerate(wanted,1):
+                filename=directory+'/word-native-'+kind+'-'+str(i)+'.txt';b=raw(filename)
+                expected='\r'.join(n['paragraphs']).replace('\n','\v').encode()
+                require(b==expected,'NOTES_NATIVE_LITERAL_BODY')
+                retained=[x for x in life['nativeNotes'] if x['kind']==kind and x['index']==i]
+                require(len(retained)==1 and retained[0]['file'].endswith('/'+run+'/'+filename) and retained[0]['sha256']==digest(b),'NOTES_NATIVE_FILE_BINDING')
+                rows.append({'kind':kind,'index':i,'sha256':digest(b)})
+        note_native[name]={'bodySha256':digest(actual),'notes':rows}
+        return result
     def comment_doc(name,parts,document,data):
         proof=comment_parts(parts,document,expected_comments)
         comment_stages[name]={**proof,'artifactSha256':digest(data)}
@@ -1057,6 +1186,8 @@ def audit(request):
             comment_doc(name,parts,doc,b)
             metadata_check(name,parts,b)
             section_check(name,doc,b)
+            note_check(name,parts,doc,b)
+            require(cap['documentNotesDigest']==note_contract['protectedDigest'],'NOTES_EXPORT_CAPSULE')
             require(cap['commentSummary']=={'stateRevision':1,'exportedThreadCount':2,'exportedMessageCount':4,'intentionalDeletionCount':1}
                     and r['publicationGate']['commentPreservationVerified'] is True and r['publicationGate']['intentionalDeletionCount']==1,'COMMENT_EXPORT_PUBLICATION')
             require(cap['documentMetadataDigest']==metadata_digest,'METADATA_EXPORT_CAPSULE')
@@ -1067,13 +1198,25 @@ def audit(request):
         custom=ET.fromstring(parts['docProps/custom.xml']);properties={n.get('name'):re.sub(r'_x([0-9a-fA-F]{4})_',lambda m:chr(int(m[1],16)),n[0].text or '') for n in custom}
         token=properties['YRTK_C01_AUTH'];require(token.startswith('YRTK1.'),'AUTHORITY_CARRIER');encoded=token[6:];payload=json.loads(base64.urlsafe_b64decode(encoded+'='*((-len(encoded))%4)))['payload']
         require(payload['projectId']==pid and payload['orderedSceneIds']==ids and [s['sceneId'] for s in payload['sceneRevisions']]==ids and [s['rawSha256'] for s in payload['sceneRevisions']]==['sha256:'+h for h in hashes] and payload['roundId']==cap['roundId'],'EXPORTED_RAW_SCENE_PARTITION')
-        if not generic:require(payload['documentSectionsDigest']==section_expected['protectedDigest'],'SECTIONS_SIGNED_DIGEST')
+        if not generic:
+            require(payload['documentSectionsDigest']==section_expected['protectedDigest'],'SECTIONS_SIGNED_DIGEST')
+            require(payload['documentNotesDigest']==note_contract['protectedDigest'],'NOTES_SIGNED_DIGEST')
         if not generic:
             encoded=raw(name+'-authority-store.json.gz')
             require(x['authorityStoreFile']==prefix+name+'-authority-store.json.gz' and x['authorityStoreEncoding']=='gzip','LOCATOR_STORE_FILE')
             data=decode_locator_store(encoded,x['authorityStoreSha256'],x['authorityStoreUncompressedBytes'])
             locator_stages[name]=locator_store(data,r['activation'],cap,ids,expected_round(round),hashes)
             locator_stages[name]['storage']={'encoding':'gzip','encodedSha256':digest(encoded),'encodedBytes':len(encoded),'decodedBytes':len(data)}
+            local=json.loads(data)['roundsById'][cap['roundId']]['documentNotes']
+            require(local['notes']==note_contract['notes'] and local['selections']==note_contract['selections'] and local['stateDigest']==digest(canonical(note_contract['document']))
+                    and local['protectedDigest']==note_contract['protectedDigest'] and len(local['sourceBindings'])==4,'NOTES_LOCAL_AUTHORITY')
+            selected={n['id']:n for n in note_contract['document']['notes']}
+            for binding in local['sourceBindings']:
+                n=selected[binding['noteId']]
+                require(binding['scope']==n['scope'] and binding['attachment']==n['attachment'] and binding['paragraphs']==[n['title'],n['body']]
+                        and binding['blockTextSha256']==digest(sum([paragraphs(d) for d in expected_round(round)],[])[binding['documentParagraphIndex']].encode()),'NOTES_LOCATOR_ANCHOR')
+            note_locators[name]={'storeSha256':digest(data),'sourceBindingsSha256':digest(canonical(local['sourceBindings'])),'stateDigest':local['stateDigest']}
+
             identifier_stages[name]={**identifier_doc(parts,doc,cap['roundId'],ids,expected_round(round)),'artifactSha256':digest(b),'roundId':cap['roundId']}
         return cap
     def word_check(name,source_file,returned_file,directory,round,tracked,cap):
@@ -1083,10 +1226,11 @@ def audit(request):
         for k,val in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','2' if tracked else '0'),('COMMENT_COUNT','0' if generic else '4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lines if line.startswith(k+'=')]==[k+'='+val],'WORD_'+k)
         require(life['screenshotProof']['ok'] is True and raw(directory+'/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'WORD_SCREENSHOT')
         require(life['nativeReadbackPath'].endswith('/'+run+'/'+directory+'/word-native-readback.txt') and life['evidencePath'].endswith('/'+run+'/'+returned_file),'WORD_FILE_BINDING')
-        stage(name+'-native',v.native(raw(directory+'/word-native-readback.txt')),round)
+        native_ps=v.native(raw(directory+'/word-native-readback.txt')) if generic else native_note_check(name,directory,life,sum([paragraphs(d) for d in expected_round(round)],[]))
+        stage(name+'-native',native_ps,round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round)
         if not generic:
-            comment_doc(name,parts,d,raw(returned_file));metadata_check(name,parts,raw(returned_file));section_check(name,d,raw(returned_file))
+            comment_doc(name,parts,d,raw(returned_file));metadata_check(name,parts,raw(returned_file));section_check(name,d,raw(returned_file));note_check(name,parts,d,raw(returned_file))
         if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_round(round))}
         else:require(generic and name=='final-word-lifecycle','WORD_UNAUTHENTICATED_SCOPE')
         if not generic:
@@ -1142,6 +1286,10 @@ def audit(request):
             section_intakes.append({'ordinal':ordinal,'status':ds['status'],'authority':ds['authority'],'protectedDigest':ds['protectedDigest'],
                                     'protectedSections':ds['protectedSections'],'sourceBindings':ds['sourceBindings'],'before':x['before'],'after':x['after'],
                                     'manifestSha256':x['manifestBeforeSha256'],'writerCalled':False})
+            dn=a['documentNotes']
+            require(dn=={'status':'VERIFIED_PROTECTED_DOCUMENT_NOTES','authority':'ADVISORY_ONLY_NO_CANONICAL_NOTE_WRITE','protectedDigest':note_contract['protectedDigest'],'noteCount':4,'policy':NOTES_POLICY}
+                    and x['noteBeforeSha256']==x['noteAfterSha256']==note_state_sha,'NOTES_INTAKE_NO_WRITE')
+            note_intakes.append({'ordinal':ordinal,**dn,'stateSha256':note_state_sha,'returnedSha256':digest(raw(base+'/returned.docx')),'writerCalled':False})
             changes=r['reviewSurface']['revisionSession']['reviewGraph']['textChanges'];require(len(changes)==1 and changes[0]['match']['quote']==('sentinel alpha' if ordinal==1 else 'sentinel round'+str(ordinal-1)) and changes[0]['replacementText']=='sentinel round'+str(ordinal),'EXACT_ROUND_CHANGE')
             reviewed_document=docx(raw(base+'/returned.docx'),ordinal)[2]
             review_rounds.append({'ordinal':ordinal,'returnedSha256':digest(raw(base+'/returned.docx')),**review_revision_proof(reviewed_document,x,ordinal)})
@@ -1184,7 +1332,8 @@ def audit(request):
                 comment_doc(base+'/review-probe',parts,pdoc,probe)
                 identifier_stages[base+'/review-probe']={**identifier_doc(parts,pdoc,cap['roundId'],ids,expected_round(1)),'artifactSha256':digest(probe),'roundId':cap['roundId']}
                 require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
-                exact(v.native(raw(base+'/review-probe/word-native-readback.txt')),ps,'REVIEW_PROBE_NATIVE_TEXT')
+                exact(native_note_check(base+'/review-probe',base+'/review-probe',lifecycle,ps),ps,'REVIEW_PROBE_NATIVE_TEXT')
+                note_check(base+'/review-probe',parts,pdoc,probe)
                 require(lifecycle['evidencePath'].endswith('/'+run+'/'+probe_file) and lifecycle['nativeReadbackPath'].endswith('/'+run+'/'+base+'/review-probe/word-native-readback.txt'),'REVIEW_PROBE_NATIVE_PATH')
                 probe_intake=read(base+'/review-probe-intake.json');pr=probe_intake['result']['returnIntake']
                 require(pr['returnedArtifactSha256']=='sha256:'+digest(probe) and pr['roundId']==cap['roundId'] and pr['exportId']==cap['exportId'] and all(pr['authority'][k] is True for k in ['validSignedLocator','sceneRevisionUnchanged','rawSha256Unchanged','baselineBound']),'REVIEW_PROBE_AUTHENTICATED_RETURN')
@@ -1225,6 +1374,20 @@ def audit(request):
                              or result.get('value',{}).get('error',{}).get('details') or {})
                     require(result.get('ok') is not True and isinstance(code,str) and code.startswith('RTK_RETURN_INTAKE_') and all(result.get(k) is not True for k in ['canOpenReviewSession','canAutoApply','canImportMutate','canWriteStorage']),'METADATA_CONTROL_REJECTED:'+kind)
                     metadata_negative.append({'id':kind,'rejected':True,'code':code,'mismatches':details.get('mismatches',[]),'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/metadata-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(control['before'])),'writerCalled':False,'before':control['before'],'after':control['after']})
+                for kind in NOTE_CONTROL_CODES:
+                    control=read(base+'/note-'+kind+'-intake.json');mutant=raw(base+'/notes-'+kind+'.docx');mps,mparts,mdoc=docx(mutant,1)
+                    require(mps==original[0] and control['kind']==kind and control['sourceSha256']==digest(raw(base+'/returned.docx')) and control['mutantSha256']==digest(mutant),'NOTES_CONTROL_BYTES')
+                    if kind=='forged-signed-digest':
+                        require(notes_doc(mparts,mdoc,mutant)['notes']==note_contract['notes'] and mparts['docProps/custom.xml']!=original[1]['docProps/custom.xml'],'NOTES_CONTROL_FORGED_SIGNATURE')
+                    else:
+                        rejected=False
+                        try:rejected=notes_doc(mparts,mdoc,mutant)['notes']!=note_contract['notes']
+                        except ValueError:rejected=True
+                        require(rejected,'NOTES_CONTROL_INDEPENDENT_REJECTION:'+kind)
+                    require(control['before']==control['after'] and control['before']['sceneHashes']==source_hashes and control['before']['noteStateSha256']==note_state_sha,'NOTES_CONTROL_NO_WRITE')
+                    result=control['result'];code=result.get('code') or result.get('reason') or result.get('value',{}).get('code') or result.get('value',{}).get('reason')
+                    require(result.get('ok') is not True and code==NOTE_CONTROL_CODES[kind] and all(result.get(k) is not True for k in ['canOpenReviewSession','canAutoApply','canImportMutate','canWriteStorage']),'NOTES_CONTROL_REJECTED:'+kind)
+                    note_negative.append({'id':kind,'code':code,'rejected':True,'mutantSha256':digest(mutant),'intakeSha256':digest(raw(base+'/note-'+kind+'-intake.json')),'canonicalStateSha256':digest(canonical(control['before'])),'before':control['before'],'after':control['after'],'writerCalled':False})
                 original_sections=section_doc(original[2],raw(base+'/returned.docx'))
                 for kind in SECTION_CONTROLS:
                     control=read(base+'/section-'+kind+'-intake.json');mutant=raw(base+'/sections-'+kind+'.docx');mps,mparts,mdoc=docx(mutant,1)
@@ -1252,11 +1415,14 @@ def audit(request):
             require(hashes==ap['afterSave'] and hashes[1:]==previous_hashes[1:],'APPLY_SAVED_HASH_CHAIN');previous_hashes=hashes;stage(base+'/persisted',all_ps,ordinal)
             renderer({**ap,'nodeId':nodes[0]},new_docs[0],base+'/applied-renderer');stage(base+'/applied-renderer',ap['renderer']['paragraphs']+sum([paragraphs(d) for d in new_docs[1:]],[]),ordinal);tree_check(ap['tree'],base+'/tree')
             comment_query(base+'/comments')
+            note_snapshot(base+'/notes')
         round_proofs.append({'ordinal':ordinal,'exportId':cap['exportId'],'roundId':cap['roundId'],'exportSha256':digest(raw(base+'/source.docx')),'returnedSha256':digest(raw(base+'/returned.docx')),'savedSceneHashes':previous_hashes})
     reopened=read('reopen.json');close=read('close.json')
     require(reopened['firstPid']==boot['pid']==close['pid'] and reopened['pid']!=boot['pid'] and close['closed'] is True,'FRESH_PROCESS')
     if not generic:
         comment_query('reopened-comments')
+        note_snapshot('reopened-notes')
+        require(raw('reopened-notes-state.json')==raw('runtime-project-snapshot/notes.craftsman.json'),'NOTES_FRESH_PROCESS_DURABILITY')
         require(raw('reopened-comments-state.json')==raw('runtime-project-snapshot/.yalken/word-review/non-text-return-state.v1.json'),'COMMENT_FRESH_PROCESS_DURABILITY')
         require(len(reopened['scenes'])==count,'REOPEN_SCENE_COUNT');all_raw=[];all_render=[]
         for i,(s,d) in enumerate(zip(reopened['scenes'],expected_round(final_round))):
@@ -1341,8 +1507,18 @@ def audit(request):
                         'expected':section_expected,'stages':section_stages,'intakeBindings':section_intakes,'negativeControls':section_negative,
                         'lossLedger':{'providerExtensionElementsObserved':sorted({(x['sectionOrdinal'],x['namespaceUri'],x['elementName']) for p in section_stages.values() for x in p['providerExtensionElements']}),
                                       'scope':'Canonical consecutive scene-directory groups map to exact Word section boundaries. Protected page geometry and break policy are digest-bound; provider-only section children are ledgered without project authority.'}}
+    notes_proof=None
+    if not generic:
+        require(len(note_stages)==2*cycles+3 and len(note_native)==cycles+2 and len(note_snapshots)==cycles+2 and len(note_intakes)==cycles and len(note_negative)==7 and len(note_locators)==cycles+1,'NOTES_COMPLETE_PATH')
+        notes_proof={'schemaVersion':'WORD_MANUSCRIPT_NOTES_PROOF_V1','policy':NOTES_POLICY,'authority':'ADVISORY_ONLY_NO_CANONICAL_NOTE_WRITE',
+                     'expected':note_contract,'sourceStateSha256':note_state_sha,'stages':note_stages,'nativeReadbacks':note_native,'snapshots':note_snapshots,
+                     'locators':note_locators,'intakeBindings':note_intakes,'negativeControls':note_negative,
+                     'lossLedger':{'excludedPrivateNoteIds':['note-private'],'excludedDeletedNoteIds':['note-deleted'],'missingNotes':[],
+                                   'formattingPolicy':'NATIVE_NOTE_TEXT_AND_PLACEMENT_PROTECTED_FORMATTING_ADVISORY',
+                                   'scope':'Four explicit canonical notes, two native footnotes and two endnotes. Literal titles, bodies, order and anchors; private and deleted notes excluded. Returned notes have no sidecar write authority. Unsupported note content is a visible typed rejection.'}}
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route,recipe)]
     for proof in proofs:
+        if proof['field'] in ['NOTES','FOOTNOTES_ENDNOTES']:proof['notesProof']=notes_proof
         if proof['field']=='COMMENTS':proof['commentProof']=comment_proof
         if proof['field']=='IDENTIFIERS_ANCHORS':proof['identifierProof']={'stages':identifier_stages,'locators':locator_stages,'negativeControls':identifier_negative,'intakeControls':identifier_intakes,'lossLedger':{'lostIdentifiers':[],'duplicateIdentifiers':[],'unsafeHyperlinks':[],'scope':'Declared per-round locator names and all three explicit hyperlink ranges across saved, applied and reopened project state; intentional negative-control losses are recorded separately.'}}
         if proof['field']=='METADATA':proof['metadataProof']=metadata_proof

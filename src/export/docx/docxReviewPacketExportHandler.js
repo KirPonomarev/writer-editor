@@ -36,6 +36,7 @@ function sanitizeReviewDocxExportCapsule(value) {
     capabilityManifestDigest: typeof source.capabilityManifestDigest === 'string' ? source.capabilityManifestDigest : '',
     documentMetadataDigest: typeof source.documentMetadataDigest === 'string' ? source.documentMetadataDigest : '',
     documentSectionsDigest: typeof source.documentSectionsDigest === 'string' ? source.documentSectionsDigest : '',
+    documentNotesDigest: typeof source.documentNotesDigest === 'string' ? source.documentNotesDigest : '',
     roundId: typeof source.roundId === 'string' ? source.roundId : '',
     exportId: typeof source.exportId === 'string' ? source.exportId : '',
     exportArtifactId: typeof source.exportArtifactId === 'string' ? source.exportArtifactId : '',

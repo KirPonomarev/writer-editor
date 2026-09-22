@@ -3,6 +3,7 @@
 const crypto = require('crypto');
 const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
 const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
+const { buildCanonicalNotesExport } = require('./docxReviewPacketNotes.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
 
 const FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID = 'cmd.project.review.exportFullManuscriptDocxReviewPacket';
@@ -1073,6 +1074,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   });
   const documentSections = buildFullManuscriptDocumentSections(scenes, blocks, cryptoPort);
   const commentExport = buildCanonicalCommentExport(input.nonTextReturnState, blocks, projectId);
+  const documentNotes = buildCanonicalNotesExport(input.notesDocument, input.documentNoteSelections, blocks, projectId);
   // Use authored paragraph boundaries, not the envelope's normalized display text.
   // This is computed from source blocks before serializing or parsing any DOCX.
   const sceneText = scenes.map((scene) => blocks
@@ -1139,6 +1141,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     sceneText,
     blocks,
     commentExport,
+    documentNotes,
     documentMetadata,
     documentSections,
     customProperties: [
@@ -1189,6 +1192,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     compileIrDigest: cryptoPort.sha256Json({ scope: 'full-manuscript', orderedSceneIds, blocks: blocks.map((block) => block.blockId),
       documentMetadataDigest: documentMetadata.protectedDigest,
       documentSectionsDigest: documentSections.protectedDigest,
+      ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
       ...(commentExport ? { commentExportDigest: cryptoPort.sha256Json(commentExport) } : {}) }),
     actualBaselineDigest: fullBookRawSha256,
     parserProfileDigest,
@@ -1252,6 +1256,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     capabilityManifestDigest,
     documentMetadataDigest: documentMetadata.protectedDigest,
     documentSectionsDigest: documentSections.protectedDigest,
+      ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
     blockCount: blocks.length,
     ...(commentExport ? { commentSummary: {
       stateRevision: commentExport.stateRevision,
@@ -1285,6 +1290,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     capabilityManifestDigest,
     documentMetadataDigest: documentMetadata.protectedDigest,
     documentSectionsDigest: documentSections.protectedDigest,
+      ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
     blockCount: blocks.length,
     authorityCarrier: 'customDocumentProperty',
     authorityPropertyName: REVIEW_DOCX_PACKET_AUTH_PROPERTY_NAME,
@@ -1329,6 +1335,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
       capabilityManifestDigest,
       documentMetadataDigest: documentMetadata.protectedDigest,
       documentSectionsDigest: documentSections.protectedDigest,
+      ...(documentNotes ? { documentNotesDigest: documentNotes.protectedDigest } : {}),
     },
     roundId,
     exportIdentity: exportId,
@@ -1336,6 +1343,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     coreManifestDigest: coreManifestResult.coreManifestDigest,
     documentMetadata: cloneJson(documentMetadata),
     documentSections: cloneJson(documentSections),
+    ...(documentNotes ? { documentNotes: cloneJson(documentNotes) } : {}),
     parserProfileDigest,
     yrtk2: {
       schemaVersion: yrtk2Result.schemaVersion,
@@ -1353,6 +1361,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     sceneText,
     blocks,
     commentExport,
+    documentNotes,
     documentMetadata,
     documentSections,
     forbiddenSecret: hmacSecret,
