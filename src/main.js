@@ -10523,6 +10523,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'list',
                 'blockKind',
                 'blockquoteDepth',
+                'sectionBreakType',
+                'sectionBreakTypeImplicit',
               ])
             ))
           : sourceReport.contentPreview.paragraphs,

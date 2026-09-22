@@ -597,7 +597,7 @@ test('DOCX content preview: XML character data follows parser legality and prese
   }
 });
 
-test('DOCX content preview: typed breaks and section types have exact plain text loss items', async () => {
+test('DOCX content preview: typed breaks and section types have exact plain text projections', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
     '<w:p><w:r><w:t>T04_LINE_BEFORE</w:t><w:br/><w:t>T04_LINE_AFTER</w:t></w:r></w:p>',
@@ -1148,9 +1148,12 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
   ]);
   assert.equal(result.contentPreview.paragraphs[0].paragraphStyleId, 'Title');
   assert.equal(result.contentPreview.paragraphs[0].zeroLengthBookmarkCount, 1);
-  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[0], 'sectionBreakType'), false);
+  assert.equal(result.contentPreview.paragraphs[0].sectionBreakType, 'nextPage');
+  assert.equal(result.contentPreview.paragraphs[0].sectionBreakTypeImplicit, true);
   assert.equal(result.contentPreview.paragraphs[2].sectionBreakType, 'nextPage');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[2], 'sectionBreakTypeImplicit'), false);
   assert.equal(result.contentPreview.paragraphs[3].sectionBreakType, 'nextPage');
+  assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[3], 'sectionBreakTypeImplicit'), false);
   assert.equal(result.contentPreview.paragraphs[3].zeroLengthBookmarkCount, 1);
   assert.equal(Object.prototype.hasOwnProperty.call(result.contentPreview.paragraphs[5], 'sectionBreakType'), false);
   assert.equal(importPreview.ok, true);

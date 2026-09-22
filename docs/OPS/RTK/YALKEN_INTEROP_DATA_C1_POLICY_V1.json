@@ -27,6 +27,7 @@
     "docs/tasks/2026-09-16--docx-import-preview-reference.md",
     "src/renderer/editor.bundle.js",
     "docs/ARCH_DIFF_LOG.md",
+    "test/contracts/revision-bridge-docx-import-preview-plan.contract.test.js",
     "test/contracts/revision-bridge-docx-import-preview-command-surface.contract.test.js",
     "test/unit/r24-wp307-writer-local-profile-integration.test.js",
     "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -343,7 +344,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "6bbafeeae9530d3e87395b060a93f2e03202f91658e1cb05e941e9736e659a18"
+        "sha256": "06f842ddfe901094c157307c5d90baff568968648fe669541a9f7028f43a75da"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -379,7 +380,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "51f7f79a5a5ce5525dda4545b46e1cc91a9e03d0a8ea4012803a1dacb87c6563"
+        "sha256": "8229a7c8c4786a4a00ae88ab7ef311255eedab71fae9d66249a4cbf0dd77eec2"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -439,7 +440,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-        "sha256": "7cbbe1c2af8cc9d7c47d4194ea1b77f3d65bc29c0bbcea5cf859f5ca1101b55e"
+        "sha256": "03583edda6837841d0ad074aadd269c2aa1dda82c129dd390857c1e3bafc7012"
       },
       {
         "path": "src/renderer/styles.css",

@@ -8723,6 +8723,9 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
   if (typeof metadata.sectionBreakType === 'string' && metadata.sectionBreakType) {
     paragraph.sectionBreakType = metadata.sectionBreakType;
   }
+  if (metadata.sectionBreakTypeImplicit === true) {
+    paragraph.sectionBreakTypeImplicit = true;
+  }
   if (Number.isInteger(metadata.zeroLengthBookmarkCount) && metadata.zeroLengthBookmarkCount > 0) {
     paragraph.zeroLengthBookmarkCount = metadata.zeroLengthBookmarkCount;
   }
@@ -8819,7 +8822,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   let activeParagraphMetadata = null;
   let activeInlineRun = null;
   const inlineBudget = { count: 0 };
-  let sectionPropertiesDepth = 0;
+  const sectionPropertiesFrames = [];
   let unsupportedDepth = 0;
   let textDepth = 0;
   let fieldInstructionTextDepth = 0;
@@ -9010,17 +9013,38 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
 
     if (tagName === 'w:sectPr') {
       if (closing) {
-        sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
+        const frame = sectionPropertiesFrames.pop();
+        const sectionBreakType = frame?.explicitTypeSeen
+          ? frame.sectionBreakType
+          : (frame?.insideParagraph ? 'nextPage' : '');
+        if (frame?.insideParagraph && frame.paragraphMetadata && sectionBreakType) {
+          frame.paragraphMetadata.sectionBreakType = sectionBreakType;
+          if (!frame.explicitTypeSeen) frame.paragraphMetadata.sectionBreakTypeImplicit = true;
+        }
+        docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
       } else {
-        sectionPropertiesDepth += 1;
-        if (selfClosing) sectionPropertiesDepth = Math.max(0, sectionPropertiesDepth - 1);
+        const frame = {
+          explicitTypeSeen: false,
+          sectionBreakType: '',
+          insideParagraph,
+          paragraphMetadata: insideParagraph ? activeParagraphMetadata : null,
+        };
+        sectionPropertiesFrames.push(frame);
+        if (selfClosing) {
+          sectionPropertiesFrames.pop();
+          const sectionBreakType = frame.insideParagraph ? 'nextPage' : '';
+          if (frame.insideParagraph && frame.paragraphMetadata) {
+            frame.paragraphMetadata.sectionBreakType = sectionBreakType;
+            frame.paragraphMetadata.sectionBreakTypeImplicit = true;
+          }
+          docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
+        }
       }
-    } else if (sectionPropertiesDepth > 0 && tagName === 'w:type' && !closing) {
+    } else if (sectionPropertiesFrames.length > 0 && tagName === 'w:type' && !closing) {
       const sectionBreakType = docxContentPreviewNormalizeSectionBreakType(token, tokenNamespaceMap);
-      if (insideParagraph && activeParagraphMetadata && sectionBreakType) {
-        activeParagraphMetadata.sectionBreakType = sectionBreakType;
-      }
-      docxContentPreviewAddSectionBreakDiagnostic(diagnostics, seenSectionBreakKinds, sectionBreakType);
+      const frame = sectionPropertiesFrames.at(-1);
+      frame.explicitTypeSeen = true;
+      frame.sectionBreakType = sectionBreakType;
     }
 
     if (tagName === 'w:p' && !closing) {
@@ -9751,6 +9775,27 @@ function docxImportPreviewParagraphSectionBreakType(paragraph) {
   return typeof paragraph?.sectionBreakType === 'string' ? paragraph.sectionBreakType.trim() : '';
 }
 
+function docxImportPreviewProjectNextPageBoundaries(paragraphs) {
+  const projectedParagraphs = [];
+  const recoveredAfterParagraphIndexes = [];
+  paragraphs.forEach((paragraph, index) => {
+    projectedParagraphs.push(paragraph);
+    if (
+      typeof paragraph?.text === 'string'
+      && paragraph.text !== ''
+      && docxImportPreviewParagraphSectionBreakType(paragraph) === 'nextPage'
+      && paragraph.sectionBreakTypeImplicit === true
+    ) {
+      // Google Docs moves a next-page section carrier onto the preceding
+      // non-empty paragraph and removes the empty carrier on DOCX export.
+      // Re-project that structural boundary as exactly one empty paragraph.
+      projectedParagraphs.push({ text: '' });
+      recoveredAfterParagraphIndexes.push(index);
+    }
+  });
+  return { projectedParagraphs, recoveredAfterParagraphIndexes };
+}
+
 function docxImportPreviewParagraphZeroLengthBookmarkCount(paragraph) {
   return Number.isInteger(paragraph?.zeroLengthBookmarkCount) ? paragraph.zeroLengthBookmarkCount : 0;
 }
@@ -9808,7 +9853,7 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
   };
 }
 
-function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
+function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoundaryRecovery = null) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
   const sourceCode = typeof diagnostic.sourceCode === 'string' ? diagnostic.sourceCode : '';
   if (diagnosticCode === DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC) {
@@ -9842,6 +9887,13 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}) {
   }
   if (diagnosticCode === DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC) {
     if (sourceCode === DOCX_CONTENT_PREVIEW_SECTION_BREAK_SOURCE_CODES.nextPage) {
+      if (sectionBoundaryRecovery?.recoveredAfterParagraphIndexes?.length > 0) {
+        return {
+          code: 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_PARAGRAPH_BOUNDARY_RECOVERED',
+          category: 'sectionBreak',
+          message: 'DOCX next-page section break relocated onto a non-empty paragraph is represented by one recovered empty paragraph boundary',
+        };
+      }
       return {
         code: 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_NOT_IMPORTED',
         category: 'sectionBreak',
@@ -9984,7 +10036,13 @@ function docxImportPreviewLossSourcePartForDiagnostic(diagnostic, contentPreview
   return diagnostic.sourcePart || diagnostic.entryId || contentPreview.sourcePart;
 }
 
-function docxImportPreviewBuildLossReport(sourceReport, contentPreview, importedText, googleDocsTabs = null) {
+function docxImportPreviewBuildLossReport(
+  sourceReport,
+  contentPreview,
+  importedText,
+  googleDocsTabs = null,
+  sectionBoundaryRecovery = null,
+) {
   const items = [
     docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY', {
       category: 'formatting',
@@ -10035,7 +10093,7 @@ function docxImportPreviewBuildLossReport(sourceReport, contentPreview, imported
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
     if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
-    const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic);
+    const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic, sectionBoundaryRecovery);
     items.push(docxImportPreviewLossItem(mapped.code, {
       category: mapped.category,
       severity: 'warning',
@@ -10158,10 +10216,16 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
   const importParagraphIndexes = googleDocsTabs
     ? googleDocsTabs.importParagraphIndexes
     : paragraphValidation.texts.map((_text, index) => index);
-  const importedText = importParagraphIndexes.map((index) => paragraphValidation.texts[index]).join('\n');
+  const sectionBoundaryRecovery = googleDocsTabs
+    ? { projectedParagraphs: contentPreview.paragraphs, recoveredAfterParagraphIndexes: [] }
+    : docxImportPreviewProjectNextPageBoundaries(contentPreview.paragraphs);
+  const importParagraphs = googleDocsTabs
+    ? importParagraphIndexes.map((index) => contentPreview.paragraphs[index])
+    : sectionBoundaryRecovery.projectedParagraphs;
+  const importedText = importParagraphs.map((paragraph) => paragraph.text).join('\n');
   let richContent;
   try {
-    richContent = docxInlineCanonicalContent(contentPreview.paragraphs);
+    richContent = docxInlineCanonicalContent(importParagraphs);
   } catch (error) {
     return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID, { field: 'contentPreview.paragraphs.inlineRuns', sourceCode: error.message });
   }
@@ -10170,7 +10234,13 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     googleDocsTabs,
     importParagraphIndexes,
   });
-  const lossReport = docxImportPreviewBuildLossReport(input, contentPreview, importedText, googleDocsTabs);
+  const lossReport = docxImportPreviewBuildLossReport(
+    input,
+    contentPreview,
+    importedText,
+    googleDocsTabs,
+    sectionBoundaryRecovery,
+  );
   if (richContent !== null) {
     const hasHeadings = contentPreview.paragraphs.some((paragraph) => paragraph.headingLevel !== undefined);
     const hasLists = contentPreview.paragraphs.some((paragraph) => paragraph.list !== undefined);
