@@ -743,6 +743,10 @@
       {
         "path": "docs/tasks/2026-09-22--word-notes-footnotes.md",
         "sha256": "44171c284df79b1628a351e2313c280eee8e90fbd19f624f525f1293119159aa"
+      },
+      {
+        "path": "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
+        "sha256": "154c4411d7771d215dfc53a5f9db378bb294a0b1bb413b757bb0ea663f91bf2d"
       }
     ],
     "followupRepair": {

@@ -20,7 +20,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.287Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.843Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
@@ -86,7 +86,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.287Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.844Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
@@ -237,7 +237,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.288Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.844Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
@@ -250,7 +250,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.288Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.845Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -330,7 +330,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.290Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.847Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
@@ -651,30 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.292Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "1fef24685124e0438d056d384ababdbb09f2a1972c7e0cb7214874ac76f01146"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-16T09:40:26.453007+00:00",
       "approvedBy": "owner-direct-task:INTEROP_DATA_RECIPES_C1_20260916",
       "authority": "DIRECT_OWNER_AUDITED_ACCELERATION_PERSONAL_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_FIXTURES_V1.json",
       "rationale": "Direct owner instruction to implement the audited acceleration plan: bounded authored-input data for one unchanged C1 preservation recipe, readiness before native effects, independent checking, explicit requirement mapping and paired TEXT and ORDER decisions. Preserve prior readers and the full denominator; metadata creates no native proof or broad portability claim.",
       "sha256": "935d58fb0e4e02ad6490a0754d0c8afd6390761f4ecb8ac51bdfa3fb50215130"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.293Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "248eba76428f83f008e131ae61e22a839113837ffbb5422a7e6efe02095bcc6c"
     },
     {
       "approved": true,
@@ -867,7 +849,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.293Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.850Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
@@ -903,7 +885,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.293Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.850Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
@@ -1182,7 +1164,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.851Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1191,7 +1173,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.851Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
@@ -1236,7 +1218,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -1245,7 +1227,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
@@ -1254,7 +1236,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1317,16 +1299,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "358dbd11ded9b890107c360bf778e76beaa466533daf62ea6c0db6c30c9ddebc"
+      "sha256": "214b038ee142e1c5620c826d94749a286a4b389981a280b02fa7f4e8b7a6c1a4"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.295Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -1443,7 +1425,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.296Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js",
@@ -1461,7 +1443,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.296Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.853Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/tasks/2026-09-22--word-notes-footnotes.md",
@@ -1470,7 +1452,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.296Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.853Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -1479,7 +1461,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.296Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.853Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
@@ -1488,12 +1470,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:30:47.296Z",
+      "approvedAtUtc": "2026-09-22T18:36:02.853Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
       "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
       "sha256": "154c4411d7771d215dfc53a5f9db378bb294a0b1bb413b757bb0ea663f91bf2d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.853Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "96d80d823687b5ba01586c77097773a68f3480f9a0f646a4be0c409d2cdb319a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.853Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "bfb6011cb3b8b8197f6cc744d5d1a3f084dcf77915927cfffcfbc85327630136"
     }
   ],
   "evidenceStampIds": [
