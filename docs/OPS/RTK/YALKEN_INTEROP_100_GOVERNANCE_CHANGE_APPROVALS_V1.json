@@ -1322,7 +1322,7 @@
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This deterministic C2A artifact refresh binds the current exhaustive test-inventory bytes after the bounded Google section-boundary recovery. The two cross-registry rows are rebound to the generated artifact; no product behavior, dependency, runtime network, denominator change, or cell credit is added.",
-      "sha256": "4dc7676004ef9f47a835e9b20b83772f447bc8ea45c953328b7ca4d70dee4cdb"
+      "sha256": "69baaf8a3f14462389c48abaf2201613329e46f61b03f93ef52b515c532780b8"
     },
     {
       "approved": true,
