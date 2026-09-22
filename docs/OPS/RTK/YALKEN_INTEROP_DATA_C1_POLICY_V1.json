@@ -654,7 +654,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-        "sha256": "062a1eb0c26ab61559202fdb6411dc7c93268034721dec670c3733bcc7078eb5"
+        "sha256": "4193c24f2d8d6e24a42d021da079c73a951af07f78dab83f6b06deda970c81a4"
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",

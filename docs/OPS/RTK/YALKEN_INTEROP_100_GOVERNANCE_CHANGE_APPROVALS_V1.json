@@ -20,12 +20,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "approvedAtUtc": "2026-09-22T18:24:12.446Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "7743703d48514e70e4388ee184cce95aae96669b051b97b7bc4792c45c86c84b"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "d3b941b02c5bd9430914295d3ef0b60491578d4c11f86196c68e8e8c1429c55e"
     },
     {
       "approved": true,
@@ -86,16 +86,16 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-22T18:24:12.447Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "e3a3f3d1445a88f6b246dd8809c20f9f104dcfec45552abb0bd4831d3181c8b2"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "fa9d096da34f29a915de815931e9c7225da69689da35daeb3ffc7c55488e3c4e"
     },
     {
       "approved": true,
@@ -237,25 +237,25 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-22T18:24:12.448Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
         "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
       ],
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "062a1eb0c26ab61559202fdb6411dc7c93268034721dec670c3733bcc7078eb5"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "4193c24f2d8d6e24a42d021da079c73a951af07f78dab83f6b06deda970c81a4"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
+      "approvedAtUtc": "2026-09-22T18:24:12.448Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "aafe0ccb44b33e4248488449c3b797befe11c1157dffbd39128e6dae438b82fc"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "0800638da1569c4d16dc34fc6fb3be395eaa364e425feb7bf29ac4321cf47915"
     },
     {
       "approved": true,
@@ -330,12 +330,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:11:05Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T18:24:12.450Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/main.js",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery distinguishes an implicit relocated next-page carrier from an explicit Word section boundary and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound for the changed files; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "06f842ddfe901094c157307c5d90baff568968648fe669541a9f7028f43a75da"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "03affdad01c35dec2fb95e91936ca65e5810482dd1453f457e3276e46e0354f7"
     },
     {
       "approved": true,
@@ -651,12 +651,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T15:25:30Z",
-      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
-      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
+      "approvedAtUtc": "2026-09-22T18:24:12.453Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "d691799222fea058bcce4f605800c74b95d67fe9f35ceaa47f5bd78e7e12c390"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "1fef24685124e0438d056d384ababdbb09f2a1972c7e0cb7214874ac76f01146"
     },
     {
       "approved": true,
@@ -669,12 +669,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T15:25:30Z",
-      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
-      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
+      "approvedAtUtc": "2026-09-22T18:24:12.453Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "56a31ad01212fcfb45249533710994a0d2390aad450d326607b389a3a90df8cb"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "248eba76428f83f008e131ae61e22a839113837ffbb5422a7e6efe02095bcc6c"
     },
     {
       "approved": true,
@@ -867,12 +867,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-22T18:24:12.454Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "053cc7c9c40f5d391e926c0f82ca09babd9ec4435e9e76cab091a8c140024e49"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "8d5eaa7c318996653d24877234581cb81670858168c1817bf8f6272b5b2a9384"
     },
     {
       "approved": true,
@@ -903,12 +903,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-22T18:24:12.454Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "c56b4a6a8800228ed11b379530a4d97b2f5b230ed352e23807947893899d03c6"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "0192de4fc2b5941569ed076eb2d70d65df310bc044de8c20d5d2db5227db297c"
     },
     {
       "approved": true,
@@ -1182,21 +1182,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T17:34:19.059686Z",
-      "approvedBy": "owner-direct-task:WORD_DOCUMENT_PARTS_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-22T18:24:12.455Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-      "rationale": "Owner authorized personally implemented import/export development and rapid progress through all 1120 cells. This bounded Word sections implementation preserves canonical consecutive scene-group boundaries, protected page geometry and signed section identity through native Word, with independent raw OOXML readback and seven zero-write corruption controls. The 18.58-second candidate journey is diagnostic only. At most 24 SECTIONS cells receive credit only from fresh merged native Word evidence and independent complete admission; the frozen denominator, prior 228-cell closure, historical evidence and protected delivery remain mandatory.",
-      "sha256": "bcc9a843fa66815404e861e54b67e9f7abef2b9094ce1a94ff579c00fff5557f"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "46dd3d21e941a54fa2ce45ed07a025c4ec8e8778e56deeace49bc09a83e4f34c"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T15:25:30Z",
-      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
-      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
+      "approvedAtUtc": "2026-09-22T18:24:12.455Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "eaab96e76bef6726b51643ae05ef7cf10bc45cc2c5e80a0ca7dcbd8ac46f9283"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "ac1882459362a8414b7f694085f2bc5cf2c83265ecb4b7f97dfa30f910a2a10c"
     },
     {
       "approved": true,
@@ -1236,30 +1236,30 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T05:00:00Z",
-      "approvedBy": "owner-direct-task:C5_GOOGLE_VERIFIER_PROMOTION_20260922",
+      "approvedAtUtc": "2026-09-22T18:24:12.455Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner directed continued personal package-based import/export implementation through all 1120 cells. This bounded verifier repair strictly admits valid internal Google section blocks and separates immutable physical-runtime identity from exact-current verifier identity. Previously executed physical evidence may carry forward only when its runtime commit is an ancestor and every intervening path is in the explicit verifier-only allowlist; runtime-affecting, malformed, or divergent promotion fails closed. Exact-byte policy, test inventory, and governance pins are rebound; product runtime, dependencies, network authority, denominator and cell credit remain unchanged until exact merged verification passes.",
-      "sha256": "a4c320aecb030e8547ed9473aa1f99bc9b9a635b83088c16504954741ba78d95"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "da26426dc4f0e09c9040ddf7f17c236a4183900a7b28f20799aac8aff8b5a644"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T15:25:30Z",
-      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
-      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
+      "approvedAtUtc": "2026-09-22T18:24:12.455Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "8a827d4888ddb8a5c8c75fd7f20b5a8f2d1a4175fdefc8971fa0d5ea0006c90d"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "aac9a1196098e7f6fd4668d376133aab75762d5150061dd94db95b308cd2cda6"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T15:25:30Z",
-      "approvedBy": "owner-direct-task:C5_EMPTY_SECTION_CARRIER_RECONCILIATION_20260922",
-      "authority": "DIRECT_OWNER_C5_PROVIDER_LOSS_RECONCILIATION",
+      "approvedAtUtc": "2026-09-22T18:24:12.455Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner authorized the bounded C5 verifier repair for a Google provider-relocated empty section carrier. The reader validates exact source DOCX paragraphs and section boundaries, records provider loss, rejects all other loss, and grants no product write, denominator, dependency, network, or cell-credit authority.",
-      "sha256": "256a417f316636c1b9b0ca194a2a40c08dd5ee37581e81ebda2f348467e166ce"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "33b6442f1dcf51866bb77c37f177f48fac3318e6bd3feb4370ab49d609634884"
     },
     {
       "approved": true,
@@ -1317,21 +1317,21 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:38:35Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "approvedAtUtc": "2026-09-22T18:24:12.456Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This deterministic C2A artifact refresh binds the current exhaustive test-inventory bytes after the bounded Google section-boundary recovery. The two cross-registry rows are rebound to the generated artifact; no product behavior, dependency, runtime network, denominator change, or cell credit is added.",
-      "sha256": "69baaf8a3f14462389c48abaf2201613329e46f61b03f93ef52b515c532780b8"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "02407bab6dd025e33bba6a377d316e9b0adb71e331feaaaf18f5a4a3b5337fc7"
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-21T18:48:53.231Z",
-      "approvedBy": "owner-direct-task:WORD_SECTIONS_CAPSULE_REPAIR_20260921",
+      "approvedAtUtc": "2026-09-22T18:24:12.456Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
-      "rationale": "Owner authorized continued personal import/export implementation through all 1120 cells. Fresh merged physical evidence exposed that the public export capsule sanitizer dropped the already-signed Word sections digest. This bounded repair preserves that typed digest for independent readback, adds no writer or external authority, and grants no SECTIONS credit until a new merged physical journey and complete independent admission pass.",
-      "sha256": "5886fbcd743bedeb14179f0045de339ed50ac5baa1e3ba1b5f8bd247f1c0489a"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "39abceedb4e10432398063b7190c6f3544c57b322ae0dba0386b639f9e08cfec"
     },
     {
       "approved": true,
@@ -1443,12 +1443,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T23:57:39.926471Z",
-      "approvedBy": "owner-direct-task:WORD_METADATA_ROUNDTRIP_20260918",
+      "approvedAtUtc": "2026-09-22T18:24:12.456Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid progress through all cells. This bounded Word metadata round-trip implementation preserves signed exact custom properties, independently checks Word-normalized core properties, and rejects changed, missing, duplicate, or forged metadata before write. At most 24 METADATA cells receive credit only from fresh merged native Word evidence and independent raw readback; the frozen denominator, prior 204-cell closure, corruption controls, and protected delivery remain mandatory.",
-      "sha256": "5b91e63033b150546198971507bea79662dad2aa6308812eb31292d014d0e03e"
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "d086935b8c51390201714db55829617c3c4eb70fb8a015148fa5f6409b3241a9"
     },
     {
       "approved": true,
@@ -1461,7 +1461,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.329Z",
+      "approvedAtUtc": "2026-09-22T18:24:12.456Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/tasks/2026-09-22--word-notes-footnotes.md",
@@ -1470,7 +1470,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.329Z",
+      "approvedAtUtc": "2026-09-22T18:24:12.456Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "src/export/docx/docxReviewPacketNotes.js",
@@ -1479,147 +1479,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.329Z",
+      "approvedAtUtc": "2026-09-22T18:24:12.456Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
       "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
       "sha256": "e1b2c65e0a1a76599ce7824b02ca69b276f0dd8d82dfdc1de395f241dac04523"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "d3b941b02c5bd9430914295d3ef0b60491578d4c11f86196c68e8e8c1429c55e"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "aac9a1196098e7f6fd4668d376133aab75762d5150061dd94db95b308cd2cda6"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "46dd3d21e941a54fa2ce45ed07a025c4ec8e8778e56deeace49bc09a83e4f34c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "ac1882459362a8414b7f694085f2bc5cf2c83265ecb4b7f97dfa30f910a2a10c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/export/docx/docxReviewPacketBuilder.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "8d5eaa7c318996653d24877234581cb81670858168c1817bf8f6272b5b2a9384"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/export/docx/docxReviewPacketExportHandler.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "39abceedb4e10432398063b7190c6f3544c57b322ae0dba0386b639f9e08cfec"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "0192de4fc2b5941569ed076eb2d70d65df310bc044de8c20d5d2db5227db297c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.330Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "fa9d096da34f29a915de815931e9c7225da69689da35daeb3ffc7c55488e3c4e"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.331Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/main.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "03affdad01c35dec2fb95e91936ca65e5810482dd1453f457e3276e46e0354f7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.331Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "da26426dc4f0e09c9040ddf7f17c236a4183900a7b28f20799aac8aff8b5a644"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:08:49.331Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "33b6442f1dcf51866bb77c37f177f48fac3318e6bd3feb4370ab49d609634884"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:13:14.728Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "2e431967155bed1fe3bd5e31d7be34627b5fd5249efad080444532e13fbd16e9"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:13:14.728Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "fd2bed1cf9778bbda6536a32908162ddf387568f996d8f7d8f4d99da8d8c4dff"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:13:14.728Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/contracts/rtk-word-c5v2-full-manuscript-product-export.contract.test.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "d086935b8c51390201714db55829617c3c4eb70fb8a015148fa5f6409b3241a9"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:16:57.692Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "906454bea71d7383938f1524382c61c4facb04402390d7e1affc2db2d2753363"
     }
   ],
   "evidenceStampIds": [
