@@ -628,18 +628,56 @@ test('DOCX import preview plan: ordinary title sections do not trigger Google Do
 
   assertDocxImportPreviewShell(singleTitle);
   assert.equal(singleTitle.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\nChapter body');
+  assert.equal(singleTitle.candidateCreatePlan.entries[0].content, 'Novel Title\n\nChapter body');
   assert.equal(singleTitle.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 
   assertDocxImportPreviewShell(repeatedTitleWithoutSeparators);
   assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\nChapter Two\nBravo body');
+  assert.equal(repeatedTitleWithoutSeparators.candidateCreatePlan.entries[0].content, 'Chapter One\n\nAlpha body\nChapter Two\n\nBravo body');
   assert.equal(repeatedTitleWithoutSeparators.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
 
   assertDocxImportPreviewShell(sameTopologyWithoutBookmarks);
   assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.sceneStrategy, 'single-scene');
-  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\n\nChapter Two\nBravo body\n');
+  assert.equal(sameTopologyWithoutBookmarks.candidateCreatePlan.entries[0].content, 'Chapter One\nAlpha body\n\nChapter Two\n\nBravo body\n');
   assert.equal(sameTopologyWithoutBookmarks.lossReport.items.some((item) => item.category === 'googleDocsTabs'), false);
+});
+
+test('DOCX import preview plan: relocated next-page carrier recovers one empty paragraph only', async () => {
+  const bridge = await loadBridge();
+  const result = bridge.buildDocxImportPreviewPlanFromContentPreview(contentPreviewReport([
+    { text: 'Alpha', sectionBreakType: 'nextPage' },
+    { text: 'Bravo' },
+    { text: '', sectionBreakType: 'nextPage' },
+    { text: 'Charlie', sectionBreakType: 'continuous' },
+    { text: 'Delta' },
+  ], {
+    diagnostics: [
+      {
+        code: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC',
+        sourceCode: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_NEXT_PAGE',
+        sourcePart: 'word/document.xml',
+        tagName: 'w:sectPr',
+      },
+      {
+        code: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_DIAGNOSTIC',
+        sourceCode: 'DOCX_CONTENT_PREVIEW_SECTION_BREAK_CONTINUOUS',
+        sourcePart: 'word/document.xml',
+        tagName: 'w:sectPr',
+      },
+    ],
+  }));
+
+  assertDocxImportPreviewShell(result);
+  assert.equal(result.ok, true);
+  assert.equal(result.candidateCreatePlan.entries[0].content, 'Alpha\n\nBravo\n\nCharlie\nDelta');
+  assert.equal(result.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_NEXT_PAGE_PARAGRAPH_BOUNDARY_RECOVERED'
+    && item.category === 'sectionBreak'
+  )), true);
+  assert.equal(result.lossReport.items.some((item) => (
+    item.code === 'DOCX_IMPORT_PREVIEW_SECTION_BREAK_CONTINUOUS_NOT_IMPORTED'
+    && item.category === 'sectionBreak'
+  )), true);
 });
 
 test('DOCX import preview plan: empty content stays preview-only and explicit', async () => {
