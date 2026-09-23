@@ -12411,6 +12411,76 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "evidenceStampIds": []
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c685ce96df2fe3d57031832c3cb1eb64307f1281b98a1c25a52906ccf584a6a9",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "cf236b37568b6588f94290ecfe225b92880e640b2d34dc5acd7ac094d7d2adad",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "600a348b6d6fa6b3e4bd6f42088d4dae1bc5117b08371e0a8534edbc37bb1f5e",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "6b566fa8f72c7f968f490166adad07960b025da696adcf2702cd2abb97758996",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "449ddb012f790be5f833d2ae2d0cc1f8bcb6b078b6d263b7f8e5e1736c7dc497",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "230eec77e214a9a415e8f2313d6250157f60606a20c7d32693133826f829c989",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "sha256": "407fd21a22001b09a4010e779d5435a9327112aa671a5aef7f53a9f615e9cb7b",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T22:17:26.000Z",
+      "rationale": "Owner-authorized exact-byte correction: admit only the current verifier entrypoint, its contract test and governance registry as metadata-only promotion paths so independently pinned historical physical runs can be reverified on exact merged main. No Product runtime path, denominator change, or automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "evidenceStampIds": []
     }
   ],
   "evidenceStampIds": [

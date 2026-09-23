@@ -11,6 +11,14 @@ test('manuscript cohort reconciliation rejects overlapping, failed, and forged a
   const repoRoot = path.resolve(__dirname, '../..');
   const spec = verifier.readInterop100Denominator(repoRoot);
   const ids = verifier.buildRequiredCells(spec).map(c => c.cellId);
+  const policy = JSON.parse(fs.readFileSync(path.join(repoRoot, 'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json')));
+  const promoted = new Set(policy.wordManuscriptBatch.verifierPromotionPaths);
+  for (const evidenceOnlyPath of [
+    'docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json',
+    'scripts/ops/rtk-interop-100-denominator-v1.mjs',
+    'test/contracts/rtk-interop-100-denominator.contract.test.js',
+  ]) assert.ok(promoted.has(evidenceOnlyPath));
+  assert.equal(promoted.has('src/main.js'), false);
   const head = 'a'.repeat(40);
   const report = cellId => ({ok: true, errors: [], authoritativeAdmission: true,
     evidenceMode: 'WORD_MANUSCRIPT_BATCH_V1', currentHead: head, requiredCells: 1120,
