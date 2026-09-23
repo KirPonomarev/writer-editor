@@ -302,13 +302,27 @@ test('Independent manuscript Python tests reject semantic, style, structure and 
  assert.equal(child.status,0,child.stdout+child.stderr);assert.match(child.stderr,/Ran [1-9][0-9]* tests/);assert.match(child.stderr,/\nOK\n/);
 });
 
-test('Current Google qualification preserves archived transport bytes and cannot promote a conversion to cell credit',async()=>{
+test('Current C5 direct transport is scoped to manuscript evidence and cannot rewrite frozen V1 qualification',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const policy=JSON.parse(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json'))),p=policy.wordManuscriptBatch.googleNativeTransport;
- assert.equal(m.validateGoogleManuscriptTransport(p),true);
- assert.equal(digest(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json'))),p.supersedesArchivedTransportAssumption.specSha256);
- for(const mutate of [p=>p.directLocalPathImport.countsAsPass=true,p=>p.directLocalPathImport.supported=false,p=>p.requiredSteps.pop(),p=>p.routeQualificationCountsAsCellPass=true,p=>p.createdDriveFilesCleanup='OPTIONAL',p=>p.productRuntimeNetworkPolicy='NETWORK_ENABLED',p=>p.externalConnectorUse='USER_DOCUMENTS',p=>p.supersedesArchivedTransportAssumption.retainsHistoricalStagingReceipt=false]){
-  const changed=structuredClone(p);mutate(changed);assert.throws(()=>m.validateGoogleManuscriptTransport(changed),/GOOGLE_TRANSPORT_POLICY/);
+ const spec=d.readInterop100Denominator(ROOT),specSha256=digest(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json')));
+ const resolved=m.validateGoogleManuscriptTransport(p,spec,specSha256);
+ assert.deepEqual(resolved,{status:'SCOPED_C5_CURRENT_TRANSPORT',evidenceMode:m.MANUSCRIPT_BATCH_MODE,route:'C5',
+  archivedDenominatorSha256:specSha256,archivedSourceReferenceKind:'INTERNAL_UPLOADED_FILE_REFERENCE',
+  currentSourceReferenceKind:'ABSOLUTE_LOCAL_FILE_PATH',routeQualificationCountsAsCellPass:false});
+ assert.equal(specSha256,p.supersedesArchivedTransportAssumption.specSha256);
+ assert.equal(spec.providerTransportPolicy.googleLocalDocxToNativeImport.directLocalPathImport.supported,false);
+ assert.equal(p.directLocalPathImport.supported,true);
+ assert.equal(p.directLocalPathImport.countsAsPass,false);
+ const genericSpec=structuredClone(spec);genericSpec.providerTransportPolicy.googleLocalDocxToNativeImport.directLocalPathImport.supported=true;
+ const generic=d.validateInterop100({spec:genericSpec,envelope:d.readInterop100EvidenceEnvelope(ROOT),ledger:d.readInterop100EvidenceLedger(ROOT),currentHead:spec.bindingBaseSha,repoRoot:ROOT});
+ assert.equal(generic.ok,false);assert.ok(generic.errors.includes('GOOGLE_DIRECT_LOCAL_PATH_IMPORT_MUST_NOT_BE_SUPPORTED'));
+ for(const mutate of [p=>p.directLocalPathImport.countsAsPass=true,p=>p.directLocalPathImport.supported=false,p=>p.requiredSteps.pop(),p=>p.routeQualificationCountsAsCellPass=true,p=>p.createdDriveFilesCleanup='OPTIONAL',p=>p.productRuntimeNetworkPolicy='NETWORK_ENABLED',p=>p.externalConnectorUse='USER_DOCUMENTS',p=>p.supersedesArchivedTransportAssumption.retainsHistoricalStagingReceipt=false,p=>p.scope='All Google routes',p=>p.historicalStagingQualification.requiredSteps.pop(),p=>p.historicalStagingQualification.stillCountsAsCellPass=true]){
+  const changed=structuredClone(p);mutate(changed);assert.throws(()=>m.validateGoogleManuscriptTransport(changed,spec,specSha256),/GOOGLE_TRANSPORT_POLICY/);
+ }
+ for(const mutate of [s=>s.providerTransportPolicy.googleLocalDocxToNativeImport.directLocalPathImport.supported=true,s=>s.providerTransportPolicy.googleLocalDocxToNativeImport.sourceReferenceKind='ABSOLUTE_LOCAL_FILE_PATH',s=>s.providerTransportPolicy.googleLocalDocxToNativeImport.requiredSteps.pop()]){
+  const changed=structuredClone(spec);mutate(changed);assert.throws(()=>m.validateGoogleManuscriptTransport(p,changed,specSha256),/GOOGLE_TRANSPORT_POLICY/);
  }
 });
 
