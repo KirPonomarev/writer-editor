@@ -602,7 +602,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "545b6ddac7ef506706b8dad0909a1847908b38895381b2b2fefde29cb3521506"
+        "sha256": "64741081097f218adcf2a1ed8e37d9e9ffca76da1c762ef51b69c8300852c3fe"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1969,6 +1969,79 @@
         {
           "path": "src/m1-text-single-scene-source-runtime.mjs",
           "sha256": "0fd2c8a94214f4192c0d6254db9dfdb297174e9d0bb204ec9ee2d8a7612c391f"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "1813227f46e61c120a135736a316b277bd3f55b439ff9f358120bf4adffa37d1"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        },
+        {
+          "path": "src/word-sections-mutant.py",
+          "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
+        },
+        {
+          "path": "test/m0-audit-repair.test.mjs",
+          "sha256": "63364c710ab92be6dfce51709c5e85b72cfcc659cb1407747def502f27d4be57"
+        },
+        {
+          "path": "test/word-manuscript-fields.test.mjs",
+          "sha256": "b6a88ebc1e4f10cd8d9f5b6e14505ff0aa367eaa3218312d7f36aa7ea30cfb85"
+        },
+        {
+          "path": "src/word-notes-mutant.py",
+          "sha256": "cd128e05ee6d080a12ab8f5009f7b9ef5d36fffaeb30c363613008028b12f40c"
+        }
+      ]
+    },
+    {
+      "id": "WORD_MANUSCRIPT_CDP_SOURCE_APP_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "70c7324296225ca143246b3fb54e508c348a830f57a25b3ecfe1fcc0e002a68c"
         },
         {
           "path": "src/c1-data-case.mjs",

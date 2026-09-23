@@ -297,6 +297,34 @@ test('C1 review return cannot replace safe-create fields, reuse a recipe or masq
  assert.equal(m.manuscriptStages('C1',f.C1_REVIEW_RECIPE)['imported-raw'],undefined);
 });
 
+test('Lab CDP source-app revision is admitted only by a complete exact code-binding set',()=>{
+ const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
+ const baselineSha='2c4b35d20a22d6bd3dbdfc9b732da0dc160c8c31';
+ const baseline=JSON.parse(execFileSync('git',['show',`${baselineSha}:${policyPath}`],{cwd:ROOT,encoding:'utf8'}));
+ const policy=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ for(const previous of baseline.labCodeBindingSets){
+  assert.deepEqual(policy.labCodeBindingSets.find(set=>set.id===previous.id),previous,`preserve ${previous.id}`);
+ }
+ const setId='WORD_MANUSCRIPT_CDP_SOURCE_APP_V1';
+ const matches=policy.labCodeBindingSets.filter(set=>set.id===setId);
+ assert.equal(matches.length,1);
+ const expected=structuredClone(baseline.labCodeBindingSets.find(set=>set.id==='WORD_CANONICAL_NOTES_ROUNDTRIP_V1'));
+ expected.id=setId;
+ const helperPath='src/m1-text-single-scene-source-runtime.mjs';
+ const helper=expected.bindings.find(binding=>binding.path===helperPath);
+ assert.ok(helper);
+ helper.sha256='70c7324296225ca143246b3fb54e508c348a830f57a25b3ecfe1fcc0e002a68c';
+ assert.deepEqual(matches[0],expected);
+ const verifier=fs.readFileSync(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs'),'utf8');
+ const labRevision=verifier.match(/function labRevision\(labRoot,revision,policy\)\{[^]*?\n\}/u)?.[0]||'';
+ assert.match(labRevision,/bindingSets\.some\(bindings=>Array\.isArray\(bindings\)&&bindings\.every\(b=>/u);
+ const pinnedBytes=new Map(expected.bindings.map(binding=>[binding.path,binding.sha256]));
+ const matchesWholeSet=()=>expected.bindings.every(binding=>pinnedBytes.get(binding.path)===binding.sha256);
+ assert.equal(matchesWholeSet(),true);
+ pinnedBytes.set(helperPath,'0'.repeat(64));
+ assert.equal(matchesWholeSet(),false,'one changed helper byte hash must reject the entire binding set');
+});
+
 test('Independent manuscript Python tests reject semantic, style, structure and caller-authority corruption',()=>{
  const {spawnSync}=require('node:child_process');const child=spawnSync('python3',['-I','-B','test/unit/rtk-interop-word-manuscript.test.py'],{cwd:ROOT,encoding:'utf8',timeout:30000});
  assert.equal(child.status,0,child.stdout+child.stderr);assert.match(child.stderr,/Ran [1-9][0-9]* tests/);assert.match(child.stderr,/\nOK\n/);
