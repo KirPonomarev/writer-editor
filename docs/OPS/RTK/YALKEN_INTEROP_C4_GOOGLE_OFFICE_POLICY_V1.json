@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "YALKEN_INTEROP_C4_GOOGLE_OFFICE_POLICY_V1",
+  "taskId": "INTEROP_C4_TEXT_ORDER_CONSUMER_20260923",
+  "bindingBaseSha": "fe1c69e7046da8fa17d6715941816b0a229864e1",
+  "contractId": "YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1",
+  "denominatorPath": "docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json",
+  "denominatorSha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93",
+  "scope": {
+    "route": "C4",
+    "hops": [
+      "YALKEN_DOCX_EXPORT",
+      "GOOGLE_OFFICE_LIFECYCLE",
+      "YALKEN_RETURN_INTAKE"
+    ],
+    "volume": "SINGLE_SCENE",
+    "profile": "SOURCE_RUNTIME",
+    "fields": [
+      "TEXT",
+      "ORDER"
+    ],
+    "cellIds": [
+      "TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME",
+      "ORDER__SINGLE_SCENE__C4__SOURCE_RUNTIME"
+    ],
+    "expectedParagraphCount": 12,
+    "sourceToken": "sentinel alpha",
+    "suggestedToken": "sentinel omega"
+  },
+  "admission": {
+    "mode": "C4_GOOGLE_OFFICE_BATCH_V1",
+    "proofSchemaVersion": "YALKEN_C4_GOOGLE_OFFICE_PROOF_V1",
+    "readbackSchemaVersion": "YALKEN_C4_GOOGLE_OFFICE_RAW_V1",
+    "candidateDiagnosticOnlyMustBe": false,
+    "admissionCreditFromRawReader": 0,
+    "acceptedCellsRequireExactPhysicalObservation": true,
+    "denominatorMutation": false,
+    "productMutationAuthority": false,
+    "writerAuthority": false
+  },
+  "timePolicy": {
+    "notBeforeUtc": "2026-09-23T00:00:00.000Z",
+    "observationMustNotBeFuture": true
+  },
+  "requiredArtifacts": [
+    "source.txt",
+    "source-review-export-phase.json",
+    "source-scene-readback.json",
+    "runtime-project-snapshot.json",
+    "runtime-build.json",
+    "yalken-review-source.docx",
+    "word-tracked-review-return.docx",
+    "google-docs-native-provider-receipt.json",
+    "google-docs-native-provider-metadata.json",
+    "google-docs-native-ui-transcript.json",
+    "google-docs-native-ui-suggesting.png",
+    "google-docs-native-ui-comment.png",
+    "google-docs-native-ui-reopen.png",
+    "review-return-intake.json",
+    "google-docs-native-cleanup.json"
+  ],
+  "proofArtifact": "c4-google-office-proof.json",
+  "forbiddenArtifacts": [
+    "review-apply-receipt.json"
+  ],
+  "providerPolicy": {
+    "nativeDocumentMimeType": "application/vnd.google-apps.document",
+    "sourceMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "exportMimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "uiMode": "SUGGESTING",
+    "requiredUiStages": [
+      "suggestingMode",
+      "anchoredComment",
+      "reopen"
+    ],
+    "revisionBeforeExportMustEqualAfterExport": true,
+    "exactCreatedDocumentIdsMustEqualDeletedDocumentIds": true,
+    "postExportMutation": false
+  },
+  "scenePolicy": {
+    "kind": "scene",
+    "exportCommandId": "cmd.project.review.exportDocxReviewPacket",
+    "sceneCount": 1,
+    "orderedSceneIdsCount": 1,
+    "nodeMustBePresent": true,
+    "capsuleMustBindSceneId": true,
+    "romanSectionRejected": true
+  },
+  "intakePolicy": {
+    "authority": "ADVISORY_ONLY_NO_WRITER",
+    "writerCalled": false,
+    "rendererAuthority": false,
+    "canAutoApply": false,
+    "canImportMutate": false,
+    "canWriteStorage": false,
+    "canonicalSceneHashUnchanged": true
+  },
+  "readerBindings": [
+    {
+      "path": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "50be0cba7808d225cbc52706020842f7c16e313f3e31cc382c1cd28e88989566",
+      "normalization": "C4_POLICY_SHA256_ZEROED"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-c4-google-office-readback.py",
+      "sha256": "33293f7b1acfe8385e61aa724e4eee391346576b81c323d119f2c7d3dbb250e5"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "sha256": "73548416c2ee32834810d9aba008762913bad7425e2f1a32ab9148a2e7da6ed8"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "82cbaba39a4c8be8ce40ed35c892c84496fe6d259d26af2fe0bcdf386d68d764"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "acbdf04bcbf08334d7a11d759306f96c33e1c1435d2f821213daa056c9f28400"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-order-c1.mjs",
+      "sha256": "b5ec996585b18086b009312f9056be3caf697a9c75619fb1fd2ef8eaeb4556b5"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-word-volume-readback.py",
+      "sha256": "721f5a4353c94fa529328699a763bbc84ad7081bf5976108dc56e054e61d2244"
+    },
+    {
+      "path": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "d74e78dd7c35a04b48d0149eff99880bb2f3b65aa5ba13181d1a9e08c1a1b2bd"
+    }
+  ],
+  "allowedVerifierPromotionPaths": [
+    "docs/OPS/RTK/YALKEN_INTEROP_C4_GOOGLE_OFFICE_POLICY_V1.json",
+    "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+    "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+    "scripts/ops/rtk-interop-c4-google-office-readback.py",
+    "test/contracts/rtk-interop-c4-google-office.contract.test.js"
+  ],
+  "limitations": [
+    "Only C4 SINGLE_SCENE TEXT and ORDER on SOURCE_RUNTIME are in this slice.",
+    "PACKAGED_BUILD_RUNTIME and all other C4 fields remain unproved.",
+    "The raw reader grants no credit; the outer verifier accepts only field proofs that pass exact observation, current runtime, UI, scene, intake and cleanup checks."
+  ]
+}

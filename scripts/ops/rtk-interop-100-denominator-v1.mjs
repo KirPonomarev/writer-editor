@@ -2,6 +2,7 @@
 import {verifyDataC1} from './rtk-interop-data-c1.mjs';
 import {verifyWordTextOrderBatch} from './rtk-interop-word-text-order-batch.mjs';
 import {verifyWordManuscriptBatch} from './rtk-interop-word-manuscript-batch.mjs';
+import {verifyC4GoogleOfficeBatch} from './rtk-interop-c4-google-office-batch.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -1479,6 +1480,15 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if(Object.hasOwn(options,'c4GoogleOfficeLabRoot')||Object.hasOwn(options,'c4GoogleOfficeRunIds')){
+    const specErrors=[];validateSpec(spec,specErrors);
+    if(options.spec||options.envelope||options.ledger||['wordManuscriptLabRoot','wordManuscriptRunIds','wordTextOrderLabRoot','wordTextOrderRunIds',
+      'dataC1LabRoot','dataC1RunId','textOrderC1LabRoot','textOrderRunId','orderC1LabRoot','orderRunId','freshC1EvidenceRoot'].some(k=>Object.hasOwn(options,k))
+      ||options.requireLocalPhysicalPackage||options.requireExternalEvidencePackage||options.externalEvidencePackageRoot)
+      specErrors.push('C4_GOOGLE_OFFICE_MODE_OPTIONS_CONFLICT');
+    return verifyC4GoogleOfficeBatch({repoRoot,labRoot:options.c4GoogleOfficeLabRoot,runIds:options.c4GoogleOfficeRunIds,
+      requiredCells:buildRequiredCells(spec),specErrors});
+  }
   if(Object.hasOwn(options,'wordManuscriptLabRoot')||Object.hasOwn(options,'wordManuscriptRunIds')){
     const specErrors=[];validateSpec(spec,specErrors);
     if(options.spec||options.envelope||options.ledger||['wordTextOrderLabRoot','wordTextOrderRunIds','freshC1EvidenceRoot','dataC1LabRoot','dataC1RunId',
@@ -1550,6 +1560,8 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 }
 
 function main() {
+  const c4Index=process.argv.indexOf('--c4-google-office-lab-root');
+  const c4RunsIndex=process.argv.indexOf('--c4-google-office-run-ids');
   const manuscriptIndex=process.argv.indexOf('--word-manuscript-lab-root');
   const wordBatchIndex=process.argv.indexOf('--word-text-order-lab-root');
   const wordBatchRunsIndex=process.argv.indexOf('--run-ids');
@@ -1563,6 +1575,8 @@ function main() {
     ? ''
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
+    ...(c4Index===-1?{}:{c4GoogleOfficeLabRoot:String(process.argv[c4Index+1]||'').trim()}),
+    ...(c4RunsIndex===-1?{}:{c4GoogleOfficeRunIds:String(process.argv[c4RunsIndex+1]||'').trim().split(',')}),
     ...(manuscriptIndex===-1?{}:{wordManuscriptLabRoot:String(process.argv[manuscriptIndex+1]||'').trim()}),
     ...(wordBatchIndex===-1?{}:{wordTextOrderLabRoot:String(process.argv[wordBatchIndex+1]||'').trim()}),
     ...(wordBatchRunsIndex===-1?{}:{[manuscriptIndex===-1?'wordTextOrderRunIds':'wordManuscriptRunIds']:String(process.argv[wordBatchRunsIndex+1]||'').trim().split(',')}),
