@@ -235,6 +235,33 @@ function validateWithEnvelope(validator, input) {
   });
 }
 
+function bindCanonicalPassEntryDigest(entry, envelopeEntry) {
+  envelopeEntry.cellId = entry.cellId;
+  envelopeEntry.canonicalPassEntrySha256 = `sha256:${sha256Text(JSON.stringify(stableJsonValue(entry)))}`;
+}
+
+function makeHostileContractCandidate(validator, mutateEntry = () => {}) {
+  const spec = validator.readInterop100Denominator();
+  const ledger = clone(validator.readInterop100EvidenceLedger());
+  const envelope = clone(validator.readInterop100EvidenceEnvelope());
+  const entry = ledger.entries[0];
+  const envelopeEntry = envelope.entries[0];
+  entry.cellId = 'TEXT__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME';
+  entry.outcome = 'REJECTED_INVALID_NO_MUTATION';
+  entry.typedResult = true;
+  entry.inputClassification = {
+    independent: true,
+    verdict: 'INVALID',
+    artifactSha256: fakeSha256('a'),
+  };
+  entry.mutationCount = 0;
+  // Keep the contract test from treating relabeled historical evidence as a pass.
+  entry.fixture.disposable = false;
+  mutateEntry(entry);
+  bindCanonicalPassEntryDigest(entry, envelopeEntry);
+  return { spec, ledger, envelope, currentHead: entry.sourceRevision };
+}
+
 function fakeSha256(nibble = '1') {
   return `sha256:${String(nibble).repeat(64).slice(0, 64)}`;
 }
@@ -513,6 +540,95 @@ test('interop 100 denominator preserves the archived 1120-cell baseline at the e
     'EXPLICIT_LOSS',
   ]);
   assert.equal(ledger.entries[0].evidenceReceipt.broadPassClaim, false);
+});
+
+test('hostile typed zero-mutation evidence has an exact hostile-only closed schema', async () => {
+  const validator = await loadValidator();
+  const candidate = makeHostileContractCandidate(validator);
+  const report = validateWithEnvelope(validator, candidate);
+  const hostileContractErrors = report.errors.filter((error) => /:(?:PASS_ENTRY_SCHEMA_CLOSED_SET_MISMATCH|HOSTILE_INPUT_|HOSTILE_REJECTION_|HOSTILE_OUTCOME_)/.test(error));
+
+  assert.equal(report.ok, false);
+  assert.equal(report.diagnosticPassedRequiredCells, 0);
+  assert.ok(report.errors.includes('TEXT__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME:FIXTURE_NOT_SEEDED_DISPOSABLE_SYNTHETIC'));
+  assert.deepEqual(hostileContractErrors, []);
+});
+
+test('hostile schema rejects missing or malformed classification and nonzero mutation', async () => {
+  const validator = await loadValidator();
+  const cases = [
+    {
+      name: 'missing classification',
+      mutate(entry) { delete entry.inputClassification; },
+      expected: [
+        'PASS_ENTRY_SCHEMA_CLOSED_SET_MISMATCH',
+        'HOSTILE_INPUT_CLASSIFICATION_SCHEMA_CLOSED_SET_MISMATCH',
+        'HOSTILE_INPUT_NOT_INDEPENDENTLY_CLASSIFIED_INVALID',
+      ],
+    },
+    {
+      name: 'invalid classification verdict',
+      mutate(entry) { entry.inputClassification.verdict = 'VALID'; },
+      expected: ['HOSTILE_INPUT_NOT_INDEPENDENTLY_CLASSIFIED_INVALID'],
+    },
+    {
+      name: 'extra classification key',
+      mutate(entry) { entry.inputClassification.source = 'unbound'; },
+      expected: ['HOSTILE_INPUT_CLASSIFICATION_SCHEMA_CLOSED_SET_MISMATCH'],
+    },
+    {
+      name: 'nonzero mutation count',
+      mutate(entry) { entry.mutationCount = 1; },
+      expected: ['HOSTILE_REJECTION_NOT_TYPED_ZERO_MUTATION'],
+    },
+    {
+      name: 'missing mutation count',
+      mutate(entry) { delete entry.mutationCount; },
+      expected: [
+        'PASS_ENTRY_SCHEMA_CLOSED_SET_MISMATCH',
+        'HOSTILE_REJECTION_NOT_TYPED_ZERO_MUTATION',
+      ],
+    },
+    {
+      name: 'string mutation count',
+      mutate(entry) { entry.mutationCount = '0'; },
+      expected: ['HOSTILE_REJECTION_NOT_TYPED_ZERO_MUTATION'],
+    },
+  ];
+
+  for (const item of cases) {
+    const candidate = makeHostileContractCandidate(validator, item.mutate);
+    const report = validateWithEnvelope(validator, candidate);
+    assert.equal(report.ok, false, item.name);
+    for (const fragment of item.expected) {
+      assert.ok(report.errors.some((error) => error.includes(fragment)), `${item.name}: expected ${fragment} in ${JSON.stringify(report.errors)}`);
+    }
+    assert.equal(report.diagnosticPassedRequiredCells, 0, item.name);
+  }
+});
+
+test('supported-volume pass entries reject hostile-only schema fields', async () => {
+  const validator = await loadValidator();
+  const spec = validator.readInterop100Denominator();
+  const ledger = clone(validator.readInterop100EvidenceLedger());
+  const envelope = clone(validator.readInterop100EvidenceEnvelope());
+  const entry = ledger.entries[0];
+  entry.inputClassification = {
+    independent: true,
+    verdict: 'INVALID',
+    artifactSha256: fakeSha256('b'),
+  };
+  entry.mutationCount = 0;
+  bindCanonicalPassEntryDigest(entry, envelope.entries[0]);
+
+  const report = validateWithEnvelope(validator, {
+    spec,
+    ledger,
+    envelope,
+    currentHead: entry.sourceRevision,
+  });
+  expectInvalid(report, 'PASS_ENTRY_SCHEMA_CLOSED_SET_MISMATCH');
+  assert.equal(report.diagnosticPassedRequiredCells, 0);
 });
 
 test('Google local DOCX native import is route-qualified only through an internal uploaded-file reference', async () => {
