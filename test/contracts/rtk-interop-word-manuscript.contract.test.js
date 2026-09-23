@@ -307,6 +307,7 @@ test('Current C5 direct transport is scoped to manuscript evidence and cannot re
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const policy=JSON.parse(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json'))),p=policy.wordManuscriptBatch.googleNativeTransport;
  const spec=d.readInterop100Denominator(ROOT),specSha256=digest(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json')));
+ assert.ok(policy.wordManuscriptBatch.verifierPromotionPaths.includes('docs/tasks/2026-09-23--c5-transport-reconciliation.md'));
  const resolved=m.validateGoogleManuscriptTransport(p,spec,specSha256);
  assert.deepEqual(resolved,{status:'SCOPED_C5_CURRENT_TRANSPORT',evidenceMode:m.MANUSCRIPT_BATCH_MODE,route:'C5',
   archivedDenominatorSha256:specSha256,archivedSourceReferenceKind:'INTERNAL_UPLOADED_FILE_REFERENCE',
