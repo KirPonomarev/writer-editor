@@ -235,6 +235,7 @@ export function validateManuscriptNotesProof(p,cycles,roundProofs){
 export function validateGoogleManuscriptTransport(p,archivedSpec,archivedSpecSha256){
  const historical=archivedSpec?.providerTransportPolicy?.googleLocalDocxToNativeImport;
  demand(p?.schemaVersion==='GOOGLE_NATIVE_DIRECT_TRANSPORT_V2'&&p.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
+  &&p.transportResolutionStatus==='SCOPED_C5_CURRENT_TRANSPORT'
   &&same(p.directLocalPathImport,{supported:true,countsAsPass:false,qualification:'ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP'})
   &&p.sourceReferenceKind==='ABSOLUTE_LOCAL_FILE_PATH'
   &&same(p.requiredSteps,['IMPORT_LOCAL_DOCX_AS_NATIVE_GOOGLE_DOC','VERIFY_NATIVE_ID_MIME_REVISION_AND_FULL_BODY','EXPORT_NATIVE_DOCX','VERIFY_UNCHANGED_NATIVE_REVISION','DELETE_EXACT_CREATED_GOOGLE_FILES'])
@@ -256,7 +257,7 @@ export function validateGoogleManuscriptTransport(p,archivedSpec,archivedSpecSha
   &&p.supersedesArchivedTransportAssumption?.specSha256===archivedSpecSha256
   &&p.supersedesArchivedTransportAssumption?.field==='providerTransportPolicy.googleLocalDocxToNativeImport'
   &&p.supersedesArchivedTransportAssumption?.retainsHistoricalStagingReceipt===true,'MANUSCRIPT_GOOGLE_TRANSPORT_POLICY');
- return {status:'SCOPED_C5_CURRENT_TRANSPORT',evidenceMode:MANUSCRIPT_BATCH_MODE,route:'C5',
+ return {status:p.transportResolutionStatus,evidenceMode:MANUSCRIPT_BATCH_MODE,route:'C5',
   archivedDenominatorSha256:archivedSpecSha256,archivedSourceReferenceKind:historical.sourceReferenceKind,
   currentSourceReferenceKind:p.sourceReferenceKind,routeQualificationCountsAsCellPass:false};
 }

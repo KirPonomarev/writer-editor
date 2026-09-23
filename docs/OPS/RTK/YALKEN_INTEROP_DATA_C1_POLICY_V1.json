@@ -602,7 +602,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "85682e2ac31023a43d83f9fbfefaf0d4da7bcbf6fedf6b8f9aaaa37b5447fc47"
+        "sha256": "545b6ddac7ef506706b8dad0909a1847908b38895381b2b2fefde29cb3521506"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1376,7 +1376,7 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "7d87ad6e38ede0db5bae60996f19b5ed9c749d767c76378cb9a6eebcbd543736"
+        "sha256": "acbdf04bcbf08334d7a11d759306f96c33e1c1435d2f821213daa056c9f28400"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
@@ -1673,6 +1673,7 @@
       "productRuntimeNetworkPolicy": "OFFLINE_FIRST_RUNTIME_NETWORK_DENIED",
       "externalConnectorUse": "DISPOSABLE_SYNTHETIC_TEST_EVIDENCE_ONLY",
       "schemaVersion": "GOOGLE_NATIVE_DIRECT_TRANSPORT_V2",
+      "transportResolutionStatus": "SCOPED_C5_CURRENT_TRANSPORT",
       "historicalStagingQualification": {
         "status": "HISTORICAL_NON_CELL_QUALIFICATION",
         "requiredSteps": [
