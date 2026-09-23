@@ -602,7 +602,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "14cdec73b975162e1d0234923903f47a86ee7009ad8707bf1bdc53a18e34651a"
+        "sha256": "85682e2ac31023a43d83f9fbfefaf0d4da7bcbf6fedf6b8f9aaaa37b5447fc47"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1705,7 +1705,6 @@
       "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
       "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
-      "docs/tasks/2026-09-23--c5-transport-reconciliation.md",
       "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "test/unit/rtk-interop-word-manuscript.test.py"
     ]
