@@ -232,17 +232,34 @@ export function validateManuscriptNotesProof(p,cycles,roundProofs){
  return true;
 }
 
-export function validateGoogleManuscriptTransport(p){
+export function validateGoogleManuscriptTransport(p,archivedSpec,archivedSpecSha256){
+ const historical=archivedSpec?.providerTransportPolicy?.googleLocalDocxToNativeImport;
  demand(p?.schemaVersion==='GOOGLE_NATIVE_DIRECT_TRANSPORT_V2'&&p.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
+  &&p.transportResolutionStatus==='SCOPED_C5_CURRENT_TRANSPORT'
   &&same(p.directLocalPathImport,{supported:true,countsAsPass:false,qualification:'ACTUAL_SYNTHETIC_IMPORT_NATIVE_READBACK_EXPORT_AND_EXACT_ID_CLEANUP'})
   &&p.sourceReferenceKind==='ABSOLUTE_LOCAL_FILE_PATH'
   &&same(p.requiredSteps,['IMPORT_LOCAL_DOCX_AS_NATIVE_GOOGLE_DOC','VERIFY_NATIVE_ID_MIME_REVISION_AND_FULL_BODY','EXPORT_NATIVE_DOCX','VERIFY_UNCHANGED_NATIVE_REVISION','DELETE_EXACT_CREATED_GOOGLE_FILES'])
   &&p.createdDriveFilesCleanup==='EXACT_CREATED_IDS_DELETE_REQUIRED'&&p.routeQualificationCountsAsCellPass===false
   &&p.productRuntimeNetworkPolicy==='OFFLINE_FIRST_RUNTIME_NETWORK_DENIED'&&p.externalConnectorUse==='DISPOSABLE_SYNTHETIC_TEST_EVIDENCE_ONLY'
-  &&p.supersedesArchivedTransportAssumption?.specSha256==='5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93'
+  &&p.scope==='Current C5 manuscript evidence only; supersedes the archived connector transport assumption, not the frozen axes or any historical cell evidence.'
+  &&archivedSpec?.contractId==='YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1'
+  &&archivedSpec?.status==='DENOMINATOR_FROZEN_EVIDENCE_OPEN'
+  &&historical?.status==='ROUTE_QUALIFIED_NOT_CELL_PASS'
+  &&same(historical.directLocalPathImport,{supported:false,countsAsPass:false,typedBlocker:'GOOGLE_IMPORT_SOURCE_FILE_REFERENCE_REQUIRED'})
+  &&historical.sourceReferenceKind==='INTERNAL_UPLOADED_FILE_REFERENCE'
+  &&historical.routeQualificationCountsAsCellPass===false
+  &&historical.createdDriveFilesCleanup==='EXACT_CREATED_IDS_DELETE_REQUIRED'
+  &&p.historicalStagingQualification?.status==='HISTORICAL_NON_CELL_QUALIFICATION'
+  &&same(p.historicalStagingQualification.requiredSteps,historical.requiredSteps)
+  &&p.historicalStagingQualification.typedBlocker===historical.directLocalPathImport.typedBlocker
+  &&p.historicalStagingQualification.stillCountsAsCellPass===false
+  &&archivedSpecSha256==='5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93'
+  &&p.supersedesArchivedTransportAssumption?.specSha256===archivedSpecSha256
   &&p.supersedesArchivedTransportAssumption?.field==='providerTransportPolicy.googleLocalDocxToNativeImport'
   &&p.supersedesArchivedTransportAssumption?.retainsHistoricalStagingReceipt===true,'MANUSCRIPT_GOOGLE_TRANSPORT_POLICY');
- return true;
+ return {status:p.transportResolutionStatus,evidenceMode:MANUSCRIPT_BATCH_MODE,route:'C5',
+  archivedDenominatorSha256:archivedSpecSha256,archivedSourceReferenceKind:historical.sourceReferenceKind,
+  currentSourceReferenceKind:p.sourceReferenceKind,routeQualificationCountsAsCellPass:false};
 }
 const gitAt=root=>args=>execFileSync('git',args,{cwd:root,encoding:'utf8',timeout:10000,maxBuffer:16*1024*1024});
 const json=(root,file,max)=>JSON.parse(readOrderFile(root,file,max).bytes);
@@ -381,7 +398,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
 }
 
 export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,requiredCells,specErrors=[],currentHead}={}){
-  const started=performance.now(),errors=[...specErrors];let identity=null,runtimeIdentity=null,runtimeRoot=null,promotionPaths=[],reviews=[];
+  const started=performance.now(),errors=[...specErrors];let identity=null,runtimeIdentity=null,runtimeRoot=null,promotionPaths=[],reviews=[],transportPolicyResolution=null;
   try{
     demand(!errors.length,'MANUSCRIPT_BATCH_SPEC_OR_MODE');
     const rows=validateManuscriptRuns(runIds);
@@ -389,8 +406,9 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     identity=clean(ROOT);const labIdentity=clean(labRoot),policy=loadDataPolicy(),batch=policy.wordManuscriptBatch;
     demand(gitAt(ROOT)(['rev-parse','origin/main']).trim()===identity.head&&(!currentHead||currentHead===identity.head),'MANUSCRIPT_BATCH_CURRENT_MAIN');
     demand(batch?.schemaVersion===MANUSCRIPT_BATCH_MODE&&same(batch.cellIds,MANUSCRIPT_CELLS)&&same(batch.requiredHops,MANUSCRIPT_HOPS),'MANUSCRIPT_BATCH_POLICY_SCOPE');
-    validateGoogleManuscriptTransport(batch.googleNativeTransport);
-    demand(hash(readOrderFile(ROOT,SPEC).bytes)===policy.productSpecSha256,'MANUSCRIPT_BATCH_SPEC_PIN');
+    const specFile=readOrderFile(ROOT,SPEC),specSha256=hash(specFile.bytes);
+    demand(specSha256===policy.productSpecSha256,'MANUSCRIPT_BATCH_SPEC_PIN');
+    transportPolicyResolution=validateGoogleManuscriptTransport(batch.googleNativeTransport,JSON.parse(specFile.bytes),specSha256);
     demand(requiredCells?.length===1120&&new Set(requiredCells.map(c=>c.cellId)).size===1120
       &&MANUSCRIPT_CELLS.every(id=>requiredCells.some(c=>c.cellId===id)),'MANUSCRIPT_BATCH_DENOMINATOR');
     for(const b of batch.readerBindings)demand(hash(readOrderFile(ROOT,b.path).bytes)===b.sha256,'MANUSCRIPT_BATCH_READER_PIN');
@@ -443,6 +461,7 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     statusCounts:{PASS:acceptedCellIds.length,NOT_EXECUTED:1120-acceptedCellIds.length},
     currentHead:identity?.head||null,currentTree:identity?.tree||null,
     evidenceRuntimeHead:runtimeIdentity?.head||null,evidenceRuntimeTree:runtimeIdentity?.tree||null,verifierPromotionPaths:promotionPaths,
+    transportPolicyResolution:ok?transportPolicyResolution:null,
     percentage:acceptedCellIds.length/1120*100,
     cellDecisions:fieldProofs.map(f=>({cellId:f.cellId,status:'PASS',outcome:f.outcome,sourceRunId:f.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(f)))})),
     policySha256:DATA_POLICY_SHA256,rawReadbacks:ok?reviews:[],seconds:(performance.now()-started)/1000,
