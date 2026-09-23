@@ -569,7 +569,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "6f162a2d11f20fb6094d785d5596eb45f4884678bbfb9bdc417eb2496795c81e"
+        "sha256": "407fd21a22001b09a4010e779d5435a9327112aa671a5aef7f53a9f615e9cb7b"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -1699,16 +1699,19 @@
       }
     },
     "verifierPromotionPaths": [
+      "docs/OPS/GOVERNANCE_APPROVALS/GOVERNANCE_CHANGE_APPROVALS.json",
       "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "scripts/ops/rtk-interop-100-denominator-v1.mjs",
       "scripts/ops/rtk-interop-data-c1.mjs",
       "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
       "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
+      "test/contracts/rtk-interop-100-denominator.contract.test.js",
       "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "test/unit/rtk-interop-word-manuscript.test.py"
     ]

@@ -1479,6 +1479,17 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if (Object.hasOwn(options, 'wordManuscriptCohorts')) {
+    const specErrors = [];
+    validateSpec(spec, specErrors);
+    if (options.spec || options.envelope || options.ledger || ['wordManuscriptLabRoot', 'wordManuscriptRunIds',
+      'wordTextOrderLabRoot', 'wordTextOrderRunIds', 'freshC1EvidenceRoot', 'dataC1LabRoot', 'dataC1RunId',
+      'textOrderC1LabRoot', 'textOrderRunId', 'orderC1LabRoot', 'orderRunId'].some(k => Object.hasOwn(options, k))
+      || options.requireLocalPhysicalPackage || options.requireExternalEvidencePackage || options.externalEvidencePackageRoot)
+      specErrors.push('WORD_MANUSCRIPT_COHORT_MODE_OPTIONS_CONFLICT');
+    return verifyWordManuscriptCohorts({repoRoot, cohorts: options.wordManuscriptCohorts,
+      currentHead: options.currentHead || currentGitHead(repoRoot), requiredCells: buildRequiredCells(spec), specErrors});
+  }
   if(Object.hasOwn(options,'wordManuscriptLabRoot')||Object.hasOwn(options,'wordManuscriptRunIds')){
     const specErrors=[];validateSpec(spec,specErrors);
     if(options.spec||options.envelope||options.ledger||['wordTextOrderLabRoot','wordTextOrderRunIds','freshC1EvidenceRoot','dataC1LabRoot','dataC1RunId',
@@ -1549,7 +1560,106 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   });
 }
 
+// This is a reconciliation check only. It never reads evidence or grants credit on its own;
+// verifyWordManuscriptCohorts obtains every input from the independent batch verifier.
+export function reconcileWordManuscriptCohortReports({cohortReports, requiredCellIds, currentHead}) {
+  const errors = [], ids = new Set(), decisions = [];
+  if (!Array.isArray(cohortReports) || cohortReports.length < 2 || cohortReports.length > 80
+    || !Array.isArray(requiredCellIds) || requiredCellIds.length !== EXPECTED_REQUIRED_CELLS
+    || new Set(requiredCellIds).size !== EXPECTED_REQUIRED_CELLS || !commitSha(currentHead))
+    errors.push('WORD_MANUSCRIPT_COHORT_SCOPE');
+  const allowed = new Set(requiredCellIds || []);
+  for (const [index, report] of (Array.isArray(cohortReports) ? cohortReports : []).entries()) {
+    if (!report || report.ok !== true || report.authoritativeAdmission !== true
+      || report.evidenceMode !== 'WORD_MANUSCRIPT_BATCH_V1' || report.currentHead !== currentHead
+      || report.requiredCells !== EXPECTED_REQUIRED_CELLS || !Array.isArray(report.errors) || report.errors.length
+      || !Array.isArray(report.acceptedCellIds) || !Array.isArray(report.cellDecisions)
+      || report.recordedCells !== report.acceptedCellIds.length
+      || report.passedRequiredCells !== report.acceptedCellIds.length
+      || report.statusCounts?.PASS !== report.acceptedCellIds.length
+      || report.statusCounts?.NOT_EXECUTED !== EXPECTED_REQUIRED_CELLS - report.acceptedCellIds.length
+      || report.broadPassClaim !== false) {
+      errors.push(`WORD_MANUSCRIPT_COHORT_NOT_AUTHORITATIVE:${index}`);
+      continue;
+    }
+    const own = new Set(report.acceptedCellIds);
+    if (own.size !== report.acceptedCellIds.length || report.cellDecisions.length !== own.size
+      || new Set(report.cellDecisions.map(d => d?.cellId)).size !== own.size
+      || report.cellDecisions.some(d => d?.status !== 'PASS' || !own.has(d.cellId)))
+      errors.push(`WORD_MANUSCRIPT_COHORT_DECISIONS:${index}`);
+    for (const id of report.acceptedCellIds) {
+      if (!allowed.has(id)) errors.push(`WORD_MANUSCRIPT_COHORT_UNKNOWN_CELL:${index}:${id}`);
+      if (ids.has(id)) errors.push(`WORD_MANUSCRIPT_COHORT_DUPLICATE_CELL:${index}:${id}`);
+      ids.add(id);
+    }
+    decisions.push(...report.cellDecisions);
+  }
+  return {errors, acceptedCellIds: errors.length ? [] : [...ids].sort(),
+    cellDecisions: errors.length ? [] : decisions.sort((a, b) => a.cellId.localeCompare(b.cellId))};
+}
+
+function verifyWordManuscriptCohorts({repoRoot, cohorts, currentHead, requiredCells, specErrors = []}) {
+  const started = performance.now(), errors = [...specErrors], reports = [], roots = new Set(), runs = new Set();
+  if (!Array.isArray(cohorts) || cohorts.length < 2 || cohorts.length > 80)
+    errors.push('WORD_MANUSCRIPT_COHORT_SCOPE');
+  for (const [index, cohort] of (Array.isArray(cohorts) ? cohorts : []).entries()) {
+    if (errors.length) break;
+    if (!cohort || typeof cohort.labRoot !== 'string' || !cohort.labRoot.trim()
+      || !Array.isArray(cohort.runIds) || !cohort.runIds.length || cohort.runIds.length > 38
+      || cohort.runIds.some(id => typeof id !== 'string' || !id.trim())) {
+      errors.push(`WORD_MANUSCRIPT_COHORT_INPUT:${index}`);
+      break;
+    }
+    let realRoot;
+    try { realRoot = fs.realpathSync(cohort.labRoot); }
+    catch { errors.push(`WORD_MANUSCRIPT_COHORT_ROOT:${index}`); break; }
+    if (roots.has(realRoot) || cohort.runIds.some(id => runs.has(id))) {
+      errors.push(`WORD_MANUSCRIPT_COHORT_DUPLICATE_INPUT:${index}`);
+      break;
+    }
+    roots.add(realRoot);
+    for (const id of cohort.runIds) runs.add(id);
+    const report = verifyWordManuscriptBatch({repoRoot, labRoot: realRoot, runIds: cohort.runIds,
+      currentHead, requiredCells});
+    if (!report.ok) { errors.push(`WORD_MANUSCRIPT_COHORT_FAILED:${index}:${report.errors.join('|')}`); break; }
+    reports.push({labRoot: realRoot, runIds: [...cohort.runIds], report});
+  }
+  const reconciled = reconcileWordManuscriptCohortReports({cohortReports: reports.map(c => c.report),
+    requiredCellIds: requiredCells?.map(c => c.cellId), currentHead});
+  errors.push(...reconciled.errors);
+  const git = args => spawnSync('git', args, {cwd: repoRoot, encoding: 'utf8'});
+  const origin = git(['rev-parse', 'origin/main']), head = git(['rev-parse', 'HEAD']), status = git(['status', '--porcelain']);
+  if (origin.status !== 0 || head.status !== 0 || status.status !== 0
+    || origin.stdout.trim() !== currentHead || head.stdout.trim() !== currentHead || status.stdout.trim())
+    errors.push('WORD_MANUSCRIPT_COHORT_CURRENT_MAIN_CHANGED');
+  const ok = errors.length === 0, acceptedCellIds = ok ? reconciled.acceptedCellIds : [];
+  return {ok, errors, contractId: CONTRACT_ID, evidenceMode: 'WORD_MANUSCRIPT_COHORTS_V1',
+    authoritativeAdmission: ok, requiredCells: EXPECTED_REQUIRED_CELLS,
+    recordedCells: acceptedCellIds.length, passedRequiredCells: acceptedCellIds.length, acceptedCellIds,
+    diagnosticPassedRequiredCells: 0, broadPassClaim: false,
+    claimVerdict: ok ? 'NEEDS_MORE_EVIDENCE' : 'FAIL_WORD_MANUSCRIPT_COHORT_EVIDENCE',
+    statusCounts: {PASS: acceptedCellIds.length, NOT_EXECUTED: EXPECTED_REQUIRED_CELLS - acceptedCellIds.length},
+    currentHead: ok ? currentHead : null, percentage: acceptedCellIds.length / EXPECTED_REQUIRED_CELLS * 100,
+    cellDecisions: ok ? reconciled.cellDecisions : [],
+    cohortProvenance: ok ? reports.map(({labRoot, runIds, report}) => ({labRoot, runIds,
+      evidenceRuntimeHead: report.evidenceRuntimeHead, evidenceRuntimeTree: report.evidenceRuntimeTree,
+      policySha256: report.policySha256, acceptedCellIds: report.acceptedCellIds,
+      observations: report.rawReadbacks.map(r => ({runId: r.runId, observationArtifactHash: r.observationArtifactHash}))})) : [],
+    seconds: (performance.now() - started) / 1000,
+    limitations: ['Each cohort was independently rehydrated by the pinned raw reader against the same exact current main.',
+      'Only unique acceptedCellIds are counted; failures and cross-cohort duplicates invalidate the entire aggregate.',
+      'Complete 1120-cell support, unexecuted routes, and release readiness remain unproved.']};
+}
+
 function main() {
+  const cohortArgs = [];
+  for (let i = 2; i < process.argv.length; i++) {
+    if (process.argv[i] === '--word-manuscript-cohort') {
+      cohortArgs.push({labRoot: String(process.argv[i + 1] || '').trim(),
+        runIds: String(process.argv[i + 2] || '').trim().split(',')});
+      i += 2;
+    }
+  }
   const manuscriptIndex=process.argv.indexOf('--word-manuscript-lab-root');
   const wordBatchIndex=process.argv.indexOf('--word-text-order-lab-root');
   const wordBatchRunsIndex=process.argv.indexOf('--run-ids');
@@ -1563,6 +1673,7 @@ function main() {
     ? ''
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
+    ...(cohortArgs.length ? {wordManuscriptCohorts: cohortArgs} : {}),
     ...(manuscriptIndex===-1?{}:{wordManuscriptLabRoot:String(process.argv[manuscriptIndex+1]||'').trim()}),
     ...(wordBatchIndex===-1?{}:{wordTextOrderLabRoot:String(process.argv[wordBatchIndex+1]||'').trim()}),
     ...(wordBatchRunsIndex===-1?{}:{[manuscriptIndex===-1?'wordTextOrderRunIds':'wordManuscriptRunIds']:String(process.argv[wordBatchRunsIndex+1]||'').trim().split(',')}),
