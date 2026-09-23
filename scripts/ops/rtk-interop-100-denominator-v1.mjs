@@ -130,6 +130,12 @@ const PASS_ENTRY_KEYS = Object.freeze([
   'targetRevision',
   'typedResult',
 ]);
+const HOSTILE_PASS_ENTRY_KEYS = Object.freeze([
+  ...PASS_ENTRY_KEYS,
+  'inputClassification',
+  'mutationCount',
+]);
+const INPUT_CLASSIFICATION_KEYS = Object.freeze(['artifactSha256', 'independent', 'verdict']);
 const EVIDENCE_RECEIPT_KEYS = Object.freeze([
   'broadPassClaim',
   'checkpointBasename',
@@ -235,6 +241,10 @@ function unique(values) {
 
 function sameKeySet(value, expectedKeys) {
   return isObject(value) && sameArray(Object.keys(value).sort(), [...expectedKeys].sort());
+}
+
+function passEntryKeys(hostile) {
+  return hostile ? HOSTILE_PASS_ENTRY_KEYS : PASS_ENTRY_KEYS;
 }
 
 function sha256(value) {
@@ -943,7 +953,7 @@ function validateCell001ExternalPackageTrust(entry, externalPackage, actuals, er
   return valid;
 }
 
-function validateExternalEvidencePackage(entry, envelopeEntry, errors, externalEvidencePackageRoot) {
+function validateExternalEvidencePackage(entry, envelopeEntry, errors, externalEvidencePackageRoot, hostile) {
   const externalPackage = envelopeEntry?.externalRehydrationPackage;
   if (!isObject(externalPackage)) {
     errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_ENVELOPE_REQUIRED`);
@@ -1078,7 +1088,7 @@ function validateExternalEvidencePackage(entry, envelopeEntry, errors, externalE
     errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_JSON_INVALID`);
     return;
   }
-  if (!sameKeySet(packagedLedgerEntry, PASS_ENTRY_KEYS)) {
+  if (!sameKeySet(packagedLedgerEntry, passEntryKeys(hostile))) {
     errors.push(`${entry.cellId}:EXTERNAL_EVIDENCE_PACKAGE_LEDGER_ENTRY_SCHEMA_CLOSED_SET_MISMATCH`);
   }
   if (!sameSha256(sha256StableJson(packagedLedgerEntry), envelopeEntry.canonicalPassEntrySha256)) {
@@ -1089,12 +1099,12 @@ function validateExternalEvidencePackage(entry, envelopeEntry, errors, externalE
   }
 }
 
-function validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, options) {
+function validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, hostile, options) {
   if (!isObject(envelopeEntry)) {
     errors.push(`${entry.cellId}:EVIDENCE_ENVELOPE_ENTRY_REQUIRED`);
     return;
   }
-  if (!sameKeySet(entry, PASS_ENTRY_KEYS)) {
+  if (!sameKeySet(entry, passEntryKeys(hostile))) {
     errors.push(`${entry.cellId}:PASS_ENTRY_SCHEMA_CLOSED_SET_MISMATCH`);
   }
   if (!sha256(envelopeEntry.canonicalPassEntrySha256)) {
@@ -1118,7 +1128,7 @@ function validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, 
     validatePhysicalPackageRehydration(entry, envelopeEntry, errors);
   }
   if (options?.requireExternalEvidencePackage === true) {
-    validateExternalEvidencePackage(entry, envelopeEntry, errors, options.externalEvidencePackageRoot);
+    validateExternalEvidencePackage(entry, envelopeEntry, errors, options.externalEvidencePackageRoot, hostile);
   }
 }
 
@@ -1344,7 +1354,7 @@ function validatePassEntry(entry, cell, spec, currentHead, repoRoot, envelopeEnt
   validateProviderEvidence(entry, route, currentHead, repoRoot, errors);
   validateCycles(entry, route, errors);
   validateOutsideContract(entry, errors);
-  validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, options);
+  validateEnvelopeBinding(entry, route, envelopeEntry, repoRoot, errors, hostile, options);
   if (cell.executionProfileId === 'PACKAGED_BUILD_RUNTIME') validatePackagedBuild(entry, currentHead, repoRoot, errors);
 
   if (!hostile) {
@@ -1352,6 +1362,9 @@ function validatePassEntry(entry, cell, spec, currentHead, repoRoot, envelopeEnt
     if (entry.typedResult === true) errors.push(`${entry.cellId}:TYPED_REFUSAL_CANNOT_PASS_SUPPORTED_ELEMENT`);
   } else {
     const classification = entry.inputClassification;
+    if (!sameKeySet(classification, INPUT_CLASSIFICATION_KEYS)) {
+      errors.push(`${entry.cellId}:HOSTILE_INPUT_CLASSIFICATION_SCHEMA_CLOSED_SET_MISMATCH`);
+    }
     if (!isObject(classification) || classification.independent !== true || classification.verdict !== 'INVALID' || !sha256(classification.artifactSha256)) {
       errors.push(`${entry.cellId}:HOSTILE_INPUT_NOT_INDEPENDENTLY_CLASSIFIED_INVALID`);
     }
