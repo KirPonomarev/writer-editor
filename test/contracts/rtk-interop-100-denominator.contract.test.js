@@ -20,13 +20,14 @@ test('manuscript cohort reconciliation rejects overlapping, failed, and forged a
   ]) assert.ok(promoted.has(evidenceOnlyPath));
   assert.equal(promoted.has('src/main.js'), false);
   const head = 'a'.repeat(40);
+  const tree = 'b'.repeat(40);
   const report = cellId => ({ok: true, errors: [], authoritativeAdmission: true,
-    evidenceMode: 'WORD_MANUSCRIPT_BATCH_V1', currentHead: head, requiredCells: 1120,
+    evidenceMode: 'WORD_MANUSCRIPT_BATCH_V1', currentHead: head, currentTree: tree, requiredCells: 1120,
     recordedCells: 1, passedRequiredCells: 1, acceptedCellIds: [cellId], broadPassClaim: false,
     statusCounts: {PASS: 1, NOT_EXECUTED: 1119},
     cellDecisions: [{cellId, status: 'PASS', sourceRunId: cellId}]});
   const reconcile = cohortReports => verifier.reconcileWordManuscriptCohortReports({
-    cohortReports, requiredCellIds: ids, currentHead: head});
+    cohortReports, requiredCellIds: ids, currentHead: head, currentTree: tree});
   const left = report(ids[0]), right = report(ids[1]);
   assert.deepEqual(reconcile([left, right]).acceptedCellIds, [ids[0], ids[1]].sort());
   const duplicate = reconcile([left, report(ids[0])]);
@@ -36,6 +37,8 @@ test('manuscript cohort reconciliation rejects overlapping, failed, and forged a
     {...right, ok: false},
     {...right, authoritativeAdmission: false},
     {...right, currentHead: 'b'.repeat(40)},
+    {...right, currentTree: undefined},
+    {...right, currentTree: 'c'.repeat(40)},
     {...right, requiredCells: 1119},
     {...right, acceptedCellIds: ['UNFROZEN_CELL']},
     {...right, cellDecisions: [{cellId: ids[1], status: 'FAIL'}]},
@@ -48,6 +51,7 @@ test('manuscript cohort reconciliation rejects overlapping, failed, and forged a
   assert.equal(modeConflict.authoritativeAdmission, false);
   assert.equal(modeConflict.recordedCells, 0);
   assert.match(modeConflict.errors.join('|'), /WORD_MANUSCRIPT_COHORT_MODE_OPTIONS_CONFLICT/);
+  assert.equal(modeConflict.currentTree, null);
 });
 
 test('fresh C1 uses fixed successor pins and preserves the archived three files', async () => {

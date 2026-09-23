@@ -1562,16 +1562,18 @@ export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
 
 // This is a reconciliation check only. It never reads evidence or grants credit on its own;
 // verifyWordManuscriptCohorts obtains every input from the independent batch verifier.
-export function reconcileWordManuscriptCohortReports({cohortReports, requiredCellIds, currentHead}) {
+export function reconcileWordManuscriptCohortReports({cohortReports, requiredCellIds, currentHead, currentTree}) {
   const errors = [], ids = new Set(), decisions = [];
   if (!Array.isArray(cohortReports) || cohortReports.length < 2 || cohortReports.length > 80
     || !Array.isArray(requiredCellIds) || requiredCellIds.length !== EXPECTED_REQUIRED_CELLS
-    || new Set(requiredCellIds).size !== EXPECTED_REQUIRED_CELLS || !commitSha(currentHead))
+    || new Set(requiredCellIds).size !== EXPECTED_REQUIRED_CELLS || !commitSha(currentHead)
+    || typeof currentTree !== 'string' || !COMMIT_RE.test(currentTree))
     errors.push('WORD_MANUSCRIPT_COHORT_SCOPE');
   const allowed = new Set(requiredCellIds || []);
   for (const [index, report] of (Array.isArray(cohortReports) ? cohortReports : []).entries()) {
     if (!report || report.ok !== true || report.authoritativeAdmission !== true
       || report.evidenceMode !== 'WORD_MANUSCRIPT_BATCH_V1' || report.currentHead !== currentHead
+      || report.currentTree !== currentTree
       || report.requiredCells !== EXPECTED_REQUIRED_CELLS || !Array.isArray(report.errors) || report.errors.length
       || !Array.isArray(report.acceptedCellIds) || !Array.isArray(report.cellDecisions)
       || report.recordedCells !== report.acceptedCellIds.length
@@ -1624,12 +1626,14 @@ function verifyWordManuscriptCohorts({repoRoot, cohorts, currentHead, requiredCe
     if (!report.ok) { errors.push(`WORD_MANUSCRIPT_COHORT_FAILED:${index}:${report.errors.join('|')}`); break; }
     reports.push({labRoot: realRoot, runIds: [...cohort.runIds], report});
   }
-  const reconciled = reconcileWordManuscriptCohortReports({cohortReports: reports.map(c => c.report),
-    requiredCellIds: requiredCells?.map(c => c.cellId), currentHead});
-  errors.push(...reconciled.errors);
   const git = args => spawnSync('git', args, {cwd: repoRoot, encoding: 'utf8'});
-  const origin = git(['rev-parse', 'origin/main']), head = git(['rev-parse', 'HEAD']), status = git(['status', '--porcelain']);
-  if (origin.status !== 0 || head.status !== 0 || status.status !== 0
+  const origin = git(['rev-parse', 'origin/main']), head = git(['rev-parse', 'HEAD']);
+  const tree = git(['rev-parse', 'HEAD^{tree}']), status = git(['status', '--porcelain']);
+  const currentTree = tree.status === 0 ? tree.stdout.trim() : null;
+  const reconciled = reconcileWordManuscriptCohortReports({cohortReports: reports.map(c => c.report),
+    requiredCellIds: requiredCells?.map(c => c.cellId), currentHead, currentTree});
+  errors.push(...reconciled.errors);
+  if (origin.status !== 0 || head.status !== 0 || tree.status !== 0 || status.status !== 0
     || origin.stdout.trim() !== currentHead || head.stdout.trim() !== currentHead || status.stdout.trim())
     errors.push('WORD_MANUSCRIPT_COHORT_CURRENT_MAIN_CHANGED');
   const ok = errors.length === 0, acceptedCellIds = ok ? reconciled.acceptedCellIds : [];
@@ -1639,7 +1643,8 @@ function verifyWordManuscriptCohorts({repoRoot, cohorts, currentHead, requiredCe
     diagnosticPassedRequiredCells: 0, broadPassClaim: false,
     claimVerdict: ok ? 'NEEDS_MORE_EVIDENCE' : 'FAIL_WORD_MANUSCRIPT_COHORT_EVIDENCE',
     statusCounts: {PASS: acceptedCellIds.length, NOT_EXECUTED: EXPECTED_REQUIRED_CELLS - acceptedCellIds.length},
-    currentHead: ok ? currentHead : null, percentage: acceptedCellIds.length / EXPECTED_REQUIRED_CELLS * 100,
+    currentHead: ok ? currentHead : null, currentTree: ok ? currentTree : null,
+    percentage: acceptedCellIds.length / EXPECTED_REQUIRED_CELLS * 100,
     cellDecisions: ok ? reconciled.cellDecisions : [],
     cohortProvenance: ok ? reports.map(({labRoot, runIds, report}) => ({labRoot, runIds,
       evidenceRuntimeHead: report.evidenceRuntimeHead, evidenceRuntimeTree: report.evidenceRuntimeTree,
