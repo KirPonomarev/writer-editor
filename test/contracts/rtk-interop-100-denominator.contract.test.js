@@ -6,6 +6,42 @@ const os = require('node:os');
 const path = require('node:path');
 const { test } = require('node:test');
 
+test('manuscript cohort reconciliation rejects overlapping, failed, and forged admission', async () => {
+  const verifier = await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
+  const repoRoot = path.resolve(__dirname, '../..');
+  const spec = verifier.readInterop100Denominator(repoRoot);
+  const ids = verifier.buildRequiredCells(spec).map(c => c.cellId);
+  const head = 'a'.repeat(40);
+  const report = cellId => ({ok: true, errors: [], authoritativeAdmission: true,
+    evidenceMode: 'WORD_MANUSCRIPT_BATCH_V1', currentHead: head, requiredCells: 1120,
+    recordedCells: 1, passedRequiredCells: 1, acceptedCellIds: [cellId], broadPassClaim: false,
+    statusCounts: {PASS: 1, NOT_EXECUTED: 1119},
+    cellDecisions: [{cellId, status: 'PASS', sourceRunId: cellId}]});
+  const reconcile = cohortReports => verifier.reconcileWordManuscriptCohortReports({
+    cohortReports, requiredCellIds: ids, currentHead: head});
+  const left = report(ids[0]), right = report(ids[1]);
+  assert.deepEqual(reconcile([left, right]).acceptedCellIds, [ids[0], ids[1]].sort());
+  const duplicate = reconcile([left, report(ids[0])]);
+  assert.equal(duplicate.acceptedCellIds.length, 0);
+  assert.match(duplicate.errors.join('|'), /WORD_MANUSCRIPT_COHORT_DUPLICATE_CELL/);
+  for (const invalid of [
+    {...right, ok: false},
+    {...right, authoritativeAdmission: false},
+    {...right, currentHead: 'b'.repeat(40)},
+    {...right, requiredCells: 1119},
+    {...right, acceptedCellIds: ['UNFROZEN_CELL']},
+    {...right, cellDecisions: [{cellId: ids[1], status: 'FAIL'}]},
+  ]) {
+    const rejected = reconcile([left, invalid]);
+    assert.equal(rejected.acceptedCellIds.length, 0);
+    assert.ok(rejected.errors.length > 0);
+  }
+  const modeConflict = verifier.verifyInterop100(repoRoot, {wordManuscriptCohorts: [], wordManuscriptLabRoot: '/unused'});
+  assert.equal(modeConflict.authoritativeAdmission, false);
+  assert.equal(modeConflict.recordedCells, 0);
+  assert.match(modeConflict.errors.join('|'), /WORD_MANUSCRIPT_COHORT_MODE_OPTIONS_CONFLICT/);
+});
+
 test('fresh C1 uses fixed successor pins and preserves the archived three files', async () => {
   const fresh = await import('../../scripts/ops/rtk-interop-c1-fresh-evidence.mjs');
   const root = path.resolve(__dirname, '../..');

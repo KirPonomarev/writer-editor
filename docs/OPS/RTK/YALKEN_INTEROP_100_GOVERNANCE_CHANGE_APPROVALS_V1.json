@@ -1503,6 +1503,69 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Bounded current-byte approval for the existing PK1R1 registry after deterministic C2A regeneration. The former reverse PK1R1-to-interop registry binding is retired to avoid an impossible content-hash cycle; historical Git bytes remain preserved. No product scope, release, or cell-credit authority added.",
       "sha256": "573e26bbbdfde637604ab9a59cd22c36d409e6832de05395ceb508246397f2b9"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "6397019fdd30a90d45d04b665aee8b159351f984ba0e76a5804d348311e5c3e5",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "3caccd73dc11dab6dd30b324613555ffb1e18cc6bc50c8527607bf6446bca88f",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "22bad6591bb200c936b4c3666b97378e3abc2d46e5710d1bd5a489033928e688",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "5ee4bcf62633445152f6c7c692e93857bd2ad9906d3ffd53e7aff4fed0369ab8",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "5eb2fffc29993f974142d25ef9b1477a774b4a37433d3806b271dc0f9b6800b6",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "sha256": "f73efe2f8d046fc3c73c3953c964ec906aa81f938d596c02b83186a4ab448259",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "sha256": "62928050605966a81851cb7a2ca3ff85e8df790a9e9b29bbe354773f9d1b4085",
+      "approvedBy": "owner-direct-task:INTEROP_MANUSCRIPT_MULTICOHORT_20260924",
+      "approvedAtUtc": "2026-09-23T21:59:21.000Z",
+      "rationale": "Owner-authorized single-agent interop implementation: bind exact bytes of read-only multi-cohort evidence reconciliation and DATA_C1 test pin. Preserve frozen 1120 denominator and prior evidence; grant zero cell credit until independent physical verification on exact merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ],
   "evidenceStampIds": [

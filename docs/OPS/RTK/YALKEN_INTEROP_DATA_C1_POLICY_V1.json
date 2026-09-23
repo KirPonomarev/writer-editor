@@ -569,7 +569,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "6f162a2d11f20fb6094d785d5596eb45f4884678bbfb9bdc417eb2496795c81e"
+        "sha256": "62928050605966a81851cb7a2ca3ff85e8df790a9e9b29bbe354773f9d1b4085"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
