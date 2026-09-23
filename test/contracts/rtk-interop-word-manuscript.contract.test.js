@@ -325,6 +325,54 @@ test('Lab CDP source-app revision is admitted only by a complete exact code-bind
  assert.equal(matchesWholeSet(),false,'one changed helper byte hash must reject the entire binding set');
 });
 
+test('Lab native-CUA manuscript revision requires the exact new identity set and two support paths',()=>{
+ const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
+ const baselineSha='fe1c69e7046da8fa17d6715941816b0a229864e1';
+ const baseline=JSON.parse(execFileSync('git',['show',`${baselineSha}:${policyPath}`],{cwd:ROOT,encoding:'utf8'}));
+ const policy=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ const expected={id:'WORD_MANUSCRIPT_NATIVE_IDENTITY_V1',bindings:[
+  {path:'cli/lab.mjs',sha256:'150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6'},
+  {path:'scripts/run_sequential.py',sha256:'f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2'},
+  {path:'src/m1-text-single-scene-source-runtime.mjs',sha256:'87ad8cb5899a2b5f2a86f2787977bd1b31d6f1ccf0b06a2350546bcd5754726f'},
+  {path:'src/c1-data-case.mjs',sha256:'6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680'},
+  {path:'src/data-c1-machine-review.mjs',sha256:'162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd'},
+  {path:'src/m0-validators.mjs',sha256:'6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9'},
+  {path:'src/order-single-scene.mjs',sha256:'50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2'},
+  {path:'src/order-machine-review.mjs',sha256:'bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351'},
+  {path:'src/text-order-machine-review.mjs',sha256:'cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb'},
+  {path:'scripts/check-physical-run.mjs',sha256:'ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b'},
+  {path:'src/word-volume-text-order.mjs',sha256:'f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22'},
+  {path:'src/word-manuscript-fields.mjs',sha256:'1813227f46e61c120a135736a316b277bd3f55b439ff9f358120bf4adffa37d1'},
+  {path:'src/word-metadata-mutant.py',sha256:'e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb'},
+  {path:'src/word-sections-mutant.py',sha256:'c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df'},
+  {path:'test/m0-audit-repair.test.mjs',sha256:'4492e13f5ba945c1205dec1fb46518a6835ab3e62392f3d4157bab769f4ed403'},
+  {path:'test/word-manuscript-fields.test.mjs',sha256:'21accb28802ea0696cebbd3c9e26f891658e70a61736be1a62113d7257e306a4'},
+  {path:'src/word-notes-mutant.py',sha256:'cd128e05ee6d080a12ab8f5009f7b9ef5d36fffaeb30c363613008028b12f40c'},
+  {path:'scripts/native-cua-target.mjs',sha256:'0ca57312401750018eb459cc70c9930592deae74be601cda33703e6effbf259a'},
+  {path:'test/native-cua-target.test.mjs',sha256:'da4dea27274e93ac5ceb74e8cbb78f1c22deb73f7a255631fdecf898c2175285'}
+ ]};
+ const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs'];
+ const matchesExactAdmission=candidate=>{
+  const sets=candidate.labCodeBindingSets.filter(set=>set.id===expected.id);
+  return sets.length===1&&JSON.stringify(sets[0])===JSON.stringify(expected)
+   &&candidate.labCodeBindingSets.length===baseline.labCodeBindingSets.length+1
+   &&JSON.stringify(candidate.allowedLabDeltaPaths)==JSON.stringify([...baseline.allowedLabDeltaPaths,...supportPaths]);
+ };
+ for(const previous of baseline.labCodeBindingSets){
+  assert.deepEqual(policy.labCodeBindingSets.find(set=>set.id===previous.id),previous,`preserve ${previous.id}`);
+ }
+ assert.equal(matchesExactAdmission(policy),true);
+ const mutants=[
+  candidate=>candidate.labCodeBindingSets.find(set=>set.id===expected.id).bindings.pop(),
+  candidate=>candidate.labCodeBindingSets.find(set=>set.id===expected.id).bindings[0].sha256='0'.repeat(64),
+  candidate=>candidate.labCodeBindingSets.find(set=>set.id===expected.id).bindings.push({...expected.bindings[0]}),
+  candidate=>candidate.labCodeBindingSets.push(structuredClone(expected)),
+  candidate=>candidate.allowedLabDeltaPaths.pop(),
+  candidate=>candidate.allowedLabDeltaPaths.push('src/main.js')
+ ];
+ for(const mutate of mutants){const candidate=structuredClone(policy);mutate(candidate);assert.equal(matchesExactAdmission(candidate),false);}
+});
+
 test('Independent manuscript Python tests reject semantic, style, structure and caller-authority corruption',()=>{
  const {spawnSync}=require('node:child_process');const child=spawnSync('python3',['-I','-B','test/unit/rtk-interop-word-manuscript.test.py'],{cwd:ROOT,encoding:'utf8',timeout:30000});
  assert.equal(child.status,0,child.stdout+child.stderr);assert.match(child.stderr,/Ran [1-9][0-9]* tests/);assert.match(child.stderr,/\nOK\n/);
