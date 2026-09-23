@@ -41,6 +41,7 @@
     "rtk-google01-provider-profiles.contract.test.js",
     "rtk-interop-100-denominator.contract.test.js",
     "rtk-interop-c1-word-fullbook-route.contract.test.js",
+    "rtk-interop-c4-google-office.contract.test.js",
     "rtk-interop-chain-matrix.contract.test.js",
     "rtk-interop-word-manuscript.contract.test.js",
     "rtk-interop-word-text-order-batch.contract.test.js",
