@@ -16,11 +16,14 @@ SPEC.loader.exec_module(C4)
 W = C4.W
 
 
-def document(paragraphs, tracked=False, extra=None):
+def document(paragraphs, tracked=False, extra=None, comment_paragraph=0,
+             comment_end_id='0', comment_reference_id='0', comments_id='0'):
     doc = ET.Element(W+'document')
     body = ET.SubElement(doc, W+'body')
     for index, value in enumerate(paragraphs):
         paragraph = ET.SubElement(body, W+'p')
+        if tracked and index == comment_paragraph:
+            ET.SubElement(paragraph, W+'commentRangeStart', {W+'id': '0'})
         if tracked and index == 0:
             before, after = value.split('sentinel omega')
             ET.SubElement(ET.SubElement(paragraph, W+'r'), W+'t').text = before
@@ -31,11 +34,20 @@ def document(paragraphs, tracked=False, extra=None):
             ET.SubElement(ET.SubElement(paragraph, W+'r'), W+'t').text = after
         elif value:
             ET.SubElement(ET.SubElement(paragraph, W+'r'), W+'t').text = value
+        if tracked and index == comment_paragraph:
+            ET.SubElement(paragraph, W+'commentRangeEnd', {W+'id': comment_end_id})
+            ET.SubElement(ET.SubElement(paragraph, W+'r'), W+'commentReference',
+                          {W+'id': comment_reference_id})
     ET.SubElement(body, W+'sectPr')
     xml = ET.tostring(doc, encoding='utf-8') if extra is None else extra
     output = io.BytesIO()
     with zipfile.ZipFile(output, 'w', zipfile.ZIP_DEFLATED) as archive:
         archive.writestr('word/document.xml', xml)
+        if tracked:
+            comments = ET.Element(W+'comments')
+            comment = ET.SubElement(comments, W+'comment', {W+'id': comments_id})
+            ET.SubElement(ET.SubElement(ET.SubElement(comment, W+'p'), W+'r'), W+'t').text = 'Anchored review comment'
+            archive.writestr('word/comments.xml', ET.tostring(comments, encoding='utf-8'))
     return output.getvalue()
 
 
@@ -43,7 +55,8 @@ def scene(paragraphs):
     doc = {'type': 'doc', 'content': [
         {'type': 'paragraph', 'content': [{'type': 'text', 'text': value}]} if value else {'type': 'paragraph'}
         for value in paragraphs]}
-    return ('[doc-v2 length=1]\n'+json.dumps(doc, ensure_ascii=False)).encode('utf8')
+    return ('[meta]\nstatus: черновик\ntags: POV=; линия=; место=\nsynopsis: \n[/meta]\n\n'
+            '[doc-v2 length=1]\n'+json.dumps(doc, ensure_ascii=False)).encode('utf8')
 
 
 class C4RawOracleTest(unittest.TestCase):
@@ -65,6 +78,14 @@ class C4RawOracleTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'C4_SCENE_TEXT_ORDER'):
             C4.scene_paragraphs(scene(C4.SOURCE))
 
+    def test_native_comment_must_bind_to_reviewed_first_paragraph_and_payload(self):
+        for kwargs in ({'comment_paragraph': 1}, {'comment_end_id': '1'},
+                       {'comment_reference_id': '1'}):
+            with self.subTest(kwargs=kwargs), self.assertRaisesRegex(ValueError, 'C4_COMMENT_ANCHOR'):
+                C4.docx_paragraphs(document(C4.REVIEWED, True, **kwargs), True)
+        with self.assertRaisesRegex(ValueError, 'C4_COMMENT_PAYLOAD'):
+            C4.docx_paragraphs(document(C4.REVIEWED, True, comments_id='1'), True)
+
     def test_malformed_or_unbounded_container_fails_before_semantic_credit(self):
         with self.assertRaisesRegex(ValueError, 'C4_ZIP_PATH'):
             output = io.BytesIO()
@@ -74,7 +95,9 @@ class C4RawOracleTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'C4_XML_ENTITY'):
             C4.docx_paragraphs(document(C4.SOURCE, extra=b'<!DOCTYPE x [<!ENTITY a "b">]><x/>'), False)
         with self.assertRaisesRegex(ValueError, 'C4_SCENE_HEADER'):
-            C4.scene_paragraphs(b'not-a-doc-v2\n{}')
+            C4.scene_paragraphs(scene(C4.REVIEWED).replace(b'[doc-v2 length=1]', b'not-a-doc-v2'))
+        with self.assertRaisesRegex(ValueError, 'C4_SCENE_METADATA'):
+            C4.scene_paragraphs(scene(C4.REVIEWED).replace('черновик'.encode('utf8'), b'published'))
 
 
 if __name__ == '__main__':
