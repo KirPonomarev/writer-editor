@@ -382,7 +382,7 @@ test('B02 parser emits typed opaque unsupported and malformed XML never becomes 
   const parser = await loadParser();
   const opaque = parser.parseReviewTransportPackageV2({
     parts: {
-      ...baseParts(documentXml('<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"><mc:Choice Requires="w14"><w:pict/></mc:Choice></mc:AlternateContent><w:tbl><w:tr/></w:tbl><w:p><w:r><w:t>Body</w:t></w:r></w:p>')),
+      ...baseParts(documentXml('<mc:AlternateContent xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"><mc:Choice Requires="w14"><w:pict/></mc:Choice></mc:AlternateContent><w:tbl><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc><w:p/></w:tc></w:tr></w:tbl><w:p><w:r><w:t>Body</w:t></w:r></w:p>')),
       'word/embeddings/object1.bin': 'opaque',
     },
   }, { cryptoPort });

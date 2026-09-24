@@ -64,6 +64,8 @@ Policy-pin scope amendment before edit: `scripts/ops/rtk-interop-data-c1.mjs` ch
 
 Test enrollment refinement: new table regressions use maintained `rtk-word-tables.contract.test.js` and `rtk-word-table-editor.contract.test.js` names; extra-maintained live-claim classification is unchanged. `rtk-generic01-create-only-import.contract.test.js` keeps loss-receipt checks with a valid table grid, which is now preserved rather than flattened.
 
+Affected-gate refinement before edits: enroll the eight exact new table paths in the existing Data C1 admitted-path gate and bind the new product table modules. `rtk-interop-100-denominator.contract.test.js` checks those bindings reject tampering. Existing B02 opaque-table and C3 candidate-budget fixtures use structurally valid tables so they continue to test their original invariant; malformed-table rejection remains separately tested. Lab retains table viewport screenshots after fresh reopen for visual inspection, with zero additional acceptance credit.
+
 ## DENYLIST
 Unrelated shell UI, packages and lockfile, frozen denominator, owner data, foreign WIP, Google implementation and rewritten historical evidence.
 

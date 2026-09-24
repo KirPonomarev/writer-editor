@@ -150,7 +150,16 @@
     "scripts/ops/rtk-interop-c4-google-office-multi-batch.mjs",
     "test/unit/rtk-interop-c4-google-office-multi.test.py",
     "test/contracts/rtk-interop-c4-google-office-multi.contract.test.js",
-    "docs/tasks/2026-09-24--c4-google-office-multiscene-admission.md"
+    "docs/tasks/2026-09-24--c4-google-office-multiscene-admission.md",
+    "docs/tasks/2026-09-25--word-tables.md",
+    "scripts/ops/rtk-interop-word-tables-readback.py",
+    "src/io/documentTables.js",
+    "src/renderer/tiptap/documentTables.mjs",
+    "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+    "test/contracts/rtk-word-table-editor.contract.test.js",
+    "test/contracts/rtk-word-tables.contract.test.js",
+    "test/fixtures/word-tables-native-v1.json",
+    "test/contracts/rtk-word-safety-c3-parser-resource-envelope.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -589,7 +598,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-        "sha256": "538256639d9fcf3e953b7e7073063927e10ec9c5e963ae29f4495ce10ff270b9"
+        "sha256": "f3be797493d03f40fff8452b40dd0ed284f7bd53efb05eae53f469695a83815c"
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
@@ -677,7 +686,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-        "sha256": "08ba7f64445942c33f455f8181e3bafa514254f7260171dad25d34ff401e333f"
+        "sha256": "c03a8280f83fe32fda0e106185b5f0e1e490e146d28c391115656f9f1fb874cf"
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -770,6 +779,14 @@
       {
         "path": "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
         "sha256": "abe3aec00d23c82fc53ab174b7a6fb1660bcc72f430152f5739a51e74b9db137"
+      },
+      {
+        "path": "src/io/documentTables.js",
+        "sha256": "6b7c9cea2b323d30ac8380892bb3ec220b89b35c1a5e1bcdb8251b3b59af8517"
+      },
+      {
+        "path": "src/renderer/tiptap/documentTables.mjs",
+        "sha256": "4bb761c1c345857b659b03bd1a8efb6291156995c5f778356b45588006730157"
       }
     ],
     "followupRepair": {
@@ -2416,7 +2433,7 @@
         },
         {
           "path": "src/word-manuscript-fields.mjs",
-          "sha256": "7f9e793a7352e67cc70115fc46b8847fe415574b546b06c546574b3952ac4f77"
+          "sha256": "81a84ad67cf6985f429fc982373bfdea2b463ac3ef0ba0ade0eedb74c1be59d2"
         },
         {
           "path": "src/word-metadata-mutant.py",
