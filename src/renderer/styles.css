@@ -9653,6 +9653,12 @@ body.dark-theme .manual-map-workspace__minimap {
 }
 
 /* Authored document tables stay inside the existing editor page. */
+.main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="table-layout-continuous"] > .tiptap-page-wrap,
+.main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="table-layout-continuous"] .tiptap-page,
+.main-content--editor #editor.tiptap-host[data-central-sheet-overflow-reason="table-layout-continuous"] .tiptap-page__content {
+  height: auto;
+  overflow: visible;
+}
 .tiptap table {
   border-collapse: collapse;
   table-layout: fixed;

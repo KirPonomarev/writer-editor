@@ -492,12 +492,14 @@ test('Manuscript raw consumer rejects incomplete rounds, missing fields and cohe
  field.tableProof={schemaVersion:'WORD_TABLES_INDEPENDENT_PROOF_V1',expectedGraphSha256:h,stages:{
   ...Object.fromEntries(graphStages.map(name=>[name,{graphSha256:h,artifactSha256:h,tableCount:2}])),
   ...Object.fromEntries(['rounds/1/word-native','final-word-lifecycle-native'].map(name=>[name,{method:'INDEPENDENT_NATIVE_CELLS_AND_COMPLETE_BODY_V1',bodySha256:h,indexSha256:h,tableCount:2,cellHashes:Array(16).fill(h)}]))},
+  viewportProof:{method:'REOPENED_FIRST_LAST_CELL_HIT_TEST_V1',viewCount:4,viewsSha256:h,screenshotHashes:Array(4).fill(h)},
   negativeControls:['drop-cell','swap-rows','swap-columns','remove-grid-span','break-vertical-merge','flatten-table'].map((id,i)=>({id,rejected:true,sha256:crypto.createHash('sha256').update('table'+i).digest('hex')})),
   lossLedger:{lostCells:[],flattenedTables:[],changedMerges:[],profile:'RECTANGULAR_CELLS_WITH_GRIDSPAN_VMERGE_AND_LITERAL_PARAGRAPHS'}};
  tableRaw.fieldProofs=[field];
  const tableOptions={...options,row:tableRow,policy:{...policy,wordManuscriptBatch:{...policy.wordManuscriptBatch,tableParagraphHashes:{SINGLE_SCENE:[{sha256:h,count:15}]},tableGraphHashes:{SINGLE_SCENE:h}}}};
  assert.equal(m.validateManuscriptRaw(tableRaw,tableOptions),true);
  for(const mutate of [r=>delete r.fieldProofs[0].tableProof,r=>r.fieldProofs[0].tableProof.negativeControls.pop(),
+  r=>delete r.fieldProofs[0].tableProof.viewportProof,r=>r.fieldProofs[0].tableProof.viewportProof.screenshotHashes.pop(),
   r=>delete r.fieldProofs[0].tableProof.stages['final-word-lifecycle-native'],r=>r.fieldProofs[0].tableProof.stages.saved.graphSha256='e'.repeat(64),
   r=>r.fieldProofs[0].tableProof.stages['rounds/1/word-native'].cellHashes.pop(),r=>r.fieldProofs[0].tableProof.lossLedger.lostCells.push(1)]){
   const changed=structuredClone(tableRaw);mutate(changed);assert.throws(()=>m.validateManuscriptRaw(changed,tableOptions));

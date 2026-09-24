@@ -394,7 +394,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "76767753091cca7c9b71fbf7ed9fc67b9c1aa3228b28f3f25914a00ed09d90b3"
+        "sha256": "da92758d228897d5670444b4a15311b5b3dd1d3f251fd0ce408c947671e67dd3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -482,7 +482,7 @@
       },
       {
         "path": "src/renderer/styles.css",
-        "sha256": "557c6207c38d5068ce98adf90da5125e9fe287a101840ac9b66a5bf732626f1a"
+        "sha256": "073ec047488110b6854bda392c511a48b44752e60a19e07dbae8127bd1f12a2b"
       },
       {
         "path": "docs/tasks/2026-09-16--editor-list-marker-flow.md",
@@ -558,7 +558,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "4506517ea08443e1bf069903595dfc21e24cef6ad533d53906d789c3952b0ceb"
+        "sha256": "fe4866579cc5316fc9e66c8d6a7d4ec46aed6b0cdef5b79f32411423519eb0ee"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -634,7 +634,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "64d0b077279a670ea76ab3023338e5ae5bb945f214ca2e1e579abab7cc4dfd16"
+        "sha256": "03078fe7f1e8638cfef09bbff9871447e1ee6caf8e409f83c74fcaff2177101c"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -1445,11 +1445,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "8f8e96a70e1f984efd166d9d4c65d4ccaf0330f1583ded0d70144d234bb81f24"
+        "sha256": "b284159b108cf712666b1854b88af9d169fdf6341f2144896207e3e163baf975"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "4d949eeed6d5187a1a9a99783b3e50eb5089864fb42e282683adee95210f3ce4"
+        "sha256": "cadefd2a09ce782f14d8cfc23ba7a4a6574fa1681c0f5692905391686b60ca27"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -2433,7 +2433,7 @@
         },
         {
           "path": "src/word-manuscript-fields.mjs",
-          "sha256": "81a84ad67cf6985f429fc982373bfdea2b463ac3ef0ba0ade0eedb74c1be59d2"
+          "sha256": "e325114830b00b1d814eff6987090cc19f533ef5a4b1a407691ca1c1ccc1be77"
         },
         {
           "path": "src/word-metadata-mutant.py",

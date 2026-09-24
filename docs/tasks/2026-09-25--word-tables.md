@@ -66,6 +66,10 @@ Test enrollment refinement: new table regressions use maintained `rtk-word-table
 
 Affected-gate refinement before edits: enroll the eight exact new table paths in the existing Data C1 admitted-path gate and bind the new product table modules. `rtk-interop-100-denominator.contract.test.js` checks those bindings reject tampering. Existing B02 opaque-table and C3 candidate-budget fixtures use structurally valid tables so they continue to test their original invariant; malformed-table rejection remains separately tested. Lab retains table viewport screenshots after fresh reopen for visual inspection, with zero additional acceptance credit.
 
+Observed table-view repair: the paragraph-only shape-outside sheet mask pushes real table formatting contexts beyond its scroll extent. `src/renderer/editor.js` selects a continuous, fully editable page presentation for documents containing tables, using the existing clear-sheet fallback and scoped auto-height CSS. This changes derived presentation only; canonical table data, Commands, persistence, ordinary paragraph pagination and print/export semantics remain unchanged. Actual first/last table-cell viewport observations and screenshots must be retained before delivery.
+
+Certification amendment: retain the historical Word promotion binding set and add one exact C1 table successor set anchored to d4a095c8. The same promotion gate accepts only a complete approved set, never mixed hashes. This admits implementation bytes only and grants zero physical cells. The existing promotion contract tests cover the successor and mixed-set rejection.
+
 ## DENYLIST
 Unrelated shell UI, packages and lockfile, frozen denominator, owner data, foreign WIP, Google implementation and rewritten historical evidence.
 

@@ -1583,9 +1583,21 @@ def audit(request):
                                    'scope':'Four explicit canonical notes, two native footnotes and two endnotes. Literal titles, bodies, order and anchors; private and deleted notes excluded. Returned notes have no sidecar write authority. Unsupported note content is a visible typed rejection.'}}
     proofs=[{'field':field,'cellId':f'{field}__{volume}__{route}__{profile}','runId':run,'status':'PASS','outcome':'EXACT_OBSERVED_MANUSCRIPT_PRESERVATION','subcases':SUBCASES[field],'requiredHops':HOPS[route],'requiredCycles':cycles,'stageProofs':stages,'controls':calibration,'oracles':v.ORACLES,'unicodeProof':unicode_proof,**({'googleProof':google_proof} if route=='C5' else {}),**({'styleProofs':style_stages,'unsupportedStylesDeclared':limitations['styles']} if field=='STYLES' else {}),**({'trackedReviewProof':{'rounds':review_rounds,'propertyProbe':review_probe,'lostRevisionFootprints':[],'unappliedPropertyPolicy':'VISIBLE_MANUAL_REVIEW_WITH_ORIGINAL_RAW_ARTIFACT_RETAINED','timestampPolicy':'LITERAL_WORD_DATE_AND_NAMESPACED_DATE_UTC_NO_NORMALIZATION'}} if field=='TRACKED_REVIEW_SEMANTICS' else {}),**({'structureProofs':structure_stages,'structureLossLedger':{'lostScenes':[],'lostChapters':[],'mergedScenes':[],'splitScenes':[],'scope':limitations['structure']}} if field=='NOVEL_SCENE_STRUCTURE' else {})} for field in fields(volume,route,recipe)]
     if table_expected is not None:
+        views=read('reopened-table-views.json')['views'];view_screens=[]
+        require(len(views)==2*len(table_expected),'TABLE_VIEW_COUNT')
+        for i,table in enumerate(table_expected):
+            for j,edge in enumerate(['first','last']):
+                view=views[2*i+j];cell=table['cells'][0 if j==0 else -1]
+                require(view['tableIndex']==i and view['edge']==edge and view['text']==''.join(cell['paragraphs']),'TABLE_VIEW_IDENTITY')
+                require(all(isinstance(view[k],(int,float)) and not isinstance(view[k],bool) and abs(view[k])<1000000 for k in ['x','y','width','height','viewportWidth','viewportHeight']),'TABLE_VIEW_BOUNDS')
+                require(view['width']>0 and view['height']>0 and 0<view['x']+view['width']/2<view['viewportWidth']
+                    and 0<view['y']+view['height']/2<view['viewportHeight'] and view['hit'] is True
+                    and view['display']!='none' and view['visibility']=='visible' and view['opacity']=='1','TABLE_VIEW_VISIBLE')
+                screen=raw(f'reopen-table-{i+1}-{edge}.png');require(screen.startswith(b'\x89PNG\r\n\x1a\n') and len(screen)>100,'TABLE_VIEW_SCREENSHOT');view_screens.append(digest(screen))
         for proof in proofs:
             proof['tableProof']={'schemaVersion':'WORD_TABLES_INDEPENDENT_PROOF_V1','expectedGraphSha256':digest(canonical(table_expected)),
                 'stages':table_stages,'negativeControls':tables.negative_controls(docx(raw('rounds/1/source.docx'))[2],table_expected),
+                'viewportProof':{'method':'REOPENED_FIRST_LAST_CELL_HIT_TEST_V1','viewCount':len(views),'viewsSha256':digest(raw('reopened-table-views.json')),'screenshotHashes':view_screens},
                 'lossLedger':{'lostCells':[],'flattenedTables':[],'changedMerges':[],'profile':'RECTANGULAR_CELLS_WITH_GRIDSPAN_VMERGE_AND_LITERAL_PARAGRAPHS'}}
     for proof in proofs:
         if proof['field'] in ['NOTES','FOOTNOTES_ENDNOTES']:proof['notesProof']=notes_proof

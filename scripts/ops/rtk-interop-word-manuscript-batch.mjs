@@ -401,6 +401,8 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    const t=f.tableProof,graphStages=['rounds/1/export','rounds/1/word','imported','saved','reopened','reexport','final-word-lifecycle'],nativeStages=['rounds/1/word-native','final-word-lifecycle-native'];
    demand(row.recipe===TABLES_RECIPE&&row.route==='C1'&&t?.schemaVersion==='WORD_TABLES_INDEPENDENT_PROOF_V1'
     &&sha64(t.expectedGraphSha256)&&t.expectedGraphSha256===batch.tableGraphHashes[row.volume]&&same(Object.keys(t.stages||{}).sort(),[...graphStages,...nativeStages].sort()),'MANUSCRIPT_TABLE_SCOPE');
+   demand(t.viewportProof?.method==='REOPENED_FIRST_LAST_CELL_HIT_TEST_V1'&&t.viewportProof.viewCount===4
+    &&sha64(t.viewportProof.viewsSha256)&&t.viewportProof.screenshotHashes?.length===4&&t.viewportProof.screenshotHashes.every(sha64),'MANUSCRIPT_TABLE_VIEWPORT');
    for(const name of graphStages)demand(t.stages[name]?.graphSha256===t.expectedGraphSha256&&sha64(t.stages[name].artifactSha256)&&t.stages[name].tableCount===2,'MANUSCRIPT_TABLE_GRAPH');
    for(const name of nativeStages)demand(t.stages[name]?.method==='INDEPENDENT_NATIVE_CELLS_AND_COMPLETE_BODY_V1'
     &&sha64(t.stages[name].bodySha256)&&sha64(t.stages[name].indexSha256)&&t.stages[name].tableCount===2

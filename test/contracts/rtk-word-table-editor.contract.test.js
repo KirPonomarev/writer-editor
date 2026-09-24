@@ -1,5 +1,25 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+test('table editor: actual sheet refresh keeps table content visible and restores ordinary pagination', () => {
+  const source = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const fn = source.slice(source.indexOf('function refreshCentralSheetStripProof('), source.indexOf('function scheduleCentralSheetStripProofRefreshOnScroll('));
+  class Element { querySelector(selector) { return selector === 'table' ? (hasTable ? {} : null) : new Element(); } }
+  let hasTable = true, fallback = '', paginationCalls = 0;
+  const context = { HTMLElement: Element, isTiptapMode: true, editor: new Element(),
+    clearCentralSheetStripProof: value => { fallback = value?.overflowReason || ''; },
+    centralSheetStripLargePayloadFastPathActive: false, centralSheetStripStructuralGuardActive: false,
+    buildCentralSheetStripRuntimeState: () => ({ shouldRender: true }),
+    applyCentralSheetStripRuntimeState: () => { paginationCalls++; return true; } };
+  vm.createContext(context); vm.runInContext(fn, context);
+  assert.equal(context.refreshCentralSheetStripProof(), false);
+  assert.equal(fallback, 'table-layout-continuous'); assert.equal(paginationCalls, 0);
+  hasTable = false;
+  assert.equal(context.refreshCentralSheetStripProof(), true);
+  assert.equal(paginationCalls, 1);
+});
 test('table editor: actual ProseMirror schema retains merged cells and supports keyboard cell movement', async () => {
   const [{ getSchema }, { default: StarterKit }, { DocumentTables }, { TableMap, goToNextCell }, { EditorState, TextSelection }] = await Promise.all([
     import('@tiptap/core'), import('@tiptap/starter-kit'), import('../../src/renderer/tiptap/documentTables.mjs'),

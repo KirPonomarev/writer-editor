@@ -4483,6 +4483,13 @@ function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
     clearCentralSheetStripProof();
     return false;
   }
+  // A table establishes its own formatting context and cannot wrap around the
+  // paragraph-only sheet float. Keep the real editable document visible in the
+  // continuous page fallback instead of masking its cells below the last page.
+  if (proseMirror.querySelector('table')) {
+    clearCentralSheetStripProof({ overflowReason: 'table-layout-continuous' });
+    return false;
+  }
   if (
     centralSheetStripLargePayloadFastPathActive
     && !centralSheetStripStructuralGuardActive
