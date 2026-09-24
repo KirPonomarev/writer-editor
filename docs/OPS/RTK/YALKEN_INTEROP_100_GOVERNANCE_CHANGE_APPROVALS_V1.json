@@ -1469,24 +1469,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "43a235c5880e70c1ee0895065e7a62866b2da57be27c0635ae8080eef50adcfa",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b657a9d3425eaf7e04fa7a1b50bd44b4a3ea0e6fc04b95a74fee09836529f2da",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
       "sha256": "f8647891abe10dc9359c20cd9b493d3e769ff9a81386a6e3d4061c52638007d8",
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
@@ -1539,6 +1521,24 @@
       "rationale": "Within the owner-authorized interop repair scope, approve this exact negative contract for a bounded internal writer failure code in C4 review apply. The diagnostic cannot authorize a write, disclose an error message or path, admit a cell, bypass recovery or change the frozen 1120 denominator. Physical native proof and exact merged-head verification remain required.",
       "approved": true,
       "authority": "OWNER_INTEROP_SCOPE_AUTONOMOUS_GATE_APPROVAL_20260923"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "1e73015324403717b7c99520f3aeb144d711278bf318d3584b27597c394f04a7",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
+      "approvedAtUtc": "2026-09-24T03:43:30.175Z",
+      "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "57bef0907d1048d720779e3c52b0dac740294b7d68718ef6d88fdf4b8e7bae8d",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
+      "approvedAtUtc": "2026-09-24T03:43:30.175Z",
+      "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ],
   "evidenceStampIds": [
@@ -1927,6 +1927,24 @@
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
       "approvedAtUtc": "2026-09-24T02:30:36.519Z",
       "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "43a235c5880e70c1ee0895065e7a62866b2da57be27c0635ae8080eef50adcfa",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b657a9d3425eaf7e04fa7a1b50bd44b4a3ea0e6fc04b95a74fee09836529f2da",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
