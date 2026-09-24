@@ -1530,6 +1530,15 @@
       "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js",
+      "sha256": "0e72e5e20db8ee31e38d9b495efdb034433b48f3b3c0695874ebbfd5568f1ddd",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924",
+      "approvedAtUtc": "2026-09-24T03:24:40Z",
+      "rationale": "Within the owner-authorized interop repair scope, approve this exact negative contract for a bounded internal writer failure code in C4 review apply. The diagnostic cannot authorize a write, disclose an error message or path, admit a cell, bypass recovery or change the frozen 1120 denominator. Physical native proof and exact merged-head verification remain required.",
+      "approved": true,
+      "authority": "OWNER_INTEROP_SCOPE_AUTONOMOUS_GATE_APPROVAL_20260923"
     }
   ],
   "evidenceStampIds": [

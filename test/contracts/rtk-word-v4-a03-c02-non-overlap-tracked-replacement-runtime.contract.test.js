@@ -301,6 +301,7 @@ test('A03 C02 applies one physically proven non-overlap tracked replacement and 
   assert.equal(applied.status, 'applied', JSON.stringify(applied, null, 2));
   assert.equal(applied.applied, true);
   assert.equal(applied.writerCalled, true);
+  assert.equal(applied.runtimeSummary.writerFailureCode, undefined);
   assert.equal(fs.readFileSync(project.scenePath, 'utf8'), 'Alpha delta gamma.\nOther beta phrase.');
   assert.equal(applied.vetoMetrics.falseExact, 0);
   assert.equal(applied.vetoMetrics.silentApply, 0);
@@ -310,6 +311,35 @@ test('A03 C02 applies one physically proven non-overlap tracked replacement and 
   assert.equal(replay.applied, false);
   assert.equal(replay.writerCalled, false);
   assert.equal(fs.readFileSync(project.scenePath, 'utf8'), 'Alpha delta gamma.\nOther beta phrase.');
+});
+
+test('A03 C02 exposes only a bounded internal writer failure code after a failed write', async () => {
+  const mod = await loadModule();
+  for (const [upstreamCode, expectedCode] of [
+    ['E_PROJECT_TRANSACTION_MANIFEST_CAS', 'E_PROJECT_TRANSACTION_MANIFEST_CAS'],
+    ['/private/project/secret.txt', undefined],
+  ]) {
+    const project = tmpProject();
+    const result = await mod.applyNonOverlapTrackedReplacementRuntime(baseInput(project), {
+      cryptoPort,
+      exactWriter: async () => ({
+        ok: false,
+        status: 'failed',
+        reason: 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_WRITE_FAILED',
+        reasons: [{
+          code: 'REVISION_BRIDGE_EXACT_TEXT_BATCH_MIN_SAFE_WRITE_WRITE_FAILED',
+          errorCode: upstreamCode,
+          message: '/private/project/secret.txt',
+        }],
+        applied: false,
+      }),
+    });
+    assert.equal(result.status, 'failed');
+    assert.equal(result.writerCalled, true);
+    assert.equal(result.runtimeSummary.writerFailureCode, expectedCode);
+    assert.equal(JSON.stringify(result.runtimeSummary).includes('/private/project'), false);
+    assert.equal(fs.readFileSync(project.scenePath, 'utf8'), project.sceneText);
+  }
 });
 
 test('A03 C02 blocks unsigned stale duplicate and unconfirmed apply before writer execution', async () => {
