@@ -20,15 +20,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
-      "sha256": "54d27a2f76e66f07e119ddbfa9fdb88c74fe2e2f73cd1f4bd3da02f267d4e7aa"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-12T14:19:44.647Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_CELL001_C1_TEXT_SOURCE_2026_09_12",
       "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_SINGLE_CELL_AUTONOMOUS_DELIVERY",
@@ -1420,15 +1411,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "sha256": "38efdabcb3305a726c4f63e6b47b684d93042b16c2c711c029ca34ff13d93717",
-      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
-      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
-      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "sha256": "8d7063cae83ed1e671eafa5168fea1f12e5ae2aaf458254b9e2d27e8df78a024",
       "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
@@ -1510,15 +1492,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "67f035debfdbfee883d3a5008cfd0b75dc6768a636c8b653e82ae7950bb04fd2",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
-      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
-      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "fa1c2957ee1afbdfd87f563280245fa4fcd37a0ac96b75fc7363a63634af4385",
       "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
@@ -1533,6 +1506,42 @@
       "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
       "approvedAtUtc": "2026-09-24T06:36:20Z",
       "rationale": "Owner-authorized exact-byte C4 post-audit successor closure: pin the corrected policy, batch verifier, independent raw reader, negative tests and existing contract bytes. All paths remain hash-bound and fail closed; Lab code pins, frozen 1120 denominator, CI, physical Google proof and exact merged-head acceptance are unchanged. This metadata repair adds zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "9fc17493633e1f50ac572331623e71df991c5dec633f3bc1941cb10fef6cc7f5",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T07:45:19Z",
+      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "0228910a6a7a454521d79436cd371374a6e86478e24285c9fa65c2feaad7ac81",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T07:45:19Z",
+      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "7263fccf8abe712cde64a4818cc8c6027ca965965ba60890d6887287af9f3fe5",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T07:45:19Z",
+      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "43ebb50d4b4c0d7ddffd906015c5a8997b6d147dc157903a1e6c7eadbb156ddd",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T07:45:19Z",
+      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

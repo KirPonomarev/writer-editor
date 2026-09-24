@@ -11,6 +11,14 @@ const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-manuscript-readback.py';
 const SPEC='docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 export const MANUSCRIPT_BATCH_MODE='WORD_MANUSCRIPT_BATCH_V1';
+// Exact merged successor bytes. The only runtime delta here exposes a bounded
+// failure code after a rejected write; successful Word journeys are unchanged.
+// Keep these outside the general promotion allowlist so later edits fail shut.
+export const MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS=Object.freeze([
+  {path:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',sha256:'385dc93ecbfa40f499264d7f23ff643cafc83255226fb7a4b68b27d6312551c4'},
+  {path:'src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs',sha256:'78318e4c11fa2b6a8eccdd933d024b8699a675394f13747ca9f8777f831b7f5a'},
+  {path:'test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js',sha256:'0e72e5e20db8ee31e38d9b495efdb034433b48f3b3c0695874ebbfd5568f1ddd'},
+]);
 export const MANUSCRIPT_HOPS=Object.freeze({
  C1:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE'],
  C2:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE','YALKEN_APPLY','YALKEN_REEXPORT','WORD_REOPEN_READBACK'],
@@ -285,7 +293,16 @@ export function validateManuscriptVerifierPromotion({repoRoot=ROOT,runtimeIdenti
   demand(ancestor,'MANUSCRIPT_BATCH_PROMOTION_NOT_DESCENDANT');
   const changed=git(['diff','--name-only','--no-renames',runtimeIdentity.head+'..'+verifierIdentity.head,'--']).trim().split('\n').filter(Boolean);
   const allowed=new Set(allowedPaths);
-  demand(changed.length>0&&changed.every(p=>allowed.has(p)),'MANUSCRIPT_BATCH_PROMOTION_SCOPE');
+  const exactSuccessors=new Map(MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS.map(binding=>[binding.path,binding.sha256]));
+  demand(changed.length>0&&changed.every(p=>allowed.has(p)||exactSuccessors.has(p)),'MANUSCRIPT_BATCH_PROMOTION_SCOPE');
+  for(const changedPath of changed){
+    if(allowed.has(changedPath))continue;
+    let bytes;
+    try{bytes=execFileSync('git',['show',verifierIdentity.head+':'+changedPath],
+      {cwd:repoRoot,encoding:null,timeout:10000,maxBuffer:16*1024*1024});}
+    catch{throw new Error('MANUSCRIPT_BATCH_PROMOTION_PIN_UNREADABLE');}
+    demand(hash(bytes)===exactSuccessors.get(changedPath),'MANUSCRIPT_BATCH_PROMOTION_PIN');
+  }
   return changed;
 }
 export function validateManuscriptRuns(runIds){

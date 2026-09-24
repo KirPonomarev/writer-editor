@@ -44,6 +44,7 @@
     "rtk-interop-c1-word-fullbook-route.contract.test.js",
     "rtk-interop-chain-matrix.contract.test.js",
     "rtk-interop-word-manuscript.contract.test.js",
+    "rtk-interop-word-manuscript-promotion.contract.test.js",
     "rtk-interop-word-text-order-batch.contract.test.js",
     "rtk-interop-word-volume.contract.test.js",
     "rtk-lab01-build-bound-profiles.contract.test.js",
