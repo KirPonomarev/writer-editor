@@ -1,0 +1,81 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+
+const ROOT=path.resolve(__dirname,'../..');
+
+test('C4 policy fixes four denominator IDs, real Google hops and pinned independent readers',async()=>{
+  const c4=await import('../../scripts/ops/rtk-interop-c4-google-office-batch.mjs');
+  const official=await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
+  const policy=c4.loadC4Policy();
+  const frozen=new Set(official.buildRequiredCells(official.readInterop100Denominator(ROOT)).map(c=>c.cellId));
+  assert.equal(c4.C4_GOOGLE_MODE,'GOOGLE_OFFICE_C4_BATCH_V1');
+  assert.equal(policy.readerBindings.length,4);
+  assert.deepEqual(policy.cellIds,c4.C4_GOOGLE_CELLS);
+  assert.deepEqual(policy.requiredHops,c4.C4_GOOGLE_HOPS);
+  assert.equal(policy.cellIds.length,4);
+  assert.ok(policy.cellIds.every(id=>frozen.has(id)));
+  assert.deepEqual(policy.allowedLabDeltaPaths,[
+    'LAB_MANIFEST.json','data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl']);
+  const promotion=JSON.parse(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json')))
+    .wordManuscriptBatch.verifierPromotionPaths;
+  for(const file of [
+    'scripts/ops/rtk-interop-c4-google-office-batch.mjs',
+    'scripts/ops/rtk-interop-c4-google-office-readback.py',
+    'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',
+    'test/contracts/rtk-interop-c4-google-office.contract.test.js',
+  ])assert.ok(promotion.includes(file),file);
+  assert.ok(!promotion.includes('src/main.js'));
+});
+
+test('C4 run selection requires one physical execution per exact profile',async()=>{
+  const c4=await import('../../scripts/ops/rtk-interop-c4-google-office-batch.mjs');
+  const source='ORDER__SINGLE_SCENE__C4__SOURCE_RUNTIME__run-one';
+  const packaged='ORDER__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME__run-two';
+  assert.deepEqual(c4.validateC4Runs([source,packaged]).map(row=>row.profile),
+    ['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME']);
+  for(const inputs of [[],[source,source],[packaged,packaged],
+    ['TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME__forged'],
+    ['ORDER__SINGLE_SCENE__C5__SOURCE_RUNTIME__wrong-route']])
+    assert.throws(()=>c4.validateC4Runs(inputs),/C4_/);
+});
+
+test('mixed official aggregate refuses overlap, stale head, false PASS and altered denominator',async()=>{
+  const official=await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
+  const ids=official.buildRequiredCells(official.readInterop100Denominator(ROOT)).map(c=>c.cellId);
+  const head='a'.repeat(40),tree='b'.repeat(40);
+  const report=(mode,cellId)=>({ok:true,errors:[],authoritativeAdmission:true,evidenceMode:mode,
+    currentHead:head,currentTree:tree,requiredCells:1120,recordedCells:1,passedRequiredCells:1,
+    acceptedCellIds:[cellId],statusCounts:{PASS:1,NOT_EXECUTED:1119},broadPassClaim:false,
+    cellDecisions:[{cellId,status:'PASS',sourceRunId:'physical-run'}]});
+  const word=report('WORD_MANUSCRIPT_COHORTS_V1',ids[0]);
+  const google=report('GOOGLE_OFFICE_C4_BATCH_V1','TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME');
+  const check=(w,g,requiredCellIds=ids)=>official.reconcileInteropAggregateReports({
+    wordReport:w,googleReport:g,requiredCellIds,currentHead:head,currentTree:tree});
+  assert.deepEqual(check(word,google).acceptedCellIds,[ids[0],google.acceptedCellIds[0]].sort());
+  for(const bad of [
+    {...google,acceptedCellIds:[ids[0]],cellDecisions:[{cellId:ids[0],status:'PASS'}]},
+    {...google,currentHead:'c'.repeat(40)},
+    {...google,currentTree:'c'.repeat(40)},
+    {...google,ok:false},
+    {...google,authoritativeAdmission:false},
+    {...google,cellDecisions:[{cellId:google.acceptedCellIds[0],status:'FAIL'}]},
+    {...google,acceptedCellIds:['UNFROZEN'],cellDecisions:[{cellId:'UNFROZEN',status:'PASS'}]},
+    {...google,evidenceMode:'WORD_MANUSCRIPT_BATCH_V1'},
+  ]){
+    const rejected=check(word,bad);
+    assert.equal(rejected.acceptedCellIds.length,0);
+    assert.ok(rejected.errors.length>0);
+  }
+  assert.equal(check(word,google,ids.slice(1)).acceptedCellIds.length,0);
+});
+
+test('mixed mode cannot count C4 without the previous authoritative cohorts',async()=>{
+  const official=await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
+  const report=official.verifyInterop100(ROOT,{googleOfficeCohort:{labRoot:'/missing',runIds:[]}});
+  assert.equal(report.authoritativeAdmission,false);
+  assert.equal(report.passedRequiredCells,0);
+  assert.match(report.errors.join('|'),/INTEROP_MIXED_COHORT_MODE_OPTIONS_CONFLICT/);
+});

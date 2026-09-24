@@ -133,7 +133,12 @@
     "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
     "src/export/docx/docxReviewPacketNotes.js",
     "test/contracts/rtk-word-canonical-notes-roundtrip.contract.test.js",
-    "docs/tasks/2026-09-22--word-notes-footnotes.md"
+    "docs/tasks/2026-09-22--word-notes-footnotes.md",
+    "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+    "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+    "scripts/ops/rtk-interop-c4-google-office-readback.py",
+    "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+    "test/unit/rtk-interop-c4-google-office.test.py"
   ],
   "protectedFiles": [
     {
@@ -1711,13 +1716,19 @@
       "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "scripts/ops/rtk-interop-c4-google-office-readback.py",
       "scripts/ops/rtk-interop-data-c1.mjs",
+      "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
       "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
       "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "scripts/perf/rtk-interop-word-manuscript-batch-plan.mjs",
       "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
       "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "test/unit/rtk-interop-c4-google-office.test.py",
       "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "test/unit/rtk-interop-word-manuscript.test.py",
       "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs"
