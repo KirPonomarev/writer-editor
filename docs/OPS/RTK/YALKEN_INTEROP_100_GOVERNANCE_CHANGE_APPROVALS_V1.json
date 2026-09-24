@@ -275,19 +275,6 @@
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "ffcfe387cb111835bc6b2522207cc1ddc7bd45ec3ded82b1e9baecfcc611a88c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
-      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
-        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
-      ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
       "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
@@ -1469,35 +1456,8 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
-      "sha256": "f8647891abe10dc9359c20cd9b493d3e769ff9a81386a6e3d4061c52638007d8",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
-      "sha256": "6c0f4ff02d9331beeaa9494171e3bd6f9d7614a16a307b41e1fcf7f41cbc0368",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
       "sha256": "decab554801a51d3fde582a012d84c305b3d6cad2143dfbd264cf19ef56349ce",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
-      "sha256": "536632ea47af3db06124fbb23fc1425b484798be44d5ea8854489e6acd8766e6",
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
       "approvedAtUtc": "2026-09-24T02:14:40.000Z",
       "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
@@ -1523,20 +1483,56 @@
       "authority": "OWNER_INTEROP_SCOPE_AUTONOMOUS_GATE_APPROVAL_20260923"
     },
     {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "1d31697ae6011ae0e1464e5c3169d49759707a21903ab19604e389a4adb8cae7",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "dd69a46b99c1b0bc58b33f4fd40e895b783e6b7706095c1ad5f83ed2f3848aa6",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "1e73015324403717b7c99520f3aeb144d711278bf318d3584b27597c394f04a7",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
-      "approvedAtUtc": "2026-09-24T03:43:30.175Z",
-      "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
+      "sha256": "67f035debfdbfee883d3a5008cfd0b75dc6768a636c8b653e82ae7950bb04fd2",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5be7da4a0e6fb37460ad2d98e26bf41f4e4dea531191aa20d6335a89f29431c8",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
-      "approvedAtUtc": "2026-09-24T04:12:10.597Z",
-      "rationale": "Owner-authorized exact-byte repair of generated C2A approval artifact after the changed C4 diagnostic contract test. Only the C1B inventory digest changes; static C2A authority metadata and all other generated approval rows are preserved. No cell credit or gate bypass.",
+      "sha256": "fa1c2957ee1afbdfd87f563280245fa4fcd37a0ac96b75fc7363a63634af4385",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "209d4dcdfab729e13b4cb75cc533b9ada76927c47a8c5c21fb17f7a284466736",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T05:08:43Z",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -1552,6 +1548,19 @@
   ],
   "version": "v1.0",
   "historicalApprovals": [
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "ffcfe387cb111835bc6b2522207cc1ddc7bd45ec3ded82b1e9baecfcc611a88c"
+    },
     {
       "approved": true,
       "approvedAtUtc": "2026-09-22T18:36:02.845Z",
@@ -1954,6 +1963,51 @@
       "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
       "approvedAtUtc": "2026-09-24T03:43:30.175Z",
       "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "f8647891abe10dc9359c20cd9b493d3e769ff9a81386a6e3d4061c52638007d8",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "6c0f4ff02d9331beeaa9494171e3bd6f9d7614a16a307b41e1fcf7f41cbc0368",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "536632ea47af3db06124fbb23fc1425b484798be44d5ea8854489e6acd8766e6",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "1e73015324403717b7c99520f3aeb144d711278bf318d3584b27597c394f04a7",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
+      "approvedAtUtc": "2026-09-24T03:43:30.175Z",
+      "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "5be7da4a0e6fb37460ad2d98e26bf41f4e4dea531191aa20d6335a89f29431c8",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
+      "approvedAtUtc": "2026-09-24T04:12:10.597Z",
+      "rationale": "Owner-authorized exact-byte repair of generated C2A approval artifact after the changed C4 diagnostic contract test. Only the C1B inventory digest changes; static C2A authority metadata and all other generated approval rows are preserved. No cell credit or gate bypass.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
