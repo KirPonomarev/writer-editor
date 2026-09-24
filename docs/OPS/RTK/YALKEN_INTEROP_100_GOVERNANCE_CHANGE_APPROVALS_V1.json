@@ -1460,10 +1460,10 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "8c65c18329bac0bb3c71dde082fbd8dbd2adb1862e4bac7ebb4dc89957a00861",
-      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
-      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
-      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "sha256": "4af6b87d8facae0348063dbb4514565e9b96ee261dd5b697ec03b51d449c6c71",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
+      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1496,10 +1496,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "sha256": "abaedc1986354909df8c7bb97d5a161019aa18e009d1aff2a335b4525270242e",
-      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
-      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
-      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "sha256": "08ba7f64445942c33f455f8181e3bafa514254f7260171dad25d34ff401e333f",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
+      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1514,37 +1514,37 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "822039ef7e3c073ee5d3822ba858aa190c3f0de4d736039de401766468cf6f59",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
-      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "sha256": "39a3e5cb1ae328086ca971515a4bb9d10e04428a14cd0be03effebb0b8d54833",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
+      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "6486eba57ef63459fece9ce1b912b8e81200888e6e2a81b5e390037e6a8bb936",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
-      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "sha256": "9a9019b59c89292605bdc6b896d6ec6a4253f27cb1addcb8402c85bedb0b8e8a",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
+      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "0c181182c91f48a84ce44efc91518385602280fc5d8e5e667d0f2e221d6d7f88",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
-      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "sha256": "f677b19fc1772b4b058d61e09a6eb3193cb05270bfb5d76bc691536326e06061",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
+      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "491abf396542c7ad3397f6bf3d63e35f793494c2cb0026d53074b703de1c19a4",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
-      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "sha256": "95943ee1620a092226cd852bb64b4904381cfd9602f988dc5e8953524f8835c1",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
+      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2413,6 +2413,60 @@
       "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
       "approvedAtUtc": "2026-09-24T14:19:54.256Z",
       "rationale": "Owner-authorized exact-byte C4 Google Office return compatibility, maintained inventory and Data C1 bindings. Independent physical proof and official exact-merged-HEAD verifier remain mandatory; this approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "8c65c18329bac0bb3c71dde082fbd8dbd2adb1862e4bac7ebb4dc89957a00861",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "abaedc1986354909df8c7bb97d5a161019aa18e009d1aff2a335b4525270242e",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "0c181182c91f48a84ce44efc91518385602280fc5d8e5e667d0f2e221d6d7f88",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
+      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "491abf396542c7ad3397f6bf3d63e35f793494c2cb0026d53074b703de1c19a4",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
+      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "822039ef7e3c073ee5d3822ba858aa190c3f0de4d736039de401766468cf6f59",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
+      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "6486eba57ef63459fece9ce1b912b8e81200888e6e2a81b5e390037e6a8bb936",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
+      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
+      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
