@@ -20,12 +20,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.843Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "d3b941b02c5bd9430914295d3ef0b60491578d4c11f86196c68e8e8c1429c55e"
+      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
+      "sha256": "54d27a2f76e66f07e119ddbfa9fdb88c74fe2e2f73cd1f4bd3da02f267d4e7aa"
     },
     {
       "approved": true,
@@ -1416,19 +1416,19 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "6d21d3e60d2064268418541f077e4fe3c9227eeaf7495e3026099addd4866020",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "sha256": "c0f95f381873575910a8e935a473a7d613e1be2617a5640c41bdcc5f9a7acc97",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
+      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "bb70c86249de907da86a4fc7729c3d64cf74184c02875fa5e8fcfbbbe470391e",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "sha256": "2a1b21db2c5fbd2a4160c54eeee1654b5563f661add4a84e28bc4fe7e4608c5f",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
+      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1870,6 +1870,33 @@
     {
       "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
       "sha256": "7b3d4b8322e606a1b3e89f64a759e59a3d3a8dc1252f020f6ba981b7a683a992",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.843Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "d3b941b02c5bd9430914295d3ef0b60491578d4c11f86196c68e8e8c1429c55e"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "6d21d3e60d2064268418541f077e4fe3c9227eeaf7495e3026099addd4866020",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "bb70c86249de907da86a4fc7729c3d64cf74184c02875fa5e8fcfbbbe470391e",
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
       "approvedAtUtc": "2026-09-24T02:14:40.000Z",
       "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
