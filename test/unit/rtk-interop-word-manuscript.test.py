@@ -40,6 +40,27 @@ def metadata_parts():
   p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
  return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
 class ManuscriptOracle(unittest.TestCase):
+ def test_single_scene_structure_recipe_binds_chapter_path_and_raw_bookmark_ranges(self):
+  for route in ['C1','C2','C3']:
+   self.assertEqual(m.fields('SINGLE_SCENE',route,'SINGLE_STRUCTURE_V2'),['NOVEL_SCENE_STRUCTURE'])
+   self.assertEqual(m.expected_ids('SINGLE_SCENE',1,'SINGLE_STRUCTURE_V2'),['roman/01_part-01/01_chapter-01/01_scene-01.txt'])
+  with self.assertRaisesRegex(ValueError,'MANUSCRIPT_RECIPE'):m.fields('MULTI_SCENE','C2','SINGLE_STRUCTURE_V2')
+  docs=m.expected_docs('SINGLE_SCENE','C2',recipe='SINGLE_STRUCTURE_V2')
+  ids=m.expected_ids('SINGLE_SCENE',1,'SINGLE_STRUCTURE_V2')
+  d=ET.fromstring(document(m.paragraphs(docs[0])));ps=d.find(m.W+'body').findall(m.W+'p')
+  for i,p in enumerate(ps):
+   name='YRTK_'+m.digest(b'word-bookmark-v1'+m.canonical({'roundBlockOccurrenceId':str(i),'roundId':'round-unit','sceneId':ids[0]}))[:32]
+   p.insert(0,ET.Element(m.W+'bookmarkStart',{m.W+'id':str(i),m.W+'name':name}))
+   p.append(ET.Element(m.W+'bookmarkEnd',{m.W+'id':str(i)}))
+  self.assertRegex(m.bookmark_partition(d,'round-unit',ids,docs),r'^[a-f0-9]{64}$')
+  for kind in ['removed-boundary','duplicate-id','merged-range','wrong-chapter']:
+   changed=copy.deepcopy(d);blocks=changed.find(m.W+'body').findall(m.W+'p')
+   if kind=='removed-boundary':blocks[0].remove(blocks[0].find(m.W+'bookmarkStart'))
+   elif kind=='duplicate-id':blocks[1].find(m.W+'bookmarkStart').set(m.W+'name',blocks[0].find(m.W+'bookmarkStart').get(m.W+'name'))
+   elif kind=='merged-range':blocks[0].remove(blocks[0].find(m.W+'bookmarkEnd'));blocks[1].remove(blocks[1].find(m.W+'bookmarkStart'))
+   with self.subTest(kind=kind),self.assertRaises(ValueError):
+    m.bookmark_partition(changed,'round-unit',['roman/01_part-01/02_chapter-02/01_scene-01.txt'] if kind=='wrong-chapter' else ids,docs)
+
  def test_native_note_reader_preserves_bodies_order_and_typed_corruption(self):
   d=ET.fromstring(document(['Before 🧭 after.','last']))
   rel=ET.Element(m.REL+'Relationships');ct=ET.Element('{http://schemas.openxmlformats.org/package/2006/content-types}Types');parts={}

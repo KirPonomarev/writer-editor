@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {performance} from 'node:perf_hooks';
 import {readOrderFile,stableOrderJson,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {loadDataPolicy,DATA_POLICY_SHA256,hash} from './rtk-interop-data-c1.mjs';
-import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,manuscriptUsesSafeCreate,C1_REVIEW_RECIPE,UNICODE_PROBES,MANUSCRIPT_LINK_TARGETS,buildWordManuscriptFixture} from './rtk-interop-word-manuscript-fixtures.mjs';
+import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,manuscriptUsesSafeCreate,C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE,UNICODE_PROBES,MANUSCRIPT_LINK_TARGETS,buildWordManuscriptFixture} from './rtk-interop-word-manuscript-fixtures.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-manuscript-readback.py';
@@ -34,6 +34,7 @@ export const MANUSCRIPT_SUBCASES=Object.freeze({
 const TEXT_CONTROLS=['swap-paragraphs','delete-empty','trim-spaces','corrupt-unicode','drop-final-paragraph','duplicate-paragraph','swap-scenes','truncate-half','corrupt-last-scene','normalize-nfd','remove-bidi-isolate','remove-ime-character'];
 const STYLE_CONTROLS=['remove-bold','change-align','change-heading','change-font','change-number-start','remove-code-style','remove-quote-style'];
 const STRUCTURE_CONTROLS=['remove-bookmark','duplicate-bookmark','swap-scene-bookmarks','remove-scene','swap-chapters','merge-scene-path'];
+const SINGLE_STRUCTURE_CONTROLS=['remove-scene-boundary','duplicate-scene-id','swap-chapters','merge-scenes'];
 export const MANUSCRIPT_SECTION_CONTROL_CODES=Object.freeze({
  'missing-section':'RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',
  'duplicate-section':'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
@@ -293,7 +294,7 @@ export function validateManuscriptRuns(runIds){
     demand(typeof runId==='string','MANUSCRIPT_BATCH_RUN_ID');
     const m=/^ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__([A-Za-z0-9_-]{1,80})$/u.exec(runId);
     demand(m,'MANUSCRIPT_BATCH_RUN_ID');
-    const recipe=m[4].startsWith('review-return-')?C1_REVIEW_RECIPE:'DEFAULT';
+    const recipe=m[4].startsWith('structure-v2-')?SINGLE_STRUCTURE_RECIPE:m[4].startsWith('review-return-')?C1_REVIEW_RECIPE:'DEFAULT';
     manuscriptFields(m[1],m[2],recipe);return {runId,volume:m[1],route:m[2],profile:m[3],recipe,cellId:runId.slice(0,runId.lastIndexOf('__'))};
   });
   demand(new Set(rows.map(x=>x.cellId+':'+x.recipe)).size===rows.length,'MANUSCRIPT_BATCH_DUPLICATE_JOURNEY');return rows;
@@ -338,12 +339,12 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    &&same(f.subcases,MANUSCRIPT_SUBCASES[f.field])&&same(f.requiredHops,MANUSCRIPT_HOPS[row.route])&&f.requiredCycles===cycles&&same(f.oracles,policy.requiredOracles),'MANUSCRIPT_FIELD_SCOPE');
   demand(same(Object.keys(f.stageProofs).sort(),stageNames),'MANUSCRIPT_STAGE_SET');
   for(const [name,n] of Object.entries(expected)){
-   const stage=f.stageProofs[name],qualified=row.recipe===C1_REVIEW_RECIPE?batch.reviewReturnParagraphHashes[row.volume][n]:batch.paragraphHashes[row.volume][row.route][n];
+   const stage=f.stageProofs[name],qualified=row.recipe===C1_REVIEW_RECIPE||(row.recipe===SINGLE_STRUCTURE_RECIPE&&row.route==='C1')?batch.reviewReturnParagraphHashes[row.volume][n]:batch.paragraphHashes[row.volume][row.route][n];
    demand(stage.round===n&&stage.paragraphSha256===qualified.sha256&&stage.paragraphCount===qualified.count&&sha64(stage.sortKeysSha256),'MANUSCRIPT_STAGE_HASH');
   }
   demand(same(f.controls.positiveControls,['identity','split-xml-runs'])&&controls(f.controls.textMutants,TEXT_CONTROLS)
    &&controls(f.controls.styleMutants,STYLE_CONTROLS)
-   &&controls(f.controls.structureMutants,row.volume==='SINGLE_SCENE'?[]:generic?STRUCTURE_CONTROLS.slice(0,3):STRUCTURE_CONTROLS),'MANUSCRIPT_RAW_MUTATIONS');
+   &&controls(f.controls.structureMutants,row.recipe===SINGLE_STRUCTURE_RECIPE?SINGLE_STRUCTURE_CONTROLS:row.volume==='SINGLE_SCENE'?[]:generic?STRUCTURE_CONTROLS.slice(0,3):STRUCTURE_CONTROLS),'MANUSCRIPT_RAW_MUTATIONS');
   const u=f.unicodeProof;demand(same(u?.probes,UNICODE_PROBES)&&sha64(u?.compositionEventsSha256)&&u.locale?.language&&u.locale.languages.includes(u.locale.language)
    &&u.locale.intl?.locale&&u.locale.intl.timeZone&&u.fontLedger?.length===(generic?sceneCount+2:2*sceneCount+cycles)
    &&u.fontLedger.every(x=>x.fonts?.length&&x.fonts.reduce((s,f)=>s+f.glyphCount,0)>0&&x.scope.includes('Chromium'))&&u.limitations?.ime&&u.limitations?.fonts,'MANUSCRIPT_UNICODE_FONT_BINDING');
@@ -441,7 +442,11 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
       const request={root:fs.realpathSync(labRoot),runId:row.runId,productHead:runtimeIdentity.head,productTree:runtimeIdentity.tree,files,
         qualifiedProvider:policy.qualifiedProvider,packageJsonSha256:hash(readOrderFile(runtimeRoot,'package.json').bytes),
         packageLockSha256:hash(readOrderFile(runtimeRoot,'package-lock.json').bytes),electronVersion:batch.electronVersion};
-      const process=spawnSync('python3',['-I','-B',path.join(ROOT,READER)],{input:JSON.stringify(request),encoding:'utf8',timeout:180000,maxBuffer:16*1024*1024});
+      const payload=Buffer.from(JSON.stringify(request),'utf8');
+      demand(payload.length>0&&payload.length<=1024*1024,'MANUSCRIPT_BATCH_REQUEST_SIZE');
+      const frame=Buffer.allocUnsafe(4+payload.length);
+      frame.writeUInt32BE(payload.length,0);payload.copy(frame,4);
+      const process=spawnSync('python3',['-I','-B',path.join(ROOT,READER)],{input:frame,encoding:'utf8',timeout:180000,maxBuffer:16*1024*1024});
       demand(!process.error&&process.status===0,'MANUSCRIPT_BATCH_RAW_FAILED:'+String(process.stdout||process.stderr||process.error));
       const raw=JSON.parse(process.stdout);
       validateManuscriptRaw(raw,{row,...runtimeIdentity,observationSha256:obsFile.binding.sha256,files,policy});

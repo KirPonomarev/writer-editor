@@ -65,7 +65,8 @@ METADATA_PUBLIC=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJE
 METADATA_AUTHORITY=['YRTK_C01_AUTH','YRTK2_TOKEN','YRTK_CORE_DIGEST']
 def fields(volume,route,recipe='DEFAULT'):
     require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT'] and route in ['C1','C2','C3','C5'],'MANUSCRIPT_SCOPE')
-    require(recipe=='DEFAULT' or (route=='C1' and recipe=='C1_REVIEW_RETURN'),'MANUSCRIPT_RECIPE')
+    require(recipe=='DEFAULT' or (route=='C1' and recipe=='C1_REVIEW_RETURN') or (volume=='SINGLE_SCENE' and route in ['C1','C2','C3'] and recipe=='SINGLE_STRUCTURE_V2'),'MANUSCRIPT_RECIPE')
+    if recipe=='SINGLE_STRUCTURE_V2':return ['NOVEL_SCENE_STRUCTURE']
     if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']
     if route=='C5':
         require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL'],'GOOGLE_NATIVE_VOLUME_UNQUALIFIED')
@@ -89,7 +90,7 @@ def expected_docs(volume,route,round=0,recipe='DEFAULT'):
     ps=[list(v.PROBES)] if volume=='SINGLE_SCENE' else v.expected_scenes(volume)
     docs=[{'type':'doc','content':[para(p.replace('sentinel alpha','sentinel round'+str(round)) if round else p) for p in s]} for s in ps]
     docs[0]['content'] += [para(p) for p in UNICODE]+styles()
-    if route in ['C2','C3'] or recipe=='C1_REVIEW_RETURN':
+    if route in ['C2','C3'] or recipe in ['C1_REVIEW_RETURN','SINGLE_STRUCTURE_V2']:
         runs=[{'type':'text','text':'[links] '}]
         for i,target in enumerate([LINK_TARGETS[0],LINK_TARGETS[1],LINK_TARGETS[0]]):
             if i:runs.append({'type':'text','text':' / '})
@@ -790,8 +791,8 @@ def assert_docx_styles(parts,document):
     proof.update(code={'font':'Menlo','points':10,'fill':'F3F4F6'},bullets=[1,0,0],quoteIndent=720)
     return {'semanticStyleSha256':digest(canonical(proof)),'declaredStyles':proof,'stylePartsSha256':{n:digest(b) for n,b in parts.items() if n in ['word/styles.xml','word/numbering.xml']}}
 
-def expected_ids(volume,count):
-    if volume=='SINGLE_SCENE':return ['roman/01_scene-01.txt']
+def expected_ids(volume,count,recipe='DEFAULT'):
+    if volume=='SINGLE_SCENE':return ['roman/01_part-01/01_chapter-01/01_scene-01.txt'] if recipe=='SINGLE_STRUCTURE_V2' else ['roman/01_scene-01.txt']
     per=1 if volume=='MULTI_SCENE' else 7
     return [f'roman/01_part-01/{i//per+1:02d}_chapter-{i//per+1:02d}/{i%per+1:02d}_scene-{i+1:02d}.txt' for i in range(count)]
 
@@ -869,7 +870,19 @@ def controls(source,volume,route,ids,round_id,recipe='DEFAULT'):
         except (ValueError,KeyError):rejected=True
         require(rejected,'FALSE_GREEN_'+name);style_results.append({'id':name,'rejected':True,'sha256':digest(b)})
     structural=[]
-    if volume!='SINGLE_SCENE':
+    if recipe=='SINGLE_STRUCTURE_V2':
+        for name in ['remove-scene-boundary','merge-scenes']:
+            d=copy.deepcopy(template);ps=d.find(W+'body').findall(W+'p')
+            if name=='remove-scene-boundary':ps[0].remove(ps[0].find(W+'bookmarkStart'))
+            else:
+                ps[0].remove(ps[0].find(W+'bookmarkEnd'))
+                ps[1].remove(ps[1].find(W+'bookmarkStart'))
+            b=replace_part(source,'word/document.xml',ET.tostring(d,encoding='utf-8'));rejected=False
+            try:bookmark_partition(docx(b)[2],round_id,ids,docs)
+            except ValueError:rejected=True
+            require(rejected,'FALSE_GREEN_'+name)
+            structural.append({'id':name,'rejected':True,'sha256':digest(b)})
+    elif volume!='SINGLE_SCENE':
         for name in STRUCTURE_CONTROLS[:3]:
             d=copy.deepcopy(template);ps=d.find(W+'body').findall(W+'p')
             if name=='remove-bookmark':ps[0].remove(ps[0].find(W+'bookmarkStart'))
@@ -1025,7 +1038,8 @@ def audit(request):
     started=time.perf_counter();root=Path(request['root']);require(root.is_absolute() and root.resolve()==root and root.is_dir(),'MANUSCRIPT_RAW_ROOT')
     run=request['runId'];m=re.fullmatch(r'ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__[A-Za-z0-9_-]{1,80}',run)
     require(m is not None,'MANUSCRIPT_RUN_ID');volume,route,profile=m.groups()
-    recipe='C1_REVIEW_RETURN' if run.rsplit('__',1)[1].startswith('review-return-') else 'DEFAULT'
+    suffix=run.rsplit('__',1)[1]
+    recipe='SINGLE_STRUCTURE_V2' if suffix.startswith('structure-v2-') else 'C1_REVIEW_RETURN' if suffix.startswith('review-return-') else 'DEFAULT'
     fields(volume,route,recipe);generic=route=='C5' or (route=='C1' and recipe=='DEFAULT');head,tree=request['productHead'],request['productTree']
     expected_round=lambda n=0:expected_docs(volume,route,n,recipe)
     require(all(re.fullmatch('[a-f0-9]{40}',s) for s in (head,tree)),'MANUSCRIPT_HEAD_TREE')
@@ -1074,7 +1088,7 @@ def audit(request):
             require('underline' in by['underline']['textDecorationLine'] and 'line-through' in by['strike']['textDecorationLine'],'RENDERER_DECORATION')
             require(by['color']['color']=='rgb(18, 52, 86)' and by['highlight']['backgroundColor']=='rgb(255, 255, 0)','RENDERER_COLORS')
             require(by['font']['fontFamily']=='Arial' and abs(float(by['font']['fontSize'].removesuffix('px'))-14*4/3)<0.01,'RENDERER_FONT')
-    source=read('source.json');src=source['scenes'];count=len(docs);ids=expected_ids(volume,count);nodes=[s['nodeId'] for s in src];section_expected=expected_section_contract(ids,docs)
+    source=read('source.json');src=source['scenes'];count=len(docs);ids=expected_ids(volume,count,recipe);nodes=[s['nodeId'] for s in src];section_expected=expected_section_contract(ids,docs)
     require(len(src)==count and [s['sceneId'] for s in src]==ids and len(set(nodes))==count and all(nodes),'SCENE_IDENTITIES')
     project=read('source-project.json');pid=project['projectId'];registry=project['treeIdentity']['nodes'];by_binding={r['bindingKey']:n for n,r in registry.items() if r.get('present') is not False}
     metadata_protected={'schemaVersion':'yalken.rtk.word.document-metadata.v1','projectId':pid,'title':project['projectName'],'createdAtUtc':project['createdAtUtc'],'creator':'Yalken'}
@@ -1084,6 +1098,14 @@ def audit(request):
     require([by_binding['file:'+s] for s in ids]==nodes,'PROJECT_SCENE_REGISTRY')
     def tree_check(value,label):
         require(value['ok'] is True and value['projectId']==pid,'TREE_PROJECT')
+        if recipe=='SINGLE_STRUCTURE_V2':
+            roman=next((n for n in value['root'].get('children',[]) if n.get('kind')=='roman-root'),None)
+            require(roman is not None,'STRUCTURE_ROMAN_ROOT')
+            parts=[n for n in roman.get('children',[]) if n.get('kind')=='part']
+            require(len(parts)==1 and parts[0]['name']=='part-01','STRUCTURE_PART')
+            chapters=parts[0].get('children',[])
+            require([(n.get('kind'),n.get('name')) for n in chapters]==[('chapter-folder','chapter-01'),('chapter-folder','chapter-02')],'STRUCTURE_CHAPTER_ORDER')
+            require([(n.get('kind'),n.get('nodeId')) for n in chapters[0].get('children',[])]==[('scene',nodes[0])] and chapters[1].get('children',[])==[],'STRUCTURE_SCENE_BOUNDARY')
         observed=[]
         def visit(n,anc):
             if n['nodeId'] in nodes:observed.append((n['nodeId'],n['kind'],n['name'],[(a['nodeId'],a['kind'],a['name']) for a in anc if a['kind'] in ['part','chapter-folder']]))
@@ -1467,7 +1489,23 @@ def audit(request):
     cleanup=read('cleanup.json');require(cleanup['ok'] is True and len(cleanup['ownedProcesses'])==2 and {p['pid'] for p in cleanup['ownedProcesses']}=={boot['pid'],reopened['pid']} and all(p['exitCode'] is not None or p['signalCode'] is not None for p in cleanup['ownedProcesses']),'RUNTIME_CLEANUP')
     result=read('result.json');require(result['ok'] is True and result['failure'] is None and result['admissionCredit']==0 and result['candidateDiagnosticOnly']==obs['candidateDiagnosticOnly'],'NATIVE_COMPLETION')
     first_cap=read('rounds/1/export.json')['result']['exportCapsule'];calibration=controls(raw('rounds/1/source.docx'),volume,route,ids,first_cap['roundId'],recipe)
-    if not generic and volume!='SINGLE_SCENE':
+    if recipe=='SINGLE_STRUCTURE_V2':
+        chapter_mutants={}
+        for name in ['duplicate-scene-id','swap-chapters']:
+            value=copy.deepcopy(source['tree'])
+            roman=next(n for n in value['root']['children'] if n['kind']=='roman-root')
+            part=next(n for n in roman['children'] if n['kind']=='part')
+            if name=='duplicate-scene-id':part['children'][1]['children'].append(copy.deepcopy(part['children'][0]['children'][0]))
+            else:part['children'][0],part['children'][1]=part['children'][1],part['children'][0]
+            rejected=False
+            try:tree_check(value,'negative-'+name)
+            except ValueError:rejected=True
+            require(rejected,'FALSE_GREEN_'+name)
+            chapter_mutants[name]={'id':name,'rejected':True,'sha256':digest(canonical(value))}
+        by_id={row['id']:row for row in calibration['structureMutants']}
+        by_id.update(chapter_mutants)
+        calibration['structureMutants']=[by_id[name] for name in ['remove-scene-boundary','duplicate-scene-id','swap-chapters','merge-scenes']]
+    elif not generic and volume!='SINGLE_SCENE':
         # Corrupt the actual hierarchy, without changing text, and require the independent tree reader to reject it.
         for name in STRUCTURE_CONTROLS[3:]:
             value=copy.deepcopy(source['tree']);parents={};all_nodes=[]
@@ -1528,5 +1566,11 @@ def audit(request):
 
 if __name__=='__main__':
     try:
-        data=sys.stdin.buffer.read(1024*1024+1);require(len(data)<=1024*1024,'REQUEST_SIZE');print(json.dumps(audit(json.loads(data)),ensure_ascii=False))
+        header=sys.stdin.buffer.read(4)
+        require(len(header)==4,'REQUEST_FRAME')
+        size=int.from_bytes(header,'big')
+        require(0<size<=1024*1024,'REQUEST_SIZE')
+        data=sys.stdin.buffer.read(size)
+        require(len(data)==size,'REQUEST_TRUNCATED')
+        print(json.dumps(audit(json.loads(data)),ensure_ascii=False))
     except Exception as e:print(json.dumps({'ok':False,'error':str(e),'admissionCredit':0}));sys.exit(1)

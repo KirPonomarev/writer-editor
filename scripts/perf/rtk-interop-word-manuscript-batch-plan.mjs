@@ -25,8 +25,11 @@ export const PLANNER_SCHEMA_VERSION = 'WORD_MANUSCRIPT_BATCH_PLAN_V1';
 const DEFAULT_SECONDS = Object.freeze({
   C1_DEFAULT: 35,
   C1_REVIEW_RETURN: 55,
+  C1_SINGLE_STRUCTURE_V2: 55,
   C2_DEFAULT: 80,
+  C2_SINGLE_STRUCTURE_V2: 80,
   C3_DEFAULT: 240,
+  C3_SINGLE_STRUCTURE_V2: 240,
   C5_DEFAULT: 150,
 });
 
@@ -61,7 +64,7 @@ function allCandidateJobs() {
           try {
             fields = manuscriptFields(volume, route, recipe);
           } catch (error) {
-            if (String(error?.message) === 'GOOGLE_NATIVE_VOLUME_UNQUALIFIED') continue;
+            if (['GOOGLE_NATIVE_VOLUME_UNQUALIFIED','MANUSCRIPT_RECIPE_VOLUME'].includes(String(error?.message))) continue;
             throw error;
           }
           const job = { volume, route, profile, recipe };
@@ -90,7 +93,7 @@ export function estimateJobSeconds(job, overrides = {}) {
     if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) throw new Error('PLANNER_DURATION_INVALID');
     return value;
   }
-  const value = DEFAULT_SECONDS[job.recipe === 'DEFAULT' ? `${job.route}_DEFAULT` : job.recipe];
+  const value = DEFAULT_SECONDS[job.recipe === 'DEFAULT' ? `${job.route}_DEFAULT` : job.recipe === 'SINGLE_STRUCTURE_V2' ? `${job.route}_${job.recipe}` : job.recipe];
   if (!value) throw new Error('PLANNER_DURATION_UNAVAILABLE');
   return value + (job.profile === 'PACKAGED_BUILD_RUNTIME' ? 15 : 0);
 }
