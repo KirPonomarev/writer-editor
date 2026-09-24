@@ -164,6 +164,8 @@ export const R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR=Object.freeze({
     {path:'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',sha256:'e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34'},
     {path:'scripts/ops/rtk-interop-c4-google-office-batch.mjs',sha256:'2c8e8c70ad3577c86d303404ed5d1307f9b58b6ac0dcfc4af959b4addac5af54'},
     {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3'},
+    {path:'scripts/ops/rtk-interop-c4-google-office-readback.py',sha256:'384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53'},
+    {path:'test/unit/rtk-interop-c4-google-office.test.py',sha256:'bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a'},
   ]),
 });
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([

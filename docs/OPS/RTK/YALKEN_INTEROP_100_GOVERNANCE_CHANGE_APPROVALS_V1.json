@@ -1529,10 +1529,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "911fca722ab8544e6fbb740a386f45cff7afa54a5d47a22705cf4aa07c99efa9",
+      "sha256": "385dc93ecbfa40f499264d7f23ff643cafc83255226fb7a4b68b27d6312551c4",
       "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
       "approvedAtUtc": "2026-09-24T06:36:20Z",
-      "rationale": "Owner-authorized exact-byte C4 post-audit successor pin closure for the corrected raw Google DOCX comment-range reader. Bind only the reviewed current C4 policy and batch verifier bytes; preserve the existing contract test and Lab code hashes, mandatory CI, independent physical proof, frozen 1120 denominator and exact merged-head official acceptance. This metadata repair adds zero cells.",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor closure: pin the corrected policy, batch verifier, independent raw reader, negative tests and existing contract bytes. All paths remain hash-bound and fail closed; Lab code pins, frozen 1120 denominator, CI, physical Google proof and exact merged-head acceptance are unchanged. This metadata repair adds zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
