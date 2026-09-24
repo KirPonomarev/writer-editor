@@ -13,7 +13,20 @@ const SPEC='docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
 const READER='scripts/ops/rtk-interop-c4-google-office-readback.py';
 export const C4_GOOGLE_MODE='GOOGLE_OFFICE_C4_BATCH_V1';
 export const C4_GOOGLE_CELLS=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME'].flatMap(profile=>
-  ['TEXT','ORDER'].map(field=>`${field}__SINGLE_SCENE__C4__${profile}`)));
+  ['TEXT','ORDER','NOVEL_SCENE_STRUCTURE'].map(field=>`${field}__SINGLE_SCENE__C4__${profile}`)));
+const C4_STRUCTURE_SUBCASES=Object.freeze(['sceneBoundariesPreserved','chapterOrderPreserved',
+  'splitMergeDetected','projectHierarchyMapped','structureLossLedgered','sceneCountReadback']);
+const C4_STRUCTURE_MUTANTS=Object.freeze(['remove-scene-boundary','duplicate-scene-id',
+  'swap-chapters','merge-scenes','wrong-target-scene','reopened-scene-rebind',
+  'merge-returned-paragraphs']);
+// Exact previous official field proof digests prevent a new structure oracle
+// from silently weakening the four already accepted TEXT/ORDER proofs.
+const C4_LEGACY_FIELD_PROOF_SHA256=Object.freeze({
+  TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME:'b0c171c92e643141eaa9f344cc00524efc9390272558cfe314015f90c97873c4',
+  ORDER__SINGLE_SCENE__C4__SOURCE_RUNTIME:'3810d41d9177f7e2c1b616b88b8b27af6a7bfbe6966766f4e7e26b1fcefe3977',
+  TEXT__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME:'8ca79b7e703c68e1198a05e15bcab4f12fa99e3275fa8af3aae32544ca21dac4',
+  ORDER__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME:'bd8c4749c2de080b74b154b2092448790c58da3b6dc2cc73842ca1e6d13099c5',
+});
 export const C4_GOOGLE_HOPS=Object.freeze(['YALKEN_DOCX_EXPORT','GOOGLE_OFFICE_LIFECYCLE','YALKEN_RETURN_INTAKE']);
 export const C4_VERIFIER_PROMOTION_PATHS=Object.freeze([
   'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
@@ -22,9 +35,11 @@ export const C4_VERIFIER_PROMOTION_PATHS=Object.freeze([
   'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
   'scripts/ops/rtk-interop-c4-google-office-batch.mjs',
+  'scripts/ops/rtk-interop-c4-google-office-readback.py',
   'test/contracts/rtk-interop-c4-google-office.contract.test.js',
+  'test/unit/rtk-interop-c4-google-office.test.py',
 ]);
-export const C4_POLICY_SHA256='c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef';
+export const C4_POLICY_SHA256='7cf735477553be555454dfc42a5bc09d8ef2d9edf2a18766f246664526644c61';
 const C4_LAB_DELTA_PATHS=Object.freeze(['LAB_MANIFEST.json','dashboard/index.html',
   'data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl',
   'src/m1-text-single-scene-source-runtime.mjs','test/m0-audit-repair.test.mjs']);
@@ -81,6 +96,7 @@ export function loadC4Policy(){
     &&sha64(policy.labRegistrySha256)&&Array.isArray(policy.allowedLabDeltaPaths)
     &&same(policy.allowedLabDeltaPaths,C4_LAB_DELTA_PATHS)
     &&same(policy.verifierPromotionPaths,C4_VERIFIER_PROMOTION_PATHS)
+    &&same(policy.legacyFieldProofSha256,C4_LEGACY_FIELD_PROOF_SHA256)
     &&Array.isArray(policy.labCodeBindings)
     &&same(policy.labCodeBindings.map(binding=>binding.path),C4_LAB_CODE_PATHS)
     &&policy.labCodeBindings.every(binding=>sha64(binding.sha256)),'C4_POLICY_SCOPE');
@@ -151,12 +167,15 @@ export function validateC4Raw(raw,{row,head,tree,observationSha256,files,require
     &&raw.observationSha256===observationSha256&&raw.filesVerified===files.length
     &&same(raw.requiredHops,C4_GOOGLE_HOPS),'C4_RAW_BINDING');
   const fields=raw.fieldProofs;
-  demand(Array.isArray(fields)&&same(fields.map(field=>field.field),['TEXT','ORDER'])
-    &&same(fields.map(field=>field.cellId),['TEXT','ORDER'].map(field=>`${field}__SINGLE_SCENE__C4__${row.profile}`))
+  demand(Array.isArray(fields)&&same(fields.map(field=>field.field),['TEXT','ORDER','NOVEL_SCENE_STRUCTURE'])
+    &&same(fields.map(field=>field.cellId),['TEXT','ORDER','NOVEL_SCENE_STRUCTURE'].map(field=>`${field}__SINGLE_SCENE__C4__${row.profile}`))
     &&fields.every(field=>field.runId===row.runId&&field.status==='PASS'
-      &&sha64(field.sourceParagraphSha256)&&sha64(field.reviewedParagraphSha256)
       &&requiredCells.some(cell=>cell.cellId===field.cellId)),'C4_FIELD_SCOPE');
   const text=fields[0].controls,order=fields[1].controls;
+  demand(fields.slice(0,2).every(field=>sha64(field.sourceParagraphSha256)
+      &&sha64(field.reviewedParagraphSha256)
+      &&hash(Buffer.from(stableOrderJson(field)))===C4_LEGACY_FIELD_PROOF_SHA256[field.cellId]),
+  'C4_LEGACY_PROOF_DRIFT');
   demand(same(text?.positiveControls,['identity','split-xml-runs'])
     &&same(text.rawMutantsExecuted.map(control=>control.id),TEXT_CONTROL_IDS)
     &&text.rawMutantsExecuted.every(control=>control.rejected===true&&sha64(control.sha256))
@@ -165,6 +184,18 @@ export function validateC4Raw(raw,{row,head,tree,observationSha256,files,require
     &&same(order.rawMutantsExecuted.map(control=>control.id),['swap','delete-empty','trim'])
     &&order.rawMutantsExecuted.every(control=>control.rejected===true&&sha64(control.sha256)),
   'C4_NEGATIVE_CONTROLS');
+  const structure=fields[2],mutants=structure.controls?.structureMutantsExecuted;
+  demand(same(structure.subcases,C4_STRUCTURE_SUBCASES)
+    &&sha64(structure.sourceMapSha256)
+    &&structure.sceneCount===1&&structure.chapterCount===1
+    &&same(structure.sourceRange,[0,11])
+    &&typeof structure.sceneId==='string'&&structure.sceneId.startsWith('roman/')
+    &&structure.reopenedSceneSha256===raw.reopenedSceneSha256
+    &&same(structure.lossLedger,{field:'NOVEL_SCENE_STRUCTURE',
+      status:'NO_STRUCTURE_LOSS_OBSERVED',sourceScenes:1,returnedRanges:1,reopenedScenes:1})
+    &&Array.isArray(mutants)&&same(mutants.map(mutant=>mutant.id),C4_STRUCTURE_MUTANTS)
+    &&mutants.every(mutant=>mutant.rejected===true&&sha64(mutant.sha256)),
+  'C4_STRUCTURE_PROOF');
   return fields;
 }
 
@@ -249,7 +280,7 @@ export function verifyGoogleOfficeC4Batch({repoRoot=ROOT,labRoot,runIds,required
     cellDecisions:fieldProofs.map(field=>({cellId:field.cellId,status:'PASS',outcome:'PRESERVED',
       sourceRunId:field.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(field)))})),
     policySha256:C4_POLICY_SHA256,rawReadbacks:ok?reviews:[],seconds:(performance.now()-started)/1000,
-    limitations:['Only the named single-scene Google Office TEXT/ORDER review journeys are verified.',
+    limitations:['Only the named single-scene Google Office TEXT/ORDER/STRUCTURE review journeys are verified.',
       'The Google document edit/comment is bound to native evidence and returned DOCX bytes; Lab PASS alone grants zero credit.',
       'SOURCE and PACKAGED profiles require separate real provider executions.']};
 }

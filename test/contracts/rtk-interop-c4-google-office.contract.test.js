@@ -6,7 +6,7 @@ const path=require('node:path');
 
 const ROOT=path.resolve(__dirname,'../..');
 
-test('C4 policy fixes four denominator IDs, real Google hops and pinned independent readers',async()=>{
+test('C4 policy fixes six denominator IDs, real Google hops and pinned independent readers',async()=>{
   const c4=await import('../../scripts/ops/rtk-interop-c4-google-office-batch.mjs');
   const official=await import('../../scripts/ops/rtk-interop-100-denominator-v1.mjs');
   const policy=c4.loadC4Policy();
@@ -17,9 +17,14 @@ test('C4 policy fixes four denominator IDs, real Google hops and pinned independ
   assert.deepEqual(policy.requiredHops,c4.C4_GOOGLE_HOPS);
   assert.deepEqual(policy.verifierPromotionPaths,c4.C4_VERIFIER_PROMOTION_PATHS);
   assert.ok(policy.verifierPromotionPaths.every(file=>!file.startsWith('src/')));
-  assert.ok(!policy.verifierPromotionPaths.includes('scripts/ops/rtk-interop-c4-google-office-readback.py'));
-  assert.equal(policy.cellIds.length,4);
+  assert.ok(policy.verifierPromotionPaths.includes('scripts/ops/rtk-interop-c4-google-office-readback.py'));
+  assert.ok(policy.verifierPromotionPaths.includes('test/unit/rtk-interop-c4-google-office.test.py'));
+  assert.equal(policy.cellIds.length,6);
   assert.ok(policy.cellIds.every(id=>frozen.has(id)));
+  assert.deepEqual(policy.cellIds.filter(id=>id.startsWith('NOVEL_SCENE_STRUCTURE__')),[
+    'NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__C4__SOURCE_RUNTIME',
+    'NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME']);
+  assert.equal(Object.keys(policy.legacyFieldProofSha256).length,4);
   assert.deepEqual(policy.allowedLabDeltaPaths,[
     'LAB_MANIFEST.json','dashboard/index.html','data/artifacts/ARTIFACTS.json',
     'data/evidence/ledger.jsonl','src/m1-text-single-scene-source-runtime.mjs',
@@ -34,6 +39,7 @@ test('C4 policy fixes four denominator IDs, real Google hops and pinned independ
   for(const file of [
     'scripts/ops/rtk-interop-c4-google-office-batch.mjs',
     'scripts/ops/rtk-interop-c4-google-office-readback.py',
+    'test/unit/rtk-interop-c4-google-office.test.py',
     'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',
     'test/contracts/rtk-interop-c4-google-office.contract.test.js',
   ])assert.ok(promotion.includes(file),file);
@@ -52,8 +58,11 @@ test('C4 promotion carries physical evidence only over exact verifier-only desce
     allowedPaths:policy.verifierPromotionPaths,git:git(paths),...more});
   assert.deepEqual(check(diff),diff);
   for(const path of ['src/main.js','package-lock.json',
-    'scripts/ops/rtk-interop-c4-google-office-readback.py','docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json'])
+    'scripts/ops/rtk-interop-c4-google-office-unreviewed-reader.py',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json'])
     assert.throws(()=>check([...diff,path]),/C4_PROMOTION_SCOPE/,path);
+  assert.deepEqual(check([...diff,'scripts/ops/rtk-interop-c4-google-office-readback.py']),
+    [...diff,'scripts/ops/rtk-interop-c4-google-office-readback.py']);
   assert.throws(()=>check([]),/C4_PROMOTION_SCOPE/);
   assert.throws(()=>check(diff,{allowedPaths:[...policy.verifierPromotionPaths,'src/main.js']}),
     /C4_PROMOTION_POLICY_SCOPE/);

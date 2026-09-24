@@ -6,8 +6,10 @@
   "cellIds": [
     "TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME",
     "ORDER__SINGLE_SCENE__C4__SOURCE_RUNTIME",
+    "NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__C4__SOURCE_RUNTIME",
     "TEXT__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME",
-    "ORDER__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME"
+    "ORDER__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME",
+    "NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME"
   ],
   "requiredHops": [
     "YALKEN_DOCX_EXPORT",
@@ -37,7 +39,9 @@
     "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
     "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
     "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
-    "test/contracts/rtk-interop-c4-google-office.contract.test.js"
+    "scripts/ops/rtk-interop-c4-google-office-readback.py",
+    "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+    "test/unit/rtk-interop-c4-google-office.test.py"
   ],
   "labCodeBindings": [
     {
@@ -52,7 +56,7 @@
   "readerBindings": [
     {
       "path": "scripts/ops/rtk-interop-c4-google-office-readback.py",
-      "sha256": "384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53"
+      "sha256": "08033a9a599d5fb9838e49b4a9dfa378dc71caaf8f54e1209275223226da8bd9"
     },
     {
       "path": "scripts/ops/rtk-interop-order-c1-readback.py",
@@ -67,5 +71,11 @@
       "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
     }
   ],
-  "claimBoundary": "Only the four independently proved C4 single-scene TEXT and ORDER cells are eligible. A prior physical run may be rehydrated on an exact merged verifier HEAD only when the complete Git delta from its clean runtime revision is restricted to the pinned verifier-only paths; product runtime changes require new physical evidence. Lab PASS alone carries zero admission credit."
+  "claimBoundary": "Only six independently rehydrated C4 single-scene TEXT, ORDER and NOVEL_SCENE_STRUCTURE cells are eligible. The four preexisting TEXT/ORDER field proofs must retain exact prior official digests; new structure proof requires source export-map ranges, provider-return paragraphs, authenticated target and reopened project hierarchy plus seven rejected raw mutants. The advisory export map grants no write authority. A prior physical run may be rehydrated on a verifier-only successor only over pinned read-only paths; any product runtime change requires new physical evidence. Lab PASS alone carries zero admission credit.",
+  "legacyFieldProofSha256": {
+    "TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME": "b0c171c92e643141eaa9f344cc00524efc9390272558cfe314015f90c97873c4",
+    "ORDER__SINGLE_SCENE__C4__SOURCE_RUNTIME": "3810d41d9177f7e2c1b616b88b8b27af6a7bfbe6966766f4e7e26b1fcefe3977",
+    "TEXT__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME": "8ca79b7e703c68e1198a05e15bcab4f12fa99e3275fa8af3aae32544ca21dac4",
+    "ORDER__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME": "bd8c4749c2de080b74b154b2092448790c58da3b6dc2cc73842ca1e6d13099c5"
+  }
 }
