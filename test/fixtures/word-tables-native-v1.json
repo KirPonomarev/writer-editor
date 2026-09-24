@@ -1,0 +1,405 @@
+{
+  "schemaVersion": "WORD_TABLE_NATIVE_REGRESSION_V1",
+  "scope": "Actual Word diagnostic regression input, not official cell acceptance",
+  "canonical": {
+    "type": "doc",
+    "content": [
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "before"
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "content": [
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R1C1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "repeat"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R2C1"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "second paragraph 日本語 é"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "repeat"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R2C3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R3C1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R3C2"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R3C3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "between"
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "content": [
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 2,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "horizontal"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 2,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "vertical"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R2C1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R2C2"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "tableRow",
+            "content": [
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R3C1"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R3C2"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "tableCell",
+                "attrs": {
+                  "colspan": 1,
+                  "rowspan": 1,
+                  "colwidth": null
+                },
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "R3C3"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "content": [
+          {
+            "type": "text",
+            "text": "after"
+          }
+        ]
+      }
+    ]
+  },
+  "returnedDocxBase64": "UEsDBBQAAAAAAAAAAAAgG4bqLgEAAC4BAAALAAAAX3JlbHMvLnJlbHM8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJVVEYtOCIgc3RhbmRhbG9uZT0ieWVzIj8+CjxSZWxhdGlvbnNoaXBzIHhtbG5zPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvcGFja2FnZS8yMDA2L3JlbGF0aW9uc2hpcHMiPgogIDxSZWxhdGlvbnNoaXAgSWQ9InJJZDEiIFR5cGU9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9vZmZpY2VEb2N1bWVudC8yMDA2L3JlbGF0aW9uc2hpcHMvb2ZmaWNlRG9jdW1lbnQiIFRhcmdldD0id29yZC9kb2N1bWVudC54bWwiLz4KPC9SZWxhdGlvbnNoaXBzPlBLAwQUAAAAAAAAAAAA13mE6rgBAAC4AQAAEwAAAFtDb250ZW50X1R5cGVzXS54bWw8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJVVEYtOCIgc3RhbmRhbG9uZT0ieWVzIj8+CjxUeXBlcyB4bWxucz0iaHR0cDovL3NjaGVtYXMub3BlbnhtbGZvcm1hdHMub3JnL3BhY2thZ2UvMjAwNi9jb250ZW50LXR5cGVzIj4KICA8RGVmYXVsdCBFeHRlbnNpb249InJlbHMiIENvbnRlbnRUeXBlPSJhcHBsaWNhdGlvbi92bmQub3BlbnhtbGZvcm1hdHMtcGFja2FnZS5yZWxhdGlvbnNoaXBzK3htbCIvPgogIDxEZWZhdWx0IEV4dGVuc2lvbj0ieG1sIiBDb250ZW50VHlwZT0iYXBwbGljYXRpb24veG1sIi8+CiAgPE92ZXJyaWRlIFBhcnROYW1lPSIvd29yZC9kb2N1bWVudC54bWwiIENvbnRlbnRUeXBlPSJhcHBsaWNhdGlvbi92bmQub3BlbnhtbGZvcm1hdHMtb2ZmaWNlZG9jdW1lbnQud29yZHByb2Nlc3NpbmdtbC5kb2N1bWVudC5tYWluK3htbCIvPgo8L1R5cGVzPlBLAwQUAAAAAAAAAAAAII1JGUoMAABKDAAAEQAAAHdvcmQvZG9jdW1lbnQueG1sPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8dzpkb2N1bWVudCB4bWxuczp3PSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvd29yZHByb2Nlc3NpbmdtbC8yMDA2L21haW4iPgogIDx3OmJvZHk+CiAgICA8dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5iZWZvcmU8L3c6dD48L3c6cj48L3c6cD48dzp0Ymw+PHc6dGJsUHI+PHc6dGJsVyB3Onc9IjAiIHc6dHlwZT0iYXV0byIvPjx3OnRibEJvcmRlcnM+PHc6dG9wIHc6dmFsPSJzaW5nbGUiIHc6c3o9IjQiIHc6Y29sb3I9ImF1dG8iLz48dzpsZWZ0IHc6dmFsPSJzaW5nbGUiIHc6c3o9IjQiIHc6Y29sb3I9ImF1dG8iLz48dzpib3R0b20gdzp2YWw9InNpbmdsZSIgdzpzej0iNCIgdzpjb2xvcj0iYXV0byIvPjx3OnJpZ2h0IHc6dmFsPSJzaW5nbGUiIHc6c3o9IjQiIHc6Y29sb3I9ImF1dG8iLz48dzppbnNpZGVIIHc6dmFsPSJzaW5nbGUiIHc6c3o9IjQiIHc6Y29sb3I9ImF1dG8iLz48dzppbnNpZGVWIHc6dmFsPSJzaW5nbGUiIHc6c3o9IjQiIHc6Y29sb3I9ImF1dG8iLz48L3c6dGJsQm9yZGVycz48L3c6dGJsUHI+PHc6dGJsR3JpZD48dzpncmlkQ29sIHc6dz0iMTQ0MCIvPjx3OmdyaWRDb2wgdzp3PSIxNDQwIi8+PHc6Z3JpZENvbCB3Onc9IjE0NDAiLz48L3c6dGJsR3JpZD48dzp0cj48dzp0Yz48dzp0Y1ByPjwvdzp0Y1ByPjx3OnA+PHc6cj48dzp0IHhtbDpzcGFjZT0icHJlc2VydmUiPlIxQzE8L3c6dD48L3c6cj48L3c6cD48L3c6dGM+PHc6dGM+PHc6dGNQcj48L3c6dGNQcj48dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5yZXBlYXQ8L3c6dD48L3c6cj48L3c6cD48L3c6dGM+PHc6dGM+PHc6dGNQcj48L3c6dGNQcj48dzpwPjwvdzpwPjwvdzp0Yz48L3c6dHI+PHc6dHI+PHc6dGM+PHc6dGNQcj48L3c6dGNQcj48dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5SMkMxPC93OnQ+PC93OnI+PC93OnA+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+c2Vjb25kIHBhcmFncmFwaCDml6XmnKzoqp4gZcyBPC93OnQ+PC93OnI+PC93OnA+PC93OnRjPjx3OnRjPjx3OnRjUHI+PC93OnRjUHI+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+cmVwZWF0PC93OnQ+PC93OnI+PC93OnA+PC93OnRjPjx3OnRjPjx3OnRjUHI+PC93OnRjUHI+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+UjJDMzwvdzp0PjwvdzpyPjwvdzpwPjwvdzp0Yz48L3c6dHI+PHc6dHI+PHc6dGM+PHc6dGNQcj48L3c6dGNQcj48dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5SM0MxPC93OnQ+PC93OnI+PC93OnA+PC93OnRjPjx3OnRjPjx3OnRjUHI+PC93OnRjUHI+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+UjNDMjwvdzp0PjwvdzpyPjwvdzpwPjwvdzp0Yz48dzp0Yz48dzp0Y1ByPjwvdzp0Y1ByPjx3OnA+PHc6cj48dzp0IHhtbDpzcGFjZT0icHJlc2VydmUiPlIzQzM8L3c6dD48L3c6cj48L3c6cD48L3c6dGM+PC93OnRyPjwvdzp0Ymw+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+YmV0d2Vlbjwvdzp0PjwvdzpyPjwvdzpwPjx3OnRibD48dzp0YmxQcj48dzp0YmxXIHc6dz0iMCIgdzp0eXBlPSJhdXRvIi8+PHc6dGJsQm9yZGVycz48dzp0b3Agdzp2YWw9InNpbmdsZSIgdzpzej0iNCIgdzpjb2xvcj0iYXV0byIvPjx3OmxlZnQgdzp2YWw9InNpbmdsZSIgdzpzej0iNCIgdzpjb2xvcj0iYXV0byIvPjx3OmJvdHRvbSB3OnZhbD0ic2luZ2xlIiB3OnN6PSI0IiB3OmNvbG9yPSJhdXRvIi8+PHc6cmlnaHQgdzp2YWw9InNpbmdsZSIgdzpzej0iNCIgdzpjb2xvcj0iYXV0byIvPjx3Omluc2lkZUggdzp2YWw9InNpbmdsZSIgdzpzej0iNCIgdzpjb2xvcj0iYXV0byIvPjx3Omluc2lkZVYgdzp2YWw9InNpbmdsZSIgdzpzej0iNCIgdzpjb2xvcj0iYXV0byIvPjwvdzp0YmxCb3JkZXJzPjwvdzp0YmxQcj48dzp0YmxHcmlkPjx3OmdyaWRDb2wgdzp3PSIxNDQwIi8+PHc6Z3JpZENvbCB3Onc9IjE0NDAiLz48dzpncmlkQ29sIHc6dz0iMTQ0MCIvPjwvdzp0YmxHcmlkPjx3OnRyPjx3OnRjPjx3OnRjUHI+PHc6Z3JpZFNwYW4gdzp2YWw9IjIiLz48L3c6dGNQcj48dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5ob3Jpem9udGFsPC93OnQ+PC93OnI+PC93OnA+PC93OnRjPjx3OnRjPjx3OnRjUHI+PHc6dk1lcmdlIHc6dmFsPSJyZXN0YXJ0Ii8+PC93OnRjUHI+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+dmVydGljYWw8L3c6dD48L3c6cj48L3c6cD48L3c6dGM+PC93OnRyPjx3OnRyPjx3OnRjPjx3OnRjUHI+PC93OnRjUHI+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+UjJDMTwvdzp0PjwvdzpyPjwvdzpwPjwvdzp0Yz48dzp0Yz48dzp0Y1ByPjwvdzp0Y1ByPjx3OnA+PHc6cj48dzp0IHhtbDpzcGFjZT0icHJlc2VydmUiPlIyQzI8L3c6dD48L3c6cj48L3c6cD48L3c6dGM+PHc6dGM+PHc6dGNQcj48dzp2TWVyZ2Ugdzp2YWw9ImNvbnRpbnVlIi8+PC93OnRjUHI+PHc6cC8+PC93OnRjPjwvdzp0cj48dzp0cj48dzp0Yz48dzp0Y1ByPjwvdzp0Y1ByPjx3OnA+PHc6cj48dzp0IHhtbDpzcGFjZT0icHJlc2VydmUiPlIzQzE8L3c6dD48L3c6cj48L3c6cD48L3c6dGM+PHc6dGM+PHc6dGNQcj48L3c6dGNQcj48dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5SM0MyPC93OnQ+PC93OnI+PC93OnA+PC93OnRjPjx3OnRjPjx3OnRjUHI+PC93OnRjUHI+PHc6cD48dzpyPjx3OnQgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+UjNDMzwvdzp0PjwvdzpyPjwvdzpwPjwvdzp0Yz48L3c6dHI+PC93OnRibD48dzpwPjx3OnI+PHc6dCB4bWw6c3BhY2U9InByZXNlcnZlIj5hZnRlcjwvdzp0PjwvdzpyPjwvdzpwPgogICAgPHc6c2VjdFByPjx3OnBnU3ogdzp3PSIxMTkwNiIgdzpoPSIxNjgzOCIvPjx3OnBnTWFyIHc6dG9wPSIxNDQwIiB3OnJpZ2h0PSIxNDQwIiB3OmJvdHRvbT0iMTQ0MCIgdzpsZWZ0PSIxNDQwIiB3OmhlYWRlcj0iNzIwIiB3OmZvb3Rlcj0iNzIwIiB3Omd1dHRlcj0iMCIvPjwvdzpzZWN0UHI+CiAgPC93OmJvZHk+Cjwvdzpkb2N1bWVudD5QSwECFAAUAAAAAAAAAAAAIBuG6i4BAAAuAQAACwAAAAAAAAAAAAAAAAAAAAAAX3JlbHMvLnJlbHNQSwECFAAUAAAAAAAAAAAA13mE6rgBAAC4AQAAEwAAAAAAAAAAAAAAAABXAQAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUABQAAAAAAAAAAAAgjUkZSgwAAEoMAAARAAAAAAAAAAAAAAAAAEADAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAwADALkAAAC5DwAAAAA=",
+  "nativeFiles": {
+    "word-native-table-1-cell-1.txt": "UjFDMQ0H",
+    "word-native-table-1-cell-3.txt": "DQc=",
+    "word-native-table-1-cell-2.txt": "cmVwZWF0DQc=",
+    "word-native-table-1-cell-6.txt": "UjJDMw0H",
+    "word-native-table-1-cell-7.txt": "UjNDMQ0H",
+    "word-native-tables.tsv": "VEFCTEUJMQkzCTMJOQpDRUxMCTEJMQkxCTEKQ0VMTAkxCTIJMQkyCkNFTEwJMQkzCTEJMwpDRUxMCTEJNAkyCTEKQ0VMTAkxCTUJMgkyCkNFTEwJMQk2CTIJMwpDRUxMCTEJNwkzCTEKQ0VMTAkxCTgJMwkyCkNFTEwJMQk5CTMJMwpUQUJMRQkyCTMJMwk3CkNFTEwJMgkxCTEJMQpDRUxMCTIJMgkxCTIKQ0VMTAkyCTMJMgkxCkNFTEwJMgk0CTIJMgpDRUxMCTIJNQkzCTEKQ0VMTAkyCTYJMwkyCkNFTEwJMgk3CTMJMwo=",
+    "word-native-table-1-cell-5.txt": "cmVwZWF0DQc=",
+    "word-native-table-1-cell-4.txt": "UjJDMQ1zZWNvbmQgcGFyYWdyYXBoIOaXpeacrOiqniBlzIENBw==",
+    "word-native-table-2-cell-7.txt": "UjNDMw0H",
+    "word-native-table-1-cell-9.txt": "UjNDMw0H",
+    "word-native-table-1-cell-8.txt": "UjNDMg0H",
+    "word-native-table-2-cell-6.txt": "UjNDMg0H",
+    "word-native-table-2-cell-4.txt": "UjJDMg0H",
+    "word-native-table-2-cell-5.txt": "UjNDMQ0H",
+    "word-native-readback.txt": "YmVmb3JlDVIxQzENB3JlcGVhdA0HDQcNB1IyQzENc2Vjb25kIHBhcmFncmFwaCDml6XmnKzoqp4gZcyBDQdyZXBlYXQNB1IyQzMNBw0HUjNDMQ0HUjNDMg0HUjNDMw0HDQdiZXR3ZWVuDWhvcml6b250YWwNB3ZlcnRpY2FsDQcNB1IyQzENB1IyQzINBw0HDQdSM0MxDQdSM0MyDQdSM0MzDQcNB2FmdGVyDQ==",
+    "word-native-table-2-cell-1.txt": "aG9yaXpvbnRhbA0H",
+    "word-native-table-2-cell-2.txt": "dmVydGljYWwNBw==",
+    "word-native-table-2-cell-3.txt": "UjJDMQ0H"
+  }
+}

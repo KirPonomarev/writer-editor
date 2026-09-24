@@ -913,7 +913,7 @@ function buildFullManuscriptProvisionalSelfParse({ source, revisionBridge, crypt
     ? source.localAuthorityCapsule.exportMap
     : (isPlainObjectValue(source?.exportMap) ? source.exportMap : {});
   const sceneProjection = typeof revisionBridge.visibleSceneTextsFromWordDocumentXml === 'function'
-    ? revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, exportMap)
+    ? revisionBridge.visibleSceneTextsFromWordDocumentXml(extracted.documentXml, exportMap, { cryptoPort, budgets: docxReviewReturnIntakeProductBudgets() })
     : { ok: false, code: 'RTK_V4_PUBLICATION_GATE_SCENE_PROJECTION_REQUIRED' };
   if (!sceneProjection.ok) {
     return {
@@ -1088,6 +1088,13 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
       publishAllowed: false,
       finalArtifactSha256,
     };
+  }
+  if (source.blocks?.some(block => block.formatIr?.table)
+    || finalParse.reviewIr?.formattingParagraphs?.some(paragraph => paragraph.table)) {
+    const tableTopology = revisionBridge.validateDocxReviewTableTopology?.(
+      finalParse.reviewIr?.formattingParagraphs, localAuthority.exportMap);
+    if (!tableTopology?.ok) return { ok: false, publishAllowed: false,
+      code: 'RTK_V4_PUBLICATION_TABLE_TOPOLOGY_MISMATCH', tableTopology };
   }
   if (source.commentExport) {
     const readback = compareCommentExportReadback(source.commentExport, finalParse.reviewIr?.commentThreads);
@@ -10588,6 +10595,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'list',
                 'blockKind',
                 'blockquoteDepth',
+                'table',
                 'sectionBreakType',
                 'sectionBreakTypeImplicit',
               ])

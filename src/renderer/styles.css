@@ -9651,3 +9651,27 @@ body.dark-theme .manual-map-workspace__minimap {
   padding-left: 8px;
   opacity: 0.9;
 }
+
+/* Authored document tables stay inside the existing editor page. */
+.tiptap table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+}
+.tiptap td,
+.tiptap th {
+  position: relative;
+  vertical-align: top;
+  border: 1px solid var(--border);
+  padding: 0.25em 0.5em;
+  overflow-wrap: anywhere;
+}
+.tiptap th {
+  background: var(--selected-bg);
+  font-weight: inherit;
+}
+.tiptap .selectedCell {
+  outline: 2px solid var(--a11y-focus-outline);
+  outline-offset: -2px;
+  background: var(--selected-bg);
+}

@@ -6,14 +6,15 @@ export const MANUSCRIPT_ROUTES=Object.freeze(['C1','C2','C3','C5']);
 export const MANUSCRIPT_PROFILES=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME']);
 export const C1_REVIEW_RECIPE='C1_REVIEW_RETURN';
 export const SINGLE_STRUCTURE_RECIPE='SINGLE_STRUCTURE_V2';
+export const TABLES_RECIPE='TABLES_V1';
 export function manuscriptRecipes(route){
  if(!MANUSCRIPT_ROUTES.includes(route))throw new Error('MANUSCRIPT_SCOPE');
- if(route==='C1')return ['DEFAULT',C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE];
+ if(route==='C1')return ['DEFAULT',C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE,TABLES_RECIPE];
  return route==='C2'||route==='C3'?['DEFAULT',SINGLE_STRUCTURE_RECIPE]:['DEFAULT'];
 }
 export function manuscriptUsesSafeCreate(route,recipe='DEFAULT'){
  if(!manuscriptRecipes(route).includes(recipe))throw new Error('MANUSCRIPT_RECIPE');
- return route==='C5'||(route==='C1'&&recipe==='DEFAULT');
+ return route==='C5'||(route==='C1'&&['DEFAULT',TABLES_RECIPE].includes(recipe));
 }
 export const UNICODE_PROBES=Object.freeze([
  '[normalization] NFC é Å ö; NFD e\u0301 A\u030a o\u0308; Hangul 한 한.',
@@ -46,6 +47,7 @@ export function manuscriptLinkBlock(){
 export function manuscriptFields(volume,route,recipe='DEFAULT'){
  if(!MANUSCRIPT_VOLUMES.includes(volume)||!MANUSCRIPT_ROUTES.includes(route))throw new Error('MANUSCRIPT_SCOPE');
  manuscriptUsesSafeCreate(route,recipe);
+ if(recipe===TABLES_RECIPE)return ['TABLES'];
  if(recipe===SINGLE_STRUCTURE_RECIPE){
   if(volume!=='SINGLE_SCENE')throw new Error('MANUSCRIPT_RECIPE_VOLUME');
   return ['NOVEL_SCENE_STRUCTURE'];
@@ -60,10 +62,21 @@ export function manuscriptFields(volume,route,recipe='DEFAULT'){
  return ['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES',...(route==='C1'||volume==='SINGLE_SCENE'?[]:['NOVEL_SCENE_STRUCTURE']),...(route==='C1'?[]:['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES'])];
 }
 export const MANUSCRIPT_CELLS=Object.freeze(MANUSCRIPT_VOLUMES.flatMap(volume=>MANUSCRIPT_ROUTES.filter(route=>route!=='C5'||volume!=='LARGE_DOCUMENT').flatMap(route=>MANUSCRIPT_PROFILES.flatMap(profile=>manuscriptRecipes(route).filter(recipe=>recipe!==SINGLE_STRUCTURE_RECIPE||volume==='SINGLE_SCENE').flatMap(recipe=>manuscriptFields(volume,route,recipe).map(field=>`${field}__${volume}__${route}__${profile}`))))));
+export function manuscriptTableBlocks(){
+ const cell=(value,colspan=1,rowspan=1)=>({type:'tableCell',attrs:{colspan,rowspan,colwidth:null},content:[paragraph(value)]});
+ const row=(...content)=>({type:'tableRow',content}),table=(...content)=>({type:'table',content});
+ const multiple=cell('[table-r2c1] multi');multiple.content.push(paragraph('[table-r2c1-p2] 日本語 e\u0301'));
+ return [table(row(cell('[table-r1c1] first'),cell('repeated cell'),cell('')),
+  row(multiple,cell('repeated cell'),cell('[table-r2c3] right')),
+  row(cell('[table-r3c1] left'),cell('[table-r3c2] middle'),cell('[table-r3c3] last'))),
+  paragraph('[between-tables]'),table(row(cell('[merged-horizontal]',2),cell('[merged-vertical]',1,2)),
+   row(cell('[merged-r2c1]'),cell('[merged-r2c2]')),
+   row(cell('[merged-r3c1]'),cell('[merged-r3c2]'),cell('[merged-r3c3]')))];
+}
 export function buildWordManuscriptFixture(volume,route,recipe='DEFAULT'){
  manuscriptFields(volume,route,recipe);
  const base=volume==='SINGLE_SCENE'?{minimumWords:0,scenes:[{paragraphs:[...WORD_VOLUME_TEXT_PROBES]}]}:buildWordVolumeFixture(volume);
- const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0){content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());if(!manuscriptUsesSafeCreate(route,recipe))content.splice(content.length-1,0,manuscriptLinkBlock());}const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'&&recipe!==SINGLE_STRUCTURE_RECIPE?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
+ const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0){content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());if(recipe===TABLES_RECIPE)content.splice(content.length-1,0,...manuscriptTableBlocks());if(!manuscriptUsesSafeCreate(route,recipe))content.splice(content.length-1,0,manuscriptLinkBlock());}const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'&&recipe!==SINGLE_STRUCTURE_RECIPE?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
  const forRound=round=>scenes.map(s=>s.paragraphs.map(p=>round?p.replace('sentinel alpha','sentinel round'+round):p));
  return {schemaVersion:'WORD_MANUSCRIPT_FIXTURE_V1',volume,route,minimumWords:base.minimumWords,requiredCycles:route==='C3'?5:1,scenes,forRound,paragraphsForRound:round=>forRound(round).flat(),sourceTokenForRound:round=>round===1?'sentinel alpha':'sentinel round'+(round-1),replacementTokenForRound:round=>'sentinel round'+round,imeText:'日本語.',imePrefix:'[ime] '};
 }

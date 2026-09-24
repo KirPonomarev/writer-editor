@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {performance} from 'node:perf_hooks';
 import {readOrderFile,stableOrderJson,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {loadDataPolicy,DATA_POLICY_SHA256,hash} from './rtk-interop-data-c1.mjs';
-import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,manuscriptUsesSafeCreate,C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE,UNICODE_PROBES,MANUSCRIPT_LINK_TARGETS,buildWordManuscriptFixture} from './rtk-interop-word-manuscript-fixtures.mjs';
+import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,manuscriptUsesSafeCreate,C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE,TABLES_RECIPE,UNICODE_PROBES,MANUSCRIPT_LINK_TARGETS,buildWordManuscriptFixture} from './rtk-interop-word-manuscript-fixtures.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-manuscript-readback.py';
@@ -32,6 +32,7 @@ export const MANUSCRIPT_HOPS=Object.freeze({
  C5:['YALKEN_SOURCE_EXPORT','GOOGLE_NATIVE_LIFECYCLE','GOOGLE_NATIVE_DOCX_EXPORT','YALKEN_RETURN_INTAKE'],
 });
 export const MANUSCRIPT_SUBCASES=Object.freeze({
+ TABLES:['cellTextPreserved','rowColumnOrderPreserved','mergedCellPolicyDeclared','tableStructureReadback','tableLossLedgered','tableRoundtripHashBound'],
  TEXT:['bodyTextReadbackIndependent','emptyParagraphsAccounted','lineBreakPolicyDeclared','paragraphBoundariesPreserved','plainTextPreserved','whitespaceEdgesPreserved'],
  ORDER:['blockOrderPreserved','providerTraversalStable','roundTripOrderStable','reorderDetected','sortKeysHashBound','orderDiffVisible'],
  UNICODE_IME_LOCALE:['unicodeNormalizationStable','bidiRunsAccounted','imeCompositionTextPreserved','localeProfileBound','fontScriptFallbackDeclared','unicodeReadbackIndependent'],
@@ -337,12 +338,12 @@ export function validateManuscriptVerifierPromotion({repoRoot=ROOT,runtimeIdenti
   return changed;
 }
 export function validateManuscriptRuns(runIds){
-  demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=38,'MANUSCRIPT_BATCH_RUN_SET');
+  demand(Array.isArray(runIds)&&runIds.length>=1&&runIds.length<=46,'MANUSCRIPT_BATCH_RUN_SET');
   const rows=runIds.map(runId=>{
     demand(typeof runId==='string','MANUSCRIPT_BATCH_RUN_ID');
     const m=/^ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__([A-Za-z0-9_-]{1,80})$/u.exec(runId);
     demand(m,'MANUSCRIPT_BATCH_RUN_ID');
-    const recipe=m[4].startsWith('structure-v2-')?SINGLE_STRUCTURE_RECIPE:m[4].startsWith('review-return-')?C1_REVIEW_RECIPE:'DEFAULT';
+    const recipe=m[4].startsWith('tables-v1-')?TABLES_RECIPE:m[4].startsWith('structure-v2-')?SINGLE_STRUCTURE_RECIPE:m[4].startsWith('review-return-')?C1_REVIEW_RECIPE:'DEFAULT';
     manuscriptFields(m[1],m[2],recipe);return {runId,volume:m[1],route:m[2],profile:m[3],recipe,cellId:runId.slice(0,runId.lastIndexOf('__'))};
   });
   demand(new Set(rows.map(x=>x.cellId+':'+x.recipe)).size===rows.length,'MANUSCRIPT_BATCH_DUPLICATE_JOURNEY');return rows;
@@ -387,7 +388,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    &&same(f.subcases,MANUSCRIPT_SUBCASES[f.field])&&same(f.requiredHops,MANUSCRIPT_HOPS[row.route])&&f.requiredCycles===cycles&&same(f.oracles,policy.requiredOracles),'MANUSCRIPT_FIELD_SCOPE');
   demand(same(Object.keys(f.stageProofs).sort(),stageNames),'MANUSCRIPT_STAGE_SET');
   for(const [name,n] of Object.entries(expected)){
-   const stage=f.stageProofs[name],qualified=row.recipe===C1_REVIEW_RECIPE||(row.recipe===SINGLE_STRUCTURE_RECIPE&&row.route==='C1')?batch.reviewReturnParagraphHashes[row.volume][n]:batch.paragraphHashes[row.volume][row.route][n];
+   const stage=f.stageProofs[name],qualified=row.recipe===TABLES_RECIPE?batch.tableParagraphHashes[row.volume][n]:row.recipe===C1_REVIEW_RECIPE||(row.recipe===SINGLE_STRUCTURE_RECIPE&&row.route==='C1')?batch.reviewReturnParagraphHashes[row.volume][n]:batch.paragraphHashes[row.volume][row.route][n];
    demand(stage.round===n&&stage.paragraphSha256===qualified.sha256&&stage.paragraphCount===qualified.count&&sha64(stage.sortKeysSha256),'MANUSCRIPT_STAGE_HASH');
   }
   demand(same(f.controls.positiveControls,['identity','split-xml-runs'])&&controls(f.controls.textMutants,TEXT_CONTROLS)
@@ -396,6 +397,17 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
   const u=f.unicodeProof;demand(same(u?.probes,UNICODE_PROBES)&&sha64(u?.compositionEventsSha256)&&u.locale?.language&&u.locale.languages.includes(u.locale.language)
    &&u.locale.intl?.locale&&u.locale.intl.timeZone&&u.fontLedger?.length===(generic?sceneCount+2:2*sceneCount+cycles)
    &&u.fontLedger.every(x=>x.fonts?.length&&x.fonts.reduce((s,f)=>s+f.glyphCount,0)>0&&x.scope.includes('Chromium'))&&u.limitations?.ime&&u.limitations?.fonts,'MANUSCRIPT_UNICODE_FONT_BINDING');
+  if(f.field==='TABLES'){
+   const t=f.tableProof,graphStages=['rounds/1/export','rounds/1/word','imported','saved','reopened','reexport','final-word-lifecycle'],nativeStages=['rounds/1/word-native','final-word-lifecycle-native'];
+   demand(row.recipe===TABLES_RECIPE&&row.route==='C1'&&t?.schemaVersion==='WORD_TABLES_INDEPENDENT_PROOF_V1'
+    &&sha64(t.expectedGraphSha256)&&t.expectedGraphSha256===batch.tableGraphHashes[row.volume]&&same(Object.keys(t.stages||{}).sort(),[...graphStages,...nativeStages].sort()),'MANUSCRIPT_TABLE_SCOPE');
+   for(const name of graphStages)demand(t.stages[name]?.graphSha256===t.expectedGraphSha256&&sha64(t.stages[name].artifactSha256)&&t.stages[name].tableCount===2,'MANUSCRIPT_TABLE_GRAPH');
+   for(const name of nativeStages)demand(t.stages[name]?.method==='INDEPENDENT_NATIVE_CELLS_AND_COMPLETE_BODY_V1'
+    &&sha64(t.stages[name].bodySha256)&&sha64(t.stages[name].indexSha256)&&t.stages[name].tableCount===2
+    &&t.stages[name].cellHashes?.length===16&&t.stages[name].cellHashes.every(sha64),'MANUSCRIPT_TABLE_NATIVE');
+   demand(controls(t.negativeControls,['drop-cell','swap-rows','swap-columns','remove-grid-span','break-vertical-merge','flatten-table'])
+    &&same(t.lossLedger,{lostCells:[],flattenedTables:[],changedMerges:[],profile:'RECTANGULAR_CELLS_WITH_GRIDSPAN_VMERGE_AND_LITERAL_PARAGRAPHS'}),'MANUSCRIPT_TABLE_CONTROLS');
+  }
   if(row.route==='C5'){
    const g=f.googleProof;
    demand(g?.transport==='DIRECT_LOCAL_PATH_NATIVE_CONVERSION_V2'&&g.cleanupVerified===true&&typeof g.documentId==='string'&&/^[A-Za-z0-9_-]{10,200}$/u.test(g.documentId)&&typeof g.revisionId==='string'&&g.revisionId.length>0

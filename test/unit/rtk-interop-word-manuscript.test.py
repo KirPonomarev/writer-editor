@@ -40,6 +40,37 @@ def metadata_parts():
   p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
  return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
 class ManuscriptOracle(unittest.TestCase):
+ def test_actual_word_table_bytes_native_cells_and_six_corruptions(self):
+  import base64
+  fixture=json.loads((ROOT/'test/fixtures/word-tables-native-v1.json').read_text())
+  decoded={k:base64.b64decode(v) for k,v in fixture['nativeFiles'].items()}
+  data=base64.b64decode(fixture['returnedDocxBase64']);ps,parts,doc=m.docx(data)
+  graphs=m.tables.canonical_graphs([fixture['canonical']])
+  self.assertEqual(m.tables.parse_body(doc)[1],graphs)
+  self.assertEqual(ps,m.paragraphs(fixture['canonical']))
+  native=lambda body,index,files:m.tables.native_readback(body,index,lambda name:files[name],graphs,len(ps),[])
+  self.assertEqual(native(decoded['word-native-readback.txt'],decoded['word-native-tables.tsv'],decoded),ps)
+  controls=m.tables.negative_controls(doc,graphs)
+  self.assertEqual([c['id'] for c in controls],m.tables.CONTROLS)
+  self.assertTrue(all(c['rejected'] for c in controls));self.assertEqual(len({c['sha256'] for c in controls}),6)
+  for kind in ['truncated-body','missing-empty-cell','wrong-row','swapped-cells','missing-cell-file']:
+   files=dict(decoded);body=decoded['word-native-readback.txt'];index=decoded['word-native-tables.tsv']
+   if kind=='truncated-body':body=body[:-1]
+   elif kind=='missing-empty-cell':body=body.replace(b'\r\x07',b'',1)
+   elif kind=='wrong-row':index=index.replace(b'CELL\t1\t1\t1\t1',b'CELL\t1\t1\t2\t1')
+   elif kind=='swapped-cells':files['word-native-table-1-cell-1.txt']=files['word-native-table-1-cell-2.txt']
+   else:del files['word-native-table-1-cell-1.txt']
+   with self.subTest(kind=kind),self.assertRaises((ValueError,KeyError)):native(body,index,files)
+
+ def test_table_recipe_is_independent_and_does_not_upgrade_review_routes(self):
+  for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
+   self.assertEqual(m.fields(volume,'C1','TABLES_V1'),['TABLES'])
+   docs=m.expected_docs(volume,'C1',recipe='TABLES_V1')
+   graphs=m.tables.canonical_graphs(docs);self.assertEqual(len(graphs),2)
+   self.assertEqual([len(t['cells']) for t in graphs],[9,7])
+  for route in ['C2','C3','C5']:
+   with self.assertRaises(ValueError):m.fields('SINGLE_SCENE',route,'TABLES_V1')
+
  def test_single_scene_structure_recipe_binds_chapter_path_and_raw_bookmark_ranges(self):
   for route in ['C1','C2','C3']:
    self.assertEqual(m.fields('SINGLE_SCENE',route,'SINGLE_STRUCTURE_V2'),['NOVEL_SCENE_STRUCTURE'])

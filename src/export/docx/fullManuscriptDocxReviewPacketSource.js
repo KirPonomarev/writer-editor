@@ -1,3 +1,4 @@
+const { tableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 
 const crypto = require('crypto');
@@ -183,6 +184,7 @@ function buildFormatIrParagraphs(scene) {
   }
   const result = [];
   let nextListNumId = 1;
+  let nextTableId = 0;
   const appendTextBlock = (node, context) => {
     const paragraphOrdinal = result.length;
     const attrs = isPlainObjectValue(node.attrs) ? node.attrs : {};
@@ -277,6 +279,14 @@ function buildFormatIrParagraphs(scene) {
   const visit = (node, context = { blockquoteDepth: 0, listStack: [] }) => {
     if (!isPlainObjectValue(node)) {
       throw makeError('FULL_MANUSCRIPT_FORMAT_IR_DOCUMENT_STRUCTURE_UNSUPPORTED', { sceneId: scene.sceneId });
+    }
+    if (node.type === 'table') {
+      if (context.blockquoteDepth || context.listStack.length) throw makeError('FULL_MANUSCRIPT_TABLE_NESTING_UNSUPPORTED');
+      for (const entry of tableParagraphs(node, `${scene.sceneId}:table-${nextTableId++}`)) {
+        appendTextBlock(entry.node, context);
+        result.at(-1).formatIr.table = entry.table;
+      }
+      return;
     }
     if (['paragraph', 'heading', 'codeBlock'].includes(node.type)) {
       appendTextBlock(node, context);

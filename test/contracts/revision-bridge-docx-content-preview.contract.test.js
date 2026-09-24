@@ -896,11 +896,11 @@ test('DOCX content preview: actual CRC mismatch fails closed before preview read
   }
 });
 
-test('DOCX content preview: table text is preserved while unsupported structures stay diagnostic-only', async () => {
+test('DOCX content preview: table topology is preserved while revisions stay diagnostic-only', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
     paragraphXml('Before'),
-    '<w:tbl><w:tr><w:tc>',
+    '<w:tbl><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc>',
     paragraphXml('Table text'),
     '</w:tc></w:tr></w:tbl>',
     '<w:ins>',
@@ -920,16 +920,20 @@ test('DOCX content preview: table text is preserved while unsupported structures
   ]);
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
-  assert.equal(importPreview.candidateCreatePlan.entries[0].content, 'Before\nTable text\nAfter');
+  const { parseObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const imported = parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content);
+  assert.equal(imported.text, 'Before\nTable text\nAfter');
+  assert.equal(imported.doc.content[1].type, 'table');
+  assert.equal(imported.doc.content[1].content[0].content[0].content[0].content[0].text, 'Table text');
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
     && item.category === 'table'
-  )), true);
+  )), false);
   assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Inserted text'), false);
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
     && item.tagName === 'w:tbl'
-  )), true);
+  )), false);
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
     && item.tagName === 'w:ins'
@@ -1914,7 +1918,7 @@ test('DOCX content preview: official WordprocessingML namespace aliases preserve
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(rawStoredDocxZip(documentXmlWithWordPrefix('wx', [
     '<wx:p><wx:r><wx:t>Alias before</wx:t><wx:tab/><wx:t>after</wx:t></wx:r></wx:p>',
-    '<wx:tbl><wx:tr><wx:tc>',
+    '<wx:tbl><wx:tblGrid><wx:gridCol/></wx:tblGrid><wx:tr><wx:tc>',
     paragraphXmlWithWordPrefix('wx', 'Alias table text'),
     '</wx:tc></wx:tr></wx:tbl>',
     '<wx:p>',
@@ -1936,7 +1940,7 @@ test('DOCX content preview: official WordprocessingML namespace aliases preserve
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
     && item.tagName === 'w:tbl'
-  )), true);
+  )), false);
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
     && item.tagName === 'w:bookmarkStart'
@@ -1948,14 +1952,14 @@ test('DOCX content preview: official WordprocessingML namespace aliases preserve
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
   assert.equal(
-    importPreview.candidateCreatePlan.entries[0].content,
+    (await import('../../src/renderer/documentContentEnvelope.mjs')).parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content).text,
     'Alias before\tafter\nAlias table text\nAlias bookmark',
   );
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_TABLE_NOT_IMPORTED'
     && item.category === 'table'
     && item.tagName === 'w:tbl'
-  )), true);
+  )), false);
   assert.equal(importPreview.lossReport.items.some((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
     && item.category === 'bookmark'
