@@ -1533,10 +1533,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "57bef0907d1048d720779e3c52b0dac740294b7d68718ef6d88fdf4b8e7bae8d",
+      "sha256": "5be7da4a0e6fb37460ad2d98e26bf41f4e4dea531191aa20d6335a89f29431c8",
       "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
-      "approvedAtUtc": "2026-09-24T03:43:30.175Z",
-      "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
+      "approvedAtUtc": "2026-09-24T04:12:10.597Z",
+      "rationale": "Owner-authorized exact-byte repair of generated C2A approval artifact after the changed C4 diagnostic contract test. Only the C1B inventory digest changes; static C2A authority metadata and all other generated approval rows are preserved. No cell credit or gate bypass.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -1945,6 +1945,15 @@
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
       "approvedAtUtc": "2026-09-24T02:14:40.000Z",
       "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "57bef0907d1048d720779e3c52b0dac740294b7d68718ef6d88fdf4b8e7bae8d",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
+      "approvedAtUtc": "2026-09-24T03:43:30.175Z",
+      "rationale": "Owner-authorized exact-byte CI closure for the C4 typed writer diagnostic contract and generated R24 inventory approval chain. Preserves all test files, required lanes, skip policy, frozen 1120-cell denominator and native physical acceptance gates; this metadata repair adds zero accepted cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
