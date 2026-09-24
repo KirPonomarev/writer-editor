@@ -2164,6 +2164,40 @@ export function createMemoizedGit(git,{requireImmutable=false,identityProvider=(
 let activeDefaultGitMemo=null;
 const defaultGit=(args,options={})=>activeDefaultGitMemo?activeDefaultGitMemo(args,options):rawDefaultGit(args,options);
 const gitText=(git,args)=>String(git(args,{encoding:'utf8'})).trim();
+// Immutable delivery candidates from the previously verified full certification
+// result. Each hint is useful only after a fresh ancestry and exact-delta check;
+// injected Git implementations retain the exhaustive search used by tests.
+const HISTORICAL_CANDIDATE_PIN_BY_BASE_SHA=Object.freeze({
+  'c12cbe14a6b1e52d0139ab1968d35a61c4ba4861':'389dbc5e39a5d541b64a8187921c24ca5bf43876',
+  '9f23ef25ed239da58001b1744ef575760d32aa1f':'3e3703511f0c87e49d7ff87315cae031a77737d6',
+  '7783156ad6ae6e9df5d0fccde88697f20cc972ef':'2d5c504b8e56d6d685239878900078c316fd8a7c',
+  '496efb3e52bffae4ae6083b290638496902823a7':'87072a10c690b99ffb25f20516ebfd410377e2fb',
+  '984b12ee237a892b09443cd661176ea0515b3fe1':'bed937e81b355b5c2faec7b5245bdc22081a7ddf',
+  'd816f9cab446509c1ed84ba3c4e9d32dcf5d6fe2':'22d02b7dee226eaa35756705901fcbaf690c40f3',
+  '7aefe4d8fa020291faa8957ae8c0f5b4a7e6b869':'da44a0947a5476d367cdf53287c68ffd128202ce',
+  '152c3edb56e303790f78fad6949c1adf20581bf5':'f7df7f0902821b88c1ee6c80856b3c9adc1092a2',
+  'f7df7f0902821b88c1ee6c80856b3c9adc1092a2':'65fa9304576f98d517e5d653ec2958eca2927599',
+  '700722463dd5facea1a2c231796f9627f30360a5':'fd99fe11dc56bbaf60cc6b6c62c746f7fcc03ac6',
+  '22d02b7dee226eaa35756705901fcbaf690c40f3':'4521ba15f772230c581e5e15c943cb322deb4de7',
+  '071daa0fa544accd0d1f038175780036145372aa':'d816f9cab446509c1ed84ba3c4e9d32dcf5d6fe2',
+  '2d5c504b8e56d6d685239878900078c316fd8a7c':'7ea8f61dc45bdb3105f15be73d1c14424e20c4ca',
+  '116f7d4efe75dbf94199f85ce85901eb866c3310':'bfa2f6c69374ae57d5be9ee0685c2110e1416095',
+  '7ea8f61dc45bdb3105f15be73d1c14424e20c4ca':'40a68820c913058839afde665bb74c65cd8ac53e',
+  '40a68820c913058839afde665bb74c65cd8ac53e':'def4754a189c8434014f08e9d4339b5a887ca7b5',
+  '4aa9317c57cf2ed18db74c9c231687f43c344e94':'7a6ec5c1f6804e7184d61bb751d31dca012387fc',
+  '69dc3872cc4cc0f46bc450cc4f89ddf8da44ecb6':'81edb707b5a560a9d3d6cf087fe08ab089179919',
+  '8689932119712ca6b82cb2072456a229c79515d2':'732a83fa679c41715e81dee5c5c6849a3a41b2e2',
+  '4521ba15f772230c581e5e15c943cb322deb4de7':'442bdbef6a153b14fec5c2d354bccd8f97a62809',
+});
+function pinnedHistoricalCandidateSha(git,requested,e){
+  if(git!==defaultGit)return null;
+  const pinned=HISTORICAL_CANDIDATE_PIN_BY_BASE_SHA[e.baseSha];
+  if(!pinned)return null;
+  try{git(['merge-base','--is-ancestor',pinned,requested],{encoding:null});}catch{return null;}
+  const changed=gitText(git,['diff','--name-only',`${e.baseSha}..${pinned}`]).split('\n').filter(Boolean).sort();
+  assert(JSON.stringify(changed)===JSON.stringify(e.admittedPaths),'E_HISTORICAL_CANDIDATE_PIN_DELTA',e.baseSha);
+  return pinned;
+}
 const objectBytes=(git,sha,artifactPath)=>git(['show',`${sha}:${validatePath(artifactPath)}`],{encoding:null});
 const evaluationTree=(git,sha)=>gitText(git,['rev-parse',`${sha}^{tree}`]);
 const ensureEvaluationObject=(git,sha)=>{
@@ -4717,6 +4751,8 @@ function resolvePre00fCurrentHeadPlanDeliveryReconciliationCandidateSha(git,reso
     }catch{return false;}
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_PRE00F_CURRENT_DELIVERY_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -5343,6 +5379,8 @@ function resolveR24ObsExportDocxCommandBridgeOuterFailCandidateSha(git,resolvedC
   const changedFor=(sha)=>gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
   const isExact=(sha)=>JSON.stringify(changedFor(sha))===JSON.stringify(e.admittedPaths);
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_OBS_EXPORT_DOCX_BRIDGE_DELIVERY_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -5408,6 +5446,8 @@ function resolveR24ReviewPreviewCommentTopologyCandidateSha(git,resolvedCandidat
   const changedFor=(sha)=>gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
   const isExact=(sha)=>JSON.stringify(changedFor(sha))===JSON.stringify(e.admittedPaths);
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_REVIEW_PREVIEW_COMMENT_TOPOLOGY_DELIVERY_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -5450,6 +5490,8 @@ function resolveR24EmbeddedFontAdmissionCandidateSha(git,resolvedCandidate,e){
     }catch{return false;}
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_EMBEDDED_FONT_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -5506,6 +5548,8 @@ function resolveR24Interop100DenominatorAdmissionHardeningCandidateSha(git,resol
     }catch{return false;}
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_INTEROP100_DENOMINATOR_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -5556,6 +5600,8 @@ export function verifyR24Interop100DenominatorAdmissionHardeningPostEvaluationEx
 function resolveDocxNotificationCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
+  const pinned = pinnedHistoricalCandidateSha(git, requested, e);
+  if (pinned) return pinned;
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_DOCX_NOTIFICATION_EXACT_ADMITTED_DELTA');
@@ -5564,6 +5610,8 @@ function resolveDocxNotificationCandidate(git, requested, e) {
 function resolveR24CommandPaletteVisibleCommandsCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
+  const pinned = pinnedHistoricalCandidateSha(git, requested, e);
+  if (pinned) return pinned;
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_COMMAND_PALETTE_VISIBLE_COMMANDS_EXACT_ADMITTED_DELTA');
@@ -5572,6 +5620,8 @@ function resolveR24CommandPaletteVisibleCommandsCandidate(git, requested, e) {
 function resolveTextSingleSceneC1SourceRuntimeCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
+  const pinned = pinnedHistoricalCandidateSha(git, requested, e);
+  if (pinned) return pinned;
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_EXACT_ADMITTED_DELTA');
@@ -5580,6 +5630,8 @@ function resolveTextSingleSceneC1SourceRuntimeCandidate(git, requested, e) {
 function resolveC2PackagedDocxReviewRoundtripProfileExpansionCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
+  const pinned = pinnedHistoricalCandidateSha(git, requested, e);
+  if (pinned) return pinned;
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_EXACT_ADMITTED_DELTA');
@@ -5588,6 +5640,8 @@ function resolveC2PackagedDocxReviewRoundtripProfileExpansionCandidate(git, requ
 function resolveR24C4GoogleReviewAuthorityCapsuleCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
+  const pinned = pinnedHistoricalCandidateSha(git, requested, e);
+  if (pinned) return pinned;
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_R24_C4_GOOGLE_REVIEW_AUTHORITY_CAPSULE_EXACT_ADMITTED_DELTA');
@@ -5785,6 +5839,8 @@ export function verifyR24C4GoogleReviewAuthorityCapsulePostEvaluationException({
 function resolveR24X01IdempotentContractRecoveryCandidate(git, requested, e) {
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
   if (exact(requested)) return requested;
+  const pinned = pinnedHistoricalCandidateSha(git, requested, e);
+  if (pinned) return pinned;
   const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
   for (const sha of ancestors.reverse()) if (exact(sha)) return sha;
   fail('E_R24_X01_IDEMPOTENT_EXACT_ADMITTED_DELTA');
@@ -5870,7 +5926,7 @@ export function verifyFSubstratePostEvaluationException({ candidateSha = 'HEAD',
   assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_F_SUBSTRATE_BASE_TREE');
   try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_F_SUBSTRATE_BASE_ANCESTRY'); }
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
-  let candidate = exact(requested) ? requested : null;
+  let candidate = exact(requested) ? requested : pinnedHistoricalCandidateSha(git, requested, e);
   if (!candidate) {
     const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
     for (const sha of ancestors.reverse()) if (exact(sha)) { candidate = sha; break; }
@@ -5962,7 +6018,7 @@ export function verifyEPlanPredecessorPostEvaluationException({ candidateSha = '
   assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_PLAN_PREDECESSOR_BASE_TREE');
   try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_PLAN_PREDECESSOR_BASE_ANCESTRY'); }
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
-  let candidate = exact(requested) ? requested : null;
+  let candidate = exact(requested) ? requested : pinnedHistoricalCandidateSha(git, requested, e);
   if (!candidate) {
     const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
     for (const sha of ancestors.reverse()) if (exact(sha)) { candidate = sha; break; }
@@ -6007,7 +6063,7 @@ export function verifyCurrentClosureSelectorPostEvaluationException({ candidateS
   assert(evaluationTree(git, e.baseSha) === e.baseTree, 'E_CURRENT_SELECTOR_BASE_TREE');
   try { git(['merge-base', '--is-ancestor', e.baseSha, requested], { encoding: null }); } catch { fail('E_CURRENT_SELECTOR_BASE_ANCESTRY'); }
   const exact = sha => JSON.stringify(gitText(git, ['diff', '--name-only', `${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort()) === JSON.stringify(e.admittedPaths);
-  let candidate = exact(requested) ? requested : null;
+  let candidate = exact(requested) ? requested : pinnedHistoricalCandidateSha(git, requested, e);
   if (!candidate) {
     const ancestors = gitText(git, ['rev-list', '--ancestry-path', '--reverse', `${e.baseSha}..${requested}`]).split('\n').filter(Boolean);
     for (const sha of ancestors.reverse()) if (exact(sha)) { candidate = sha; break; }
@@ -6239,6 +6295,8 @@ function resolveR24O01O08SemanticOracleHardeningCandidateSha(git,resolvedCandida
     }catch{return false;}
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_O01_O08_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -6329,6 +6387,8 @@ function resolveR24Rcv00fDeliveryReconciliationCandidateSha(git,resolvedCandidat
   const changedFor=(sha)=>gitText(git,['diff','--name-only',`${e.baseSha}..${sha}`]).split('\n').filter(Boolean).sort();
   const isExact=(sha)=>JSON.stringify(changedFor(sha))===JSON.stringify(e.admittedPaths);
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_RCV00F_DELIVERY_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -6367,6 +6427,8 @@ function resolveR24P03RelationshipGraphValidationCandidateSha(git,resolvedCandid
     }catch{return false;}
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_P03_RELATIONSHIP_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -6408,6 +6470,8 @@ function resolveR24Ops03SemanticE0ClassifierCandidateSha(git,resolvedCandidate,e
     }catch{return false;}
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_OPS03_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -6446,6 +6510,8 @@ function resolveR24Rcv00hMinimalE0ParserPurityCandidateSha(git,resolvedCandidate
     return JSON.stringify(changed)===JSON.stringify(e.admittedPaths);
   };
   if(isExact(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned)return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_RCV00H_CANDIDATE_SEARCH');}
   for(const sha of [...candidates].reverse())if(isExact(sha))return sha;
@@ -6507,6 +6573,9 @@ function resolveR24W0CurrentStateClosureCandidateSha(git,resolvedCandidate,e){
       return false;
     }
   };
+  if(hasExactDelta(resolvedCandidate)&&hasSelfConsistentImplementationClaim(resolvedCandidate))return resolvedCandidate;
+  const pinned=pinnedHistoricalCandidateSha(git,resolvedCandidate,e);
+  if(pinned&&hasSelfConsistentImplementationClaim(pinned))return pinned;
   let candidates=[];
   try{candidates=gitText(git,['rev-list','--ancestry-path','--reverse',`${e.baseSha}..${resolvedCandidate}`]).split('\n').filter(Boolean);}catch{fail('E_R24_W0_CURRENT_STATE_CANDIDATE_SEARCH');}
   const exactCandidates=[...new Set([resolvedCandidate,...candidates].filter(hasExactDelta))];
