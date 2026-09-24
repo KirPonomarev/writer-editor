@@ -149,13 +149,11 @@ export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
   'docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json',
   'scripts/ops/r24/corrective/c2a-effective-certification.mjs',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
-  'scripts/ops/rtk-interop-word-manuscript-batch.mjs',
   'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs',
   'scripts/ops/r24/run-c1c-contract-shard.mjs',
   'test/fixtures/r24-fixture-publication-cache.mjs',
   'test/contracts/review-bridge-product-discoverability-labels.contract.test.js',
-  'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs',
-  'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js'
+  'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs'
 ]);
 // The Data C1 delivery predates the C4 Lab code repair. Admit this successor
 // only while all three candidate Git blobs retain the reviewed exact bytes.
@@ -168,6 +166,15 @@ export const R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR=Object.freeze({
     {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3'},
     {path:'scripts/ops/rtk-interop-c4-google-office-readback.py',sha256:'384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53'},
     {path:'test/unit/rtk-interop-c4-google-office.test.py',sha256:'bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a'},
+  ]),
+});
+// A verifier-only successor after C4 must retain these exact reviewed blobs.
+export const R24_INTEROP_WORD_PROMOTION_SUCCESSOR=Object.freeze({
+  baseSha:'a4d186e026af0d532c73d2108e5369252302574b',
+  baseTree:'5a5fcda93702460f6600dc2e67dc8e08731a0a18',
+  bindings:Object.freeze([
+    {path:'scripts/ops/rtk-interop-word-manuscript-batch.mjs',sha256:'31d0eaf56d6097720029af84f5a683ff22e4852eacdee67d9395125930421319'},
+    {path:'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',sha256:'5b9438128c83fae963c46c8c1aca03ff795ee951f29986635b55e469ad5283fa'},
   ]),
 });
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([
@@ -1982,6 +1989,22 @@ export function verifyR24InteropC4LabCodePinSuccessor({candidateSha='HEAD',git=d
       {path:'test/m0-audit-repair.test.mjs',sha256:'bbbfa513a373fa5e2fb23b10a8b17eca103c477aff1e596e67f940abb4174770'}
     ]),'E_INTEROP_C4_SUCCESSOR_LAB_CODE_BINDING');
   return{status:'PASS',baseSha:expectation.baseSha,candidateSha:candidate,admittedPaths:bindings.map(binding=>binding.path),bindings,cellAcceptanceAuthority:false};
+}
+export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
+  const expectation=R24_INTEROP_WORD_PROMOTION_SUCCESSOR;
+  const candidate=gitText(git,['rev-parse',candidateSha]);
+  assert(evaluationTree(git,expectation.baseSha)===expectation.baseTree,'E_INTEROP_WORD_PROMOTION_BASE_TREE');
+  try{git(['merge-base','--is-ancestor',expectation.baseSha,candidate],{encoding:null});}
+  catch{fail('E_INTEROP_WORD_PROMOTION_ANCESTRY');}
+  const bindings=expectation.bindings.map(binding=>{
+    let bytes;
+    try{bytes=objectBytes(git,candidate,binding.path);}
+    catch{fail('E_INTEROP_WORD_PROMOTION_MISSING',binding.path);}
+    assert(h(bytes)===binding.sha256,'E_INTEROP_WORD_PROMOTION_PIN',binding.path);
+    return{path:binding.path,sha256:binding.sha256};
+  });
+  return{status:'PASS',baseSha:expectation.baseSha,candidateSha:candidate,
+    admittedPaths:bindings.map(binding=>binding.path),bindings,cellAcceptanceAuthority:false};
 }
 
 const h=(bytes)=>crypto.createHash('sha256').update(bytes).digest('hex');
@@ -7769,6 +7792,10 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   const c4LabCodePinSuccessor=allowAuditCycle2Admission&&c4LabCodePinChanged
     ? verifyR24InteropC4LabCodePinSuccessor({candidateSha:resolvedCandidate,git}) : null;
   for(const admittedPath of (c4LabCodePinSuccessor?.admittedPaths??[]))allowedPaths.add(admittedPath);
+  const wordPromotionChanged=changed.includes('test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js');
+  const wordPromotionSuccessor=allowAuditCycle2Admission&&wordPromotionChanged
+    ? verifyR24InteropWordPromotionSuccessor({candidateSha:resolvedCandidate,git}) : null;
+  for(const admittedPath of (wordPromotionSuccessor?.admittedPaths??[]))allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);

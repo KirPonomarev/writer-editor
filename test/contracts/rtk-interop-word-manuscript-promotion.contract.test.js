@@ -25,18 +25,21 @@ test('Manuscript promotion admits only the exact inspected C4 successor blobs', 
   const runtimeIdentity = identity();
   const {validateManuscriptVerifierPromotion: check, MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS: bindings} =
     await import(pathToFileURL(path.join(ROOT, 'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
-  assert.equal(bindings.length, 3);
+  assert.equal(bindings.length, 2);
   for (const binding of bindings) {
     const target = path.join(root, binding.path);
     await fs.mkdir(path.dirname(target), {recursive: true});
     await fs.copyFile(path.join(ROOT, binding.path), target);
     assert.equal(digest(await fs.readFile(target)), binding.sha256);
   }
+  const certificationCarrier = 'scripts/ops/r24/corrective/post-audit-certification-set.mjs';
+  await fs.mkdir(path.join(root, path.dirname(certificationCarrier)), {recursive: true});
+  await fs.copyFile(path.join(ROOT, certificationCarrier), path.join(root, certificationCarrier));
   await fs.writeFile(path.join(root, 'oracle.txt'), 'after\n');
   git('add', '.');
   git('commit', '-m', 'exact successor');
   assert.deepEqual(check({repoRoot: root, runtimeIdentity, verifierIdentity: identity(), allowedPaths: ['oracle.txt']}),
-    ['oracle.txt', ...bindings.map(binding => binding.path)].sort());
+    ['oracle.txt', certificationCarrier, ...bindings.map(binding => binding.path)].sort());
   await fs.appendFile(path.join(root, bindings[1].path), '\n// altered after exact admission\n');
   git('add', '.');
   git('commit', '-m', 'alter pinned product code');

@@ -1501,15 +1501,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "0228910a6a7a454521d79436cd371374a6e86478e24285c9fa65c2feaad7ac81",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T07:45:19Z",
-      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "7263fccf8abe712cde64a4818cc8c6027ca965965ba60890d6887287af9f3fe5",
       "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
@@ -1519,29 +1510,38 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "5b9438128c83fae963c46c8c1aca03ff795ee951f29986635b55e469ad5283fa",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T08:00:26Z",
+      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "43ebb50d4b4c0d7ddffd906015c5a8997b6d147dc157903a1e6c7eadbb156ddd",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T07:45:19Z",
-      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
+      "sha256": "8e965386d045290810471fd2333c7b77cf2ce0a5698b0b3f9d5fabff5b9671f0",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T08:00:26Z",
+      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "14a49451e8db6e074d30ca860938f997c9cfcfcd45df129776494352487c8acc",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_CLOSURE_20260924",
-      "approvedAtUtc": "2026-09-24T07:56:49Z",
-      "rationale": "Exact-byte admission of non-mutating Word manuscript verifier and its negative contract as post-evaluation proof carriers. The verifier pins inspected C4 successor bytes; product runtime, frozen denominator and independent physical oracles are unchanged. Zero cell credit before merged-head aggregate verification.",
+      "sha256": "2e8fef80e5abd010f062b9c9e55b409f7b934b66a83ace038872b6325f9df0e3",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T08:00:26Z",
+      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "sha256": "3a7fe36fcebbd22994000de512d6a7d8250a558531f52f8d96d623223bca1c38",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_CLOSURE_20260924",
-      "approvedAtUtc": "2026-09-24T07:56:49Z",
-      "rationale": "Exact-byte admission of non-mutating Word manuscript verifier and its negative contract as post-evaluation proof carriers. The verifier pins inspected C4 successor bytes; product runtime, frozen denominator and independent physical oracles are unchanged. Zero cell credit before merged-head aggregate verification.",
+      "sha256": "31d0eaf56d6097720029af84f5a683ff22e4852eacdee67d9395125930421319",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
+      "approvedAtUtc": "2026-09-24T08:00:26Z",
+      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
