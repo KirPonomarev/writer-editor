@@ -1388,15 +1388,6 @@
       "sha256": "e1b2c65e0a1a76599ce7824b02ca69b276f0dd8d82dfdc1de395f241dac04523"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f93a8518248d00a90e273e1130ea26232cdcb6eb4f8caa4860de2dd0b4bd0eec",
-      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
-      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
-      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "2b2546b998706608def8be3ed2968dfd1940f27eb5bf5fbd031e3e9a1ef33c08",
       "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
@@ -1483,6 +1474,15 @@
       "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
       "approvedAtUtc": "2026-09-24T00:34:37.419Z",
       "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a55181a3aa73416b5f392a3dbfb9e4853c0b08d54e0ee33dfe4f4132086e9a6b",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:41:35.186Z",
+      "rationale": "Owner-authorized exact-byte inventory binding for the changed W-STRUCT contract test. Generated inventory changes only one SHA; 1490 test files, all required lanes, skip policy and frozen 1120-cell denominator remain unchanged. No automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -1744,6 +1744,15 @@
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "sha256": "e5cfaa22bb30cb7fd7ddda5c31f437b0b67c68de50c309e9503710d6d185d0f9",
+      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
+      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
+      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f93a8518248d00a90e273e1130ea26232cdcb6eb4f8caa4860de2dd0b4bd0eec",
       "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
       "approvedAtUtc": "2026-09-23T23:20:44.295Z",
       "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
