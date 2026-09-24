@@ -999,6 +999,13 @@ function isInertHyperlinkRelationship(item) {
   return lower.startsWith('http://') || lower.startsWith('https://');
 }
 
+function isInertGoogleOfficeCustomXmlRelationship(item) {
+  return item.partName === 'word/_rels/document.xml.rels'
+    && item.type === 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml'
+    && item.target === '../customXML/item1.xml'
+    && (item.targetMode === '' || item.targetMode.toLowerCase() === 'internal');
+}
+
 function parseRelationshipParts(parts, budgets, cryptoPort) {
   const relationships = [];
   const reasons = [];
@@ -1018,6 +1025,13 @@ function parseRelationshipParts(parts, budgets, cryptoPort) {
       if (isActive) {
         relationships.push(item);
         reasons.push(reason('RTK_HOSTILE_PACKAGE_BLOCKED', `${partName}.${item.id}`, 'Active relationship is blocked.', item));
+        continue;
+      }
+      // Stage02 has already resolved this exact internal target within the
+      // package and checked that the part exists. This custom XML is advisory
+      // only; it cannot provide a locator, HMAC verification, or write power.
+      if (isInertGoogleOfficeCustomXmlRelationship(item)) {
+        relationships.push({ ...item, inert: true });
         continue;
       }
       if (item.target.includes('..') || item.target.startsWith('/')) {

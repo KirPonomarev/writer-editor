@@ -1305,6 +1305,10 @@ function docxZipKnownSupportPartName(name) {
     DOCX_ZIP_INVENTORY_KNOWN_PARTS.includes(name)
     || /^customXml\/item\d+\.xml$/u.test(name)
     || /^customXml\/itemProps\d+\.xml$/u.test(name)
+    // Google Office mode preserves the advisory custom XML payload but emits
+    // this capitalization. ZIP identity remains case-sensitive; the hostile
+    // gate also rejects case-folded duplicate entry names before parsing.
+    || /^customXML\/item(?:Props)?1\.xml$/u.test(name)
   );
 }
 

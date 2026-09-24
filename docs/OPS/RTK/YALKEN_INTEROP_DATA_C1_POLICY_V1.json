@@ -138,7 +138,12 @@
     "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
     "scripts/ops/rtk-interop-c4-google-office-readback.py",
     "test/contracts/rtk-interop-c4-google-office.contract.test.js",
-    "test/unit/rtk-interop-c4-google-office.test.py"
+    "test/unit/rtk-interop-c4-google-office.test.py",
+    "docs/tasks/2026-09-24--c4-office-raw-return-compat.md",
+    "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+    "src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs",
+    "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+    "test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -358,7 +363,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "03affdad01c35dec2fb95e91936ca65e5810482dd1453f457e3276e46e0354f7"
+        "sha256": "d64d907945c85869ee54ed26bfe4f37adaa98242920c4a18b3556679f44923ff"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -394,7 +399,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "8229a7c8c4786a4a00ae88ab7ef311255eedab71fae9d66249a4cbf0dd77eec2"
+        "sha256": "8df112592b38faed8da43dc0c3ba717f32a372446f99a56e64baa0144ca057bc"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -474,7 +479,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "fa9d096da34f29a915de815931e9c7225da69689da35daeb3ffc7c55488e3c4e"
+        "sha256": "8c65c18329bac0bb3c71dde082fbd8dbd2adb1862e4bac7ebb4dc89957a00861"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -494,7 +499,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "0192de4fc2b5941569ed076eb2d70d65df310bc044de8c20d5d2db5227db297c"
+        "sha256": "1ab3bc1b9d83b443d83d2010221bfcc944f4c6e99ebc2b1f5e6ff49bae438759"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -610,7 +615,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "b3cd9bac2f596372a96ab2ab7311261e07b534ad48aec649a063409e00f03add"
+        "sha256": "1fb273e5d2537a77e4223bb68cfd3550d6b0e1b8a2caf9850f699f03ca9b4107"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -662,7 +667,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-        "sha256": "4193c24f2d8d6e24a42d021da079c73a951af07f78dab83f6b06deda970c81a4"
+        "sha256": "abaedc1986354909df8c7bb97d5a161019aa18e009d1aff2a335b4525270242e"
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",

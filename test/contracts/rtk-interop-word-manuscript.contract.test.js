@@ -144,6 +144,31 @@ test('Full-manuscript DOCX metadata is dual-carried, signed, parsed independentl
   value=>value.duplicateCustomPropertyNames=['YALKEN_PROJECT_ID'],
  ];
  for(const mutate of mutations){const changed=structuredClone(metadata);mutate(changed);assert.equal(verify(changed).ok,false);}
+ const officeCoreLoss=structuredClone(metadata);
+ officeCoreLoss.coreProtectedProperties.projectId='';
+ officeCoreLoss.coreProtectedProperties.title='';
+ officeCoreLoss.lossLedger.missingCoreProtectedProperties=['projectId','title'];
+ assert.equal(verify(officeCoreLoss).ok,false);
+ const verifyOffice=value=>validateFullManuscriptDocumentMetadataReturn({
+   expected:source.documentMetadata,returned:value,
+   signedDigest:payload.documentMetadataDigest,allowAdvisoryCoreOmissions:true,
+ });
+ const degraded=verifyOffice(officeCoreLoss);
+ assert.equal(degraded.ok,true);
+ assert.equal(degraded.status,'VERIFIED_SIGNED_DOCUMENT_METADATA_WITH_CORE_OMISSIONS');
+ assert.equal(degraded.proof.coreMetadataPreserved,false);
+ assert.deepEqual(degraded.proof.coreOmissions,['projectId','title']);
+ for(const mutate of [
+   value=>value.coreProtectedProperties.projectId='forged-project',
+   value=>value.coreProtectedProperties.creator='forged-creator',
+   value=>value.coreProtectedProperties.createdAtUtc='2026-09-18T01:03:00Z',
+   value=>value.publicCustomProperties.YALKEN_PROJECT_ID='forged-project',
+   value=>value.duplicateCorePropertyNames=['title'],
+ ]){const changed=structuredClone(officeCoreLoss);mutate(changed);assert.equal(verifyOffice(changed).ok,false);}
+ assert.equal(validateFullManuscriptDocumentMetadataReturn({
+   expected:source.documentMetadata,returned:officeCoreLoss,
+   signedDigest:'sha256:'+'0'.repeat(64),allowAdvisoryCoreOmissions:true,
+ }).ok,false);
  assert.equal(validateFullManuscriptDocumentMetadataReturn({expected:source.documentMetadata,returned:metadata,signedDigest:'sha256:'+'0'.repeat(64)}).ok,false);
  const withUnknown=buildDocxReviewPacketBuffer({...source,customProperties:[...source.customProperties,{name:'WORD_PROVIDER_PROPERTY',value:'account me'}]});
  const parsedUnknown=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:withUnknown},{cryptoPort});

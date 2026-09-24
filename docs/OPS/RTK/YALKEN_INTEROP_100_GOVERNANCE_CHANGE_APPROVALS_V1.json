@@ -65,31 +65,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T02:11:05Z",
-      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
-      ],
-      "filePath": "src/io/revisionBridge/index.mjs",
-      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery distinguishes an implicit relocated next-page carrier from an explicit Word section boundary and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound for the changed files; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
-      "sha256": "8229a7c8c4786a4a00ae88ab7ef311255eedab71fae9d66249a4cbf0dd77eec2"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.844Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "fa9d096da34f29a915de815931e9c7225da69689da35daeb3ffc7c55488e3c4e"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-10T00:30:07Z",
       "approvedBy": "owner-directive:YALKEN_INTEROP_U000C_PAGEBREAK_REEXPORT_PR1857_MERGE_FORWARD_2026_09_10",
       "authority": "OWNER_DIRECTIVE_INTEROP_U000C_PAGEBREAK_REEXPORT_CONTOUR_PR1857_FULL_ACCESS_APPROVAL_NEVER",
@@ -129,19 +104,6 @@
       "filePath": "test/contracts/revision-bridge-docx-import-local-file-preview.contract.test.js",
       "rationale": "Bounded M1 lab repair preserves DOCX local-file preview relationship diagnostic identity through sanitizer and admits the exact post-audit verifier/test/inventory/C2A hash rebind. Scope remains package-root relationship classification and pathless public locator resolution only; no product surface expansion, dependency, runtime network, cloud truth, Word/provider GUI execution, acceptance preview, denominator promotion, cell acceptance, release readiness, 100 percent portability, or PROGRAM_DONE authority is added.",
       "sha256": "2e5fdec3f9e5f7ba4a91ca94552b2da2fc55053248f5e8b9856be921e005306e"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-11T19:20:41Z",
-      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
-      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
-      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
-      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca"
     },
     {
       "approved": true,
@@ -228,19 +190,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.844Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
-        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
-      ],
-      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "4193c24f2d8d6e24a42d021da079c73a951af07f78dab83f6b06deda970c81a4"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-12T23:03:21.647Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
       "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
@@ -278,15 +227,6 @@
       "filePath": "src/export/docx/docxMinExportHandler.js",
       "rationale": "Approve exact current bytes for the bounded TEXT SINGLE_SCENE C1 SOURCE_RUNTIME product repair and its required post-evaluation CI admission witness. This covers only DOCX min export structured doc preservation, collab query envelope repair, DOCX import newline and relationship diagnostic classification, pathless public locator exposure, refreshed test inventory, and static verifier admission. No feature expansion, dependency, runtime network, cloud truth, Word execution, denominator promotion, release readiness, 100 percent portability, Program DONE, or cell acceptance authority is added.",
       "sha256": "6620064f486ea2b2cff3246d27e87d6690aa8ee6e34d53aa2e734ce97d85e0ef"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.847Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/main.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "03affdad01c35dec2fb95e91936ca65e5810482dd1453f457e3276e46e0354f7"
     },
     {
       "approved": true,
@@ -833,15 +773,6 @@
       "filePath": "test/contracts/revision-bridge-docx-colors.contract.test.js",
       "rationale": "Owner requested continued personal product import/export development. This bounded color preservation repair retains the existing authority, frozen raw oracle, denominator, historical evidence and required gates. No whole-cell credit.",
       "sha256": "d8dac9a3d78ce5db2fb59f43f8d5f8daf942455b515e9a8887cbb730750729af"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.850Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "0192de4fc2b5941569ed076eb2d70d65df310bc044de8c20d5d2db5227db297c"
     },
     {
       "approved": true,
@@ -1393,24 +1324,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "4da48b7ca03b36af27563a66b9d2477bb116b5808f76b299cd34d6e0403d2e5c",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T02:35:18.087Z",
-      "rationale": "Exact admission of the five newly delivered C4 verifier, policy and test files into the shared post-audit change-scope allowlist. This registers an authorized verifier delta and grants zero cells before fresh native physical proof.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "4e3b995c2b641fc2467cb4c059abd160602525cefe9b49766f988ec7bcd59aaa",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T02:35:18.087Z",
-      "rationale": "Exact admission of the five newly delivered C4 verifier, policy and test files into the shared post-audit change-scope allowlist. This registers an authorized verifier delta and grants zero cells before fresh native physical proof.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "sha256": "8d7063cae83ed1e671eafa5168fea1f12e5ae2aaf458254b9e2d27e8df78a024",
       "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
@@ -1422,15 +1335,6 @@
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
       "sha256": "c37f3376d148b57b2507aab5520dd905f335d2edd654d04e0a1118bcebc586ce",
-      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
-      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
-      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "sha256": "b3cd9bac2f596372a96ab2ab7311261e07b534ad48aec649a063409e00f03add",
       "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
       "approvedAtUtc": "2026-09-24T00:34:37.419Z",
       "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
@@ -1519,29 +1423,128 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "bd8313032ecff3a33ac2ca6845fe9337d65886105ff5e9345b1428274c0bdc28",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
-      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
-      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c6e7e73554afa6d489c695395558e8254d4db99266bb1203294c6828e8dd014b",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
-      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
-      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "sha256": "b9b0972236f3acd9388463fc1d3d7b71177900d8ea464e6fcf36a7a8b4c23d8d",
       "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
       "approvedAtUtc": "2026-09-24T12:58:46.576Z",
       "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-24--c4-office-raw-return-compat.md",
+      "sha256": "e67880e87a422320ba059bf24a31f3ee6e7544c24a68200df73f6d1d7aa629da",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "sha256": "1ab3bc1b9d83b443d83d2010221bfcc944f4c6e99ebc2b1f5e6ff49bae438759",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "8df112592b38faed8da43dc0c3ba717f32a372446f99a56e64baa0144ca057bc",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "8c65c18329bac0bb3c71dde082fbd8dbd2adb1862e4bac7ebb4dc89957a00861",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "d64d907945c85869ee54ed26bfe4f37adaa98242920c4a18b3556679f44923ff",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "28e28195e4f10b7a18513161c8cf7d3adedbfc306507ae898946849e1cf3db43",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "1fb273e5d2537a77e4223bb68cfd3550d6b0e1b8a2caf9850f699f03ca9b4107",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "abaedc1986354909df8c7bb97d5a161019aa18e009d1aff2a335b4525270242e",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs",
+      "sha256": "78318e4c11fa2b6a8eccdd933d024b8699a675394f13747ca9f8777f831b7f5a",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:14:02.325Z",
+      "rationale": "Owner-authorized exact current-byte shared post-audit admission for the existing interop product chain plus Google Office-mode return compatibility. No denominator, independent oracle, physical gate or accepted cell credit is changed by this registry entry.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "bd77bde7e98be8b4ff38ea5738e7df4eb904631f33aa445423abac043f8ac835",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:14:02.325Z",
+      "rationale": "Owner-authorized exact current-byte shared post-audit admission for the existing interop product chain plus Google Office-mode return compatibility. No denominator, independent oracle, physical gate or accepted cell credit is changed by this registry entry.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "d85b474dd388f49c95e6e7bd860b2fe96be057b4533951e6c798f518be39e0df",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:14:02.325Z",
+      "rationale": "Owner-authorized exact current-byte shared post-audit admission for the existing interop product chain plus Google Office-mode return compatibility. No denominator, independent oracle, physical gate or accepted cell credit is changed by this registry entry.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "ccdd1173f28b610ca45d6851529ed2074ecbc9da5fc3399d4f26325e93dd0d34",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:19:54.256Z",
+      "rationale": "Owner-authorized exact-byte C4 Google Office return compatibility, maintained inventory and Data C1 bindings. Independent physical proof and official exact-merged-HEAD verifier remain mandatory; this approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "0e74e57e3f3927e9d00ac15fb81694e8fc08638abfdd4551ff97e11e5dabfadf",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:19:54.256Z",
+      "rationale": "Owner-authorized exact-byte C4 Google Office return compatibility, maintained inventory and Data C1 bindings. Independent physical proof and official exact-merged-HEAD verifier remain mandatory; this approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -2197,6 +2200,138 @@
       "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
       "approvedAtUtc": "2026-09-24T12:18:28.384Z",
       "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T02:11:05Z",
+      "approvedBy": "owner-direct-task:GOOGLE_DOCS_SECTION_BOUNDARY_RECOVERY_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1"
+      ],
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "rationale": "Owner authorized continued personal package-based import/export implementation through all 1120 cells. This bounded Google section-boundary recovery distinguishes an implicit relocated next-page carrier from an explicit Word section boundary and restores exactly one authored empty paragraph. Exact-byte policy and governance pins are rebound for the changed files; no dependency, runtime network, new write authority, denominator change, or cell credit is added before a complete fresh merged batch passes.",
+      "sha256": "8229a7c8c4786a4a00ae88ab7ef311255eedab71fae9d66249a4cbf0dd77eec2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.844Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "fa9d096da34f29a915de815931e9c7225da69689da35daeb3ffc7c55488e3c4e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-11T19:20:41Z",
+      "approvedBy": "owner-direct:TASK_ID:R24-S05-DOCX-TABLE-VISIBLE-TEXT-V1-20260911:SECONDARY_REGISTRY_HYGIENE",
+      "authority": "DIRECT_OWNER_REQUEST_YALKEN_R24_INTEROP_TABLE_VISIBLE_TEXT_SECONDARY_REGISTRY_HYGIENE",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "rationale": "Secondary interop governance registry hygiene during bounded S05 DOCX table visible-text contour: rebind existing approval row to current repo bytes so the secondary registry validates as current-byte evidence. Metadata-only; no additional product behavior, UI, dependency, network, storage mutation, Word/Google closure, full denominator PASS, release readiness, or PROGRAM_DONE claim.",
+      "sha256": "4290d67d9711516c36fdb078514136674c570bde497b582e3023996233a773ca"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.844Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "ES-R24-EMBEDDED-FONT-ADMISSION-POST-AUDIT-GATE-REPAIR-V1",
+        "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD"
+      ],
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "4193c24f2d8d6e24a42d021da079c73a951af07f78dab83f6b06deda970c81a4"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.847Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "src/main.js",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "03affdad01c35dec2fb95e91936ca65e5810482dd1453f457e3276e46e0354f7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.850Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "0192de4fc2b5941569ed076eb2d70d65df310bc044de8c20d5d2db5227db297c"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4da48b7ca03b36af27563a66b9d2477bb116b5808f76b299cd34d6e0403d2e5c",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T02:35:18.087Z",
+      "rationale": "Exact admission of the five newly delivered C4 verifier, policy and test files into the shared post-audit change-scope allowlist. This registers an authorized verifier delta and grants zero cells before fresh native physical proof.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "4e3b995c2b641fc2467cb4c059abd160602525cefe9b49766f988ec7bcd59aaa",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T02:35:18.087Z",
+      "rationale": "Exact admission of the five newly delivered C4 verifier, policy and test files into the shared post-audit change-scope allowlist. This registers an authorized verifier delta and grants zero cells before fresh native physical proof.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "b3cd9bac2f596372a96ab2ab7311261e07b534ad48aec649a063409e00f03add",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "bd8313032ecff3a33ac2ca6845fe9337d65886105ff5e9345b1428274c0bdc28",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "c6e7e73554afa6d489c695395558e8254d4db99266bb1203294c6828e8dd014b",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "b1c3b153fc28e0ee407bbf0e65c4dcfb7d1b5c5a7c3ca4bc4a19ea93eebee05f",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7248d1584063ae8940facd77d11a1d5a829bb476f7d2c08c8ebe271a51bf63a3",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

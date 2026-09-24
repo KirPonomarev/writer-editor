@@ -92,6 +92,28 @@ function assertReviewAnalysisOnly(result) {
   assert.equal(result.canWriteManuscript, false);
 }
 
+test('B02 parser treats exact Google Office customXML relationship as inert advisory evidence', async () => {
+  const parser = await loadParser();
+  const parts = {
+    ...baseParts(documentXml('<w:p><w:r><w:t>Scene</w:t></w:r></w:p>')),
+    'customXML/item1.xml': '<root/>',
+    'word/_rels/document.xml.rels': '<Relationships><Relationship Id="rIdCustom" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXML/item1.xml"/></Relationships>',
+  };
+  const admitted = parser.parseReviewTransportPackageV2({ parts }, { cryptoPort });
+  assertReviewAnalysisOnly(admitted);
+  assert.equal(admitted.packageInventory.relationships.some((item) => item.id === 'rIdCustom' && item.inert === true), true);
+  for (const changed of [
+    parts['word/_rels/document.xml.rels'].replace('customXml', 'attachedTemplate'),
+    parts['word/_rels/document.xml.rels'].replace('../customXML/item1.xml', '../../customXML/item1.xml'),
+  ]) {
+    const blocked = parser.parseReviewTransportPackageV2({
+      parts: { ...parts, 'word/_rels/document.xml.rels': changed },
+    }, { cryptoPort });
+    assert.equal(blocked.ok, false);
+    assert.equal(blocked.reasons.some((item) => item.code === 'RTK_HOSTILE_PACKAGE_BLOCKED'), true);
+  }
+});
+
 test('B02 parser is namespace and attribute-order stable without regex XML authority', async () => {
   const parser = await loadParser();
   const first = parser.parseReviewTransportPackageV2({

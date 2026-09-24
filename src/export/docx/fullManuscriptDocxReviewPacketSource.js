@@ -468,6 +468,13 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
   const coreProtected = isPlainObjectValue(returned.coreProtectedProperties)
     ? returned.coreProtectedProperties
     : {};
+  // Some Office-mode providers retain the signed custom properties but omit
+  // redundant core title/identifier fields. They remain an explicit fidelity
+  // loss, never a source for project metadata or an authority carrier.
+  const allowedCoreOmissions = input.allowAdvisoryCoreOmissions === true
+    ? new Set(['projectId', 'title'])
+    : new Set();
+  const coreOmissions = [];
   if (returned.schemaVersion !== WORD_DOCUMENT_METADATA_SCHEMA) mismatches.push('schemaVersion');
   if (returned.corePropertiesPresent !== true || returned.corePropertiesRootValid !== true) mismatches.push('coreProperties');
   if (returned.customPropertiesPresent !== true || returned.customPropertiesRootValid !== true) mismatches.push('customProperties');
@@ -475,7 +482,18 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
     if (normalizeString(actual[key]) !== normalizeString(expect[key])) mismatches.push(`protectedProperties.${key}`);
   }
   for (const key of ['projectId', 'title', 'creator']) {
-    if (normalizeString(coreProtected[key]) !== normalizeString(expect[key])) mismatches.push(`coreProtectedProperties.${key}`);
+    const value = normalizeString(coreProtected[key]);
+    if (!value && allowedCoreOmissions.has(key)) {
+      coreOmissions.push(key);
+    } else if (value !== normalizeString(expect[key])) {
+      mismatches.push(`coreProtectedProperties.${key}`);
+    }
+  }
+  const duplicateCore = Array.isArray(returned.duplicateCorePropertyNames)
+    ? returned.duplicateCorePropertyNames.map(normalizeString)
+    : [];
+  if (duplicateCore.some((name) => ['title', 'identifier', 'creator', 'createdAtUtc'].includes(name))) {
+    mismatches.push('duplicateCorePropertyNames');
   }
   const expectedCreatedAt = Date.parse(normalizeString(expect.createdAtUtc));
   const coreCreatedAt = Date.parse(normalizeString(coreProtected.createdAtUtc));
@@ -510,10 +528,14 @@ function validateFullManuscriptDocumentMetadataReturn(input = {}) {
   return {
     ok: true,
     applicable: true,
-    status: 'VERIFIED_PROTECTED_DOCUMENT_METADATA',
+    status: coreOmissions.length > 0
+      ? 'VERIFIED_SIGNED_DOCUMENT_METADATA_WITH_CORE_OMISSIONS'
+      : 'VERIFIED_PROTECTED_DOCUMENT_METADATA',
     proof: {
       schemaVersion: WORD_DOCUMENT_METADATA_SCHEMA,
       authority: 'ADVISORY_ONLY_NO_PROJECT_METADATA_WRITE',
+      coreOmissions: coreOmissions.sort(),
+      coreMetadataPreserved: coreOmissions.length === 0,
       protectedDigest: expected.protectedDigest,
       protectedProperties: cloneJson(actual),
       coreProtectedProperties: cloneJson(coreProtected),

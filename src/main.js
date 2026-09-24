@@ -9219,6 +9219,10 @@ async function inspectDocxReviewReturnIntakeV2({
     expected: localAuthority.documentMetadata,
     returned: verifiedParserResult.reviewIr?.documentMetadata,
     signedDigest: payload.documentMetadataDigest,
+    // The return carrier and local project binding were verified above. A
+    // provider may omit only redundant core title/identifier; signed custom
+    // metadata must still match and the omitted fields are reported as loss.
+    allowAdvisoryCoreOmissions: true,
   });
   if (!documentMetadataBinding.ok) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_METADATA_MISMATCH', {
