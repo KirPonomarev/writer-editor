@@ -11,6 +11,36 @@ const {pathToFileURL} = require('node:url');
 const ROOT = path.resolve(__dirname, '../..');
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 
+test('Word reader successor requires the exact certified current-head binding', async () => {
+  const {validateManuscriptReaderSuccessor: check} =
+    await import(pathToFileURL(path.join(ROOT, 'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+  const reader = 'scripts/ops/rtk-interop-word-manuscript-batch.mjs';
+  const binding = {path: reader, sha256: '38efdabcb3305a726c4f63e6b47b684d93042b16c2c711c029ca34ff13d93717'};
+  const currentHead = 'a'.repeat(40);
+  const actualSha256 = digest(await fs.readFile(path.join(ROOT, reader)));
+  const certification = {
+    status: 'PASS', baseSha: 'a4d186e026af0d532c73d2108e5369252302574b',
+    candidateSha: currentHead, cellAcceptanceAuthority: false,
+    bindings: [
+      {path: reader, sha256: actualSha256},
+      {path: 'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js', sha256: 'b'.repeat(64)},
+    ],
+  };
+  assert.doesNotThrow(() => check({binding, actualSha256, certification, currentHead}));
+  const rejected = [
+    {binding: {...binding, sha256: '0'.repeat(64)}},
+    {binding: {...binding, path: 'scripts/ops/other.mjs'}},
+    {actualSha256: '0'.repeat(64)},
+    {certification: {...certification, status: 'FAIL'}},
+    {certification: {...certification, candidateSha: 'c'.repeat(40)}},
+    {certification: {...certification, cellAcceptanceAuthority: true}},
+    {certification: {...certification, bindings: certification.bindings.slice(0, 1)}},
+  ];
+  for (const overrides of rejected)
+    assert.throws(() => check({binding, actualSha256, certification, currentHead, ...overrides}),
+      /MANUSCRIPT_BATCH_READER_(?:PIN|SUCCESSOR_CERT)/);
+});
+
 test('Manuscript promotion admits only the exact inspected C4 successor blobs', async t => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'manuscript-exact-successor-'));
   t.after(() => fs.rm(root, {recursive: true, force: true}));
