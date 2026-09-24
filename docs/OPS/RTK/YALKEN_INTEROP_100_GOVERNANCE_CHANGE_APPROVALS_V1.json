@@ -1541,7 +1541,7 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "95943ee1620a092226cd852bb64b4904381cfd9602f988dc5e8953524f8835c1",
+      "sha256": "36e22132b81b24687a8a4d6598f6ff4210dd8fd8cce674d14d02dafa7e7acbf5",
       "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
       "approvedAtUtc": "2026-09-24T19:17:47.238Z",
       "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
