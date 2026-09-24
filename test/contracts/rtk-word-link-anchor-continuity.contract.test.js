@@ -54,6 +54,68 @@ print(json.dumps(result))
  }
 });
 
+test('Office-wide identity rewrite resolves one replacement only with the authenticated full text and section vector',async()=>{
+ const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+ const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+ const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
+ const source=buildFullManuscriptDocxReviewPacketSource({projectId:'owned-vector-guard',scenes:[
+  {sceneId:'part/a/one',scenePath:'/part/a/one',title:'one',text:'alpha sentinel text.\nMore alpha.',order:0},
+  {sceneId:'part/b/two',scenePath:'/part/b/two',title:'two',text:'bravo text.',order:1},
+  {sceneId:'part/c/three',scenePath:'/part/c/three',title:'three',text:'charlie text.',order:2},
+ ]},{hmacSecret:'unit-only'});
+ const exportMap=source.localAuthorityCapsule.exportMap;
+ const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes(
+  {bytes:buildDocxReviewPacketBuffer(source)},{cryptoPort:productCryptoPort()});
+ assert.equal(parsed.ok,true);
+ const verifiedSections={...source.localAuthorityCapsule.documentSections,
+  status:'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'};
+ const projection=structuredClone(parsed.reviewIr);
+ projection.formattingParagraphs.forEach((paragraph,index)=>{
+  paragraph.bookmarkNames=[];
+  paragraph.paraId=String(index+1).padStart(8,'0');
+  paragraph.textId='';
+ });
+ projection.formattingParagraphs[0].paragraphText='alpha changed text.';
+ projection.textRevisions=[
+  {operation:'insert',paragraphIndex:0,text:'changed',replacementGroupId:'office-pair',author:'Office User'},
+  {operation:'delete',paragraphIndex:0,text:'sentinel',replacementGroupId:'office-pair',author:'Office User'},
+ ];
+ projection.commentThreads=[{threadId:'comment-1',commentId:'1',status:'ANCHORED',paragraphIndex:0,
+  quotedAnchorText:'alpha changed',anchorLocator:{paraId:'00000001',textId:'',bookmarkNames:[]},body:'Review'}];
+ const candidate=(returnProjection,sections=verifiedSections,map=exportMap)=>
+  bridge.buildDocxReviewPreviewSessionCandidateFromEvidence({returnedProjection:returnProjection},
+   {targetScope:{type:'scene',id:'part/a/one'},fullManuscriptExportMap:map,verifiedDocumentSections:sections});
+ const exact=candidate(projection);
+ assert.equal(exact.ok,true);
+ assert.equal(exact.reviewPacket.textChanges.length,1);
+ assert.equal(exact.reviewPacket.textChanges[0].match.kind,'exact');
+ assert.equal(exact.reviewPacket.textChanges[0].match.blockId,exportMap.scenes[0].blocks[0].blockId);
+ assert.equal(exact.reviewPacket.textChanges[0].sourceAuthority,'full-manuscript-export-map-full-text-vector');
+ assert.equal(exact.reviewPacket.commentPlacements[0].sceneAuthority.authority,
+  'full-manuscript-export-map-full-text-vector');
+ assert.equal(exact.reviewPacket.commentPlacements[0].targetScope.id,'part/a/one');
+ const negative=[
+  p=>{p.formattingParagraphs[2].paragraphText='drifted bravo text.';},
+  p=>{p.formattingParagraphs[0].bookmarkNames=['partial-bookmark'];},
+  p=>{p.formattingParagraphs[0].paraId=exportMap.scenes[1].blocks[0].wordSignals.find(s=>s.kind==='w14ParaIdTextId').value.paraId;},
+  p=>{p.formattingParagraphs[0].paragraphText='alpha changed changed text.';},
+  p=>{p.structureChanges=[{kind:'movedParagraph'}];},
+ ];
+ for(const mutate of negative){const bad=structuredClone(projection);mutate(bad);
+  assert.equal(candidate(bad).reviewPacket.textChanges[0].match.kind,'manual');}
+ for(const badSections of [null,{...verifiedSections,status:'UNVERIFIED'},
+  {...verifiedSections,protectedSections:verifiedSections.protectedSections.map((section,index)=>
+   index===0?{...section,endParagraphIndex:0}:section)},
+  {...verifiedSections,sourceBindings:verifiedSections.sourceBindings.map((binding,index)=>
+   index===0?{...binding,sceneIds:['part/b/two']}:binding)}]){
+  assert.equal(candidate(projection,badSections).reviewPacket.textChanges[0].match.kind,'manual');
+ }
+ const ambiguousMap=structuredClone(exportMap);
+ ambiguousMap.scenes[1].blocks[0].formatIr.runs=structuredClone(ambiguousMap.scenes[0].blocks[0].formatIr.runs);
+ ambiguousMap.scenes[1].blocks[0].canonicalTextSha256=ambiguousMap.scenes[0].blocks[0].canonicalTextSha256;
+ assert.equal(candidate(projection,verifiedSections,ambiguousMap).reviewPacket.textChanges[0].match.kind,'manual');
+});
+
 test('Real product exporter binds linked ranges to persisted locators; independent reader rejects coherent locator corruption',async()=>{
  const {buildWordManuscriptFixture}=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');

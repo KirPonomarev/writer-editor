@@ -1199,12 +1199,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "d5ab729693e3aa939387d5fbe3db412bc0c94b38bf0e1e55058852154ad4879f"
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "sha256": "179c95b68cd0c737b77162a7d59d4a0b5c258a3ca9444ccd1ee48f259a1ed315"
     },
     {
       "approved": true,
@@ -1451,10 +1451,10 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "8df112592b38faed8da43dc0c3ba717f32a372446f99a56e64baa0144ca057bc",
-      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
-      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
-      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "sha256": "729046c43305eab5b7bd1de55e01f24b2dd6d97c8617bcaf6f1c94d0201b27d9",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1469,10 +1469,10 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "9224d34436a41fd826fb123a30ea541127c1b6830084c7bb718cc3e2d56f4c36",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
-      "approvedAtUtc": "2026-09-24T15:51:07.055Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "sha256": "b209c81507b850dbe1bdb75d6db9ec7f00b26f5c8487d4608545f5273a1871f6",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1514,37 +1514,37 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "39a3e5cb1ae328086ca971515a4bb9d10e04428a14cd0be03effebb0b8d54833",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
-      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
+      "sha256": "c7c8c0703129301c4b8d157bd1ba25715406f53812a3d75bbfb55c1a53e650a5",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "9a9019b59c89292605bdc6b896d6ec6a4253f27cb1addcb8402c85bedb0b8e8a",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
-      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
+      "sha256": "1b970adf30de3633a0ebb4a37d3946afff84553d20500b0971e9eaa1ceeba75e",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f677b19fc1772b4b058d61e09a6eb3193cb05270bfb5d76bc691536326e06061",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
-      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
+      "sha256": "47860a40073063e83b1a07b72b94239f105077be364d78d6c4b1740430d9cf90",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "36e22132b81b24687a8a4d6598f6ff4210dd8fd8cce674d14d02dafa7e7acbf5",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_SDT_PARSER_20260924",
-      "approvedAtUtc": "2026-09-24T19:17:47.238Z",
-      "rationale": "Owner-authorized bounded C4 Office DOCX SDT no-op normalization and exact-byte binding refresh. Independent native physical proof and official exact merged-head acceptance remain mandatory; this approval grants zero cells.",
+      "sha256": "de675b7b60f923511722f077e9ad82b92877de4a0b70feae4a435a2b63273e8d",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },

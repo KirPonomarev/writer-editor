@@ -364,7 +364,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "9224d34436a41fd826fb123a30ea541127c1b6830084c7bb718cc3e2d56f4c36"
+        "sha256": "b209c81507b850dbe1bdb75d6db9ec7f00b26f5c8487d4608545f5273a1871f6"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -400,7 +400,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "8df112592b38faed8da43dc0c3ba717f32a372446f99a56e64baa0144ca057bc"
+        "sha256": "729046c43305eab5b7bd1de55e01f24b2dd6d97c8617bcaf6f1c94d0201b27d9"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -716,7 +716,7 @@
       },
       {
         "path": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
-        "sha256": "d5ab729693e3aa939387d5fbe3db412bc0c94b38bf0e1e55058852154ad4879f"
+        "sha256": "179c95b68cd0c737b77162a7d59d4a0b5c258a3ca9444ccd1ee48f259a1ed315"
       },
       {
         "path": "docs/tasks/2026-09-17--word-link-anchor-continuity.md",
