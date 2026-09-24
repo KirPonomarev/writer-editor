@@ -1416,19 +1416,19 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c0f95f381873575910a8e935a473a7d613e1be2617a5640c41bdcc5f9a7acc97",
+      "sha256": "4da48b7ca03b36af27563a66b9d2477bb116b5808f76b299cd34d6e0403d2e5c",
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
-      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
+      "approvedAtUtc": "2026-09-24T02:35:18.087Z",
+      "rationale": "Exact admission of the five newly delivered C4 verifier, policy and test files into the shared post-audit change-scope allowlist. This registers an authorized verifier delta and grants zero cells before fresh native physical proof.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "2a1b21db2c5fbd2a4160c54eeee1654b5563f661add4a84e28bc4fe7e4608c5f",
+      "sha256": "4e3b995c2b641fc2467cb4c059abd160602525cefe9b49766f988ec7bcd59aaa",
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
-      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
+      "approvedAtUtc": "2026-09-24T02:35:18.087Z",
+      "rationale": "Exact admission of the five newly delivered C4 verifier, policy and test files into the shared post-audit change-scope allowlist. This registers an authorized verifier delta and grants zero cells before fresh native physical proof.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1900,6 +1900,24 @@
       "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
       "approvedAtUtc": "2026-09-24T02:14:40.000Z",
       "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c0f95f381873575910a8e935a473a7d613e1be2617a5640c41bdcc5f9a7acc97",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
+      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "2a1b21db2c5fbd2a4160c54eeee1654b5563f661add4a84e28bc4fe7e4608c5f",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_CI_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T02:30:36.519Z",
+      "rationale": "Register the already-added C4 contract in the maintained RTK graph and preserve exact-byte verifier promotion from the prior accepted set. This CI repair grants zero cells and keeps physical proof, frozen denominator and exact-head gates unchanged.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
