@@ -275,19 +275,6 @@
         "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "ffcfe387cb111835bc6b2522207cc1ddc7bd45ec3ded82b1e9baecfcc611a88c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
-      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
-      "evidenceStampIds": [
-        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
-        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
-      ],
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
       "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
@@ -1539,6 +1526,15 @@
       "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "209d4dcdfab729e13b4cb75cc533b9ada76927c47a8c5c21fb17f7a284466736",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T05:08:43Z",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ],
   "evidenceStampIds": [
@@ -1552,6 +1548,19 @@
   ],
   "version": "v1.0",
   "historicalApprovals": [
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "ffcfe387cb111835bc6b2522207cc1ddc7bd45ec3ded82b1e9baecfcc611a88c"
+    },
     {
       "approved": true,
       "approvedAtUtc": "2026-09-22T18:36:02.845Z",
