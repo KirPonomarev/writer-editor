@@ -204,6 +204,7 @@ function validateBinding(binding) {
 
 function buildSummary(binding, result = {}) {
   const changes = list(binding?.writerInput?.reviewItems);
+  const writerErrorCode = normalizeString(result?.writerResult?.reasons?.[0]?.errorCode);
   return {
     replacementPairCount: changes.length,
     trustedBlockRangeDigestCount: Array.isArray(binding?.trustedBlockRangeDigests)
@@ -213,6 +214,9 @@ function buildSummary(binding, result = {}) {
     admissionDigest: normalizeString(binding?.admissionDigest || binding?.admission?.admissionDigest),
     envelopeDigest: normalizeString(result?.envelope?.envelopeDigest || binding?.admission?.envelope?.envelopeDigest),
     outcomeDigest: normalizeString(result?.outcomeRecord?.outcomeDigest),
+    ...(result?.status === 'failed' && /^[A-Z][A-Z0-9_]{2,127}$/u.test(writerErrorCode)
+      ? { writerFailureCode: writerErrorCode }
+      : {}),
   };
 }
 
