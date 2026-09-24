@@ -155,15 +155,16 @@ export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
   'test/contracts/review-bridge-product-discoverability-labels.contract.test.js',
   'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs'
 ]);
-// The Data C1 delivery predates the C4 Lab code repair. Admit this successor
-// only while all three candidate Git blobs retain the reviewed exact bytes.
+// The C4 verifier-only promotion preserves the pinned Lab code and raw reader.
+// Admit this successor only while its policy, consumer and negative contracts
+// retain the reviewed exact bytes; physical evidence is checked separately.
 export const R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR=Object.freeze({
   baseSha:'9bc01bebf618919c8f48651bd0d79491645ba202',
   baseTree:'2fb6e7eec06fbb832f67dab04212f152b51879c9',
   bindings:Object.freeze([
-    {path:'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',sha256:'e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34'},
-    {path:'scripts/ops/rtk-interop-c4-google-office-batch.mjs',sha256:'2c8e8c70ad3577c86d303404ed5d1307f9b58b6ac0dcfc4af959b4addac5af54'},
-    {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3'},
+    {path:'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',sha256:'c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef'},
+    {path:'scripts/ops/rtk-interop-c4-google-office-batch.mjs',sha256:'6ff3af0394f1e1b4cefea59874e778922f52dcec73a1ba1df3cf7a463cf6e76f'},
+    {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'f3826483859a48bbe1837f06e66d152801141b7ffebba4fa9218f5108bc11387'},
     {path:'scripts/ops/rtk-interop-c4-google-office-readback.py',sha256:'384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53'},
     {path:'test/unit/rtk-interop-c4-google-office.test.py',sha256:'bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a'},
   ]),

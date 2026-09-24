@@ -1493,12 +1493,12 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "317593215baf4bbf0382609e319738852c8578bf1a35ed774054d275877d6d58",
-      "approvedBy": "owner-delegated-codex:INTEROP_CERTIFIER_HISTORICAL_CANDIDATE_PERF_20260924",
-      "approvedAtUtc": "2026-09-24T11:51:14.896Z",
-      "rationale": "Owner-authorized bounded interop certification performance repair. Historical candidate SHA hints are accepted only after fresh ancestry, exact Git diff path comparison, and unchanged artifact checks; injected Git keeps exhaustive search. Full baseline and optimized certification reports match byte-for-byte on the exact base. This approval grants no new interop cell PASS and no product runtime authority.",
+      "sha256": "2fe9e6c91624968fee4af6f1cc7d0668a946bf8f87c86f68235eb8274077a2d9",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-CERT-BIND-20260924",
+      "approvedAtUtc": "2026-09-24T12:23:20.915Z",
+      "rationale": "Owner-authorized exact-byte post-audit successor rebind for the bounded C4 verifier-only promotion. It pins current C4 policy, consumer and negative contract while retaining original Lab code and independent raw reader hashes. No product runtime change or direct cell credit; official merged-head mixed verifier remains mandatory.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_CERTIFICATION_PERFORMANCE_REPAIR_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
@@ -2118,6 +2118,15 @@
       "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "317593215baf4bbf0382609e319738852c8578bf1a35ed774054d275877d6d58",
+      "approvedBy": "owner-delegated-codex:INTEROP_CERTIFIER_HISTORICAL_CANDIDATE_PERF_20260924",
+      "approvedAtUtc": "2026-09-24T11:51:14.896Z",
+      "rationale": "Owner-authorized bounded interop certification performance repair. Historical candidate SHA hints are accepted only after fresh ancestry, exact Git diff path comparison, and unchanged artifact checks; injected Git keeps exhaustive search. Full baseline and optimized certification reports match byte-for-byte on the exact base. This approval grants no new interop cell PASS and no product runtime authority.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_CERTIFICATION_PERFORMANCE_REPAIR_EXACT_BYTE_BINDING"
     }
   ]
 }
