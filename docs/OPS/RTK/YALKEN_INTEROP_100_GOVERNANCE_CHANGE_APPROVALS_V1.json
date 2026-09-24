@@ -1510,38 +1510,38 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "5b9438128c83fae963c46c8c1aca03ff795ee951f29986635b55e469ad5283fa",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T08:00:26Z",
-      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "281f040263f38c324460c9b8d7ed819b5864d6612ed3fe855f87e5b14629820a",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_PROOF_CARRIER_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T08:07:15Z",
+      "rationale": "Exact-byte closure of the Word verifier proof-carrier scope and its negative contract, inventory and post-audit pin. The two product runtime successor blobs remain separately SHA-pinned. This governance approval creates zero interop cells; native evidence and unified exact merged-head verification remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "8e965386d045290810471fd2333c7b77cf2ce0a5698b0b3f9d5fabff5b9671f0",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T08:00:26Z",
-      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "da01a2afe017d896286f37123af1d1b6a20688bdd973abd57c5be55d3d84b7a0",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_PROOF_CARRIER_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T08:07:15Z",
+      "rationale": "Exact-byte closure of the Word verifier proof-carrier scope and its negative contract, inventory and post-audit pin. The two product runtime successor blobs remain separately SHA-pinned. This governance approval creates zero interop cells; native evidence and unified exact merged-head verification remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "2e8fef80e5abd010f062b9c9e55b409f7b934b66a83ace038872b6325f9df0e3",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T08:00:26Z",
-      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
+      "sha256": "3cf40702a248ef72569f8122629d548a2b730ca4ab30162d9bf8b8bfd3566dba",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_PROOF_CARRIER_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T08:07:15Z",
+      "rationale": "Exact-byte closure of the Word verifier proof-carrier scope and its negative contract, inventory and post-audit pin. The two product runtime successor blobs remain separately SHA-pinned. This governance approval creates zero interop cells; native evidence and unified exact merged-head verification remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "sha256": "31d0eaf56d6097720029af84f5a683ff22e4852eacdee67d9395125930421319",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_POSTAUDIT_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T08:00:26Z",
-      "rationale": "Bounded post-audit admission of the exact Word verifier and negative test Git blobs after C4, while the Word verifier independently pins the two inspected product runtime/test deltas. The certification carrier itself remains a governed non-mutating verifier. Frozen denominator, physical oracle and exact merged-head acceptance are unchanged; this repair grants zero cells.",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "da31e05e98b4edb5b8f3023e8c0c6367fad4b1700a3ccf13bec4c2532a88aa9a",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_PROOF_CARRIER_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T08:07:15Z",
+      "rationale": "Exact-byte closure of the Word verifier proof-carrier scope and its negative contract, inventory and post-audit pin. The two product runtime successor blobs remain separately SHA-pinned. This governance approval creates zero interop cells; native evidence and unified exact merged-head verification remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

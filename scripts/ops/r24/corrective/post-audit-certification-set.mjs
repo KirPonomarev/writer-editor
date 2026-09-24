@@ -173,8 +173,8 @@ export const R24_INTEROP_WORD_PROMOTION_SUCCESSOR=Object.freeze({
   baseSha:'a4d186e026af0d532c73d2108e5369252302574b',
   baseTree:'5a5fcda93702460f6600dc2e67dc8e08731a0a18',
   bindings:Object.freeze([
-    {path:'scripts/ops/rtk-interop-word-manuscript-batch.mjs',sha256:'31d0eaf56d6097720029af84f5a683ff22e4852eacdee67d9395125930421319'},
-    {path:'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',sha256:'5b9438128c83fae963c46c8c1aca03ff795ee951f29986635b55e469ad5283fa'},
+    {path:'scripts/ops/rtk-interop-word-manuscript-batch.mjs',sha256:'281f040263f38c324460c9b8d7ed819b5864d6612ed3fe855f87e5b14629820a'},
+    {path:'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',sha256:'da01a2afe017d896286f37123af1d1b6a20688bdd973abd57c5be55d3d84b7a0'},
   ]),
 });
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([

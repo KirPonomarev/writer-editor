@@ -18,7 +18,10 @@ export const MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS=Object.freeze([
   {path:'src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs',sha256:'78318e4c11fa2b6a8eccdd933d024b8699a675394f13747ca9f8777f831b7f5a'},
   {path:'test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js',sha256:'0e72e5e20db8ee31e38d9b495efdb034433b48f3b3c0695874ebbfd5568f1ddd'},
 ]);
-const MANUSCRIPT_PROMOTION_CERTIFICATION_CARRIER='scripts/ops/r24/corrective/post-audit-certification-set.mjs';
+const MANUSCRIPT_PROMOTION_PROOF_CARRIERS=Object.freeze([
+  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',
+]);
 export const MANUSCRIPT_HOPS=Object.freeze({
  C1:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE'],
  C2:['YALKEN_EXPORT','WORD_LIFECYCLE','YALKEN_RETURN_INTAKE','YALKEN_APPLY','YALKEN_REEXPORT','WORD_REOPEN_READBACK'],
@@ -292,9 +295,9 @@ export function validateManuscriptVerifierPromotion({repoRoot=ROOT,runtimeIdenti
   try{git(['merge-base','--is-ancestor',runtimeIdentity.head,verifierIdentity.head]);ancestor=true;}catch{}
   demand(ancestor,'MANUSCRIPT_BATCH_PROMOTION_NOT_DESCENDANT');
   const changed=git(['diff','--name-only','--no-renames',runtimeIdentity.head+'..'+verifierIdentity.head,'--']).trim().split('\n').filter(Boolean);
-  // The post-audit verifier is a non-mutating proof carrier. Its own strict
-  // certification and exact-byte governance approval remain separate gates.
-  const allowed=new Set([...allowedPaths,MANUSCRIPT_PROMOTION_CERTIFICATION_CARRIER]);
+  // These non-mutating proof carriers have separate exact-byte certification
+  // and governance gates; neither can authorize a product runtime change.
+  const allowed=new Set([...allowedPaths,...MANUSCRIPT_PROMOTION_PROOF_CARRIERS]);
   const exactSuccessors=new Map(MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS.map(binding=>[binding.path,binding.sha256]));
   demand(changed.length>0&&changed.every(p=>allowed.has(p)||exactSuccessors.has(p)),'MANUSCRIPT_BATCH_PROMOTION_SCOPE');
   for(const changedPath of changed){

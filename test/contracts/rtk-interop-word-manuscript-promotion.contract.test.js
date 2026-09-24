@@ -35,11 +35,14 @@ test('Manuscript promotion admits only the exact inspected C4 successor blobs', 
   const certificationCarrier = 'scripts/ops/r24/corrective/post-audit-certification-set.mjs';
   await fs.mkdir(path.join(root, path.dirname(certificationCarrier)), {recursive: true});
   await fs.copyFile(path.join(ROOT, certificationCarrier), path.join(root, certificationCarrier));
+  const promotionContract = 'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js';
+  await fs.mkdir(path.join(root, path.dirname(promotionContract)), {recursive: true});
+  await fs.copyFile(path.join(ROOT, promotionContract), path.join(root, promotionContract));
   await fs.writeFile(path.join(root, 'oracle.txt'), 'after\n');
   git('add', '.');
   git('commit', '-m', 'exact successor');
   assert.deepEqual(check({repoRoot: root, runtimeIdentity, verifierIdentity: identity(), allowedPaths: ['oracle.txt']}),
-    ['oracle.txt', certificationCarrier, ...bindings.map(binding => binding.path)].sort());
+    ['oracle.txt', certificationCarrier, promotionContract, ...bindings.map(binding => binding.path)].sort());
   await fs.appendFile(path.join(root, bindings[1].path), '\n// altered after exact admission\n');
   git('add', '.');
   git('commit', '-m', 'alter pinned product code');
