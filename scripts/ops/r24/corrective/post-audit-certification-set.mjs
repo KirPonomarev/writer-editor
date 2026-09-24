@@ -149,11 +149,13 @@ export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
   'docs/OPS/R24/EVIDENCE/ES-R24-RCV01A-NORMATIVE-CLAIM-TEST-LANE-MANIFEST-CLAIM-BINDINGS.json',
   'scripts/ops/r24/corrective/c2a-effective-certification.mjs',
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  'scripts/ops/rtk-interop-word-manuscript-batch.mjs',
   'scripts/ops/r24/corrective/rcv01a-normative-claim-test-lane-manifest.mjs',
   'scripts/ops/r24/run-c1c-contract-shard.mjs',
   'test/fixtures/r24-fixture-publication-cache.mjs',
   'test/contracts/review-bridge-product-discoverability-labels.contract.test.js',
-  'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs'
+  'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs',
+  'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js'
 ]);
 // The Data C1 delivery predates the C4 Lab code repair. Admit this successor
 // only while all three candidate Git blobs retain the reviewed exact bytes.

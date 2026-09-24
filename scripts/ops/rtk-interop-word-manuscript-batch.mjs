@@ -15,7 +15,7 @@ export const MANUSCRIPT_BATCH_MODE='WORD_MANUSCRIPT_BATCH_V1';
 // failure code after a rejected write; successful Word journeys are unchanged.
 // Keep these outside the general promotion allowlist so later edits fail shut.
 export const MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS=Object.freeze([
-  {path:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',sha256:'385dc93ecbfa40f499264d7f23ff643cafc83255226fb7a4b68b27d6312551c4'},
+  {path:'scripts/ops/r24/corrective/post-audit-certification-set.mjs',sha256:'14a49451e8db6e074d30ca860938f997c9cfcfcd45df129776494352487c8acc'},
   {path:'src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs',sha256:'78318e4c11fa2b6a8eccdd933d024b8699a675394f13747ca9f8777f831b7f5a'},
   {path:'test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js',sha256:'0e72e5e20db8ee31e38d9b495efdb034433b48f3b3c0695874ebbfd5568f1ddd'},
 ]);
