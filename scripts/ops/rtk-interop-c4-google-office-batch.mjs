@@ -15,7 +15,7 @@ export const C4_GOOGLE_MODE='GOOGLE_OFFICE_C4_BATCH_V1';
 export const C4_GOOGLE_CELLS=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME'].flatMap(profile=>
   ['TEXT','ORDER'].map(field=>`${field}__SINGLE_SCENE__C4__${profile}`)));
 export const C4_GOOGLE_HOPS=Object.freeze(['YALKEN_DOCX_EXPORT','GOOGLE_OFFICE_LIFECYCLE','YALKEN_RETURN_INTAKE']);
-export const C4_POLICY_SHA256='1d31697ae6011ae0e1464e5c3169d49759707a21903ab19604e389a4adb8cae7';
+export const C4_POLICY_SHA256='e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34';
 const C4_LAB_DELTA_PATHS=Object.freeze(['LAB_MANIFEST.json','dashboard/index.html',
   'data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl',
   'src/m1-text-single-scene-source-runtime.mjs','test/m0-audit-repair.test.mjs']);

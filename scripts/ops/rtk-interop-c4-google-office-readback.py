@@ -57,7 +57,8 @@ def docx_paragraphs(data, returned):
         body = doc.find(W+'body')
         require(doc.tag == W+'document' and body is not None, 'C4_XML_BODY')
         allowed_body = {W+'p', W+'sectPr', W+'bookmarkStart', W+'bookmarkEnd'}
-        allowed_para = {W+'pPr', W+'r', W+'ins', W+'del', W+'bookmarkStart', W+'bookmarkEnd'}
+        allowed_para = {W+'pPr', W+'r', W+'ins', W+'del', W+'bookmarkStart', W+'bookmarkEnd',
+                        W+'commentRangeStart', W+'commentRangeEnd'}
         allowed_run = {W+'rPr', W+'t', W+'delText', W+'commentReference'}
         require(all(node.tag in allowed_body for node in body), 'C4_UNDECLARED_BODY')
         paragraphs = body.findall(W+'p')
@@ -72,6 +73,31 @@ def docx_paragraphs(data, returned):
         insertions = body.findall('.//'+W+'ins')
         deletions = body.findall('.//'+W+'del')
         require((len(insertions), len(deletions)) == ((1, 1) if returned else (0, 0)), 'C4_TRACKED_REVIEW')
+        markers = {
+            tag: [(index, node.get(W+'id')) for index, para in enumerate(paragraphs)
+                  for node in para.iter(W+tag)]
+            for tag in ('commentRangeStart', 'commentRangeEnd', 'commentReference')
+        }
+        if returned:
+            starts, ends, references = (markers[tag] for tag in markers)
+            require(len(starts) == len(ends) == len(references) == 1
+                    and starts[0][0] == ends[0][0] == references[0][0] == 0
+                    and starts[0][1] is not None
+                    and starts[0][1] == ends[0][1] == references[0][1],
+                    'C4_COMMENT_ANCHOR')
+            require('word/comments.xml' in names, 'C4_COMMENT_PACKAGE')
+            comments_raw = archive.read('word/comments.xml')
+            require(b'<!DOCTYPE' not in comments_raw.upper()
+                    and b'<!ENTITY' not in comments_raw.upper(), 'C4_COMMENT_ENTITY')
+            comments_root = ET.fromstring(comments_raw)
+            comments = comments_root.findall(W+'comment')
+            require(comments_root.tag == W+'comments' and len(comments) == 1
+                    and comments[0].get(W+'id') == starts[0][1]
+                    and any((node.text or '').strip() for node in comments[0].iter(W+'t')),
+                    'C4_COMMENT_PAYLOAD')
+        else:
+            require(all(not values for values in markers.values())
+                    and 'word/comments.xml' not in names, 'C4_SOURCE_COMMENT_FREE')
         visible = []
         for para in paragraphs:
             chunks = []
@@ -86,6 +112,9 @@ def docx_paragraphs(data, returned):
 
 def scene_paragraphs(data):
     source = data.decode('utf8')
+    metadata = '[meta]\nstatus: черновик\ntags: POV=; линия=; место=\nsynopsis: \n[/meta]\n\n'
+    require(source.startswith(metadata), 'C4_SCENE_METADATA')
+    source = source[len(metadata):]
     first, payload = source.split('\n', 1)
     require(re.fullmatch(r'\[doc-v2 length=[1-9][0-9]{0,6}\]', first), 'C4_SCENE_HEADER')
     doc = json.loads(payload)

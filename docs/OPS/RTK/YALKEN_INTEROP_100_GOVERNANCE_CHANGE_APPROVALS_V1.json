@@ -1457,19 +1457,19 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
-      "sha256": "decab554801a51d3fde582a012d84c305b3d6cad2143dfbd264cf19ef56349ce",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "sha256": "384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "test/unit/rtk-interop-c4-google-office.test.py",
-      "sha256": "7373360c733c7c3fa681410e9a7eae3b57ae98eca3032fb28672dd8b30f70210",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "sha256": "bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1484,19 +1484,19 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
-      "sha256": "1d31697ae6011ae0e1464e5c3169d49759707a21903ab19604e389a4adb8cae7",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
-      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
-      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "sha256": "e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
-      "sha256": "dd69a46b99c1b0bc58b33f4fd40e895b783e6b7706095c1ad5f83ed2f3848aa6",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
-      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
-      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "sha256": "2c8e8c70ad3577c86d303404ed5d1307f9b58b6ac0dcfc4af959b4addac5af54",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1529,10 +1529,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "209d4dcdfab729e13b4cb75cc533b9ada76927c47a8c5c21fb17f7a284466736",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
-      "approvedAtUtc": "2026-09-24T05:08:43Z",
-      "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
+      "sha256": "385dc93ecbfa40f499264d7f23ff643cafc83255226fb7a4b68b27d6312551c4",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:36:20Z",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor closure: pin the corrected policy, batch verifier, independent raw reader, negative tests and existing contract bytes. All paths remain hash-bound and fail closed; Lab code pins, frozen 1120 denominator, CI, physical Google proof and exact merged-head acceptance are unchanged. This metadata repair adds zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -2008,6 +2008,51 @@
       "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924:INVENTORY_REPAIR",
       "approvedAtUtc": "2026-09-24T04:12:10.597Z",
       "rationale": "Owner-authorized exact-byte repair of generated C2A approval artifact after the changed C4 diagnostic contract test. Only the C1B inventory digest changes; static C2A authority metadata and all other generated approval rows are preserved. No cell credit or gate bypass.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
+      "sha256": "decab554801a51d3fde582a012d84c305b3d6cad2143dfbd264cf19ef56349ce",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-interop-c4-google-office.test.py",
+      "sha256": "7373360c733c7c3fa681410e9a7eae3b57ae98eca3032fb28672dd8b30f70210",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "1d31697ae6011ae0e1464e5c3169d49759707a21903ab19604e389a4adb8cae7",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "dd69a46b99c1b0bc58b33f4fd40e895b783e6b7706095c1ad5f83ed2f3848aa6",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "209d4dcdfab729e13b4cb75cc533b9ada76927c47a8c5c21fb17f7a284466736",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T05:08:43Z",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

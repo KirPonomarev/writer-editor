@@ -43,7 +43,7 @@
   "readerBindings": [
     {
       "path": "scripts/ops/rtk-interop-c4-google-office-readback.py",
-      "sha256": "decab554801a51d3fde582a012d84c305b3d6cad2143dfbd264cf19ef56349ce"
+      "sha256": "384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53"
     },
     {
       "path": "scripts/ops/rtk-interop-order-c1-readback.py",
