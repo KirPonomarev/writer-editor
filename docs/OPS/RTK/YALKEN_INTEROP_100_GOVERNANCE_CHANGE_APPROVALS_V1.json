@@ -1492,15 +1492,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "fa1c2957ee1afbdfd87f563280245fa4fcd37a0ac96b75fc7363a63634af4385",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
-      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
-      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "7263fccf8abe712cde64a4818cc8c6027ca965965ba60890d6887287af9f3fe5",
       "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
@@ -1542,6 +1533,15 @@
       "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_PROOF_CARRIER_CLOSURE_20260924",
       "approvedAtUtc": "2026-09-24T08:07:15Z",
       "rationale": "Exact-byte closure of the Word verifier proof-carrier scope and its negative contract, inventory and post-audit pin. The two product runtime successor blobs remain separately SHA-pinned. This governance approval creates zero interop cells; native evidence and unified exact merged-head verification remain mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "adcf146566900604383a5064c671227a920be07a4c3f754ec8088cfb8dbee1e1",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_C2A_INVENTORY_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T08:30:40Z",
+      "rationale": "Deterministic C2A approval rebind after the required C1B test inventory changed for the Word promotion negative contract. The generator changed only the inventory digest; this exact-byte metadata closure adds zero cells and preserves all physical and merged-head gates.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
