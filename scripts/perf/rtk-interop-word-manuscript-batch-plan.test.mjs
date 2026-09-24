@@ -9,8 +9,8 @@ import {
 } from './rtk-interop-word-manuscript-batch-plan.mjs';
 
 test('candidate matrix is bounded and deterministic', () => {
-  assert.equal(CANDIDATE_JOBS.length, 38);
-  assert.equal(SUPPORTED_CELL_IDS.length, 300);
+  assert.equal(CANDIDATE_JOBS.length, 44);
+  assert.equal(SUPPORTED_CELL_IDS.length, 306);
   assert.equal(FULL_DENOMINATOR_CELLS, 1120);
   assert.deepEqual(CANDIDATE_JOBS, [...CANDIDATE_JOBS].sort((left, right) => left.key.localeCompare(right.key)));
 });
@@ -31,7 +31,7 @@ test('planner exposes unreachable work instead of repeating accepted cells', () 
   assert.equal(plan.plannedNewCells, 24);
   assert.equal(plan.unreachableTarget, 76);
   assert.equal(plan.supportedUncoveredCells, 24);
-  assert.equal(plan.missingRecipeCells, 820);
+  assert.equal(plan.missingRecipeCells, 814);
   assert.equal(new Set(plan.jobs.flatMap((job) => job.newCellIds)).size, 24);
 });
 
@@ -72,7 +72,7 @@ test('historical state timings stay separate from fixed delivery overhead', () =
 
 test('note extension plans exactly 48 unique new cells in 24 physical jobs', () => {
   const accepted = SUPPORTED_CELL_IDS.filter(id => !/^(?:NOTES|FOOTNOTES_ENDNOTES)__/.test(id));
-  assert.equal(accepted.length, 252);
+  assert.equal(accepted.length, 258);
   const plan = planBatch({ acceptedCellIds: accepted, targetNewCells: 48 });
   assert.equal(plan.targetReached, true);
   assert.equal(plan.plannedNewCells, 48);

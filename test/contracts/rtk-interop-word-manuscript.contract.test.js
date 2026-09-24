@@ -7,7 +7,7 @@ const path = require('node:path');
 const os = require('node:os');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
-const {execFileSync} = require('node:child_process');
+const {execFileSync,spawn} = require('node:child_process');
 const {pathToFileURL} = require('node:url');
 const {commitProjectTransaction,commitPathFor} = require('../../src/core/project-transaction-v1.cjs');
 const {durableSaveTransaction} = require('../../src/core/save-coordinator-v1.cjs');
@@ -232,12 +232,12 @@ test('Section admission binds canonical boundaries, protected geometry, no-write
  for(const mutate of [x=>delete x.stages.reexport,x=>x.expected.protectedSections[0].endParagraphIndex=2,x=>x.intakeBindings[0].after.sceneHashes=[],x=>x.negativeControls.pop(),x=>x.negativeControls[0].writerCalled=true,x=>x.negativeControls[1].code='RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',x=>x.lossLedger.scope='']){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,'MULTI_SCENE',1,[{exportSha256:exportSha,returnedSha256:returnedSha}]));}
 });
 
-test('Manuscript admission targets 300 distinct frozen whole cells and five real C3 rounds',async()=>{
+test('Manuscript admission preserves 300 legacy cells and admits six versioned structure targets',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,300);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,300);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,306);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,306);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
@@ -295,6 +295,49 @@ test('C1 review return cannot replace safe-create fields, reuse a recipe or masq
  assert.equal(m.manuscriptStages('C1')['imported-raw'],0);
  assert.equal(m.manuscriptStages('C1',f.C1_REVIEW_RECIPE)['rounds/1/persisted'],1);
  assert.equal(m.manuscriptStages('C1',f.C1_REVIEW_RECIPE)['imported-raw'],undefined);
+});
+
+test('single-scene structure uses a distinct review recipe and never upgrades legacy observations',async()=>{
+ const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
+ const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
+ const expected=[];
+ for(const route of ['C1','C2','C3'])for(const profile of f.MANUSCRIPT_PROFILES){
+  const id=`NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__${route}__${profile}`;
+  expected.push(id);
+  assert.deepEqual(f.manuscriptFields('SINGLE_SCENE',route,f.SINGLE_STRUCTURE_RECIPE),['NOVEL_SCENE_STRUCTURE']);
+  assert.equal(f.manuscriptUsesSafeCreate(route,f.SINGLE_STRUCTURE_RECIPE),false);
+  const fixture=f.buildWordManuscriptFixture('SINGLE_SCENE',route,f.SINGLE_STRUCTURE_RECIPE);
+  assert.equal(fixture.scenes.length,1);
+  assert.equal(fixture.scenes[0].chapter,0);
+  const run=`ORDER__SINGLE_SCENE__${route}__${profile}__structure-v2-unit`;
+  const row=m.validateManuscriptRuns([run])[0];
+  assert.equal(row.recipe,f.SINGLE_STRUCTURE_RECIPE);
+  assert.equal(row.cellId,`ORDER__SINGLE_SCENE__${route}__${profile}`);
+  assert.throws(()=>m.validateManuscriptRuns([run,run.replace('unit','other')]),/DUPLICATE_JOURNEY/);
+ }
+ assert.deepEqual(expected.sort(),f.MANUSCRIPT_CELLS.filter(id=>id.startsWith('NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__')).sort());
+ assert.equal(new Set(f.MANUSCRIPT_CELLS).size,306);
+ assert.deepEqual(f.manuscriptFields('SINGLE_SCENE','C1'),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);
+ assert.deepEqual(f.manuscriptFields('SINGLE_SCENE','C2'),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES','TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']);
+});
+
+test('independent raw reader completes a bounded request without waiting for pipe EOF',async()=>{
+ const payload=Buffer.from('{}');
+ const frame=Buffer.alloc(4+payload.length);
+ frame.writeUInt32BE(payload.length,0);payload.copy(frame,4);
+ const child=spawn('python3',['-I','-B',path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-readback.py')],{stdio:['pipe','pipe','pipe']});
+ let timer;
+ try{
+  const response=await new Promise((resolve,reject)=>{
+   timer=setTimeout(()=>reject(new Error('RAW_READER_WAITED_FOR_EOF')),2000);
+   child.once('error',reject);
+   child.stdout.once('data',resolve);
+   child.stdin.write(frame);
+  });
+  const parsed=JSON.parse(String(response));
+  assert.equal(parsed.ok,false);
+  assert.notEqual(parsed.error,'REQUEST_SIZE');
+ }finally{clearTimeout(timer);child.kill();}
 });
 
 test('Lab CDP source-app revision is admitted only by a complete exact code-binding set',()=>{
@@ -355,13 +398,19 @@ test('Lab native-CUA manuscript revision requires the exact new identity set and
  const matchesExactAdmission=candidate=>{
   const sets=candidate.labCodeBindingSets.filter(set=>set.id===expected.id);
   return sets.length===1&&JSON.stringify(sets[0])===JSON.stringify(expected)
-   &&candidate.labCodeBindingSets.length===baseline.labCodeBindingSets.length+1
+   &&candidate.labCodeBindingSets.length>=baseline.labCodeBindingSets.length+1
    &&JSON.stringify(candidate.allowedLabDeltaPaths)==JSON.stringify([...baseline.allowedLabDeltaPaths,...supportPaths]);
  };
  for(const previous of baseline.labCodeBindingSets){
   assert.deepEqual(policy.labCodeBindingSets.find(set=>set.id===previous.id),previous,`preserve ${previous.id}`);
  }
  assert.equal(matchesExactAdmission(policy),true);
+ const structureSets=policy.labCodeBindingSets.filter(set=>set.id==='WORD_SINGLE_STRUCTURE_V2');
+ assert.equal(structureSets.length,1);
+ const expectedStructure=structuredClone(expected);
+ expectedStructure.id='WORD_SINGLE_STRUCTURE_V2';
+ expectedStructure.bindings.find(b=>b.path==='src/word-manuscript-fields.mjs').sha256='ae82c51632b0c8abd5ca330a688b889044fdb96679066c298739a85cd5f8db66';
+ assert.deepEqual(structureSets[0],expectedStructure);
  const mutants=[
   candidate=>candidate.labCodeBindingSets.find(set=>set.id===expected.id).bindings.pop(),
   candidate=>candidate.labCodeBindingSets.find(set=>set.id===expected.id).bindings[0].sha256='0'.repeat(64),

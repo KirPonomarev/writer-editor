@@ -250,15 +250,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.845Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "0800638da1569c4d16dc34fc6fb3be395eaa364e425feb7bf29ac4321cf47915"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-12T23:03:21.647Z",
       "approvedBy": "owner-directive:YALKEN_R2_4_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2_2026_09_12",
       "authority": "SUPERVISOR_DIRECTIVE_R24_INTEROP100_DENOMINATOR_ADMISSION_HARDENING_V2",
@@ -290,15 +281,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
-      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "42f8c8b0a932fa02a48238469a941d5c5803c483ae44041ba8641f0a9363d24b"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
       "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
@@ -309,15 +291,6 @@
       "filePath": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
       "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-16T21:52:26.361685+00:00",
-      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "6dac1ac99ae91acae95cc8f19791291cbee75034ffacac3fed48a5c7d5fc682f"
     },
     {
       "approved": true,
@@ -1164,24 +1137,6 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.851Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "46dd3d21e941a54fa2ce45ed07a025c4ec8e8778e56deeace49bc09a83e4f34c"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.851Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "ac1882459362a8414b7f694085f2bc5cf2c83265ecb4b7f97dfa30f910a2a10c"
-    },
-    {
-      "approved": true,
       "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
       "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
@@ -1215,33 +1170,6 @@
       "filePath": "src/product/mainProjectManifestAuthority.mjs",
       "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
       "sha256": "4aa747a31cf10ab25767c5a10cafb3e287e868a3b7f15b0f26715de4e5860325"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "da26426dc4f0e09c9040ddf7f17c236a4183900a7b28f20799aac8aff8b5a644"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "aac9a1196098e7f6fd4668d376133aab75762d5150061dd94db95b308cd2cda6"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "33b6442f1dcf51866bb77c37f177f48fac3318e6bd3feb4370ab49d609634884"
     },
     {
       "approved": true,
@@ -1296,15 +1224,6 @@
       "filePath": "docs/tasks/2026-09-17--word-review-semantics.md",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded Word tracked-review proof retains every prior native predicate and requires independently verified insert/delete/property revisions, authors/timestamps, typed manual-only visibility and no silent product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
       "sha256": "0833f12d6c42583d9e93d3f4b1ac6c3bf5ffe4caf41c1771843287bad5b77dfc"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
-      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
-      "sha256": "ab1b4ec0b70c0d336e8a136e2cda7086e502193e045e73ffa89230fc39eb37b8"
     },
     {
       "approved": true,
@@ -1469,6 +1388,198 @@
       "sha256": "e1b2c65e0a1a76599ce7824b02ca69b276f0dd8d82dfdc1de395f241dac04523"
     },
     {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "271ebb81a1985cd8a6ed0cc3e6d273224d6a1ab6e095b8bb0c4271cf8a4da0e6",
+      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
+      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
+      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "sha256": "762d1dcb875cf765311f5d08f96ad0dd32e4b83795ffe50753ac6763d1547a76",
+      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
+      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
+      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "sha256": "538256639d9fcf3e953b7e7073063927e10ec9c5e963ae29f4495ce10ff270b9",
+      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
+      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
+      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "e2d2a7c68b0b98832e7a5a625e52beac45431601275866ee5ee8f898b5f4b2fc",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "52af4f2b12c085a7d0085c6fda52a7de8c936fac9ee7dba57c5ec5cf7127ca78",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "38efdabcb3305a726c4f63e6b47b684d93042b16c2c711c029ca34ff13d93717",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
+      "sha256": "8d7063cae83ed1e671eafa5168fea1f12e5ae2aaf458254b9e2d27e8df78a024",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "sha256": "c37f3376d148b57b2507aab5520dd905f335d2edd654d04e0a1118bcebc586ce",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "b3cd9bac2f596372a96ab2ab7311261e07b534ad48aec649a063409e00f03add",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a55181a3aa73416b5f392a3dbfb9e4853c0b08d54e0ee33dfe4f4132086e9a6b",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:41:35.186Z",
+      "rationale": "Owner-authorized exact-byte inventory binding for the changed W-STRUCT contract test. Generated inventory changes only one SHA; 1490 test files, all required lanes, skip policy and frozen 1120-cell denominator remain unchanged. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "5bb2f2e96aec9ca78e7b534f49661970a501196d0806a9c00cfbc25fb03fb0ca",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T01:07:32.993Z",
+      "rationale": "Owner-authorized exact-byte C2A generated binding refresh for the changed C1B W-STRUCT test inventory. It changes only the inventory SHA in the C2A approval artifact; prior approval is retained as history. Frozen denominator, certification semantics, oracle independence and physical proof gates are unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    }
+  ],
+  "evidenceStampIds": [
+    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1",
+    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
+    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
+    "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
+    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
+    "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
+    "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+  ],
+  "version": "v1.0",
+  "historicalApprovals": [
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.845Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "0800638da1569c4d16dc34fc6fb3be395eaa364e425feb7bf29ac4321cf47915"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T01:38:43.925088+00:00",
+      "approvedBy": "owner-direct-task:WORD_MANUSCRIPT_FIELDS_C1_C2_C3_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2/C3 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
+      "sha256": "42f8c8b0a932fa02a48238469a941d5c5803c483ae44041ba8641f0a9363d24b"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T21:52:26.361685+00:00",
+      "approvedBy": "owner-direct-task:WORD_TEXT_ORDER_C1_C2_BATCH_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
+      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
+      "sha256": "6dac1ac99ae91acae95cc8f19791291cbee75034ffacac3fed48a5c7d5fc682f"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.851Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "46dd3d21e941a54fa2ce45ed07a025c4ec8e8778e56deeace49bc09a83e4f34c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.851Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "ac1882459362a8414b7f694085f2bc5cf2c83265ecb4b7f97dfa30f910a2a10c"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "da26426dc4f0e09c9040ddf7f17c236a4183900a7b28f20799aac8aff8b5a644"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "aac9a1196098e7f6fd4668d376133aab75762d5150061dd94db95b308cd2cda6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "33b6442f1dcf51866bb77c37f177f48fac3318e6bd3feb4370ab49d609634884"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-22T18:36:02.852Z",
+      "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-authorized continuation: explicitly selected canonical notes as native footnotes/endnotes, signed title/body/order/anchor protection, unchanged sidecar through apply and reopen, private/deleted exclusion, seven typed zero-write corruptions. At most 48 additional cells only after complete fresh merged native proof; no denominator or prior evidence rewrite.",
+      "sha256": "ab1b4ec0b70c0d336e8a136e2cda7086e502193e045e73ffa89230fc39eb37b8"
+    },
+    {
       "approved": true,
       "approvedAtUtc": "2026-09-22T18:36:02.853Z",
       "approvedBy": "owner-direct-task:WORD_NOTES_FOOTNOTES_ROUNDTRIP_20260922",
@@ -1622,44 +1733,8 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f93a8518248d00a90e273e1130ea26232cdcb6eb4f8caa4860de2dd0b4bd0eec",
-      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
-      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
-      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "2b2546b998706608def8be3ed2968dfd1940f27eb5bf5fbd031e3e9a1ef33c08",
-      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
-      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
-      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "271ebb81a1985cd8a6ed0cc3e6d273224d6a1ab6e095b8bb0c4271cf8a4da0e6",
-      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
-      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
-      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
       "sha256": "ff672cba99a4d8a804d4724a0767b51eb4b9fb80c73cc8ea67816e78ac541d2e",
-      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
-      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
-      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "sha256": "762d1dcb875cf765311f5d08f96ad0dd32e4b83795ffe50753ac6763d1547a76",
       "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
       "approvedAtUtc": "2026-09-23T23:20:44.295Z",
       "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
@@ -1676,23 +1751,22 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "test/contracts/rtk-interop-100-denominator.contract.test.js",
-      "sha256": "538256639d9fcf3e953b7e7073063927e10ec9c5e963ae29f4495ce10ff270b9",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f93a8518248d00a90e273e1130ea26232cdcb6eb4f8caa4860de2dd0b4bd0eec",
+      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
+      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
+      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2b2546b998706608def8be3ed2968dfd1940f27eb5bf5fbd031e3e9a1ef33c08",
       "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
       "approvedAtUtc": "2026-09-23T23:20:44.295Z",
       "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
-  ],
-  "evidenceStampIds": [
-    "ES-R24-DOCX-NAMESPACE-ALIAS-PREVIEW-V1",
-    "ES-R24-INTEROP-P03-MAIN40A688-RESYNC",
-    "ES-R24-RCV00H-MINIMAL-E0-PARSER-PURITY-CLAIM-BINDINGS",
-    "ES-R24-T04-EMBEDDED-FONT-ADMISSION-PRODUCT-HEAD",
-    "ES-R24-T04-TYPED-BREAK-SECTION-LOSS-PATCHED-REPLAY",
-    "TEXT_SINGLE_SCENE_C1_SOURCE_RUNTIME_PRODUCT_REPAIR_M1_LAB_REPAIR",
-    "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
-  ],
-  "version": "v1.0"
+  ]
 }
