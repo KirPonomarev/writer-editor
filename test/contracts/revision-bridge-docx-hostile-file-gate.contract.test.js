@@ -432,6 +432,39 @@ test('Stage02 hostile file gate distinguishes internal, safe hyperlink, and host
   }
 });
 
+test('Stage02 accepts Google Office customXML advisory parts only with confined internal targets', async () => {
+  const bridge = await loadBridge();
+  const parts = [
+    { name: 'word/document.xml', body: '<root/>' },
+    { name: 'customXML/item1.xml', body: '<root/>' },
+    { name: 'customXML/itemProps1.xml', body: '<root/>' },
+    {
+      name: 'word/_rels/document.xml.rels',
+      body: '<Relationships><Relationship Id="rIdCustom" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXML/item1.xml"/></Relationships>',
+    },
+    {
+      name: 'customXML/_rels/item1.xml.rels',
+      body: '<Relationships><Relationship Target="itemProps1.xml"/></Relationships>',
+    },
+  ];
+  const admitted = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture(parts));
+  assert.equal(admitted.ok, true);
+  assert.equal(admitted.parse.semanticAllowed, true);
+  const duplicateCase = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture([
+    ...parts,
+    { name: 'customXml/item1.xml', body: '<forged/>' },
+  ]));
+  assert.equal(duplicateCase.ok, false);
+  assert.equal(duplicateCase.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.DUPLICATE_ENTRY_NAME);
+  const escaped = bridge.inspectDocxHostileFileGateFromZipBytes(zipFixture(parts.map((part) => (
+    part.name === 'word/_rels/document.xml.rels'
+      ? { ...part, body: part.body.replace('../customXML/item1.xml', '../../customXML/item1.xml') }
+      : part
+  ))));
+  assert.equal(escaped.ok, false);
+  assert.equal(escaped.code, bridge.DOCX_HOSTILE_FILE_GATE_REASON_CODES.INTERNAL_RELATIONSHIP_TARGET_UNSAFE);
+});
+
 test('Stage02 hostile file gate rejects invalid internal relationship graph references', async () => {
   const bridge = await loadBridge();
   const drawingDocument = (relationshipId) => (
