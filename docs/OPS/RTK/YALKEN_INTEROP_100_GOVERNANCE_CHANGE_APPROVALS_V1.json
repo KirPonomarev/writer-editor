@@ -1398,10 +1398,10 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "sha256": "762d1dcb875cf765311f5d08f96ad0dd32e4b83795ffe50753ac6763d1547a76",
-      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
-      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
-      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "sha256": "c29fcf409247417c40e3b1ec5b0613b9d2930ab3423e1b281615f6dda40b1ef0",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1416,19 +1416,19 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "e2d2a7c68b0b98832e7a5a625e52beac45431601275866ee5ee8f898b5f4b2fc",
-      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
-      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
-      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "sha256": "6d21d3e60d2064268418541f077e4fe3c9227eeaf7495e3026099addd4866020",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "52af4f2b12c085a7d0085c6fda52a7de8c936fac9ee7dba57c5ec5cf7127ca78",
-      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
-      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
-      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "sha256": "bb70c86249de907da86a4fc7729c3d64cf74184c02875fa5e8fcfbbbe470391e",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1470,19 +1470,64 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "a55181a3aa73416b5f392a3dbfb9e4853c0b08d54e0ee33dfe4f4132086e9a6b",
-      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
-      "approvedAtUtc": "2026-09-24T00:41:35.186Z",
-      "rationale": "Owner-authorized exact-byte inventory binding for the changed W-STRUCT contract test. Generated inventory changes only one SHA; 1490 test files, all required lanes, skip policy and frozen 1120-cell denominator remain unchanged. No automatic cell credit.",
+      "sha256": "43a235c5880e70c1ee0895065e7a62866b2da57be27c0635ae8080eef50adcfa",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5bb2f2e96aec9ca78e7b534f49661970a501196d0806a9c00cfbc25fb03fb0ca",
-      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
-      "approvedAtUtc": "2026-09-24T01:07:32.993Z",
-      "rationale": "Owner-authorized exact-byte C2A generated binding refresh for the changed C1B W-STRUCT test inventory. It changes only the inventory SHA in the C2A approval artifact; prior approval is retained as history. Frozen denominator, certification semantics, oracle independence and physical proof gates are unchanged; no automatic cell credit.",
+      "sha256": "b657a9d3425eaf7e04fa7a1b50bd44b4a3ea0e6fc04b95a74fee09836529f2da",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "f8647891abe10dc9359c20cd9b493d3e769ff9a81386a6e3d4061c52638007d8",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "6c0f4ff02d9331beeaa9494171e3bd6f9d7614a16a307b41e1fcf7f41cbc0368",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
+      "sha256": "decab554801a51d3fde582a012d84c305b3d6cad2143dfbd264cf19ef56349ce",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "536632ea47af3db06124fbb23fc1425b484798be44d5ea8854489e6acd8766e6",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-interop-c4-google-office.test.py",
+      "sha256": "7373360c733c7c3fa681410e9a7eae3b57ae98eca3032fb28672dd8b30f70210",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -1765,6 +1810,69 @@
       "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
       "approvedAtUtc": "2026-09-23T23:20:44.295Z",
       "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a55181a3aa73416b5f392a3dbfb9e4853c0b08d54e0ee33dfe4f4132086e9a6b",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:41:35.186Z",
+      "rationale": "Owner-authorized exact-byte inventory binding for the changed W-STRUCT contract test. Generated inventory changes only one SHA; 1490 test files, all required lanes, skip policy and frozen 1120-cell denominator remain unchanged. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "5bb2f2e96aec9ca78e7b534f49661970a501196d0806a9c00cfbc25fb03fb0ca",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T01:07:32.993Z",
+      "rationale": "Owner-authorized exact-byte C2A generated binding refresh for the changed C1B W-STRUCT test inventory. It changes only the inventory SHA in the C2A approval artifact; prior approval is retained as history. Frozen denominator, certification semantics, oracle independence and physical proof gates are unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "e2d2a7c68b0b98832e7a5a625e52beac45431601275866ee5ee8f898b5f4b2fc",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "sha256": "762d1dcb875cf765311f5d08f96ad0dd32e4b83795ffe50753ac6763d1547a76",
+      "approvedBy": "owner-direct-task:INTEROP_AGGREGATE_TREE_BINDING_20260924",
+      "approvedAtUtc": "2026-09-23T23:20:44.295Z",
+      "rationale": "Owner-authorized exact-byte repair: publish the independently resolved clean merged Git tree in one official multi-cohort receipt and reject missing or mismatched child trees. Frozen 1120 denominator and physical oracle remain unchanged; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "52af4f2b12c085a7d0085c6fda52a7de8c936fac9ee7dba57c5ec5cf7127ca78",
+      "approvedBy": "owner-direct-task:INTEROP_W_STRUCT_20260924",
+      "approvedAtUtc": "2026-09-24T00:34:37.419Z",
+      "rationale": "Owner-authorized bounded interop W-STRUCT implementation and exact-byte verifier repair: six SINGLE_SCENE structure journeys may be credited only by independent native physical proof on exact merged HEAD. Existing 300 manuscript recipes, frozen 1120 denominator, oracle independence, negative controls and source/packaged separation remain intact. No automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "90892ab134fa1097d4b847e7863a5269ac26457cefcda125f1e86dfd06d70a84",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "7b3d4b8322e606a1b3e89f64a759e59a3d3a8dc1252f020f6ba981b7a683a992",
+      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
+      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
+      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

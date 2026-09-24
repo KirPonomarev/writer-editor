@@ -2,6 +2,7 @@
 import {verifyDataC1} from './rtk-interop-data-c1.mjs';
 import {verifyWordTextOrderBatch} from './rtk-interop-word-text-order-batch.mjs';
 import {verifyWordManuscriptBatch} from './rtk-interop-word-manuscript-batch.mjs';
+import {verifyGoogleOfficeC4Batch} from './rtk-interop-c4-google-office-batch.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -1479,6 +1480,19 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if (Object.hasOwn(options, 'googleOfficeCohort')) {
+    const specErrors = [];
+    validateSpec(spec, specErrors);
+    if (options.spec || options.envelope || options.ledger || !Object.hasOwn(options, 'wordManuscriptCohorts')
+      || ['wordManuscriptLabRoot', 'wordManuscriptRunIds', 'wordTextOrderLabRoot', 'wordTextOrderRunIds',
+        'freshC1EvidenceRoot', 'dataC1LabRoot', 'dataC1RunId', 'textOrderC1LabRoot', 'textOrderRunId',
+        'orderC1LabRoot', 'orderRunId'].some(k => Object.hasOwn(options, k))
+      || options.requireLocalPhysicalPackage || options.requireExternalEvidencePackage || options.externalEvidencePackageRoot)
+      specErrors.push('INTEROP_MIXED_COHORT_MODE_OPTIONS_CONFLICT');
+    return verifyMixedInteropCohorts({repoRoot, wordCohorts:options.wordManuscriptCohorts,
+      googleCohort:options.googleOfficeCohort,currentHead:options.currentHead||currentGitHead(repoRoot),
+      requiredCells:buildRequiredCells(spec),specErrors});
+  }
   if (Object.hasOwn(options, 'wordManuscriptCohorts')) {
     const specErrors = [];
     validateSpec(spec, specErrors);
@@ -1656,13 +1670,112 @@ function verifyWordManuscriptCohorts({repoRoot, cohorts, currentHead, requiredCe
       'Complete 1120-cell support, unexecuted routes, and release readiness remain unproved.']};
 }
 
+// Reconciliation is deliberately unable to create evidence: each member must
+// already be a complete, exact-head authoritative report from its own reader.
+export function reconcileInteropAggregateReports({wordReport,googleReport,requiredCellIds,currentHead,currentTree}) {
+  const errors=[],ids=new Set(),decisions=[];
+  if (!Array.isArray(requiredCellIds)||requiredCellIds.length!==EXPECTED_REQUIRED_CELLS
+    ||new Set(requiredCellIds).size!==EXPECTED_REQUIRED_CELLS||!commitSha(currentHead)
+    ||typeof currentTree!=='string'||!COMMIT_RE.test(currentTree))
+    errors.push('INTEROP_MIXED_SCOPE');
+  const allowed=new Set(requiredCellIds||[]);
+  for(const [label,report,mode] of [
+    ['WORD',wordReport,'WORD_MANUSCRIPT_COHORTS_V1'],
+    ['GOOGLE',googleReport,'GOOGLE_OFFICE_C4_BATCH_V1'],
+  ]){
+    if(!report||report.ok!==true||report.authoritativeAdmission!==true||report.evidenceMode!==mode
+      ||report.currentHead!==currentHead||report.currentTree!==currentTree
+      ||report.requiredCells!==EXPECTED_REQUIRED_CELLS||!Array.isArray(report.errors)||report.errors.length
+      ||!Array.isArray(report.acceptedCellIds)||!Array.isArray(report.cellDecisions)
+      ||report.recordedCells!==report.acceptedCellIds.length
+      ||report.passedRequiredCells!==report.acceptedCellIds.length
+      ||report.statusCounts?.PASS!==report.acceptedCellIds.length
+      ||report.statusCounts?.NOT_EXECUTED!==EXPECTED_REQUIRED_CELLS-report.acceptedCellIds.length
+      ||report.broadPassClaim!==false){errors.push(`INTEROP_MIXED_NOT_AUTHORITATIVE:${label}`);continue;}
+    const own=new Set(report.acceptedCellIds);
+    if(own.size!==report.acceptedCellIds.length||report.cellDecisions.length!==own.size
+      ||new Set(report.cellDecisions.map(d=>d?.cellId)).size!==own.size
+      ||report.cellDecisions.some(d=>d?.status!=='PASS'||!own.has(d.cellId)))
+      errors.push(`INTEROP_MIXED_DECISIONS:${label}`);
+    for(const id of report.acceptedCellIds){
+      if(!allowed.has(id))errors.push(`INTEROP_MIXED_UNKNOWN_CELL:${label}:${id}`);
+      if(ids.has(id))errors.push(`INTEROP_MIXED_DUPLICATE_CELL:${id}`);
+      ids.add(id);
+    }
+    decisions.push(...report.cellDecisions);
+  }
+  return {errors,acceptedCellIds:errors.length?[]:[...ids].sort(),
+    cellDecisions:errors.length?[]:decisions.sort((a,b)=>a.cellId.localeCompare(b.cellId))};
+}
+
+function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,currentHead,requiredCells,specErrors=[]}){
+  const started=performance.now(),errors=[...specErrors];
+  if(!googleCohort||typeof googleCohort.labRoot!=='string'
+    ||!Array.isArray(googleCohort.runIds)||googleCohort.runIds.length<1||googleCohort.runIds.length>2)
+    errors.push('INTEROP_MIXED_GOOGLE_INPUT');
+  if(!Array.isArray(wordCohorts)||wordCohorts.length<2||wordCohorts.length>80)
+    errors.push('INTEROP_MIXED_WORD_INPUT');
+  const wordRoots=(Array.isArray(wordCohorts)?wordCohorts:[]).map(c=>{
+    try{return fs.realpathSync(c.labRoot);}catch{return null;}
+  });
+  let googleRoot=null;
+  try{googleRoot=fs.realpathSync(googleCohort?.labRoot||'');}catch{}
+  if(!googleRoot||wordRoots.includes(googleRoot)
+    ||googleCohort?.runIds?.some(id=>wordCohorts?.some(c=>c.runIds?.includes(id))))
+    errors.push('INTEROP_MIXED_DUPLICATE_INPUT');
+  let word=null,google=null;
+  if(!errors.length){
+    google=verifyGoogleOfficeC4Batch({repoRoot,labRoot:googleRoot,runIds:googleCohort.runIds,
+      currentHead,requiredCells});
+    if(!google.ok)errors.push('INTEROP_MIXED_GOOGLE_FAILED:'+google.errors.join('|'));
+  }
+  if(!errors.length){
+    word=verifyWordManuscriptCohorts({repoRoot,cohorts:wordCohorts,currentHead,requiredCells});
+    if(!word.ok)errors.push('INTEROP_MIXED_WORD_FAILED:'+word.errors.join('|'));
+  }
+  const git=args=>spawnSync('git',args,{cwd:repoRoot,encoding:'utf8'});
+  const origin=git(['rev-parse','origin/main']),head=git(['rev-parse','HEAD']);
+  const tree=git(['rev-parse','HEAD^{tree}']),status=git(['status','--porcelain']);
+  const currentTree=tree.status===0?tree.stdout.trim():null;
+  const reconciled=reconcileInteropAggregateReports({wordReport:word,googleReport:google,
+    requiredCellIds:requiredCells?.map(c=>c.cellId),currentHead,currentTree});
+  errors.push(...reconciled.errors);
+  if(origin.status!==0||head.status!==0||tree.status!==0||status.status!==0
+    ||origin.stdout.trim()!==currentHead||head.stdout.trim()!==currentHead||status.stdout.trim())
+    errors.push('INTEROP_MIXED_CURRENT_MAIN_CHANGED');
+  const ok=!errors.length,acceptedCellIds=ok?reconciled.acceptedCellIds:[];
+  return {ok,errors,contractId:CONTRACT_ID,evidenceMode:'INTEROP_MIXED_COHORTS_V1',
+    authoritativeAdmission:ok,requiredCells:EXPECTED_REQUIRED_CELLS,
+    recordedCells:acceptedCellIds.length,passedRequiredCells:acceptedCellIds.length,acceptedCellIds,
+    diagnosticPassedRequiredCells:0,broadPassClaim:false,
+    claimVerdict:ok?'NEEDS_MORE_EVIDENCE':'FAIL_INTEROP_MIXED_EVIDENCE',
+    statusCounts:{PASS:acceptedCellIds.length,NOT_EXECUTED:EXPECTED_REQUIRED_CELLS-acceptedCellIds.length},
+    currentHead:ok?currentHead:null,currentTree:ok?currentTree:null,
+    percentage:acceptedCellIds.length/EXPECTED_REQUIRED_CELLS*100,
+    cellDecisions:ok?reconciled.cellDecisions:[],
+    cohortProvenance:ok?{word:word.cohortProvenance,google:{labRoot:googleRoot,
+      runIds:[...googleCohort.runIds],policySha256:google.policySha256,
+      acceptedCellIds:google.acceptedCellIds,observations:google.rawReadbacks.map(r=>({
+        runId:r.runId,observationArtifactHash:r.observationArtifactHash}))}}:null,
+    seconds:(performance.now()-started)/1000,
+    limitations:['Each route has independent raw verification on the same exact current main.',
+      'Only unique acceptedCellIds count; a failed route or duplicate invalidates the combined report.',
+      'Unexecuted cells and release readiness remain unproved.']};
+}
+
 function main() {
   const cohortArgs = [];
+  let googleCohort=null;
   for (let i = 2; i < process.argv.length; i++) {
     if (process.argv[i] === '--word-manuscript-cohort') {
       cohortArgs.push({labRoot: String(process.argv[i + 1] || '').trim(),
         runIds: String(process.argv[i + 2] || '').trim().split(',')});
       i += 2;
+    } else if (process.argv[i] === '--google-office-cohort') {
+      if(googleCohort)throw new Error('INTEROP_MIXED_DUPLICATE_GOOGLE_COHORT');
+      googleCohort={labRoot:String(process.argv[i+1]||'').trim(),
+        runIds:String(process.argv[i+2]||'').trim().split(',')};
+      i+=2;
     }
   }
   const manuscriptIndex=process.argv.indexOf('--word-manuscript-lab-root');
@@ -1679,6 +1792,7 @@ function main() {
     : String(process.argv[externalEvidencePackageRootIndex + 1] || '').trim();
   const report = verifyInterop100(repoRootFromHere(), {
     ...(cohortArgs.length ? {wordManuscriptCohorts: cohortArgs} : {}),
+    ...(googleCohort ? {googleOfficeCohort:googleCohort} : {}),
     ...(manuscriptIndex===-1?{}:{wordManuscriptLabRoot:String(process.argv[manuscriptIndex+1]||'').trim()}),
     ...(wordBatchIndex===-1?{}:{wordTextOrderLabRoot:String(process.argv[wordBatchIndex+1]||'').trim()}),
     ...(wordBatchRunsIndex===-1?{}:{[manuscriptIndex===-1?'wordTextOrderRunIds':'wordManuscriptRunIds']:String(process.argv[wordBatchRunsIndex+1]||'').trim().split(',')}),

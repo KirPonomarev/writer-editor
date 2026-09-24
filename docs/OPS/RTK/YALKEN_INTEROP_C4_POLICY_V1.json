@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "YALKEN_INTEROP_C4_POLICY_V1",
+  "evidenceMode": "GOOGLE_OFFICE_C4_BATCH_V1",
+  "productBaseHead": "bfd79fd3f775be4fb6388643094b6ed7c02c6957",
+  "productSpecSha256": "5a4bc6e1d3946028ca4fa71fba622727a29d65d5a1c0cf7e5a76126504ddad93",
+  "cellIds": [
+    "TEXT__SINGLE_SCENE__C4__SOURCE_RUNTIME",
+    "ORDER__SINGLE_SCENE__C4__SOURCE_RUNTIME",
+    "TEXT__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME",
+    "ORDER__SINGLE_SCENE__C4__PACKAGED_BUILD_RUNTIME"
+  ],
+  "requiredHops": [
+    "YALKEN_DOCX_EXPORT",
+    "GOOGLE_OFFICE_LIFECYCLE",
+    "YALKEN_RETURN_INTAKE"
+  ],
+  "notBeforeUtc": "2026-09-24T00:00:00Z",
+  "labRegistryPath": "/Volumes/T7-Secure/storage/PROJECTS.json",
+  "labRegistryKey": "yalken-interop-lab",
+  "labCanonicalRoot": "/Volumes/T7-Secure/storage/yalken/interop-lab/r24-portability-lab-v2",
+  "labManagedRoot": "/Volumes/T7-Secure/worktrees/yalken/interop-lab",
+  "labBaseHead": "72f767de28306218e1a7bcb1754e6dc8dc4f31e7",
+  "labBaseTree": "e34df1a8334f66bd258cbfc8a0ec960135d0cb27",
+  "labRegistrySha256": "6ff83d79ea88b61f77f7c660c396f75ec55dabc07eb17ef354e6e2c179faaa51",
+  "allowedLabDeltaPaths": [
+    "LAB_MANIFEST.json",
+    "data/artifacts/ARTIFACTS.json",
+    "data/evidence/ledger.jsonl"
+  ],
+  "readerBindings": [
+    {
+      "path": "scripts/ops/rtk-interop-c4-google-office-readback.py",
+      "sha256": "decab554801a51d3fde582a012d84c305b3d6cad2143dfbd264cf19ef56349ce"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-order-c1-readback.py",
+      "sha256": "e24b8784fc9b8f62d5b9ebaaf0e3ebc4ef0822d58da83bcc6e3ecde793fa2b9e"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-text-c1-readback.py",
+      "sha256": "0afbb89f587a4189c0d984fc9e410dcb4c53f436f54c5b54c9d642845b4d66bb"
+    },
+    {
+      "path": "scripts/ops/rtk-interop-c1-raw-readback.py",
+      "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
+    }
+  ],
+  "claimBoundary": "Only fresh exact-head C4 single-scene TEXT and ORDER, source and packaged independently. Historical runs and Lab PASS carry zero admission credit."
+}
