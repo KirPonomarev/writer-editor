@@ -1696,6 +1696,20 @@ function parseTextRevisions(documentXml, documentScan, cryptoPort, budgets, budg
       && inner.openStart > token.openStart
       && inner.closeEnd <= token.closeEnd);
     if (containsParagraphElement) continue;
+    // Office-mode DOCX may place self-closing tracked markers around the
+    // substantive revision inside w:sdt wrappers. They have no body or
+    // semantic atoms, so emitting them as TextRevisions creates phantom
+    // changes and can consume the neighboring replacement group. Keep their
+    // provenance as an explicit diagnostic, never as an apply candidate.
+    if (token.selfClosing) {
+      reasons.push(reason(
+        'RTK_EMPTY_TRACKED_REVISION_NOOP',
+        `reviewIr.textRevisions.${attr(token, 'id', W_NS) || token.openStart}`,
+        'Self-closing tracked marker has no text effect.',
+        { operation: token.localName === 'ins' ? 'insert' : 'delete', sourceXmlProvenance: provenance(token) },
+      ));
+      continue;
+    }
     const atoms = extractSemanticAtoms(documentXml, documentScan, token);
     const text = semanticAtomsToText(atoms);
     const revision = {

@@ -293,6 +293,37 @@ test('B02 parser does not form replacement groups across visible run boundaries'
   }
 });
 
+test('B02 parser treats empty Office SDT revision wrappers as no-op evidence, preserving one replacement', async () => {
+  const parser = await loadParser();
+  // Reduced from a real Office-mode DOCX return: Google wraps one suggestion in
+  // content controls and emits empty, self-closing ins/del markers around it.
+  const wrapper = (tag, body, author = 'Ada') => `<w:sdt><w:sdtPr><w:tag w:val="goog_rdk"/></w:sdtPr><w:sdtContent><w:${tag} w:id="0" w:author="${author}"${body === null ? '/>' : `>${body}</w:${tag}>`}</w:sdtContent></w:sdt>`;
+  const insertion = wrapper('ins', '<w:r><w:t>sentinel round1</w:t></w:r>');
+  const deletion = wrapper('del', '<w:r><w:delText>sentinel alpha</w:delText></w:r>');
+  const officeBody = (gap = '', deletionAuthor = 'Ada') => `<w:p><w:r><w:t>Body text </w:t></w:r>${wrapper('ins', null)}${insertion}${wrapper('ins', null)}${gap}${wrapper('del', null)}${deletionAuthor === 'Ada' ? deletion : wrapper('del', '<w:r><w:delText>sentinel alpha</w:delText></w:r>', deletionAuthor)}${wrapper('del', null)}<w:r><w:t>.</w:t></w:r></w:p>`;
+
+  const returned = parser.parseReviewTransportPackageV2({ parts: baseParts(documentXml(officeBody())) }, { cryptoPort });
+  assertReviewAnalysisOnly(returned);
+  assert.deepEqual(returned.reviewIr.textRevisions.map(({ operation, text }) => ({ operation, text })), [
+    { operation: 'insert', text: 'sentinel round1' },
+    { operation: 'delete', text: 'sentinel alpha' },
+  ]);
+  assert.equal(replacementGroupIds(returned).length, 1);
+  assert.equal(returned.reasons.filter((item) => item.code === 'RTK_EMPTY_TRACKED_REVISION_NOOP').length, 4);
+
+  const visibleBoundary = parser.parseReviewTransportPackageV2({
+    parts: baseParts(documentXml(officeBody('<w:r><w:t>visible</w:t></w:r>'))),
+  }, { cryptoPort });
+  assertReviewAnalysisOnly(visibleBoundary);
+  assert.equal(replacementGroupIds(visibleBoundary).length, 0);
+
+  const differentAuthor = parser.parseReviewTransportPackageV2({
+    parts: baseParts(documentXml(officeBody('', 'Other'))),
+  }, { cryptoPort });
+  assertReviewAnalysisOnly(differentAuthor);
+  assert.equal(replacementGroupIds(differentAuthor).length, 0);
+});
+
 test('B02 parser replacement grouping uses a boundary index and stays count-stable on dense revisions', async () => {
   const parser = await loadParser();
   const source = fs.readFileSync(path.join(process.cwd(), PARSER_PATH), 'utf8');
