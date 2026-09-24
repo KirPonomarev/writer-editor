@@ -1544,6 +1544,123 @@
       "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-24--c4-office-raw-return-compat.md",
+      "sha256": "e67880e87a422320ba059bf24a31f3ee6e7544c24a68200df73f6d1d7aa629da",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "sha256": "1ab3bc1b9d83b443d83d2010221bfcc944f4c6e99ebc2b1f5e6ff49bae438759",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "8df112592b38faed8da43dc0c3ba717f32a372446f99a56e64baa0144ca057bc",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "8c65c18329bac0bb3c71dde082fbd8dbd2adb1862e4bac7ebb4dc89957a00861",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "d64d907945c85869ee54ed26bfe4f37adaa98242920c4a18b3556679f44923ff",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
+      "sha256": "28e28195e4f10b7a18513161c8cf7d3adedbfc306507ae898946849e1cf3db43",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "1fb273e5d2537a77e4223bb68cfd3550d6b0e1b8a2caf9850f699f03ca9b4107",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "abaedc1986354909df8c7bb97d5a161019aa18e009d1aff2a335b4525270242e",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "b1c3b153fc28e0ee407bbf0e65c4dcfb7d1b5c5a7c3ca4bc4a19ea93eebee05f",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7248d1584063ae8940facd77d11a1d5a829bb476f7d2c08c8ebe271a51bf63a3",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:12:33.968Z",
+      "rationale": "Owner-authorized bounded Google Office-mode raw DOCX compatibility and exact existing Data C1 binding refresh. Signed custom metadata and all native, independent, official verifier gates remain mandatory; this approval alone grants zero interop cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs",
+      "sha256": "78318e4c11fa2b6a8eccdd933d024b8699a675394f13747ca9f8777f831b7f5a",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:14:02.325Z",
+      "rationale": "Owner-authorized exact current-byte shared post-audit admission for the existing interop product chain plus Google Office-mode return compatibility. No denominator, independent oracle, physical gate or accepted cell credit is changed by this registry entry.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "bd77bde7e98be8b4ff38ea5738e7df4eb904631f33aa445423abac043f8ac835",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:14:02.325Z",
+      "rationale": "Owner-authorized exact current-byte shared post-audit admission for the existing interop product chain plus Google Office-mode return compatibility. No denominator, independent oracle, physical gate or accepted cell credit is changed by this registry entry.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "d85b474dd388f49c95e6e7bd860b2fe96be057b4533951e6c798f518be39e0df",
+      "approvedBy": "owner-delegated-codex:INTEROP-C4-OFFICE-RAW-RETURN-20260924",
+      "approvedAtUtc": "2026-09-24T14:14:02.325Z",
+      "rationale": "Owner-authorized exact current-byte shared post-audit admission for the existing interop product chain plus Google Office-mode return compatibility. No denominator, independent oracle, physical gate or accepted cell credit is changed by this registry entry.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ],
   "evidenceStampIds": [
