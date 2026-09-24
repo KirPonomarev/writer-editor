@@ -42,12 +42,12 @@ async function fixture(paragraphs,{rich=false}={}){
   const gate=s=>context.buildFullManuscriptProvisionalSelfParse({source:s,revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),coreManifest:s.advisoryManifest.coreManifest});
   return {source,gate,bridge,context};
 }
-async function sectionFixture(){
+async function sectionFixture({trailingEmpty=false}={}){
   const bridge=await import(pathToFileURL(path.join(ROOT,'src/io/revisionBridge/index.mjs')));
   const context=harness();
   const scenes=[
     {sceneId:'roman/part-01/chapter-01/a.txt',scenePath:'/synthetic/roman/part-01/chapter-01/a.txt',text:'a-1\na-2',order:0},
-    {sceneId:'roman/part-01/chapter-01/b.txt',scenePath:'/synthetic/roman/part-01/chapter-01/b.txt',text:'b-1',order:1},
+    {sceneId:'roman/part-01/chapter-01/b.txt',scenePath:'/synthetic/roman/part-01/chapter-01/b.txt',text:trailingEmpty?'b-1\n':'b-1',order:1},
     {sceneId:'roman/part-01/chapter-02/c.txt',scenePath:'/synthetic/roman/part-01/chapter-02/c.txt',text:'c-1\nc-2',order:2},
   ];
   const source=buildFullManuscriptDocxReviewPacketSource({projectId:'section-project',projectRoot:'/synthetic',manifestPath:'/synthetic/manifest.json',scenes,expectedOrderedSceneIds:scenes.map(s=>s.sceneId)},{revisionBridge:bridge,cryptoPort:context.createRtkReviewTransportCryptoPort(),createdAtUtc:'2026-09-18T00:00:00Z',roundIdHex:'c'.repeat(32),keyIdHex:'d'.repeat(32),hmacSecret:'section-local-key-never-published'});
@@ -84,6 +84,38 @@ test('Full manuscript Word sections bind canonical scene groups to exact OOXML b
   assert.equal(binding.ok,true,JSON.stringify(binding));
   assert.equal(binding.proof.protectedSections[0].properties.pageSize.orientation,'portrait');
   assert.equal(binding.proof.protectedSections[0].properties.margins.leftTwips,1440);
+});
+test('Office transport retains an authored empty section carrier and only normalizes omitted Word defaults',async()=>{
+  const {source,bridge,context}=await sectionFixture({trailingEmpty:true});
+  source.officeModeTransport=true;
+  source.localAuthorityCapsule.officeModeTransport=true;
+  const bytes=buildDocxReviewPacketBuffer(source);
+  const publication=await context.buildFullManuscriptPublicationGate(source,bytes,bridge);
+  assert.equal(publication.ok,true,JSON.stringify(publication));
+  const extracted=bridge.extractDocxReviewTransportPackagePartsFromZipBytes({bytes},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+  assert.equal(extracted.ok,true,JSON.stringify(extracted));
+  const xml=extracted.parts['word/document.xml'].toString('utf8');
+  assert.ok(xml.includes('<w:t>\u2060</w:t>'));
+  assert.equal(buildDocxReviewPacketBuffer({...source,officeModeTransport:false}).includes(Buffer.from('\u2060')),false);
+  const returned=buildStoredZip(Object.entries(extracted.parts).map(([name,data])=>({name,data:name==='word/document.xml'
+    ?data.toString('utf8').replaceAll(' w:gutter="0"','').replaceAll('<w:cols w:num="1" w:space="720"/>','')
+    :data})));
+  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes:returned,hmacSecret:source.forbiddenSecret,
+    expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort:context.createRtkReviewTransportCryptoPort()});
+  assert.equal(parsed.ok,true,JSON.stringify(parsed));
+  const signedDigest=parsed.authorityCarrier?.selectedCarrier?.payload?.documentSectionsDigest;
+  const binding=validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,
+    returned:parsed.reviewIr.documentSections,signedDigest,allowOfficeDefaultOmissions:true});
+  assert.equal(binding.ok,true,JSON.stringify(binding));
+  assert.equal(binding.proof.lossLedger.providerNormalizedFields.length,4);
+  const strict=validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,
+    returned:parsed.reviewIr.documentSections,signedDigest});
+  assert.equal(strict.ok,false);
+  const mutated=clone(parsed.reviewIr.documentSections);
+  mutated.protectedSections[0].properties.pageSize.widthTwips+=1;
+  const changed=validateFullManuscriptDocumentSectionsReturn({expected:source.documentSections,
+    returned:mutated,signedDigest,allowOfficeDefaultOmissions:true});
+  assert.equal(changed.ok,false);
 });
 test('Public export capsule preserves only a typed signed section digest',async()=>{
   const {source}=await sectionFixture();

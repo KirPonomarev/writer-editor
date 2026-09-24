@@ -1117,6 +1117,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     expected: localAuthority.documentSections,
     returned: finalParse.reviewIr?.documentSections,
     signedDigest: finalPayload.documentSectionsDigest,
+    allowOfficeDefaultOmissions: source.officeModeTransport === true,
   });
   if (!documentSectionsBinding.ok) {
     return {
@@ -4698,6 +4699,10 @@ async function readCanonicalNotesForDocxExport(projectId, projectRoot) {
 }
 
 async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
+  if (payload.options?.officeModeTransport !== undefined
+    && payload.options.officeModeTransport !== true) {
+    throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_OFFICE_TRANSPORT_INVALID');
+  }
   if (isDirty || autoSaveInProgress) {
     throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_DIRTY_EDITOR_BLOCKED');
   }
@@ -4756,6 +4761,8 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
     revisionBridge,
     cryptoPort: createRtkReviewTransportCryptoPort(),
   });
+  source.officeModeTransport = payload.options?.officeModeTransport === true;
+  source.localAuthorityCapsule.officeModeTransport = source.officeModeTransport;
   source.publicationOwner = activeStage10ApplicationBootstrap;
   // ROUND-01 (V3): import the export-time secret into the main-process-only
   // vault and patch the durable capsule with the opaque keyRef + public
@@ -9239,6 +9246,7 @@ async function inspectDocxReviewReturnIntakeV2({
     expected: localAuthority.documentSections,
     returned: verifiedParserResult.reviewIr?.documentSections,
     signedDigest: payload.documentSectionsDigest,
+    allowOfficeDefaultOmissions: localAuthority.officeModeTransport === true,
   });
   if (!documentSectionsBinding.ok) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH', {

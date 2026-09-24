@@ -662,13 +662,36 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
     schemaVersion: returned.schemaVersion,
     protectedSections: returnedSections,
   };
+  const normalizedSections = cloneJson(returnedSections);
+  const providerNormalizedFields = [];
+  if (input.allowOfficeDefaultOmissions === true && returnedSections.length === expectedSections.length) {
+    for (const [index, section] of normalizedSections.entries()) {
+      const expectedSection = expectedSections[index];
+      if (section?.properties?.margins?.gutterTwips === null
+        && expectedSection?.properties?.margins?.gutterTwips === 0) {
+        section.properties.margins.gutterTwips = 0;
+        providerNormalizedFields.push(`section-${index}:default-gutter-zero`);
+      }
+      if (section?.carriers?.columns === false
+        && section?.properties?.columns?.count === 1
+        && section?.properties?.columns?.spaceTwips === null
+        && expectedSection?.properties?.columns?.count === 1
+        && expectedSection?.properties?.columns?.spaceTwips === 720) {
+        section.carriers.columns = true;
+        section.properties.columns.spaceTwips = 720;
+        providerNormalizedFields.push(`section-${index}:default-single-column`);
+      }
+    }
+  }
+  const normalizedProjection = { schemaVersion: returned.schemaVersion, protectedSections: normalizedSections };
   const expectedDigest = normalizeString(expected.protectedDigest);
   const signedDigest = normalizeString(input.signedDigest);
   if (returned.schemaVersion !== WORD_DOCUMENT_SECTIONS_SCHEMA) mismatches.push('schemaVersion');
   if (returned.applicable !== true) mismatches.push('applicable');
   if (returnedSections.length !== expectedSections.length) mismatches.push('sectionCount');
-  if (JSON.stringify(returnedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
-  if (normalizeString(returned.protectedDigest) !== expectedDigest) mismatches.push('protectedDigest');
+  if (JSON.stringify(normalizedProjection) !== JSON.stringify(expectedProjection)) mismatches.push('protectedSections');
+  if (normalizeString(returned.protectedDigest) !== (input.allowOfficeDefaultOmissions === true
+    ? sha256Text(canonicalWordBookmarkIdentityJson(returnedProjection)) : expectedDigest)) mismatches.push('protectedDigest');
   if (signedDigest !== expectedDigest) mismatches.push('signedDigest');
   if (mismatches.length > 0) {
     return {
@@ -687,10 +710,13 @@ function validateFullManuscriptDocumentSectionsReturn(input = {}) {
       schemaVersion: WORD_DOCUMENT_SECTIONS_SCHEMA,
       authority: 'ADVISORY_ONLY_NO_PROJECT_STRUCTURE_WRITE',
       protectedDigest: expectedDigest,
-      protectedSections: cloneJson(returnedSections),
+      protectedSections: cloneJson(normalizedSections),
       sourceBindings: Array.isArray(expected.sourceBindings) ? cloneJson(expected.sourceBindings) : [],
       policies: isPlainObjectValue(expected.policies) ? cloneJson(expected.policies) : {},
-      lossLedger: isPlainObjectValue(returned.lossLedger) ? cloneJson(returned.lossLedger) : {},
+      lossLedger: {
+        ...(isPlainObjectValue(returned.lossLedger) ? cloneJson(returned.lossLedger) : {}),
+        ...(providerNormalizedFields.length ? { providerNormalizedFields } : {}),
+      },
     },
   };
 }
