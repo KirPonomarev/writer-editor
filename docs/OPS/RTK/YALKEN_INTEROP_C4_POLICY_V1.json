@@ -30,6 +30,15 @@
     "src/m1-text-single-scene-source-runtime.mjs",
     "test/m0-audit-repair.test.mjs"
   ],
+  "verifierPromotionPaths": [
+    "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+    "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+    "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+    "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+    "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+    "test/contracts/rtk-interop-c4-google-office.contract.test.js"
+  ],
   "labCodeBindings": [
     {
       "path": "src/m1-text-single-scene-source-runtime.mjs",
@@ -58,5 +67,5 @@
       "sha256": "e3f8ca4bd0075f425a7793dd0665a2af798be68af642abe216fb3f342c4274f8"
     }
   ],
-  "claimBoundary": "Only fresh exact-head C4 single-scene TEXT and ORDER, source and packaged independently. Historical runs and Lab PASS carry zero admission credit."
+  "claimBoundary": "Only the four independently proved C4 single-scene TEXT and ORDER cells are eligible. A prior physical run may be rehydrated on an exact merged verifier HEAD only when the complete Git delta from its clean runtime revision is restricted to the pinned verifier-only paths; product runtime changes require new physical evidence. Lab PASS alone carries zero admission credit."
 }
