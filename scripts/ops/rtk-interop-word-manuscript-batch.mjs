@@ -10,6 +10,9 @@ import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,manuscriptUsesSafeC
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-manuscript-readback.py';
 const SPEC='docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json';
+const WORD_READER_PATH='scripts/ops/rtk-interop-word-manuscript-batch.mjs';
+const LEGACY_WORD_READER_SHA256='38efdabcb3305a726c4f63e6b47b684d93042b16c2c711c029ca34ff13d93717';
+const WORD_PROMOTION_BASE_SHA='a4d186e026af0d532c73d2108e5369252302574b';
 export const MANUSCRIPT_BATCH_MODE='WORD_MANUSCRIPT_BATCH_V1';
 // Exact merged successor bytes. The only runtime delta here exposes a bounded
 // failure code after a rejected write; successful Word journeys are unchanged.
@@ -281,6 +284,29 @@ function clean(root){
   const [head,tree]=git(['rev-parse','HEAD','HEAD^{tree}']).trim().split('\n');
   demand(sha40(head)&&sha40(tree),'MANUSCRIPT_BATCH_GIT_IDENTITY');return {head,tree};
 }
+// The frozen Data C1 policy names the original Word reader. A later verifier-only
+// successor is certified independently by the required post-audit gate. Query
+// that gate in a separate process to avoid an import cycle through the aggregate.
+function certifiedWordReaderSuccessor(){
+  const query="import {verifyR24InteropWordPromotionSuccessor} from './scripts/ops/r24/corrective/post-audit-certification-set.mjs'; process.stdout.write(JSON.stringify(verifyR24InteropWordPromotionSuccessor()));";
+  const result=spawnSync(process.execPath,['--input-type=module','-e',query],
+    {cwd:ROOT,encoding:'utf8',timeout:10000,maxBuffer:1024*1024});
+  demand(!result.error&&result.status===0&&result.stdout,'MANUSCRIPT_BATCH_READER_SUCCESSOR_CERT');
+  try{return JSON.parse(result.stdout);}catch{throw new Error('MANUSCRIPT_BATCH_READER_SUCCESSOR_CERT');}
+}
+export function validateManuscriptReaderSuccessor({binding,actualSha256,certification,currentHead}){
+  demand(binding?.path===WORD_READER_PATH&&binding.sha256===LEGACY_WORD_READER_SHA256,
+    'MANUSCRIPT_BATCH_READER_PIN');
+  const entries=certification?.bindings;
+  demand(certification?.status==='PASS'&&certification.baseSha===WORD_PROMOTION_BASE_SHA
+    &&certification.candidateSha===currentHead&&certification.cellAcceptanceAuthority===false
+    &&Array.isArray(entries)&&entries.length===2
+    &&same(entries.map(x=>x.path).sort(),[
+      WORD_READER_PATH,'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js'].sort())
+    &&entries.every(x=>sha64(x.sha256))
+    &&entries.find(x=>x.path===WORD_READER_PATH)?.sha256===actualSha256,
+    'MANUSCRIPT_BATCH_READER_SUCCESSOR_CERT');
+}
 export function validateManuscriptVerifierPromotion({repoRoot=ROOT,runtimeIdentity,verifierIdentity,allowedPaths}){
   demand(runtimeIdentity&&verifierIdentity&&sha40(runtimeIdentity.head)&&sha40(runtimeIdentity.tree)
     &&sha40(verifierIdentity.head)&&sha40(verifierIdentity.tree),'MANUSCRIPT_BATCH_PROMOTION_IDENTITY');
@@ -434,7 +460,13 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     transportPolicyResolution=validateGoogleManuscriptTransport(batch.googleNativeTransport,JSON.parse(specFile.bytes),specSha256);
     demand(requiredCells?.length===1120&&new Set(requiredCells.map(c=>c.cellId)).size===1120
       &&MANUSCRIPT_CELLS.every(id=>requiredCells.some(c=>c.cellId===id)),'MANUSCRIPT_BATCH_DENOMINATOR');
-    for(const b of batch.readerBindings)demand(hash(readOrderFile(ROOT,b.path).bytes)===b.sha256,'MANUSCRIPT_BATCH_READER_PIN');
+    for(const b of batch.readerBindings){
+      const actualSha256=hash(readOrderFile(ROOT,b.path).bytes);
+      if(actualSha256===b.sha256)continue;
+      demand(b.path===WORD_READER_PATH&&b.sha256===LEGACY_WORD_READER_SHA256,'MANUSCRIPT_BATCH_READER_PIN');
+      validateManuscriptReaderSuccessor({binding:b,actualSha256,
+        certification:certifiedWordReaderSuccessor(),currentHead:identity.head});
+    }
     const manifest=json(labRoot,'LAB_MANIFEST.json'),shadow=manifest.shadow.yalken;
     runtimeRoot=fs.realpathSync(shadow.root);runtimeIdentity=clean(runtimeRoot);
     demand(shadow.readOnly===true&&shadow.head===runtimeIdentity.head&&shadow.tree===runtimeIdentity.tree
