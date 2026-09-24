@@ -5518,6 +5518,122 @@ function docxReviewPreviewSessionBookmarkGuard(exportMap, paragraphs, options = 
   } };
 }
 
+// Office may rewrite every exported bookmark and w14 identity. In that one
+// case, an authenticated source map plus a verified *whole-document* text and
+// section vector can establish identity independently of paragraph position.
+// This does not rescue partial bookmark loss or a displaced known locator.
+function docxReviewPreviewSessionFullTextVectorGuard(exportMap, projection, verifiedSections) {
+  const scenes = Array.isArray(exportMap?.scenes) ? exportMap.scenes : [];
+  const paragraphs = Array.isArray(projection?.formattingParagraphs) ? projection.formattingParagraphs : [];
+  const sections = Array.isArray(verifiedSections?.protectedSections) ? verifiedSections.protectedSections : [];
+  const bindings = Array.isArray(verifiedSections?.sourceBindings) ? verifiedSections.sourceBindings : [];
+  const revisions = Array.isArray(projection?.textRevisions) ? projection.textRevisions : [];
+  if (exportMap?.scope !== 'full-manuscript'
+    || verifiedSections?.status !== 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
+    || scenes.length === 0 || sections.length === 0 || sections.length !== bindings.length
+    || revisions.length !== 2 || (projection?.moveRevisions?.length || 0) !== 0
+    || (projection?.structureChanges?.length || 0) !== 0) return null;
+  const ordered = scenes.flatMap((scene) => (Array.isArray(scene?.blocks) ? scene.blocks : [])
+    .map((block) => ({ sceneId: normalizeString(scene.sceneId), block })));
+  if (ordered.length === 0 || ordered.length !== paragraphs.length
+    || ordered.some(({ sceneId, block }, index) => !sceneId || !normalizeString(block?.blockId)
+      || block.documentParagraphIndex !== index)
+    || paragraphs.some((paragraph, index) => paragraph?.paragraphIndex !== index
+      || typeof paragraph.paragraphText !== 'string'
+      || paragraph.paragraphFormattingInvalid === true
+      || !Array.isArray(paragraph.bookmarkNames) || paragraph.bookmarkNames.length > 0)) return null;
+  const declaredBookmarks = new Set();
+  const declaredParaIds = new Map();
+  const declaredTextIds = new Map();
+  for (const [index, { block }] of ordered.entries()) {
+    const signals = Array.isArray(block.wordSignals) ? block.wordSignals : [];
+    for (const signal of signals) {
+      if (signal?.kind === 'bookmarkName') {
+        const name = normalizeString(signal.value?.name).toLowerCase();
+        if (!name || declaredBookmarks.has(name)) return null;
+        declaredBookmarks.add(name);
+      }
+      if (signal?.kind === 'w14ParaIdTextId') {
+        for (const [key, byId] of [['paraId', declaredParaIds], ['textId', declaredTextIds]]) {
+          const value = normalizeString(signal.value?.[key]).toLowerCase();
+          if (value && byId.has(value)) return null;
+          if (value) byId.set(value, index);
+        }
+      }
+    }
+    const runs = block?.formatIr?.runs;
+    if (!Array.isArray(runs) || runs.some((run) => typeof run?.text !== 'string')
+      || `sha256:${sha256Hex(runs.map((run) => run.text).join(''))}` !== block.canonicalTextSha256) return null;
+  }
+  if (declaredBookmarks.size !== ordered.length) return null;
+  for (const [index, paragraph] of paragraphs.entries()) {
+    const paraId = normalizeString(paragraph.paraId).toLowerCase();
+    const textId = normalizeString(paragraph.textId).toLowerCase();
+    if ((declaredParaIds.has(paraId) && declaredParaIds.get(paraId) !== index)
+      || (declaredTextIds.has(textId) && declaredTextIds.get(textId) !== index)) return null;
+  }
+  let nextParagraphIndex = 0;
+  for (const [ordinal, section] of sections.entries()) {
+    if (section?.ordinal !== ordinal || section.startParagraphIndex !== nextParagraphIndex
+      || !Number.isSafeInteger(section.endParagraphIndex)
+      || section.endParagraphIndex < nextParagraphIndex || section.endParagraphIndex >= ordered.length
+      || bindings[ordinal]?.ordinal !== ordinal) return null;
+    const sceneIds = [...new Set(ordered.slice(nextParagraphIndex, section.endParagraphIndex + 1)
+      .map(({ sceneId }) => sceneId))];
+    if (JSON.stringify(sceneIds) !== JSON.stringify(bindings[ordinal].sceneIds)) return null;
+    nextParagraphIndex = section.endParagraphIndex + 1;
+  }
+  if (nextParagraphIndex !== ordered.length) return null;
+  const sectionByEnd = new Map(sections.map((section) => [section.endParagraphIndex, section]));
+  const [first, second] = revisions;
+  const inserted = [first, second].find((revision) => revision?.operation === 'insert');
+  const deleted = [first, second].find((revision) => revision?.operation === 'delete');
+  const index = inserted?.paragraphIndex;
+  if (!inserted || !deleted || !Number.isSafeInteger(index) || index < 0 || index >= ordered.length
+    || deleted.paragraphIndex !== index || !normalizeString(inserted.replacementGroupId)
+    || inserted.replacementGroupId !== deleted.replacementGroupId
+    || !normalizeString(inserted.text) || !normalizeString(deleted.text)
+    || inserted.text.includes(deleted.text)) return null;
+  const finalText = paragraphs[index].paragraphText;
+  if (finalText.indexOf(inserted.text) < 0
+    || finalText.indexOf(inserted.text) !== finalText.lastIndexOf(inserted.text)) return null;
+  const originalAtTarget = finalText.replace(inserted.text, deleted.text);
+  if (originalAtTarget.indexOf(deleted.text) !== originalAtTarget.lastIndexOf(deleted.text)) return null;
+  for (const [paragraphIndex, { block }] of ordered.entries()) {
+    let originalText = paragraphIndex === index ? originalAtTarget : paragraphs[paragraphIndex].paragraphText;
+    const section = sectionByEnd.get(paragraphIndex);
+    // Office emits a word-joiner carrier for an empty paragraph bearing a
+    // non-final section break. It is never manuscript text.
+    if (originalText === '\u2060' && block.canonicalTextSha256 === `sha256:${sha256Hex('')}`
+      && section?.breakPlacement === 'PARAGRAPH_PROPERTIES') originalText = '';
+    if (`sha256:${sha256Hex(originalText)}` !== block.canonicalTextSha256) return null;
+  }
+  const target = ordered[index];
+  if (ordered.filter(({ block }) => block.canonicalTextSha256 === target.block.canonicalTextSha256).length !== 1) return null;
+  return {
+    sourceAuthority: 'full-manuscript-export-map-full-text-vector',
+    resolveRevision(signal = {}) {
+      return signal.paragraphIndex === index ? {
+        type: 'scene', id: target.sceneId, blockId: target.block.blockId,
+        paragraphIndex: index, documentParagraphIndex: index,
+        sourceAuthority: 'full-manuscript-export-map-full-text-vector',
+      } : null;
+    },
+    resolveComment(signal = {}) {
+      const at = signal.paragraphIndex;
+      const quote = typeof signal.quote === 'string' ? signal.quote : '';
+      if (!Number.isSafeInteger(at) || at < 0 || at >= ordered.length || !quote
+        || paragraphs.filter((paragraph) => paragraph.paragraphText.includes(quote)).length !== 1
+        || paragraphs[at].paragraphText.indexOf(quote) !== paragraphs[at].paragraphText.lastIndexOf(quote)
+        || !paragraphs[at].paragraphText.includes(quote)) return null;
+      const { sceneId, block } = ordered[at];
+      return { type: 'scene', id: sceneId, blockId: block.blockId,
+        paragraphIndex: at, documentParagraphIndex: at,
+        sourceAuthority: 'full-manuscript-export-map-full-text-vector' };
+    },
+  };
+}
+
 function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}) {
   const bounds = docxReviewPreviewSessionCandidateBounds(options);
   const targetScope = docxReviewPreviewSessionTargetScope(options.targetScope);
@@ -6148,6 +6264,8 @@ function returnEvidenceFullManuscriptRevisionAuthority(revision, fallbackTargetS
   return {
     targetScope: docxReviewPreviewSessionTargetScopeOrDefault(resolvedTargetScope),
     blockId: normalizeString(resolvedTargetScope.blockId),
+    sourceAuthority: normalizeString(resolvedTargetScope.sourceAuthority)
+      || 'full-manuscript-export-map-paragraph-signal',
     paragraphIndex: Number.isSafeInteger(resolvedTargetScope.paragraphIndex)
       ? resolvedTargetScope.paragraphIndex
       : -1,
@@ -6197,7 +6315,7 @@ function returnEvidenceTextChangeFromRevision(revision, options = {}) {
   const operationId = docxReviewPreviewSessionOperationIdFromRevision(revision);
   if (operationId) change.operationId = operationId;
   if (fullManuscriptSceneBound) {
-    change.sourceAuthority = 'full-manuscript-export-map-paragraph-signal';
+    change.sourceAuthority = authority.sourceAuthority;
     change.typedUnsupportedSiblingsRemainPending = true;
   }
   return change;
@@ -6213,9 +6331,13 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
     ? options.fullManuscriptExportMap
     : null;
   const bookmarkGuard = docxReviewPreviewSessionBookmarkGuard(fullManuscriptExportMap, projection?.formattingParagraphs, options);
-  const fullManuscriptScopeResolver = bookmarkGuard ? bookmarkGuard.resolve : (fullManuscriptExportMap
+  const fullTextVectorGuard = Object.hasOwn(options, 'fullTextVectorGuard')
+    ? options.fullTextVectorGuard
+    : docxReviewPreviewSessionFullTextVectorGuard(fullManuscriptExportMap, projection, options.verifiedDocumentSections);
+  const fullManuscriptScopeResolver = fullTextVectorGuard ? fullTextVectorGuard.resolveRevision
+    : (bookmarkGuard ? bookmarkGuard.resolve : (fullManuscriptExportMap
     ? docxReviewPreviewSessionBuildFullManuscriptBlockScopeResolver(fullManuscriptExportMap)
-    : null);
+    : null));
   const authorityOptions = {
     ...options,
     fullManuscriptExportMap,
@@ -6298,7 +6420,7 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
         ...(operationId ? { operationId } : {}),
         ...(fullManuscriptSceneBound
           ? {
-              sourceAuthority: 'full-manuscript-export-map-paragraph-signal',
+              sourceAuthority: currentAuthority.sourceAuthority,
               typedUnsupportedSiblingsRemainPending: true,
             }
           : {}),
@@ -6308,7 +6430,9 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
     }
     textChanges.push(returnEvidenceTextChangeFromRevision(current, authorityOptions));
   }
-  if (bookmarkGuard && Array.isArray(options.bookmarkDiagnostics)) options.bookmarkDiagnostics.push(...bookmarkGuard.diagnostics);
+  if (bookmarkGuard && !fullTextVectorGuard && Array.isArray(options.bookmarkDiagnostics)) {
+    options.bookmarkDiagnostics.push(...bookmarkGuard.diagnostics);
+  }
   return textChanges;
 }
 
@@ -6401,11 +6525,16 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
   const fullManuscriptExportMap = isPlainObject(options.fullManuscriptExportMap)
     ? options.fullManuscriptExportMap
     : null;
+  const fullTextVectorGuard = docxReviewPreviewSessionFullTextVectorGuard(
+    fullManuscriptExportMap, projection, options.verifiedDocumentSections,
+  );
   const bookmarkDiagnostics = [];
   const textChanges = returnEvidenceTextChangesFromProjection(projection, {
     targetScope,
     createdAt,
     fullManuscriptExportMap,
+    fullTextVectorGuard,
+    verifiedDocumentSections: options.verifiedDocumentSections,
     bookmarkDiagnostics,
   });
   const commentThreads = returnEvidenceCommentThreadsFromProjection(projection);
@@ -6587,6 +6716,19 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
   // documentParagraphIndex as fallback. Never a raw reparse.
   function sceneAuthorityFromExportMap(thread) {
     if (!isPlainObject(fullManuscriptExportMap)) return null;
+    if (fullTextVectorGuard) {
+      const resolved = fullTextVectorGuard.resolveComment({
+        paragraphIndex: thread?.paragraphIndex,
+        quote: thread?.quotedAnchorText,
+      });
+      return resolved ? {
+        paraId: '', textId: '', bookmarkNames: [], blockId: resolved.blockId,
+        paragraphIndex: resolved.paragraphIndex,
+        documentParagraphIndex: resolved.documentParagraphIndex,
+        authority: resolved.sourceAuthority,
+        targetScope: { type: 'scene', id: resolved.id },
+      } : null;
+    }
     const scenes = Array.isArray(fullManuscriptExportMap.scenes) ? fullManuscriptExportMap.scenes : [];
     const locator = isPlainObject(thread?.anchorLocator) ? thread.anchorLocator : {};
     const wantedParaId = normalizeString(locator.paraId);

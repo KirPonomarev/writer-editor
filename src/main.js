@@ -9415,6 +9415,9 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
         targetScope: activeContext.targetScope,
         createdAt: activeContext.createdAt,
         fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
+        verifiedDocumentSections: authenticatedFullManuscriptExportMap
+          ? returnIntake.parserResult?.documentSectionsBinding
+          : null,
       });
     }
   } catch (error) {
