@@ -1529,10 +1529,10 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "209d4dcdfab729e13b4cb75cc533b9ada76927c47a8c5c21fb17f7a284466736",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
-      "approvedAtUtc": "2026-09-24T05:08:43Z",
-      "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
+      "sha256": "911fca722ab8544e6fbb740a386f45cff7afa54a5d47a22705cf4aa07c99efa9",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:36:20Z",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor pin closure for the corrected raw Google DOCX comment-range reader. Bind only the reviewed current C4 policy and batch verifier bytes; preserve the existing contract test and Lab code hashes, mandatory CI, independent physical proof, frozen 1120 denominator and exact merged-head official acceptance. This metadata repair adds zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -2044,6 +2044,15 @@
       "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
       "approvedAtUtc": "2026-09-24T04:40:31.514Z",
       "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "209d4dcdfab729e13b4cb75cc533b9ada76927c47a8c5c21fb17f7a284466736",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
+      "approvedAtUtc": "2026-09-24T05:08:43Z",
+      "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
