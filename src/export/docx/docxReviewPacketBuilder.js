@@ -298,7 +298,7 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
@@ -307,6 +307,11 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   }
   const textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(block, hyperlinkByHref);
+  // Google Office drops an otherwise empty paragraph carrying a section
+  // break. A word joiner is visually empty but keeps the authored paragraph
+  // and its boundary in the DOCX transport. It is enabled only for C4 export.
+  const sectionCarrier = officeModeTransport && sectionBreak && block.text === ''
+    ? '<w:r><w:t>\u2060</w:t></w:r>' : '';
   const textAlign = toWordParagraphAlignment(block.formatIr?.paragraph?.textAlign);
   const headingLevel = Number(block.formatIr?.paragraph?.headingLevel);
   const paragraphPropertyParts = [];
@@ -348,12 +353,13 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
     paragraphProperties,
     `<w:bookmarkStart w:id="${bookmarkId}" w:name="${escapeXml(bookmarkName)}"/>`,
     textRun,
+    sectionCarrier,
     `<w:bookmarkEnd w:id="${bookmarkId}"/>`,
     '</w:p>',
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes) {
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false) {
   const normalizedSections = normalizeDocumentSections(documentSections, blocks.length);
   const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
     .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
@@ -365,6 +371,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     commentExport,
     paragraphBreaks.get(index) || null,
     documentNotes,
+    officeModeTransport,
   )).join('');
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
@@ -708,7 +715,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes, Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
     { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships) },
-    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes) },
+    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
