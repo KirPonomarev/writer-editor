@@ -155,6 +155,17 @@ export const ALLOWED_POST_EVALUATION_CARRIERS=Object.freeze([
   'test/contracts/review-bridge-product-discoverability-labels.contract.test.js',
   'test/contracts/r24-rcv01a-normative-claim-test-lane-manifest.contract.test.mjs'
 ]);
+// The Data C1 delivery predates the C4 Lab code repair. Admit this successor
+// only while all three candidate Git blobs retain the reviewed exact bytes.
+export const R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR=Object.freeze({
+  baseSha:'9bc01bebf618919c8f48651bd0d79491645ba202',
+  baseTree:'2fb6e7eec06fbb832f67dab04212f152b51879c9',
+  bindings:Object.freeze([
+    {path:'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',sha256:'1d31697ae6011ae0e1464e5c3169d49759707a21903ab19604e389a4adb8cae7'},
+    {path:'scripts/ops/rtk-interop-c4-google-office-batch.mjs',sha256:'dd69a46b99c1b0bc58b33f4fd40e895b783e6b7706095c1ad5f83ed2f3848aa6'},
+    {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3'},
+  ]),
+});
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([
   'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   'src/io/revisionBridge/index.mjs',
@@ -1946,6 +1957,29 @@ export const WP700_CI_REPAIR_TEMPORAL_ADMISSION_EXPECTATION=Object.freeze({
   baseSha:'3ad5522ae2ad23882cd1d3ada92f683f7bca8208',baseTree:'f12efb3c5b272a7d52393d9b01f1629909f4d940',leaseCounter:73,pathDenominator:10,
   refreshedInventoryDigest:'ea0de2ec5f28464e847d581c8bcba0fcaa9a0958a5a4a71bc0092d044f7d9858',inventoryFileDenominator:1312,lateMjsDenominator:8,correctedTerminalTestDigest:'46b15391f32e663a515ea8c91eb2435c07d35be1f8e0a986d060a509cda5fc72'
 });
+export function verifyR24InteropC4LabCodePinSuccessor({candidateSha='HEAD',git=defaultGit}={}){
+  const expectation=R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR;
+  const candidate=gitText(git,['rev-parse',candidateSha]);
+  assert(evaluationTree(git,expectation.baseSha)===expectation.baseTree,'E_INTEROP_C4_SUCCESSOR_BASE_TREE');
+  try{git(['merge-base','--is-ancestor',expectation.baseSha,candidate],{encoding:null});}
+  catch{fail('E_INTEROP_C4_SUCCESSOR_ANCESTRY');}
+  const bindings=expectation.bindings.map(binding=>{
+    let bytes;
+    try{bytes=objectBytes(git,candidate,binding.path);}
+    catch{fail('E_INTEROP_C4_SUCCESSOR_MISSING',binding.path);}
+    assert(h(bytes)===binding.sha256,'E_INTEROP_C4_SUCCESSOR_PIN',binding.path);
+    return{path:binding.path,sha256:binding.sha256};
+  });
+  const policy=JSON.parse(objectBytes(git,candidate,bindings[0].path));
+  assert(policy.schemaVersion==='YALKEN_INTEROP_C4_POLICY_V1'&&policy.evidenceMode==='GOOGLE_OFFICE_C4_BATCH_V1'&&
+    JSON.stringify(policy.allowedLabDeltaPaths)===JSON.stringify(['LAB_MANIFEST.json','dashboard/index.html','data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl','src/m1-text-single-scene-source-runtime.mjs','test/m0-audit-repair.test.mjs'])&&
+    JSON.stringify(policy.labCodeBindings)===JSON.stringify([
+      {path:'src/m1-text-single-scene-source-runtime.mjs',sha256:'a7fa328c62d6d85c36d8182cf684c107151e8dc7c215ab5c3f8126717abd397c'},
+      {path:'test/m0-audit-repair.test.mjs',sha256:'bbbfa513a373fa5e2fb23b10a8b17eca103c477aff1e596e67f940abb4174770'}
+    ]),'E_INTEROP_C4_SUCCESSOR_LAB_CODE_BINDING');
+  return{status:'PASS',baseSha:expectation.baseSha,candidateSha:candidate,admittedPaths:bindings.map(binding=>binding.path),bindings,cellAcceptanceAuthority:false};
+}
+
 const h=(bytes)=>crypto.createHash('sha256').update(bytes).digest('hex');
 const canonicalValueDigest=(value)=>h(canonicalBytes(value).subarray(0,-1));
 const fail=(code,detail='')=>{const error=new Error(`${code}${detail?`:${detail}`:''}`);error.code=code;throw error;};
@@ -7727,6 +7761,10 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   for (const admittedPath of (textOrderC1Exception?.admittedPaths ?? [])) allowedPaths.add(admittedPath);
   const dataC1Exception=allowAuditCycle2Admission?verifyDataC1PostEvaluation({candidateSha:resolvedCandidate,git}):null;
   for(const admittedPath of (dataC1Exception?.admittedPaths??[]))allowedPaths.add(admittedPath);
+  const c4LabCodePinChanged=changed.some(changedPath=>R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR.bindings.some(binding=>binding.path===changedPath));
+  const c4LabCodePinSuccessor=allowAuditCycle2Admission&&c4LabCodePinChanged
+    ? verifyR24InteropC4LabCodePinSuccessor({candidateSha:resolvedCandidate,git}) : null;
+  for(const admittedPath of (c4LabCodePinSuccessor?.admittedPaths??[]))allowedPaths.add(admittedPath);
   for(const changedPath of changed)assert(allowedPaths.has(changedPath),'E_POST_EVALUATION_PATH',changedPath);
   const boundPaths=new Set(value.stages.flatMap((stage)=>stage.artifactBindings.map((binding)=>binding.path)));
   for(const allowed of ALLOWED_POST_EVALUATION_CARRIERS)assert(!boundPaths.has(allowed),'E_POST_EVALUATION_BOUND_ARTIFACT',allowed);
@@ -7737,6 +7775,7 @@ export function verifyCertificationSet({value,fileDigest,candidateSha='HEAD',git
   verificationResult.orderC1PostEvaluationException = orderC1Exception;
   verificationResult.textOrderC1PostEvaluationException = textOrderC1Exception;
   verificationResult.dataC1PostEvaluationException = dataC1Exception;
+  verificationResult.r24InteropC4LabCodePinSuccessor = c4LabCodePinSuccessor;
   verificationResult.rcv00dCurrentIdentityBindingPostEvaluationException = rcv00dCurrentIdentityBindingException;
   verificationResult.docxNotificationOutcomePostEvaluationException = docxNotificationOutcomeException;
   verificationResult.r24CommandPaletteVisibleCommandsPostEvaluationException = r24CommandPaletteVisibleCommandsException;
