@@ -18,7 +18,14 @@ test('C4 policy fixes four denominator IDs, real Google hops and pinned independ
   assert.equal(policy.cellIds.length,4);
   assert.ok(policy.cellIds.every(id=>frozen.has(id)));
   assert.deepEqual(policy.allowedLabDeltaPaths,[
-    'LAB_MANIFEST.json','data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl']);
+    'LAB_MANIFEST.json','dashboard/index.html','data/artifacts/ARTIFACTS.json',
+    'data/evidence/ledger.jsonl','src/m1-text-single-scene-source-runtime.mjs',
+    'test/m0-audit-repair.test.mjs']);
+  assert.deepEqual(policy.labCodeBindings,[
+    {path:'src/m1-text-single-scene-source-runtime.mjs',
+      sha256:'a7fa328c62d6d85c36d8182cf684c107151e8dc7c215ab5c3f8126717abd397c'},
+    {path:'test/m0-audit-repair.test.mjs',
+      sha256:'bbbfa513a373fa5e2fb23b10a8b17eca103c477aff1e596e67f940abb4174770'}]);
   const promotion=JSON.parse(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json')))
     .wordManuscriptBatch.verifierPromotionPaths;
   for(const file of [
@@ -28,6 +35,28 @@ test('C4 policy fixes four denominator IDs, real Google hops and pinned independ
     'test/contracts/rtk-interop-c4-google-office.contract.test.js',
   ])assert.ok(promotion.includes(file),file);
   assert.ok(!promotion.includes('src/main.js'));
+});
+
+test('C4 Lab admission rejects unlisted paths and altered code at an observation revision',async()=>{
+  const c4=await import('../../scripts/ops/rtk-interop-c4-google-office-batch.mjs');
+  const crypto=require('node:crypto');
+  const source=Buffer.from('bounded C4 authored scene source');
+  const testSource=Buffer.from('bounded C4 authored scene test');
+  const sha256=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+  const sourcePath='src/m1-text-single-scene-source-runtime.mjs';
+  const testPath='test/m0-audit-repair.test.mjs';
+  const policy={allowedLabDeltaPaths:[sourcePath,testPath,'LAB_MANIFEST.json'],
+    labCodeBindings:[{path:sourcePath,sha256:sha256(source)},
+      {path:testPath,sha256:sha256(testSource)}]};
+  const valid={changedPaths:[sourcePath,testPath,'LAB_MANIFEST.json'],
+    codeBlobs:{[sourcePath]:source,[testPath]:testSource},policy};
+  assert.doesNotThrow(()=>c4.validateC4LabRevision(valid));
+  assert.throws(()=>c4.validateC4LabRevision({...valid,
+    changedPaths:[...valid.changedPaths,'src/unreviewed-runner.mjs']}),/C4_LAB_CODE_DRIFT/);
+  assert.throws(()=>c4.validateC4LabRevision({...valid,
+    codeBlobs:{...valid.codeBlobs,[sourcePath]:Buffer.from('altered')}}),/C4_LAB_CODE_PIN/);
+  assert.throws(()=>c4.validateC4LabRevision({...valid,
+    codeBlobs:{[sourcePath]:source}}),/C4_LAB_CODE_PIN/);
 });
 
 test('C4 run selection requires one physical execution per exact profile',async()=>{

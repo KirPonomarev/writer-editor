@@ -15,7 +15,12 @@ export const C4_GOOGLE_MODE='GOOGLE_OFFICE_C4_BATCH_V1';
 export const C4_GOOGLE_CELLS=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME'].flatMap(profile=>
   ['TEXT','ORDER'].map(field=>`${field}__SINGLE_SCENE__C4__${profile}`)));
 export const C4_GOOGLE_HOPS=Object.freeze(['YALKEN_DOCX_EXPORT','GOOGLE_OFFICE_LIFECYCLE','YALKEN_RETURN_INTAKE']);
-export const C4_POLICY_SHA256='f8647891abe10dc9359c20cd9b493d3e769ff9a81386a6e3d4061c52638007d8';
+export const C4_POLICY_SHA256='1d31697ae6011ae0e1464e5c3169d49759707a21903ab19604e389a4adb8cae7';
+const C4_LAB_DELTA_PATHS=Object.freeze(['LAB_MANIFEST.json','dashboard/index.html',
+  'data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl',
+  'src/m1-text-single-scene-source-runtime.mjs','test/m0-audit-repair.test.mjs']);
+const C4_LAB_CODE_PATHS=Object.freeze(['src/m1-text-single-scene-source-runtime.mjs',
+  'test/m0-audit-repair.test.mjs']);
 const demand=(ok,code)=>{if(!ok)throw new Error(code);};
 const same=(a,b)=>stableOrderJson(a)===stableOrderJson(b);
 const sha40=value=>typeof value==='string'&&/^[a-f0-9]{40}$/u.test(value);
@@ -65,11 +70,21 @@ export function loadC4Policy(){
     &&policy.productSpecSha256===hash(readOrderFile(ROOT,SPEC).bytes)
     &&sha40(policy.productBaseHead)&&sha40(policy.labBaseHead)&&sha40(policy.labBaseTree)
     &&sha64(policy.labRegistrySha256)&&Array.isArray(policy.allowedLabDeltaPaths)
-    &&same(policy.allowedLabDeltaPaths,['LAB_MANIFEST.json','data/artifacts/ARTIFACTS.json',
-      'data/evidence/ledger.jsonl']),'C4_POLICY_SCOPE');
+    &&same(policy.allowedLabDeltaPaths,C4_LAB_DELTA_PATHS)
+    &&Array.isArray(policy.labCodeBindings)
+    &&same(policy.labCodeBindings.map(binding=>binding.path),C4_LAB_CODE_PATHS)
+    &&policy.labCodeBindings.every(binding=>sha64(binding.sha256)),'C4_POLICY_SCOPE');
   for(const binding of policy.readerBindings)
     demand(hash(readOrderFile(ROOT,binding.path).bytes)===binding.sha256,'C4_READER_PIN');
   return policy;
+}
+
+export function validateC4LabRevision({changedPaths,codeBlobs,policy}){
+  demand(Array.isArray(changedPaths)&&changedPaths.every(file=>policy.allowedLabDeltaPaths.includes(file)),
+    'C4_LAB_CODE_DRIFT');
+  for(const binding of policy.labCodeBindings)
+    demand(Buffer.isBuffer(codeBlobs[binding.path])
+      &&hash(codeBlobs[binding.path])===binding.sha256,'C4_LAB_CODE_PIN');
 }
 
 function labRevision(labRoot,revision,policy){
@@ -78,7 +93,10 @@ function labRevision(labRoot,revision,policy){
   demand(git(['rev-parse',policy.labBaseHead+'^{tree}']).trim()===policy.labBaseTree,'C4_LAB_BASE_TREE');
   git(['merge-base','--is-ancestor',policy.labBaseHead,revision]);
   const changed=git(['diff','--name-only','--no-renames',policy.labBaseHead,revision,'--']).trim().split('\n').filter(Boolean);
-  demand(changed.every(file=>policy.allowedLabDeltaPaths.includes(file)),'C4_LAB_CODE_DRIFT');
+  const codeBlobs=Object.fromEntries(policy.labCodeBindings.map(binding=>[binding.path,
+    execFileSync('git',['show',`${revision}:${binding.path}`],
+      {cwd:labRoot,timeout:10000,maxBuffer:16*1024*1024})]));
+  validateC4LabRevision({changedPaths:changed,codeBlobs,policy});
 }
 
 export function selectC4Observation(ledger,row){

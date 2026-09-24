@@ -24,8 +24,21 @@
   "labRegistrySha256": "6ff83d79ea88b61f77f7c660c396f75ec55dabc07eb17ef354e6e2c179faaa51",
   "allowedLabDeltaPaths": [
     "LAB_MANIFEST.json",
+    "dashboard/index.html",
     "data/artifacts/ARTIFACTS.json",
-    "data/evidence/ledger.jsonl"
+    "data/evidence/ledger.jsonl",
+    "src/m1-text-single-scene-source-runtime.mjs",
+    "test/m0-audit-repair.test.mjs"
+  ],
+  "labCodeBindings": [
+    {
+      "path": "src/m1-text-single-scene-source-runtime.mjs",
+      "sha256": "a7fa328c62d6d85c36d8182cf684c107151e8dc7c215ab5c3f8126717abd397c"
+    },
+    {
+      "path": "test/m0-audit-repair.test.mjs",
+      "sha256": "bbbfa513a373fa5e2fb23b10a8b17eca103c477aff1e596e67f940abb4174770"
+    }
   ],
   "readerBindings": [
     {
