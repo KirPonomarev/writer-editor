@@ -1520,12 +1520,12 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "99b2a0a813e2aa860e6293f836fc2645820ed28c45f42172ced6196650b114e6",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
-      "approvedAtUtc": "2026-09-24T09:07:46Z",
-      "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
+      "sha256": "317593215baf4bbf0382609e319738852c8578bf1a35ed774054d275877d6d58",
+      "approvedBy": "owner-delegated-codex:INTEROP_CERTIFIER_HISTORICAL_CANDIDATE_PERF_20260924",
+      "approvedAtUtc": "2026-09-24T11:51:14.896Z",
+      "rationale": "Owner-authorized bounded interop certification performance repair. Historical candidate SHA hints are accepted only after fresh ancestry, exact Git diff path comparison, and unchanged artifact checks; injected Git keeps exhaustive search. Full baseline and optimized certification reports match byte-for-byte on the exact base. This approval grants no new interop cell PASS and no product runtime authority.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_INTEROP_CERTIFICATION_PERFORMANCE_REPAIR_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
@@ -2062,6 +2062,15 @@
       "approvedBy": "owner-delegated-codex:INTEROP_C4_POSTAUDIT_APPROVAL_CLOSURE_20260924",
       "approvedAtUtc": "2026-09-24T05:08:43Z",
       "rationale": "Owner-authorized exact-byte C4 post-audit successor admission for the repaired Lab code pin. It binds only the reviewed C4 policy, batch verifier and contract test Git blobs plus the two Lab code hashes; future drift fails closed. This approval adds zero cells and leaves physical Google proof and the unified exact-head verifier mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "99b2a0a813e2aa860e6293f836fc2645820ed28c45f42172ced6196650b114e6",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
+      "approvedAtUtc": "2026-09-24T09:07:46Z",
+      "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
