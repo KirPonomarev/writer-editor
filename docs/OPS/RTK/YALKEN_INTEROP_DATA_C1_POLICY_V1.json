@@ -143,7 +143,8 @@
     "test/contracts/revision-bridge-docx-hostile-file-gate.contract.test.js",
     "src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs",
     "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-    "test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js"
+    "test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js",
+    "docs/tasks/2026-09-24--c4-real-office-mode-proof.md"
   ],
   "protectedFiles": [
     {
@@ -363,7 +364,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "d64d907945c85869ee54ed26bfe4f37adaa98242920c4a18b3556679f44923ff"
+        "sha256": "9224d34436a41fd826fb123a30ea541127c1b6830084c7bb718cc3e2d56f4c36"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -475,7 +476,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketBuilder.js",
-        "sha256": "8d5eaa7c318996653d24877234581cb81670858168c1817bf8f6272b5b2a9384"
+        "sha256": "269e1507568772696f63e8c9c419400af60141c7bcc42c870293e7c08e4659f6"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -499,7 +500,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "1ab3bc1b9d83b443d83d2010221bfcc944f4c6e99ebc2b1f5e6ff49bae438759"
+        "sha256": "887de5b012324c66d1fc8c9f5e327668e65bf7edd83d7e9a446ab4ef60062c7a"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -599,7 +600,7 @@
       },
       {
         "path": "test/contracts/rtk-word-full-manuscript-volume.contract.test.js",
-        "sha256": "9c99b293e9e8d681c0ca13e1efb788d7dbd3fcc1969d91b64df980629cad6561"
+        "sha256": "bb2e14b15d21693093e7f2631ee3fe5d96cf4c26f6dc5f868c55f4522bde0a94"
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
