@@ -162,11 +162,11 @@ export const R24_INTEROP_C4_LAB_CODE_PIN_SUCCESSOR=Object.freeze({
   baseSha:'9bc01bebf618919c8f48651bd0d79491645ba202',
   baseTree:'2fb6e7eec06fbb832f67dab04212f152b51879c9',
   bindings:Object.freeze([
-    {path:'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',sha256:'c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef'},
-    {path:'scripts/ops/rtk-interop-c4-google-office-batch.mjs',sha256:'6ff3af0394f1e1b4cefea59874e778922f52dcec73a1ba1df3cf7a463cf6e76f'},
-    {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'f3826483859a48bbe1837f06e66d152801141b7ffebba4fa9218f5108bc11387'},
-    {path:'scripts/ops/rtk-interop-c4-google-office-readback.py',sha256:'384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53'},
-    {path:'test/unit/rtk-interop-c4-google-office.test.py',sha256:'bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a'},
+    {path:'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',sha256:'7cf735477553be555454dfc42a5bc09d8ef2d9edf2a18766f246664526644c61'},
+    {path:'scripts/ops/rtk-interop-c4-google-office-batch.mjs',sha256:'483b25be2d270d763e71a1ec0be1b85919802870921f1c638df5eded2ae5104b'},
+    {path:'test/contracts/rtk-interop-c4-google-office.contract.test.js',sha256:'27c2f99e0d120595c46d15ca1b632845ae1eeba537ced598b0b663f8e44ece7f'},
+    {path:'scripts/ops/rtk-interop-c4-google-office-readback.py',sha256:'08033a9a599d5fb9838e49b4a9dfa378dc71caaf8f54e1209275223226da8bd9'},
+    {path:'test/unit/rtk-interop-c4-google-office.test.py',sha256:'ff25fb86354c820c38e0e1d8da09fa7c649dc7186f9ef29f7c6b5f58f24496bc'},
   ]),
 });
 // A verifier-only successor after C4 must retain these exact reviewed blobs.

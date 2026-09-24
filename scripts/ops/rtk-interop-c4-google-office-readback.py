@@ -3,9 +3,11 @@
 
 The Lab observation and provider receipt are untrusted inputs. This reader
 rehashes their complete artifact inventory and derives TEXT/ORDER continuity
-from DOCX XML and the reopened project bytes, with zero admission authority.
+and single-scene structure from DOCX XML and reopened project bytes, with zero
+admission authority.
 """
 import importlib.util
+from copy import deepcopy
 from datetime import datetime
 import io
 import json
@@ -31,6 +33,10 @@ SOURCE = tuple(order.EXPECTED)
 REVIEWED = tuple(p.replace('sentinel alpha', 'sentinel omega') for p in SOURCE)
 PROFILES = ('SOURCE_RUNTIME', 'PACKAGED_BUILD_RUNTIME')
 FIELDS = ('TEXT', 'ORDER')
+STRUCTURE_FIELD = 'NOVEL_SCENE_STRUCTURE'
+STRUCTURE_SUBCASES = ('sceneBoundariesPreserved', 'chapterOrderPreserved',
+                      'splitMergeDetected', 'projectHierarchyMapped',
+                      'structureLossLedgered', 'sceneCountReadback')
 SUBCASES = {
     'TEXT': tuple(text.SUBCASES),
     'ORDER': tuple(order.SUBCASES),
@@ -130,6 +136,158 @@ def scene_paragraphs(data):
     return result
 
 
+def strict_json(data):
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, 'C4_STRUCTURE_DUPLICATE_JSON_KEY')
+            result[key] = value
+        return result
+    return json.loads(data, object_pairs_hook=unique_pairs)
+
+
+def source_export_map(source_docx):
+    with zipfile.ZipFile(io.BytesIO(source_docx)) as archive:
+        names = archive.namelist()
+        require(names.count('customXml/item1.xml') == 1, 'C4_STRUCTURE_SOURCE_MAP_MISSING')
+        carrier = archive.read('customXml/item1.xml')
+    require(len(carrier) <= MAX_FILE and b'<!DOCTYPE' not in carrier.upper()
+            and b'<!ENTITY' not in carrier.upper(), 'C4_STRUCTURE_MAP_XML_BOUNDS')
+    root = ET.fromstring(carrier)
+    namespace = '{urn:yalken:rtk:word-review-packet:v1}'
+    payloads = root.findall(namespace+'payload')
+    require(root.tag == namespace+'reviewTransport'
+            and root.get('authorityRole') == 'advisory-not-apply-authority'
+            and len(root) == len(payloads) == 1
+            and payloads[0].get('encoding') == 'json'
+            and isinstance(payloads[0].text, str), 'C4_STRUCTURE_MAP_CARRIER')
+    value = strict_json(payloads[0].text)
+    require(value.get('schemaVersion') == 'yalken.rtk.word.product-review-docx-export.advisory-manifest.v1',
+            'C4_STRUCTURE_MAP_SCHEMA')
+    return value['coreManifest']['exportMap'], digest(carrier)
+
+
+def validate_structure_core(context):
+    export_map = context['exportMap']
+    source = context['sourceParagraphs']
+    returned = context['returnedParagraphs']
+    export = context['exportPhase']
+    readback = context['sourceReadback']
+    intake = context['intake']
+    apply = context['apply']
+    reopen = context['reopen']
+    manifest = context['manifest']
+    loss = context['loss']
+    scene_bytes = context['sceneBytes']
+    require(export_map.get('schemaVersion') == 'yalken.rtk.word-v4.export-map.v1'
+            and export_map.get('scope') == 'scene'
+            and isinstance(export_map.get('scenes'), list)
+            and len(export_map['scenes']) == 1, 'C4_STRUCTURE_SCENE_COUNT')
+    mapped = export_map['scenes'][0]
+    scene_id = mapped.get('sceneId')
+    parts = scene_id.split('/') if isinstance(scene_id, str) else []
+    require(len(parts) == 4 and parts[0] == 'roman' and parts[-1].endswith('.txt')
+            and all(part and part not in ('.', '..') and '\\' not in part for part in parts)
+            and mapped.get('sceneOrdinal') == 0, 'C4_STRUCTURE_SCENE_ID')
+    source_hash = digest(context['sourceBytes'])
+    require(mapped.get('sceneRevision') == mapped.get('rawSha256') == 'sha256:'+source_hash,
+            'C4_STRUCTURE_SOURCE_REVISION')
+    blocks = mapped.get('blocks')
+    require(isinstance(blocks, list) and len(blocks) == len(source) == len(returned)
+            and 0 < len(blocks) <= 4096, 'C4_STRUCTURE_RANGE_COUNT')
+    require(len({block.get('blockId') for block in blocks}) == len(blocks)
+            and len({block.get('paragraphId') for block in blocks}) == len(blocks),
+            'C4_STRUCTURE_DUPLICATE_BLOCK')
+    for index, block in enumerate(blocks):
+        require(block.get('documentParagraphIndex') == index
+                and isinstance(block.get('blockId'), str) and block['blockId']
+                and isinstance(block.get('paragraphId'), str) and block['paragraphId']
+                and block.get('canonicalTextSha256') == 'sha256:'+digest(source[index].encode('utf8')),
+                'C4_STRUCTURE_RANGE_MAP')
+    require(tuple(source) == SOURCE and tuple(returned) == REVIEWED,
+            'C4_STRUCTURE_RETURNED_RANGE')
+    proof = export.get('sourceCreationProof')
+    require(export.get('ok') is True and export.get('sceneId') == scene_id
+            and export.get('sourceAuthoringStrategy') == 'PRODUCT_COMMAND_CREATED_NESTED_SCENE'
+            and isinstance(proof, list) and len(proof) == 3
+            and [row.get('kind') for row in proof] == ['part', 'chapter-folder', 'scene']
+            and all(isinstance(row.get('nodeId'), str) and row['nodeId'] for row in proof)
+            and len({row['nodeId'] for row in proof}) == 3,
+            'C4_STRUCTURE_SOURCE_ENTITY')
+    require(export.get('sourceNodeId') == proof[-1]['nodeId']
+            and readback.get('sceneId') == scene_id
+            and readback.get('sourceNodeKind') == 'scene'
+            and readback.get('sourceCreationProof') == proof
+            and readback.get('sceneFileSha256') == source_hash,
+            'C4_STRUCTURE_SOURCE_READBACK')
+    bindings = manifest.get('treeIdentity', {}).get('nodes', {})
+    require(isinstance(bindings, dict), 'C4_STRUCTURE_TREE_IDENTITY')
+    expected_paths = ['file:'+('/'.join(parts[:index])) for index in (2, 3, 4)]
+    for row, expected in zip(proof, expected_paths):
+        binding = bindings.get(row['nodeId'])
+        require(isinstance(binding, dict) and binding.get('kind') == row['kind']
+                and binding.get('bindingKey') == expected
+                and binding.get('present') is True, 'C4_STRUCTURE_HIERARCHY')
+    live_scenes = [binding for binding in bindings.values()
+                   if isinstance(binding, dict) and binding.get('kind') == 'scene'
+                   and binding.get('present') is True]
+    require(len(live_scenes) == 1 and live_scenes[0].get('bindingKey') == 'file:'+scene_id,
+            'C4_STRUCTURE_REOPEN_SCENE_COUNT')
+    change = intake.get('selectedChange') or {}
+    require(intake.get('authenticated') is True and intake.get('textChangeCount') == 1
+            and change.get('targetScope') == {'type': 'scene', 'id': scene_id}
+            and change.get('match', {}).get('blockId') == blocks[0]['blockId']
+            and change.get('documentParagraphIndex') == 0
+            and change.get('paragraphIndex') == 0
+            and change.get('replacementText') == 'sentinel omega',
+            'C4_STRUCTURE_AUTHENTICATED_TARGET')
+    require(apply.get('commandId') == 'cmd.project.review.applyExactTextChangesBatch'
+            and apply.get('changeId') == change.get('changeId')
+            and apply.get('requestedChangeCount') == 1
+            and apply.get('mutationOnlyAfterExplicitApply') is True
+            and apply.get('saveResult', {}).get('ok') is True,
+            'C4_STRUCTURE_EXPLICIT_APPLY')
+    require(reopen.get('ok') is True and reopen.get('freshProcess') is True
+            and reopen.get('sceneId') == scene_id
+            and reopen.get('sceneFileSha256') == digest(scene_bytes),
+            'C4_STRUCTURE_REOPEN_BINDING')
+    require(loss.get('ok') is True and loss.get('itemCount') == 0
+            and loss.get('items') == [], 'C4_STRUCTURE_LOSS_LEDGER')
+    return {'sceneId': scene_id, 'sceneCount': 1, 'chapterCount': 1,
+            'sourceRange': [0, len(blocks)-1],
+            'reopenedSceneSha256': digest(scene_bytes),
+            'subcases': list(STRUCTURE_SUBCASES),
+            'lossLedger': {'field': STRUCTURE_FIELD, 'status': 'NO_STRUCTURE_LOSS_OBSERVED',
+                           'sourceScenes': 1, 'returnedRanges': 1, 'reopenedScenes': 1}}
+
+
+def structure_controls(context):
+    def mutant(name, change):
+        altered = deepcopy(context)
+        change(altered)
+        try:
+            validate_structure_core(altered)
+        except (ValueError, KeyError, TypeError, AttributeError):
+            return {'id': name, 'sha256': digest(json.dumps(altered, sort_keys=True,
+                    ensure_ascii=False, default=lambda b: b.hex() if isinstance(b, bytes) else str(b)
+                    ).encode('utf8')), 'rejected': True}
+        raise ValueError('C4_STRUCTURE_MUTANT_ACCEPTED:'+name)
+    return [
+        mutant('remove-scene-boundary', lambda x: x['exportMap']['scenes'][0]['blocks'].pop()),
+        mutant('duplicate-scene-id', lambda x: x['exportMap']['scenes'].append(
+            deepcopy(x['exportMap']['scenes'][0]))),
+        mutant('swap-chapters', lambda x: x['manifest']['treeIdentity']['nodes'][
+            x['exportPhase']['sourceCreationProof'][1]['nodeId']].update(
+            bindingKey='file:roman/Swapped Chapter')),
+        mutant('merge-scenes', lambda x: x['exportMap']['scenes'].append(
+            {**deepcopy(x['exportMap']['scenes'][0]), 'sceneId':'roman/merged.txt'})),
+        mutant('wrong-target-scene', lambda x: x['intake']['selectedChange']['targetScope'].update(
+            id='roman/wrong.txt')),
+        mutant('reopened-scene-rebind', lambda x: x['reopen'].update(sceneId='roman/wrong.txt')),
+        mutant('merge-returned-paragraphs', lambda x: x['returnedParagraphs'].pop()),
+    ]
+
+
 def audit(request):
     started = time.perf_counter()
     run = request['runId']
@@ -164,8 +322,8 @@ def audit(request):
     same(tuple(raw('source.txt').decode('utf8').split('\n')), SOURCE, 'C4_SOURCE_FIXTURE')
     source = raw('yalken-review-source.docx')
     returned = raw('word-tracked-review-return.docx')
-    docx_paragraphs(source, False)
-    docx_paragraphs(returned, True)
+    source_paragraphs = docx_paragraphs(source, False)
+    returned_paragraphs = docx_paragraphs(returned, True)
     require(digest(source) != digest(returned), 'C4_PROVIDER_NO_CHANGE')
     controls = {'TEXT': text.text_controls(source), 'ORDER': order.semantic_controls(source)}
     receipt = read('google-docs-native-provider-receipt.json')
@@ -254,17 +412,49 @@ def audit(request):
         data = raw(artifact)
         require(data.startswith(b'\x89PNG\r\n\x1a\n') and len(data) > 100,
                 'C4_PRODUCT_SCREENSHOT')
+    export_map, source_map_sha = source_export_map(source)
+    structure_context = {
+        'exportMap': export_map,
+        'sourceParagraphs': source_paragraphs,
+        'returnedParagraphs': returned_paragraphs,
+        'exportPhase': read('source-review-export-phase.json'),
+        'sourceReadback': read('source-scene-readback.json'),
+        'intake': intake,
+        'apply': apply,
+        'reopen': reopen,
+        'manifest': strict_json(raw('runtime-project-snapshot/project.craftsman.json')),
+        'loss': read('loss-report.json'),
+        'sourceBytes': raw('source.txt'),
+        'sceneBytes': scene,
+    }
+    structure = validate_structure_core(structure_context)
+    structure_mutants = structure_controls(structure_context)
+    legacy_fields = [{'field': field, 'cellId': f'{field}__SINGLE_SCENE__C4__{profile}',
+                      'runId': run, 'status': 'PASS', 'subcases': list(SUBCASES[field]),
+                      'controls': controls[field],
+                      'sourceParagraphSha256': digest(json.dumps(SOURCE, ensure_ascii=False, separators=(',', ':')).encode()),
+                      'reviewedParagraphSha256': digest(json.dumps(REVIEWED, ensure_ascii=False, separators=(',', ':')).encode())}
+                     for field in FIELDS]
     return {'ok': True, 'schemaVersion': 'GOOGLE_OFFICE_C4_RAW_READBACK_V1', 'admissionCredit': 0,
             'runId': run, 'productHead': head, 'productTree': tree,
             'sourceDocxSha256': digest(source), 'returnedDocxSha256': digest(returned),
             'reopenedSceneSha256': digest(scene), 'observationSha256': digest(raw('observation.json')),
             'filesVerified': len(files), 'requiredHops': list(HOPS),
-            'fieldProofs': [{'field': field, 'cellId': f'{field}__SINGLE_SCENE__C4__{profile}',
-                             'runId': run, 'status': 'PASS', 'subcases': list(SUBCASES[field]),
-                             'controls': controls[field],
-                             'sourceParagraphSha256': digest(json.dumps(SOURCE, ensure_ascii=False, separators=(',', ':')).encode()),
-                             'reviewedParagraphSha256': digest(json.dumps(REVIEWED, ensure_ascii=False, separators=(',', ':')).encode())}
-                            for field in FIELDS],
+            'fieldProofs': [*legacy_fields, {
+                'field': STRUCTURE_FIELD,
+                'cellId': f'{STRUCTURE_FIELD}__SINGLE_SCENE__C4__{profile}',
+                'runId': run,
+                'status': 'PASS',
+                'subcases': structure['subcases'],
+                'controls': {'structureMutantsExecuted': structure_mutants},
+                'sourceMapSha256': source_map_sha,
+                'sceneId': structure['sceneId'],
+                'sceneCount': structure['sceneCount'],
+                'chapterCount': structure['chapterCount'],
+                'sourceRange': structure['sourceRange'],
+                'reopenedSceneSha256': structure['reopenedSceneSha256'],
+                'lossLedger': structure['lossLedger'],
+            }],
             'seconds': time.perf_counter()-started}
 
 

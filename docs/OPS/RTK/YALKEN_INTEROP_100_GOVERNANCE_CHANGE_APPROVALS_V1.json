@@ -1438,24 +1438,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
-      "sha256": "384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
-      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/unit/rtk-interop-c4-google-office.test.py",
-      "sha256": "bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
-      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js",
       "sha256": "0e72e5e20db8ee31e38d9b495efdb034433b48f3b3c0695874ebbfd5568f1ddd",
       "approvedBy": "owner-delegated-codex:INTEROP_C4_WRITER_FAILURE_CODE_20260924",
@@ -1492,56 +1474,74 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "2fe9e6c91624968fee4af6f1cc7d0668a946bf8f87c86f68235eb8274077a2d9",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-CERT-BIND-20260924",
-      "approvedAtUtc": "2026-09-24T12:23:20.915Z",
-      "rationale": "Owner-authorized exact-byte post-audit successor rebind for the bounded C4 verifier-only promotion. It pins current C4 policy, consumer and negative contract while retaining original Lab code and independent raw reader hashes. No product runtime change or direct cell credit; official merged-head mixed verifier remains mandatory.",
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
+      "sha256": "08033a9a599d5fb9838e49b4a9dfa378dc71caaf8f54e1209275223226da8bd9",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
-      "sha256": "6ff3af0394f1e1b4cefea59874e778922f52dcec73a1ba1df3cf7a463cf6e76f",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
-      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
-      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "sha256": "483b25be2d270d763e71a1ec0be1b85919802870921f1c638df5eded2ae5104b",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
-      "sha256": "c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
-      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
-      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "sha256": "7cf735477553be555454dfc42a5bc09d8ef2d9edf2a18766f246664526644c61",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
-      "sha256": "f3826483859a48bbe1837f06e66d152801141b7ffebba4fa9218f5108bc11387",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
-      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
-      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "sha256": "27c2f99e0d120595c46d15ca1b632845ae1eeba537ced598b0b663f8e44ece7f",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-interop-c4-google-office.test.py",
+      "sha256": "ff25fb86354c820c38e0e1d8da09fa7c649dc7186f9ef29f7c6b5f58f24496bc",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "ffb70f25c15ec63fe0c5265dfe07723f01fa80c6512f8a8e64ab2294fe1ec6a1",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
-      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
-      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "sha256": "bd8313032ecff3a33ac2ca6845fe9337d65886105ff5e9345b1428274c0bdc28",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "ce90ddc5a84edeb041c0f12bb6b767c90776f991518ad4d7e21b9e293c92d887",
-      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
-      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
-      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "sha256": "c6e7e73554afa6d489c695395558e8254d4db99266bb1203294c6828e8dd014b",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b9b0972236f3acd9388463fc1d3d7b71177900d8ea464e6fcf36a7a8b4c23d8d",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-SINGLE-STRUCTURE-20260924",
+      "approvedAtUtc": "2026-09-24T12:58:46.576Z",
+      "rationale": "Owner-authorized bounded C4 single-scene structure admission from two immutable real Google Office journeys. Independent raw source-map, returned range, authenticated target, explicit Apply and reopened project hierarchy are jointly checked with seven rejected mutations. Four previous TEXT/ORDER field-proof digests remain exact. This approval alone grants zero cells; only the official unified verifier on exact merged main may accept the two new frozen IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -2127,6 +2127,78 @@
       "rationale": "Owner-authorized bounded interop certification performance repair. Historical candidate SHA hints are accepted only after fresh ancestry, exact Git diff path comparison, and unchanged artifact checks; injected Git keeps exhaustive search. Full baseline and optimized certification reports match byte-for-byte on the exact base. This approval grants no new interop cell PASS and no product runtime authority.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_CERTIFICATION_PERFORMANCE_REPAIR_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-readback.py",
+      "sha256": "384c3673c66f77c83c929fde319c9a47d945b4877ed52747d2370ac557894e53",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-interop-c4-google-office.test.py",
+      "sha256": "bc232d0fdc8be377699efba98cd3af80917a2fe6debe19d9e2dcab531cc6000a",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "2fe9e6c91624968fee4af6f1cc7d0668a946bf8f87c86f68235eb8274077a2d9",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-CERT-BIND-20260924",
+      "approvedAtUtc": "2026-09-24T12:23:20.915Z",
+      "rationale": "Owner-authorized exact-byte post-audit successor rebind for the bounded C4 verifier-only promotion. It pins current C4 policy, consumer and negative contract while retaining original Lab code and independent raw reader hashes. No product runtime change or direct cell credit; official merged-head mixed verifier remains mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "6ff3af0394f1e1b4cefea59874e778922f52dcec73a1ba1df3cf7a463cf6e76f",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "f3826483859a48bbe1837f06e66d152801141b7ffebba4fa9218f5108bc11387",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "ffb70f25c15ec63fe0c5265dfe07723f01fa80c6512f8a8e64ab2294fe1ec6a1",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ce90ddc5a84edeb041c0f12bb6b767c90776f991518ad4d7e21b9e293c92d887",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }
