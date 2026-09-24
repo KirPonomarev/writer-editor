@@ -1465,33 +1465,6 @@
       "authority": "OWNER_INTEROP_SCOPE_AUTONOMOUS_GATE_APPROVAL_20260923"
     },
     {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
-      "sha256": "e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
-      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
-      "sha256": "2c8e8c70ad3577c86d303404ed5d1307f9b58b6ac0dcfc4af959b4addac5af54",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
-      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
-      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
-      "sha256": "18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3",
-      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
-      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
-      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "7263fccf8abe712cde64a4818cc8c6027ca965965ba60890d6887287af9f3fe5",
       "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
@@ -1528,20 +1501,47 @@
       "authority": "DIRECT_OWNER_INTEROP_CERTIFICATION_PERFORMANCE_REPAIR_EXACT_BYTE_BINDING"
     },
     {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "6ff3af0394f1e1b4cefea59874e778922f52dcec73a1ba1df3cf7a463cf6e76f",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "f3826483859a48bbe1837f06e66d152801141b7ffebba4fa9218f5108bc11387",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "aa5d4c2b38a85f7218bc5249b70f7d749c206c7953a590c1773d4fafb01f91ae",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
-      "approvedAtUtc": "2026-09-24T09:07:46Z",
-      "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
+      "sha256": "ffb70f25c15ec63fe0c5265dfe07723f01fa80c6512f8a8e64ab2294fe1ec6a1",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c2cc5c79ce515ebf1596a029cad5ac6e5f4b722d5495f1b4531246567b16df50",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
-      "approvedAtUtc": "2026-09-24T09:07:46Z",
-      "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
+      "sha256": "ce90ddc5a84edeb041c0f12bb6b767c90776f991518ad4d7e21b9e293c92d887",
+      "approvedBy": "owner-delegated-codex:YALKEN-C4-VERIFIER-PROMOTION-20260924",
+      "approvedAtUtc": "2026-09-24T12:18:28.384Z",
+      "rationale": "Owner-authorized exact bounded C4 verifier-only evidence promotion: rehydrate previous physical Google run against its unchanged clean runtime SHA, require ancestor and exact allowlisted Git diff to current merged verifier SHA, preserve pinned independent raw oracle and 1120 denominator. Product runtime drift requires a new physical run; this change adds zero first-ever cell IDs.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -2068,6 +2068,51 @@
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
       "sha256": "99b2a0a813e2aa860e6293f836fc2645820ed28c45f42172ced6196650b114e6",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
+      "approvedAtUtc": "2026-09-24T09:07:46Z",
+      "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json",
+      "sha256": "e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-batch.mjs",
+      "sha256": "2c8e8c70ad3577c86d303404ed5d1307f9b58b6ac0dcfc4af959b4addac5af54",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_RAW_COMMENT_RANGE_REPAIR_20260924",
+      "approvedAtUtc": "2026-09-24T06:20:15.996Z",
+      "rationale": "Owner-authorized bounded C4 raw oracle correction for genuine Google Docs first-paragraph comment markers and the exact Yalken scene metadata preamble. The independent reader verifies one matched start/end/reference and comments.xml payload, rejects off-target or mismatched anchors, and parses the fixed metadata before the reopened scene. Physical SOURCE/PACKAGED evidence and exact merged-head unified 1120-cell verification remain mandatory; this approval grants zero cells by itself.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office.contract.test.js",
+      "sha256": "18f2b189be0230db61aea7c71fab3046c08df723471352535e5fb4826d2039f3",
+      "approvedBy": "owner-delegated-codex:INTEROP_C4_LAB_CODE_PIN_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T04:40:31.514Z",
+      "rationale": "Owner-authorized exact-byte C4 Lab authored-scene repair admission. Two Lab code/test paths are pinned by SHA-256 at every reviewed Git revision; all other Lab paths remain prohibited. This governance update grants zero cells until fresh native physical runs, independent raw readback and exact merged-head 1120-cell aggregate verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "aa5d4c2b38a85f7218bc5249b70f7d749c206c7953a590c1773d4fafb01f91ae",
+      "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
+      "approvedAtUtc": "2026-09-24T09:07:46Z",
+      "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "c2cc5c79ce515ebf1596a029cad5ac6e5f4b722d5495f1b4531246567b16df50",
       "approvedBy": "owner-delegated-codex:INTEROP_WORD_CERTIFIED_READER_REBIND_20260924",
       "approvedAtUtc": "2026-09-24T09:07:46Z",
       "rationale": "Exact-byte repair: retain frozen Data C1 policy, require the independently verified current-head Word reader successor certificate, and reject mismatched reader or certificate. Inventory and C2A approvals are regenerated. This approval grants zero cells until official merged-head physical acceptance.",

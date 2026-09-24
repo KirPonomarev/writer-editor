@@ -15,6 +15,9 @@ test('C4 policy fixes four denominator IDs, real Google hops and pinned independ
   assert.equal(policy.readerBindings.length,4);
   assert.deepEqual(policy.cellIds,c4.C4_GOOGLE_CELLS);
   assert.deepEqual(policy.requiredHops,c4.C4_GOOGLE_HOPS);
+  assert.deepEqual(policy.verifierPromotionPaths,c4.C4_VERIFIER_PROMOTION_PATHS);
+  assert.ok(policy.verifierPromotionPaths.every(file=>!file.startsWith('src/')));
+  assert.ok(!policy.verifierPromotionPaths.includes('scripts/ops/rtk-interop-c4-google-office-readback.py'));
   assert.equal(policy.cellIds.length,4);
   assert.ok(policy.cellIds.every(id=>frozen.has(id)));
   assert.deepEqual(policy.allowedLabDeltaPaths,[
@@ -35,6 +38,32 @@ test('C4 policy fixes four denominator IDs, real Google hops and pinned independ
     'test/contracts/rtk-interop-c4-google-office.contract.test.js',
   ])assert.ok(promotion.includes(file),file);
   assert.ok(!promotion.includes('src/main.js'));
+});
+
+test('C4 promotion carries physical evidence only over exact verifier-only descendants',async()=>{
+  const c4=await import('../../scripts/ops/rtk-interop-c4-google-office-batch.mjs');
+  const policy=c4.loadC4Policy(),old={head:'a'.repeat(40),tree:'b'.repeat(40)},
+    current={head:'c'.repeat(40),tree:'d'.repeat(40)};
+  const diff=['scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+    'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json'];
+  const git=paths=>args=>args[0]==='diff'?paths.join('\n'):'';
+  const check=(paths,more={})=>c4.validateC4VerifierPromotion({
+    runtimeIdentity:old,verifierIdentity:current,
+    allowedPaths:policy.verifierPromotionPaths,git:git(paths),...more});
+  assert.deepEqual(check(diff),diff);
+  for(const path of ['src/main.js','package-lock.json',
+    'scripts/ops/rtk-interop-c4-google-office-readback.py','docs/OPS/RTK/YALKEN_INTEROP_100_DENOMINATOR_V1.json'])
+    assert.throws(()=>check([...diff,path]),/C4_PROMOTION_SCOPE/,path);
+  assert.throws(()=>check([]),/C4_PROMOTION_SCOPE/);
+  assert.throws(()=>check(diff,{allowedPaths:[...policy.verifierPromotionPaths,'src/main.js']}),
+    /C4_PROMOTION_POLICY_SCOPE/);
+  assert.throws(()=>check(diff,{git:args=>{if(args[0]==='merge-base')throw new Error('not descendant');return '';}}),
+    /C4_PROMOTION_NOT_DESCENDANT/);
+  assert.deepEqual(c4.validateC4VerifierPromotion({runtimeIdentity:old,
+    verifierIdentity:{...old},allowedPaths:policy.verifierPromotionPaths}),[]);
+  assert.throws(()=>c4.validateC4VerifierPromotion({runtimeIdentity:old,
+    verifierIdentity:{...old,tree:'e'.repeat(40)},allowedPaths:policy.verifierPromotionPaths}),
+    /C4_PROMOTION_TREE/);
 });
 
 test('C4 Lab admission rejects unlisted paths and altered code at an observation revision',async()=>{

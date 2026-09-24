@@ -15,7 +15,16 @@ export const C4_GOOGLE_MODE='GOOGLE_OFFICE_C4_BATCH_V1';
 export const C4_GOOGLE_CELLS=Object.freeze(['SOURCE_RUNTIME','PACKAGED_BUILD_RUNTIME'].flatMap(profile=>
   ['TEXT','ORDER'].map(field=>`${field}__SINGLE_SCENE__C4__${profile}`)));
 export const C4_GOOGLE_HOPS=Object.freeze(['YALKEN_DOCX_EXPORT','GOOGLE_OFFICE_LIFECYCLE','YALKEN_RETURN_INTAKE']);
-export const C4_POLICY_SHA256='e6544a2e6acdeba14d19131733e7a1a7520d6ed3dcc2c5bc07134fe6f0facb34';
+export const C4_VERIFIER_PROMOTION_PATHS=Object.freeze([
+  'docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json',
+  'docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/RTK/YALKEN_INTEROP_100_GOVERNANCE_CHANGE_APPROVALS_V1.json',
+  'docs/OPS/RTK/YALKEN_INTEROP_C4_POLICY_V1.json',
+  'scripts/ops/r24/corrective/post-audit-certification-set.mjs',
+  'scripts/ops/rtk-interop-c4-google-office-batch.mjs',
+  'test/contracts/rtk-interop-c4-google-office.contract.test.js',
+]);
+export const C4_POLICY_SHA256='c752b52aa9f12dea5bc7aa572cdc431edc3480bd2ce8d72ff4bcf64f62ccb0ef';
 const C4_LAB_DELTA_PATHS=Object.freeze(['LAB_MANIFEST.json','dashboard/index.html',
   'data/artifacts/ARTIFACTS.json','data/evidence/ledger.jsonl',
   'src/m1-text-single-scene-source-runtime.mjs','test/m0-audit-repair.test.mjs']);
@@ -71,6 +80,7 @@ export function loadC4Policy(){
     &&sha40(policy.productBaseHead)&&sha40(policy.labBaseHead)&&sha40(policy.labBaseTree)
     &&sha64(policy.labRegistrySha256)&&Array.isArray(policy.allowedLabDeltaPaths)
     &&same(policy.allowedLabDeltaPaths,C4_LAB_DELTA_PATHS)
+    &&same(policy.verifierPromotionPaths,C4_VERIFIER_PROMOTION_PATHS)
     &&Array.isArray(policy.labCodeBindings)
     &&same(policy.labCodeBindings.map(binding=>binding.path),C4_LAB_CODE_PATHS)
     &&policy.labCodeBindings.every(binding=>sha64(binding.sha256)),'C4_POLICY_SCOPE');
@@ -85,6 +95,30 @@ export function validateC4LabRevision({changedPaths,codeBlobs,policy}){
   for(const binding of policy.labCodeBindings)
     demand(Buffer.isBuffer(codeBlobs[binding.path])
       &&hash(codeBlobs[binding.path])===binding.sha256,'C4_LAB_CODE_PIN');
+}
+
+// The raw oracle still verifies the physical run against the product bytes it
+// executed. Promotion changes only the verifier identity and fails closed if
+// any product/runtime/reader path changed between that run and current main.
+export function validateC4VerifierPromotion({repoRoot=ROOT,runtimeIdentity,verifierIdentity,
+  allowedPaths,git=gitAt(repoRoot)}){
+  demand(runtimeIdentity&&verifierIdentity&&sha40(runtimeIdentity.head)
+    &&sha40(runtimeIdentity.tree)&&sha40(verifierIdentity.head)
+    &&sha40(verifierIdentity.tree),'C4_PROMOTION_IDENTITY');
+  demand(same(allowedPaths,C4_VERIFIER_PROMOTION_PATHS),'C4_PROMOTION_POLICY_SCOPE');
+  if(runtimeIdentity.head===verifierIdentity.head){
+    demand(runtimeIdentity.tree===verifierIdentity.tree,'C4_PROMOTION_TREE');
+    return [];
+  }
+  try{git(['merge-base','--is-ancestor',runtimeIdentity.head,verifierIdentity.head]);}
+  catch{throw new Error('C4_PROMOTION_NOT_DESCENDANT');}
+  let changed;
+  try{changed=git(['diff','--name-only','--no-renames',
+    runtimeIdentity.head+'..'+verifierIdentity.head,'--']).trim().split('\n').filter(Boolean);}
+  catch{throw new Error('C4_PROMOTION_DIFF_UNAVAILABLE');}
+  const allowed=new Set(allowedPaths);
+  demand(changed.length>0&&changed.every(file=>allowed.has(file)),'C4_PROMOTION_SCOPE');
+  return changed;
 }
 
 function labRevision(labRoot,revision,policy){
@@ -136,7 +170,7 @@ export function validateC4Raw(raw,{row,head,tree,observationSha256,files,require
 
 export function verifyGoogleOfficeC4Batch({repoRoot=ROOT,labRoot,runIds,requiredCells,specErrors=[],currentHead}={}){
   const started=performance.now(),errors=[...specErrors];
-  let identity=null,reviews=[];
+  let identity=null,runtimeIdentity=null,runtimeRoot=null,promotionPaths=[],reviews=[];
   try{
     demand(!errors.length,'C4_SPEC_OR_MODE');
     const rows=validateC4Runs(runIds);
@@ -149,10 +183,17 @@ export function verifyGoogleOfficeC4Batch({repoRoot=ROOT,labRoot,runIds,required
     demand(requiredCells?.length===1120&&new Set(requiredCells.map(cell=>cell.cellId)).size===1120
       &&C4_GOOGLE_CELLS.every(id=>requiredCells.some(cell=>cell.cellId===id)),'C4_DENOMINATOR');
     const shadow=json(labRoot,'LAB_MANIFEST.json').shadow.yalken;
-    demand(fs.realpathSync(shadow.root)===ROOT&&shadow.readOnly===true
-      &&shadow.head===identity.head&&shadow.tree===identity.tree
-      &&shadow.declaredOriginMainHead===identity.head&&shadow.declaredOriginMainTree===identity.tree,
+    runtimeRoot=fs.realpathSync(shadow.root);runtimeIdentity=clean(runtimeRoot);
+    const expectedShadowRoot=fs.realpathSync(path.join(realLabRoot,'.shadow','yalken-origin-main'));
+    demand(runtimeRoot===expectedShadowRoot&&shadow.readOnly===true&&shadow.detached===true
+      &&shadow.head===runtimeIdentity.head
+      &&shadow.tree===runtimeIdentity.tree
+      &&shadow.declaredOriginMainHead===runtimeIdentity.head
+      &&shadow.declaredOriginMainTree===runtimeIdentity.tree
+      &&git(['rev-parse',runtimeIdentity.head+'^{tree}']).trim()===runtimeIdentity.tree,
     'C4_SHADOW');
+    promotionPaths=validateC4VerifierPromotion({runtimeIdentity,verifierIdentity:identity,
+      allowedPaths:policy.verifierPromotionPaths});
     demand(hash(readOrderFile(labRoot,'data/registry/frozen-denominator-registry-v2.json').bytes)===policy.labRegistrySha256,
       'C4_LAB_REGISTRY');
     labRevision(labRoot,labIdentity.head,policy);
@@ -167,7 +208,7 @@ export function verifyGoogleOfficeC4Batch({repoRoot=ROOT,labRoot,runIds,required
       const withoutHash={...obs};delete withoutHash.artifactHash;
       demand(obs.artifactHashScope==='observation_without_artifactHash'
         &&hashOrderObservation(withoutHash)===obs.artifactHash,'C4_OBSERVATION_HASH');
-      demand(obs.yalkenShadowHead===identity.head&&obs.yalkenShadowTree===identity.tree
+      demand(obs.yalkenShadowHead===runtimeIdentity.head&&obs.yalkenShadowTree===runtimeIdentity.tree
         &&obs.candidateDiagnosticOnly===false,'C4_ACTUAL_RUNTIME');
       demand(Date.parse(obs.createdAt)>=Date.parse(policy.notBeforeUtc)
         &&Date.parse(obs.createdAt)<=Date.now(),'C4_OBSERVATION_TIME');
@@ -181,17 +222,18 @@ export function verifyGoogleOfficeC4Batch({repoRoot=ROOT,labRoot,runIds,required
           &&file.bytes>=0&&file.bytes<=8*1024*1024&&sha64(file.sha256))
         &&files.reduce((n,file)=>n+file.bytes,0)<=64*1024*1024,'C4_FILE_SCOPE');
       const input=JSON.stringify({root:fs.realpathSync(labRoot),runId:row.runId,
-        productHead:identity.head,productTree:identity.tree,files});
+        productHead:runtimeIdentity.head,productTree:runtimeIdentity.tree,files});
       demand(Buffer.byteLength(input)<=1024*1024,'C4_READER_REQUEST');
       const proc=spawnSync('python3',['-I','-B',path.join(ROOT,READER)],
         {input,encoding:'utf8',timeout:60000,maxBuffer:4*1024*1024});
       demand(!proc.error&&proc.status===0,'C4_RAW_FAILED:'+String(proc.stdout||proc.stderr||proc.error));
       const raw=JSON.parse(proc.stdout);
-      validateC4Raw(raw,{row,...identity,observationSha256:obsFile.binding.sha256,files,requiredCells});
+      validateC4Raw(raw,{row,...runtimeIdentity,observationSha256:obsFile.binding.sha256,files,requiredCells});
       reviews.push({runId:row.runId,observationArtifactHash:obs.artifactHash,raw});
     }
     demand(readOrderFile(labRoot,'data/evidence/ledger.jsonl',64*1024*1024).bytes.equals(ledgerFile.bytes)
-      &&same(clean(ROOT),identity)&&same(clean(labRoot),labIdentity),'C4_CHANGED_DURING_REVIEW');
+      &&same(clean(ROOT),identity)&&same(clean(runtimeRoot),runtimeIdentity)
+      &&same(clean(labRoot),labIdentity),'C4_CHANGED_DURING_REVIEW');
   }catch(error){errors.push(String(error.message));}
   const ok=!errors.length,fieldProofs=ok?reviews.flatMap(review=>review.raw.fieldProofs):[];
   const acceptedCellIds=[...new Set(fieldProofs.map(field=>field.cellId))].sort();
@@ -201,6 +243,8 @@ export function verifyGoogleOfficeC4Batch({repoRoot=ROOT,labRoot,runIds,required
     broadPassClaim:false,claimVerdict:ok?'NEEDS_MORE_EVIDENCE':'FAIL_GOOGLE_OFFICE_C4_EVIDENCE',
     statusCounts:{PASS:acceptedCellIds.length,NOT_EXECUTED:1120-acceptedCellIds.length},
     currentHead:identity?.head||null,currentTree:identity?.tree||null,
+    evidenceRuntimeHead:runtimeIdentity?.head||null,evidenceRuntimeTree:runtimeIdentity?.tree||null,
+    verifierPromotionPaths:promotionPaths,
     percentage:acceptedCellIds.length/1120*100,
     cellDecisions:fieldProofs.map(field=>({cellId:field.cellId,status:'PASS',outcome:'PRESERVED',
       sourceRunId:field.runId,fieldProofSha256:hash(Buffer.from(stableOrderJson(field)))})),
