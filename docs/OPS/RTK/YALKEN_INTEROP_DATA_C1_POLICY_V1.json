@@ -144,7 +144,13 @@
     "src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs",
     "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
     "test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js",
-    "docs/tasks/2026-09-24--c4-real-office-mode-proof.md"
+    "docs/tasks/2026-09-24--c4-real-office-mode-proof.md",
+    "docs/OPS/RTK/YALKEN_INTEROP_C4_MULTI_POLICY_V1.json",
+    "scripts/ops/rtk-interop-c4-google-office-multi-readback.py",
+    "scripts/ops/rtk-interop-c4-google-office-multi-batch.mjs",
+    "test/unit/rtk-interop-c4-google-office-multi.test.py",
+    "test/contracts/rtk-interop-c4-google-office-multi.contract.test.js",
+    "docs/tasks/2026-09-24--c4-google-office-multiscene-admission.md"
   ],
   "protectedFiles": [
     {
@@ -1737,7 +1743,13 @@
       "test/unit/rtk-interop-c4-google-office.test.py",
       "test/contracts/rtk-interop-word-manuscript.contract.test.js",
       "test/unit/rtk-interop-word-manuscript.test.py",
-      "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs"
+      "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
+      "docs/OPS/RTK/YALKEN_INTEROP_C4_MULTI_POLICY_V1.json",
+      "scripts/ops/rtk-interop-c4-google-office-multi-readback.py",
+      "scripts/ops/rtk-interop-c4-google-office-multi-batch.mjs",
+      "test/unit/rtk-interop-c4-google-office-multi.test.py",
+      "test/contracts/rtk-interop-c4-google-office-multi.contract.test.js",
+      "docs/tasks/2026-09-24--c4-google-office-multiscene-admission.md"
     ]
   },
   "labCodeBindingSets": [

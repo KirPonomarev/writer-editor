@@ -3,6 +3,7 @@ import {verifyDataC1} from './rtk-interop-data-c1.mjs';
 import {verifyWordTextOrderBatch} from './rtk-interop-word-text-order-batch.mjs';
 import {verifyWordManuscriptBatch} from './rtk-interop-word-manuscript-batch.mjs';
 import {verifyGoogleOfficeC4Batch} from './rtk-interop-c4-google-office-batch.mjs';
+import {verifyGoogleOfficeC4MultiBatch} from './rtk-interop-c4-google-office-multi-batch.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -1480,6 +1481,30 @@ export function validateInterop100({
 
 export function verifyInterop100(repoRoot = repoRootFromHere(), options = {}) {
   const spec = options.spec || readInterop100Denominator(repoRoot);
+  if (Object.hasOwn(options, 'googleOfficeMultiCohort')) {
+    const specErrors = [];
+    validateSpec(spec, specErrors);
+    if (options.spec || options.envelope || options.ledger
+      || Object.hasOwn(options, 'googleOfficeCohort')
+      || ['wordManuscriptLabRoot', 'wordManuscriptRunIds', 'wordTextOrderLabRoot',
+        'wordTextOrderRunIds', 'freshC1EvidenceRoot', 'dataC1LabRoot', 'dataC1RunId',
+        'textOrderC1LabRoot', 'textOrderRunId', 'orderC1LabRoot', 'orderRunId']
+        .some(key => Object.hasOwn(options, key))
+      || options.requireLocalPhysicalPackage || options.requireExternalEvidencePackage
+      || options.externalEvidencePackageRoot)
+      specErrors.push('C4_MULTI_COHORT_MODE_OPTIONS_CONFLICT');
+    if (Object.hasOwn(options, 'wordManuscriptCohorts'))
+      return verifyMixedInteropCohorts({repoRoot,
+        wordCohorts: options.wordManuscriptCohorts,
+        googleMultiCohort: options.googleOfficeMultiCohort,
+        currentHead: options.currentHead || currentGitHead(repoRoot),
+        requiredCells: buildRequiredCells(spec), specErrors});
+    return verifyGoogleOfficeC4MultiBatch({repoRoot,
+      labRoot: options.googleOfficeMultiCohort?.labRoot,
+      runIds: options.googleOfficeMultiCohort?.runIds,
+      currentHead: options.currentHead || currentGitHead(repoRoot),
+      requiredCells: buildRequiredCells(spec), specErrors});
+  }
   if (Object.hasOwn(options, 'googleOfficeCohort')) {
     const specErrors = [];
     validateSpec(spec, specErrors);
@@ -1672,8 +1697,10 @@ function verifyWordManuscriptCohorts({repoRoot, cohorts, currentHead, requiredCe
 
 // Reconciliation is deliberately unable to create evidence: each member must
 // already be a complete, exact-head authoritative report from its own reader.
-export function reconcileInteropAggregateReports({wordReport,googleReport,requiredCellIds,currentHead,currentTree}) {
+export function reconcileInteropAggregateReports({wordReport,googleReport,googleMultiReport,
+  requiredCellIds,currentHead,currentTree}) {
   const errors=[],ids=new Set(),decisions=[];
+  if (googleReport && googleMultiReport) errors.push('INTEROP_MIXED_GOOGLE_MODE_CONFLICT');
   if (!Array.isArray(requiredCellIds)||requiredCellIds.length!==EXPECTED_REQUIRED_CELLS
     ||new Set(requiredCellIds).size!==EXPECTED_REQUIRED_CELLS||!commitSha(currentHead)
     ||typeof currentTree!=='string'||!COMMIT_RE.test(currentTree))
@@ -1681,7 +1708,9 @@ export function reconcileInteropAggregateReports({wordReport,googleReport,requir
   const allowed=new Set(requiredCellIds||[]);
   for(const [label,report,mode] of [
     ['WORD',wordReport,'WORD_MANUSCRIPT_COHORTS_V1'],
-    ['GOOGLE',googleReport,'GOOGLE_OFFICE_C4_BATCH_V1'],
+    googleMultiReport
+      ? ['GOOGLE_MULTI',googleMultiReport,'GOOGLE_OFFICE_C4_MULTI_BATCH_V1']
+      : ['GOOGLE',googleReport,'GOOGLE_OFFICE_C4_BATCH_V1'],
   ]){
     if(!report||report.ok!==true||report.authoritativeAdmission!==true||report.evidenceMode!==mode
       ||report.currentHead!==currentHead||report.currentTree!==currentTree
@@ -1708,8 +1737,12 @@ export function reconcileInteropAggregateReports({wordReport,googleReport,requir
     cellDecisions:errors.length?[]:decisions.sort((a,b)=>a.cellId.localeCompare(b.cellId))};
 }
 
-function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,currentHead,requiredCells,specErrors=[]}){
+function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,googleMultiCohort,
+  currentHead,requiredCells,specErrors=[]}){
   const started=performance.now(),errors=[...specErrors];
+  const multi = googleMultiCohort !== undefined;
+  if (multi && googleCohort) errors.push('INTEROP_MIXED_GOOGLE_MODE_CONFLICT');
+  googleCohort = multi ? googleMultiCohort : googleCohort;
   if(!googleCohort||typeof googleCohort.labRoot!=='string'
     ||!Array.isArray(googleCohort.runIds)||googleCohort.runIds.length<1||googleCohort.runIds.length>2)
     errors.push('INTEROP_MIXED_GOOGLE_INPUT');
@@ -1725,7 +1758,8 @@ function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,currentHea
     errors.push('INTEROP_MIXED_DUPLICATE_INPUT');
   let word=null,google=null;
   if(!errors.length){
-    google=verifyGoogleOfficeC4Batch({repoRoot,labRoot:googleRoot,runIds:googleCohort.runIds,
+    const verifyGoogle = multi ? verifyGoogleOfficeC4MultiBatch : verifyGoogleOfficeC4Batch;
+    google=verifyGoogle({repoRoot,labRoot:googleRoot,runIds:googleCohort.runIds,
       currentHead,requiredCells});
     if(!google.ok)errors.push('INTEROP_MIXED_GOOGLE_FAILED:'+google.errors.join('|'));
   }
@@ -1737,7 +1771,8 @@ function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,currentHea
   const origin=git(['rev-parse','origin/main']),head=git(['rev-parse','HEAD']);
   const tree=git(['rev-parse','HEAD^{tree}']),status=git(['status','--porcelain']);
   const currentTree=tree.status===0?tree.stdout.trim():null;
-  const reconciled=reconcileInteropAggregateReports({wordReport:word,googleReport:google,
+  const reconciled=reconcileInteropAggregateReports({wordReport:word,
+    ...(multi ? {googleMultiReport:google} : {googleReport:google}),
     requiredCellIds:requiredCells?.map(c=>c.cellId),currentHead,currentTree});
   errors.push(...reconciled.errors);
   if(origin.status!==0||head.status!==0||tree.status!==0||status.status!==0
@@ -1754,6 +1789,7 @@ function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,currentHea
     percentage:acceptedCellIds.length/EXPECTED_REQUIRED_CELLS*100,
     cellDecisions:ok?reconciled.cellDecisions:[],
     cohortProvenance:ok?{word:word.cohortProvenance,google:{labRoot:googleRoot,
+      evidenceMode:google.evidenceMode,
       runIds:[...googleCohort.runIds],policySha256:google.policySha256,
       acceptedCellIds:google.acceptedCellIds,observations:google.rawReadbacks.map(r=>({
         runId:r.runId,observationArtifactHash:r.observationArtifactHash}))}}:null,
@@ -1766,6 +1802,7 @@ function verifyMixedInteropCohorts({repoRoot,wordCohorts,googleCohort,currentHea
 function main() {
   const cohortArgs = [];
   let googleCohort=null;
+  let googleMultiCohort=null;
   for (let i = 2; i < process.argv.length; i++) {
     if (process.argv[i] === '--word-manuscript-cohort') {
       cohortArgs.push({labRoot: String(process.argv[i + 1] || '').trim(),
@@ -1774,6 +1811,11 @@ function main() {
     } else if (process.argv[i] === '--google-office-cohort') {
       if(googleCohort)throw new Error('INTEROP_MIXED_DUPLICATE_GOOGLE_COHORT');
       googleCohort={labRoot:String(process.argv[i+1]||'').trim(),
+        runIds:String(process.argv[i+2]||'').trim().split(',')};
+      i+=2;
+    } else if (process.argv[i] === '--google-office-multi-cohort') {
+      if(googleMultiCohort)throw new Error('C4_MULTI_DUPLICATE_COHORT');
+      googleMultiCohort={labRoot:String(process.argv[i+1]||'').trim(),
         runIds:String(process.argv[i+2]||'').trim().split(',')};
       i+=2;
     }
@@ -1793,6 +1835,7 @@ function main() {
   const report = verifyInterop100(repoRootFromHere(), {
     ...(cohortArgs.length ? {wordManuscriptCohorts: cohortArgs} : {}),
     ...(googleCohort ? {googleOfficeCohort:googleCohort} : {}),
+    ...(googleMultiCohort ? {googleOfficeMultiCohort:googleMultiCohort} : {}),
     ...(manuscriptIndex===-1?{}:{wordManuscriptLabRoot:String(process.argv[manuscriptIndex+1]||'').trim()}),
     ...(wordBatchIndex===-1?{}:{wordTextOrderLabRoot:String(process.argv[wordBatchIndex+1]||'').trim()}),
     ...(wordBatchRunsIndex===-1?{}:{[manuscriptIndex===-1?'wordTextOrderRunIds':'wordManuscriptRunIds']:String(process.argv[wordBatchRunsIndex+1]||'').trim().split(',')}),

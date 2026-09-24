@@ -1307,10 +1307,10 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
-      "sha256": "c29fcf409247417c40e3b1ec5b0613b9d2930ab3423e1b281615f6dda40b1ef0",
-      "approvedBy": "owner-direct-task:INTEROP_C4_GO_BASE_20260924",
-      "approvedAtUtc": "2026-09-24T02:14:40.000Z",
-      "rationale": "Owner-authorized bounded C4 Google Office verifier/admission: four single-scene TEXT/ORDER source and packaged cells remain candidates until fresh native Google review, independent raw DOCX/project proof and exact merged-head unified 1120-cell verification. Existing 306 cells, frozen denominator and mandatory gates remain protected; no automatic cell credit.",
+      "sha256": "6a498bbfde59896e1059b1c2979ae045b60c7763f7d02e3bf979510514f86928",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1352,10 +1352,10 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "7263fccf8abe712cde64a4818cc8c6027ca965965ba60890d6887287af9f3fe5",
-      "approvedBy": "owner-delegated-codex:INTEROP_WORD_PROMOTION_EXACT_SUCCESSOR_20260924",
-      "approvedAtUtc": "2026-09-24T07:45:19Z",
-      "rationale": "Exact-byte Word manuscript evidence promotion only across the inspected C4 certification/test/runtime successor. Rejected writes expose a bounded failure code; successful journeys are unchanged. A separate negative contract keeps DATA_C1 source pins intact. Repair grants zero cells until independent unified verification on merged main.",
+      "sha256": "a98dd9a798e91d9599afbb801c16df58051d65bd4d3511d4d380d191b7ccdf45",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:15:18Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission, including maintained RTK contract graph membership and exact-byte bindings. Frozen denominator, independent oracle, physical proof, CI, merge and exact-head recheck remain mandatory; metadata grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1514,37 +1514,37 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c7c8c0703129301c4b8d157bd1ba25715406f53812a3d75bbfb55c1a53e650a5",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
-      "approvedAtUtc": "2026-09-24T20:11:05Z",
-      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "sha256": "24d5874c1d6928a7ad1091a3b8cd8f1db075896f24f2797c8e26e60a3d85e4fe",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "1b970adf30de3633a0ebb4a37d3946afff84553d20500b0971e9eaa1ceeba75e",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
-      "approvedAtUtc": "2026-09-24T20:11:05Z",
-      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "sha256": "7338add0dade27bdd2415a8f3c8ea416a9b71c9e4cd9696eb9c6ec7bdba45734",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "47860a40073063e83b1a07b72b94239f105077be364d78d6c4b1740430d9cf90",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
-      "approvedAtUtc": "2026-09-24T20:11:05Z",
-      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "sha256": "e51ed1f993c09a98633dfe11ae8ca82aceb1aafa5f0a06fe1e8b9d9c7f2a7ad1",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "de675b7b60f923511722f077e9ad82b92877de4a0b70feae4a435a2b63273e8d",
-      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
-      "approvedAtUtc": "2026-09-24T20:11:05Z",
-      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "sha256": "4f730c340d36c1f0581b2241c096bad41715c4426252daa1698be034af765f5d",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1554,6 +1554,60 @@
       "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
       "approvedAtUtc": "2026-09-24T15:51:07.055Z",
       "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_MULTI_POLICY_V1.json",
+      "sha256": "eb9cabec39d6fa3518ba57a87423a735198f811c3e19f6e1c33e5ab3e2afc27f",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-multi-readback.py",
+      "sha256": "b8527f901d30f33a8cc355f64e5be6739890f4a07ed793fe539be84e8476ff7d",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-multi-batch.mjs",
+      "sha256": "309fc70bcd03418716a66d1d246293f83b997c34765e429a1bfe44267ec40e77",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-interop-c4-google-office-multi.test.py",
+      "sha256": "6fa7aea2189c6c745d25b2ec3046a5be533acbd7c2f707ae5767e1b8218a3cb3",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office-multi.contract.test.js",
+      "sha256": "fbbe6209bb697508c8faa498c68c36bc1f7ae3a1d7c2ba21488d23094f66e488",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-24--c4-google-office-multiscene-admission.md",
+      "sha256": "e52589f75d5adee10d00bd1105e3774f71468231889be47e27c82b839f3072fc",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:33:39Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission and strict same-head unified aggregation. Only verifier, tests, generated metadata and exact byte bindings change. No product promotion, frozen denominator change or cell credit is granted by this approval; independent physical proof and complete delivery remain mandatory.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -2467,6 +2521,105 @@
       "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_OFFICE_TRANSPORT_20260924",
       "approvedAtUtc": "2026-09-24T15:51:07.055Z",
       "rationale": "Owner-authorized bounded C4 Office DOCX transport and exact-byte Data C1/post-audit binding repair. This registration changes no frozen denominator or oracle, and grants zero cells before new physical proof and exact-head official verification.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b20a3f31f22da9b41ecdd0e175dba639e59fa04b794fd56902634201974e9b61",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "24abdfff525c858f323fd992b04f182e18edbaad3baa04f71a5a733f03f97d7f",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_C4_MULTI_POLICY_V1.json",
+      "sha256": "4ffc64861692679736a05d5f07ec7b169fa20ba37591d2b471e076f99b92bf4b",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:15:18Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission, including maintained RTK contract graph membership and exact-byte bindings. Frozen denominator, independent oracle, physical proof, CI, merge and exact-head recheck remain mandatory; metadata grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c7c8c0703129301c4b8d157bd1ba25715406f53812a3d75bbfb55c1a53e650a5",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-24--c4-google-office-multiscene-admission.md",
+      "sha256": "8274aecd92826545cd8fc763f22c2e0c073fa03ffe4402acfb4907720d54d63b",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-100-denominator-v1.mjs",
+      "sha256": "d3bd673d151262f2684c40774f175d841df7e8726a82d23ea4def40f04d5623f",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-multi-batch.mjs",
+      "sha256": "ac75c9c0bb681d16f6180e8dba15ea96065a3233bfb5432132a15070410be775",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:15:18Z",
+      "rationale": "Owner-authorized C4 multi-scene Office admission, including maintained RTK contract graph membership and exact-byte bindings. Frozen denominator, independent oracle, physical proof, CI, merge and exact-head recheck remain mandatory; metadata grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-c4-google-office-multi-readback.py",
+      "sha256": "5adffdfeea230e98d8184414f0f596c5d5194780969c212b57ee350f616e6a99",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "1b970adf30de3633a0ebb4a37d3946afff84553d20500b0971e9eaa1ceeba75e",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_FULL_VECTOR_20260924",
+      "approvedAtUtc": "2026-09-24T20:11:05Z",
+      "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-c4-google-office-multi.contract.test.js",
+      "sha256": "4e48505359427d83bfa92f38d686edf5135648272d7c80746f35a9c9b3a06ee5",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-interop-c4-google-office-multi.test.py",
+      "sha256": "73cb8fb6a3115af7541ca95e66f5bda4468ef8b10cca91cb3d78afc13e9a9bb2",
+      "approvedBy": "owner-delegated-codex:YALKEN_INTEROP_C4_MULTI_ADMISSION_20260924",
+      "approvedAtUtc": "2026-09-24T21:06:51Z",
+      "rationale": "Owner-authorized bounded verifier-only admission for two exact C4 multi-scene Google Office DOCX physical runs. Raw independent proof, frozen 1120 IDs, required tests, CI, merge and exact-head recheck remain mandatory; this approval alone grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
