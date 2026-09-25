@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a4a466408369cb9a43031b673d7661bc4b90a1f443dbd606e14cce3a1857e304",
+      "sha256": "2d1ee91ca693d8b144e48528a98ff9cbd81066095e9d186b237c501dd3d3ff91",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
+      "approvedAtUtc": "2026-09-25T15:42:22.206323Z",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1540,12 +1540,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "c2b1b90f282598a4842c86a3556300332f007b0e51a39dad65d593d12f410f46",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "9c41e7452ea1e1d8ab46f4559497c2156fc21473ec61a042414f8c22260a3c57",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:42:22.206323Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -4503,6 +4503,15 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "sha256": "66e22c02095efc74872f06549254d00b90d6f06be9fa2dc5a7a5f9b0e2249604"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required.",
+      "sha256": "c2b1b90f282598a4842c86a3556300332f007b0e51a39dad65d593d12f410f46"
     },
     {
       "approved": true,
