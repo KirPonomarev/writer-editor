@@ -189,8 +189,6 @@
   },
   "extraMaintainedContractBasenames": [
     "b3c07-security-runtime-boundary.contract.test.js",
-    "donor-port-command-surface-kernel.contract.test.js",
-    "revision-bridge-docx-content-preview.contract.test.js",
-    "revision-bridge-docx-inline-styles.contract.test.js"
+    "donor-port-command-surface-kernel.contract.test.js"
   ]
 }
