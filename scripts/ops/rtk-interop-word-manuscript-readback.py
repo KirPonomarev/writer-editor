@@ -469,6 +469,8 @@ def expected_links(docs):
         if n.get('type') in ['paragraph','heading','codeBlock']:
             offset=0
             for run in n.get('content',[]):
+                if run.get('type')=='image':
+                    require(set(run)=={'type','attrs'} and run['attrs'] in [media.attrs(0),media.attrs(1)],'LINK_MEDIA_ATOM');continue
                 value=run['text'];end=offset+len(value.encode('utf-16-le'))//2
                 links=[m for m in run.get('marks',[]) if m['type']=='link']
                 require(len(links)<=1,'LINK_EXPECTED_UNIQUE_MARK')

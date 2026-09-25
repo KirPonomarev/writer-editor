@@ -83,14 +83,14 @@ test('Manuscript promotion admits only the exact inspected C4 successor blobs', 
   assert.throws(() => check({repoRoot: root, runtimeIdentity, verifierIdentity: identity(), allowedPaths: ['oracle.txt']}), /PROMOTION_SCOPE/);
 });
 
-for(const era of ['C1','REVIEW','HOSTILE'])test(era+' Word reader successor admits one complete set and rejects mixed or altered bindings', async () => {
+for(const era of ['C1','REVIEW','HOSTILE','MEDIA'])test(era+' Word reader successor admits one complete set and rejects mixed or altered bindings', async () => {
   const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
-  const expected = era==='C1'?cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR:era==='REVIEW'?cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR:cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR, candidate = 'f'.repeat(40);
+  const expected = era==='C1'?cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR:era==='REVIEW'?cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR:era==='HOSTILE'?cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR:cert.R24_INTEROP_WORD_MEDIA_SUCCESSOR, candidate = 'f'.repeat(40);
   const historicalHead = era==='C1'?'3a5f0b2080e861d779cf5838a2a34c6e7d5e4244':era==='REVIEW'?'3dbe5404aad3b583fdbf929f2b49cf016f819fc6':null;
   const bytes = new Map(await Promise.all([...expected.bindings, ...expected.guards].map(async b => [b.path, historicalHead?execFileSync('git',['show',historicalHead+':'+b.path],{cwd:ROOT}):await fs.readFile(path.join(ROOT, b.path))])));
   const git = args => {
     if (args[0] === 'rev-parse') {
-      for (const set of [cert.R24_INTEROP_WORD_PROMOTION_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR]) {
+      for (const set of [cert.R24_INTEROP_WORD_PROMOTION_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR,cert.R24_INTEROP_WORD_MEDIA_SUCCESSOR]) {
         if (args[1] === set.baseSha + '^{tree}') return set.baseTree;
         if (args[1] === set.successorBaseSha + '^{tree}') return set.successorBaseTree;
       }

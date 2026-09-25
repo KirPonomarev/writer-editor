@@ -254,3 +254,37 @@ test('Word media: unsupported drawing semantics cannot masquerade as preserved i
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes).ok, false, xml);
   }
 });
+
+
+test('Word media: independent raw oracle executes real retained Word bytes and rejects corruptions', () => {
+  const path = require('node:path');
+  const result = spawnSync('python3', ['-I', '-B', path.join(__dirname, '../unit/rtk-word-media.test.py')], { encoding: 'utf8', maxBuffer: 1024 * 1024 });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stderr, /Ran 6 tests/u);
+  assert.match(result.stderr, /OK/u);
+});
+
+
+test('Word media acceptance rejects missing native hops, broken asset continuity and altered round bindings', async () => {
+ const { validateManuscriptMediaProof: check } = await import('../../scripts/ops/rtk-interop-word-manuscript-batch.mjs');
+ const witnesses=JSON.parse(require('node:zlib').gunzipSync(Buffer.from('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','base64')));
+ for(const witness of witnesses){
+  const {proof,rounds,route}=witness;
+  const row={recipe:'MEDIA_V1',route,volume:'SINGLE_SCENE'},batch={mediaGraphHashes:{SINGLE_SCENE:proof.expectedGraphSha256}};
+  assert.equal(check(proof,row,batch,rounds),true);
+  for(const kind of ['native','asset','round','placement','viewport','control','loss','cycles']){
+   const p=structuredClone(proof),r=structuredClone(rounds);
+   if(kind==='native')delete p.nativeReadbacks['final-word-lifecycle'];
+   else if(kind==='asset')p.assetSnapshots['reopened-media-assets'].assets[0].sha256='0'.repeat(64);
+   else if(kind==='round')r[0].returnedSha256='0'.repeat(64);
+   else if(kind==='placement')p.stages['rounds/1/word'].placementCount=2;
+   else if(kind==='viewport')p.viewportProof.viewCount=2;
+   else if(kind==='control')p.negativeControls[0].rejected=false;
+   else if(kind==='loss')p.lossLedger.lostImages=['lost'];
+   else r.length=0;
+   assert.throws(()=>check(p,row,batch,r),/MANUSCRIPT_MEDIA_/,kind);
+  }
+  assert.throws(()=>check(proof,{...row,route:'C3'},batch,rounds),/MANUSCRIPT_MEDIA_/);
+  assert.throws(()=>check(proof,{...row,recipe:'DEFAULT'},batch,rounds),/MANUSCRIPT_MEDIA_/);
+ }
+});
