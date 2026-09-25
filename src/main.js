@@ -9229,6 +9229,18 @@ async function inspectDocxReviewReturnIntakeV2({
     parserResult: verifiedParserResult,
   });
   if (!localBinding.ok) return localBinding;
+  // Only a verified return and the main-owned current export map can account
+  // for unchanged tables. The immutable worker packet remains raw evidence.
+  const tableBinding = revisionBridge.bindDocxReviewTableTopology(
+    verifiedParserResult.reviewIr, localAuthority.exportMap,
+  );
+  if (!tableBinding.ok) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_TABLE_TOPOLOGY_MISMATCH', {
+    reason: tableBinding.code,
+  });
+  if (tableBinding.applicable) {
+    verifiedParserResult.reviewIr = tableBinding.reviewIr;
+    verifiedParserResult.tableTopologyBinding = tableBinding.proof;
+  }
   const documentMetadataBinding = validateFullManuscriptDocumentMetadataReturn({
     expected: localAuthority.documentMetadata,
     returned: verifiedParserResult.reviewIr?.documentMetadata,

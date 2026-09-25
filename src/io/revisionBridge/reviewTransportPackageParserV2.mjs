@@ -1857,7 +1857,8 @@ function parseStructureChanges(documentScan, budgetState, reasons) {
           && token.path[3] === 'pPr')
       );
     if (declaredSectionProperties) continue;
-    if (['pPrChange', 'tbl', 'sectPr'].includes(token.localName)) {
+    if (['pPrChange', 'tbl', 'sectPr', 'tblPrChange', 'tblGridChange',
+      'trPrChange', 'tcPrChange', 'cellIns', 'cellDel', 'cellMerge'].includes(token.localName)) {
       const change = {
         kind: 'StructureChange',
         structureKind: token.localName,
@@ -1885,6 +1886,17 @@ function parseStructureChanges(documentScan, budgetState, reasons) {
     }
     // PARSER-01 (P6): paragraph-mark ins/del under p/pPr/rPr is structural.
     const isWordInsOrDel = isWordToken(token, 'ins') || isWordToken(token, 'del');
+    if (isWordInsOrDel && token.path[token.path.length - 2] === 'trPr') {
+      const change = {
+        kind: 'StructureChange',
+        structureKind: token.localName === 'ins' ? 'tableRowInserted' : 'tableRowDeleted',
+        sourceXmlProvenance: provenance(token),
+        classification: 'STRUCTURAL_BLOCKED',
+        reasonCode: 'RTK_BLOCKED_STRUCTURAL',
+        writerAuthorityImpact: 'blocking',
+      };
+      if (admitWorkerOutput(budgetState, reasons, 'reviewIr.structureChanges', change)) changes.push(change);
+    }
     const isParagraphMark = isWordInsOrDel
       && token.path.length >= 3
       && token.path[token.path.length - 2] === 'rPr'
