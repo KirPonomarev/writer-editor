@@ -262,7 +262,7 @@ test('Manuscript admission preserves 306 legacy targets and qualifies 24 distinc
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,330);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,330);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,354);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,354);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
@@ -341,7 +341,7 @@ test('single-scene structure uses a distinct review recipe and never upgrades le
   assert.throws(()=>m.validateManuscriptRuns([run,run.replace('unit','other')]),/DUPLICATE_JOURNEY/);
  }
  assert.deepEqual(expected.sort(),f.MANUSCRIPT_CELLS.filter(id=>id.startsWith('NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__')).sort());
- assert.equal(new Set(f.MANUSCRIPT_CELLS).size,330);
+ assert.equal(new Set(f.MANUSCRIPT_CELLS).size,354);
  assert.deepEqual(f.manuscriptFields('SINGLE_SCENE','C1'),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);
  assert.deepEqual(f.manuscriptFields('SINGLE_SCENE','C2'),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES','TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']);
 });
@@ -419,7 +419,7 @@ test('Lab native-CUA manuscript revision requires the exact new identity set and
   {path:'scripts/native-cua-target.mjs',sha256:'0ca57312401750018eb459cc70c9930592deae74be601cda33703e6effbf259a'},
   {path:'test/native-cua-target.test.mjs',sha256:'da4dea27274e93ac5ceb74e8cbb78f1c22deb73f7a255631fdecf898c2175285'}
  ]};
- const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json','src/word-hostile-mutant.py','src/word-hostile-probe.mjs','test/word-hostile.test.mjs'];
+ const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json','src/word-hostile-mutant.py','src/word-hostile-probe.mjs','test/word-hostile.test.mjs','src/word-media-native.mjs','test/word-media-native.test.mjs'];
  const matchesExactAdmission=candidate=>{
   const sets=candidate.labCodeBindingSets.filter(set=>set.id===expected.id);
   return sets.length===1&&JSON.stringify(sets[0])===JSON.stringify(expected)

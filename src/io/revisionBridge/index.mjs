@@ -1,3 +1,5 @@
+import documentMediaData from '../documentMedia.js';
+const { createImageAttrs, validateImageAttrs } = documentMediaData;
 import documentTables from '../documentTables.js';
 const { groupTableParagraphs, createTableReader, compareTableParagraphTopology } = documentTables;
 import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
@@ -7,6 +9,7 @@ import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
+  extractDocumentMediaReferencesV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
 } from './reviewTransportPackageParserV2.mjs';
@@ -3629,6 +3632,44 @@ export function bindDocxReviewTableTopology(reviewIr, exportMap) {
   } };
 }
 
+// Compare immutable return evidence with the locally authenticated source map.
+// Unchanged images grant no independent write capability. A missing, moved or
+// substituted image keeps the entire return blocked, even when text matches.
+export function bindDocxReviewMedia(reviewIr, exportMap) {
+  const blocks = Array.isArray(exportMap?.scenes) ? exportMap.scenes.flatMap(s => s.blocks || []) : [];
+  const observed = reviewIr?.documentMedia;
+  const unsupported = Array.isArray(reviewIr?.opaqueUnsupported) ? reviewIr.opaqueUnsupported : [];
+  const drawings = unsupported.filter(x => x.elementName === 'drawing');
+  if (!observed && !drawings.length && !blocks.some(b => b.formatIr?.media?.length)) return { ok: true, applicable: false, reviewIr };
+  const fail = code => ({ ok: false, applicable: true, code: `DOCX_MEDIA_${code}` });
+  if (!blocks.length) return fail('LOCAL_EXPORT_MAP_REQUIRED');
+  if (observed?.schemaVersion !== 'yalken.word.media-return.v1' || !Array.isArray(observed.placements)) return fail('PROJECTION_REQUIRED');
+  let expected;
+  try {
+    expected = blocks.flatMap((block, paragraphIndex) => (block.formatIr?.media || []).map(item => {
+      const { attrs } = documentMediaData.validateImageAttrs(item.attrs);
+      return { paragraphIndex, offset: item.offset, sha256: attrs.sha256, width: attrs.width, height: attrs.height,
+        alt: attrs.alt, displayName: attrs.displayName };
+    }));
+  } catch { return fail('SOURCE_INVALID'); }
+  const actual = observed.placements.map(x => Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName'].map(k => [k, x[k]])));
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) return fail('RETURN_MISMATCH');
+  const key = x => {
+    const p = x?.sourceXmlProvenance;
+    return p?.partName === 'word/document.xml' && p.elementName === 'drawing'
+      && p.namespaceUri === 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+      && Number.isSafeInteger(p.openStart) && Number.isSafeInteger(p.closeEnd) && p.openStart >= 0 && p.closeEnd > p.openStart
+      ? `${p.openStart}:${p.closeEnd}` : null;
+  };
+  const actualKeys = observed.placements.map(key), opaqueKeys = drawings.map(key);
+  if (actualKeys.some(k => !k) || new Set(actualKeys).size !== expected.length
+    || JSON.stringify(actualKeys.slice().sort()) !== JSON.stringify(opaqueKeys.slice().sort())) return fail('OCCURRENCE_BINDING_MISMATCH');
+  const proof = { schemaVersion: 'yalken.word.media-binding.v1', localExportMapDigest: `sha256:${hashCanonicalValue(exportMap)}`,
+    returnedMediaDigest: `sha256:${hashCanonicalValue(observed)}`, automaticApplyAuthority: false };
+  return { ok: true, applicable: true, proof, reviewIr: { ...reviewIr,
+    opaqueUnsupported: unsupported.filter(x => !drawings.includes(x)), mediaBinding: proof } };
+}
+
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   const xml = normalizeString(documentXml);
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
@@ -3782,7 +3823,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     });
   }
 
-  const parts = {};
+  const parts = {}, binaryParts = {};
   const inventoryEntries = [];
   let totalInflatedBytes = 0;
   for (const entry of metadataResult.entries) {
@@ -3823,7 +3864,8 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
       dataStart,
       dataEnd,
     });
-    if (!shouldExtractDocxReviewTransportAnalysisPart(entry.entryId)) continue;
+    const isPng = /^word\/media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.png$/u.test(entry.entryId);
+    if (!shouldExtractDocxReviewTransportAnalysisPart(entry.entryId) && !isPng) continue;
     // Pre-inflate part budget: effective.maxInflatedPartBytes (10 MiB V6),
     // NOT the 32 MiB host bound (Z6).
     if (entry.byteSize > effective.maxInflatedPartBytes) {
@@ -3857,7 +3899,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     // central CRC is the legacy-fixture sentinel (no real CRC evidence); real
     // DOCX packages always carry a non-zero CRC for non-empty parts, so this
     // never opens a bypass for tampered non-empty content in real archives.
-    if (Number.isSafeInteger(entry.centralCrc32) && entry.centralCrc32 !== 0) {
+    if (Number.isSafeInteger(entry.centralCrc32) && (entry.centralCrc32 !== 0 || isPng)) {
       const actualCrc32 = zipEvidenceCrc32(inflated.contentBytes);
       if (actualCrc32 !== entry.centralCrc32) {
         return {
@@ -3877,7 +3919,8 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
         };
       }
     }
-    parts[entry.entryId] = Buffer.from(inflated.contentBytes).toString('utf8');
+    if (isPng) binaryParts[entry.entryId] = Buffer.from(inflated.contentBytes);
+    else parts[entry.entryId] = Buffer.from(inflated.contentBytes).toString('utf8');
   }
 
   return {
@@ -3886,6 +3929,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     code: 'DOCX_REVIEW_TRANSPORT_PARTS_READY',
     reason: 'DOCX_REVIEW_TRANSPORT_PARTS_READY',
     parts,
+    binaryParts,
     zipInventory: {
       eocdCount: docxZipCountEndRecordSignatures(bytes),
       entries: inventoryEntries,
@@ -3903,8 +3947,18 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     zipInventory: extracted.zipInventory,
   };
   delete parserInput.bytes;
+  const mediaCache = new Map(); let mediaBytes = 0;
+  const readDocumentMediaPart = name => {
+    if (mediaCache.has(name)) return mediaCache.get(name);
+    const bytes = extracted.binaryParts?.[name];
+    if (!Buffer.isBuffer(bytes) || bytes.length > documentMediaData.MEDIA_LIMITS.bytes) throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
+    mediaBytes += bytes.length;
+    if (mediaBytes > documentMediaData.MEDIA_LIMITS.totalBytes || mediaCache.size >= documentMediaData.MEDIA_LIMITS.assets) throw Error('DOCUMENT_MEDIA_BYTES');
+    const { sha256, width, height } = createImageAttrs(bytes);
+    const result = Object.freeze({ sha256, width, height }); mediaCache.set(name, result); return result;
+  };
   return {
-    ...parseReviewTransportPackageV2(parserInput, options),
+    ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart }),
     packagePartsFromZipBytes: {
       status: extracted.status,
       code: extracted.code,
@@ -6599,7 +6653,12 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       ok: false, status: 'blocked', code: tableBinding.code,
       reason: tableBinding.code, decision: 'diagnostics-only', bounds,
     });
-    projection = tableBinding.reviewIr;
+    const mediaBinding = bindDocxReviewMedia(tableBinding.reviewIr, fullManuscriptExportMap);
+    if (!mediaBinding.ok) return docxReviewPreviewSessionResult({
+      ok: false, status: 'blocked', code: mediaBinding.code,
+      reason: mediaBinding.code, decision: 'diagnostics-only', bounds,
+    });
+    projection = mediaBinding.reviewIr;
   }
   const fullTextVectorGuard = docxReviewPreviewSessionFullTextVectorGuard(
     fullManuscriptExportMap, projection, options.verifiedDocumentSections,
@@ -8879,6 +8938,32 @@ function docxInlineCanonicalContent(paragraphs) {
     }
     if (joined !== paragraph.text) throw new Error('DOCX_INLINE_TEXT_BINDING');
     const attrs = { ...(level !== undefined ? { level } : {}), ...(textAlign !== undefined ? { textAlign } : {}) };
+    if (paragraph.media !== undefined) {
+      if (codeBlock || !Array.isArray(paragraph.media) || !paragraph.media.length || paragraph.media.length > 4096) throw Error('DOCUMENT_MEDIA_PLACEMENT');
+      let previous = -1;
+      const images = paragraph.media.map(item => {
+        if (!isPlainObject(item) || Object.keys(item).length !== 2 || !Number.isSafeInteger(item.offset)
+          || item.offset < previous || item.offset > joined.length || item.offset < 0) throw Error('DOCUMENT_MEDIA_PLACEMENT');
+        previous = item.offset;
+        return { offset: item.offset, node: { type: 'image', attrs: validateImageAttrs(item.attrs).attrs } };
+      });
+      const mixed = []; let cursor = 0, index = 0;
+      for (const node of nodes) {
+        const value = node.type === 'hardBreak' ? '\n' : node.text;
+        let start = 0;
+        while (index < images.length && images[index].offset <= cursor + value.length) {
+          const end = images[index].offset - cursor;
+          if (end > 0 && end < value.length && /[\ud800-\udbff]/u.test(value[end - 1]) && /[\udc00-\udfff]/u.test(value[end])) throw Error('DOCUMENT_MEDIA_SURROGATE_SPLIT');
+          if (end > start) mixed.push(node.type === 'hardBreak' ? node : { ...node, text: value.slice(start, end) });
+          mixed.push(images[index++].node); start = end;
+        }
+        if (start < value.length) mixed.push(node.type === 'hardBreak' ? node : { ...node, text: value.slice(start) });
+        cursor += value.length;
+      }
+      while (index < images.length && images[index].offset === cursor) mixed.push(images[index++].node);
+      if (index !== images.length) throw Error('DOCUMENT_MEDIA_PLACEMENT');
+      nodes.splice(0, nodes.length, ...mixed); hasMarks = true;
+    }
     let block = codeBlock
       ? { type: 'codeBlock', attrs: { language: '' }, content: joined ? [{ type: 'text', text: joined }] : [] }
       : { type: level === undefined ? 'paragraph' : 'heading', ...(Object.keys(attrs).length ? { attrs } : {}), content: nodes };
@@ -9549,6 +9634,28 @@ export function buildDocxContentPreviewFromZipBytes(input) {
   let parsed;
   try {
     parsed = docxContentPreviewParseMainDocumentXml(xmlText, docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
+    if (!parsed.failure) {
+      const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
+      const refs = extractDocumentMediaReferencesV1(xmlText, {
+        // Match the existing bounded full-manuscript count profile; generic
+        // text-only intake retains its own unchanged 64k paragraph ceiling.
+        budgets: { maxBlocks: 50000 },
+        relationshipsXml: Buffer.from(auxiliary('word/_rels/document.xml.rels') || []).toString('utf8'),
+        contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
+        cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },
+      });
+      if (refs.length) parsed.contentPreview.mediaParts = [...new Set(refs.map(ref => ref.partName))];
+      let mediaBytes = 0;
+      for (const ref of refs) {
+        const paragraph = parsed.contentPreview.paragraphs[ref.paragraphIndex];
+        if (!paragraph || !Number.isSafeInteger(ref.offset) || ref.offset < 0 || ref.offset > paragraph.text.length) throw Error('DOCUMENT_MEDIA_PLACEMENT');
+        const image = auxiliary(ref.partName);
+        if (!image || (mediaBytes += image.length) > documentMediaData.MEDIA_LIMITS.totalBytes) throw Error('DOCUMENT_MEDIA_BYTES');
+        const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName });
+        if (ref.cx !== attrs.width * 9525 || ref.cy !== attrs.height * 9525) throw Error('DOCUMENT_MEDIA_RESIZED_IMAGE_UNSUPPORTED');
+        (paragraph.media ||= []).push({ offset: ref.offset, attrs });
+      }
+    }
   } catch (error) {
     parsed = { failure: docxContentPreviewMalformedXmlDiagnostic(error.message) };
   }
@@ -10311,6 +10418,10 @@ function docxImportPreviewBuildLossReport(
   for (const diagnostic of diagnostics) {
     if (!isPlainObject(diagnostic)) continue;
     if (isDocxPackageRootRelationshipDiagnostic(diagnostic)) continue;
+    if (contentPreview.paragraphs.some(p => p.media?.length)
+      && ((diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC')
+        || (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
+          && contentPreview.mediaParts?.includes(diagnostic.entryId || diagnostic.sourcePart)))) continue;
     const knownIgnoredPart = [
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY,
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.UNSUPPORTED_STORY_DIAGNOSTICS_ONLY,
@@ -10504,6 +10615,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     if (contentPreview.paragraphs.some(p => p.table !== undefined)) {
       formatting.message = 'Table rows, cells, empty cell paragraphs and horizontal/vertical merges are preserved. ' + formatting.message;
     }
+    if (contentPreview.paragraphs.some(p => p.media?.length)) formatting.message = 'Validated inline PNG bytes, repeated image identity, placement and alternative text are preserved. Other media and floating shapes remain unsupported. ' + formatting.message;
     if (hasBlockStyles) {
       lossReport.mode = 'block-styles-headings-lists-and-inline-marks';
       formatting.code = 'DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS';

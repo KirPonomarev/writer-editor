@@ -4490,6 +4490,13 @@ function refreshCentralSheetStripProof({ reuseCachedDecision = false } = {}) {
     clearCentralSheetStripProof({ overflowReason: 'table-layout-continuous' });
     return false;
   }
+  // Inline replaced elements also exceed a text-line mask. Keep each canonical
+  // image visible in the same continuous fallback, including a reused asset
+  // at a page boundary; presentation never rewrites the document.
+  if (proseMirror.querySelector('img')) {
+    clearCentralSheetStripProof({ overflowReason: 'media-layout-continuous' });
+    return false;
+  }
   if (
     centralSheetStripLargePayloadFastPathActive
     && !centralSheetStripStructuralGuardActive

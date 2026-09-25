@@ -176,6 +176,7 @@ function sanitizeContentPreviewReport(report) {
     contentPreview: isPlainObject(report.contentPreview)
       ? {
           sourcePart: report.contentPreview.sourcePart,
+          ...(Array.isArray(report.contentPreview.mediaParts) ? { mediaParts: [...report.contentPreview.mediaParts] } : {}),
           paragraphCount: report.contentPreview.paragraphCount,
           textLength: report.contentPreview.textLength,
           textHash: report.contentPreview.textHash,
@@ -194,6 +195,7 @@ function sanitizeContentPreviewReport(report) {
                 'blockKind',
                 'blockquoteDepth',
                 'table',
+                'media',
               ]))
               .filter(isPlainObject)
             : [],

@@ -1,5 +1,6 @@
 const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
+const { buildMediaPackage } = require('./docxMedia.js');
 
 const { buildStoredZip } = require('./docxMinBuilder');
 const {
@@ -299,12 +300,15 @@ function buildSectionPropertiesXml(section, options = {}) {
   ].join('');
 }
 
-function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false) {
+function buildParagraphXml(block, index, hyperlinkByHref, commentExport, sectionBreak = null, documentNotes = null, officeModeTransport = false, mediaPackage = null) {
   const bookmarkId = String(index + 1);
   const bookmarkName = resolveBookmarkName(block, index);
   const markers = commentMarkersForBlock(commentExport, block);
   for (const [offset, xml] of noteMarkersForBlock(documentNotes, block)) {
     markers.set(offset, (markers.get(offset) || '') + xml);
+  }
+  for (const image of block.formatIr?.media || []) {
+    markers.set(image.offset, (markers.get(image.offset) || '') + mediaPackage.drawing(image.attrs));
   }
   const textRun = markers.size ? buildCommentedRunsXml(block, hyperlinkByHref, markers)
     : buildFormatIrRunsXml(block, hyperlinkByHref);
@@ -360,7 +364,7 @@ function buildParagraphXml(block, index, hyperlinkByHref, commentExport, section
   ].join('');
 }
 
-function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false) {
+function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSections, documentNotes, officeModeTransport = false, mediaPackage = null) {
   const normalizedSections = normalizeDocumentSections(documentSections, blocks.length);
   const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
     .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
@@ -373,6 +377,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     paragraphBreaks.get(index) || null,
     documentNotes,
     officeModeTransport,
+    mediaPackage,
   ));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
@@ -688,6 +693,20 @@ function assertNoEmbeddedSecret(buffer, forbiddenSecret) {
 
 function buildDocxReviewPacketBuffer(input = {}) {
   const blocks = normalizeReviewPacketBlocks(input);
+  const mediaPackage = buildMediaPackage({ type: 'doc', content: blocks.map(block => {
+    const media = block.formatIr?.media;
+    if (media !== undefined && !Array.isArray(media)) throw Error('DOCX_MEDIA_PLACEMENT');
+    let previous = 0;
+    return { type: 'paragraph', content: (media || []).map(item => {
+      const offset = item?.offset;
+      if (!Number.isSafeInteger(offset) || offset < previous || offset > block.text.length
+        || block.formatIr?.paragraph?.nodeType === 'codeBlock'
+        || (offset > 0 && /[\uD800-\uDBFF]/u.test(block.text[offset - 1]) && /[\uDC00-\uDFFF]/u.test(block.text[offset] || '')))
+        throw Error('DOCX_MEDIA_PLACEMENT');
+      previous = offset;
+      return { type: 'image', attrs: item.attrs };
+    }) };
+  }) });
   const numberingDefinitions = collectNumberingDefinitions(blocks);
   const hyperlinks = collectDocumentHyperlinks(blocks);
   const hyperlinkByHref = new Map(hyperlinks.map((entry) => [entry.href, entry.relationshipId]));
@@ -713,10 +732,10 @@ function buildDocxReviewPacketBuffer(input = {}) {
   }
 
   const buffer = buildStoredZip([
-    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes, Boolean(documentMetadata)) },
+    { name: '[Content_Types].xml', data: buildContentTypesXml(comments.contentTypes + notes.contentTypes + mediaPackage.contentTypes, Boolean(documentMetadata)) },
     { name: '_rels/.rels', data: buildRootRelsXml(Boolean(documentMetadata)) },
-    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships) },
-    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true) },
+    { name: 'word/_rels/document.xml.rels', data: buildDocumentRelsXml(hyperlinks, comments.relationships + notes.relationships + mediaPackage.relationships) },
+    { name: 'word/document.xml', data: buildDocumentXml(blocks, hyperlinkByHref, input.commentExport, input.documentSections, input.documentNotes, input.officeModeTransport === true, mediaPackage) },
     { name: 'word/settings.xml', data: buildSettingsXml() },
     { name: 'word/numbering.xml', data: buildNumberingXml(numberingDefinitions) },
     { name: 'word/styles.xml', data: buildStylesXml(blocks) },
@@ -727,6 +746,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
     { name: 'customXml/itemProps1.xml', data: buildCustomXmlItemPropsXml() },
     ...comments.entries,
     ...notes.entries,
+    ...mediaPackage.parts,
   ]);
   const modernMode = validateDocxReviewPacketModernMode15(buffer);
   if (!modernMode.ok) throw new Error(modernMode.code);
