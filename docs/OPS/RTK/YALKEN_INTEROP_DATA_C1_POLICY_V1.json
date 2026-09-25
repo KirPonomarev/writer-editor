@@ -415,7 +415,7 @@
   "qualifiedRuntimeRepair": {
     "id": "DOCX_IMPORT_PREVIEW_REFERENCE_REPAIR_V1",
     "bindingBaseSha": "0a45daf438c778143afad28ba02b519393a11f9b",
-    "scope": "Main-owned preview reference transport and bounded recoverable DOCX create transaction; real fenced manifest authority, v3 durable receipt and owned resource recovery. Preserve all raw preservation oracles and IPC limits; runtime changes require fresh native evidence, no historical PASS carry-forward.",
+    "scope": "Main-owned preview reference transport and bounded recoverable DOCX create transaction; real fenced manifest authority, v3 durable receipt, retained staging-inode ownership witnesses and owned resource recovery. Preserve all raw preservation oracles and IPC limits; runtime changes require fresh native evidence, no historical PASS carry-forward.",
     "sourceBindings": [
       {
         "path": "src/main.js",

@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "6827a36695b564925295e32c2ffed9c26e92923616dcc64eb1e673528c538194",
+      "sha256": "0a31b59898517fbd1ed44ea07b23c4a4a425c43c70cac99e0fcf42deba176c23",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:30:55.970314Z",
+      "approvedAtUtc": "2026-09-25T12:38:26.405498Z",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1821,7 +1821,7 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "sha256": "ec29bccc9e772666e0e3e69525d11229dae13861b6b628208456368b575d5fef",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:30:55.970314Z",
+      "approvedAtUtc": "2026-09-25T12:38:26.405498Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1830,34 +1830,34 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "f9ac48a4fa9f3f4e5417d109ab18c9786e9532d6e1b540a0f98f2fff2cf733a6",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:30:55.970314Z",
+      "approvedAtUtc": "2026-09-25T12:38:26.405498Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "f4f20c0b7f5204098583b2499743e42d3b91b0fe0f0699c7e1a7f8db9c2824d7",
+      "sha256": "c7c9b790cf475d5ce4e34a81d757f0eab44daf2e8043254507d1fe884fae97c3",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:30:55.970314Z",
+      "approvedAtUtc": "2026-09-25T12:38:26.405498Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "5447839e3f84fcb7d876f3b14948b71802042ec4d04a3566ecd0cdf5f1c9fbcf",
+      "sha256": "b7fd8e257fac9bbbd1de41fe9db35e58c31dbb104155d82a19dbcf3c36d13629",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:30:55.970314Z",
+      "approvedAtUtc": "2026-09-25T12:38:26.405498Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "be29a611d8e3ed07946cf4d659165df59966dddfdfa8d9f23197c6a8456a2dbe",
+      "sha256": "f966db1875d704051053c65be9da262a147bbec9660fc54261d352dd4e01f49f",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:30:55.970314Z",
+      "approvedAtUtc": "2026-09-25T12:38:26.405498Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
