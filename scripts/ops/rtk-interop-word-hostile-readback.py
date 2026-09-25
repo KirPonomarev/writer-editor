@@ -145,8 +145,8 @@ def invalid_reason(field, parts, control=None):
             return 'PROTECTED_PROJECT_PROPERTY_DUPLICATED'
     elif field == 'IDENTIFIERS_ANCHORS':
         starts = list(document.iter(W + 'bookmarkStart'))
-        if duplicates([n.get(W + 'id') for n in starts]) or duplicates([n.get(W + 'name') for n in starts]):
-            return 'WORD_BOOKMARK_IDENTITY_DUPLICATED'
+        if any(not re.fullmatch(r'[+-]?[0-9]+', n.get(W + 'id', '').strip()) for n in starts):
+            return 'WORD_BOOKMARK_ID_NOT_DECIMAL'
     elif field == 'SECTIONS':
         for parent in document.iter():
             if parent.tag in [W + 'body', W + 'pPr'] and len(parent.findall(W + 'sectPr')) > 1:
@@ -166,21 +166,21 @@ def invalid_reason(field, parts, control=None):
         # Nested revisions are legal CT_RunTrackChange; they alone prove nothing.
         for change in document.iter():
             if change.tag in [W + 'ins', W + 'del', W + 'moveFrom', W + 'moveTo']:
-                if not re.fullmatch(r'[+-]?[0-9]+', change.get(W + 'id', '')):
+                if not re.fullmatch(r'[+-]?[0-9]+', change.get(W + 'id', '').strip()):
                     return 'WORD_REVISION_ID_NOT_DECIMAL'
     elif field == 'COMMENTS':
         comments = xml_part(parts, 'word/comments.xml')
         ids = [] if comments is None else [n.get(W + 'id') for n in comments.findall(W + 'comment')]
-        refs = [n.get(W + 'id') for n in document.iter(W + 'commentReference')]
-        if duplicates(ids) or any(value not in ids for value in refs):
-            return 'WORD_COMMENT_ID_GRAPH_INVALID'
+        # OOXML permits ignoring duplicate/orphan comments; that is not proof
+        # of malformed bytes. A non-integer CT_Comment identifier is invalid.
+        if any(not re.fullmatch(r'[+-]?[0-9]+', (value or '').strip()) for value in ids):
+            return 'WORD_COMMENT_ID_NOT_DECIMAL'
     elif field == 'FOOTNOTES_ENDNOTES':
         for kind in ['footnote', 'endnote']:
             root = xml_part(parts, 'word/' + kind + 's.xml')
             ids = [] if root is None else [n.get(W + 'id') for n in root.findall(W + kind)]
-            refs = [n.get(W + 'id') for n in document.iter(W + kind + 'Reference')]
-            if duplicates(ids) or any(value not in ids for value in refs):
-                return 'WORD_NATIVE_NOTE_ID_GRAPH_INVALID'
+            if any(not re.fullmatch(r'[+-]?[0-9]+', (value or '').strip()) for value in ids):
+                return 'WORD_NATIVE_NOTE_ID_NOT_DECIMAL'
     elif field == 'MEDIA_ASSETS':
         rels = xml_part(parts, 'word/_rels/document.xml.rels')
         for rel in [] if rels is None else rels.findall(REL + 'Relationship'):

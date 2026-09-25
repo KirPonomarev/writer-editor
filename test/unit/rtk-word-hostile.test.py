@@ -54,14 +54,15 @@ def mutate(field, source):
         cell = E.SubElement(E.SubElement(table, W + 'tr'), W + 'tc')
         E.SubElement(E.SubElement(cell, W + 'tcPr'), W + 'gridSpan', {W + 'val': 'not-a-decimal'}); E.SubElement(cell, W + 'p')
     elif field == 'SECTIONS': first.find(W + 'pPr').append(E.Element(W + 'sectPr'))
-    elif field == 'IDENTIFIERS_ANCHORS': first.append(copy.deepcopy(first.find(W + 'bookmarkStart')))
+    elif field == 'IDENTIFIERS_ANCHORS': first.find(W + 'bookmarkStart').set(W + 'id', 'not-a-decimal')
     elif field == 'TRACKED_REVIEW_SEMANTICS': first.find(W + 'ins').set(W + 'id', 'not-a-decimal')
     elif field in ['COMMENTS', 'FOOTNOTES_ENDNOTES', 'STYLES', 'MEDIA_ASSETS']:
         name = {'COMMENTS': 'word/comments.xml', 'FOOTNOTES_ENDNOTES': 'word/footnotes.xml', 'STYLES': 'word/styles.xml', 'MEDIA_ASSETS': 'word/_rels/document.xml.rels'}[field]
         doc = E.fromstring(p[name])
         if field == 'STYLES': doc[0].set(W + 'type', 'not-a-style-type')
+        elif field == 'COMMENTS': doc[0].set(W + 'id', 'not-a-decimal')
         elif field == 'MEDIA_ASSETS': E.SubElement(doc, REL + 'Relationship', {'Id': 'image1', 'Type': 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image', 'Target': '../../escape.png'})
-        else: doc.append(copy.deepcopy(doc[0]))
+        else: doc[0].set(W + 'id', 'not-a-decimal')
     else:
         name = 'docProps/custom.xml'; doc = E.fromstring(p[name])
         if field == 'METADATA': doc.append(copy.deepcopy(doc[0]))
@@ -112,6 +113,15 @@ class HostileClassifier(unittest.TestCase):
         E.SubElement(cell, W + 'p'); p['word/document.xml'] = E.tostring(doc)
         for field in ['TABLES', 'TRACKED_REVIEW_SEMANTICS']:
             self.assertFalse(h.classify_invalid(field, original, pack(p))['invalid'])
+
+    def test_duplicate_or_orphan_comments_are_not_false_malformed_evidence(self):
+        # ISO 29500 explicitly permits ignoring duplicate/unreferenced comments.
+        # https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.comment
+        p = parts(); original = pack(p); comments = E.fromstring(p['word/comments.xml'])
+        comments.append(copy.deepcopy(comments[0]))
+        comments.append(E.Element(W + 'comment', {W + 'id': '77'}))
+        p['word/comments.xml'] = E.tostring(comments)
+        self.assertFalse(h.classify_invalid('COMMENTS', original, pack(p))['invalid'])
 
     def test_invalid_source_and_archive_bypass_fail_closed(self):
         p = parts(); original = pack(p)

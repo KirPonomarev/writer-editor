@@ -75,7 +75,7 @@ function baseParts(document) {
   };
 }
 
-function trackedReplacementParagraph(gap = '', ids = ['d1', 'i1'], author = 'Ada') {
+function trackedReplacementParagraph(gap = '', ids = ['101', '102'], author = 'Ada') {
   return `<w:p><w:del w:id="${ids[0]}" w:author="${author}"><w:r><w:delText>old</w:delText></w:r></w:del>${gap}<w:ins w:id="${ids[1]}" w:author="${author}"><w:r><w:t>new</w:t></w:r></w:ins></w:p>`;
 }
 
@@ -91,6 +91,42 @@ function assertReviewAnalysisOnly(result) {
   assert.equal(result.canApply, false);
   assert.equal(result.canWriteManuscript, false);
 }
+
+test('malformed Word style types and annotation IDs cannot enter Review analysis', async () => {
+  const parser = await loadParser();
+  const control = {
+    ...baseParts(documentXml('<w:p><w:bookmarkStart w:id="3" w:name="example"/><w:ins w:id="1"><w:r><w:t>new</w:t></w:r></w:ins><w:bookmarkEnd w:id="3"/></w:p>')),
+    'word/styles.xml': `<w:styles xmlns:w="${W_NS}"><w:style w:type="paragraph" w:styleId="Normal"/></w:styles>`,
+    'word/comments.xml': `<w:comments xmlns:w="${W_NS}"><w:comment w:id="2" w:author="A"><w:p/></w:comment></w:comments>`,
+  };
+  assertReviewAnalysisOnly(parser.parseReviewTransportPackageV2({ parts: control }, { cryptoPort }));
+  for (const [part, before, after, field] of [
+    ['word/styles.xml', 'w:type="paragraph"', 'w:type="not-a-style-type"', 'reviewIr.formattingParagraphs'],
+    ['word/document.xml', 'w:id="1"', 'w:id="not-a-decimal"', 'reviewIr.textRevisions'],
+    ['word/comments.xml', 'w:id="2"', 'w:id="not-a-decimal"', 'reviewIr.commentThreads'],
+    ['word/document.xml', 'w:id="3"', 'w:id="not-a-decimal"', 'reviewIr.structureChanges'],
+  ]) {
+    const parts = { ...control, [part]: control[part].replace(before, after) };
+    const result = parser.parseReviewTransportPackageV2({ parts }, { cryptoPort });
+    assert.equal(result.ok, false, part);
+    assert.equal(result.code, 'RTK_HOSTILE_PACKAGE_BLOCKED');
+    assert.equal(result.canApply, false);
+    assert.equal(result.canWriteManuscript, false);
+    assert.ok(result.reasons.some(item => item.field === field && item.code === 'RTK_HOSTILE_PACKAGE_BLOCKED'));
+  }
+});
+
+test('semantic type checks preserve namespace aliases, nested revisions and legal style defaults', async () => {
+  const parser = await loadParser();
+  const parts = {
+    ...baseParts(documentXml('<x:p><x:ins x:id="+001"><x:del x:id="2"><x:r><x:delText>old</x:delText></x:r></x:del></x:ins></x:p>', 'x')),
+    'word/styles.xml': `<x:styles xmlns:x="${W_NS}"><x:style x:styleId="Default"/>${['paragraph','character','table','numbering'].map((type,i)=>`<x:style x:type="${type}" x:styleId="s${i}"/>`).join('')}</x:styles>`,
+    'word/comments.xml': `<x:comments xmlns:x="${W_NS}"><x:comment x:id="2" x:author="A"><x:p/></x:comment></x:comments>`,
+  };
+  assertReviewAnalysisOnly(parser.parseReviewTransportPackageV2({ parts }, { cryptoPort }));
+  parts['word/document.xml'] = parts['word/document.xml'].replace('x:id="+001"', 'x:id="invalid"');
+  assert.equal(parser.parseReviewTransportPackageV2({ parts }, { cryptoPort }).ok, false);
+});
 
 test('B02 parser treats exact Google Office customXML relationship as inert advisory evidence', async () => {
   const parser = await loadParser();
@@ -201,8 +237,8 @@ test('B02 parser treats Word-normalized insert-delete replacements as tracked-on
       ...baseParts(documentXml(`
         <w:p>
           <w:r><w:t>Alpha </w:t></w:r>
-          <w:ins w:id="i1" w:author="Word"><w:r><w:t>new</w:t></w:r></w:ins>
-          <w:del w:id="d1" w:author="Word"><w:r><w:delText>old</w:delText></w:r></w:del>
+          <w:ins w:id="102" w:author="Word"><w:r><w:t>new</w:t></w:r></w:ins>
+          <w:del w:id="101" w:author="Word"><w:r><w:delText>old</w:delText></w:r></w:del>
           <w:r><w:t> omega</w:t></w:r>
         </w:p>
         <w:sectPr/>`)),
@@ -341,7 +377,7 @@ test('B02 parser replacement grouping uses a boundary index and stays count-stab
   for (const pairCount of [32, 64, 128, 256]) {
     let body = '';
     for (let index = 0; index < pairCount; index += 1) {
-      body += trackedReplacementParagraph('', [`d${index}`, `i${index}`], 'Ada');
+      body += trackedReplacementParagraph('', [String(index * 2), String(index * 2 + 1)], 'Ada');
     }
     const result = parser.parseReviewTransportPackageV2({
       parts: baseParts(documentXml(body)),

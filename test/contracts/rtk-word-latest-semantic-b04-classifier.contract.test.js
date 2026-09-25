@@ -85,7 +85,7 @@ test('B04 classifier keeps replacement pairs atomic and duplicate ambiguity bloc
   const parser = await load(PARSER_PATH);
   const classifier = await load(CLASSIFIER_PATH);
   const parsed = parser.parseReviewTransportPackageV2({
-    parts: parts('<w:p><w:del w:id="d1"><w:r><w:delText>old</w:delText></w:r></w:del><w:ins w:id="i1"><w:r><w:t>new</w:t></w:r></w:ins></w:p>'),
+    parts: parts('<w:p><w:del w:id="101"><w:r><w:delText>old</w:delText></w:r></w:del><w:ins w:id="102"><w:r><w:t>new</w:t></w:r></w:ins></w:p>'),
   }, { cryptoPort });
   const exact = classifier.classifyReviewTransportIrV2({
     reviewIr: parsed.reviewIr,
@@ -99,7 +99,7 @@ test('B04 classifier keeps replacement pairs atomic and duplicate ambiguity bloc
   assert.equal(exact.classifications.text.length, 1);
   assert.equal(exact.classifications.text[0].kind, 'replacement-pair');
   assert.equal(exact.classifications.text[0].disposition, 'EXACT_AUTOMATIC_CANDIDATE');
-  assert.deepEqual(exact.classifications.text[0].sourceRevisionIds, ['d1', 'i1']);
+  assert.deepEqual(exact.classifications.text[0].sourceRevisionIds, ['101', '102']);
   assert.equal(ambiguous.classifications.text[0].disposition, 'MANUAL_REVIEW');
   assert.equal(ambiguous.reasons.some((reason) => reason.code === 'RTK_BLOCKED_AMBIGUOUS_TEXT'), true);
 });
@@ -112,8 +112,8 @@ test('B04 classifier keeps Word advisory inventory visible without blocking exac
       ...parts(`
         <w:p>
           <w:r><w:t>Alpha </w:t></w:r>
-          <w:ins w:id="i1"><w:r><w:t>new</w:t></w:r></w:ins>
-          <w:del w:id="d1"><w:r><w:delText>old</w:delText></w:r></w:del>
+          <w:ins w:id="102"><w:r><w:t>new</w:t></w:r></w:ins>
+          <w:del w:id="101"><w:r><w:delText>old</w:delText></w:r></w:del>
           <w:r><w:t> omega</w:t></w:r>
         </w:p>
         <w:sectPr/>`),
@@ -156,7 +156,7 @@ test('B04 classifier blocks move and structural changes even with otherwise vali
   const parser = await load(PARSER_PATH);
   const classifier = await load(CLASSIFIER_PATH);
   const parsed = parser.parseReviewTransportPackageV2({
-    parts: parts('<w:p><w:moveFrom w:id="m1"><w:r><w:t>from</w:t></w:r></w:moveFrom><w:moveTo w:id="m1"><w:r><w:t>to</w:t></w:r></w:moveTo><w:pPr><w:pPrChange w:id="p1"/></w:pPr></w:p>'),
+    parts: parts('<w:p><w:moveFrom w:id="103"><w:r><w:t>from</w:t></w:r></w:moveFrom><w:moveTo w:id="103"><w:r><w:t>to</w:t></w:r></w:moveTo><w:pPr><w:pPrChange w:id="p1"/></w:pPr></w:p>'),
   }, { cryptoPort });
   const result = classifier.classifyReviewTransportIrV2({
     reviewIr: parsed.reviewIr,
