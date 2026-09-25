@@ -6,7 +6,7 @@ const vm = require('node:vm');
 test('table editor: actual sheet refresh keeps table content visible and restores ordinary pagination', () => {
   const source = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
   const fn = source.slice(source.indexOf('function refreshCentralSheetStripProof('), source.indexOf('function scheduleCentralSheetStripProofRefreshOnScroll('));
-  class Element { querySelector(selector) { return selector === 'table' ? (hasTable ? {} : null) : new Element(); } }
+  class Element { querySelector(selector) { return selector === 'table' ? (hasTable ? {} : null) : selector === 'img' ? null : new Element(); } }
   let hasTable = true, fallback = '', paginationCalls = 0;
   const context = { HTMLElement: Element, isTiptapMode: true, editor: new Element(),
     clearCentralSheetStripProof: value => { fallback = value?.overflowReason || ''; },

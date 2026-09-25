@@ -25,3 +25,25 @@ test('Word media editor: malicious URI, wrong media type and excessive dimension
     assert.equal(html[0], 'span'); assert.equal(html[1].src, undefined);
   }
 });
+
+
+test('Word media editor: sheet refresh prevents clipping every image and restores text pagination after removal', () => {
+  const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
+  const source = fs.readFileSync(path.join(__dirname, '../../src/renderer/editor.js'), 'utf8');
+  const fn = source.slice(source.indexOf('function refreshCentralSheetStripProof('), source.indexOf('function scheduleCentralSheetStripProofRefreshOnScroll('));
+  let hasImage = true, fallback = '', calls = 0;
+  class Element { querySelector(selector) { return selector === 'table' ? null : selector === 'img' ? (hasImage ? {} : null) : new Element(); } }
+  const context = { HTMLElement: Element, isTiptapMode: true, editor: new Element(),
+    clearCentralSheetStripProof: value => { fallback = value?.overflowReason || ''; },
+    centralSheetStripLargePayloadFastPathActive: false, centralSheetStripStructuralGuardActive: false,
+    buildCentralSheetStripRuntimeState: () => ({ shouldRender: true }),
+    applyCentralSheetStripRuntimeState: () => { calls++; return true; } };
+  vm.createContext(context); vm.runInContext(fn, context);
+  for (const fast of [false, true]) {
+    context.centralSheetStripLargePayloadFastPathActive = fast;
+    assert.equal(context.refreshCentralSheetStripProof(), false);
+    assert.equal(fallback, 'media-layout-continuous'); assert.equal(calls, 0);
+  }
+  hasImage = false; context.centralSheetStripLargePayloadFastPathActive = false;
+  assert.equal(context.refreshCentralSheetStripProof(), true); assert.equal(calls, 1);
+});

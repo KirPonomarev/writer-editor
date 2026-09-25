@@ -128,3 +128,5 @@ slash object markers, so field acceptance additionally requires Word inline-shap
 object readback. The XML parser remains platform-neutral: its bounded package
 adapter validates PNG bytes and supplies immutable metadata through a read-only
 port. Adjacent text Apply preserves images; crossing an image stays blocked.
+
+Media physical counterexample: the paragraph-only page mask clipped the third reused PNG after reopen. Use the existing continuous rich-content fallback for images; preserve canonical content and restore ordinary pagination when no images remain. Additional affected harness scope: `test/contracts/rtk-word-table-editor.contract.test.js`. Independent media oracle requires all three decoded images to pass hit testing; the first diagnostic remains rejected.
