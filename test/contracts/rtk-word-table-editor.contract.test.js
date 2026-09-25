@@ -32,6 +32,8 @@ test('table editor: actual ProseMirror schema retains merged cells and supports 
     { type: 'tableRow', content: [cell('merged', 2), cell('vertical', 1, 2)] },
     { type: 'tableRow', content: [cell('left'), cell('')] },
   ] }, p('after')] };
+  // ProseMirror now declares an optional table property attribute; empty attrs carry no document data.
+  json.content[0].attrs = {};
   const doc = schema.nodeFromJSON(json); doc.check();
   assert.deepEqual(JSON.parse(JSON.stringify(doc.toJSON())), json);
   const map = TableMap.get(doc.firstChild);
