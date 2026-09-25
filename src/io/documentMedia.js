@@ -107,7 +107,8 @@ function documentMedia(doc) {
     if (node?.type === 'image') {
       if (!['paragraph', 'heading'].includes(parentType) || node.content?.length || node.marks?.length) fail('IMAGE_SHAPE');
       const cached = validatedByEncoding.get(node.attrs?.dataBase64);
-      const media = cached && Object.keys(node.attrs).length === KEYS.length
+      const media = cached && typeof node.attrs === 'object' && !Array.isArray(node.attrs)
+        && Object.keys(node.attrs).length === KEYS.length
         && KEYS.every(key => node.attrs[key] === cached.attrs[key]) ? cached : validateImageAttrs(node.attrs);
       validatedByEncoding.set(media.attrs.dataBase64, media);
       // Canonical nodes carry encoded bytes. Reuse must not evade the aggregate
