@@ -683,6 +683,11 @@ test('Word import transaction admission preserves every historical Lab identity 
  currentFixture.id='WORD_CURRENT_SAFE_CREATE_TEST_V1';
  currentFixture.bindings.find(b=>b.path==='test/m0-audit-repair.test.mjs').sha256='71ea6b01db1b2af71a26910686eddef09e3b65e35b4db0a7a4cde0c0dcf296f4';
  expected.labCodeBindingSets.push(currentFixture);
+ // W7 restores the existing structure recipe on the current UTF8-safe runner.
+ const currentStructure=structuredClone(currentFixture);
+ currentStructure.id='WORD_CURRENT_STRUCTURE_UTF8_V1';
+ currentStructure.bindings.find(b=>b.path==='src/word-manuscript-fields.mjs').sha256='eaa9972c0a980274540a3b4aea2ef50c9fee7527e426d7219d1ad79dac07f85f';
+ expected.labCodeBindingSets.push(currentStructure);
  for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],expected[key],key);
  for(const p of base.admittedPaths)assert.ok(actual.admittedPaths.includes(p),p);
  const bindings=actual.qualifiedRuntimeRepair.sourceBindings;
