@@ -168,7 +168,8 @@
     "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
     "test/contracts/rtk-word-hostile.contract.test.js",
     "test/contracts/rtk-word-latest-semantic-b04-classifier.contract.test.js",
-    "test/unit/rtk-word-hostile.test.py"
+    "test/unit/rtk-word-hostile.test.py",
+    "test/unit/sector-m-preload-workspace-query-bridge.test.js"
   ],
   "protectedFiles": [
     {
