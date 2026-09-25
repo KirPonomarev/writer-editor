@@ -283,7 +283,7 @@ export const R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "2ec7a6b9f41b6c87896fd260f3ca8b395f391c7ea8974ca8c1eb86baf0f0b824"
+      "sha256": "ac87e40a5cca7f5cdc5fb96808d41d21ff1112bd443d10dcb6d6073ca7803c02"
     }
   ],
   "guards": [
