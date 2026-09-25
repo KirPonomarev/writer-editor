@@ -221,12 +221,13 @@ test('W4 complete Office locator rewrite needs signed sections, full Original ve
   }
 });
 
-for (const kind of ['replace', 'insert', 'delete']) test(`W6 ${kind} before image keeps unchanged Unicode hyperlink marks`, async t => {
+for (const fieldLink of [false, true]) for (const kind of ['replace', 'insert', 'delete']) test(`W6 ${kind} before image keeps unchanged Unicode ${fieldLink ? 'field' : 'relationship'} hyperlink marks`, async t => {
   const suffix = '日本語 é link';
   const f = await fixture({ linkSuffix: suffix });
   const changed = kind === 'replace' ? tracked('before ', 'del', 970) + tracked('Changed prefix: ', 'ins', 971)
     : kind === 'insert' ? run('before ') + tracked('inserted ', 'ins', 970) : tracked('before ', 'del', 970);
-  const result = f.parse(replaceRun(f.xml, 'before ', changed));
+  const returnedXml = replaceRun(f.xml, 'before ', changed);
+  const result = f.parse(fieldLink ? asFieldLink(returnedXml) : returnedXml);
   assert.equal(result.ok, true, JSON.stringify(result.reasons));
   assert.equal(f.bridge.bindDocxReviewMedia(result.reviewIr, f.map).ok, true);
   const candidate = f.candidate(result); const changes = candidate.reviewPacket.textChanges;
@@ -294,5 +295,31 @@ for (const failure of ['overlap', 'stale', 'changed-state', 'snapshot-tamper', '
     const rebased = JSON.parse(fs.readFileSync(statePath)); assert.equal(rebased.threads[0].anchor.startUtf16, 11); assert.deepEqual(rebased.threads[0].messages, state.threads[0].messages);
     const bytes = fs.readFileSync(statePath, 'utf8'); await journal.reconcileExactTextApplyJournal(root, operationId); assert.equal(fs.readFileSync(statePath, 'utf8'), bytes);
     assert.equal(fs.readFileSync(snapshot, 'utf8'), f.original);
+  }
+});
+
+function asFieldLink(xml, instruction = 'HYPERLINK "https://example.com/w6" \\h') {
+  const result = xml.replace(/<w:hyperlink\b[^>]*>([^]*?)<\/w:hyperlink>/u, (_, body) =>
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText>' + esc(instruction) + '</w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>' + body + '<w:r><w:fldChar w:fldCharType="end"/></w:r>');
+  assert.notEqual(result, xml); return result;
+}
+
+test('W6 Office field link correspondence rejects changed targets, unbalanced/nested/edited fields and unknown instructions', async () => {
+  const f = await fixture({ linkSuffix: '日本語 é link' });
+  const edited = replaceRun(f.xml, 'before ', tracked('before ', 'del', 990) + tracked('changed prefix ', 'ins', 991));
+  const field = asFieldLink(edited);
+  const cases = [
+    asFieldLink(edited, 'HYPERLINK "https://evil.example/changed"'),
+    asFieldLink(edited, 'INCLUDEPICTURE "https://example.com/w6"'),
+    asFieldLink(edited, 'HYPERLINK "file:///tmp/private"'),
+    asFieldLink(edited, 'HYPERLINK "https://user:pass@example.com/w6"'),
+    asFieldLink(edited, 'HYPERLINK "https://example.com/w6" \\unknown'),
+    field.replace('<w:r><w:fldChar w:fldCharType="end"/></w:r>', ''),
+    field.replace('<w:fldChar w:fldCharType="begin"/>', '<w:fldChar w:fldCharType="begin"/><w:fldChar w:fldCharType="begin"/>'),
+    replaceRun(field, '日本語 é link', tracked('日本語 é link', 'del', 993) + tracked('changed link', 'ins', 994)),
+  ];
+  for (const xml of cases) {
+    const parsed = f.parse(xml);
+    assert.equal(parsed.ok && f.bridge.bindDocxReviewMedia(parsed.reviewIr, f.map).ok, false);
   }
 });

@@ -469,7 +469,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "dc409e0df51cf91ad21b0edf81139197d804129890418b305dc9491deec7fed4"
+        "sha256": "46d960e7a317cbeb70a581389226542fff018300f5fb86a105bcd76f2eab216c"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -549,7 +549,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "6ffbb3c1e17fa2450d52bfb680e7b98dead7583831bc1f07b32873da7d6ce1cc"
+        "sha256": "c081eb4905a66ee0ba7b6201c2b147de913240f21b4129a36db619977e88f8a8"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -945,7 +945,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
-        "sha256": "ae5075833ac5044417cbce810a115043d45fb8cd562d29bc8aece5bc4adea02e"
+        "sha256": "fa7a133ebd1086cb280aeb3fe07cb124be8614bc6744839b1b406233e73ea0f0"
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
@@ -977,7 +977,7 @@
       },
       {
         "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",
-        "sha256": "575463842b7409561723952118839cd9d91f9acec6af8a4b5d08b055271b3306"
+        "sha256": "40ee616b20152b764edb93daf8935f995b8cecbcd41a9390321c9d977f3893a4"
       },
       {
         "path": "test/contracts/rtk-word-composite-fidelity.contract.test.js",

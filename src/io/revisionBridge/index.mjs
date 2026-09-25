@@ -3667,6 +3667,20 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
         || !Array.isArray(s.revisionRanges))
       || `sha256:${sha256Hex(segments.map(s => s.originalText).join(''))}` !== block.canonicalTextSha256)
       return fail('TEXT_CORRESPONDENCE_MISMATCH');
+    if (textCorrespondence.fieldLinks) {
+      const expectedLinks = [];
+      for (const run of block.formatIr?.runs || []) {
+        const links = (run.preservedMarks || []).filter(mark => mark.type === 'link');
+        if (links.length > 1) return fail('FIELD_LINK_SOURCE_INVALID');
+        if (!links.length) continue;
+        const href = links[0].attrs?.href, last = expectedLinks.at(-1);
+        if (last && last.to === run.from && last.href === href) last.to = run.to;
+        else expectedLinks.push({ from: run.from, to: run.to, href });
+      }
+      if (!expectedLinks.length || JSON.stringify(textCorrespondence.fieldLinks) !== JSON.stringify(expectedLinks)) {
+        return fail('FIELD_LINK_MISMATCH');
+      }
+    }
     let originalOffset = 0, currentOffset = 0;
     for (const [i, placement] of placements.entries()) {
       originalOffset += segments[i].originalText.length;
