@@ -47,3 +47,19 @@ test('Word media editor: sheet refresh prevents clipping every image and restore
   hasImage = false; context.centralSheetStripLargePayloadFastPathActive = false;
   assert.equal(context.refreshCentralSheetStripProof(), true); assert.equal(calls, 1);
 });
+
+test('W3: editor history, JSON persistence and schema copy retain exact display EMU; paste cannot invent media',async()=>{
+  const {Node,getSchema}=require('@tiptap/core');const {EditorState,TextSelection}=require('@tiptap/pm/state');const {history,undo,redo}=require('@tiptap/pm/history');
+  const {DocumentMedia,mediaImageDom}=await import('../../src/renderer/tiptap/documentMedia.mjs');const envelope=await import('../../src/renderer/documentContentEnvelope.mjs');
+  const schema=getSchema([Node.create({name:'doc',topNode:true,content:'paragraph+'}),Node.create({name:'paragraph',content:'inline*'}),Node.create({name:'text',group:'inline'}),DocumentMedia]);
+  const attrs={assetId:'main-owned',assetPath:'assets/media/owned.png',sha256:'main-owned',mimeType:'image/png',width:2,height:1,alt:'scaled',displayName:'same.png',dataBase64:'iVBORw==',displayWidthEmu:38101,displayHeightEmu:28577};
+  const doc=schema.nodeFromJSON({type:'doc',content:[{type:'paragraph',content:[{type:'image',attrs}]}]});doc.check();
+  let state=EditorState.create({doc,plugins:[history()]});const apply=tr=>{state=state.apply(tr);};
+  apply(state.tr.setSelection(TextSelection.create(state.doc,1)).insertText('before '));assert.equal(state.doc.firstChild.lastChild.attrs.displayWidthEmu,38101);
+  assert.equal(undo(state,apply),true);assert.equal(state.doc.firstChild.childCount,1);assert.equal(redo(state,apply),true);
+  const stored=envelope.composeObservablePayload({doc:state.doc.toJSON()}),reopened=schema.nodeFromJSON(envelope.parseObservablePayload(stored).doc);reopened.check();
+  assert.equal(reopened.firstChild.lastChild.attrs.displayHeightEmu,28577);
+  const copied=schema.nodeFromJSON(JSON.parse(JSON.stringify(reopened.toJSON())));assert.equal(copied.firstChild.lastChild.attrs.displayWidthEmu,38101);
+  const view=mediaImageDom(attrs);assert.match(view[1].style,/aspect-ratio:38101\/28577/u);assert.match(view[1].style,/object-fit:fill/u);assert.deepEqual(DocumentMedia.config.parseHTML(),[]);
+  for(const patch of [{displayWidthEmu:0},{displayWidthEmu:1.2},{displayHeightEmu:undefined},{displayHeightEmu:78028801}])assert.equal(mediaImageDom({...attrs,...patch})[0],'span');
+});

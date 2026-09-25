@@ -3702,7 +3702,8 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
             || !Number.isSafeInteger(attrs.width) || !Number.isSafeInteger(attrs.height)
             || attrs.width < 1 || attrs.height < 1 || attrs.width > 8192 || attrs.height > 8192)
             throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
-          if (ref.cx !== attrs.width * 9525 || ref.cy !== attrs.height * 9525) throw Error('DOCUMENT_MEDIA_RESIZE_UNSUPPORTED');
+          // XML size is bounded independently of PNG pixels. Authenticated
+          // source binding decides whether a size change is an allowed return.
           return { ...ref, sha256: attrs.sha256, width: attrs.width, height: attrs.height };
         });
         documentMedia = { schemaVersion: 'yalken.word.media-return.v1', placements, canWriteManuscript: false };

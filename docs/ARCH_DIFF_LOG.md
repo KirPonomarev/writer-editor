@@ -113,3 +113,7 @@ Owner-authorized task C1_IMPORT_BREADTH_REPAIR_20260916 repairs the reproduced 6
 ### C1 import preview repair — CI fixture follow-up
 
 The candidate CI run 35094206293 identified a historical bundle assertion comparing an old wording successor with the new generated bundle, and an old admission fixture loading the growing live test inventory. The bounded task now includes the two affected test files. Keep all historical successors and the admission verifier unchanged: bind the current bundle through the existing exact runtime repair qualification; seed the historical unit fixture from the recorded 0a45daf base inventory and retain a negative control for wrong inventory scope. The real current inventory remains separately mandatory. This grants no product cell PASS. Rollback remains the same PR and corresponding local Lab qualification.
+
+## 2026-09-25 — W3 inline PNG display size
+
+Owner-approved bounded Word remediation. Optional paired integer EMU placement fields preserve display size independently of immutable PNG identity; legacy nodes keep intrinsic sizing. Review-only resize remains explicit manual residual without an apply capability. No new dependency, network, route, denominator or oracle exception. Rollback: revert the single W3 delivery; preserve original inputs and retained proof.

@@ -10,20 +10,23 @@ export function mediaImageDom(attrs = {}) {
     && Number.isSafeInteger(attrs.width) && attrs.width > 0 && attrs.width <= 8192
     && Number.isSafeInteger(attrs.height) && attrs.height > 0 && attrs.height <= 8192
     && attrs.width * attrs.height <= 16777216;
-  if (!safe) return ['span', { role: 'img', 'aria-label': 'Изображение недоступно', 'data-media-unavailable': 'true' }, 'Изображение недоступно'];
+  const legacy = attrs.displayWidthEmu === undefined && attrs.displayHeightEmu === undefined;
+  const sizeSafe = legacy || [attrs.displayWidthEmu, attrs.displayHeightEmu].every(n => Number.isSafeInteger(n) && n > 0 && n <= 78028800);
+  if (!safe || !sizeSafe) return ['span', { role: 'img', 'aria-label': 'Изображение недоступно', 'data-media-unavailable': 'true' }, 'Изображение недоступно'];
   return ['img', {
     src: `data:image/png;base64,${attrs.dataBase64}`,
     alt: typeof attrs.alt === 'string' ? attrs.alt : '',
     title: typeof attrs.displayName === 'string' ? attrs.displayName : '',
     width: attrs.width, height: attrs.height,
-    style: 'max-width:100%;height:auto',
+    style: legacy ? 'max-width:100%;height:auto' : `width:${attrs.displayWidthEmu / 9525}px;max-width:100%;height:auto;aspect-ratio:${attrs.displayWidthEmu}/${attrs.displayHeightEmu};object-fit:fill`,
     'data-yalken-owned-image': 'true',
   }];
 }
 export const DocumentMedia = Node.create({
   name: 'image', inline: true, group: 'inline', atom: true,
   selectable: true, draggable: false,
-  addAttributes() { return Object.fromEntries(fields.map(name => [name, { default: null, rendered: false }])); },
+  addAttributes() { return { ...Object.fromEntries(fields.map(name => [name, { default: null, rendered: false }])),
+    displayWidthEmu: { default: undefined, rendered: false }, displayHeightEmu: { default: undefined, rendered: false } }; },
   // External HTML cannot invent project media. The typed DOCX intake supplies
   // the canonical JSON node; the existing plain-text paste policy is retained.
   parseHTML() { return []; },

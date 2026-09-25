@@ -3649,11 +3649,15 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
     expected = blocks.flatMap((block, paragraphIndex) => (block.formatIr?.media || []).map(item => {
       const { attrs } = documentMediaData.validateImageAttrs(item.attrs);
       return { paragraphIndex, offset: item.offset, sha256: attrs.sha256, width: attrs.width, height: attrs.height,
-        alt: attrs.alt, displayName: attrs.displayName };
+        alt: attrs.alt, displayName: attrs.displayName, ...documentMediaData.imageDisplaySize(attrs) };
     }));
   } catch { return fail('SOURCE_INVALID'); }
-  const actual = observed.placements.map(x => Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName'].map(k => [k, x[k]])));
-  if (JSON.stringify(actual) !== JSON.stringify(expected)) return fail('RETURN_MISMATCH');
+  const actual = observed.placements.map(x => Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName', 'cx', 'cy'].map(k => [k, x[k]])));
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+    const withoutSize = rows => rows.map(({ cx, cy, ...identity }) => identity);
+    if (JSON.stringify(withoutSize(actual)) === JSON.stringify(withoutSize(expected))) return fail('RESIZE_REQUIRES_MANUAL');
+    return fail('RETURN_MISMATCH');
+  }
   const key = x => {
     const p = x?.sourceXmlProvenance;
     return p?.partName === 'word/document.xml' && p.elementName === 'drawing'
@@ -7263,6 +7267,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
   ].map(reason => [reason, 'UNSUPPORTED_FEATURE']),
   ...[
     'DOCUMENT_MEDIA_ATTRS',
+    'DOCUMENT_MEDIA_DISPLAY_EXTENT',
     'DOCUMENT_MEDIA_ALT',
     'DOCUMENT_MEDIA_NAME',
     'DOCUMENT_MEDIA_CONTENT_TYPE',
@@ -9845,8 +9850,7 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         const image = auxiliary(ref.partName);
         if (!image) throw Error('DOCUMENT_MEDIA_PART_MISSING');
         if ((mediaBytes += image.length) > documentMediaData.MEDIA_LIMITS.totalBytes) throw Error('DOCUMENT_MEDIA_TOTAL_BYTE_LIMIT');
-        const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName });
-        if (ref.cx !== attrs.width * 9525 || ref.cy !== attrs.height * 9525) throw Error('DOCUMENT_MEDIA_RESIZED_IMAGE_UNSUPPORTED');
+        const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName, displayWidthEmu: ref.cx, displayHeightEmu: ref.cy });
         (paragraph.media ||= []).push({ offset: ref.offset, attrs });
       }
     }

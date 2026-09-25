@@ -24,9 +24,9 @@ const changes = {
 };
 async function preview(bytes) { const [bridge]=await modules; const report=bridge.buildDocxContentPreviewFromZipBytes(bytes); return {report,plan:report.ok?bridge.buildDocxImportPreviewPlanFromContentPreview(report):null}; }
 const mediaBytes = async () => exported([{type:'paragraph',content:[{type:'image',attrs:createImageAttrs(png(),{alt:'synthetic red blue'})}]}]);
-test('W2: resized valid PNG is unsupported rather than malformed XML', async()=>{
+test('W2/W3: resized valid PNG imports with explicit placement instead of malformed XML', async()=>{
   const {report}=await preview(mutate(await mediaBytes(),xmlChange(x=>x.replaceAll('cx="19050"','cx="38100"'))));
-  assert.equal(report.ok,false);assert.equal(report.code,'DOCX_CONTENT_PREVIEW_UNSUPPORTED_FEATURE');assert.equal(report.reason,'DOCUMENT_MEDIA_RESIZED_IMAGE_UNSUPPORTED');
+  assert.equal(report.ok,true,JSON.stringify(report));assert.equal(report.contentPreview.paragraphs[0].media[0].attrs.displayWidthEmu,38100);
 });
 test('W2: actual malformed XML, corrupted PNG and external relationship remain blocked and distinct',async()=>{
   const bytes=await mediaBytes();

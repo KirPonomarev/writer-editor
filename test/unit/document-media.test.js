@@ -67,3 +67,25 @@ test('decoded pixel budget counts every placement even when compressed bytes are
   assert.equal(documentMedia(doc(4)).placements.length, 4);
   assert.throws(() => documentMedia(doc(5)), /DOCUMENT_MEDIA_DOCUMENT_BOUNDS/);
 });
+
+test('W3: intrinsic identity is independent of exact positive EMU placement size', () => {
+  const { imageDisplaySize } = require('../../src/io/documentMedia');
+  const legacy=createImageAttrs(png()), sized=createImageAttrs(png(),{displayWidthEmu:19051,displayHeightEmu:9526});
+  assert.equal(sized.assetId,legacy.assetId);assert.equal(sized.sha256,legacy.sha256);
+  assert.equal(sized.width,1);assert.equal(sized.height,1);
+  assert.deepEqual(imageDisplaySize(sized),{cx:19051,cy:9526});
+  assert.deepEqual(validateImageAttrs(sized).attrs,sized);
+  assert.deepEqual(createImageAttrs(png(),{displayWidthEmu:9525,displayHeightEmu:9525}),legacy);
+  assert.deepEqual(imageDisplaySize(legacy),{cx:9525,cy:9525});
+  for(const value of [0,-1,NaN,Infinity,1.5,78028801,'9525',null])
+    assert.throws(()=>createImageAttrs(png(),{displayWidthEmu:value,displayHeightEmu:9525}),/DOCUMENT_MEDIA_DISPLAY_EXTENT/);
+  assert.throws(()=>createImageAttrs(png(),{displayWidthEmu:9525}),/DOCUMENT_MEDIA_DISPLAY_EXTENT/);
+  for(const n of [1,78028800])assert.equal(imageDisplaySize(createImageAttrs(png(),{displayWidthEmu:n,displayHeightEmu:1})).cx,n);
+});
+test('W3: one binary has independent bounded placements and cannot evade display area budget',()=>{
+  const attrs=n=>createImageAttrs(png(),{displayWidthEmu:n*9525,displayHeightEmu:n*9525});
+  const doc=sizes=>({type:'doc',content:[{type:'paragraph',content:sizes.map(n=>({type:'image',attrs:attrs(n)}))}]});
+  const graph=documentMedia(doc([1,2,3]));assert.equal(graph.assets.length,1);
+  assert.deepEqual(graph.placements.map(a=>a.displayWidthEmu||a.width*9525),[9525,19050,28575]);
+  assert.throws(()=>documentMedia(doc([8192,8192])),/DOCUMENT_MEDIA_DOCUMENT_BOUNDS/);
+});
