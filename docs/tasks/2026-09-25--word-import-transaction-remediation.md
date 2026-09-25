@@ -114,3 +114,9 @@ known failed gate, not a product regression or a waived check; it requires a
 bounded same-contour verification repair before delivery. Initial diagnostic
 baseline: 2055 passed, 1 failed, 59 pre-existing declared skips. Focused final
 transaction/crash proof: 43 passed, 0 skipped; reference command chain: 10 passed.
+
+The same-contour gate repair was declared at clean local checkpoint a306e176 and
+passed its preflight before editing doctor. The evaluator now recognizes the
+existing guarded protocol adapter and requires the envelope rejection check;
+mutants remove each guard independently. Both focused doctor tests pass.
+No gate is disabled and the product IPC surface itself remains unchanged.
