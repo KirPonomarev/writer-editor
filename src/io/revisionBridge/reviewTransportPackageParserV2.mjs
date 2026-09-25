@@ -4150,6 +4150,7 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
   const state = createParserBudgetState(budgets, cryptoPort);
   const scan = (name, xml) => {
     const result = parseXmlPart(name, xml, budgets, cryptoPort, state);
+    if (result.diagnostics.some(d => d.code === 'RTK_BUDGET_EXCEEDED')) fail('XML_LIMIT');
     const roots = result.tokens.filter(t => t.depth === 0);
     const expectedRoot = name === 'word/document.xml' ? ['document', W_NS] : name.endsWith('.rels') ? ['Relationships', REL_NS] : ['Types', CONTENT_TYPES_NS];
     if (result.diagnostics.length || roots.length !== 1 || roots[0].localName !== expectedRoot[0] || roots[0].namespaceUri !== expectedRoot[1]) fail('XML');
@@ -4179,8 +4180,8 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     if (owners.length !== 1) fail('PARAGRAPH_OWNERSHIP');
     const paragraphIndex = owners[0], paragraph = paragraphs[paragraphIndex];
     const descendants = tokens.filter(t => inside(t, drawing));
-    const inline = one(descendants, 'inline', NS_WP);
     if (descendants.some(t => t.namespaceUri === NS_WP && t.localName === 'anchor')) fail('FLOATING_IMAGE_UNSUPPORTED');
+    const inline = one(descendants, 'inline', NS_WP);
     const blip = one(descendants, 'blip', NS_A), props = one(descendants, 'docPr', NS_WP);
     const extent = one(descendants.filter(t => inside(t, inline)), 'extent', NS_WP);
     const NS_PIC = 'http://schemas.openxmlformats.org/drawingml/2006/picture';

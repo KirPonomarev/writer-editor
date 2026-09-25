@@ -365,6 +365,7 @@ function getDocxImportLossReport(docxImportPreviewPlan, receipt = null) {
   const plan = getObjectOrNull(docxImportPreviewPlan);
   if (plan && getObjectOrNull(plan.lossReport)) return plan.lossReport;
   const safeReceipt = getObjectOrNull(receipt);
+  if (safeReceipt && getObjectOrNull(safeReceipt.lossReport)) return safeReceipt.lossReport;
   if (safeReceipt && getObjectOrNull(safeReceipt.lossReportSummary)) {
     return safeReceipt.lossReportSummary;
   }

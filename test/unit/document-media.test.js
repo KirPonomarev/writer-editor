@@ -35,7 +35,7 @@ test('Untrusted media attributes never create external paths or accept substitut
 test('PNG resource limit applies before decompression and malformed base64 cannot normalize into authority', () => {
   const attrs = createImageAttrs(png());
   assert.throws(() => validateImageAttrs({ ...attrs, dataBase64: attrs.dataBase64 + '\n' }), /DOCUMENT_MEDIA_ATTRS/);
-  assert.throws(() => inspectPng(Buffer.alloc(4 * 1024 * 1024 + 1)), /DOCUMENT_MEDIA_PNG_BYTES/);
+  assert.throws(() => inspectPng(Buffer.alloc(4 * 1024 * 1024 + 1)), /DOCUMENT_MEDIA_PNG_BYTE_LIMIT/);
 });
 
 test('Media cannot silently disappear from unsupported node positions', () => {
