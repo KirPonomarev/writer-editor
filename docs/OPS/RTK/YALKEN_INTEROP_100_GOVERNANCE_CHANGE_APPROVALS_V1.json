@@ -514,7 +514,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -1027,7 +1027,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "afe7e5b867dab357290dd9966ee8c2d66eb229d8867d3c3198aedcd465ff9df9",
+      "sha256": "276720060c79a74848558ce5f6162e56928a898a87cca29ecae8b2801c1e4d2b",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1344,7 +1344,7 @@
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
       "sha256": "a2b501433c157c8193e80b352ff7f05855a20ab45b51eb8e6cb85943feedd127",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1542,7 +1542,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "e3f6ae7bd7ccca5a43824f4e93bd9d31af373dc8e0010c657197cd91da88f845",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1659,7 +1659,7 @@
       "filePath": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
       "sha256": "7c133510cb9ced270fb4aa7ba5aea9060f05d01695d52025da23fcc2b2d828a5",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1668,7 +1668,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "46d960e7a317cbeb70a581389226542fff018300f5fb86a105bcd76f2eab216c",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1677,7 +1677,7 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "b00e4dad983377667898374ca39814c7927ece76f01f19112f2433186c1abf4b",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1821,7 +1821,7 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "sha256": "700e381ced98eea086623c3bc8876d88c1ea64dc532e03bde036e9e872e74ad8",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1830,34 +1830,34 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "sha256": "e9160d7f12641d8ac3901429cde070cb47426b381967982566534ecd960ab3ff",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3bc0cad050fa1eac7dde12d3faf9348430ae8c50208c1689c7de59afe1c8d4db",
+      "sha256": "5a8d2fe3c461e2e004380ec3755ce1f86fb6cdec77f3b7c5c19a87bcb8bc3958",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "bff57640287e65078fbc80bb9de02aab9153b44ddc8d9f0ddce2cffb76fee96b",
+      "sha256": "ed4e727ad1fad2f44e7ea5b8f6e0f95bd7699b63925f3364172e33ba08d37257",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "f7d64a74f19da3c386c0846ae323cfb0c79392fa7d3cd0688dc8a879d53aff7a",
+      "sha256": "76a4220c485c5e93ddba03ba7fa62e220c17cf210d76f537e2f5fe750b186d1b",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1866,7 +1866,7 @@
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
       "sha256": "69125951b9bc3adc5fd33ccc8e71920e9fb138560807b34beaf4176c6b17905c",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -2020,7 +2020,7 @@
       "sha256": "dcd91d9ce79a8bafcbf3ed03d63d17a206411cedfa6d6eab2e9665f36ceacef0",
       "approved": true,
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
@@ -2053,9 +2053,9 @@
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-composite-fidelity.md",
-      "sha256": "40ee616b20152b764edb93daf8935f995b8cecbcd41a9390321c9d977f3893a4",
+      "sha256": "ecd979d5398cb44562151b2072f320fc0082c1b790e662e7c470871117179143",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -2064,7 +2064,7 @@
       "filePath": "src/io/revisionBridge/exactTextApplyJournal.mjs",
       "sha256": "ca1d735c97590bf584800b5b24e90c7aa9915ebba270eb0f5a62909a006bb0ef",
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -2074,7 +2074,7 @@
       "sha256": "26c05b1c56e9aebed93e5a1f6a3727c7842557306ccc7bb1ed5a0f03820fde3b",
       "approved": true,
       "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:14:14.659518Z",
+      "approvedAtUtc": "2026-09-25T18:22:06.853944Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     }
