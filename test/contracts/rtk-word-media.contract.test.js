@@ -74,7 +74,7 @@ test('Word media: generic import reconstructs ordered image identity and alt fro
 
 test('Word media: admitted generic create stores actual assets atomically and replay detects missing or altered binary', async t => {
   const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
-  const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+  const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'word-media-create-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const attrs = createImageAttrs(image(), { alt: 'red', displayName: 'same.png' });

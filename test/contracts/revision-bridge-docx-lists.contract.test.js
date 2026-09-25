@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
-const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const CT = 'http://schemas.openxmlformats.org/package/2006/content-types';
 const REL = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -125,8 +125,8 @@ test('C1 lists: local picker, admitted atomic create and retry preserve canonica
  assert.match(rememberDocxImportPreviewPlanAdmission(plan),/^[a-f0-9]{64}$/);
  const projectRoot=fs.mkdtempSync(path.join(os.tmpdir(),'docx-lists-test-'));t.after(()=>fs.rmSync(projectRoot,{recursive:true,force:true}));const options={projectRoot,romanRoot:path.join(projectRoot,'roman'),projectId:'lists-test'};
  const applied=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(applied.ok,true,JSON.stringify(applied));
- const dir=path.join(options.romanRoot,'Imported');assert.equal(fs.readdirSync(dir).length,1);assert.equal(fs.readFileSync(path.join(dir,fs.readdirSync(dir)[0]),'utf8'),plan.candidateCreatePlan.entries[0].content);
- assert.equal((await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options)).ok,true);assert.equal(fs.readdirSync(dir).length,1);
+ const dir=path.join(options.romanRoot,'Imported');assert.equal(fs.readdirSync(dir).filter(name => name.endsWith('.txt')).length,1);assert.equal(fs.readFileSync(path.join(dir,fs.readdirSync(dir).filter(name => name.endsWith('.txt'))[0]),'utf8'),plan.candidateCreatePlan.entries[0].content);
+ assert.equal((await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options)).ok,true);assert.equal(fs.readdirSync(dir).filter(name => name.endsWith('.txt')).length,1);
 });
 test('C1 lists: main and local projections generate identical admitted candidate bytes',async()=>{
  const {report,bytes}=await roundtrip(doc(ol(7,li(p('a')))));const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');const start=main.indexOf('function copyDocxImportPreviewAllowedFields(');const end=main.indexOf('function validateDocxImportPreviewPayload(',start);assert.ok(start>0&&end>start);

@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
 const modules = Promise.all([
@@ -129,8 +129,8 @@ test('C1 blocks: admitted rich plan creates exact durable bytes once and rejects
     const applied = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
     assert.equal(applied.ok, true, JSON.stringify(applied));
     const folder = path.join(options.romanRoot, 'Imported');
-    assert.equal(fs.readdirSync(folder).length, 1);
-    assert.equal(fs.readFileSync(path.join(folder, fs.readdirSync(folder)[0]), 'utf8'), plan.candidateCreatePlan.entries[0].content);
+    assert.equal(fs.readdirSync(folder).filter(name => name.endsWith('.txt')).length, 1);
+    assert.equal(fs.readFileSync(path.join(folder, fs.readdirSync(folder).filter(name => name.endsWith('.txt'))[0]), 'utf8'), plan.candidateCreatePlan.entries[0].content);
   }
   const forged = structuredClone(plan); forged.candidateCreatePlan.entries[0].content += 'corrupt';
   assert.equal((await applyDocxImportSafeCreate({ docxImportPreviewPlan: forged }, options)).ok, false);

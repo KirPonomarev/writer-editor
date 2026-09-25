@@ -36,7 +36,7 @@ const {
   applyDocxImportSafeCreate,
   rememberDocxImportPreviewPlanAdmission,
   hashDocxImportPreviewPlanForAdmission,
-} = require(SAFE_CREATE_MODULE_PATH);
+} = require('../fixtures/docx-import-real-authority.cjs');
 const { writeFlowSceneBatchAtomic } = require(FLOW_BATCH_MODULE_PATH);
 
 async function loadBridge() {
@@ -652,7 +652,8 @@ test('GENERIC01-G8-control-safe-create-applies-once: clean admitted plan creates
   assert.equal(applied.value.receipt.atomicEvidence.markerCleared, true);
   // CONTROL: no .flow-batch markers leak (atomic write cleanup is intact).
   const batchDir = path.join(projectRoot, '.flow-batch');
-  assert.deepEqual(fs.readdirSync(batchDir), []);
+  assert.equal(fs.existsSync(batchDir), false);
+  assert.equal(fs.existsSync(path.join(projectRoot, 'project.craftsman.json.wp201-transaction.json')), false);
 });
 
 test('GENERIC01-G8-control-duplicate-is-idempotent-now: duplicate apply returns the same idempotent receipt (control, amended by G2)', async () => {
@@ -680,3 +681,8 @@ test('GENERIC01-G8-control-duplicate-is-idempotent-now: duplicate apply returns 
   assert.equal(readCreatedSceneFiles(romanRoot).length, 1, 'no new scene files created');
   assert.equal(readSingleCreatedScene(romanRoot).content, originalText);
 });
+
+// The maintained GENERIC01 lane must exercise the real main authority and
+// process-death recovery, rather than leaving those proofs outside required CI.
+require('./word-import-transaction-remediation.contract.test.js');
+require('../unit/word-import-transaction-resources.test.js');

@@ -3466,7 +3466,9 @@ function evaluateM3CommandWiringTokens(sectorMStatus) {
       const mainText = fs.readFileSync(M3_MAIN_PATH, 'utf8');
       mainWired = mainText.includes('guardedHandle(IMPORT_MARKDOWN_V1_CHANNEL')
         && mainText.includes('guardedHandle(EXPORT_MARKDOWN_V1_CHANNEL')
-        && mainText.includes("guardedHandle('ui:command-bridge', async (_, request) => {")
+        && mainText.includes("guardedProtocolHandle('ui:command-bridge', async (_, request) => {")
+        && mainText.includes('const guardedProtocolHandle = (channel, handler) => guardedHandle(channel, async (event, request) => {')
+        && mainText.includes("const envelopeVerdict = validateIpcEnvelope(request, 'ui:command-bridge');\n  if (!envelopeVerdict.ok) {")
         && mainText.includes("'cmd.project.importMarkdownV1'")
         && mainText.includes("'cmd.project.exportMarkdownV1'")
         && mainText.includes('function normalizeUiBridgeMenuResult(result) {')

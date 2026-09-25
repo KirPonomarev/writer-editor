@@ -7,12 +7,12 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 
 const {
-  DOCX_IMPORT_RECEIPT_V2_SCHEMA,
+  DOCX_IMPORT_RECEIPT_V3_SCHEMA,
   DOCX_IMPORT_SAFE_CREATE_READY_REASON,
   applyDocxImportSafeCreate,
   rememberDocxImportPreviewPlanAdmission,
   validateDocxImportPreviewPlan,
-} = require('../../src/utils/docxImportSafeCreate');
+} = require('../fixtures/docx-import-real-authority.cjs');
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const BRIDGE_MODULE_PATH = path.join(REPO_ROOT, 'src', 'io', 'revisionBridge', 'index.mjs');
@@ -151,7 +151,7 @@ function makeProjectRoot(prefix) {
   return fs.mkdtempSync(path.join(os.tmpdir(), prefix));
 }
 
-function expectedImportOperationId(plan, projectId = '') {
+function expectedImportOperationId(plan, projectId = 'docx-import-test-project') {
   const entry = plan.candidateCreatePlan.entries[0];
   const operationCanonical = {
     projectId,
@@ -166,7 +166,7 @@ function expectedImportOperationId(plan, projectId = '') {
   return `docx-import-op-${operationHash.slice(0, 12)}`;
 }
 
-function expectedScenePath(romanRoot, plan, projectId = '') {
+function expectedScenePath(romanRoot, plan, projectId = 'docx-import-test-project') {
   const entry = plan.candidateCreatePlan.entries[0];
   const importOperationId = expectedImportOperationId(plan, projectId);
   return path.join(
@@ -253,8 +253,8 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
 
   assert.equal(result.ok, true, JSON.stringify(result, null, 2));
   assert.equal(fs.readFileSync(scenePath, 'utf8'), 'Alpha\nBravo');
-  assert.equal(fs.existsSync(path.join(projectRoot, '.flow-batch')), true);
-  assert.deepEqual(fs.readdirSync(path.join(projectRoot, '.flow-batch')), []);
+  assert.equal(fs.existsSync(path.join(projectRoot, 'project.craftsman.json.wp201-transaction.json')), false);
+  assert.equal(fs.existsSync(`${scenePath}.wp201-commit.json`), true);
 
   const receipt = result.value.receipt;
   const publicSceneLocator = expectedPublicSceneLocator(
@@ -263,7 +263,7 @@ test('DOCX import safe create: valid preview creates one new scene and returns p
     'project-docx-safe-create',
     plan.candidateCreatePlan.entries[0].sceneId,
   );
-  assert.equal(receipt.schemaVersion, DOCX_IMPORT_RECEIPT_V2_SCHEMA);
+  assert.equal(receipt.schemaVersion, DOCX_IMPORT_RECEIPT_V3_SCHEMA);
   assert.equal(receipt.reason, DOCX_IMPORT_SAFE_CREATE_READY_REASON);
   assert.equal(receipt.projectId, 'project-docx-safe-create');
   assert.equal(receipt.importOperationId, expectedImportOperationId(plan, 'project-docx-safe-create'));
@@ -388,9 +388,8 @@ test('DOCX import safe create: stale marker failure keeps public error details p
   );
 
   assert.equal(result.ok, false);
-  assert.equal(result.error.code, 'M7_FLOW_BATCH_STALE');
-  assert.equal(result.error.reason, 'flow_save_batch_stale');
-  assert.equal(result.error.details.staleMarkerCount, 1);
+  assert.equal(result.error.code, 'DOCX_SAFE_CREATE_LEGACY_RECOVERY_REQUIRED');
+  assert.equal(result.error.reason, 'docx_import_legacy_batch_requires_recovery');
   assert.equal(Object.prototype.hasOwnProperty.call(result.error.details, 'staleMarkers'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(result.error.details, 'markerPath'), false);
   assert.deepEqual(listFilesRecursive(path.join(romanRoot, 'Imported')), []);
@@ -473,39 +472,15 @@ test('DOCX import safe create: tampered hashes and forged candidate shapes fail 
   }
 });
 
-test('DOCX import safe create: trusted write failure is rewrapped and does not claim creation', async () => {
+test('DOCX import safe create: missing real authority is rejected before publication', async () => {
   const projectRoot = makeProjectRoot('docx-import-safe-create-write-fail-');
   const romanRoot = path.join(projectRoot, 'roman');
   const plan = admitPreviewPlan(await buildPreviewPlan(['Alpha']));
-
-  const result = await applyDocxImportSafeCreate(
-    { docxImportPreviewPlan: plan },
-    {
-      projectRoot,
-      romanRoot,
-      writeBatchAtomic: async () => ({
-        ok: false,
-        error: {
-          code: 'M7_FLOW_BATCH_WRITE_FAIL',
-          reason: 'flow_save_batch_write_failed',
-          details: {
-            markerPath: path.join(projectRoot, '.flow-batch', 'secret.json'),
-            staleMarkers: [path.join(projectRoot, '.flow-batch', 'stale.json')],
-            batchId: 'flow-batch-redacted',
-          },
-        },
-      }),
-    },
-  );
-
+  const result = await require('../../src/utils/docxImportSafeCreate.js').applyDocxImportSafeCreate(
+    { docxImportPreviewPlan: plan }, { projectRoot, romanRoot, transactionAuthority: {} });
   assert.equal(result.ok, false);
-  assert.equal(result.error.code, 'M7_FLOW_BATCH_WRITE_FAIL');
-  assert.equal(result.error.reason, 'flow_save_batch_write_failed');
-  assert.equal(result.error.details.batchId, 'flow-batch-redacted');
-  assert.equal(result.error.details.staleMarkerCount, 1);
-  assert.equal(Object.prototype.hasOwnProperty.call(result.error.details, 'markerPath'), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(result.error.details, 'staleMarkers'), false);
-  assert.deepEqual(listFilesRecursive(path.join(romanRoot, 'Imported')), []);
+  assert.equal(result.error.code, 'DOCX_SAFE_CREATE_AUTHORITY_REQUIRED');
+  assert.deepEqual(listFilesRecursive(projectRoot), []);
 });
 
 test('DOCX import safe create: thrown write error messageCode cannot carry an absolute path', async () => {
@@ -519,7 +494,7 @@ test('DOCX import safe create: thrown write error messageCode cannot carry an ab
     {
       projectRoot,
       romanRoot,
-      writeBatchAtomic: async () => {
+      queueDiskOperation: async () => {
         throw new Error(`FLOW_BATCH_FAILED ${leakedPath}`);
       },
     },

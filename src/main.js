@@ -11426,15 +11426,8 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
     const importProjectRoot = getProjectRootPath();
     const romanRoot = getProjectSectionPath('roman');
     const projectBinding = await resolveProjectBindingForFile(romanRoot);
-    // GENERIC-01 (G3): manifest-authority transaction port. The flow batch
-    // journal and the manifest revision bump commit in one lease/publish scope
-    // (atomic or nothing). Mirrors the stage10 adapter wiring.
-    let docxImportTransactionAuthority = null;
-    try {
-      docxImportTransactionAuthority = await getMainProjectManifestAuthority();
-    } catch {
-      docxImportTransactionAuthority = null;
-    }
+    // Missing authority is a command failure before any import publication.
+    const docxImportTransactionAuthority = await getMainProjectManifestAuthority();
     assertCurrentReferenceContext();
     safeCreateResult = await applyDocxImportSafeCreate(
       {
@@ -11456,14 +11449,8 @@ async function handleDocxImportSafeCreateCommandSurface(payload = {}) {
           assertCurrentReferenceContext();
           return operation();
         }, label),
-        operationLabel: 'safe create DOCX import scene batch',
-        writeBatchAtomic: (input, options = {}) => writeFlowSceneBatchAtomic(input, {
-          ...options,
-          beforeActivate: async (...args) => {
-            if (typeof options.beforeActivate === 'function') await options.beforeActivate(...args);
-            assertCurrentReferenceContext();
-          },
-        }),
+        operationLabel: 'safe create DOCX import transaction',
+        assertPublication: assertCurrentReferenceContext,
         transactionAuthority: docxImportTransactionAuthority,
         importRequestNonce: requestId,
       },

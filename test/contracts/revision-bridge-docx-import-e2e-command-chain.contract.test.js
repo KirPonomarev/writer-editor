@@ -155,6 +155,7 @@ function instantiateDocxSafeCreatePort(options = {}) {
     ensureProjectStructure: 0,
     resolveProjectBindingForFile: [],
     queueDiskOperation: [],
+    manifestPublication: [],
   };
 
   return instantiateMainSection(
@@ -181,13 +182,11 @@ function instantiateDocxSafeCreatePort(options = {}) {
       getProjectRootPath: () => projectRoot,
       resolveProjectBindingForFile: async (targetPath) => {
         calls.resolveProjectBindingForFile.push(targetPath);
-        if (options.transactionAuthority) {
-          fs.writeFileSync(manifestPath, manifestRaw, 'utf8');
-        }
+        if (!fs.existsSync(manifestPath)) fs.writeFileSync(manifestPath, manifestRaw, 'utf8');
         return {
           projectId: 'docx-e2e-project',
-          manifestPath: options.transactionAuthority ? manifestPath : '',
-          manifestRaw: options.transactionAuthority ? manifestRaw : '',
+          manifestPath,
+          manifestRaw: fs.readFileSync(manifestPath, 'utf8'),
           manifest: cloneJsonSafe(manifest),
         };
       },
@@ -195,7 +194,14 @@ function instantiateDocxSafeCreatePort(options = {}) {
         calls.queueDiskOperation.push(operationLabel);
         return operation();
       },
-      getMainProjectManifestAuthority: async () => options.transactionAuthority || null,
+      getMainProjectManifestAuthority: async () => {
+        const authority = options.transactionAuthority || makeDocxImportTransactionAuthority();
+        await authority.initialize(projectRoot);
+        return { ...authority, commitManifestText: async args => {
+          calls.manifestPublication.push({ expectedText: args.expectedText, nextText: args.nextText });
+          return authority.commitManifestText(args);
+        } };
+      },
       writeFlowSceneBatchAtomic,
       module: { exports: {} },
       exports: {},
@@ -430,7 +436,7 @@ function assertIdempotentIntegrityFailure(result, safeCreatePort, expectedQueueC
   assert.equal(result.ok, false, JSON.stringify(result, null, 2));
   assert.equal(result.error.code, 'DOCX_SAFE_CREATE_IDEMPOTENT_RECEIPT_INTEGRITY_FAILED');
   assert.equal(result.error.reason, 'docx_import_safe_create_idempotent_receipt_integrity_failed');
-  assert.equal(safeCreatePort.calls.queueDiskOperation.length, expectedQueueCallCount);
+  assert.equal(safeCreatePort.calls.manifestPublication.length, expectedQueueCallCount);
   assertNoPublicAuthorityLeak(result);
 }
 
@@ -482,7 +488,7 @@ async function assertDurableReceiptMutationFailsClosed({
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
   const firstOperationId = first.safeCreate.receipt.importOperationId;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
   mutateDurableReceipt(first.projectRoot, firstOperationId, mutate);
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
@@ -497,52 +503,31 @@ async function assertDurableReceiptMutationFailsClosed({
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
 }
 
-function makeDocxImportTransactionAuthority(overrides = {}, options = {}) {
+function makeDocxImportTransactionAuthority() {
   const calls = [];
-  const readCalls = [];
-  const result = {
-    revision: 'ignored-revision',
-    fencingGeneration: 7,
-    nextHash: 'a'.repeat(64),
-    previousHash: 'b'.repeat(64),
-    durablePublication: true,
-    ...overrides,
-  };
-  let committedAuthority = null;
-  const authority = {
+  let real;
+  return {
     calls,
-    readCalls,
+    async initialize(projectRoot) {
+      if (real) return;
+      const { createMainProjectManifestAuthority } = await import('../../src/product/mainProjectManifestAuthority.mjs');
+      real = createMainProjectManifestAuthority({ anchorRoot: path.join(projectRoot, '.test-authority'), useLeaseHeartbeatWorker: false });
+    },
+    withProjectLease: (...args) => real.withProjectLease(...args),
+    verifyManifestContinuation: (...args) => real.verifyManifestContinuation(...args),
     async commitManifestText(payload) {
-      calls.push(cloneJsonSafe(payload));
-      committedAuthority = {
-        revision: String(result.fencingGeneration),
-        fencingGeneration: result.fencingGeneration,
-        nextHash: result.nextHash,
-        previousHash: result.previousHash,
-        durablePublication: result.durablePublication,
-      };
-      return { ...result };
+      calls.push({ projectId: payload.projectId, targetPath: payload.targetPath, expectedText: payload.expectedText, nextText: payload.nextText });
+      return real.commitManifestText(payload);
     },
   };
-  if (options.exposeReadback !== false) {
-    authority.readManifestAuthorityForImport = async (payload) => {
-      readCalls.push(cloneJsonSafe(payload));
-      if (typeof options.readback === 'function') {
-        return options.readback(cloneJsonSafe(payload), cloneJsonSafe(committedAuthority));
-      }
-      if (options.readback !== undefined) return cloneJsonSafe(options.readback);
-      return cloneJsonSafe(committedAuthority);
-    };
-  }
-  return authority;
 }
 
 async function assertTransactionAuthorityCoherentForgeryFailsClosed({
   paragraphPrefix,
   requestId,
   mutate,
-  field = 'manifestAuthority',
-  failReason = 'trusted_manifest_authority_mismatch',
+  field = 'transactionEvidence',
+  failReason = 'committed_transaction_readback_failed',
 }) {
   const transactionAuthority = makeDocxImportTransactionAuthority();
   const first = await runDocxImportCommandChain(
@@ -552,7 +537,7 @@ async function assertTransactionAuthorityCoherentForgeryFailsClosed({
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
   const receipt = first.safeCreate.receipt;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
   mutateDurableReceipt(first.projectRoot, receipt.importOperationId, mutate);
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
@@ -563,9 +548,7 @@ async function assertTransactionAuthorityCoherentForgeryFailsClosed({
   assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
   assert.equal(duplicate.error.details.field, field);
   assert.equal(duplicate.error.details.failReason, failReason);
-  assert.equal(transactionAuthority.readCalls.length, 1);
-  assert.equal(transactionAuthority.readCalls[0].projectId, 'docx-e2e-project');
-  assert.equal(transactionAuthority.readCalls[0].importOperationId, receipt.importOperationId);
+  assert.equal(transactionAuthority.calls.length, 1, 'forgery must not publish a second manifest');
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
 }
 
@@ -598,16 +581,16 @@ test('DOCX import e2e command chain: clean DOCX creates one local scene with pat
   assert.equal(Object.prototype.hasOwnProperty.call(result.safeCreate.publicSceneLocator, 'bindingKey'), false);
   assert.equal(Object.prototype.hasOwnProperty.call(result.safeCreate.publicSceneLocator, 'relativeFile'), false);
   assert.equal(readOnlyCreatedScene(result.romanRoot), 'Alpha\nBravo');
-  assert.deepEqual(fs.readdirSync(path.join(result.projectRoot, '.flow-batch')), []);
+  assert.equal(fs.existsSync(path.join(result.projectRoot, 'project.craftsman.json.wp201-transaction.json')), false);
   assert.equal(result.safeCreate.receipt.atomicEvidence.sceneCount, 1);
   assert.equal(result.safeCreate.receipt.atomicEvidence.markerCleared, true);
   assert.equal(result.safeCreate.receipt.sceneIntegrityScope, DOCX_IMPORT_SCENE_INTEGRITY_SCOPE);
   assert.equal(result.safeCreate.receipt.createdAtAuthority, DOCX_IMPORT_CREATED_AT_AUTHORITY);
   assert.match(result.safeCreate.receipt.createdAt, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u);
-  assert.deepEqual(result.safeCreate.receipt.transactionEvidence.lease, { algorithmic: true });
+  assert.deepEqual(result.safeCreate.receipt.transactionEvidence.lease, { fencingGeneration: 1 });
   assert.equal(
     result.safeCreate.receipt.transactionEvidence.manifestHash,
-    result.safeCreate.receipt.manifestAuthority.algorithmicHash,
+    result.safeCreate.receipt.manifestAuthority.nextHash,
   );
   assert.equal(
     result.safeCreate.receipt.sceneTreeIdentities[0].treeNodeId,
@@ -676,7 +659,7 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   // writes), not a blocking error. Re-applying the same admitted plan returns
   // the original receipt with the same importOperationId and performs no new
   // storage writes.
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
     requestId: first.safeCreate.requestId,
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
@@ -685,7 +668,7 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   assert.equal(duplicate.safeCreateOk, true);
   assert.equal(duplicate.created, false, 'duplicate must not create a new scene');
   assert.equal(duplicate.receipt.importOperationId, firstOperationId);
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assert.equal(first.ports.safeCreate.calls.manifestPublication.length, queueCallsBeforeDuplicate);
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(duplicate);
 
@@ -697,10 +680,10 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   assert.equal(second.safeCreateOk, true);
   assert.equal(second.created, true);
   assert.notEqual(second.receipt.importOperationId, firstOperationId);
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate + 1);
+  assert.equal(first.ports.safeCreate.calls.manifestPublication.length, queueCallsBeforeDuplicate + 1);
   const createdFiles = fs.readdirSync(path.join(first.romanRoot, 'Imported')).filter((name) => name.endsWith('.txt'));
   assert.equal(createdFiles.length, 2, `expected two imported scene files, got ${createdFiles.join(', ')}`);
-  const queueCallsAfterSecondImport = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsAfterSecondImport = first.ports.safeCreate.calls.manifestPublication.length;
   assertNoPublicAuthorityLeak(second);
 
   const tamperedPlan = cloneJsonSafe(first.preview.docxImportPreviewPlan);
@@ -712,7 +695,7 @@ test('DOCX import e2e command chain: tamper fails closed and duplicate apply ret
   });
   assert.equal(tampered.ok, false);
   assert.equal(tampered.error.code, 'DOCX_SAFE_CREATE_PREVIEW_TAMPERED');
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsAfterSecondImport);
+  assert.equal(first.ports.safeCreate.calls.manifestPublication.length, queueCallsAfterSecondImport);
   const filesAfterTamper = fs.readdirSync(path.join(first.romanRoot, 'Imported')).filter((name) => name.endsWith('.txt'));
   assert.deepEqual(filesAfterTamper.sort(), createdFiles.sort());
   assert.ok(filesAfterTamper.every((name) => fs.readFileSync(path.join(first.romanRoot, 'Imported', name), 'utf8') === originalText));
@@ -724,7 +707,7 @@ test('DOCX import e2e command chain: idempotent receipt fails closed when create
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const firstOperationId = first.safeCreate.receipt.importOperationId;
   const scenePath = readOnlyCreatedScenePath(first.romanRoot);
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
   fs.unlinkSync(scenePath);
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
@@ -745,7 +728,7 @@ test('DOCX import e2e command chain: idempotent receipt fails closed when create
   const scenePath = readOnlyCreatedScenePath(first.romanRoot);
   const originalText = fs.readFileSync(scenePath, 'utf8');
   const mutatedText = `${originalText}\nmutant`;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
   fs.writeFileSync(scenePath, mutatedText, 'utf8');
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
@@ -764,7 +747,7 @@ test('DOCX import e2e command chain: idempotent receipt fails closed when receip
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
   const firstOperationId = first.safeCreate.receipt.importOperationId;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
   const wrongCandidateHash = '0'.repeat(64);
 
   mutateDurableReceipt(first.projectRoot, firstOperationId, (receipt) => ({
@@ -802,8 +785,8 @@ test('DOCX import e2e command chain: idempotent receipt fails closed when batch 
 test('DOCX import e2e command chain: idempotent receipt fails closed when manifest authority revision changes', async () => {
   await assertDurableReceiptMutationFailsClosed({
     paragraphPrefix: 'Manifest revision',
-    field: 'manifestAuthority',
-    failReason: 'manifest_authority_algorithmic_mismatch',
+    field: 'manifestAuthority.revision',
+    failReason: 'manifest_authority_revision_mismatch',
     mutate: (receipt) => ({
       ...receipt,
       manifestAuthority: {
@@ -818,7 +801,7 @@ test('DOCX import e2e command chain: idempotent receipt fails closed when manife
   await assertDurableReceiptMutationFailsClosed({
     paragraphPrefix: 'Manifest hash',
     field: 'manifestAuthority',
-    failReason: 'manifest_authority_algorithmic_mismatch',
+    failReason: 'manifest_authority_unsupported_fields',
     mutate: (receipt) => ({
       ...receipt,
       manifestAuthority: {
@@ -897,25 +880,25 @@ test('DOCX import e2e command chain: transaction manifest authority replay binds
     present: true,
   });
   assert.deepEqual(receipt.manifestAuthority, {
-    revision: '7',
-    fencingGeneration: 7,
-    nextHash: 'a'.repeat(64),
-    previousHash: 'b'.repeat(64),
+    revision: '1',
+    fencingGeneration: 1,
+    nextHash: sha256Text(transactionAuthority.calls[0].nextText),
+    previousHash: sha256Text(transactionAuthority.calls[0].expectedText),
     durablePublication: true,
   });
-  assert.deepEqual(receipt.transactionEvidence.lease, { fencingGeneration: 7 });
-  assert.equal(receipt.transactionEvidence.manifestHash, 'a'.repeat(64));
+  assert.deepEqual(receipt.transactionEvidence.lease, { fencingGeneration: 1 });
+  assert.equal(receipt.transactionEvidence.manifestHash, sha256Text(transactionAuthority.calls[0].nextText));
   assert.equal(receipt.transactionEvidence.batchManifestHash, sha256Text(receipt.batchId));
 
   const originalText = readOnlyCreatedScene(first.romanRoot);
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
     requestId: first.safeCreate.requestId,
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
   });
   assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
   assert.equal(duplicate.created, false);
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assert.equal(first.ports.safeCreate.calls.manifestPublication.length, queueCallsBeforeDuplicate);
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
 
   mutateDurableReceipt(first.projectRoot, receipt.importOperationId, (storedReceipt) => ({
@@ -992,6 +975,8 @@ test('DOCX import e2e command chain: coherent replay forgery of previous hash fa
 test('DOCX import e2e command chain: coherent replay forgery of durable publication fails trusted readback', async () => {
   await assertTransactionAuthorityCoherentForgeryFailsClosed({
     paragraphPrefix: 'Coherent durable publication',
+    field: 'manifestAuthority.durablePublication',
+    failReason: 'manifest_authority_publication_invalid',
     requestId: 'request-coherent-durable-publication-forgery',
     mutate: (receipt) => ({
       ...receipt,
@@ -1012,7 +997,7 @@ test('DOCX import e2e command chain: coherent replay forgery of batch evidence i
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
   const receipt = first.safeCreate.receipt;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
   const forgedBatchId = 'flow-batch-999999999999-deadbeef';
 
   mutateDurableReceipt(first.projectRoot, receipt.importOperationId, (storedReceipt) => ({
@@ -1028,53 +1013,32 @@ test('DOCX import e2e command chain: coherent replay forgery of batch evidence i
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
   });
 
-  assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
-  assert.equal(duplicate.created, false);
-  assert.equal(transactionAuthority.readCalls.length, 1);
-  assert.equal(duplicate.receipt.batchId, undefined);
-  assert.equal(duplicate.receipt.transactionEvidence.batchManifestHash, undefined);
-  assert.equal(
-    duplicate.receipt.batchEvidenceAuthority,
-    'NOT_RETURNED_ON_IDEMPOTENT_REPLAY_WITHOUT_TRUSTED_BATCH_READBACK',
-  );
-  assert.deepEqual(duplicate.receipt.manifestAuthority, receipt.manifestAuthority);
-  assert.deepEqual(duplicate.receipt.transactionEvidence.lease, receipt.transactionEvidence.lease);
-  assert.equal(
-    duplicate.receipt.transactionEvidence.manifestHash,
-    receipt.transactionEvidence.manifestHash,
-  );
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.field, 'batchId');
+  assert.equal(duplicate.error.details.failReason, 'batch_id_invalid');
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(duplicate);
 });
 
-test('DOCX import e2e command chain: transaction replay without trusted readback strips stored authority fields', async () => {
-  const transactionAuthority = makeDocxImportTransactionAuthority({}, { exposeReadback: false });
+test('DOCX import e2e command chain: transaction replay without durable commit readback fails closed', async () => {
+  const transactionAuthority = makeDocxImportTransactionAuthority();
   const first = await runDocxImportCommandChain(
     cleanDocxZip([`No readback replay ${Date.now()}`]),
     { transactionAuthority },
   );
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
+  fs.unlinkSync(`${readOnlyCreatedScenePath(first.romanRoot)}.wp201-commit.json`);
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
     requestId: first.safeCreate.requestId,
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
   });
 
-  assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
-  assert.equal(duplicate.created, false);
-  assert.equal(duplicate.receipt.batchId, undefined);
-  assert.equal(duplicate.receipt.manifestAuthority, undefined);
-  assert.equal(duplicate.receipt.transactionEvidence, undefined);
-  assert.deepEqual(duplicate.receipt.replayAuthority, {
-    schemaVersion: 'revision-bridge.docx-import-safe-create-replay-authority.v1',
-    status: 'NON_AUTHORITATIVE',
-    reason: 'TRUSTED_TRANSACTION_READBACK_UNAVAILABLE',
-  });
-  assert.equal(transactionAuthority.readCalls.length, 0);
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.field, 'transactionEvidence');
+  assert.equal(duplicate.error.details.failReason, 'committed_transaction_readback_failed');
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(duplicate);
 });
@@ -1084,7 +1048,7 @@ test('DOCX import e2e command chain: idempotent receipt fails closed on malforme
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
   const firstOperationId = first.safeCreate.receipt.importOperationId;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
   writeDurableReceiptText(first.projectRoot, firstOperationId, '{"schemaVersion":');
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
@@ -1110,12 +1074,12 @@ test('DOCX import e2e command chain: idempotent receipt fails closed when create
   });
 });
 
-test('DOCX import e2e command chain: createdAt is shape-only non-authoritative metadata', async () => {
+test('DOCX import e2e command chain: createdAt grants no authority and modified receipt bytes fail committed readback', async () => {
   const first = await runDocxImportCommandChain(cleanDocxZip([`Created at metadata ${Date.now()}`]));
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const originalText = readOnlyCreatedScene(first.romanRoot);
   const firstOperationId = first.safeCreate.receipt.importOperationId;
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
   const replacementCreatedAt = '2000-01-01T00:00:00.000Z';
 
   mutateDurableReceipt(first.projectRoot, firstOperationId, (receipt) => ({
@@ -1127,22 +1091,20 @@ test('DOCX import e2e command chain: createdAt is shape-only non-authoritative m
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
   });
 
-  assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
-  assert.equal(duplicate.created, false);
-  assert.equal(duplicate.receipt.createdAtAuthority, DOCX_IMPORT_CREATED_AT_AUTHORITY);
-  assert.equal(duplicate.receipt.createdAt, replacementCreatedAt);
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.failReason, 'committed_transaction_readback_failed');
+  assert.equal(first.ports.safeCreate.calls.manifestPublication.length, queueCallsBeforeDuplicate);
   assert.equal(readOnlyCreatedScene(first.romanRoot), originalText);
   assertNoPublicAuthorityLeak(duplicate);
 });
 
-test('DOCX import e2e command chain: CRLF-only scene byte changes are canonical-text equivalent by receipt scope', async () => {
+test('DOCX import e2e command chain: CRLF-only foreign byte changes require reconciliation despite canonical text equality', async () => {
   const first = await runDocxImportCommandChain(cleanDocxZip([`CRLF scope ${Date.now()}`, 'Second']));
   assert.equal(first.safeCreate.ok, true, JSON.stringify(first.safeCreate, null, 2));
   const scenePath = readOnlyCreatedScenePath(first.romanRoot);
   const originalText = fs.readFileSync(scenePath, 'utf8');
   const crlfText = originalText.replace(/\n/gu, '\r\n');
-  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.queueDiskOperation.length;
+  const queueCallsBeforeDuplicate = first.ports.safeCreate.calls.manifestPublication.length;
 
   fs.writeFileSync(scenePath, crlfText, 'utf8');
   const duplicate = await first.ports.safeCreate.handleDocxImportSafeCreateCommandSurface({
@@ -1150,10 +1112,9 @@ test('DOCX import e2e command chain: CRLF-only scene byte changes are canonical-
     docxImportPreviewPlan: first.preview.docxImportPreviewPlan,
   });
 
-  assert.equal(duplicate.ok, true, JSON.stringify(duplicate, null, 2));
-  assert.equal(duplicate.created, false);
-  assert.equal(duplicate.receipt.sceneIntegrityScope, DOCX_IMPORT_SCENE_INTEGRITY_SCOPE);
-  assert.equal(first.ports.safeCreate.calls.queueDiskOperation.length, queueCallsBeforeDuplicate);
+  assertIdempotentIntegrityFailure(duplicate, first.ports.safeCreate, queueCallsBeforeDuplicate);
+  assert.equal(duplicate.error.details.failReason, 'committed_transaction_readback_failed');
+  assert.equal(first.ports.safeCreate.calls.manifestPublication.length, queueCallsBeforeDuplicate);
   assert.equal(fs.readFileSync(scenePath, 'utf8'), crlfText);
   assertNoPublicAuthorityLeak(duplicate);
 });

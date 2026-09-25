@@ -10,6 +10,10 @@ const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
 
 const JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v1';
 const COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v1';
+const RESOURCE_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v2';
+const RESOURCE_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v2';
+const MAX_RESOURCE_BYTES = 20 * 1024 * 1024; // existing 16 MiB media budget plus bounded receipt
+const MAX_RESOURCES = 129;
 const RECOVERY_PACKET_SCHEMA_VERSION = 'yalken.project-transaction.recovery-packet.v1';
 const PROJECT_COMMIT_REPAIR_CAPABILITY_ID = 'CAP_R24_PROJECT_COMMIT_REPAIR';
 const MAX_ARTIFACT_BYTES = 32 * 1024 * 1024;
@@ -128,13 +132,154 @@ function classifyBytes(actual, before, after) {
   return 'OTHER';
 }
 
-function transactionIdFor({ scenePath, manifestPath, revision, before, after }) {
+function resourceBindings(resources) {
+  return resources.map(({ path: targetPath, content }) => ({ path: targetPath, digest: sha256hex(content), bytes: content.length }));
+}
+
+// These are create-only companions of the scene, never arbitrary replacements.
+// Validate journal-derived paths and bytes before using them for recovery I/O.
+function normalizeResources(resources, { scenePath, manifestPath }, wire = false) {
+  if (!Array.isArray(resources) || resources.length === 0 || resources.length > MAX_RESOURCES) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_SHAPE', TRANSACTION_PHASES.ADMIT);
+  }
+  const root = path.dirname(manifestPath), seen = new Set();
+  let total = 0;
+  return resources.map(entry => {
+    if (!entry || typeof entry.path !== 'string' || !path.isAbsolute(entry.path)
+      || path.normalize(entry.path) !== entry.path) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_PATH', TRANSACTION_PHASES.ADMIT);
+    }
+    const relative = path.relative(root, entry.path);
+    if (!relative || relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)
+      || [scenePath, manifestPath, commitPathFor(scenePath), journalPathFor(manifestPath)].includes(entry.path)
+      || relative.split(path.sep).some(part => part === '.yalken-recovery' || part.includes('.wp201-'))
+      || seen.has(entry.path)) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_PATH', TRANSACTION_PHASES.ADMIT);
+    }
+    seen.add(entry.path);
+    const value = wire ? entry.contentBase64 : entry.content;
+    if (wire ? typeof value !== 'string' || value.length > Math.ceil(MAX_RESOURCE_BYTES / 3) * 4
+      : !Buffer.isBuffer(value) && typeof value !== 'string') {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_SHAPE', TRANSACTION_PHASES.ADMIT);
+    }
+    const content = Buffer.from(value, wire ? 'base64' : undefined);
+    if (wire && content.toString('base64') !== value) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_ENCODING', TRANSACTION_PHASES.ADMIT);
+    }
+    total += content.length;
+    if (total > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.ADMIT);
+    return { path: entry.path, content };
+  });
+}
+
+const resourceStagingPath = (entry, transactionId) => `${entry.path}.wp201-${transactionId}.tmp`;
+
+async function assertResourceBoundary(targetPath, manifestPath, fsAdapter, ownedStaging = null) {
+  const root = path.dirname(manifestPath);
+  const paths = [root];
+  for (const part of path.relative(root, targetPath).split(path.sep)) paths.push(path.join(paths.at(-1), part));
+  for (const candidate of paths) {
+    let stat;
+    try { stat = await fsAdapter.lstat(candidate); } catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    let ownedLink = false;
+    if (candidate === targetPath && stat.nlink === 2 && ownedStaging) {
+      try {
+        const staging = await fsAdapter.lstat(ownedStaging);
+        ownedLink = staging.isFile() && !staging.isSymbolicLink() && staging.nlink === 2
+          && staging.ino === stat.ino && staging.dev === stat.dev;
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+    if (stat.isSymbolicLink() || (candidate === targetPath ? !stat.isFile() || (stat.nlink !== 1 && !ownedLink) : !stat.isDirectory())) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BOUNDARY', TRANSACTION_PHASES.RECOVER);
+    }
+  }
+}
+
+async function readResource(entry, manifestPath, fsAdapter, transactionId = null) {
+  await assertResourceBoundary(entry.path, manifestPath, fsAdapter, transactionId ? resourceStagingPath(entry, transactionId) : null);
+  try {
+    const stat = await fsAdapter.stat(entry.path);
+    if (stat.size > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.RECOVER);
+    return await fsAdapter.readFile(entry.path);
+  } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+}
+
+async function publishResource(entry, manifestPath, revision, fsAdapter, transactionId) {
+  await assertResourceBoundary(entry.path, manifestPath, fsAdapter);
+  await ensureCompanionDirectory(entry.path, manifestPath, fsAdapter);
+  // Exclusive link publishes complete bytes without overwriting an unrelated
+  // file that appears after admission. A killed staging file is never truth.
+  const stagingPath = resourceStagingPath(entry, transactionId);
+  const staged = await readResource({ path: stagingPath }, manifestPath, fsAdapter);
+  if (staged === null) {
+    await durableSaveTransaction({ filePath: stagingPath, content: entry.content, revision, fsAdapter });
+  } else if (!staged.equals(entry.content)) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_STAGING_DIVERGENCE', TRANSACTION_PHASES.RECOVER);
+  await assertResourceBoundary(entry.path, manifestPath, fsAdapter);
+  await fsAdapter.link(stagingPath, entry.path);
+  // Retain the inode witness until commit/rollback cleanup. Equal bytes alone
+  // must never authorize deleting a foreign file that won the create race.
+  await fsyncDirectory(path.dirname(entry.path), fsAdapter);
+}
+
+async function ensureCompanionDirectory(targetPath, manifestPath, fsAdapter) {
+  let parent = path.dirname(manifestPath);
+  await assertResourceBoundary(targetPath, manifestPath, fsAdapter);
+  for (const part of path.relative(parent, path.dirname(targetPath)).split(path.sep).filter(Boolean)) {
+    const child = path.join(parent, part);
+    try { await fsAdapter.mkdir(child); } catch (error) { if (error.code !== 'EEXIST') throw error; }
+    await assertResourceBoundary(targetPath, manifestPath, fsAdapter);
+    await fsyncDirectory(parent, fsAdapter);
+    parent = child;
+  }
+}
+
+async function inspectResources(resources, manifestPath, fsAdapter, transactionId = null, requireOwnership = false) {
+  const observed = [];
+  for (const entry of resources) {
+    const bytes = await readResource(entry, manifestPath, fsAdapter, transactionId);
+    if (bytes !== null && !bytes.equals(entry.content)) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_DIVERGENCE', TRANSACTION_PHASES.RECOVER);
+    }
+    observed.push(bytes);
+    if (transactionId) {
+      const stagingPath = resourceStagingPath(entry, transactionId);
+      await assertResourceBoundary(stagingPath, manifestPath, fsAdapter, entry.path);
+      try {
+        if ((await fsAdapter.stat(stagingPath)).size > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.RECOVER);
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      const staged = await readOptionalText(stagingPath, { readFile: async p => fsAdapter.readFile(p) });
+      if (staged !== null && !staged.equals(entry.content)) {
+        throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_STAGING_DIVERGENCE', TRANSACTION_PHASES.RECOVER);
+      }
+      if (bytes !== null) {
+        if (staged === null && requireOwnership) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_OWNERSHIP', TRANSACTION_PHASES.RECOVER);
+        if (staged !== null) {
+          const [target, witness] = await Promise.all([fsAdapter.lstat(entry.path), fsAdapter.lstat(stagingPath)]);
+          if (target.ino !== witness.ino || target.dev !== witness.dev) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_OWNERSHIP', TRANSACTION_PHASES.RECOVER);
+        }
+      }
+    }
+  }
+  return observed;
+}
+
+async function cleanupResourceStaging(resources, manifestPath, fsAdapter, transactionId) {
+  await inspectResources(resources, manifestPath, fsAdapter, transactionId);
+  for (const resource of resources) {
+    const staging = resourceStagingPath(resource, transactionId);
+    try { await fsAdapter.lstat(staging); } catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+    await removeDurably(staging, fsAdapter);
+  }
+}
+
+function transactionIdFor({ scenePath, manifestPath, revision, before, after, resources = [] }) {
   return sha256hex(JSON.stringify({
     scenePath,
     manifestPath,
     revision,
     before: { sceneDigest: digestOptional(before.scene), manifestDigest: sha256hex(before.manifest) },
     after: { sceneDigest: sha256hex(after.scene), manifestDigest: sha256hex(after.manifest) },
+    ...(resources.length ? { resources: resourceBindings(resources) } : {}),
   }));
 }
 
@@ -145,7 +290,7 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
   } catch {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_JSON', TRANSACTION_PHASES.RECOVER);
   }
-  if (!journal || journal.schemaVersion !== JOURNAL_SCHEMA_VERSION) {
+  if (!journal || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SCHEMA', TRANSACTION_PHASES.RECOVER);
   }
   if (journal.scenePath !== scenePath || journal.manifestPath !== manifestPath) {
@@ -165,11 +310,17 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
   if (before.manifest === null || after.scene === null || after.manifest === null) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SHAPE', TRANSACTION_PHASES.RECOVER);
   }
-  const expectedId = transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after });
+  const resources = journal.schemaVersion === RESOURCE_JOURNAL_SCHEMA_VERSION
+    ? normalizeResources(journal.resources, { scenePath, manifestPath }, true) : [];
+  if (journal.schemaVersion === JOURNAL_SCHEMA_VERSION && journal.resources !== undefined) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SHAPE', TRANSACTION_PHASES.RECOVER);
+  }
+  if (resources.length && before.scene !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.RECOVER);
+  const expectedId = transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after, resources });
   if (journal.transactionId !== expectedId) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_DIGEST', TRANSACTION_PHASES.RECOVER);
   }
-  return { ...journal, before, after };
+  return { ...journal, before, after, resources };
 }
 
 function isDigest(value) {
@@ -197,7 +348,7 @@ async function readCommitRecordState({
   } catch {
     return corruptCommitState(source, 'COMMIT_RECORD_JSON');
   }
-  if (!record || record.schemaVersion !== COMMIT_SCHEMA_VERSION
+  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || !isDigest(record.transactionId)
     || !Number.isSafeInteger(record.revision) || record.revision < 0
     || !isDigest(record.sceneDigest) || !isDigest(record.manifestDigest)) {
@@ -206,6 +357,13 @@ async function readCommitRecordState({
   if (record.scenePath !== scenePath || record.manifestPath !== manifestPath) {
     return corruptCommitState(source, 'COMMIT_RECORD_BINDING');
   }
+  if (record.schemaVersion === RESOURCE_COMMIT_SCHEMA_VERSION) {
+    if (!Array.isArray(record.resources) || !record.resources.length || record.resources.length > MAX_RESOURCES
+      || record.resources.some(entry => !entry || typeof entry.path !== 'string' || !isDigest(entry.digest)
+        || !Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || entry.bytes > MAX_RESOURCE_BYTES)) {
+      return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
+    }
+  } else if (record.resources !== undefined) return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
   const manifestMatches = async (targetDigest) => {
     if (record.manifestDigest === targetDigest) return true;
     if (typeof verifyManifestContinuation !== 'function') return false;
@@ -219,7 +377,8 @@ async function readCommitRecordState({
     const currentCommit = record.transactionId === expectedJournal.transactionId
       && record.revision === expectedJournal.revision
       && record.sceneDigest === sha256hex(expectedJournal.after.scene)
-      && record.manifestDigest === sha256hex(expectedJournal.after.manifest);
+      && record.manifestDigest === sha256hex(expectedJournal.after.manifest)
+      && canonicalize(record.resources || []) === canonicalize(resourceBindings(expectedJournal.resources || []));
     if (currentCommit) return Object.freeze({ status: 'VALID', relation: 'CURRENT', record, source });
     const priorCommit = record.sceneDigest === digestOptional(expectedJournal.before.scene)
       && await manifestMatches(sha256hex(expectedJournal.before.manifest));
@@ -259,6 +418,7 @@ function buildRecoveryPacket({ journal, journalSource, commitState, currentScene
     schemaVersion: RECOVERY_PACKET_SCHEMA_VERSION,
     capabilityId: PROJECT_COMMIT_REPAIR_CAPABILITY_ID,
     status: 'PRESERVED_AWAITING_INDEPENDENT_AUTHORITY',
+    ...(journal.resources?.length ? { companionResources: journal.resources.map(entry => ({ path: entry.path, contentBase64: entry.content.toString('base64') })) } : {}),
     binding: {
       transactionId: journal.transactionId,
       revision: journal.revision,
@@ -370,7 +530,7 @@ async function readPendingProjectTransactionBinding({ manifestPath, fsAdapter = 
   } catch {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_JSON', TRANSACTION_PHASES.RECOVER);
   }
-  if (!candidate || candidate.schemaVersion !== JOURNAL_SCHEMA_VERSION) {
+  if (!candidate || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION].includes(candidate.schemaVersion)) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SCHEMA', TRANSACTION_PHASES.RECOVER);
   }
   if (candidate.manifestPath !== manifestPath || typeof candidate.scenePath !== 'string') {
@@ -417,6 +577,12 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
   const source = await readOptionalText(journalPath, fsAdapter);
   if (source === null) return Object.freeze({ recovered: false, outcome: 'NO_JOURNAL' });
   const journal = parseJournal(source, { scenePath, manifestPath });
+  if (journal.resources.length) {
+    await assertResourceBoundary(scenePath, manifestPath, fsAdapter, resourceStagingPath({ path: scenePath }, journal.transactionId));
+    await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
+    await assertResourceBoundary(commitPathFor(scenePath), manifestPath, fsAdapter);
+  }
+  const stagedResources = journal.resources.length ? [...journal.resources, { path: scenePath, content: Buffer.from(journal.after.scene) }] : [];
   const currentManifest = await readOptionalText(manifestPath, fsAdapter);
   const currentScene = await readOptionalText(scenePath, fsAdapter);
   const commitState = await readCommitRecordState({
@@ -438,6 +604,8 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
     });
   }
   const committed = commitState.status === 'VALID' && commitState.relation === 'CURRENT';
+  // Classify all companions and their ownership before any recovery mutation.
+  const resourceStates = await inspectResources(stagedResources, manifestPath, fsAdapter, journal.transactionId, !committed);
   const target = committed ? journal.after : journal.before;
   const manifestClass = classifyBytes(currentManifest, journal.before.manifest, journal.after.manifest);
   const sceneClass = classifyBytes(currentScene, journal.before.scene, journal.after.scene);
@@ -459,7 +627,10 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
     });
   }
   if (currentScene !== target.scene) {
-    await publishSceneExact({
+    if (journal.resources.length && target.scene !== null) await ensureCompanionDirectory(scenePath, manifestPath, fsAdapter);
+    if (journal.resources.length && target.scene !== null) {
+      await publishResource({ path: scenePath, content: Buffer.from(target.scene) }, manifestPath, journal.revision, fsAdapter, journal.transactionId);
+    } else await publishSceneExact({
       scenePath,
       expectedText: currentScene,
       nextText: target.scene,
@@ -467,11 +638,25 @@ async function recoverProjectTransaction({ scenePath, manifestPath, publishManif
       fsAdapter,
     });
   }
+  for (let index = 0; index < journal.resources.length; index++) {
+    const resource = journal.resources[index];
+    if (committed && resourceStates[index] === null) await publishResource(resource, manifestPath, journal.revision, fsAdapter, journal.transactionId);
+    if (!committed && resourceStates[index] !== null) {
+      const observed = await readResource(resource, manifestPath, fsAdapter, journal.transactionId);
+      if (!observed?.equals(resource.content)) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_DIVERGENCE', TRANSACTION_PHASES.RECOVER);
+      await removeDurably(resource.path, fsAdapter);
+    }
+  }
+  const finalResources = await inspectResources(journal.resources, manifestPath, fsAdapter, journal.transactionId);
+  if (finalResources.some(bytes => committed ? bytes === null : bytes !== null)) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_READBACK', TRANSACTION_PHASES.RECOVER);
+  }
   const finalManifest = await readOptionalText(manifestPath, fsAdapter);
   const finalScene = await readOptionalText(scenePath, fsAdapter);
   if (finalManifest !== target.manifest || finalScene !== target.scene) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RECOVERY_READBACK', TRANSACTION_PHASES.RECOVER);
   }
+  await cleanupResourceStaging(stagedResources, manifestPath, fsAdapter, journal.transactionId);
   await removeDurably(journalPath, fsAdapter);
   return Object.freeze({
     recovered: true,
@@ -490,6 +675,7 @@ async function commitProjectTransaction({
   revision,
   publishManifest,
   verifyManifestContinuation,
+  createResources,
   fsAdapter = fsp,
 }) {
   assertPathPair(scenePath, manifestPath);
@@ -506,6 +692,14 @@ async function commitProjectTransaction({
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_MANIFEST_AUTHORITY_REQUIRED', TRANSACTION_PHASES.ADMIT);
   }
 
+  const resources = createResources === undefined ? [] : normalizeResources(createResources, { scenePath, manifestPath });
+  if (resources.length && expectedSceneContent !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.ADMIT);
+  if (resources.length) {
+    await assertResourceBoundary(scenePath, manifestPath, fsAdapter);
+    await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
+    await assertResourceBoundary(commitPathFor(scenePath), manifestPath, fsAdapter);
+  }
+
   const recovery = await recoverProjectTransaction({ scenePath, manifestPath, publishManifest, verifyManifestContinuation, fsAdapter });
   const observedScene = await readOptionalText(scenePath, fsAdapter);
   const observedManifest = await readOptionalText(manifestPath, fsAdapter);
@@ -518,13 +712,25 @@ async function commitProjectTransaction({
 
   const before = { scene: expectedSceneContent, manifest: expectedManifestContent };
   const after = { scene: sceneContent, manifest: manifestContent };
-  const transactionId = transactionIdFor({ scenePath, manifestPath, revision, before, after });
+  for (const entry of resources) {
+    if (await readResource(entry, manifestPath, fsAdapter) !== null) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_EXISTS', TRANSACTION_PHASES.ADMIT);
+    }
+  }
+  const transactionId = transactionIdFor({ scenePath, manifestPath, revision, before, after, resources });
+  const stagedResources = resources.length ? [...resources, { path: scenePath, content: Buffer.from(sceneContent) }] : [];
+  for (const entry of stagedResources) {
+    if (await readResource({ path: resourceStagingPath(entry, transactionId) }, manifestPath, fsAdapter) !== null) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_STAGING_EXISTS', TRANSACTION_PHASES.ADMIT);
+    }
+  }
   const journal = {
-    schemaVersion: JOURNAL_SCHEMA_VERSION,
+    schemaVersion: resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
     transactionId,
     revision,
     scenePath,
     manifestPath,
+    ...(resources.length ? { resources: resources.map(entry => ({ path: entry.path, contentBase64: entry.content.toString('base64') })) } : {}),
     before: {
       sceneBase64: encodeOptionalText(before.scene),
       manifestBase64: encodeOptionalText(before.manifest),
@@ -545,7 +751,7 @@ async function commitProjectTransaction({
   if (priorCommitState.status === 'CORRUPT') {
     await failCorruptCommit({
       manifestPath,
-      journal: { ...journal, before, after },
+      journal: { ...journal, before, after, resources },
       journalSource: null,
       commitState: priorCommitState,
       currentScene: observedScene,
@@ -554,7 +760,7 @@ async function commitProjectTransaction({
     });
   }
   const priorCommit = priorCommitState.status === 'VALID' ? priorCommitState.record : null;
-  if (priorCommit
+  if (!resources.length && priorCommit
     && priorCommit.revision === revision
     && priorCommit.sceneDigest === sha256hex(after.scene)
     && priorCommit.manifestDigest === sha256hex(after.manifest)
@@ -580,6 +786,9 @@ async function commitProjectTransaction({
     fsAdapter,
   });
 
+  for (const entry of resources) await publishResource(entry, manifestPath, revision, fsAdapter, transactionId);
+  if (resources.length) await ensureCompanionDirectory(scenePath, manifestPath, fsAdapter);
+
   await publishManifestExact({
     publishManifest,
     manifestPath,
@@ -588,7 +797,10 @@ async function commitProjectTransaction({
     revision,
     reason: 'project-transaction-publish',
   });
-  await publishSceneExact({
+  if (resources.length) {
+    await publishResource({ path: scenePath, content: Buffer.from(sceneContent) }, manifestPath, revision, fsAdapter, transactionId);
+    await inspectResources(stagedResources, manifestPath, fsAdapter, transactionId, true);
+  } else await publishSceneExact({
     scenePath,
     expectedText: before.scene,
     nextText: after.scene,
@@ -597,13 +809,14 @@ async function commitProjectTransaction({
   });
 
   const commitRecord = {
-    schemaVersion: COMMIT_SCHEMA_VERSION,
+    schemaVersion: resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
     transactionId,
     revision,
     scenePath,
     manifestPath,
     sceneDigest: sha256hex(after.scene),
     manifestDigest: sha256hex(after.manifest),
+    ...(resources.length ? { resources: resourceBindings(resources) } : {}),
   };
   await durableSaveTransaction({
     filePath: commitPathFor(scenePath),
@@ -614,9 +827,13 @@ async function commitProjectTransaction({
 
   const finalScene = await readOptionalText(scenePath, fsAdapter);
   const finalManifest = await readOptionalText(manifestPath, fsAdapter);
+  if ((await inspectResources(stagedResources, manifestPath, fsAdapter, transactionId)).some(bytes => bytes === null)) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_READBACK', TRANSACTION_PHASES.READBACK);
+  }
   if (finalScene !== after.scene || finalManifest !== after.manifest) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_READBACK', TRANSACTION_PHASES.READBACK);
   }
+  await cleanupResourceStaging(stagedResources, manifestPath, fsAdapter, transactionId);
   await removeDurably(journalPath, fsAdapter);
 
   return Object.freeze({
@@ -662,11 +879,12 @@ function decodePacketRole(packet, role) {
 
 function journalWireRecord(journal) {
   return {
-    schemaVersion: JOURNAL_SCHEMA_VERSION,
+    schemaVersion: journal.resources?.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
     transactionId: journal.transactionId,
     revision: journal.revision,
     scenePath: journal.scenePath,
     manifestPath: journal.manifestPath,
+    ...(journal.resources?.length ? { resources: journal.resources.map(entry => ({ path: entry.path, contentBase64: entry.content.toString('base64') })) } : {}),
     before: {
       sceneBase64: encodeOptionalText(journal.before.scene),
       manifestBase64: encodeOptionalText(journal.before.manifest),
@@ -736,19 +954,21 @@ async function repairCorruptProjectCommit({
       scene: decodePacketRole(packet, 'AFTER_SCENE'),
       manifest: decodePacketRole(packet, 'AFTER_MANIFEST'),
     };
+    const resources = packet.companionResources === undefined ? [] : normalizeResources(packet.companionResources, { scenePath, manifestPath }, true);
     if (before.manifest === null || after.scene === null || after.manifest === null) {
       throw new ProjectTransactionError('E_PROJECT_COMMIT_RECOVERY_PACKET_SHAPE', TRANSACTION_PHASES.RECOVER);
     }
     journal = {
-      schemaVersion: JOURNAL_SCHEMA_VERSION,
+      schemaVersion: resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
       transactionId: recoveryTransactionId,
       revision: packet.binding.revision,
       scenePath,
       manifestPath,
       before,
       after,
+      resources,
     };
-    if (transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after }) !== recoveryTransactionId) {
+    if (transactionIdFor({ scenePath, manifestPath, revision: journal.revision, before, after, resources }) !== recoveryTransactionId) {
       throw new ProjectTransactionError('E_PROJECT_COMMIT_RECOVERY_PACKET_BINDING', TRANSACTION_PHASES.RECOVER);
     }
     syntheticJournal = true;
@@ -800,6 +1020,7 @@ async function repairCorruptProjectCommit({
   if (authorized !== true) {
     throw new ProjectTransactionError('E_PROJECT_COMMIT_REPAIR_AUTHORITY_REQUIRED', TRANSACTION_PHASES.RECOVER);
   }
+  await inspectResources(journal.resources, manifestPath, fsAdapter, journal.transactionId);
 
   const [journalReadback, commitReadback, sceneReadback, manifestReadback] = await Promise.all([
     readOptionalText(journalPath, fsAdapter),
@@ -827,13 +1048,14 @@ async function repairCorruptProjectCommit({
   } else {
     const commitPath = commitPathFor(scenePath);
     const commitRecord = {
-      schemaVersion: COMMIT_SCHEMA_VERSION,
+      schemaVersion: journal.resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
       transactionId: journal.transactionId,
       revision: journal.revision,
       scenePath,
       manifestPath,
       sceneDigest: sha256hex(journal.after.scene),
       manifestDigest: sha256hex(journal.after.manifest),
+      ...(journal.resources.length ? { resources: resourceBindings(journal.resources) } : {}),
     };
     await durableSaveTransaction({
       filePath: commitPath,
@@ -854,6 +1076,32 @@ async function repairCorruptProjectCommit({
   });
 }
 
+// Readback of a committed create transaction is independent of the import
+// receipt's own assertions. Every recorded companion must still match bytes.
+async function readVerifiedProjectTransaction({ scenePath, manifestPath, verifyManifestContinuation, fsAdapter = fsp }) {
+  assertPathPair(scenePath, manifestPath);
+  if (await readOptionalText(journalPathFor(manifestPath), fsAdapter) !== null) {
+    throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RECOVERY_REQUIRED', TRANSACTION_PHASES.READBACK);
+  }
+  const state = await readCommitRecordState({ scenePath, manifestPath,
+    observedScene: await readOptionalText(scenePath, fsAdapter),
+    observedManifest: await readOptionalText(manifestPath, fsAdapter), verifyManifestContinuation, fsAdapter });
+  if (state.status !== 'VALID') throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMIT_READBACK', TRANSACTION_PHASES.READBACK);
+  if (state.record.resources) {
+    normalizeResources(state.record.resources.map(entry => ({ path: entry.path, content: '' })), { scenePath, manifestPath });
+    let total = 0;
+    for (const entry of state.record.resources) {
+      total += entry.bytes;
+      if (total > MAX_RESOURCE_BYTES) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_BUDGET', TRANSACTION_PHASES.READBACK);
+      const content = await readResource(entry, manifestPath, fsAdapter);
+      if (content === null || content.length !== entry.bytes || sha256hex(content) !== entry.digest) {
+        throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCE_READBACK', TRANSACTION_PHASES.READBACK);
+      }
+    }
+  }
+  return Object.freeze({ ...state.record });
+}
+
 function classifyProjectTransactionState({ scenePath, manifestPath }) {
   assertPathPair(scenePath, manifestPath);
   const commitPath = commitPathFor(scenePath);
@@ -864,7 +1112,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
   } catch {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMIT_RECORD_INVALID' };
   }
-  if (!record || record.schemaVersion !== COMMIT_SCHEMA_VERSION
+  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || record.scenePath !== scenePath || record.manifestPath !== manifestPath) {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMIT_RECORD_BINDING' };
   }
@@ -875,6 +1123,25 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
   const manifestDigest = sha256hex(fs.readFileSync(manifestPath));
   if (sceneDigest !== record.sceneDigest || manifestDigest !== record.manifestDigest) {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'ARTIFACT_DIGEST_MISMATCH' };
+  }
+  if (record.schemaVersion === RESOURCE_COMMIT_SCHEMA_VERSION) {
+    try {
+      normalizeResources(record.resources.map(entry => ({ path: entry.path, content: '' })), { scenePath, manifestPath });
+      let total = 0;
+      for (const entry of record.resources) {
+        if (!Number.isSafeInteger(entry.bytes) || entry.bytes < 0 || !isDigest(entry.digest)) throw Error('RESOURCE_SHAPE');
+        total += entry.bytes;
+        if (total > MAX_RESOURCE_BYTES) throw Error('RESOURCE_BUDGET');
+        let current = path.dirname(manifestPath);
+        for (const part of path.relative(current, entry.path).split(path.sep)) {
+          current = path.join(current, part);
+          const stat = fs.lstatSync(current);
+          if (stat.isSymbolicLink() || (current === entry.path
+            ? !stat.isFile() || stat.nlink !== 1 || stat.size !== entry.bytes : !stat.isDirectory())) throw Error('RESOURCE_BOUNDARY');
+        }
+        if (sha256hex(fs.readFileSync(entry.path)) !== entry.digest) throw Error('RESOURCE_DIGEST');
+      }
+    } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'RESOURCE_BINDING_MISMATCH' }; }
   }
   return { classification: 'NEW_COMMITTED', record };
 }
@@ -892,6 +1159,7 @@ module.exports = Object.freeze({
   commitProjectTransaction,
   journalPathFor,
   readPendingProjectTransactionBinding,
+  readVerifiedProjectTransaction,
   recoveryPacketPathFor,
   recoverProjectTransaction,
   repairCorruptProjectCommit,

@@ -422,7 +422,7 @@ test('Lab native-CUA manuscript revision requires the exact new identity set and
  const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json','src/word-hostile-mutant.py','src/word-hostile-probe.mjs','test/word-hostile.test.mjs','src/word-media-native.mjs','test/word-media-native.test.mjs'];
  const matchesExactAdmission=candidate=>{
   const sets=candidate.labCodeBindingSets.filter(set=>set.id===expected.id);
-  return sets.length===1&&JSON.stringify(sets[0])===JSON.stringify(expected)
+  return sets.length===1&&require('node:util').isDeepStrictEqual(sets[0],expected)
    &&candidate.labCodeBindingSets.length>=baseline.labCodeBindingSets.length+1
    &&JSON.stringify(candidate.allowedLabDeltaPaths)==JSON.stringify([...baseline.allowedLabDeltaPaths,...supportPaths]);
  };
@@ -646,7 +646,7 @@ test('Word native reopen admission preserves old sets and pins only native alias
 test('Word native file transport admits only exact Lab successors and their negative regressions',()=>{
  const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
  const base=JSON.parse(execFileSync('git',['show','58c408eb9799d65194d0081a8a45c509af8706ac:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
- const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ const actual=JSON.parse(execFileSync('git',['show','46e050b21b472cb76e2892cc7415b58ebaf0f299:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
  const expected=structuredClone(base),entry=structuredClone(base.labCodeBindingSets.find(s=>s.id==='WORD_MEDIA_REOPEN_V1'));
  const overrides={
   "src/m1-text-single-scene-source-runtime.mjs": "8ca52faeaf512e97fe22f8b8213936444fb02be30169bdc4bf5b862cdf3b5421",
@@ -665,8 +665,21 @@ test('Word native file transport admits only exact Lab successors and their nega
 };
  for(const binding of utf8.bindings)if(utf8Overrides[binding.path])binding.sha256=utf8Overrides[binding.path];
  expected.labCodeBindingSets.push(utf8);
- expected.qualifiedRuntimeRepair.sourceBindings.find(b=>b.path==='test/contracts/rtk-interop-word-manuscript.contract.test.js').sha256=digest(fs.readFileSync(__filename));
+ expected.qualifiedRuntimeRepair.sourceBindings.find(b=>b.path==='test/contracts/rtk-interop-word-manuscript.contract.test.js').sha256=digest(execFileSync('git',['show','46e050b21b472cb76e2892cc7415b58ebaf0f299:test/contracts/rtk-interop-word-manuscript.contract.test.js'],{cwd:ROOT}));
  assert.deepEqual(actual,expected);
  assert.equal(actual.wordManuscriptBatch.cellIds.length,354);
  assert.equal(actual.wordManuscriptBatch.hostileCellIds.length,84);
+});
+
+// Current product repair may change source bindings, never historical Lab identities.
+test('Word import transaction admission preserves every historical Lab identity and frozen cell set',()=>{
+ const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
+ const base=JSON.parse(execFileSync('git',['show','46e050b21b472cb76e2892cc7415b58ebaf0f299:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
+ const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],base[key],key);
+ for(const p of base.admittedPaths)assert.ok(actual.admittedPaths.includes(p),p);
+ const bindings=actual.qualifiedRuntimeRepair.sourceBindings;
+ assert.equal(new Set(bindings.map(b=>b.path)).size,bindings.length);
+ for(const b of bindings)assert.equal(digest(fs.readFileSync(path.join(ROOT,b.path))),b.sha256,b.path);
+ for(const b of base.qualifiedRuntimeRepair.sourceBindings)assert.ok(bindings.some(a=>a.path===b.path),b.path);
 });

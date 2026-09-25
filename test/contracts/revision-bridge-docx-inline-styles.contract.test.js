@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
-const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const CT = 'http://schemas.openxmlformats.org/package/2006/content-types';
 const REL = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -118,13 +118,13 @@ test('C1 inline: local picker projection retains marks; admitted rich scene pers
   const result = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
   assert.equal(result.ok, true, JSON.stringify(result));
   const imported = path.join(options.romanRoot, 'Imported');
-  assert.equal(fs.readdirSync(imported).length, 1);
-  const content = fs.readFileSync(path.join(imported, fs.readdirSync(imported)[0]), 'utf8');
+  assert.equal(fs.readdirSync(imported).filter(name => name.endsWith('.txt')).length, 1);
+  const content = fs.readFileSync(path.join(imported, fs.readdirSync(imported).filter(name => name.endsWith('.txt'))[0]), 'utf8');
   assert.equal(content, plan.candidateCreatePlan.entries[0].content);
   assert.deepEqual(await profile(plan), [[['B', ['bold']], ...[...'plain'].map(ch => [ch, []]), ['I', ['italic']]]]);
   const repeat = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
   assert.equal(repeat.ok, true, JSON.stringify(repeat));
-  assert.equal(fs.readdirSync(imported).length, 1);
+  assert.equal(fs.readdirSync(imported).filter(name => name.endsWith('.txt')).length, 1);
 });
 
 

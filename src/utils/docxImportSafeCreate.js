@@ -7,7 +7,8 @@ const {
   isPathInsideBoundary,
   joinPathSegmentsWithinRoot,
 } = require('../core/io/path-boundary');
-const { writeFlowSceneBatchAtomic } = require('./flowSceneBatchAtomic');
+const { commitProjectTransaction, recoverProjectTransaction, readPendingProjectTransactionBinding,
+  readVerifiedProjectTransaction } = require('../core/project-transaction-v1.cjs');
 
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_SCHEMA = 'revision-bridge.docx-import-safe-create-receipt.v1';
 const DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE = 'docx.import.safeCreate.receipt';
@@ -38,6 +39,8 @@ const docxImportPreviewPlanAdmissions = new Map();
 // prior durable receipt (writerCalls=0); a new operation id on the same
 // artifact produces an independent copy.
 const DOCX_IMPORT_RECEIPT_V2_SCHEMA = 'revision-bridge.docx-import-receipt.v2';
+const hashExactBytes = value => crypto.createHash('sha256').update(value).digest('hex');
+const DOCX_IMPORT_RECEIPT_V3_SCHEMA = 'revision-bridge.docx-import-receipt.v3';
 const DOCX_IMPORT_RECEIPT_STORE_DIRNAME = path.join('.yalken', 'docx-import', 'receipts');
 
 const DOCX_IMPORT_SAFE_CREATE_ALLOWED_PLAN_KEYS = new Set([
@@ -642,8 +645,8 @@ function validateTrustedRoots(projectRoot, romanRoot) {
 }
 
 // GENERIC-01 (G2/G4): durable idempotent receipt store. The store lives under
-// <projectRoot>/.yalken/docx-import/receipts/<importOperationId>.json. Atomic
-// write mirrors the existing flowSceneBatchAtomic pattern.
+// <projectRoot>/.yalken/docx-import/receipts/<importOperationId>.json. It is a
+// bounded companion in the Core transaction; it cannot prove its own commit.
 function buildReceiptStoreDir(projectRoot) {
   return path.join(projectRoot, DOCX_IMPORT_RECEIPT_STORE_DIRNAME);
 }
@@ -652,33 +655,19 @@ function buildReceiptStorePath(projectRoot, importOperationId) {
   return path.join(buildReceiptStoreDir(projectRoot), `${importOperationId}.json`);
 }
 
-async function writeJsonAtomic(targetPath, value) {
-  const tempPath = `${targetPath}.${process.pid}.receipt.tmp`;
-  let handle = null;
-  try {
-    await fs.mkdir(path.dirname(targetPath), { recursive: true });
-    handle = await fs.open(tempPath, 'w');
-    await handle.writeFile(JSON.stringify(value, null, 2), 'utf8');
-    await handle.sync();
-    await handle.close();
-    handle = null;
-    await fs.rename(tempPath, targetPath);
-  } finally {
-    if (handle) await handle.close().catch(() => {});
-    await fs.unlink(tempPath).catch(() => {});
-  }
-}
-
 async function readDurableReceipt(projectRoot, importOperationId) {
   const result = await readDurableReceiptRecord(projectRoot, importOperationId);
   return result.status === 'ok' ? result.receipt : null;
 }
 
 async function readDurableReceiptRecord(projectRoot, importOperationId) {
-  if (!importOperationId) return { status: 'missing', receipt: null };
+  if (!/^docx-import-op-[a-f0-9]{12}$/.test(importOperationId || '')) return { status: 'unreadable', receipt: null };
   const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
   let text = '';
   try {
+    if (!isPathInsideBoundary(projectRoot, receiptPath, { resolveSymlinks: true })) throw Error('DOCX_SAFE_CREATE_RECEIPT_PATH');
+    const stat = await fs.lstat(receiptPath);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || stat.size > 4 * 1024 * 1024) throw Error('DOCX_SAFE_CREATE_RECEIPT_INVALID');
     text = await fs.readFile(receiptPath, 'utf8');
   } catch (error) {
     if (error && error.code === 'ENOENT') return { status: 'missing', receipt: null };
@@ -691,10 +680,7 @@ async function readDurableReceiptRecord(projectRoot, importOperationId) {
   }
 }
 
-async function writeDurableReceipt(projectRoot, importOperationId, receipt) {
-  const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
-  await writeJsonAtomic(receiptPath, receipt);
-}
+
 
 function normalizeDocxImportOperationNonce(value) {
   const raw = typeof value === 'string' ? value.trim() : '';
@@ -852,17 +838,9 @@ function buildIdempotentReceiptIntegrityError(field, sceneId, failReason, expect
 
 function buildDocxImportTransactionEvidence(manifestEvidence, batchId) {
   return {
-    lease: manifestEvidence && typeof manifestEvidence.fencingGeneration === 'number'
-      ? { fencingGeneration: manifestEvidence.fencingGeneration }
-      : { algorithmic: true },
-    manifestHash: manifestEvidence && typeof manifestEvidence.nextHash === 'string'
-      ? manifestEvidence.nextHash
-      : (manifestEvidence && typeof manifestEvidence.algorithmicHash === 'string'
-        ? manifestEvidence.algorithmicHash
-        : ''),
-    batchManifestHash: typeof batchId === 'string' && batchId.length > 0
-      ? sha256Text(batchId)
-      : '',
+    lease: { fencingGeneration: manifestEvidence.fencingGeneration },
+    manifestHash: manifestEvidence.nextHash,
+    batchManifestHash: sha256Text(batchId),
   };
 }
 
@@ -940,18 +918,7 @@ function validateDocxImportManifestAuthority(manifestAuthority, importOperationI
     };
   }
 
-  if (manifestAuthority.algorithmic === true) {
-    const expected = buildAlgorithmicManifestEvidence(importOperationId);
-    if (!jsonStableEqual(manifestAuthority, expected)) {
-      return {
-        ok: false,
-        field: 'manifestAuthority',
-        failReason: 'manifest_authority_algorithmic_mismatch',
-        expected: expected.algorithmicHash,
-      };
-    }
-    return { ok: true };
-  }
+  if (manifestAuthority.algorithmic === true) return { ok: false, field: 'manifestAuthority', failReason: 'durable_authority_required' };
 
   const allowedKeys = new Set([
     'revision',
@@ -1008,7 +975,7 @@ function validateDocxImportManifestAuthority(manifestAuthority, importOperationI
       failReason: 'manifest_authority_previous_hash_invalid',
     };
   }
-  if (typeof manifestAuthority.durablePublication !== 'boolean') {
+  if (manifestAuthority.durablePublication !== true) {
     return {
       ok: false,
       field: 'manifestAuthority.durablePublication',
@@ -1016,107 +983,6 @@ function validateDocxImportManifestAuthority(manifestAuthority, importOperationI
     };
   }
   return { ok: true };
-}
-
-function isAlgorithmicDocxImportManifestAuthority(manifestAuthority) {
-  return isPlainObject(manifestAuthority) && manifestAuthority.algorithmic === true;
-}
-
-function coerceTrustedDocxImportManifestAuthority(value) {
-  if (isPlainObject(value) && isPlainObject(value.manifestAuthority)) {
-    return value.manifestAuthority;
-  }
-  return value;
-}
-
-function buildNonAuthoritativeReplayReceipt(receipt, reason) {
-  const replayReceipt = cloneJsonSafe(receipt);
-  delete replayReceipt.batchId;
-  delete replayReceipt.manifestAuthority;
-  delete replayReceipt.transactionEvidence;
-  replayReceipt.replayAuthority = {
-    schemaVersion: 'revision-bridge.docx-import-safe-create-replay-authority.v1',
-    status: 'NON_AUTHORITATIVE',
-    reason,
-  };
-  return replayReceipt;
-}
-
-function buildTrustedManifestReplayReceipt(receipt) {
-  const replayReceipt = cloneJsonSafe(receipt);
-  delete replayReceipt.batchId;
-  if (isPlainObject(replayReceipt.transactionEvidence)) {
-    replayReceipt.transactionEvidence = {
-      lease: cloneJsonSafe(replayReceipt.transactionEvidence.lease),
-      manifestHash: replayReceipt.transactionEvidence.manifestHash,
-    };
-  }
-  replayReceipt.batchEvidenceAuthority = 'NOT_RETURNED_ON_IDEMPOTENT_REPLAY_WITHOUT_TRUSTED_BATCH_READBACK';
-  return replayReceipt;
-}
-
-async function validateDocxImportTrustedReplayAuthority({
-  transactionAuthority,
-  receipt,
-  importOperationId,
-  projectId,
-}) {
-  if (isAlgorithmicDocxImportManifestAuthority(receipt.manifestAuthority)) {
-    return { ok: true, receipt };
-  }
-
-  if (
-    !transactionAuthority
-    || typeof transactionAuthority.readManifestAuthorityForImport !== 'function'
-  ) {
-    return {
-      ok: true,
-      receipt: buildNonAuthoritativeReplayReceipt(
-        receipt,
-        'TRUSTED_TRANSACTION_READBACK_UNAVAILABLE',
-      ),
-    };
-  }
-
-  let trustedReadback = null;
-  try {
-    trustedReadback = await transactionAuthority.readManifestAuthorityForImport({
-      projectId,
-      importOperationId,
-    });
-  } catch {
-    return {
-      ok: false,
-      field: 'manifestAuthority',
-      failReason: 'trusted_manifest_authority_read_failed',
-    };
-  }
-
-  const trustedManifestAuthority = coerceTrustedDocxImportManifestAuthority(trustedReadback);
-  const trustedValidation = validateDocxImportManifestAuthority(
-    trustedManifestAuthority,
-    importOperationId,
-  );
-  if (!trustedValidation.ok) {
-    return {
-      ok: false,
-      field: trustedValidation.field,
-      failReason: `trusted_${trustedValidation.failReason}`,
-      expected: trustedValidation.expected || '',
-    };
-  }
-  if (!jsonStableEqual(receipt.manifestAuthority, trustedManifestAuthority)) {
-    return {
-      ok: false,
-      field: 'manifestAuthority',
-      failReason: 'trusted_manifest_authority_mismatch',
-    };
-  }
-
-  return {
-    ok: true,
-    receipt: buildTrustedManifestReplayReceipt(receipt),
-  };
 }
 
 async function validateExistingDocxImportReceipt(options) {
@@ -1131,6 +997,7 @@ async function validateExistingDocxImportReceipt(options) {
     operationNonce,
     projectId,
     transactionAuthority,
+    manifestPath,
   } = options;
   const entry = validated.value.entry;
   const fail = (field, failReason, expected = '') => buildIdempotentReceiptIntegrityError(
@@ -1141,7 +1008,10 @@ async function validateExistingDocxImportReceipt(options) {
   );
 
   if (!isPlainObject(receipt)) return fail('receipt', 'receipt_not_object');
-  if (receipt.schemaVersion !== DOCX_IMPORT_RECEIPT_V2_SCHEMA) {
+  if (receipt.schemaVersion === DOCX_IMPORT_RECEIPT_V2_SCHEMA) {
+    return buildError('DOCX_SAFE_CREATE_LEGACY_RECOVERY_REQUIRED', 'docx_import_legacy_receipt_requires_recovery');
+  }
+  if (receipt.schemaVersion !== DOCX_IMPORT_RECEIPT_V3_SCHEMA) {
     return fail('schemaVersion', 'schema_version_mismatch');
   }
   if (receipt.type !== DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE) {
@@ -1209,7 +1079,7 @@ async function validateExistingDocxImportReceipt(options) {
       expectedBatchManifestHash,
     );
   }
-  if (!/^flow-batch-\d{10,}-[a-f0-9]{8}$/u.test(receipt.batchId)) {
+  if (receipt.batchId !== `project-create-${importOperationId}`) {
     return fail('batchId', 'batch_id_invalid');
   }
   const manifestAuthorityValidation = validateDocxImportManifestAuthority(
@@ -1338,23 +1208,22 @@ async function validateExistingDocxImportReceipt(options) {
     return fail('atomicEvidence', 'atomic_evidence_mismatch');
   }
 
-  const trustedReplayAuthorityValidation = await validateDocxImportTrustedReplayAuthority({
-    transactionAuthority,
-    receipt,
-    importOperationId,
-    projectId,
-  });
-  if (!trustedReplayAuthorityValidation.ok) {
-    return fail(
-      trustedReplayAuthorityValidation.field,
-      trustedReplayAuthorityValidation.failReason,
-      trustedReplayAuthorityValidation.expected || '',
-    );
-  }
+  try {
+    const commit = await readVerifiedProjectTransaction({ scenePath: targetPath, manifestPath,
+      verifyManifestContinuation: args => transactionAuthority.verifyManifestContinuation({ ...args, projectId }) });
+    const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
+    const stored = await fs.readFile(receiptPath);
+    if (commit.schemaVersion !== 'yalken.project-transaction.commit.v2'
+      || commit.revision !== receipt.manifestAuthority.fencingGeneration
+      || commit.manifestDigest !== receipt.manifestAuthority.nextHash
+      || !commit.resources.some(resource => resource.path === receiptPath && resource.digest === hashExactBytes(stored))) {
+      return fail('transactionEvidence', 'committed_receipt_binding_mismatch');
+    }
+  } catch { return fail('transactionEvidence', 'committed_transaction_readback_failed'); }
 
   return {
     ok: true,
-    receipt: trustedReplayAuthorityValidation.receipt,
+    receipt,
     publicSceneLocator: expectedPublicSceneLocator,
     publicSceneLocators: expectedPublicSceneLocator ? [expectedPublicSceneLocator] : [],
   };
@@ -1396,7 +1265,7 @@ async function verifyDocxMediaAssetFiles(content, projectRoot) {
   if (missing.length) throw Error('DOCX_MEDIA_FILES_MISSING');
 }
 
-async function applyDocxImportSafeCreate(input = {}, options = {}) {
+async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
   const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot.trim() : '';
   const romanRoot = typeof options.romanRoot === 'string' ? options.romanRoot.trim() : '';
 
@@ -1463,6 +1332,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       operationNonce,
       projectId,
       transactionAuthority,
+      manifestPath: options.manifestPath,
     });
     if (!receiptValidation.ok) return receiptValidation;
     return {
@@ -1507,12 +1377,6 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     content: validated.value.entry.content,
     importOperationId,
   };
-  const queueDiskOperation = typeof options.queueDiskOperation === 'function'
-    ? options.queueDiskOperation
-    : async (operation) => operation();
-  const writeBatchAtomic = typeof options.writeBatchAtomic === 'function'
-    ? options.writeBatchAtomic
-    : writeFlowSceneBatchAtomic;
   const sceneTreeIdentityDescriptor = buildDocxImportSceneTreeIdentityDescriptor({
     projectRoot,
     targetPath: normalizedEntry.path,
@@ -1525,103 +1389,15 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     sceneId: normalizedEntry.sceneId,
   });
 
-  // GENERIC-01 (G3): manifest-authority transaction. The flow batch journal
-  // runs inside one lease/publish scope; the manifest revision bump (if a
-  // transactionAuthority port is wired) commits in the same scope. Without a
-  // transactionAuthority port (unit-test direct calls), the manifest evidence
-  // is algorithmic (donor pattern) so the atomic invariant is still observable.
-  let writeResult = null;
-  let manifestEvidence = null;
-  try {
-    writeResult = await queueDiskOperation(
-      () => writeBatchAtomic(
-        {
-          projectRoot,
-          entries: [
-            ...mediaEntries,
-            {
-              path: normalizedEntry.path,
-              content: normalizedEntry.content,
-            },
-          ],
-        },
-        {
-          beforeActivate: async ({ entry }) => {
-            if (!isPathInsideBoundary(projectRoot, entry.path, { resolveSymlinks: true })) throw Error('DOCX_MEDIA_PATH');
-            if (entry.path === normalizedEntry.path && (await prepareDocxMediaEntries(normalizedEntry.content, projectRoot)).length) throw Error('DOCX_MEDIA_ACTIVATION_INCOMPLETE');
-            if (await pathExists(entry.path)) {
-              throw new Error('DOCX_SAFE_CREATE_EXISTING_SCENE_BLOCKED');
-            }
-          },
-        },
-      ),
-      typeof options.operationLabel === 'string' && options.operationLabel.trim()
-        ? options.operationLabel
-        : 'safe create DOCX import scene batch',
-    );
-
-    // GENERIC-01 (G3): manifest revision bump. When a transactionAuthority port
-    // is provided (main handler), the manifest CAS commit runs atomically. When
-    // absent (unit-test direct calls), the evidence is algorithmic.
-    if (transactionAuthority && typeof transactionAuthority.commitManifestText === 'function') {
-      manifestEvidence = await commitManifestRevisionForImport(
-        transactionAuthority,
-        {
-          projectId,
-          importOperationId,
-          manifestPath: typeof options.manifestPath === 'string' ? options.manifestPath : null,
-          manifestText: typeof options.manifestRaw === 'string' ? options.manifestRaw : '',
-          sceneTreeIdentityDescriptor,
-          lease: typeof options.lease === 'object' ? options.lease : null,
-        },
-      );
-    } else {
-      manifestEvidence = buildAlgorithmicManifestEvidence(importOperationId);
-    }
-  } catch (error) {
-    return buildError(
-      'DOCX_SAFE_CREATE_WRITE_FAIL',
-      'docx_import_safe_create_write_failed',
-      {
-        messageCode: error
-          && typeof error.message === 'string'
-          && DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE.test(error.message)
-          ? error.message.slice(0, 96)
-          : 'WRITE_EXCEPTION',
-      },
-    );
-  }
-
-  if (!writeResult || writeResult.ok !== true) {
-    if (writeResult && isPlainObject(writeResult.error)) {
-      const reason = writeResult.error.reason === 'DOCX_SAFE_CREATE_EXISTING_SCENE_BLOCKED'
-        ? 'docx_import_safe_create_existing_scene_blocked'
-        : (typeof writeResult.error.reason === 'string'
-          ? writeResult.error.reason
-          : 'docx_import_safe_create_write_failed');
-      return {
-        ok: false,
-        error: {
-          code: typeof writeResult.error.code === 'string'
-            ? writeResult.error.code
-            : 'DOCX_SAFE_CREATE_WRITE_FAIL',
-          reason,
-          details: isPlainObject(writeResult.error.details)
-            ? sanitizePublicErrorDetails(writeResult.error.details)
-            : {},
-        },
-      };
-    }
-    return buildError(
-      'DOCX_SAFE_CREATE_WRITE_FAIL',
-      'docx_import_safe_create_write_failed',
-    );
-  }
-
-  const actualContent = normalizeText(await fs.readFile(normalizedEntry.path, 'utf8'));
-  // GENERIC-01 (G3): Core-allocated tree-node identity. The tree identity is
-  // allocated atomically within the same transaction scope (algorithmic donor
-  // when no transactionAuthority port is wired).
+  const manifestContent = buildDocxImportManifestTextWithSceneTreeIdentity({
+    manifestText: options.manifestRaw, projectId, sceneTreeIdentityDescriptor,
+  });
+  if (!manifestContent) throw Error('DOCX_SAFE_CREATE_MANIFEST_TREE_IDENTITY_INVALID');
+  const manifestEvidence = {
+    revision: String(options.lease.fencingGeneration), fencingGeneration: options.lease.fencingGeneration,
+    nextHash: hashExactBytes(manifestContent), previousHash: hashExactBytes(options.manifestRaw), durablePublication: true,
+  };
+  const actualContent = normalizeText(normalizedEntry.content);
   const verifiedScene = buildVerifiedDocxImportScene(
     normalizedEntry,
     importOperationId,
@@ -1649,7 +1425,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   };
 
   const receipt = {
-    schemaVersion: DOCX_IMPORT_RECEIPT_V2_SCHEMA,
+    schemaVersion: DOCX_IMPORT_RECEIPT_V3_SCHEMA,
     type: DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE,
     reason: DOCX_IMPORT_SAFE_CREATE_READY_REASON,
     sceneIntegrityScope: DOCX_IMPORT_SAFE_CREATE_SCENE_INTEGRITY_SCOPE,
@@ -1660,9 +1436,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     projectId,
     sourceArtifactSha256: validated.value.sourceArtifactSha256,
     candidateContentSha256: validated.value.entry.candidateContentSha256,
-    batchId: writeResult.value && typeof writeResult.value.batchId === 'string'
-      ? writeResult.value.batchId
-      : '',
+    batchId: `project-create-${importOperationId}`,
     sourcePreviewHash: validated.value.previewHash,
     inputHash,
     outputHash,
@@ -1679,9 +1453,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     carrierIgnored: validated.value.carrierIgnored,
     transactionEvidence: buildDocxImportTransactionEvidence(
       manifestEvidence,
-      writeResult.value && typeof writeResult.value.batchId === 'string'
-        ? writeResult.value.batchId
-        : '',
+      `project-create-${importOperationId}`,
     ),
     atomicEvidence: {
       sceneCount: 1,
@@ -1691,8 +1463,21 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
     createdAt: new Date().toISOString(),
   };
 
-  // GENERIC-01 (G4): persist the durable receipt atomically.
-  await writeDurableReceipt(projectRoot, importOperationId, receipt);
+  const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
+  await commitProjectTransaction({ scenePath: targetPath, sceneContent: normalizedEntry.content,
+    expectedSceneContent: null, manifestPath: options.manifestPath, manifestContent,
+    expectedManifestContent: options.manifestRaw, revision: options.lease.fencingGeneration,
+    createResources: [...mediaEntries, { path: receiptPath, content: `${JSON.stringify(receipt, null, 2)}\n` }],
+    publishManifest: options.publishManifest, verifyManifestContinuation: options.verifyManifestContinuation,
+    fsAdapter: options.fsAdapter });
+  // Precomputed receipt fields confer no success until independent durable
+  // commit/manifest/scene/resource readback has verified the whole publication.
+  const checked = await validateExistingDocxImportReceipt({ receipt, plan, validated,
+    projectRoot, romanRoot, targetPath, importOperationId, operationNonce, projectId,
+    transactionAuthority, manifestPath: options.manifestPath });
+  if (!checked.ok) return checked;
+  await verifyDocxMediaAssetFiles(normalizedEntry.content, projectRoot);
+  await options.assertPublication();
 
   return {
     ok: true,
@@ -1710,62 +1495,71 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   };
 }
 
-// GENERIC-01 (G3): manifest revision bump via the transactionAuthority port.
-// Uses commitManifestText with lease/CAS semantics. Falls back to algorithmic
-// evidence if the authority rejects the commit (partial -> rollback).
-async function commitManifestRevisionForImport(authority, context) {
-  const projectId = typeof context.projectId === 'string' && context.projectId.trim()
-    ? context.projectId.trim()
-    : 'docx-import-generic';
-  const manifestPath = typeof context.manifestPath === 'string' && context.manifestPath.trim()
-    ? context.manifestPath.trim()
-    : '';
-  const expectedText = typeof context.manifestText === 'string' && context.manifestText.trim()
-    ? context.manifestText
-    : '';
-  const nextText = buildDocxImportManifestTextWithSceneTreeIdentity({
-    manifestText: expectedText,
-    projectId,
-    sceneTreeIdentityDescriptor: context.sceneTreeIdentityDescriptor,
-  });
-  if (!manifestPath || !expectedText || !nextText) {
-    throw new Error('DOCX_SAFE_CREATE_MANIFEST_TREE_IDENTITY_INVALID');
+// The command's entire read/recover/create/replay sequence holds one project
+// lease. No absent-authority or algorithmic success path exists in runtime.
+async function applyDocxImportSafeCreate(input = {}, options = {}) {
+  const validated = validateDocxImportPreviewPlan(input.docxImportPreviewPlan);
+  if (!validated.ok) return validated;
+  if (!isDocxImportPreviewPlanAdmitted(input.docxImportPreviewPlan)) {
+    return buildError('DOCX_SAFE_CREATE_PREVIEW_NOT_ADMITTED', 'docx_import_safe_create_preview_not_admitted');
   }
+  const roots = validateTrustedRoots(options.projectRoot, options.romanRoot);
+  if (!roots.ok) return roots;
+  const authority = options.transactionAuthority;
+  if (!authority || typeof authority.withProjectLease !== 'function' || typeof authority.commitManifestText !== 'function'
+    || typeof authority.verifyManifestContinuation !== 'function' || !options.projectId
+    || !path.isAbsolute(options.manifestPath || '') || path.dirname(options.manifestPath) !== options.projectRoot
+    || typeof options.manifestRaw !== 'string') {
+    return buildError('DOCX_SAFE_CREATE_AUTHORITY_REQUIRED', 'docx_import_manifest_authority_required');
+  }
+  const queue = typeof options.queueDiskOperation === 'function' ? options.queueDiskOperation : op => op();
   try {
-    const result = await authority.commitManifestText({
-      projectId,
-      targetPath: manifestPath,
-      expectedText,
-      nextText,
-      lease: context.lease || null,
-      label: 'docxImportSafeCreate',
-    });
-    return {
-      revision: typeof result.fencingGeneration === 'number'
-        ? String(result.fencingGeneration)
-        : (typeof result.revision === 'string' ? result.revision : ''),
-      fencingGeneration: typeof result.fencingGeneration === 'number' ? result.fencingGeneration : null,
-      nextHash: typeof result.nextHash === 'string' ? result.nextHash : '',
-      previousHash: typeof result.previousHash === 'string' ? result.previousHash : '',
-      durablePublication: result.durablePublication === true,
-    };
+    return await queue(() => authority.withProjectLease(options.projectId, lease => lease.publish(async proof => {
+      const assertPublication = async () => {
+        if (typeof options.assertPublication === 'function') await options.assertPublication();
+        await proof.assertOwned();
+      };
+      await assertPublication();
+      if (await fs.readFile(options.manifestPath, 'utf8') !== options.manifestRaw) throw Error('DOCX_SAFE_CREATE_MANIFEST_CAS');
+      const fsAdapter = new Proxy(fs, { get(target, key) {
+        if (typeof target[key] !== 'function') return target[key];
+        return async (...args) => {
+          if (['open', 'rename', 'link', 'unlink', 'mkdir'].includes(key)) await assertPublication();
+          return target[key](...args);
+        };
+      } });
+      const publishManifest = async ({ manifestPath, expectedText, nextText }) => {
+        await assertPublication();
+        const result = await authority.commitManifestText({ projectId: options.projectId,
+          targetPath: manifestPath, expectedText, nextText, lease, label: 'docxImportSafeCreate' });
+        if (result?.ok !== true || result.readbackVerified !== true || result.durablePublication !== true
+          || result.fencingGeneration !== lease.fencingGeneration || result.nextHash !== hashExactBytes(nextText)
+          || result.previousHash !== hashExactBytes(expectedText)) throw Error('DOCX_SAFE_CREATE_MANIFEST_PUBLICATION_UNVERIFIED');
+      };
+      const verifyManifestContinuation = args => authority.verifyManifestContinuation({ ...args, projectId: options.projectId });
+      const legacyBatchRoot = path.join(options.projectRoot, '.flow-batch');
+      if (!isPathInsideBoundary(options.projectRoot, legacyBatchRoot, { resolveSymlinks: true })) throw Error('DOCX_SAFE_CREATE_LEGACY_PATH');
+      let legacyEntries;
+      try { legacyEntries = await fs.readdir(legacyBatchRoot); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+      if (legacyEntries?.some(name => name.endsWith('.json'))) {
+        return buildError('DOCX_SAFE_CREATE_LEGACY_RECOVERY_REQUIRED', 'docx_import_legacy_batch_requires_recovery');
+      }
+      const pending = await readPendingProjectTransactionBinding({ manifestPath: options.manifestPath, fsAdapter });
+      if (pending.pending) await recoverProjectTransaction({ scenePath: pending.scenePath,
+        manifestPath: options.manifestPath, publishManifest, verifyManifestContinuation, fsAdapter });
+      const manifestRaw = await fs.readFile(options.manifestPath, 'utf8');
+      if (JSON.parse(manifestRaw).projectId !== options.projectId) throw Error('DOCX_SAFE_CREATE_PROJECT_IDENTITY_MISMATCH');
+      const result = await applyDocxImportSafeCreateInLease(input, { ...options, manifestRaw, lease,
+        publishManifest, verifyManifestContinuation, fsAdapter, assertPublication });
+      await assertPublication();
+      return result;
+    })), options.operationLabel || 'safe create DOCX import transaction');
   } catch (error) {
-    if (error && typeof error.message === 'string' && DOCX_IMPORT_SAFE_CREATE_MESSAGE_CODE_RE.test(error.message)) {
-      throw error;
-    }
-    throw new Error('DOCX_SAFE_CREATE_MANIFEST_COMMIT_FAILED');
+    return buildError('DOCX_SAFE_CREATE_WRITE_FAIL', 'docx_import_safe_create_write_failed', {
+      messageCode: /^[A-Z][A-Z0-9_]{1,95}$/.test(error?.code || error?.message || '')
+        ? (error.code || error.message) : 'WRITE_EXCEPTION',
+    });
   }
-}
-
-function buildAlgorithmicManifestEvidence(importOperationId) {
-  const algorithmicHash = crypto.createHash('sha256')
-    .update(`manifest:algorithmic:${importOperationId}`, 'utf8').digest('hex');
-  return {
-    revision: algorithmicHash.slice(0, 8),
-    algorithmic: true,
-    algorithmicHash,
-    durablePublication: false,
-  };
 }
 
 module.exports = {
@@ -1773,6 +1567,7 @@ module.exports = {
   DOCX_IMPORT_SAFE_CREATE_RECEIPT_TYPE,
   DOCX_IMPORT_SAFE_CREATE_READY_REASON,
   DOCX_IMPORT_RECEIPT_V2_SCHEMA,
+  DOCX_IMPORT_RECEIPT_V3_SCHEMA,
   applyDocxImportSafeCreate,
   verifyDocxMediaAssetFiles,
   buildImportOperationId,

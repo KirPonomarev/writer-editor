@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
-const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const CT = 'http://schemas.openxmlformats.org/package/2006/content-types';
 const REL = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -187,6 +187,6 @@ test('C1 colors: actual preview admission, persistence and repeat preserve marks
   const options={projectRoot,romanRoot:path.join(projectRoot,'roman'),projectId:'colors'};
   const first=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(first.ok,true,JSON.stringify(first));
   const repeat=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(repeat.ok,true);
-  const dir=path.join(options.romanRoot,'Imported');assert.equal(fs.readdirSync(dir).length,1);
-  assert.equal(fs.readFileSync(path.join(dir,fs.readdirSync(dir)[0]),'utf8'),plan.candidateCreatePlan.entries[0].content);
+  const dir=path.join(options.romanRoot,'Imported');assert.equal(fs.readdirSync(dir).filter(name => name.endsWith('.txt')).length,1);
+  assert.equal(fs.readFileSync(path.join(dir,fs.readdirSync(dir).filter(name => name.endsWith('.txt'))[0]),'utf8'),plan.candidateCreatePlan.entries[0].content);
 });
