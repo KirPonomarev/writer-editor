@@ -402,7 +402,7 @@ test('DOCX content preview: clean main document returns ordered deterministic pa
   assert.equal(first.carrierIgnored, null);
 });
 
-test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are stable text only', async () => {
+test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities preserve paragraph structure', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
     '<w:p><w:r><w:t>A&amp;B</w:t><w:tab/><w:t>C&lt;D</w:t><w:br/><w:t>&quot;E&apos;</w:t></w:r></w:p>',
@@ -427,7 +427,12 @@ test('DOCX content preview: tabs, breaks, empty paragraphs, and XML entities are
     && item.category === 'lineBreak'
     && item.sourceCode === 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'
     && item.tagName === 'w:br'
-  )), true);
+  )), false);
+  const { parseObservablePayload } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const doc = parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content).doc;
+  assert.equal(doc.content.length, 2);
+  assert.deepEqual(doc.content[0].content.map(n => n.type), ['text', 'hardBreak', 'text']);
+  assert.deepEqual(doc.content[1].content, []);
 });
 
 test('DOCX content preview: XML character data follows parser legality and preserves CDATA text', async (t) => {
@@ -597,7 +602,7 @@ test('DOCX content preview: XML character data follows parser legality and prese
   }
 });
 
-test('DOCX content preview: typed breaks and section types have exact plain text projections', async () => {
+test('DOCX content preview: typed breaks preserve paragraph boundaries and disclose page/column/section losses', async () => {
   const bridge = await loadBridge();
   const input = cleanDocxZip([
     '<w:p><w:r><w:t>T04_LINE_BEFORE</w:t><w:br/><w:t>T04_LINE_AFTER</w:t></w:r></w:p>',
@@ -658,7 +663,10 @@ test('DOCX content preview: typed breaks and section types have exact plain text
   }
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
-  assert.equal(importPreview.candidateCreatePlan.entries[0].content, [
+  const { parseObservablePayload, deriveVisibleTextFromDocument } = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const doc = parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content).doc;
+  assert.equal(doc.content.length, 7);
+  assert.equal(deriveVisibleTextFromDocument(doc), [
     'T04_LINE_BEFORE\nT04_LINE_AFTER',
     'T04_PAGE_BEFORE\nT04_PAGE_AFTER',
     'T04_COLUMN_BEFORE\nT04_COLUMN_AFTER',
@@ -668,7 +676,6 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     'T04_SECTION_TWO',
   ].join('\n'));
   for (const expected of [
-    ['DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY', 'lineBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_LINE'],
     ['DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY', 'pageBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_PAGE'],
     ['DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY', 'columnBreak', 'DOCX_CONTENT_PREVIEW_TYPED_BREAK_COLUMN'],
     [
@@ -690,7 +697,7 @@ test('DOCX content preview: typed breaks and section types have exact plain text
     )).length, 1);
   }
   assert.equal(importPreview.lossReport.items.some((item) => (
-    item.code === 'DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY'
+    item.code === 'DOCX_IMPORT_PREVIEW_INLINE_MARKS_ONLY'
     && item.category === 'formatting'
   )), true);
 });

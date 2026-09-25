@@ -202,7 +202,9 @@
     "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
     "docs/tasks/2026-09-25--word-table-properties.md",
     "src/io/documentTableProperties.js",
-    "test/contracts/rtk-word-table-properties.contract.test.js"
+    "test/contracts/rtk-word-table-properties.contract.test.js",
+    "docs/tasks/2026-09-25--word-composite-fidelity.md",
+    "test/contracts/rtk-word-composite-fidelity.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -466,7 +468,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "001594afbc8e411bc6e058db63725b7f2ed83fcdb68fe15b9efe86cb70dc3240"
+        "sha256": "dc409e0df51cf91ad21b0edf81139197d804129890418b305dc9491deec7fed4"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -478,7 +480,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
-        "sha256": "8985525ff217e54c07fa9ba6c7a2fe99438e36b0341e58c8d85394b6bf4a84b1"
+        "sha256": "3036df257710aa9b5c7065852c843da835057e3200a69c214353141177a1e006"
       },
       {
         "path": "docs/tasks/2026-09-16--docx-inline-styles-c1.md",
@@ -526,7 +528,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-        "sha256": "f5e56880b421e79320453b971730b72e451181fc1c2ed4e3e1e6aa791f14316e"
+        "sha256": "a2b501433c157c8193e80b352ff7f05855a20ab45b51eb8e6cb85943feedd127"
       },
       {
         "path": "src/renderer/styles.css",
@@ -902,7 +904,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "36187b40a57b62dcfee6194a4cbc5586721c271afa8cbb425a4e4aa14bb32492"
+        "sha256": "69125951b9bc3adc5fd33ccc8e71920e9fb138560807b34beaf4176c6b17905c"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -971,6 +973,14 @@
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
         "sha256": "f534eb61254e8a1d4251073b0d3666aca06f0608eeb6322f4f0a09b988294ae6"
+      },
+      {
+        "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",
+        "sha256": "b178634373ed5dd62af3a8889d0a47376f9ca084a6f8f8c34903f68352716bf2"
+      },
+      {
+        "path": "test/contracts/rtk-word-composite-fidelity.contract.test.js",
+        "sha256": "95b1c9467948f43e6ff339de5e5d93c3804bfe89edaf9ba1abf0d22bfb55c439"
       }
     ],
     "followupRepair": {

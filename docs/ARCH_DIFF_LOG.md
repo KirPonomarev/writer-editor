@@ -129,3 +129,6 @@ Owner-approved bounded Word remediation. Optional paired integer EMU placement f
 ## 2026-09-25 — WORD_TABLE_PROPERTIES_20260925
 
 Owner-approved W5 continuation from e53782a9: bounded optional canonical table and cell properties preserve absolute grid widths, fixed layout, literal shading and borders through existing import/editor/export. Independent raw table reader covers those properties and mutation counterexamples. Namespace identity is checked before table interpretation. Existing command, recovery and transport authority retained. No architecture exception, dependencies, runtime network or general UI change. One rollback: revert the W5 delivery; no source document rewrite. No accepted-cell credit from this prerequisite.
+
+## 2026-09-25 — W6 Word composite fidelity
+Owner-approved WORD_COMPOSITE_FIDELITY_20260925 on b6986aea: preserve unformatted hardBreak structure in the existing canonical document model and align diagnostics with actual rich candidates. Page/column and other unsupported losses, G/R authority separation, fenced persistence and frozen acceptance remain unchanged. No architecture exception, new dependency or runtime network. Rollback: revert bounded W6 delivery.

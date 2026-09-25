@@ -9181,7 +9181,7 @@ function docxResolveBlockStyle(metadata, catalog) {
 
 function docxInlineCanonicalContent(paragraphs) {
   let runCount = 0;
-  let hasMarks = false;
+  let needsRichContent = false;
   const blocks = paragraphs.map((paragraph) => {
     const codeBlock = paragraph.blockKind === 'codeBlock';
     const depth = paragraph.blockquoteDepth;
@@ -9199,7 +9199,7 @@ function docxInlineCanonicalContent(paragraphs) {
     if (Object.hasOwn(paragraph, 'textAlign') && (textAlign === null || normalizeParagraphAlignment(textAlign) !== textAlign)) {
       throw new Error('DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID');
     }
-    hasMarks ||= level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
+    needsRichContent ||= level !== undefined || textAlign !== undefined || codeBlock || depth !== undefined;
     const runs = paragraph.inlineRuns === undefined
       ? (paragraph.text ? [{ text: paragraph.text, marks: [] }] : [])
       : paragraph.inlineRuns;
@@ -9230,12 +9230,15 @@ function docxInlineCanonicalContent(paragraphs) {
         }
         continue;
       }
-      hasMarks ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize);
+      needsRichContent ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize);
       const marks = run.marks.map((type) => ({ type }));
       const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
       if (Object.keys(textStyle).length) marks.push({ type: 'textStyle', attrs: textStyle });
       if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
       const parts = run.text.split('\n');
+      // A line break and a paragraph boundary have distinct document meaning.
+      // Plain text uses the same separator for both and cannot retain that identity.
+      needsRichContent ||= parts.length > 1;
       parts.forEach((text, index) => {
         if (index) nodes.push({ type: 'hardBreak' });
         if (text) nodes.push({ type: 'text', text, ...(marks.length ? { marks } : {}) });
@@ -9267,7 +9270,7 @@ function docxInlineCanonicalContent(paragraphs) {
       }
       while (index < images.length && images[index].offset === cursor) mixed.push(images[index++].node);
       if (index !== images.length) throw Error('DOCUMENT_MEDIA_PLACEMENT');
-      nodes.splice(0, nodes.length, ...mixed); hasMarks = true;
+      nodes.splice(0, nodes.length, ...mixed); needsRichContent = true;
     }
     let block = codeBlock
       ? { type: 'codeBlock', attrs: { language: '' }, content: joined ? [{ type: 'text', text: joined }] : [] }
@@ -9279,7 +9282,7 @@ function docxInlineCanonicalContent(paragraphs) {
   const stack = [];
   groupTableParagraphs(paragraphs).forEach(group => {
     if (group.table) {
-      hasMarks = true; stack.length = 0;
+      needsRichContent = true; stack.length = 0;
       for (const cell of group.cells) {
         if (cell.paragraphs.some(p => paragraphs[p.index].list !== undefined)) throw new Error('DOCX_TABLE_LIST_UNSUPPORTED');
         cell.node.content = cell.paragraphs.map(p => blocks[p.index]);
@@ -9302,7 +9305,7 @@ function docxInlineCanonicalContent(paragraphs) {
       || !['bulletList', 'orderedList'].includes(list.kind)
       || !Number.isInteger(list.ordinal) || list.ordinal < 0 || list.ordinal > 2147483647
       || block.type !== 'paragraph' || list.level > stack.length) throw new Error('DOCX_LIST_PROJECTION_INVALID');
-    hasMarks = true;
+    needsRichContent = true;
     stack.length = Math.min(stack.length, list.level + 1);
     let active = stack[list.level];
     if (!active || active.numId !== list.numId || active.node.type !== list.kind
@@ -9320,7 +9323,7 @@ function docxInlineCanonicalContent(paragraphs) {
     active.node.content.push({ type: 'listItem', content: [block] });
     active.nextOrdinal = list.ordinal + 1;
   });
-  return hasMarks ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
+  return needsRichContent ? composeObservablePayload({ doc: { type: 'doc', content } }) : null;
 }
 
 function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
@@ -10514,7 +10517,7 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
   };
 }
 
-function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoundaryRecovery = null) {
+function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoundaryRecovery = null, richCandidate = false) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
   if (diagnosticCode === 'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS') {
     return { code: 'DOCX_IMPORT_PREVIEW_TABLE_PROPERTY_LOSS', category: 'formatting', message: diagnostic.message };
@@ -10538,14 +10541,18 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoun
       return {
         code: 'DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY',
         category: 'pageBreak',
-        message: 'DOCX page break is flattened to a newline in the plain text import candidate',
+        message: richCandidate
+          ? 'DOCX page break is converted to a line break; its page layout meaning is not preserved'
+          : 'DOCX page break is flattened to a newline in the plain text import candidate',
       };
     }
     if (sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.column) {
       return {
         code: 'DOCX_IMPORT_PREVIEW_COLUMN_BREAK_TEXT_ONLY',
         category: 'columnBreak',
-        message: 'DOCX column break is flattened to a newline in the plain text import candidate',
+        message: richCandidate
+          ? 'DOCX column break is converted to a line break; its column layout meaning is not preserved'
+          : 'DOCX column break is flattened to a newline in the plain text import candidate',
       };
     }
   }
@@ -10706,6 +10713,7 @@ function docxImportPreviewBuildLossReport(
   importedText,
   googleDocsTabs = null,
   sectionBoundaryRecovery = null,
+  richCandidate = false,
 ) {
   const items = [
     docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_PLAIN_TEXT_ONLY', {
@@ -10739,6 +10747,8 @@ function docxImportPreviewBuildLossReport(
   for (const diagnostic of diagnostics) {
     if (!isPlainObject(diagnostic)) continue;
     if (isDocxPackageRootRelationshipDiagnostic(diagnostic)) continue;
+    if (richCandidate && diagnostic.code === DOCX_CONTENT_PREVIEW_TYPED_BREAK_DIAGNOSTIC
+      && diagnostic.sourceCode === DOCX_CONTENT_PREVIEW_TYPED_BREAK_SOURCE_CODES.line) continue;
     if (contentPreview.paragraphs.some(p => p.media?.length)
       && ((diagnostic.tagName === 'w:drawing' && diagnostic.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC')
         || (diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.MEDIA_DIAGNOSTICS_ONLY
@@ -10768,7 +10778,7 @@ function docxImportPreviewBuildLossReport(
       });
       break;
     }
-    const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic, sectionBoundaryRecovery);
+    const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic, sectionBoundaryRecovery, richCandidate);
     items.push(docxImportPreviewLossItem(mapped.code, {
       ...docxTableLossDetails(diagnostic),
       category: mapped.category,
@@ -10785,8 +10795,8 @@ function docxImportPreviewBuildLossReport(
       ilvl: diagnostic.ilvl,
       listKey: diagnostic.listKey,
       message: mapped.message || (knownIgnoredPart
-        ? 'known DOCX package part is ignored by the plain text import candidate'
-        : 'unsupported DOCX structure is not represented in the plain text import candidate'),
+        ? 'known DOCX package part is not represented in the imported document'
+        : 'unsupported DOCX structure is not represented in the imported document'),
     }));
   }
   const sortedItems = docxImportPreviewSortRecords(items);
@@ -10916,6 +10926,7 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     importedText,
     googleDocsTabs,
     sectionBoundaryRecovery,
+    richContent !== null,
   );
   if (richContent !== null) {
     const hasHeadings = contentPreview.paragraphs.some((paragraph) => paragraph.headingLevel !== undefined);
@@ -10941,10 +10952,13 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       formatting.message = 'Uniform literal fonts, supported resolved theme fonts and half-point sizes are preserved. Installed font availability determines rendering. '
         + formatting.message.replace('fonts,', 'unresolved or differing script fonts,');
     }
-    if (contentPreview.paragraphs.some(p => p.table !== undefined)) {
-      formatting.message = 'Table rows, cells, empty cell paragraphs and horizontal/vertical merges are preserved. ' + formatting.message;
+    if (importParagraphs.some(p => p.text.includes('\n'))) {
+      formatting.message = 'Line breaks within paragraphs and separate paragraph boundaries are preserved. Page and column layout losses remain listed separately. ' + formatting.message;
     }
-    if (contentPreview.paragraphs.some(p => p.media?.length)) formatting.message = 'Validated inline PNG bytes, repeated image identity, placement and alternative text are preserved. Other media and floating shapes remain unsupported. ' + formatting.message;
+    if (contentPreview.paragraphs.some(p => p.table !== undefined)) {
+      formatting.message = 'Table rows, cells, empty cell paragraphs, horizontal/vertical merges, bounded absolute column widths, literal shading and supported borders are preserved. Unsupported table properties are listed separately. ' + formatting.message;
+    }
+    if (contentPreview.paragraphs.some(p => p.media?.length)) formatting.message = 'Validated inline PNG bytes, repeated image identity, placement, bounded display dimensions and alternative text are preserved. Other media and floating shapes remain unsupported. ' + formatting.message;
     if (hasBlockStyles) {
       lossReport.mode = 'block-styles-headings-lists-and-inline-marks';
       formatting.code = 'DOCX_IMPORT_PREVIEW_BLOCK_STYLES_HEADINGS_LISTS_AND_INLINE_MARKS';
