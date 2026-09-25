@@ -4205,12 +4205,19 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
         const kind = attr(token, 'fldCharType');
         if (kind === 'begin' && !field) field = { phase: 'instruction', instruction: '', originalFrom: originalOffset, currentFrom: currentOffset };
         else if (kind === 'separate' && field?.phase === 'instruction') {
-          const match = field.instruction.match(/^\s*HYPERLINK\s+"([^"\r\n]+)"(?:\s+\\h)?\s*$/u);
+          const instruction = field.instruction.trim();
+          const argument = instruction.slice(9).trimStart();
+          const quoteEnd = argument.indexOf('"', 1);
+          const trailing = argument.slice(quoteEnd + 1);
+          const validInstruction = instruction.startsWith('HYPERLINK')
+            && /\s/u.test(instruction[9] || '') && argument[0] === '"' && quoteEnd > 1
+            && (!trailing.trim() || (/\s/u.test(trailing[0]) && trailing.trim() === '\\h'));
+          const target = validInstruction ? argument.slice(1, quoteEnd) : '';
           let href = '';
           try {
-            const url = match && new URL(match[1]);
+            const url = target && new URL(target);
             if (url && ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password
-              && !/[\u0000-\u0020\u007f]/u.test(match[1])) href = match[1];
+              && !/[\u0000-\u0020\u007f]/u.test(target)) href = target;
           } catch {}
           if (!href) eligible = false;
           field.phase = 'result'; field.href = href;
