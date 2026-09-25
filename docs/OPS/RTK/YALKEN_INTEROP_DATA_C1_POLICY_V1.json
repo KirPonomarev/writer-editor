@@ -816,7 +816,7 @@
       },
       {
         "path": "src/io/documentMedia.js",
-        "sha256": "6821f2991fe157261dcc754f28bd3bc0689544eefa43b434ad6075f1ab3b63c7"
+        "sha256": "ed470e91f0d4e8c41e29b27a39797f993c66313b381f9dbddbd963f97f4637b2"
       },
       {
         "path": "src/export/docx/docxMedia.js",

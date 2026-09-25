@@ -42,3 +42,26 @@ test('Media cannot silently disappear from unsupported node positions', () => {
   const image = { type: 'image', attrs: createImageAttrs(png()) };
   for (const type of ['doc', 'codeBlock', 'tableCell']) assert.throws(() => documentMedia({ type, content: [image] }), /DOCUMENT_MEDIA_IMAGE_SHAPE/);
 });
+
+
+test('repeated media cannot evade payload budgets through one content-addressed asset', () => {
+  const original = png(), data = Buffer.concat([original.subarray(0, -12), chunk('tEXt', Buffer.alloc(1024 * 1024, 65)), original.subarray(-12)]);
+  const attrs = createImageAttrs(data), image = { type: 'image', attrs };
+  const doc = copies => ({ type: 'doc', content: [{ type: 'paragraph', content: Array(copies).fill(image) }] });
+  assert.equal(documentMedia(doc(3)).assets.length, 1);
+  assert.throws(() => documentMedia(doc(17)), /DOCUMENT_MEDIA_DOCUMENT_BOUNDS/);
+  const changed = { ...attrs, width: 2 };
+  assert.throws(() => documentMedia({ type: 'doc', content: [{ type: 'paragraph', content: [image, { type: 'image', attrs: changed }] }] }), /DOCUMENT_MEDIA_IDENTITY/);
+  const label = documentMedia({ type: 'doc', content: [{ type: 'paragraph', content: [image, { type: 'image', attrs: { ...attrs, alt: 'second placement' } }] }] });
+  assert.equal(label.placements[1].alt, 'second placement');
+});
+
+
+test('decoded pixel budget counts every placement even when compressed bytes are small', () => {
+  const header = Buffer.alloc(13); header.writeUInt32BE(4096, 0); header.writeUInt32BE(4096, 4); header[8] = 1;
+  const bytes = Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', header), chunk('IDAT', zlib.deflateSync(Buffer.alloc(4096 * 513))), chunk('IEND', Buffer.alloc(0))]);
+  const image = { type: 'image', attrs: createImageAttrs(bytes) };
+  const doc = copies => ({ type: 'doc', content: [{ type: 'paragraph', content: Array(copies).fill(image) }] });
+  assert.equal(documentMedia(doc(4)).placements.length, 4);
+  assert.throws(() => documentMedia(doc(5)), /DOCUMENT_MEDIA_DOCUMENT_BOUNDS/);
+});
