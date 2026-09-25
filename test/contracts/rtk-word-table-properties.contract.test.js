@@ -119,3 +119,24 @@ test('W5: actual editor schema and transactions retain properties through edit u
   const splitJson = JSON.parse(JSON.stringify(state.doc.toJSON()));
   assert.deepEqual(schema.nodeFromJSON((await imported(await exported(splitJson))).doc).toJSON(),state.doc.toJSON());
 });
+test('W5: independent Python raw oracle checks widths fill and border and rejects each actual OOXML mutant', async () => {
+  const {spawnSync}=require('node:child_process'), path=require('node:path');
+  const doc=fixture(), bytes=await exported(doc);
+  const code=`import sys,json,base64,io,zipfile,importlib.util,copy
+from xml.etree import ElementTree as E
+spec=importlib.util.spec_from_file_location('table_reader',sys.argv[1]);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+x=json.load(sys.stdin);root=E.fromstring(zipfile.ZipFile(io.BytesIO(base64.b64decode(x['bytes']))).read('word/document.xml'))
+expected=m.canonical_graphs([x['doc']]);assert m.parse_body(root)[1]==expected
+for kind in ['width','shading','border','layout','cell-override']:
+ r=copy.deepcopy(root);t=r.find('.//'+m.W+'tbl')
+ if kind=='width':t.find('./'+m.W+'tblGrid/'+m.W+'gridCol').set(m.W+'w','721')
+ elif kind=='shading':t.find('.//'+m.W+'shd').set(m.W+'fill','00FF00')
+ elif kind=='border':t.find('./'+m.W+'tblPr/'+m.W+'tblBorders/'+m.W+'top').set(m.W+'sz','8')
+ elif kind=='layout':t.find('./'+m.W+'tblPr').remove(t.find('./'+m.W+'tblPr/'+m.W+'tblLayout'))
+ else:
+  b=E.SubElement(t.find('.//'+m.W+'tcPr'),m.W+'tcBorders');E.SubElement(b,m.W+'top',{m.W+'val':'none'})
+ assert m.parse_body(r)[1]!=expected,kind
+print('RAW_TABLE_PROPERTIES_AND_FIVE_MUTANTS_PASS')`;
+  const result=spawnSync('python3',['-I','-B','-c',code,path.join(__dirname,'../../scripts/ops/rtk-interop-word-tables-readback.py')],{input:JSON.stringify({doc,bytes:bytes.toString('base64')}),encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/FIVE_MUTANTS_PASS/u);
+});

@@ -7507,6 +7507,10 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_TABLE_PROJECTION_INVALID',
     'DOCX_TABLE_PROJECTION_ORDER',
     'DOCX_TABLE_PROPERTY_INVALID',
+    'DOCX_TABLE_PROPERTIES_INVALID',
+    'DOCX_TABLE_PROPERTY_DUPLICATE',
+    'DOCX_TABLE_GRID_WIDTH_INVALID',
+    'DOCX_TABLE_MERGED_CELL_PROPERTIES_CONFLICT',
     'DOCX_TABLE_PROPERTY_OWNER_INVALID',
     'DOCX_TABLE_RAGGED_GRID',
     'DOCX_TABLE_ROW_INVALID',
@@ -9589,7 +9593,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     // revisions and foreign-namespace lookalikes never become inline marks.
     const parentTag = closing ? elementStack.at(-1)?.semanticTagName
       : elementStack.at(selfClosing ? -1 : -2)?.semanticTagName;
-    tableReader.tag(tagName, parentTag, closing, selfClosing,
+    // Literal w prefixes can be rebound. The table reader receives only names
+    // whose namespace identity is proved, just like the review table reader.
+    const tableParent = elementStack.at(closing || selfClosing ? -1 : -2);
+    const tableTag = docxContentPreviewNamespaceUriForTagName(rawTagName, tokenNamespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
+      ? tagName : `other:${rawTagName.split(':').at(-1)}`;
+    const tableParentTag = tableParent && docxContentPreviewNamespaceUriForTagName(tableParent.rawTagName, tableParent.namespaceMap) === DOCX_WORDPROCESSINGML_MAIN_NAMESPACE
+      ? parentTag : `other:${tableParent?.rawTagName.split(':').at(-1) || ''}`;
+    tableReader.tag(tableTag, tableParentTag, closing, selfClosing,
       name => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, name));
     if (insideParagraph && tagName === 'w:r') {
       activeInlineRun = closing || selfClosing ? null : { properties: {}, styleId: '' };

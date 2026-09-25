@@ -12,6 +12,68 @@ def bounded(value,maximum):
 def span(value,maximum):
     need(isinstance(value,str) and re.fullmatch('[1-9][0-9]{0,2}',value),'SPAN');return bounded(int(value),maximum)
 
+# Independent literal-property reader. Shares no validator or constants with product.
+EDGES=('top','left','bottom','right','insideH','insideV')
+def property_record(value,table=False,columns=None):
+    if value is None:return None
+    need(isinstance(value,dict) and set(value)==({'version','grid','layout','widthDxa','shading','borders'} if table else {'version','shading','borders'}),'PROPERTY_KEYS')
+    need(value['version']==1 and type(value['version']) is int,'PROPERTY_VERSION')
+    fill=value['shading'];need(fill is None or fill=='none' or isinstance(fill,str) and re.fullmatch('[0-9A-F]{6}',fill),'SHADING')
+    borders=value['borders'];need(isinstance(borders,dict) and set(borders)<=set(EDGES),'BORDER_EDGES')
+    for edge in borders.values():
+        need(isinstance(edge,dict),'BORDER')
+        if edge.get('style')=='none':need(set(edge)=={'style'},'BORDER_NONE')
+        else:
+            need(set(edge)=={'style','size','color'} and edge['style'] in ['single','double'],'BORDER')
+            need(type(edge['size']) is int and 2<=edge['size']<=96,'BORDER_SIZE')
+            need(edge['color']=='auto' or isinstance(edge['color'],str) and re.fullmatch('[0-9A-F]{6}',edge['color']),'BORDER_COLOR')
+    if table:
+        need(isinstance(value['grid'],list) and len(value['grid'])==columns,'WIDTH_GRID')
+        for n in value['grid']:
+            if n is not None:bounded(n,31680)
+        need(value['layout'] in [None,'fixed'],'LAYOUT')
+        if value['widthDxa'] is not None:bounded(value['widthDxa'],31680)
+    return copy.deepcopy(value)
+def raw_properties(pr,table=False,grid=None):
+    result={'version':1,'shading':None,'borders':{}}
+    if table:result.update(grid=grid,layout=None,widthDxa=None)
+    if pr is None:return result
+    for tag in ['shd','tblBorders' if table else 'tcBorders','tblLayout','tblW','tcW']:
+        need(len(pr.findall(W+tag))<=1,'PROPERTY_DUPLICATE')
+    shade=pr.find(W+'shd')
+    if shade is not None:
+        v={k.removeprefix(W):v for k,v in shade.attrib.items()}
+        need(set(v)<={'val','color','fill'} and v.get('val','clear') in ['clear','nil'] and v.get('color','auto')=='auto','SHADING_UNSUPPORTED')
+        f=v.get('fill','auto');need(f=='auto' or re.fullmatch('[0-9A-Fa-f]{6}',f),'SHADING_COLOR')
+        result['shading']='none' if f=='auto' or v.get('val')=='nil' else f.upper()
+    container=pr.find(W+('tblBorders' if table else 'tcBorders'))
+    if container is not None:
+        for edge in container:
+            k=edge.tag.removeprefix(W);need(k in EDGES and k not in result['borders'],'BORDER_EDGE')
+            v={k.removeprefix(W):v for k,v in edge.attrib.items()}
+            need(set(v)<={'val','sz','color','space','shadow','frame'} and v.get('space','0')=='0'
+                and v.get('shadow','0') in ['0','false','off'] and v.get('frame','0') in ['0','false','off'],'BORDER_UNSUPPORTED')
+            if v.get('val') in ['none','nil']:b={'style':'none'}
+            else:
+                need(v.get('val') in ['single','double'] and re.fullmatch('[0-9]{1,2}',v.get('sz','')),'BORDER_VALUE')
+                b={'style':v['val'],'size':int(v['sz']),'color':v.get('color','auto').upper()}
+                if b['color']=='AUTO':b['color']='auto'
+            result['borders'][k]=b
+    if table:
+        layout=pr.find(W+'tblLayout')
+        if layout is not None:need(layout.get(W+'type')=='fixed','LAYOUT_UNSUPPORTED');result['layout']='fixed'
+        width=pr.find(W+'tblW')
+        if width is not None and not (width.get(W+'type')=='auto' and width.get(W+'w','0')=='0'):
+            need(width.get(W+'type')=='dxa' and re.fullmatch('[1-9][0-9]{0,4}',width.get(W+'w','')),'WIDTH_UNSUPPORTED')
+            result['widthDxa']=int(width.get(W+'w'))
+    return property_record(result,table,len(grid) if table else None)
+def compact_table_properties(value):
+    legacy={'version':1,'grid':[1440]*len(value['grid']),'layout':None,'widthDxa':None,'shading':None,
+        'borders':{k:{'style':'single','size':4,'color':'auto'} for k in EDGES}}
+    return {} if value==legacy else {'wordTable':value}
+def compact_cell_properties(value):
+    return {} if value=={'version':1,'shading':None,'borders':{}} else {'wordCell':value}
+
 def expected_blocks(para):
     def cell(value,wide=1,high=1):return {'type':'tableCell','attrs':{'colspan':wide,'rowspan':high,'colwidth':None},'content':[para(value)]}
     def row(*cells):return {'type':'tableRow','content':list(cells)}
@@ -46,11 +108,14 @@ def canonical_graphs(docs):
                     need(p.get('type') in ['paragraph','heading','codeBlock'] and all(n.get('type')=='text' for n in p.get('content',[])),'CANON_CELL_CONTENT')
                     values.append(''.join(n['text'] for n in p.get('content',[])))
                 record={'row':y,'column':x,'colspan':wide,'rowspan':high,'header':cell['type']=='tableHeader','paragraphs':values}
+                if attrs.get('wordCell') is not None:record.update(compact_cell_properties(property_record(attrs['wordCell'])))
                 for yy in range(y,y+high):
                     for xx in range(x,x+wide):need(xx not in grid[yy],'CANON_OVERLAP');grid[yy][xx]=record
                 cells.append(record);offset+=len(ps);need(offset<=50000,'PARAGRAPH_LIMIT');x+=wide
         width=len(grid[0]);need(width and all(set(row)==set(range(width)) for row in grid),'CANON_RECTANGLE')
-        result.append({'startParagraphIndex':start,'rows':len(rows),'columns':width,'cells':cells})
+        graph={'startParagraphIndex':start,'rows':len(rows),'columns':width,'cells':cells}
+        if node.get('attrs',{}).get('wordTable') is not None:graph.update(compact_table_properties(property_record(node['attrs']['wordTable'],True,width)))
+        result.append(graph)
     for doc in docs:visit(doc)
     return result
 
@@ -64,6 +129,12 @@ def parse_body(document):
         width=bounded(len(grids[0]),128);rows=node.findall(W+'tr');bounded(len(rows),512);need(width*len(rows)<=65536,'GRID_LIMIT')
         need(len(node.findall('.//'+W+'tbl'))==0,'NESTED')
         graph={'startParagraphIndex':len(paragraphs),'rows':len(rows),'columns':width,'cells':[]};previous={}
+        raw_grid=[]
+        for col in grids[0]:
+            v=col.get(W+'w');need(v is None or re.fullmatch('[1-9][0-9]{0,4}',v),'GRID_WIDTH')
+            raw_grid.append(None if v is None else bounded(int(v),31680))
+        need(len(node.findall(W+'tblPr'))<=1,'TABLE_PROPERTIES_DUPLICATE')
+        graph.update(compact_table_properties(raw_properties(node.find(W+'tblPr'),True,raw_grid)))
         for y,row in enumerate(rows):
             need(all(c.tag in [W+'trPr',W+'tc',W+'tblPrEx'] for c in row),'ROW_OWNER')
             exceptions=row.findall(W+'tblPrEx');need(len(exceptions)<=1,'ROW_EXCEPTION')
@@ -83,14 +154,18 @@ def parse_body(document):
                 merge=merge_nodes[0].get(W+'val','continue') if merge_nodes else ''
                 need(merge in ['','restart','continue'] and x+wide<=width,'MERGE_VALUE')
                 ps=cell.findall(W+'p');need(ps,'CELL_PARAGRAPHS')
+                cp=raw_properties(cell.find(W+'tcPr'))
+                cw=cell.find('./'+W+'tcPr/'+W+'tcW')
+                if cw is not None and cw.get(W+'type')!='auto':
+                    need(cw.get(W+'type')=='dxa' and all(v is not None for v in raw_grid[x:x+wide]) and cw.get(W+'w')==str(sum(raw_grid[x:x+wide])),'CELL_WIDTH_CONFLICT')
                 if merge=='continue':
                     old=previous.get(x);need(old and old[0]['column']==x and old[0]['colspan']==wide and old[1]
                         and all(previous.get(xx)==old for xx in range(x,x+wide)) and old[0]['header']==header,'ORPHAN_MERGE')
                     need(len(ps)==1 and text(ps[0])=='' and all(n.tag not in {W+t for t in ['ins','del','bookmarkStart','bookmarkEnd','commentReference','commentRangeStart','commentRangeEnd','footnoteReference','endnoteReference','drawing','object','pict','tab','br','cr']} for n in ps[0].iter()),'CONTINUATION_CONTENT')
-                    record=old[0];record['rowspan']+=1
+                    record=old[0];need(compact_cell_properties(cp)==({ 'wordCell':record['wordCell']} if 'wordCell' in record else {}),'MERGED_PROPERTIES');record['rowspan']+=1
                 else:
                     record={'row':y,'column':x,'colspan':wide,'rowspan':1,'header':header,'paragraphs':[text(p) for p in ps]}
-                    graph['cells'].append(record);paragraphs.extend(ps)
+                    record.update(compact_cell_properties(cp));graph['cells'].append(record);paragraphs.extend(ps)
                 for xx in range(x,x+wide):current[xx]=(record,merge in ['restart','continue'])
                 x+=wide
             need(x==width,'RECTANGLE');previous=current
