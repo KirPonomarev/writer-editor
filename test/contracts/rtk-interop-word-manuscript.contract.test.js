@@ -636,7 +636,8 @@ test('Word native reopen admission preserves old sets and pins only native alias
   for(const binding of entry.bindings)if(change.overrides[binding.path])binding.sha256=change.overrides[binding.path];
   expected.labCodeBindingSets.push(entry);
  }
- assert.deepEqual(actual,expected,'admission may add only the two complete exact binding sets');
+ expected.qualifiedRuntimeRepair.sourceBindings.find(b=>b.path==='test/contracts/rtk-interop-word-manuscript.contract.test.js').sha256=digest(fs.readFileSync(__filename));
+ assert.deepEqual(actual,expected,'admission adds only the two exact Lab sets and the updated regression-file binding');
  assert.equal(actual.wordManuscriptBatch.cellIds.length,354);
  assert.equal(actual.wordManuscriptBatch.hostileCellIds.length,84);
 });

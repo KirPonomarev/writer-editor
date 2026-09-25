@@ -1819,45 +1819,45 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b694ed1fe34b66faa49be84055db7e047a830939a9153274766492686c9a922a",
+      "sha256": "d19447a6a52591af301b4cbd23988354850c668e7232dc6b62146d29a068c899",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "bf0cfa8d1c0ab653f8cc33ae7b83a01dd443a327e4627880d34bed8af77fe7da",
+      "sha256": "c738fc0f756892a2b030564976f9716568d83b88af7a7870238fbf862d0fe399",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "55f9e45bf237da3fcd753d6364a5b76776a2245bae5246c4d8672a15ed15ad0c",
+      "sha256": "65f51b575789e2ac45555c4f0b9e929f2220124866eed782757379cd92424dd8",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "15ae07d6289f9734fd8cfec7edd39411cf462aeb29c20200d0d493e9844549b0",
+      "sha256": "a93ce1c991ee6531aedf6083cf2ff0faa8dd8db093c707d262d19d28c393cedd",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "65a1e9f2bf68e0cca0433fc84c94094497a6b46688bb5f824b2a43a30009c555",
+      "sha256": "de4ddbb0edc86a70ab9320542875cb73fc2dbc0af1f7d61fe6cf286ae0416eea",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
@@ -1866,16 +1866,16 @@
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
       "sha256": "ac87e40a5cca7f5cdc5fb96808d41d21ff1112bd443d10dcb6d6073ca7803c02",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "sha256": "bf2a9186ed0584a1967afd66a479e526c13de6bbae6e76e044126170cdc33dc2",
+      "sha256": "0b62ff4f6b8d27fb7aa34c8891795a7120b3da3a923158b21e1e2cc704592665",
       "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:36:04Z",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
