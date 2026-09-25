@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { prepareExactTextCommentRebase, validateExactTextCommentRebase, publishExactTextCommentRebase, computeExactTextCommentRebase } from './reviewTransportNonTextReturnRuntime.mjs';
 
 import {
   atomicWriteFile,
@@ -212,6 +213,7 @@ function validateJournalEntry(entry, expectedOperationId = '') {
   normalizePortableRelativePath(entry.sceneRelativePath, 'sceneRelativePath');
   assertHash(entry.beforeHash, 'beforeHash');
   assertHash(entry.afterHash, 'afterHash');
+  if (entry.commentRebase) validateExactTextCommentRebase(entry.commentRebase, entry.projectId);
   return entry;
 }
 
@@ -229,7 +231,9 @@ async function readJournalEntryFromContext(context, operationIdRaw) {
 async function writeJournalEntry(context, entry) {
   const validated = validateJournalEntry(entry, entry.operationId);
   const journalPath = journalPathFor(context, validated.operationId);
-  const result = await atomicWriteFile(journalPath, `${JSON.stringify(validated, null, 2)}\n`, {
+  const bytes = `${JSON.stringify(validated, null, 2)}\n`;
+  if (Buffer.byteLength(bytes) > JOURNAL_MAX_BYTES) throw journalError('E_REVISION_BRIDGE_APPLY_JOURNAL_FILE_UNSAFE', 'journal exceeds budget');
+  const result = await atomicWriteFile(journalPath, bytes, {
     safetyMode: 'strict',
   });
   return { entry: cloneJsonSafe(validated), journalPath, bytesWritten: result.bytesWritten };
@@ -397,6 +401,12 @@ export async function prepareExactTextApplyJournal(input = {}, options = {}) {
   // apply writers always pass the resolved operations so the journal records a
   // per-operation authority digest.
   const expectedSlices = buildExpectedSlices(input.operations);
+  if ((typeof input.beforeContent === 'string' && sha256Text(input.beforeContent) !== beforeHash)
+    || (typeof input.afterContent === 'string' && sha256Text(input.afterContent) !== afterHash)) {
+    throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_CONTENT_HASH', 'comment transition must use exact scene bytes');
+  }
+  const commentRebase = typeof input.beforeContent === 'string' && typeof input.afterContent === 'string'
+    ? await prepareExactTextCommentRebase(input) : null;
 
   const entry = {
     schemaVersion: REVISION_BRIDGE_EXACT_TEXT_APPLY_JOURNAL_SCHEMA,
@@ -413,6 +423,7 @@ export async function prepareExactTextApplyJournal(input = {}, options = {}) {
     inputHash: assertHash(input.inputHash, 'inputHash'),
     mutationEpoch,
     expectedSlices,
+    ...(commentRebase ? { commentRebase } : {}),
     preparedAt,
     updatedAt: preparedAt,
     transactionId: '',
@@ -452,6 +463,22 @@ export async function recordExactTextApplyJournalSnapshot(projectRoot, operation
   }, options);
 }
 
+async function publishJournalCommentRebase(context, entry) {
+  if (!entry.commentRebase) return;
+  const scenePath = await resolveStoredProjectFile(context, entry.sceneRelativePath, 'sceneRelativePath');
+  const snapshotPath = await resolveStoredProjectFile(context, entry.recovery.snapshotRelativePath, 'snapshotRelativePath');
+  const beforeContent = await fs.readFile(snapshotPath, 'utf8'), afterContent = await fs.readFile(scenePath, 'utf8');
+  if (sha256Text(beforeContent) !== entry.beforeHash || sha256Text(afterContent) !== entry.afterHash) {
+    throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_SCENE_CONFLICT', 'exact scene snapshots required');
+  }
+  const expected = computeExactTextCommentRebase({ projectId: entry.projectId, sceneId: entry.sceneId,
+    beforeContent, afterContent, beforeText: entry.commentRebase.beforeText });
+  if (!expected || expected.afterText !== entry.commentRebase.afterText) {
+    throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_TRANSITION_INVALID', 'comment transition does not match exact scene edit');
+  }
+  await publishExactTextCommentRebase(context.projectRoot, entry.projectId, entry.commentRebase);
+}
+
 export async function recordExactTextApplyJournalApplied(projectRoot, operationId, details = {}, options = {}) {
   return updateJournalEntry(projectRoot, operationId, async (entry, context) => {
     if (entry.status !== 'prepared' || entry.recovery?.snapshotHash !== entry.beforeHash) {
@@ -462,6 +489,7 @@ export async function recordExactTextApplyJournalApplied(projectRoot, operationI
     if (observedHash !== entry.afterHash) {
       throw journalError('E_REVISION_BRIDGE_APPLY_JOURNAL_AFTER_HASH_MISMATCH', 'target does not match afterHash');
     }
+    if (entry.commentRebase) await publishJournalCommentRebase(context, entry);
     const next = appendStatus(entry, 'applied', options.now);
     next.transactionId = normalizeString(details.transactionId) || entry.transactionId;
     return next;
@@ -580,6 +608,10 @@ export async function reconcileExactTextApplyJournal(projectRoot, operationId, o
       || (normalizeString(pendingIntent.nextTextHash) && pendingIntent.nextTextHash !== entry.afterHash)
     )
   );
+  if (observedHash === entry.afterHash && entry.commentRebase) {
+    if (intentConflicts || !recoveryVerified) throw journalError('E_REVISION_BRIDGE_COMMENT_REBASE_RECOVERY_CONFLICT', 'verified scene recovery and nonconflicting intent required');
+    await publishJournalCommentRebase(context, entry);
+  }
   const receiptValid = entry.status === 'receipt_written'
     && isPlainObject(entry.receipt)
     && entry.receipt.operationId === entry.operationId

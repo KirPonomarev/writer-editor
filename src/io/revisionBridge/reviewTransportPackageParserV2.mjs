@@ -4180,22 +4180,64 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     if (correspondences.has(paragraph)) return correspondences.get(paragraph);
     const inner = tokens.filter(t => inside(t, paragraph)).sort((a, b) => a.openStart - b.openStart);
     const revisions = inner.filter(t => t.namespaceUri === W_NS && ['ins', 'del'].includes(t.localName));
-    const forbidden = new Set(['moveFrom', 'moveTo', 'fldChar', 'instrText', 'delInstrText',
+    const forbidden = new Set(['moveFrom', 'moveTo', 'delInstrText',
       'fldSimple', 'sym', 'footnoteReference', 'endnoteReference', 'softHyphen', 'noBreakHyphen']);
     let eligible = !tokens.some(t => inside(paragraph, t) && t.namespaceUri === W_NS
       && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName))
       && !inner.some(t => t.namespaceUri === W_NS && forbidden.has(t.localName));
     const segments = [{ originalText: '', currentText: '', revisionRanges: [] }];
     const offsets = new Map();
+    const fieldLinks = [];
+    let field = null;
     let originalOffset = 0, currentOffset = 0;
     for (const token of inner) {
       if (isWordToken(token, 'drawing')) {
+        if (field) eligible = false;
         offsets.set(token.openStart, { originalOffset, currentOffset });
         segments.push({ originalText: '', currentText: '', revisionRanges: [] });
         continue;
       }
+      // Word may serialize an unchanged hyperlink as a complex field. Only
+      // balanced, non-nested, unedited http(s) HYPERLINK fields are projected;
+      // the caller must still bind their ranges and targets to the local map.
+      if (isWordToken(token, 'fldChar')) {
+        if (revisions.some(r => inside(token, r))) eligible = false;
+        const kind = attr(token, 'fldCharType');
+        if (kind === 'begin' && !field) field = { phase: 'instruction', instruction: '', originalFrom: originalOffset, currentFrom: currentOffset };
+        else if (kind === 'separate' && field?.phase === 'instruction') {
+          const instruction = field.instruction.trim();
+          const argument = instruction.slice(9).trimStart();
+          const quoteEnd = argument.indexOf('"', 1);
+          const trailing = argument.slice(quoteEnd + 1);
+          const validInstruction = instruction.startsWith('HYPERLINK')
+            && /\s/u.test(instruction[9] || '') && argument[0] === '"' && quoteEnd > 1
+            && (!trailing.trim() || (/\s/u.test(trailing[0]) && trailing.trim() === '\\h'));
+          const target = validInstruction ? argument.slice(1, quoteEnd) : '';
+          let href = '';
+          try {
+            const url = target && new URL(target);
+            if (url && ['http:', 'https:'].includes(url.protocol) && !url.username && !url.password
+              && !/[\u0000-\u0020\u007f]/u.test(target)) href = target;
+          } catch {}
+          if (!href) eligible = false;
+          field.phase = 'result'; field.href = href;
+        } else if (kind === 'end' && field?.phase === 'result') {
+          if (originalOffset <= field.originalFrom || originalOffset - field.originalFrom !== currentOffset - field.currentFrom) eligible = false;
+          fieldLinks.push({ from: field.originalFrom, to: originalOffset, href: field.href }); field = null;
+        } else eligible = false;
+        continue;
+      }
+      if (isWordToken(token, 'instrText')) {
+        if (field?.phase !== 'instruction' || revisions.some(r => inside(token, r))) eligible = false;
+        else {
+          field.instruction += tokenText(documentXml, token);
+          if (field.instruction.length > 4096) eligible = false;
+        }
+        continue;
+      }
       if (token.namespaceUri !== W_NS || !['t', 'delText', 'tab', 'br', 'cr'].includes(token.localName)) continue;
       const owners = revisions.filter(r => inside(token, r));
+      if (field && (field.phase !== 'result' || owners.length)) eligible = false;
       if (owners.length > 1 || (token.localName === 'delText' && owners[0]?.localName !== 'del')
         || (token.localName === 't' && owners[0]?.localName === 'del')
         || (token.localName === 'br' && !['', 'textWrapping'].includes(attr(token, 'type')))) eligible = false;
@@ -4212,7 +4254,8 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
           originalFrom: atomOriginalStart, originalTo: originalOffset });
       }
     }
-    const value = { eligible, segments, offsets };
+    if (field) eligible = false;
+    const value = { eligible, segments, offsets, fieldLinks };
     correspondences.set(paragraph, value);
     return value;
   };
@@ -4271,6 +4314,7 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     const firstDrawing = correspondence.offsets.keys().next().value === drawing.openStart;
     return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
       ...(correspondence.eligible ? { originalOffset: positions.originalOffset,
-        ...(firstDrawing ? { textCorrespondence: { schemaVersion: 'yalken.word.media-text-correspondence.v1', segments: correspondence.segments } } : {}) } : {}) };
+        ...(firstDrawing ? { textCorrespondence: { schemaVersion: 'yalken.word.media-text-correspondence.v1', segments: correspondence.segments,
+          ...(correspondence.fieldLinks.length ? { fieldLinks: correspondence.fieldLinks } : {}) } } : {}) } : {}) };
   });
 }

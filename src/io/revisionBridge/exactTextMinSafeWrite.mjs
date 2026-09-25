@@ -1,4 +1,5 @@
 import documentMediaData from '../documentMedia.js';
+import { assertExactTextCommentRebasePending } from './reviewTransportNonTextReturnRuntime.mjs';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -730,8 +731,8 @@ function findAllTextOccurrences(text, needle) {
 
 function applyRichInlineReplacement(block, operation) {
   const blockText = richBlockVisibleText(block);
-  const from = Number(operation.from);
-  const to = Number(operation.to);
+  let from = Number(operation.from);
+  let to = Number(operation.to);
   if (from < 0 || to < from || blockText.slice(from, to) !== operation.expectedText) {
     return {
       ok: false,
@@ -760,6 +761,40 @@ function applyRichInlineReplacement(block, operation) {
       code: 'REVISION_BRIDGE_EXACT_TEXT_GRAPHEME_SPLIT_BLOCKED',
       details: { changeId: operation.changeId, from, to },
     };
+  }
+
+  if ((block.content || []).some(node => node.type === 'image')) {
+    // The authenticated range may include unchanged context (notably a whole
+    // text segment next to an image). Keep that context's original marks rather
+    // than treating a surviving hyperlink as part of the replacement. Authority
+    // and uniqueness were checked against the complete range above.
+    const original = operation.expectedText;
+    const replacement = operation.replacementText;
+    const replacementBoundaries = graphemeBoundaries(replacement);
+    let prefix = 0;
+    while (prefix < Math.min(original.length, replacement.length)
+      && original[prefix] === replacement[prefix]) prefix += 1;
+    while (prefix > 0 && (!boundaries.has(from + prefix) || !replacementBoundaries?.has(prefix))) prefix -= 1;
+    let suffix = 0;
+    while (suffix < Math.min(original.length - prefix, replacement.length - prefix)
+      && original[original.length - suffix - 1] === replacement[replacement.length - suffix - 1]) suffix += 1;
+    while (suffix > 0 && (!boundaries.has(to - suffix)
+      || !replacementBoundaries?.has(replacement.length - suffix))) suffix -= 1;
+    // Retain one complete original grapheme for an insertion, so the existing
+    // writer still derives its marks from a nonempty exact source range.
+    if (prefix + suffix === original.length && original !== replacement) {
+      if (prefix > 0) {
+        prefix -= 1;
+        while (prefix > 0 && !boundaries.has(from + prefix)) prefix -= 1;
+      } else if (suffix > 0) {
+        suffix -= 1;
+        while (suffix > 0 && !boundaries.has(to - suffix)) suffix -= 1;
+      }
+    }
+    from += prefix;
+    to -= suffix;
+    operation = { ...operation, replacementText: replacement.slice(prefix, replacement.length - suffix) };
+
   }
 
   const content = Array.isArray(block.content) ? block.content : [];
@@ -1287,6 +1322,8 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       scenePath,
       beforeHash: sha256Text(currentText),
       afterHash: outputHash,
+      beforeContent: currentText,
+      afterContent: nextText,
       inputHash,
       operationKind: 'replaceExactTextBatch',
       projectId,
@@ -1340,6 +1377,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
           await userBeforeWrite(event);
         }
         if (userAfterStage) await userAfterStage(event);
+        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentRebase);
       },
     });
 
@@ -1688,6 +1726,8 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
       scenePath,
       beforeHash: sha256Text(currentText),
       afterHash: outputHash,
+      beforeContent: currentText,
+      afterContent: nextText,
       inputHash,
       operationKind: 'replaceExactText',
       projectId: rawString(providedPlan.projectId),
@@ -1741,6 +1781,7 @@ export async function applyExactTextMinSafeWrite(input = {}, options = {}) {
           await userBeforeWrite(event);
         }
         if (userAfterStage) await userAfterStage(event);
+        if (event?.stage === 'SNAPSHOT_CREATED') await assertExactTextCommentRebasePending(projectRoot, journalRef.entry.commentRebase);
       },
     });
 

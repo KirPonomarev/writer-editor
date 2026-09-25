@@ -88,6 +88,7 @@
     "rtk-word-c5v2-terminal-orchestrator.contract.test.js",
     "rtk-word-canonical-comment-reexport.contract.test.js",
     "rtk-word-canonical-notes-roundtrip.contract.test.js",
+    "rtk-word-composite-fidelity.contract.test.js",
     "rtk-word-full-manuscript-volume.contract.test.js",
     "rtk-word-hostile.contract.test.js",
     "rtk-word-latest-semantic-b00.contract.test.js",

@@ -26,7 +26,7 @@ function replaceRun(xml, text, replacement) {
   assert(regex.test(xml), text);
   return xml.replace(regex, () => replacement);
 }
-async function fixture({ before = 'before ', after = ' after', duplicate = false, duplicateParagraph = false, wrap = p => p } = {}) {
+async function fixture({ before = 'before ', after = ' after', duplicate = false, duplicateParagraph = false, linkSuffix = '', wrap = p => p } = {}) {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
   const { crc32 } = await import('../../src/io/revisionBridge/reviewTransportZipEvidenceV1.mjs');
@@ -35,6 +35,7 @@ async function fixture({ before = 'before ', after = ' after', duplicate = false
   const png = Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), chunk('IHDR', ihdr), chunk('IDAT', deflateSync(Buffer.from([0, 255, 0, 0, 255]))), chunk('IEND', Buffer.alloc(0))]);
   const attrs = createImageAttrs(png, { alt: 'protected W4', displayName: 'w4.png' });
   const content = [{ type: 'text', text: before }, { type: 'image', attrs }, { type: 'text', text: after }];
+  if (linkSuffix) content.splice(1, 0, { type: 'text', text: linkSuffix, marks: [{ type: 'link', attrs: { href: 'https://example.com/w6', target: '_blank', rel: 'noopener noreferrer nofollow' } }] });
   if (duplicate) content.push({ type: 'image', attrs }, { type: 'text', text: ' tail' });
   const doc = { type: 'doc', content: [wrap({ type: 'paragraph', content })] };
   if (duplicateParagraph) doc.content.push(structuredClone(doc.content[0]));
@@ -217,5 +218,113 @@ test('W4 complete Office locator rewrite needs signed sections, full Original ve
     assert.equal(candidate.reviewPacket.textChanges[0].match.kind, duplicateParagraph ? 'manual' : 'exact');
     const forged = { ...sections.proof, status: sections.status, sourceBindings: [] };
     assert.equal(build(forged).reviewPacket.textChanges[0].match.kind, 'manual');
+  }
+});
+
+for (const fieldLink of [false, true]) for (const kind of ['replace', 'insert', 'delete']) test(`W6 ${kind} before image keeps unchanged Unicode ${fieldLink ? 'field' : 'relationship'} hyperlink marks`, async t => {
+  const suffix = '日本語 é link';
+  const f = await fixture({ linkSuffix: suffix });
+  const changed = kind === 'replace' ? tracked('before ', 'del', 970) + tracked('Changed prefix: ', 'ins', 971)
+    : kind === 'insert' ? run('before ') + tracked('inserted ', 'ins', 970) : tracked('before ', 'del', 970);
+  const returnedXml = replaceRun(f.xml, 'before ', changed);
+  const result = f.parse(fieldLink ? asFieldLink(returnedXml) : returnedXml);
+  assert.equal(result.ok, true, JSON.stringify(result.reasons));
+  assert.equal(f.bridge.bindDocxReviewMedia(result.reviewIr, f.map).ok, true);
+  const candidate = f.candidate(result); const changes = candidate.reviewPacket.textChanges;
+  assert.equal(changes.length, 1); assert.equal(changes[0].match.kind, 'exact');
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'w6-rich-context-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const scenePath = path.join(root, 'scene.txt'); fs.writeFileSync(scenePath, f.original);
+  const statePath = path.join(root, '.yalken', 'word-review', 'non-text-return-state.v1.json');
+  fs.mkdirSync(path.dirname(statePath), { recursive: true });
+  const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'w4-test', revision: 1, events: [], threads: [{ threadId: 't', rootCommentId: 'c', sceneId: 'roman/w4.txt', status: 'open', anchor: { sceneId: 'roman/w4.txt', sceneParagraphIndex: 0, blockTextSha256: digest('before ' + suffix + ' after'), startUtf16: 7, selectedText: suffix, selectedTextSha256: digest(suffix) }, messages: [{ commentId: 'c', kind: 'root', body: 'Comment 日本語' }] }] };
+  fs.writeFileSync(statePath, JSON.stringify(state));
+  const writer = await import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs');
+  const projectSnapshot = { projectId: 'w4-test', baselineHash: 'w6-baseline', scenes: [{ sceneId: 'roman/w4.txt', text: f.original }] };
+  const revisionSession = { projectId: 'w4-test', sessionId: 'w6-session', baselineHash: 'w6-baseline', status: 'open', reviewGraph: candidate.reviewPacket };
+  const applied = await writer.applyExactTextBatchMinSafeWrite({ projectRoot: root, projectSnapshot, revisionSession, reviewItems: changes, scenePath, scenePathBySceneId: { 'roman/w4.txt': scenePath } });
+  assert.equal(applied.ok, true, JSON.stringify(applied));
+  const doc = f.envelope.parseObservablePayload(fs.readFileSync(scenePath, 'utf8')).doc;
+  const nodes = doc.content[0].content;
+  assert.deepEqual(nodes.find(n => n.marks?.some(m => m.type === 'link')), f.envelope.parseObservablePayload(f.original).doc.content[0].content[1]);
+  assert.deepEqual(nodes.find(n => n.type === 'image').attrs, f.attrs);
+  const reopenedState = JSON.parse(fs.readFileSync(statePath));
+  assert.deepEqual(reopenedState.threads[0].messages, state.threads[0].messages);
+  assert.equal(reopenedState.revision, 2);
+  const visible = f.envelope.deriveVisibleTextFromDocument(doc);
+  assert.equal(reopenedState.threads[0].anchor.startUtf16, visible.indexOf(suffix));
+  assert.equal(reopenedState.threads[0].anchor.blockTextSha256, digest(visible));
+  const reexport = buildFullManuscriptDocxReviewPacketSource({ projectId: 'w4-test', projectRoot: root, scenes: [{ sceneId: 'roman/w4.txt', scenePath, order: 0, text: visible, doc }], nonTextReturnState: reopenedState });
+  assert.equal(reexport.commentExport.threads[0].anchor.selectedText, suffix);
+  assert.equal(f.envelope.deriveVisibleTextFromDocument(doc), (kind === 'replace' ? 'Changed prefix: ' : kind === 'insert' ? 'before inserted ' : '') + suffix + ' after');
+});
+
+for (const failure of ['overlap', 'stale', 'changed-state', 'snapshot-tamper', 'forged-transition', 'crash-before-comment']) test(`W6 comment anchor ${failure} has no false success and preserves recoverable bytes`, async t => {
+  const f = await fixture({ linkSuffix: '日本語 é link' }), sceneId = 'roman/w4.txt';
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'w6-comment-fault-')); t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const scenePath = path.join(root, 'scene.txt'), statePath = path.join(root, '.yalken/word-review/non-text-return-state.v1.json');
+  fs.writeFileSync(scenePath, f.original); fs.mkdirSync(path.dirname(statePath), { recursive: true });
+  const selected = failure === 'overlap' ? 'before ' : '日本語 é link';
+  const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'w4-test', revision: 1, events: [], threads: [{ threadId: 't', rootCommentId: 'c', sceneId, status: 'open', anchor: { sceneId, sceneParagraphIndex: 0, blockTextSha256: failure === 'stale' ? '0'.repeat(64) : digest('before 日本語 é link after'), startUtf16: failure === 'overlap' ? 0 : 7, selectedText: selected, selectedTextSha256: digest(selected) }, messages: [{ commentId: 'c', kind: 'root', body: 'unchanged comment' }] }] };
+  const beforeState = JSON.stringify(state); fs.writeFileSync(statePath, beforeState);
+  const writer = await import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs');
+  const journal = await import('../../src/io/revisionBridge/exactTextApplyJournal.mjs');
+  const changes = f.candidate(f.parse(replaceRun(f.xml, 'before ', tracked('before ', 'del', 980) + tracked('new prefix ', 'ins', 981)))).reviewPacket.textChanges;
+  const input = { projectRoot: root, projectSnapshot: { projectId: 'w4-test', baselineHash: 'b', scenes: [{ sceneId, text: f.original }] }, revisionSession: { projectId: 'w4-test', sessionId: 's', baselineHash: 'b', status: 'open', reviewGraph: { textChanges: changes } }, reviewItems: changes, scenePath, scenePathBySceneId: { [sceneId]: scenePath } };
+  const operationId = 'op_w6_' + failure.replaceAll('-', '_');
+  let snapshot;
+  const options = { operationId, afterStage: async event => {
+    if (event.stage !== 'SNAPSHOT_CREATED') return; snapshot = event.snapshotPath;
+    if (failure === 'changed-state') fs.writeFileSync(statePath, beforeState + ' ');
+    if (failure === 'snapshot-tamper') fs.writeFileSync(snapshot, 'forged snapshot');
+    if (failure === 'forged-transition') {
+      const file = path.join(root, 'backups/revision-bridge-apply-journal', operationId + '.json');
+      const saved = JSON.parse(fs.readFileSync(file)); const forged = JSON.parse(saved.commentRebase.afterText); forged.threads[0].messages[0].body = 'forged body';
+      saved.commentRebase.afterText = JSON.stringify(forged); saved.commentRebase.afterHash = digest(saved.commentRebase.afterText); fs.writeFileSync(file, JSON.stringify(saved));
+    }
+  } };
+  if (failure === 'crash-before-comment') options.publishScene = async (file, content) => {
+    fs.writeFileSync(file, content); throw Object.assign(new Error('simulated crash after scene commit'), { code: 'EIO' });
+  };
+  const result = await writer.applyExactTextBatchMinSafeWrite(input, options);
+  assert.notEqual(result.status, 'applied');
+  if (['overlap', 'stale', 'changed-state'].includes(failure)) assert.equal(fs.readFileSync(scenePath, 'utf8'), f.original);
+  if (failure !== 'changed-state' && failure !== 'crash-before-comment') assert.equal(fs.readFileSync(statePath, 'utf8'), beforeState);
+  if (failure === 'crash-before-comment') {
+    const recovered = await journal.reconcileExactTextApplyJournal(root, operationId);
+    assert.equal(recovered.outcome, 'applied_receipt_missing');
+    const rebased = JSON.parse(fs.readFileSync(statePath)); assert.equal(rebased.threads[0].anchor.startUtf16, 11); assert.deepEqual(rebased.threads[0].messages, state.threads[0].messages);
+    const bytes = fs.readFileSync(statePath, 'utf8'); await journal.reconcileExactTextApplyJournal(root, operationId); assert.equal(fs.readFileSync(statePath, 'utf8'), bytes);
+    assert.equal(fs.readFileSync(snapshot, 'utf8'), f.original);
+  }
+});
+
+function asFieldLink(xml, instruction = 'HYPERLINK "https://example.com/w6" \\h') {
+  const result = xml.replace(/<w:hyperlink\b[^>]*>([^]*?)<\/w:hyperlink>/u, (_, body) =>
+    '<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText>' + esc(instruction) + '</w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>' + body + '<w:r><w:fldChar w:fldCharType="end"/></w:r>');
+  assert.notEqual(result, xml); return result;
+}
+
+test('W6 Office field link correspondence rejects changed targets, unbalanced/nested/edited fields and unknown instructions', async () => {
+  const f = await fixture({ linkSuffix: '日本語 é link' });
+  const edited = replaceRun(f.xml, 'before ', tracked('before ', 'del', 990) + tracked('changed prefix ', 'ins', 991));
+  const field = asFieldLink(edited);
+  const cases = [
+    asFieldLink(edited, 'HYPERLINK "https://evil.example/changed"'),
+    asFieldLink(edited, 'INCLUDEPICTURE "https://example.com/w6"'),
+    asFieldLink(edited, 'HYPERLINK "file:///tmp/private"'),
+    asFieldLink(edited, 'HYPERLINK "https://user:pass@example.com/w6"'),
+    asFieldLink(edited, 'HYPERLINK "https://example.com/w6" \\unknown'),
+    asFieldLink(edited, 'HYPERLINK"https://example.com/w6"'),
+    asFieldLink(edited, 'HYPERLINK "https://example.com/w6"\\h'),
+    asFieldLink(edited, 'HYPERLINK "https://example.com/w6" "extra"'),
+    asFieldLink(edited, 'HYPERLINK "https://example.com/w6'),
+    asFieldLink(edited, 'HYPERLINK "https://example.com/\nw6"'),
+    field.replace('<w:r><w:fldChar w:fldCharType="end"/></w:r>', ''),
+    field.replace('<w:fldChar w:fldCharType="begin"/>', '<w:fldChar w:fldCharType="begin"/><w:fldChar w:fldCharType="begin"/>'),
+    replaceRun(field, '日本語 é link', tracked('日本語 é link', 'del', 993) + tracked('changed link', 'ins', 994)),
+  ];
+  for (const xml of cases) {
+    const parsed = f.parse(xml);
+    assert.equal(parsed.ok && f.bridge.bindDocxReviewMedia(parsed.reviewIr, f.map).ok, false);
   }
 });

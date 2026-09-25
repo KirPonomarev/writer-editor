@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import { atomicWriteFile } from '../markdown/atomicWriteFile.mjs';
 import { normalizeCommentProvenance, compareCommentExportReadback } from '../../export/docx/docxReviewPacketComments.js';
+import { parseObservablePayload, deriveVisibleTextFromDocument } from '../../renderer/documentContentEnvelope.mjs';
 
 export const RTK_ROOT_COMMENT_RETURN_COMMAND_ID = 'cmd.rtk.review.applyRootCommentReturn';
 export const RTK_COMMENT_LIFECYCLE_RETURN_COMMAND_ID = 'cmd.rtk.review.applyCommentLifecycleReturn';
@@ -89,6 +90,118 @@ function validateState(value, projectId) {
   if (!Number.isSafeInteger(value.revision) || value.revision < 0) throw new Error('RTK_NON_TEXT_STATE_REVISION_INVALID');
   if (!Array.isArray(value.threads) || !Array.isArray(value.events)) throw new Error('RTK_NON_TEXT_STATE_COLLECTION_INVALID');
   return clone(value);
+}
+
+const COMMENT_REBASE_MAX_BYTES = 64 * 1024;
+const rebaseError = code => Object.assign(new Error(code), { code });
+
+async function readExactCommentState(projectRoot) {
+  const root = await fs.promises.realpath(projectRoot);
+  let target = root;
+  for (const part of STATE_RELATIVE_PATH.split(path.sep)) {
+    target = path.join(target, part);
+    let stat;
+    try { stat = await fs.promises.lstat(target); }
+    catch (error) { if (error.code === 'ENOENT') return null; throw error; }
+    if (stat.isSymbolicLink() || (target.endsWith(STATE_RELATIVE_PATH)
+      ? !stat.isFile() || stat.size > COMMENT_REBASE_MAX_BYTES : !stat.isDirectory())) {
+      throw rebaseError('RTK_COMMENT_REBASE_STATE_UNSAFE');
+    }
+  }
+  return { target, text: await fs.promises.readFile(target, 'utf8') };
+}
+
+function rebaseParagraphs(content) {
+  const parsed = parseObservablePayload(content);
+  if (parsed.issue) throw rebaseError('RTK_COMMENT_REBASE_SCENE_INVALID');
+  if (!parsed.doc) return parsed.text.split('\n');
+  const result = [];
+  const visit = node => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node.type)) {
+      result.push(deriveVisibleTextFromDocument({ type: 'doc', content: [node] }));
+    } else for (const child of node.content || []) visit(child);
+  };
+  visit(parsed.doc); return result;
+}
+
+// Rebase only a proved unchanged range in the same paragraph. No quote search,
+// fallback scene routing or inference across a changed comment body is allowed.
+export async function prepareExactTextCommentRebase({ projectRoot, projectId, sceneId, beforeContent, afterContent }) {
+  const saved = await readExactCommentState(projectRoot);
+  if (!saved) return null;
+  return computeExactTextCommentRebase({ projectId, sceneId, beforeContent, afterContent, beforeText: saved.text });
+}
+
+export function computeExactTextCommentRebase({ projectId, sceneId, beforeContent, afterContent, beforeText }) {
+  const before = validateState(JSON.parse(beforeText), projectId);
+  if (!before.threads.some(thread => thread.sceneId === sceneId && thread.status !== 'deleted')) return null;
+  const oldParagraphs = rebaseParagraphs(beforeContent), newParagraphs = rebaseParagraphs(afterContent);
+  if (oldParagraphs.length !== newParagraphs.length) throw rebaseError('RTK_COMMENT_REBASE_STRUCTURE_UNSUPPORTED');
+  const after = clone(before); let changed = false;
+  for (const thread of after.threads) {
+    if (thread.sceneId !== sceneId || thread.status === 'deleted') continue;
+    const anchor = thread.anchor || {}, index = anchor.sceneParagraphIndex;
+    const oldText = oldParagraphs[index], newText = newParagraphs[index];
+    const start = anchor.startUtf16, end = start + (anchor.selectedText?.length || 0);
+    if (anchor.sceneId !== sceneId || !Number.isSafeInteger(index) || index < 0
+      || typeof oldText !== 'string' || sha256(oldText) !== anchor.blockTextSha256
+      || !Number.isSafeInteger(start) || start < 0 || !anchor.selectedText
+      || oldText.slice(start, end) !== anchor.selectedText
+      || sha256(anchor.selectedText) !== anchor.selectedTextSha256) throw rebaseError('RTK_COMMENT_REBASE_ANCHOR_STALE');
+    const edges = text => new Set([text.length, ...Array.from(new Intl.Segmenter(undefined,
+      { granularity: 'grapheme' }).segment(text), segment => segment.index)]);
+    const oldEdges = edges(oldText), newEdges = edges(newText);
+    if (!oldEdges.has(start) || !oldEdges.has(end)) throw rebaseError('RTK_COMMENT_REBASE_GRAPHEME_SPLIT');
+    if (oldText === newText) continue;
+    let prefix = 0, suffix = 0;
+    while (prefix < Math.min(oldText.length, newText.length) && oldText[prefix] === newText[prefix]) prefix++;
+    while (prefix > 0 && (!oldEdges.has(prefix) || !newEdges.has(prefix))) prefix--;
+    while (suffix < Math.min(oldText.length - prefix, newText.length - prefix)
+      && oldText[oldText.length - suffix - 1] === newText[newText.length - suffix - 1]) suffix++;
+    while (suffix > 0 && (!oldEdges.has(oldText.length - suffix) || !newEdges.has(newText.length - suffix))) suffix--;
+    let nextStart;
+    if (end <= prefix) nextStart = start;
+    else if (start >= oldText.length - suffix) nextStart = start + newText.length - oldText.length;
+    else throw rebaseError('RTK_COMMENT_REBASE_RANGE_CHANGED');
+    if (!newEdges.has(nextStart) || !newEdges.has(nextStart + anchor.selectedText.length)
+      || newText.slice(nextStart, nextStart + anchor.selectedText.length) !== anchor.selectedText) {
+      throw rebaseError('RTK_COMMENT_REBASE_READBACK_MISMATCH');
+    }
+    thread.anchor = { ...anchor, startUtf16: nextStart, blockTextSha256: sha256(newText) };
+    changed = true;
+  }
+  if (!changed) return null;
+  after.revision++;
+  const afterText = `${JSON.stringify(after, null, 2)}\n`;
+  if (Buffer.byteLength(afterText) > COMMENT_REBASE_MAX_BYTES) throw rebaseError('RTK_COMMENT_REBASE_STATE_BUDGET');
+  return { beforeText, afterText, beforeHash: sha256(beforeText), afterHash: sha256(afterText) };
+}
+
+export function validateExactTextCommentRebase(binding, projectId) {
+  if (!isPlainObject(binding) || !['beforeText', 'afterText'].every(key => typeof binding[key] === 'string'
+    && Buffer.byteLength(binding[key]) <= COMMENT_REBASE_MAX_BYTES)
+    || sha256(binding.beforeText) !== binding.beforeHash || sha256(binding.afterText) !== binding.afterHash) {
+    throw rebaseError('RTK_COMMENT_REBASE_BINDING_INVALID');
+  }
+  const before = validateState(JSON.parse(binding.beforeText), projectId);
+  const after = validateState(JSON.parse(binding.afterText), projectId);
+  if (after.revision !== before.revision + 1) throw rebaseError('RTK_COMMENT_REBASE_REVISION_INVALID');
+}
+
+// Called only by the existing exact Apply journal after verifying the canonical
+// scene's afterHash. Its before/after CAS is idempotent across crash recovery.
+export async function assertExactTextCommentRebasePending(projectRoot, binding) {
+  if (binding && (await readExactCommentState(projectRoot))?.text !== binding.beforeText) throw rebaseError('RTK_COMMENT_REBASE_STATE_CONFLICT');
+}
+
+export async function publishExactTextCommentRebase(projectRoot, projectId, binding) {
+  validateExactTextCommentRebase(binding, projectId);
+  const current = await readExactCommentState(projectRoot);
+  if (!current || ![binding.beforeText, binding.afterText].includes(current.text)) {
+    throw rebaseError('RTK_COMMENT_REBASE_STATE_CONFLICT');
+  }
+  if (current.text !== binding.afterText) await atomicWriteFile(current.target, binding.afterText, { safetyMode: 'strict' });
+  if ((await readExactCommentState(projectRoot))?.text !== binding.afterText) throw rebaseError('RTK_COMMENT_REBASE_READBACK_MISMATCH');
 }
 
 export function createRtkNonTextReturnFilePort(options = {}) {
