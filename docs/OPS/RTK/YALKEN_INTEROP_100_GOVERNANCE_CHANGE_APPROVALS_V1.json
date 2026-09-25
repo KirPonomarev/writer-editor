@@ -514,7 +514,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c9fe78dab0d0aa9bce1fe2339043a4b1c7189352dbfcf7afd701b29ce2dfdc6b",
+      "sha256": "0dd578c06240928ceeb7f4e783403401ea73f15bc63ac0df905652655421b181",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1335,7 +1335,7 @@
       "filePath": "src/renderer/tiptap/documentTables.mjs",
       "sha256": "7b821a423ed4f2649498f2b761a1b42596a1ae3213c8e180be7ddff943d8c7bf",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1407,7 +1407,7 @@
       "filePath": "scripts/ops/rtk-interop-word-tables-readback.py",
       "sha256": "35fa4d11cfbe179e546213abcb9ced1aa49a6442d154f5dba69fd227e82da0d8",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1416,7 +1416,7 @@
       "filePath": "src/io/documentTables.js",
       "sha256": "443cebb5d02499e98d18c030ddeb73d3ae5aaf141d62c671c538cba262481b6d",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1542,7 +1542,7 @@
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
       "sha256": "599afa369c0bca18c8b513e6b502a81a9069bcd9364be833d757e30bfa66b25e",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1668,7 +1668,7 @@
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "001594afbc8e411bc6e058db63725b7f2ed83fcdb68fe15b9efe86cb70dc3240",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1693,9 +1693,9 @@
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "714077059961329ee75bc663d2e79ee5558eba1b01165e8ffed2a8b2e7e7b460",
+      "sha256": "c0ad962c90d932a324b4790d81da5d5be90bebf7f4c1544a58dc00ade744bc0a",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1720,12 +1720,12 @@
     },
     {
       "filePath": "src/renderer/tiptap/index.js",
-      "sha256": "5e0ee4e17743893e7a6ca2cf18ee453d120f462d270710ca143d251b880e213d",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "8b791ceaf22668027f70b28e412e5eb39a3827211a8d714e82ef8af2c2f07a05",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "src/utils/docxImportLocalFilePreview.js",
@@ -1783,9 +1783,9 @@
     },
     {
       "filePath": "test/contracts/rtk-word-table-editor.contract.test.js",
-      "sha256": "9bf5724b5aa69ee2d7a9c4a0e1f6e6d60ab6025cc6183767f8100b9ad1692d93",
+      "sha256": "ee2d57971200bb4942b5261770e349ecfe5ddf1b414f9856096827d120c3b3e5",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1819,45 +1819,45 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "ceb85cc8f228262df4474221d125523d96ead24fbbd118c0a5ea506e4000d857",
+      "sha256": "f40302c267bc3d7c82e42c32e1051a7a14a089331584faec328b6171d9112fc1",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "bad02c3bec7a6f93e9f3c759f0ddf7877e13825b62f7569798d6f74f60f173b4",
+      "sha256": "55b2e63f89c05311b8f2a5358c408e90258c40de301f04a03cca1d89939a64c6",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "dac4c27d21e9135a3b5d3a0110bfc810b0cbd2fd9b49e154b4fae94adf30e74f",
+      "sha256": "6ad95f19e352c7f69677ee3b24b2e513eae32bb413813c1e87f69f6d0a5f7f6e",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "903e9c41d90a46704b655cea3f4ee6061dc8dd5bbea286fca700cba7d18a5054",
+      "sha256": "67ee4565b954c04bb798f4a00963521aa3a82aeb2dec55bec1f1449cf2d564dd",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "34032b5537ddd51e0664b16ed73ebbaef9e6d795237d5e68cd05793d1dd887ad",
+      "sha256": "16e94a73985deea6b2297da7f930dda9168a0f18dda0d876ff831b70daff36c5",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1866,7 +1866,7 @@
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
       "sha256": "36187b40a57b62dcfee6194a4cbc5586721c271afa8cbb425a4e4aa14bb32492",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1975,7 +1975,7 @@
       "sha256": "b11bc1ffdbbb3fec429c4b4a639dadf3ada5ebe98cc5abdba2b48e58a5d2837e",
       "approved": true,
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
@@ -2026,9 +2026,9 @@
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-table-properties.md",
-      "sha256": "a2e69d27591b7c0ddcdf6692c71a129d1e0a1d5c6b2e112438c981c078f8a102",
+      "sha256": "354c156ab76896971bf969a6b071b1eaf89206f7802c4b0200e1e2610a7c50e1",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -2037,7 +2037,7 @@
       "filePath": "src/io/documentTableProperties.js",
       "sha256": "d44bbc4abf523277d52530ed37b507015276a9a9bbaedfb10bae69fbc70c77da",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -2047,7 +2047,7 @@
       "sha256": "f534eb61254e8a1d4251073b0d3666aca06f0608eeb6322f4f0a09b988294ae6",
       "approved": true,
       "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:41:29.231741Z",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     }
@@ -4692,6 +4692,15 @@
       "filePath": "src/renderer/editor.bundle.js",
       "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "sha256": "bbb5a72f86221cbb9429235cd8a42d7998cf31d853ef13ac375947740fd44451"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/renderer/tiptap/index.js",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required.",
+      "sha256": "5e0ee4e17743893e7a6ca2cf18ee453d120f462d270710ca143d251b880e213d"
     },
     {
       "filePath": "test/contracts/rtk-word-table-editor.contract.test.js",

@@ -534,6 +534,8 @@ export function initTiptap(mountEl, options = {}) {
     },
     extensions: [
       StarterKit.configure({
+        // Loading a table must not silently append authored document content.
+        trailingNode: { notAfter: ['table'] },
         link: false,
         underline: false,
       }),

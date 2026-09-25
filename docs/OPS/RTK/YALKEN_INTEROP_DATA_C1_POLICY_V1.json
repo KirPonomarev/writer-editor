@@ -442,7 +442,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "714077059961329ee75bc663d2e79ee5558eba1b01165e8ffed2a8b2e7e7b460"
+        "sha256": "c0ad962c90d932a324b4790d81da5d5be90bebf7f4c1544a58dc00ade744bc0a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -570,7 +570,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "5e0ee4e17743893e7a6ca2cf18ee453d120f462d270710ca143d251b880e213d"
+        "sha256": "8b791ceaf22668027f70b28e412e5eb39a3827211a8d714e82ef8af2c2f07a05"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -954,7 +954,7 @@
       },
       {
         "path": "docs/tasks/2026-09-25--word-table-properties.md",
-        "sha256": "a2e69d27591b7c0ddcdf6692c71a129d1e0a1d5c6b2e112438c981c078f8a102"
+        "sha256": "354c156ab76896971bf969a6b071b1eaf89206f7802c4b0200e1e2610a7c50e1"
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
@@ -966,7 +966,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "9bf5724b5aa69ee2d7a9c4a0e1f6e6d60ab6025cc6183767f8100b9ad1692d93"
+        "sha256": "ee2d57971200bb4942b5261770e349ecfe5ddf1b414f9856096827d120c3b3e5"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
