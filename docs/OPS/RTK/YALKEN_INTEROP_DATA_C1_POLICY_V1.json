@@ -871,7 +871,7 @@
       },
       {
         "path": "test/contracts/word-import-transaction-remediation.contract.test.js",
-        "sha256": "6c0a08ed484ec1f264841c1269ceadf15d08587a7bb07823ed539ef893cfbd21"
+        "sha256": "4e8635b92684b64cf8895172dba800423cfb426e53d0e49524029fb2cfb2b6cd"
       },
       {
         "path": "test/fixtures/docx-import-real-authority.cjs",

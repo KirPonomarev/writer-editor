@@ -207,7 +207,7 @@ test('Word W1: CRLF manifest bytes are bound exactly, while legacy receipts stay
   assert.equal(f.scenes().length, 1);
 });
 
-function ownedPng() {
+function ownedPng(red = 255) {
   const { deflateSync } = require('node:zlib');
   const chunk = (tag, data) => {
     const body = Buffer.concat([Buffer.from(tag), data]); let crc = 0xffffffff;
@@ -215,7 +215,7 @@ function ownedPng() {
     const result = Buffer.alloc(data.length + 12); result.writeUInt32BE(data.length); body.copy(result, 4); result.writeUInt32BE((crc ^ 0xffffffff) >>> 0, result.length - 4); return result;
   };
   const header = Buffer.alloc(13); header.writeUInt32BE(1); header.writeUInt32BE(1, 4); header[8] = 8; header[9] = 6;
-  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', header), chunk('IDAT', deflateSync(Buffer.from([0,255,0,0,255]))), chunk('IEND', Buffer.alloc(0))]);
+  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', header), chunk('IDAT', deflateSync(Buffer.from([0,red,0,0,255]))), chunk('IEND', Buffer.alloc(0))]);
 }
 for (const shared of [false, true]) {
   test(`Word W1: ${shared ? 'shared' : 'new'} media survives manifest failure/retry with exact binary ownership`, async t => {
@@ -276,3 +276,37 @@ for (const targetKind of ['scene', 'receipt']) {
     assert.equal(fs.existsSync(`${f.manifestPath}.wp201-transaction.json`), true);
   });
 }
+
+
+test('Word W1: second asset I/O failure and failed rollback retain recovery until the same request completes', async t => {
+  const { createImageAttrs } = require('../../src/io/documentMedia.js');
+  const images = [ownedPng(255), ownedPng(127)];
+  const attrs = images.map((bytes, i) => createImageAttrs(bytes, { alt: `asset ${i}`, displayName: `asset-${i}.png` }));
+  const f = await fixture(t, '', { type: 'doc', content: [{ type: 'paragraph', content: attrs.map(attrs => ({ type: 'image', attrs })) }] });
+  const assets = attrs.map(a => path.join(f.projectRoot, a.assetPath));
+  const originalLink = fsp.link, originalUnlink = fsp.unlink;
+  let createdAsset, reached = 0;
+  fsp.link = async (from, to) => {
+    if (assets.includes(to)) {
+      reached++;
+      if (reached === 2) throw Object.assign(Error('second asset'), { code: 'ENOSPC' });
+      createdAsset = to;
+    }
+    return originalLink(from, to);
+  };
+  let first;
+  try { first = await f.call(); } finally { fsp.link = originalLink; }
+  assert.equal(first.ok, false); assert.equal(reached, 2); assert.equal(f.commits(), 0);
+  assert.equal(fs.readFileSync(f.manifestPath, 'utf8'), f.originalManifest);
+  assert.equal(f.scenes().length, 0); assert.ok(fs.existsSync(createdAsset));
+  const journal = `${f.manifestPath}.wp201-transaction.json`;
+  fsp.unlink = async p => { if (p === createdAsset) throw Object.assign(Error('rollback asset'), { code: 'EIO' }); return originalUnlink(p); };
+  let rollback;
+  try { rollback = await f.call(); } finally { fsp.unlink = originalUnlink; }
+  assert.equal(rollback.ok, false); assert.ok(fs.existsSync(journal));
+  assert.equal(fs.readFileSync(f.manifestPath, 'utf8'), f.originalManifest);
+  const retry = await f.call(); assert.equal(retry.ok, true, JSON.stringify(retry));
+  for (let i = 0; i < assets.length; i++) assert.deepEqual(fs.readFileSync(assets[i]), images[i]);
+  assert.equal(fs.existsSync(journal), false); assert.equal(f.scenes().length, 1);
+  assert.equal((await f.call()).idempotent, true); assert.equal(f.scenes().length, 1);
+});
