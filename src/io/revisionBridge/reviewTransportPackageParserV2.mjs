@@ -3524,6 +3524,30 @@ function blockingReason(reasons) {
   ].includes(item.code));
 }
 
+function validateWordSemanticTypes(documentScan, commentsScan, stylesScan, reasons) {
+  // Validate expanded names and typed values before any revision can acquire
+  // product authority. Nested ins/del and absent style type are legal OOXML;
+  // annotation IDs, when present, use the XML Schema integer lexical space.
+  const integer = /^[+-]?[0-9]+$/u;
+  for (const [scan, names, field] of [
+    [documentScan, ['ins', 'del', 'moveFrom', 'moveTo'], 'reviewIr.textRevisions'],
+    [documentScan, ['bookmarkStart', 'bookmarkEnd'], 'reviewIr.structureChanges'],
+    [commentsScan, ['comment'], 'reviewIr.commentThreads'],
+  ]) {
+    const invalid = scan.tokens.find(token => names.some(name => isWordToken(token, name))
+      && Object.hasOwn(token.attrsByNs, `${W_NS}|id`)
+      && !integer.test(attr(token, 'id', W_NS).trim()));
+    if (invalid) reasons.push(reason('RTK_HOSTILE_PACKAGE_BLOCKED', field,
+      'Word annotation identifier is not an XML Schema integer.', { sourceXmlProvenance: provenance(invalid) }));
+  }
+  const styleTypes = ['paragraph', 'character', 'table', 'numbering'];
+  const invalidStyle = stylesScan.tokens.find(token => isWordToken(token, 'style')
+    && Object.hasOwn(token.attrsByNs, `${W_NS}|type`)
+    && !styleTypes.includes(attr(token, 'type', W_NS)));
+  if (invalidStyle) reasons.push(reason('RTK_HOSTILE_PACKAGE_BLOCKED', 'reviewIr.formattingParagraphs',
+    'Word style type is outside the supported OOXML enumeration.', { sourceXmlProvenance: provenance(invalidStyle) }));
+}
+
 // ADMIT-01 laneCompleteness for V2 ReviewIR. The marker covers both the
 // short lane names (text/structure/comments) asserted by abort contracts and
 // the V2 IR field names (textRevisions/structureChanges/commentThreads) so the
@@ -3690,6 +3714,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       ...parseXmlPart('word/people.xml', rawString(parts['word/people.xml']), budgets, cryptoPort, budgetState),
     },
   };
+
+  const stylesScan = parseXmlPart('word/styles.xml', rawString(parts['word/styles.xml']), budgets, cryptoPort, budgetState);
+  reasons.push(...stylesScan.diagnostics, ...scans.comments.diagnostics);
+  if (!blockingReason(reasons)) validateWordSemanticTypes(documentScan, scans.comments, stylesScan, reasons);
 
   const opaqueUnsupported = [
     ...collectOpaqueUnsupportedParts(partNames),

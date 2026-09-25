@@ -224,6 +224,29 @@ export const R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR=Object.freeze({
     }
   ]
 });
+export const R24_INTEROP_WORD_HOSTILE_SUCCESSOR=Object.freeze({
+  "id": "WORD_HOSTILE_20260925",
+  "baseSha": "a4d186e026af0d532c73d2108e5369252302574b",
+  "baseTree": "5a5fcda93702460f6600dc2e67dc8e08731a0a18",
+  "successorBaseSha": "3dbe5404aad3b583fdbf929f2b49cf016f819fc6",
+  "successorBaseTree": "f7ee0bb1c73e9ea396c0bcdac01cff7e0329fc05",
+  "bindings": [
+    {
+      "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "002a1096d134b2563801393230a873471d3ae6c3685c1a44f44ba20b0145ea8b"
+    },
+    {
+      "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "68b6d07f5800692de0ff1cdb6f8b55598b239233780053f9e35760c247300e53"
+    }
+  ],
+  "guards": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "ee266bd8f48c350893e8cb50cf210cd15c4b80c8c554bf2d401a28569c1d9abe"
+    }
+  ]
+});
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([
   'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   'src/io/revisionBridge/index.mjs',
@@ -2039,7 +2062,7 @@ export function verifyR24InteropC4LabCodePinSuccessor({candidateSha='HEAD',git=d
 }
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
   const candidate=gitText(git,['rev-parse',candidateSha]);
-  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR].find(set=>
+  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR].find(set=>
     [...set.bindings,...(set.guards||[])].every(binding=>{
       try{return h(objectBytes(git,candidate,binding.path))===binding.sha256;}
       catch{return false;}

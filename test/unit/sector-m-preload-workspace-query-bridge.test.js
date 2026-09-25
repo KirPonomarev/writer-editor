@@ -98,7 +98,7 @@ test('preload workspace query bridge: review surface query reads active session 
   assert.ok(source.includes('function readActiveReviewSessionReviewSurface() {'))
   assert.ok(source.includes("if (activeReviewSessionLifecycle !== 'active' || !isPlainObjectValue(activeReviewSessionStore)) {"))
   assert.ok(source.includes('return hasReviewSurfacePayload(reviewSurface)'))
-  assert.ok(source.includes('function handleReviewSurfaceImportPacketCommandSurface(payload = {}) {'))
+  assert.ok(source.includes('function handleReviewSurfaceImportPacketCommandSurface(payload = {}, publication = {}) {'))
   assert.ok(source.includes('function handleReviewSurfaceClearSessionCommandSurface() {'))
   assert.ok(source.includes('async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {}, options = {}) {'))
   assert.ok(source.includes('function attachReviewExactTextApplyReceipt(receipt, safeWriteResult) {'))

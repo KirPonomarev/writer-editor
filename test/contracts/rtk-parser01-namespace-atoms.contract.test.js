@@ -296,8 +296,8 @@ test('PARSER01-P7-no-cross-paragraph-replacement-group', async () => {
   // RED REASON: parseTextRevisions groups by raw XML distance only (line ~1196),
   // with no story/paragraph boundary check, so both share replacementGroupId.
   const crossDoc = documentXml(
-    '<w:p><w:del w:id="d1" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del></w:p>'
-    + '<w:p><w:ins w:id="i1" w:author="B"><w:r><w:t>new</w:t></w:r></w:ins></w:p>',
+    '<w:p><w:del w:id="101" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del></w:p>'
+    + '<w:p><w:ins w:id="102" w:author="B"><w:r><w:t>new</w:t></w:r></w:ins></w:p>',
   );
   const cross = parser.parseReviewTransportPackageV2(
     { parts: baseParts(crossDoc) },
@@ -325,8 +325,8 @@ test('PARSER01-P7b-same-author-cross-paragraph-no-group', async () => {
   // alone — both revisions must stay false-sentinel, never a shared groupId.
   // AMDG transparency: the single dimension under test is named explicitly.
   const crossDoc = documentXml(
-    '<w:p><w:del w:id="d1" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del></w:p>'
-    + '<w:p><w:ins w:id="i1" w:author="A"><w:r><w:t>new</w:t></w:r></w:ins></w:p>',
+    '<w:p><w:del w:id="101" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del></w:p>'
+    + '<w:p><w:ins w:id="102" w:author="A"><w:r><w:t>new</w:t></w:r></w:ins></w:p>',
   );
   const cross = parser.parseReviewTransportPackageV2(
     { parts: baseParts(crossDoc) },
@@ -349,8 +349,8 @@ test('PARSER01-P7c-same-paragraph-replacement-control', async () => {
   // CONTROL: same-paragraph adjacent del+ins (b02 fixture style) group into one pair.
   // Green now and MUST remain green after Pass 2.
   const sameDoc = documentXml(
-    '<w:p><w:del w:id="d1" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del>'
-    + '<w:ins w:id="i1" w:author="A"><w:r><w:t>new</w:t></w:r></w:ins></w:p>',
+    '<w:p><w:del w:id="101" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del>'
+    + '<w:ins w:id="102" w:author="A"><w:r><w:t>new</w:t></w:r></w:ins></w:p>',
   );
   const same = parser.parseReviewTransportPackageV2(
     { parts: baseParts(sameDoc) },

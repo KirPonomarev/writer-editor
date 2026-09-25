@@ -107,7 +107,7 @@ test('B03 comment on deleted text keeps anchor quote and related delete revision
   const parser = await loadParser();
   const result = parser.parseReviewTransportPackageV2({
     parts: parts(
-      documentXml('<w:p><w:del w:id="del-1" w:author="Editor"><w:commentRangeStart w:id="5"/><w:r><w:delText>doomed text</w:delText></w:r><w:commentRangeEnd w:id="5"/></w:del><w:r><w:commentReference w:id="5"/></w:r></w:p>'),
+      documentXml('<w:p><w:del w:id="101" w:author="Editor"><w:commentRangeStart w:id="5"/><w:r><w:delText>doomed text</w:delText></w:r><w:commentRangeEnd w:id="5"/></w:del><w:r><w:commentReference w:id="5"/></w:r></w:p>'),
       `<w:comments xmlns:w="${W_NS}"><w:comment w:id="5" w:author="A"><w:p><w:r><w:t>Comment on deleted text</w:t></w:r></w:p></w:comment></w:comments>`,
     ),
   }, { cryptoPort });
@@ -117,7 +117,7 @@ test('B03 comment on deleted text keeps anchor quote and related delete revision
   assert.equal(thread.status, 'ANCHORED');
   assert.equal(thread.quotedAnchorText, 'doomed text');
   assert.equal(thread.relatedRevision.kind, 'delete');
-  assert.equal(thread.relatedRevision.nativeRevisionId, 'del-1');
+  assert.equal(thread.relatedRevision.nativeRevisionId, '101');
   assert.equal(result.reviewIr.textRevisions[0].operation, 'delete');
   assert.equal(result.canApply, false);
 });

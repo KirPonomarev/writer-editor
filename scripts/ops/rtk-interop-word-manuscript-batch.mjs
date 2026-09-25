@@ -6,6 +6,7 @@ import {performance} from 'node:perf_hooks';
 import {readOrderFile,stableOrderJson,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {loadDataPolicy,DATA_POLICY_SHA256,hash} from './rtk-interop-data-c1.mjs';
 import {MANUSCRIPT_VOLUMES,MANUSCRIPT_CELLS,manuscriptFields,manuscriptUsesSafeCreate,C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE,TABLES_RECIPE,UNICODE_PROBES,MANUSCRIPT_LINK_TARGETS,buildWordManuscriptFixture} from './rtk-interop-word-manuscript-fixtures.mjs';
+import {WORD_HOSTILE_CELLS,wordHostileCampaign,validateWordHostileRaw,selectedManuscriptProofs} from './rtk-interop-word-hostile.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const READER='scripts/ops/rtk-interop-word-manuscript-readback.py';
@@ -344,9 +345,10 @@ export function validateManuscriptRuns(runIds){
     const m=/^ORDER__(SINGLE_SCENE|MULTI_SCENE|FULL_SYNTHETIC_NOVEL|LARGE_DOCUMENT)__(C[1235])__(SOURCE_RUNTIME|PACKAGED_BUILD_RUNTIME)__([A-Za-z0-9_-]{1,80})$/u.exec(runId);
     demand(m,'MANUSCRIPT_BATCH_RUN_ID');
     const recipe=m[4].startsWith('tables-v1-')?TABLES_RECIPE:m[4].startsWith('structure-v2-')?SINGLE_STRUCTURE_RECIPE:m[4].startsWith('review-return-')?C1_REVIEW_RECIPE:'DEFAULT';
-    manuscriptFields(m[1],m[2],recipe);return {runId,volume:m[1],route:m[2],profile:m[3],recipe,cellId:runId.slice(0,runId.lastIndexOf('__'))};
+    manuscriptFields(m[1],m[2],recipe);const row={runId,volume:m[1],route:m[2],profile:m[3],recipe,cellId:runId.slice(0,runId.lastIndexOf('__'))};
+    const campaign=wordHostileCampaign(row);return {...row,...(campaign?{campaign}:{})};
   });
-  demand(new Set(rows.map(x=>x.cellId+':'+x.recipe)).size===rows.length,'MANUSCRIPT_BATCH_DUPLICATE_JOURNEY');return rows;
+  demand(new Set(rows.map(x=>x.cellId+':'+x.recipe+':'+(x.campaign||''))).size===rows.length,'MANUSCRIPT_BATCH_DUPLICATE_JOURNEY');return rows;
 }
 function labRevision(labRoot,revision,policy){
   demand(sha40(revision),'MANUSCRIPT_BATCH_LAB_REVISION');const git=gitAt(labRoot);
@@ -363,7 +365,7 @@ function labRevision(labRoot,revision,policy){
 }
 export function selectManuscriptObservation(ledger,row){
   const candidates=ledger.filter(e=>e.type==='PHYSICAL_OBSERVATION'&&e.runId===row.runId);
-  demand(candidates.length===1&&candidates[0].cellId===row.cellId&&candidates[0].recipe===row.recipe,'MANUSCRIPT_BATCH_EXACT_OBSERVATION');
+  demand(candidates.length===1&&candidates[0].cellId===row.cellId&&candidates[0].recipe===row.recipe&&candidates[0].campaign===row.campaign,'MANUSCRIPT_BATCH_EXACT_OBSERVATION');
   const obs=candidates[0];
   demand(!ledger.some(e=>(e.runId===row.runId&&(e.stale===true||['PRIVACY_INVALIDATED','AUDIT_INVALIDATED_PHYSICAL_OBSERVATION'].includes(e.type)))
     ||(e.type==='EVIDENCE_SUPERSEDES'&&e.supersedesRunId===row.runId)
@@ -471,6 +473,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
   }
  }
  demand(raw.finalHops?.ok===true&&raw.finalHops.acceptanceCredit===0,'MANUSCRIPT_FINAL_HOPS');
+ validateWordHostileRaw(raw,{row,hops:MANUSCRIPT_HOPS[row.route],oracles:policy.requiredOracles,admittedCells:batch.hostileCellIds});
  return true;
 }
 
@@ -483,11 +486,12 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
     identity=clean(ROOT);const labIdentity=clean(labRoot),policy=loadDataPolicy(),batch=policy.wordManuscriptBatch;
     demand(gitAt(ROOT)(['rev-parse','origin/main']).trim()===identity.head&&(!currentHead||currentHead===identity.head),'MANUSCRIPT_BATCH_CURRENT_MAIN');
     demand(batch?.schemaVersion===MANUSCRIPT_BATCH_MODE&&same(batch.cellIds,MANUSCRIPT_CELLS)&&same(batch.requiredHops,MANUSCRIPT_HOPS),'MANUSCRIPT_BATCH_POLICY_SCOPE');
+    demand(same(batch.hostileCellIds,WORD_HOSTILE_CELLS),'MANUSCRIPT_HOSTILE_POLICY_SCOPE');
     const specFile=readOrderFile(ROOT,SPEC),specSha256=hash(specFile.bytes);
     demand(specSha256===policy.productSpecSha256,'MANUSCRIPT_BATCH_SPEC_PIN');
     transportPolicyResolution=validateGoogleManuscriptTransport(batch.googleNativeTransport,JSON.parse(specFile.bytes),specSha256);
     demand(requiredCells?.length===1120&&new Set(requiredCells.map(c=>c.cellId)).size===1120
-      &&MANUSCRIPT_CELLS.every(id=>requiredCells.some(c=>c.cellId===id)),'MANUSCRIPT_BATCH_DENOMINATOR');
+      &&[...MANUSCRIPT_CELLS,...WORD_HOSTILE_CELLS].every(id=>requiredCells.some(c=>c.cellId===id)),'MANUSCRIPT_BATCH_DENOMINATOR');
     for(const b of batch.readerBindings){
       const actualSha256=hash(readOrderFile(ROOT,b.path).bytes);
       if(actualSha256===b.sha256)continue;
@@ -508,7 +512,7 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
       const prefix='runs/'+row.runId+'/',entry=selectManuscriptObservation(ledger,row);
       const obsFile=readOrderFile(labRoot,prefix+'observation.json'),obs=JSON.parse(obsFile.bytes);
       demand(obs.runId===row.runId&&obs.cellId===row.cellId&&obs.artifactHash===entry.artifactHash,'MANUSCRIPT_BATCH_OBSERVATION_FILE');
-      for(const k of ['labHead','labTree','createdAt','status','recipe','yalkenShadowHead','yalkenShadowTree'])demand(obs[k]===entry[k],'MANUSCRIPT_BATCH_LEDGER_BINDING');
+      for(const k of ['labHead','labTree','createdAt','status','recipe','campaign','yalkenShadowHead','yalkenShadowTree'])demand(obs[k]===entry[k],'MANUSCRIPT_BATCH_LEDGER_BINDING');
       const withoutHash={...obs};delete withoutHash.artifactHash;
       demand(obs.artifactHashScope==='observation_without_artifactHash'&&hashOrderObservation(withoutHash)===obs.artifactHash,'MANUSCRIPT_BATCH_OBSERVATION_HASH');
       demand(obs.yalkenShadowHead===runtimeIdentity.head&&obs.yalkenShadowTree===runtimeIdentity.tree&&obs.candidateDiagnosticOnly===false,'MANUSCRIPT_BATCH_ACTUAL_RUNTIME');
@@ -534,12 +538,12 @@ export function verifyWordManuscriptBatch({repoRoot=ROOT,labRoot,runIds,required
       validateManuscriptRaw(raw,{row,...runtimeIdentity,observationSha256:obsFile.binding.sha256,files,policy});
       reviews.push({runId:row.runId,observationArtifactHash:obs.artifactHash,raw});
     }
-    const proved=reviews.flatMap(r=>r.raw.fieldProofs.map(f=>f.cellId));
+    const proved=reviews.flatMap(r=>selectedManuscriptProofs(r.raw).map(f=>f.cellId));
     demand(new Set(proved).size===proved.length,'MANUSCRIPT_BATCH_DUPLICATE_CELL_CREDIT');
     demand(readOrderFile(labRoot,'data/evidence/ledger.jsonl',64*1024*1024).bytes.equals(ledgerFile.bytes)
       &&same(clean(ROOT),identity)&&same(clean(runtimeRoot),runtimeIdentity)&&same(clean(labRoot),labIdentity),'MANUSCRIPT_BATCH_CHANGED_DURING_REVIEW');
   }catch(error){errors.push(String(error.message));}
-  const ok=!errors.length,fieldProofs=ok?reviews.flatMap(r=>r.raw.fieldProofs):[];
+  const ok=!errors.length,fieldProofs=ok?reviews.flatMap(r=>selectedManuscriptProofs(r.raw)):[];
   const acceptedCellIds=[...new Set(fieldProofs.map(f=>f.cellId))].sort();
   return {ok,errors,contractId:'YALKEN_INTEROP_100_SUPPORTED_CONTRACT_V1',evidenceMode:MANUSCRIPT_BATCH_MODE,
     authoritativeAdmission:ok,requiredCells:1120,recordedCells:acceptedCellIds.length,passedRequiredCells:acceptedCellIds.length,
