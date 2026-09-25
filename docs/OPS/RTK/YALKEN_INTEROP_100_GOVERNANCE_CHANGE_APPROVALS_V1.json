@@ -514,12 +514,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
-      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "approvedAtUtc": "2026-09-25T14:39:12.198352Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
-      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
-      "sha256": "afbfa2a28a08876a0cd2acbb8e02f69e47ce4fb7c0484d75274c622f6cd19133"
+      "rationale": "Owner-approved W3 placement-size contract and rollback record; exact scope only, no gate or oracle exception and no accepted-cell credit.",
+      "sha256": "b2c911c633778bbb5c34f6553ba2ee76c50b6d75d551aabe7aae18d0783834a6"
     },
     {
       "approved": true,
@@ -4440,6 +4440,15 @@
       "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T11:44:09.907549+00:00",
+      "approvedBy": "owner-direct-task:C1_IMPORT_BREADTH_REPAIR_20260916",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_REPAIR_PERSONAL_IMPLEMENTATION",
+      "filePath": "docs/ARCH_DIFF_LOG.md",
+      "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
+      "sha256": "afbfa2a28a08876a0cd2acbb8e02f69e47ce4fb7c0484d75274c622f6cd19133"
     }
   ]
 }
