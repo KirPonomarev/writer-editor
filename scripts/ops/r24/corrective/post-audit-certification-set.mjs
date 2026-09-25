@@ -293,6 +293,29 @@ export const R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR=Object.freeze({
     }
   ]
 });
+export const R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR=Object.freeze({
+  "id": "WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+  "baseSha": "a4d186e026af0d532c73d2108e5369252302574b",
+  "baseTree": "5a5fcda93702460f6600dc2e67dc8e08731a0a18",
+  "successorBaseSha": "58c408eb9799d65194d0081a8a45c509af8706ac",
+  "successorBaseTree": "aadceb318e35464a5afadebcae9b83a59b325901",
+  "bindings": [
+    {
+      "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "4f4c8d5552d5ea381fe27fdabd5ae07994e415e8296be4df8ed5f7cd0bd1ffc1"
+    },
+    {
+      "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "1d34a7df469dd3b31e90d3cd086fe4c8e74cb2838c89dfac83a9bda8003dac3c"
+    }
+  ],
+  "guards": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "95e8bb1d90c661f31baa24cb6b1924304dc55993995ca54a3413cc856eff5c66"
+    }
+  ]
+});
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([
   'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   'src/io/revisionBridge/index.mjs',
@@ -2108,7 +2131,7 @@ export function verifyR24InteropC4LabCodePinSuccessor({candidateSha='HEAD',git=d
 }
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
   const candidate=gitText(git,['rev-parse',candidateSha]);
-  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_SUCCESSOR,R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR].find(set=>
+  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,R24_INTEROP_WORD_HOSTILE_SUCCESSOR,R24_INTEROP_WORD_MEDIA_SUCCESSOR,R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR].find(set=>
     [...set.bindings,...(set.guards||[])].every(binding=>{
       try{return h(objectBytes(git,candidate,binding.path))===binding.sha256;}
       catch{return false;}
