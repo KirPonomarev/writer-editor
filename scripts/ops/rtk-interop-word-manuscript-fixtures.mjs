@@ -10,7 +10,7 @@ export const TABLES_RECIPE='TABLES_V1';
 export function manuscriptRecipes(route){
  if(!MANUSCRIPT_ROUTES.includes(route))throw new Error('MANUSCRIPT_SCOPE');
  if(route==='C1')return ['DEFAULT',C1_REVIEW_RECIPE,SINGLE_STRUCTURE_RECIPE,TABLES_RECIPE];
- return route==='C2'||route==='C3'?['DEFAULT',SINGLE_STRUCTURE_RECIPE]:['DEFAULT'];
+ return route==='C2'||route==='C3'?['DEFAULT',SINGLE_STRUCTURE_RECIPE,TABLES_RECIPE]:['DEFAULT'];
 }
 export function manuscriptUsesSafeCreate(route,recipe='DEFAULT'){
  if(!manuscriptRecipes(route).includes(recipe))throw new Error('MANUSCRIPT_RECIPE');
@@ -76,7 +76,7 @@ export function manuscriptTableBlocks(){
 export function buildWordManuscriptFixture(volume,route,recipe='DEFAULT'){
  manuscriptFields(volume,route,recipe);
  const base=volume==='SINGLE_SCENE'?{minimumWords:0,scenes:[{paragraphs:[...WORD_VOLUME_TEXT_PROBES]}]}:buildWordVolumeFixture(volume);
- const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0){content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());if(recipe===TABLES_RECIPE)content.splice(content.length-1,0,...manuscriptTableBlocks());if(!manuscriptUsesSafeCreate(route,recipe))content.splice(content.length-1,0,manuscriptLinkBlock());}const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'&&recipe!==SINGLE_STRUCTURE_RECIPE?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
+ const scenes=base.scenes.map((s,i)=>{const content=s.paragraphs.map(p=>paragraph(p));if(i===0){content.push(...UNICODE_PROBES.map(p=>paragraph(p)),...manuscriptStyleBlocks());if(recipe===TABLES_RECIPE){const tables=manuscriptTableBlocks();if(route==='C1')content.splice(content.length-1,0,...tables);else{tables[0].content[0].content[0].content=[content.shift()];content.unshift(...tables);}}if(!manuscriptUsesSafeCreate(route,recipe))content.splice(content.length-1,0,manuscriptLinkBlock());}const doc={type:'doc',content};return {ordinal:i,name:'scene-'+String(i+1).padStart(2,'0'),chapter:volume==='SINGLE_SCENE'&&recipe!==SINGLE_STRUCTURE_RECIPE?null:Math.floor(i/(volume==='MULTI_SCENE'?1:7)),doc,paragraphs:manuscriptParagraphs(doc)};});
  const forRound=round=>scenes.map(s=>s.paragraphs.map(p=>round?p.replace('sentinel alpha','sentinel round'+round):p));
  return {schemaVersion:'WORD_MANUSCRIPT_FIXTURE_V1',volume,route,minimumWords:base.minimumWords,requiredCycles:route==='C3'?5:1,scenes,forRound,paragraphsForRound:round=>forRound(round).flat(),sourceTokenForRound:round=>round===1?'sentinel alpha':'sentinel round'+(round-1),replacementTokenForRound:round=>'sentinel round'+round,imeText:'日本語.',imePrefix:'[ime] '};
 }

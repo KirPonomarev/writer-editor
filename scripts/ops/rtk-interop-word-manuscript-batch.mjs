@@ -388,7 +388,7 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    &&same(f.subcases,MANUSCRIPT_SUBCASES[f.field])&&same(f.requiredHops,MANUSCRIPT_HOPS[row.route])&&f.requiredCycles===cycles&&same(f.oracles,policy.requiredOracles),'MANUSCRIPT_FIELD_SCOPE');
   demand(same(Object.keys(f.stageProofs).sort(),stageNames),'MANUSCRIPT_STAGE_SET');
   for(const [name,n] of Object.entries(expected)){
-   const stage=f.stageProofs[name],qualified=row.recipe===TABLES_RECIPE?batch.tableParagraphHashes[row.volume][n]:row.recipe===C1_REVIEW_RECIPE||(row.recipe===SINGLE_STRUCTURE_RECIPE&&row.route==='C1')?batch.reviewReturnParagraphHashes[row.volume][n]:batch.paragraphHashes[row.volume][row.route][n];
+   const stage=f.stageProofs[name],qualified=row.recipe===TABLES_RECIPE?(generic?batch.tableParagraphHashes:batch.tableReviewParagraphHashes)[row.volume][n]:row.recipe===C1_REVIEW_RECIPE||(row.recipe===SINGLE_STRUCTURE_RECIPE&&row.route==='C1')?batch.reviewReturnParagraphHashes[row.volume][n]:batch.paragraphHashes[row.volume][row.route][n];
    demand(stage.round===n&&stage.paragraphSha256===qualified.sha256&&stage.paragraphCount===qualified.count&&sha64(stage.sortKeysSha256),'MANUSCRIPT_STAGE_HASH');
   }
   demand(same(f.controls.positiveControls,['identity','split-xml-runs'])&&controls(f.controls.textMutants,TEXT_CONTROLS)
@@ -398,15 +398,29 @@ export function validateManuscriptRaw(raw,{row,head,tree,observationSha256,files
    &&u.locale.intl?.locale&&u.locale.intl.timeZone&&u.fontLedger?.length===(generic?sceneCount+2:2*sceneCount+cycles)
    &&u.fontLedger.every(x=>x.fonts?.length&&x.fonts.reduce((s,f)=>s+f.glyphCount,0)>0&&x.scope.includes('Chromium'))&&u.limitations?.ime&&u.limitations?.fonts,'MANUSCRIPT_UNICODE_FONT_BINDING');
   if(f.field==='TABLES'){
-   const t=f.tableProof,graphStages=['rounds/1/export','rounds/1/word','imported','saved','reopened','reexport','final-word-lifecycle'],nativeStages=['rounds/1/word-native','final-word-lifecycle-native'];
-   demand(row.recipe===TABLES_RECIPE&&row.route==='C1'&&t?.schemaVersion==='WORD_TABLES_INDEPENDENT_PROOF_V1'
-    &&sha64(t.expectedGraphSha256)&&t.expectedGraphSha256===batch.tableGraphHashes[row.volume]&&same(Object.keys(t.stages||{}).sort(),[...graphStages,...nativeStages].sort()),'MANUSCRIPT_TABLE_SCOPE');
+   const t=f.tableProof,graphRounds=generic?Object.fromEntries(['rounds/1/export','rounds/1/word','imported','saved','reopened','reexport','final-word-lifecycle'].map(n=>[n,0]))
+    :Object.fromEntries([...Array.from({length:cycles},(_,i)=>[[`rounds/${i+1}/export`,i],[`rounds/${i+1}/word`,i+1],[`rounds/${i+1}/persisted`,i+1]]).flat(),
+     ['rounds/1/review-probe',1],['reopened',cycles],['reexport',cycles],['final-word-lifecycle',cycles]]);
+   const graphStages=Object.keys(graphRounds),nativeStages=generic?['rounds/1/word-native','final-word-lifecycle-native']
+    :[...Array.from({length:cycles},(_,i)=>`rounds/${i+1}/word-native`),'rounds/1/review-probe-native','final-word-lifecycle-native'];
+   const graphHashes=generic?[batch.tableGraphHashes[row.volume]]:batch.tableReviewGraphHashes?.[row.volume]?.slice(0,cycles+1);
+   demand(row.recipe===TABLES_RECIPE&&['C1','C2','C3'].includes(row.route)
+    &&t?.schemaVersion===(generic?'WORD_TABLES_INDEPENDENT_PROOF_V1':'WORD_TABLES_INDEPENDENT_REVIEW_PROOF_V1')
+    &&Array.isArray(graphHashes)&&graphHashes.length===(generic?1:cycles+1)&&graphHashes.every(sha64)
+    &&t.expectedGraphSha256===graphHashes[0]&&(generic||same(t.expectedRoundGraphSha256,graphHashes))
+    &&same(Object.keys(t.stages||{}).sort(),[...graphStages,...nativeStages].sort()),'MANUSCRIPT_TABLE_SCOPE');
    demand(t.viewportProof?.method==='REOPENED_FIRST_LAST_CELL_HIT_TEST_V1'&&t.viewportProof.viewCount===4
     &&sha64(t.viewportProof.viewsSha256)&&t.viewportProof.screenshotHashes?.length===4&&t.viewportProof.screenshotHashes.every(sha64),'MANUSCRIPT_TABLE_VIEWPORT');
-   for(const name of graphStages)demand(t.stages[name]?.graphSha256===t.expectedGraphSha256&&sha64(t.stages[name].artifactSha256)&&t.stages[name].tableCount===2,'MANUSCRIPT_TABLE_GRAPH');
+   for(const name of graphStages)demand(t.stages[name]?.graphSha256===graphHashes[graphRounds[name]]&&sha64(t.stages[name].artifactSha256)&&t.stages[name].tableCount===2,'MANUSCRIPT_TABLE_GRAPH');
    for(const name of nativeStages)demand(t.stages[name]?.method==='INDEPENDENT_NATIVE_CELLS_AND_COMPLETE_BODY_V1'
     &&sha64(t.stages[name].bodySha256)&&sha64(t.stages[name].indexSha256)&&t.stages[name].tableCount===2
     &&t.stages[name].cellHashes?.length===16&&t.stages[name].cellHashes.every(sha64),'MANUSCRIPT_TABLE_NATIVE');
+   if(!generic){
+    for(const r of raw.roundProofs)demand(t.stages[`rounds/${r.ordinal}/export`].artifactSha256===r.exportSha256
+     &&t.stages[`rounds/${r.ordinal}/word`].artifactSha256===r.returnedSha256
+     &&t.stages[`rounds/${r.ordinal}/persisted`].artifactSha256===hash(stableOrderJson(r.savedSceneHashes)),'MANUSCRIPT_TABLE_APPLY_BINDING');
+    demand(t.stages.reopened.artifactSha256===hash(stableOrderJson(raw.roundProofs.at(-1).savedSceneHashes)),'MANUSCRIPT_TABLE_REOPEN_BINDING');
+   }
    demand(controls(t.negativeControls,['drop-cell','swap-rows','swap-columns','remove-grid-span','break-vertical-merge','flatten-table'])
     &&same(t.lossLedger,{lostCells:[],flattenedTables:[],changedMerges:[],profile:'RECTANGULAR_CELLS_WITH_GRIDSPAN_VMERGE_AND_LITERAL_PARAGRAPHS'}),'MANUSCRIPT_TABLE_CONTROLS');
   }

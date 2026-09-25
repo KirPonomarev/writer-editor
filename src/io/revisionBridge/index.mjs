@@ -3573,6 +3573,62 @@ export function validateDocxReviewTableTopology(paragraphs, exportMap) {
   return compareTableParagraphTopology(paragraphs, expected);
 }
 
+// A derived comparison, never writer authority. Product callers supply the
+// authenticated local export map, not a map received in the returned DOCX.
+// Preserve every actual revision/unknown semantic; only the unchanged table
+// occurrence inventory can stop masquerading as a structural edit.
+export function bindDocxReviewTableTopology(reviewIr, exportMap) {
+  const paragraphs = Array.isArray(reviewIr?.formattingParagraphs) ? reviewIr.formattingParagraphs : [];
+  const scenes = Array.isArray(exportMap?.scenes) ? exportMap.scenes : [];
+  const hasTables = paragraphs.some(p => p?.table)
+    || scenes.some(scene => scene.blocks?.some(block => block?.formatIr?.table))
+    || reviewIr?.structureChanges?.some(change => change?.structureKind === 'tbl')
+    || reviewIr?.opaqueUnsupported?.some(item => item?.elementName === 'tbl');
+  if (!hasTables) return { ok: true, applicable: false, reviewIr };
+  if (!scenes.length) return { ok: false, code: 'DOCX_TABLE_LOCAL_EXPORT_MAP_REQUIRED' };
+  const topology = validateDocxReviewTableTopology(paragraphs, exportMap);
+  if (!topology.ok) return { ...topology, applicable: true };
+  // Table occurrences without a bounded grid projection are not accounted.
+  if (!paragraphs.some(p => p?.table)) return { ok: false, code: 'DOCX_TABLE_PROJECTION_REQUIRED' };
+  const structures = Array.isArray(reviewIr.structureChanges) ? reviewIr.structureChanges : [];
+  const unsupported = Array.isArray(reviewIr.opaqueUnsupported) ? reviewIr.opaqueUnsupported : [];
+  const tableCount = new Set(paragraphs.filter(p => p.table).map(p => p.table.tableId)).size;
+  const occurrenceKey = item => {
+    const p = item?.sourceXmlProvenance;
+    return p?.elementName === 'tbl'
+      && p.namespaceUri === 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+      && p.partName === 'word/document.xml'
+      && Number.isSafeInteger(p.openStart) && p.openStart >= 0
+      && Number.isSafeInteger(p.closeEnd) && p.closeEnd > p.openStart
+      ? `${p.openStart}:${p.closeEnd}` : null;
+  };
+  const tableStructures = structures.filter(item => item?.kind === 'StructureChange'
+    && item.structureKind === 'tbl' && occurrenceKey(item));
+  const tableUnsupported = unsupported.filter(item => item?.kind === 'unsupported-element'
+    && item.elementName === 'tbl' && item.partName === 'word/document.xml' && occurrenceKey(item));
+  const keys = tableStructures.map(occurrenceKey).sort();
+  const opaqueKeys = tableUnsupported.map(occurrenceKey).sort();
+  const ranges = tableStructures.map(item => item.sourceXmlProvenance).sort((a, b) => a.openStart - b.openStart);
+  if (keys.length !== tableCount || new Set(keys).size !== tableCount
+    || JSON.stringify(keys) !== JSON.stringify(opaqueKeys)
+    || ranges.some((range, i) => i > 0 && range.openStart <= ranges[i - 1].closeEnd)) {
+    return { ok: false, applicable: true, code: 'DOCX_TABLE_OCCURRENCE_BINDING_MISMATCH' };
+  }
+  const proof = {
+    schemaVersion: 'yalken.word.table-topology-binding.v1',
+    status: 'PASS',
+    localExportMapDigest: `sha256:${hashCanonicalValue(exportMap)}`,
+    returnedParagraphsDigest: `sha256:${hashCanonicalValue(paragraphs)}`,
+    automaticApplyAuthority: false,
+  };
+  return { ok: true, applicable: true, proof, reviewIr: {
+    ...reviewIr,
+    structureChanges: structures.filter(change => !tableStructures.includes(change)),
+    opaqueUnsupported: unsupported.filter(item => !tableUnsupported.includes(item)),
+    tableTopologyBinding: proof,
+  } };
+}
+
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   const xml = normalizeString(documentXml);
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
@@ -6531,10 +6587,20 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
   const bounds = docxReviewPreviewSessionCandidateBounds(options);
   const targetScope = docxReviewPreviewSessionTargetScopeOrDefault(options.targetScope);
   const createdAt = normalizeString(options.createdAt);
-  const projection = isPlainObject(packet?.returnedProjection) ? packet.returnedProjection : {};
+  let projection = isPlainObject(packet?.returnedProjection) ? packet.returnedProjection : {};
   const fullManuscriptExportMap = isPlainObject(options.fullManuscriptExportMap)
     ? options.fullManuscriptExportMap
     : null;
+  if (fullManuscriptExportMap) {
+    // Recompute from the immutable evidence and locally authenticated map;
+    // never consume a packet-carried table proof or grant writer authority.
+    const tableBinding = bindDocxReviewTableTopology(projection, fullManuscriptExportMap);
+    if (!tableBinding.ok) return docxReviewPreviewSessionResult({
+      ok: false, status: 'blocked', code: tableBinding.code,
+      reason: tableBinding.code, decision: 'diagnostics-only', bounds,
+    });
+    projection = tableBinding.reviewIr;
+  }
   const fullTextVectorGuard = docxReviewPreviewSessionFullTextVectorGuard(
     fullManuscriptExportMap, projection, options.verifiedDocumentSections,
   );

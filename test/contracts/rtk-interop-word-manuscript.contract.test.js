@@ -257,12 +257,12 @@ test('Section admission binds canonical boundaries, protected geometry, no-write
  for(const mutate of [x=>delete x.stages.reexport,x=>x.expected.protectedSections[0].endParagraphIndex=2,x=>x.intakeBindings[0].after.sceneHashes=[],x=>x.negativeControls.pop(),x=>x.negativeControls[0].writerCalled=true,x=>x.negativeControls[1].code='RTK_RETURN_INTAKE_DOCUMENT_SECTIONS_MISMATCH',x=>x.lossLedger.scope='']){const bad=structuredClone(p);mutate(bad);assert.throws(()=>check(bad,'MULTI_SCENE',1,[{exportSha256:exportSha,returnedSha256:returnedSha}]));}
 });
 
-test('Manuscript admission preserves 306 legacy targets and adds eight separately qualified C1 table targets',async()=>{
+test('Manuscript admission preserves 306 legacy targets and qualifies 24 distinct Word table targets',async()=>{
  const m=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-batch.mjs')));
  const f=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-word-manuscript-fixtures.mjs')));
  const d=await import(pathToFileURL(path.join(ROOT,'scripts/ops/rtk-interop-100-denominator-v1.mjs')));
  const spec=d.readInterop100Denominator(ROOT),cells=d.buildRequiredCells(spec);
- assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,314);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,314);
+ assert.equal(cells.length,1120);assert.equal(f.MANUSCRIPT_CELLS.length,330);assert.equal(new Set(f.MANUSCRIPT_CELLS).size,330);
  for(const id of f.MANUSCRIPT_CELLS)assert.ok(cells.some(c=>c.cellId===id),id);
  for(const route of ['C1','C2','C3','C5'])assert.deepEqual(m.MANUSCRIPT_HOPS[route],spec.routes.find(r=>r.id===route).hops);
  assert.throws(()=>m.validateManuscriptRuns(['ORDER__LARGE_DOCUMENT__C5__SOURCE_RUNTIME__not-qualified']));
@@ -341,7 +341,7 @@ test('single-scene structure uses a distinct review recipe and never upgrades le
   assert.throws(()=>m.validateManuscriptRuns([run,run.replace('unit','other')]),/DUPLICATE_JOURNEY/);
  }
  assert.deepEqual(expected.sort(),f.MANUSCRIPT_CELLS.filter(id=>id.startsWith('NOVEL_SCENE_STRUCTURE__SINGLE_SCENE__')).sort());
- assert.equal(new Set(f.MANUSCRIPT_CELLS).size,314);
+ assert.equal(new Set(f.MANUSCRIPT_CELLS).size,330);
  assert.deepEqual(f.manuscriptFields('SINGLE_SCENE','C1'),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES']);
  assert.deepEqual(f.manuscriptFields('SINGLE_SCENE','C2'),['TEXT','ORDER','UNICODE_IME_LOCALE','STYLES','TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']);
 });
@@ -504,7 +504,31 @@ test('Manuscript raw consumer rejects incomplete rounds, missing fields and cohe
   r=>r.fieldProofs[0].tableProof.stages['rounds/1/word-native'].cellHashes.pop(),r=>r.fieldProofs[0].tableProof.lossLedger.lostCells.push(1)]){
   const changed=structuredClone(tableRaw);mutate(changed);assert.throws(()=>m.validateManuscriptRaw(changed,tableOptions));
  }
- assert.throws(()=>m.validateManuscriptRuns([tableRun.replace('__C1__','__C2__')]),/MANUSCRIPT_RECIPE/);
+ assert.throws(()=>m.validateManuscriptRuns([tableRun.replace('__C1__','__C5__')]),/MANUSCRIPT_RECIPE/);
+ for(const route of ['C2','C3']){
+  const cycles=route==='C3'?5:1,reviewRun=tableRun.replace('__C1__',`__${route}__`),review=structuredClone(tableRaw);
+  review.runId=reviewRun;review.roundProofs=Array.from({length:cycles},(_,i)=>({...raw.roundProofs[0],ordinal:i+1,exportId:'export-'+i,roundId:'round-'+i}));
+  const rf=review.fieldProofs[0];rf.runId=reviewRun;rf.cellId=`TABLES__SINGLE_SCENE__${route}__SOURCE_RUNTIME`;rf.requiredHops=m.MANUSCRIPT_HOPS[route];rf.requiredCycles=cycles;
+  rf.stageProofs=Object.fromEntries(Object.entries(m.manuscriptStages(route,f.TABLES_RECIPE)).map(([name,round])=>[name,{round,paragraphCount:15,paragraphSha256:h,sortKeysSha256:h}]));
+  rf.unicodeProof.fontLedger=Array.from({length:2+cycles},()=>unicodeProof.fontLedger[0]);
+  const graphHashes=Array.from({length:cycles+1},(_,i)=>digest(Buffer.from('review-graph-'+i))),savedHash=digest(Buffer.from(JSON.stringify([h])));
+  const rounds=Object.fromEntries([...Array.from({length:cycles},(_,i)=>[[`rounds/${i+1}/export`,i],[`rounds/${i+1}/word`,i+1],[`rounds/${i+1}/persisted`,i+1]]).flat(),['rounds/1/review-probe',1],['reopened',cycles],['reexport',cycles],['final-word-lifecycle',cycles]]);
+  rf.tableProof={...rf.tableProof,schemaVersion:'WORD_TABLES_INDEPENDENT_REVIEW_PROOF_V1',expectedGraphSha256:graphHashes[0],expectedRoundGraphSha256:graphHashes,stages:{
+   ...Object.fromEntries(Object.entries(rounds).map(([name,round])=>[name,{graphSha256:graphHashes[round],artifactSha256:name.endsWith('/persisted')||name==='reopened'?savedHash:h,tableCount:2}])),
+   ...Object.fromEntries([...Array.from({length:cycles},(_,i)=>`rounds/${i+1}/word-native`),'rounds/1/review-probe-native','final-word-lifecycle-native'].map(name=>[name,structuredClone(field.tableProof.stages['rounds/1/word-native'])]))}};
+  const ro={...tableOptions,row:m.validateManuscriptRuns([reviewRun])[0],policy:{...policy,wordManuscriptBatch:{tableReviewParagraphHashes:{SINGLE_SCENE:Array(cycles+1).fill({sha256:h,count:15})},tableReviewGraphHashes:{SINGLE_SCENE:graphHashes}}}};
+  assert.equal(m.validateManuscriptRaw(review,ro),true,route);
+  for(const mutate of [r=>r.roundProofs.pop(),r=>r.fieldProofs[0].requiredCycles=0,
+   r=>delete r.fieldProofs[0].tableProof.stages[`rounds/${cycles}/persisted`],
+   r=>delete r.fieldProofs[0].tableProof.stages[`rounds/${cycles}/word-native`],
+   r=>r.fieldProofs[0].tableProof.stages.reopened.graphSha256=graphHashes[0],
+   r=>r.fieldProofs[0].tableProof.stages['rounds/1/persisted'].artifactSha256=h,
+   r=>r.fieldProofs[0].tableProof.expectedRoundGraphSha256.pop(),
+   r=>r.fieldProofs[0].tableProof.schemaVersion='WORD_TABLES_INDEPENDENT_PROOF_V1']){
+   const bad=structuredClone(review);mutate(bad);assert.throws(()=>m.validateManuscriptRaw(bad,ro),undefined,route);
+  }
+ }
+
 
  const mutants=[r=>delete r.recipe,r=>r.recipe='C1_REVIEW_RETURN',r=>r.admissionCredit=3,r=>r.productHead='d'.repeat(40),r=>r.filesVerified=0,r=>r.roundProofs=[],r=>r.roundProofs[0].ordinal=5,r=>r.fieldProofs.pop(),r=>r.fieldProofs[0].requiredCycles=5,r=>r.fieldProofs[0].subcases.pop(),r=>delete r.fieldProofs[0].stageProofs['reopened-renderer'],r=>r.fieldProofs[0].stageProofs.source.paragraphSha256='e'.repeat(64),r=>r.fieldProofs[0].controls.textMutants[0].rejected=false,r=>r.fieldProofs[0].unicodeProof.fontLedger=[],r=>r.finalHops=null,r=>delete r.fieldProofs[0].stageProofs['reexport-docx'],r=>r.fieldProofs[0].controls.styleMutants.pop(),r=>r.fieldProofs.at(-1).styleProofs.reexport.semanticStyleSha256='f'.repeat(64)];
  for(const mutate of mutants){const changed=JSON.parse(JSON.stringify(raw));mutate(changed);assert.throws(()=>m.validateManuscriptRaw(changed,options));}

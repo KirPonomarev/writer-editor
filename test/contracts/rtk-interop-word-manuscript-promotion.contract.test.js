@@ -83,10 +83,10 @@ test('Manuscript promotion admits only the exact inspected C4 successor blobs', 
   assert.throws(() => check({repoRoot: root, runtimeIdentity, verifierIdentity: identity(), allowedPaths: ['oracle.txt']}), /PROMOTION_SCOPE/);
 });
 
-test('C1 table reader successor admits one complete set and rejects mixed or altered bindings', async () => {
+for(const era of ['C1','REVIEW'])test(era+' table reader successor admits one complete set and rejects mixed or altered bindings', async () => {
   const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
-  const expected = cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR, candidate = 'f'.repeat(40);
-  const bytes = new Map(await Promise.all([...expected.bindings, ...expected.guards].map(async b => [b.path, await fs.readFile(path.join(ROOT, b.path))])));
+  const expected = era==='C1'?cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR:cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR, candidate = 'f'.repeat(40);
+  const bytes = new Map(await Promise.all([...expected.bindings, ...expected.guards].map(async b => [b.path, era==='C1'?execFileSync('git',['show','3a5f0b2080e861d779cf5838a2a34c6e7d5e4244:'+b.path],{cwd:ROOT}):await fs.readFile(path.join(ROOT, b.path))])));
   const git = args => {
     if (args[0] === 'rev-parse') {
       if (args[1] === expected.baseSha + '^{tree}') return expected.baseTree;

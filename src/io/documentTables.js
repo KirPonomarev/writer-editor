@@ -150,7 +150,7 @@ function renderTableParagraphs(items, metadata, renderParagraph) {
 // Consumes only namespace-resolved events from the existing bounded XML parser.
 // It does not tokenize XML or trust names/attributes before namespace validation.
 function createTableReader(paragraphs) {
-  let active = null, row = null, cell = null, nextId = 0;
+  let active = null, row = null, cell = null, nextId = 0, zeroMargins = null;
   const finish = () => {
     if (!active.rows.length || !active.gridColumns) fail('GRID_REQUIRED');
     const table = { type: 'table', content: [] }, sources = [], previous = [];
@@ -186,6 +186,30 @@ function createTableReader(paragraphs) {
   };
   return {
     tag(name, parent, closing, selfClosing, attribute) {
+      // Word can materialize zero top/bottom row cell margins after review.
+      // Accept exactly that neutral form; other row exceptions remain blocked.
+      if (zeroMargins) {
+        if (name === 'w:tblPrEx' && closing) {
+          if (!zeroMargins.container || zeroMargins.sides.size !== 2) fail('ROW_EXCEPTION_UNSUPPORTED');
+          zeroMargins = null;
+        } else if (name === 'w:tblCellMar' && parent === 'w:tblPrEx') {
+          if (!closing) {
+            if (zeroMargins.container || selfClosing) fail('ROW_EXCEPTION_UNSUPPORTED');
+            zeroMargins.container = true;
+          }
+        } else if (['w:top', 'w:bottom'].includes(name) && parent === 'w:tblCellMar') {
+          if (!closing) {
+            if (zeroMargins.sides.has(name) || attribute('w') !== '0' || attribute('type') !== 'dxa') fail('ROW_EXCEPTION_UNSUPPORTED');
+            zeroMargins.sides.add(name);
+          }
+        } else fail('ROW_EXCEPTION_UNSUPPORTED');
+        return;
+      }
+      if (name === 'w:tblPrEx') {
+        if (closing || selfClosing || parent !== 'w:tr' || !row || cell || row.cells.length || row.exceptionSeen) fail('ROW_EXCEPTION_UNSUPPORTED');
+        row.exceptionSeen = true; zeroMargins = { container: false, sides: new Set() };
+        return;
+      }
       if (name === 'w:tbl') {
         if (closing) { if (!active || row || cell) fail('NESTING_INVALID'); finish(); active = null; }
         else {
@@ -236,13 +260,13 @@ function createTableReader(paragraphs) {
           if (cell.merge || !['restart', 'continue'].includes(value)) fail('MERGE_INVALID');
           cell.merge = value;
         }
-      } else if (['w:hMerge', 'w:gridBefore', 'w:gridAfter', 'w:tblPrEx'].includes(name)) {
+      } else if (['w:hMerge', 'w:gridBefore', 'w:gridAfter'].includes(name)) {
         fail('STRUCTURE_UNSUPPORTED');
       } else if (name === 'w:p' && !closing && (!cell || parent !== 'w:tc')) {
         fail('PARAGRAPH_OWNER_INVALID');
       }
     },
-    complete() { if (active || row || cell) fail('UNCLOSED'); },
+    complete() { if (active || row || cell || zeroMargins) fail('UNCLOSED'); },
   };
 }
 

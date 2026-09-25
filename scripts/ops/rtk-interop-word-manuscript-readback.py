@@ -70,7 +70,7 @@ METADATA_PUBLIC=['YALKEN_METADATA_SCHEMA','YALKEN_METADATA_POLICY','YALKEN_PROJE
 METADATA_AUTHORITY=['YRTK_C01_AUTH','YRTK2_TOKEN','YRTK_CORE_DIGEST']
 def fields(volume,route,recipe='DEFAULT'):
     require(volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT'] and route in ['C1','C2','C3','C5'],'MANUSCRIPT_SCOPE')
-    require(recipe=='DEFAULT' or (route=='C1' and recipe in ['C1_REVIEW_RETURN','TABLES_V1']) or (volume=='SINGLE_SCENE' and route in ['C1','C2','C3'] and recipe=='SINGLE_STRUCTURE_V2'),'MANUSCRIPT_RECIPE')
+    require(recipe=='DEFAULT' or (route=='C1' and recipe=='C1_REVIEW_RETURN') or (route in ['C1','C2','C3'] and recipe=='TABLES_V1') or (volume=='SINGLE_SCENE' and route in ['C1','C2','C3'] and recipe=='SINGLE_STRUCTURE_V2'),'MANUSCRIPT_RECIPE')
     if recipe=='TABLES_V1':return ['TABLES']
     if recipe=='SINGLE_STRUCTURE_V2':return ['NOVEL_SCENE_STRUCTURE']
     if recipe=='C1_REVIEW_RETURN':return ([] if volume=='SINGLE_SCENE' else ['NOVEL_SCENE_STRUCTURE'])+['TRACKED_REVIEW_SEMANTICS','COMMENTS','IDENTIFIERS_ANCHORS','METADATA','SECTIONS','NOTES','FOOTNOTES_ENDNOTES']
@@ -96,7 +96,12 @@ def expected_docs(volume,route,round=0,recipe='DEFAULT'):
     ps=[list(v.PROBES)] if volume=='SINGLE_SCENE' else v.expected_scenes(volume)
     docs=[{'type':'doc','content':[para(p.replace('sentinel alpha','sentinel round'+str(round)) if round else p) for p in s]} for s in ps]
     docs[0]['content'] += [para(p) for p in UNICODE]+styles()
-    if recipe=='TABLES_V1':docs[0]['content'][-1:-1]=tables.expected_blocks(para)
+    if recipe=='TABLES_V1':
+        blocks=tables.expected_blocks(para)
+        if route=='C1':docs[0]['content'][-1:-1]=blocks
+        else:
+            blocks[0]['content'][0]['content'][0]['content']=[docs[0]['content'].pop(0)]
+            docs[0]['content'][:0]=blocks
     if route in ['C2','C3'] or recipe in ['C1_REVIEW_RETURN','SINGLE_STRUCTURE_V2']:
         runs=[{'type':'text','text':'[links] '}]
         for i,target in enumerate([LINK_TARGETS[0],LINK_TARGETS[1],LINK_TARGETS[0]]):
@@ -314,8 +319,8 @@ def notes_doc(parts,document,data):
     projection={'schemaVersion':NOTES_SCHEMA,'notes':notes}
     return {'artifactSha256':digest(data),**projection,'references':refs,'partsSha256':parts_hash,'protectedDigest':'sha256:'+digest(canonical(projection))}
 
-def native_note_body(data,expected,notes):
-    actual=v.native(data);wanted=list(expected)
+def native_note_body(data,expected,notes,parsed_paragraphs=None):
+    actual=v.native(data) if parsed_paragraphs is None else parsed_paragraphs;wanted=list(expected)
     for n in reversed(notes):
         i=n['paragraphIndex'];raw=wanted[i].encode('utf-16-le');at=2*n['offsetUtf16'];wanted[i]=(raw[:at]+b'\x02\x00'+raw[at:]).decode('utf-16-le')
     exact(actual,wanted,'NATIVE_NOTE_REFERENCE_POSITIONS')
@@ -384,7 +389,7 @@ def expected_section_contract(ids,docs):
 
 def section_doc(document,data):
     body=document.find(W+'body');require(body is not None,'SECTIONS_BODY')
-    paragraphs=list(body.findall(W+'p'));body_sections=[n for n in list(body) if n.tag==W+'sectPr'];paragraph_sections=[]
+    paragraphs=body_paragraphs(document);body_sections=[n for n in list(body) if n.tag==W+'sectPr'];paragraph_sections=[]
     for index,p in enumerate(paragraphs):
         pprs=[n for n in list(p) if n.tag==W+'pPr'];require(len(pprs)<=1,'SECTIONS_PARAGRAPH_PROPERTIES_DUPLICATE')
         if pprs:
@@ -517,7 +522,7 @@ IDENTIFIER_CONTROLS=['missing-bookmark','duplicate-bookmark','wrong-bookmark-end
 def identifier_controls(source,round_id,ids,docs):
     _,parts,template=docx(source);identifier_doc(parts,template,round_id,ids,docs);rows=[]
     for name in IDENTIFIER_CONTROLS:
-        d=copy.deepcopy(template);changed=dict(parts);ps=d.findall(W+'body/'+W+'p');first=ps[0];starts=d.findall('.//'+W+'bookmarkStart');links=d.findall('.//'+W+'hyperlink')
+        d=copy.deepcopy(template);changed=dict(parts);ps=body_paragraphs(d);first=ps[0];starts=d.findall('.//'+W+'bookmarkStart');links=d.findall('.//'+W+'hyperlink')
         rels=ET.fromstring(parts['word/_rels/document.xml.rels']);link_rels=[r for r in rels if r.get('Type')==LINK_REL]
         if name=='missing-bookmark':first.remove(first.find(W+'bookmarkStart'))
         elif name=='duplicate-bookmark':ps[1].find(W+'bookmarkStart').set(W+'name',starts[0].get(W+'name'))
@@ -604,7 +609,7 @@ def comment_parts(parts,document,expected):
     require(set(ex)==set(cid)==set(by_para) and set(cex)==set(by_durable),'COMMENT_GRAPH_EXACT_JOIN')
     ranges={};starts={};ends={};refs={}
     body=document.find(W+'body')
-    for pi,p in enumerate(body.findall(W+'p')):
+    for pi,p in enumerate(body_paragraphs(document)):
         position=0;value=''
         def walk(n,deleted=False):
             nonlocal position,value
@@ -712,7 +717,7 @@ def review_revision_proof(document,intake,ordinal,property_probe=False):
 def review_controls(document,intake):
     # Calibrate the revision predicate on the actual native first paragraph.
     # Full-document preservation is independently required by the journey oracle.
-    first=document.find(W+'body/'+W+'p');require(first is not None,'REVIEW_CONTROL_PARAGRAPH')
+    first=body_paragraphs(document)[0];require(first is not None,'REVIEW_CONTROL_PARAGRAPH')
     rows=[]
     for name in REVIEW_CONTROLS:
         root=ET.Element(W+'document');body=ET.SubElement(root,W+'body');body.append(copy.deepcopy(first));value=copy.deepcopy(intake)
@@ -830,7 +835,8 @@ def controls(source,volume,route,ids,round_id,recipe='DEFAULT'):
     assert_docx_styles(docx(b)[1],docx(b)[2])
     for name in TEXT_CONTROLS:
         d=copy.deepcopy(template);body=d.find(W+'body');ps=body.findall(W+'p')
-        if name=='swap-paragraphs':body.remove(ps[0]);body.insert(1,ps[0])
+        if name=='swap-paragraphs':
+            a,b=list(body).index(ps[0]),list(body).index(ps[1]);body[a],body[b]=ps[1],ps[0]
         elif name=='delete-empty':body.remove(next(p for p in ps if v.visible(p)==''))
         elif name=='trim-spaces':
             for n in d.iter(W+'t'):
@@ -1078,10 +1084,15 @@ def audit(request):
     cycles=5 if route=='C3' else 1;final_round=0 if generic else cycles
     docs=expected_round();expected=sum([paragraphs(d) for d in docs],[]);stages={};style_stages={};structure_stages={};font_ledger=[];identifier_stages={};locator_stages={};identifier_intakes=[];identifier_negative=[];metadata_stages={};metadata_intakes=[];metadata_negative=[];section_stages={};section_intakes=[];section_negative=[];note_stages={};note_intakes=[];note_negative=[];note_snapshots={};note_locators={};note_native={}
     table_expected=tables.canonical_graphs(docs) if recipe=='TABLES_V1' else None;table_stages={}
-    def table_docx_stage(name,document,data):
+    def table_graph(round=0):return tables.canonical_graphs(expected_round(round))
+    def table_docx_stage(name,document,data,round=0):
         if table_expected is None:return
-        actual=tables.parse_body(document)[1];require(actual==table_expected,'TABLE_GRAPH_'+name)
+        actual=tables.parse_body(document)[1];require(actual==table_graph(round),'TABLE_GRAPH_'+name)
         table_stages[name]={'graphSha256':digest(canonical(actual)),'artifactSha256':digest(data),'tableCount':len(actual)}
+    def table_canonical_stage(name,documents,hashes,round):
+        if table_expected is None:return
+        graph=tables.canonical_graphs(documents);require(graph==table_graph(round),'TABLE_CANONICAL_'+name)
+        table_stages[name]={'graphSha256':digest(canonical(graph)),'artifactSha256':digest(canonical(hashes)),'tableCount':len(graph)}
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_round(round)],[])
         stages[name]={**exact(ps,es,name),'round':round,'sortKeysSha256':digest(canonical([[i,digest(p.encode())] for i,p in enumerate(ps)]))}
@@ -1183,7 +1194,14 @@ def audit(request):
         note_stages[name]=proof
     def native_note_check(name,directory,life,ps):
         actual=raw(directory+'/word-native-readback.txt')
-        result=native_note_body(actual,ps,note_contract['notes']);rows=[]
+        if table_expected is None:parsed_ps=None
+        else:
+            breaks=[section['startParagraphIndex'] for section in section_expected['protectedSections'][1:]]
+            parsed_ps=tables.native_readback(actual,raw(directory+'/word-native-tables.tsv'),lambda f:raw(directory+'/'+f),table_expected,len(ps),breaks)
+            table_stages[name+'-native']={'bodySha256':digest(actual),'indexSha256':digest(raw(directory+'/word-native-tables.tsv')),
+                'cellHashes':[digest(raw(directory+f'/word-native-table-{ti+1}-cell-{ci+1}.txt')) for ti,t in enumerate(table_expected) for ci in range(len(t['cells']))],
+                'method':'INDEPENDENT_NATIVE_CELLS_AND_COMPLETE_BODY_V1','tableCount':len(table_expected)}
+        result=native_note_body(actual,ps,note_contract['notes'],parsed_ps);rows=[]
         require(len(life.get('nativeNotes',[]))==4,'NOTES_NATIVE_COUNT')
         for kind in ['footnote','endnote']:
             wanted=[n for n in note_contract['notes'] if n['kind']==kind]
@@ -1218,7 +1236,7 @@ def audit(request):
         require(cap['projectId']==pid and cap['scope']=='full-manuscript' and cap['orderedSceneIds']==ids and cap['sceneCount']==count and cap['blockCount']==len(expected),'EXPORT_CAPSULE')
         require(cap['exportId'] not in export_ids and cap['roundId'].startswith('round-'),'EXPORT_FRESH_ROUND');export_ids.add(cap['exportId'])
         require(r['publicationGate']['ok'] is True and r['publicationGate']['finalArtifactSha256']=='sha256:'+digest(b) and r['canAutoApply'] is False and r['canImportMutate'] is False,'EXPORT_AUTHORITY')
-        ps,parts,doc=docx(b);stage(name+'-docx',ps,round);table_docx_stage(name,doc,b)
+        ps,parts,doc=docx(b);stage(name+'-docx',ps,round);table_docx_stage(name,doc,b,round)
         if not generic:
             comment_doc(name,parts,doc,b)
             metadata_check(name,parts,b)
@@ -1263,7 +1281,7 @@ def audit(request):
         for k,val in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','2' if tracked else '0'),('COMMENT_COUNT','0' if generic else '4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lines if line.startswith(k+'=')]==[k+'='+val],'WORD_'+k)
         require(life['screenshotProof']['ok'] is True and raw(directory+'/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'WORD_SCREENSHOT')
         require(life['nativeReadbackPath'].endswith('/'+run+'/'+directory+'/word-native-readback.txt') and life['evidencePath'].endswith('/'+run+'/'+returned_file),'WORD_FILE_BINDING')
-        if table_expected is not None:
+        if table_expected is not None and generic:
             expected_breaks=[] if name=='final-word-lifecycle' else [section['startParagraphIndex'] for section in expected_section_contract(ids,docs)['protectedSections'][1:]]
             native_ps=tables.native_readback(raw(directory+'/word-native-readback.txt'),raw(directory+'/word-native-tables.tsv'),lambda f:raw(directory+'/'+f),table_expected,len(expected),expected_breaks)
             table_stages[name+'-native']={'bodySha256':digest(raw(directory+'/word-native-readback.txt')),'indexSha256':digest(raw(directory+'/word-native-tables.tsv')),
@@ -1272,7 +1290,7 @@ def audit(request):
         else:
             native_ps=v.native(raw(directory+'/word-native-readback.txt')) if generic else native_note_check(name,directory,life,sum([paragraphs(d) for d in expected_round(round)],[]))
         stage(name+'-native',native_ps,round)
-        ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round);table_docx_stage(name,d,raw(returned_file))
+        ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round);table_docx_stage(name,d,raw(returned_file),round)
         if not generic:
             comment_doc(name,parts,d,raw(returned_file));metadata_check(name,parts,raw(returned_file));section_check(name,d,raw(returned_file));note_check(name,parts,d,raw(returned_file))
         if cap is not None:structure_stages[name]={'bookmarkSha256':bookmark_partition(d,cap['roundId'],ids,expected_round(round))}
@@ -1373,6 +1391,7 @@ def audit(request):
                 lifecycle=read(base+'/review-probe-word.json');require(lifecycle['status']=='PASS' and lifecycle['cleanupOk'] is True and lifecycle['compileProcess']['status']==lifecycle['process']['status']==0,'REVIEW_PROBE_WORD_LIFECYCLE')
                 require(lifecycle['sourceDocxHash']==lifecycle['preOpenHash']==digest(raw(base+'/source.docx')) and lifecycle['postWordHash']==lifecycle['copiedBackHash']==digest(probe),'REVIEW_PROBE_BYTES')
                 for k,value in [('WORD_STATUS','PASS'),('DOCUMENTS_BEFORE','0'),('DOCUMENTS_AFTER','0'),('REVISION_COUNT','3'),('COMMENT_COUNT','4'),('SCREENSHOT_STATUS','PASS')]:require([line for line in lifecycle['process']['stdout'].splitlines() if line.startswith(k+'=')]==[k+'='+value],'REVIEW_PROBE_'+k)
+                table_docx_stage(base+'/review-probe',pdoc,probe,1)
                 comment_doc(base+'/review-probe',parts,pdoc,probe)
                 identifier_stages[base+'/review-probe']={**identifier_doc(parts,pdoc,cap['roundId'],ids,expected_round(1)),'artifactSha256':digest(probe),'roundId':cap['roundId']}
                 require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
@@ -1453,9 +1472,10 @@ def audit(request):
             require(ap['commandId']=='cmd.project.review.applyExactTextChangesBatch' and result['ok'] is True and result['applied'] is True and result['totals']=={'requested':1,'applied':1,'blocked':0,'failed':0,'skipped':0} and ap['changeId']==changes[0]['changeId'],'EXPLICIT_APPLY')
             require(ap['before']==previous_hashes and ap['afterApply'][0]!=previous_hashes[0] and ap['afterApply'][1:]==previous_hashes[1:] and receipt['sceneId']==ids[0] and receipt['projectId']==pid and receipt['changeIds']==[ap['changeId']] and receipt['writeStatus']=='applied' and result['editorSync']['ok'] is True and ap['save']['ok'] is True,'APPLY_CANONICAL_MUTATION')
             new_docs=expected_round(ordinal);saved=ap['scenes'];require(len(saved)==count and [s['sceneId'] for s in saved]==ids and [s['nodeId'] for s in saved]==nodes,'APPLY_ALL_SCENES')
-            hashes=[];all_ps=[]
+            hashes=[];all_ps=[];saved_table_docs=[]
             for i,(s,d) in enumerate(zip(saved,new_docs)):
-                require(s['file']==prefix+base+f'/saved-scenes/{i}.txt','APPLY_SCENE_PATH');b=files[s['file']];actual=scene(b);require(digest(b)==s['sha256'] and normalize_doc(actual)==normalize_doc(d),'APPLY_RAW_RICH_SCENE');hashes.append(digest(b));all_ps+=paragraphs(actual)
+                require(s['file']==prefix+base+f'/saved-scenes/{i}.txt','APPLY_SCENE_PATH');b=files[s['file']];actual=scene(b);require(digest(b)==s['sha256'] and normalize_doc(actual)==normalize_doc(d),'APPLY_RAW_RICH_SCENE');hashes.append(digest(b));all_ps+=paragraphs(actual);saved_table_docs.append(actual)
+            table_canonical_stage(base+'/persisted',saved_table_docs,hashes,ordinal)
             require(hashes==ap['afterSave'] and hashes[1:]==previous_hashes[1:],'APPLY_SAVED_HASH_CHAIN');previous_hashes=hashes;stage(base+'/persisted',all_ps,ordinal)
             renderer({**ap,'nodeId':nodes[0]},new_docs[0],base+'/applied-renderer');stage(base+'/applied-renderer',ap['renderer']['paragraphs']+sum([paragraphs(d) for d in new_docs[1:]],[]),ordinal);tree_check(ap['tree'],base+'/tree')
             comment_query(base+'/comments')
@@ -1473,6 +1493,7 @@ def audit(request):
             require(s['sceneId']==ids[i] and s['nodeId']==nodes[i] and s['file']==prefix+f'reopened-scenes/{i}.txt','REOPEN_SCENE_BINDING')
             b=files[s['file']];require(b==raw('runtime-project-snapshot/'+ids[i]) and digest(b)==s['sha256']==previous_hashes[i],'REOPEN_DURABLE_BYTES')
             actual=scene(b);require(normalize_doc(actual)==normalize_doc(d),'REOPEN_RICH_DOCUMENT');renderer(s,d,'reopen-renderer-'+str(i));all_raw+=paragraphs(actual);all_render+=s['renderer']['paragraphs']
+        table_canonical_stage('reopened',[scene(files[s['file']]) for s in reopened['scenes']],previous_hashes,final_round)
         stage('reopened-persisted',all_raw,final_round);stage('reopened-renderer',all_render,final_round);tree_check(reopened['tree'],'reopen-tree')
         cap_final=export_check('reexport','reexport.docx',final_round,previous_hashes)
         word_check('final-word-lifecycle','reexport.docx','final-word.docx','final-word',final_round,False,cap_final)
@@ -1585,7 +1606,7 @@ def audit(request):
     if table_expected is not None:
         views=read('reopened-table-views.json')['views'];view_screens=[]
         require(len(views)==2*len(table_expected),'TABLE_VIEW_COUNT')
-        for i,table in enumerate(table_expected):
+        for i,table in enumerate(table_graph(final_round)):
             for j,edge in enumerate(['first','last']):
                 view=views[2*i+j];cell=table['cells'][0 if j==0 else -1]
                 require(view['tableIndex']==i and view['edge']==edge and view['text']==''.join(cell['paragraphs']),'TABLE_VIEW_IDENTITY')
@@ -1595,7 +1616,8 @@ def audit(request):
                     and view['display']!='none' and view['visibility']=='visible' and view['opacity']=='1','TABLE_VIEW_VISIBLE')
                 screen=raw(f'reopen-table-{i+1}-{edge}.png');require(screen.startswith(b'\x89PNG\r\n\x1a\n') and len(screen)>100,'TABLE_VIEW_SCREENSHOT');view_screens.append(digest(screen))
         for proof in proofs:
-            proof['tableProof']={'schemaVersion':'WORD_TABLES_INDEPENDENT_PROOF_V1','expectedGraphSha256':digest(canonical(table_expected)),
+            proof['tableProof']={'schemaVersion':'WORD_TABLES_INDEPENDENT_PROOF_V1' if generic else 'WORD_TABLES_INDEPENDENT_REVIEW_PROOF_V1','expectedGraphSha256':digest(canonical(table_expected)),
+                **({'expectedRoundGraphSha256':[digest(canonical(table_graph(n))) for n in range(cycles+1)]} if not generic else {}),
                 'stages':table_stages,'negativeControls':tables.negative_controls(docx(raw('rounds/1/source.docx'))[2],table_expected),
                 'viewportProof':{'method':'REOPENED_FIRST_LAST_CELL_HIT_TEST_V1','viewCount':len(views),'viewsSha256':digest(raw('reopened-table-views.json')),'screenshotHashes':view_screens},
                 'lossLedger':{'lostCells':[],'flattenedTables':[],'changedMerges':[],'profile':'RECTANGULAR_CELLS_WITH_GRIDSPAN_VMERGE_AND_LITERAL_PARAGRAPHS'}}
