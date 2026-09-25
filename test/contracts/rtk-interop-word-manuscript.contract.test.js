@@ -605,3 +605,38 @@ test('Actual intake result preserves revision metadata without sharing state, se
  const empty=context.sanitizeDocxReviewReturnIntakeForResult({parserResult:{reviewIr:{textRevisions:[null,{author:{toString:()=> 'authority'}}]}}});
  assert.equal(empty.reviewMetadata.textRevisions.length,2);assert.equal(empty.reviewMetadata.textRevisions[1].author,'');assert.equal(empty.counts.textRevisions,2);
 });
+
+
+test('Word native reopen admission preserves old sets and pins only native alias repair and regression',()=>{
+ const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
+ const base=JSON.parse(execFileSync('git',['show','ccc9b4b02db839241405f2667313c8ec5450455e:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
+ const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ const replacements=[
+  {
+    "prior": "WORD_SINGLE_STRUCTURE_V2",
+    "id": "WORD_SINGLE_STRUCTURE_REOPEN_V1",
+    "overrides": {
+      "src/m1-text-single-scene-source-runtime.mjs": "fbe0cd67145368db3e27bf5e0093cfa94d7e83a413b809718d513f407f4bb342",
+      "test/m0-audit-repair.test.mjs": "78e1f3b27cf2ca2e54ac5aa7b286a669e4fd15ea202464c558ac4a43341e103d"
+    }
+  },
+  {
+    "prior": "WORD_MEDIA_V1",
+    "id": "WORD_MEDIA_REOPEN_V1",
+    "overrides": {
+      "src/m1-text-single-scene-source-runtime.mjs": "d6812728c12e7d99329e221db30ca86778dff38f4631bd2235b1885b44e407f0",
+      "test/m0-audit-repair.test.mjs": "78e1f3b27cf2ca2e54ac5aa7b286a669e4fd15ea202464c558ac4a43341e103d"
+    }
+  }
+];
+ const expected=structuredClone(base);
+ for(const change of replacements){
+  const entry=structuredClone(base.labCodeBindingSets.find(s=>s.id===change.prior));
+  entry.id=change.id;
+  for(const binding of entry.bindings)if(change.overrides[binding.path])binding.sha256=change.overrides[binding.path];
+  expected.labCodeBindingSets.push(entry);
+ }
+ assert.deepEqual(actual,expected,'admission may add only the two complete exact binding sets');
+ assert.equal(actual.wordManuscriptBatch.cellIds.length,354);
+ assert.equal(actual.wordManuscriptBatch.hostileCellIds.length,84);
+});
