@@ -4,6 +4,7 @@ import Highlight from '@tiptap/extension-highlight'
 import Link from '@tiptap/extension-link'
 import { DocumentTextStyle } from './documentTextStyle.mjs'
 import { DocumentParagraphAlignment, readParagraphAlignment } from './documentParagraphAlignment.mjs'
+import { DocumentTables } from './documentTables.mjs'
 import Underline from '@tiptap/extension-underline'
 import StarterKit from '@tiptap/starter-kit'
 import {
@@ -537,6 +538,7 @@ export function initTiptap(mountEl, options = {}) {
       }),
       DocumentTextStyle,
       DocumentParagraphAlignment,
+      DocumentTables,
       Color,
       Highlight.configure({
         multicolor: true,

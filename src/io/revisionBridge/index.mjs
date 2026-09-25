@@ -1,3 +1,5 @@
+import documentTables from '../documentTables.js';
+const { groupTableParagraphs, createTableReader, compareTableParagraphTopology } = documentTables;
 import { composeObservablePayload } from '../../renderer/documentContentEnvelope.mjs';
 import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs';
 import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../paragraphAlignment.mjs';
@@ -3565,7 +3567,13 @@ function decodeXmlTextEntities(value) {
     .replace(/&amp;/gu, '&');
 }
 
-export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap) {
+export function validateDocxReviewTableTopology(paragraphs, exportMap) {
+  const expected = Array.isArray(exportMap?.scenes) ? exportMap.scenes.flatMap(scene => scene.blocks || []) : [];
+  if (!Array.isArray(paragraphs)) return { ok: false, code: 'DOCX_TABLE_PROJECTION_REQUIRED' };
+  return compareTableParagraphTopology(paragraphs, expected);
+}
+
+export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   const xml = normalizeString(documentXml);
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
   const sceneOrderBySceneId = new Map();
@@ -3597,32 +3605,35 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap) {
     }
   }
   let paragraphOrdinal = 0;
-  const paragraphRe = /<w:p\b[\s\S]*?<\/w:p>/gu;
+  const hasTables = scenes.some(scene => scene.blocks?.some(block => block.formatIr?.table))
+    || /<(?:[^>\s/:]+:)?tbl(?:\s|>)/u.test(xml);
+  // Keep the existing clean-producer projection for ordinary documents. The
+  // final bounded package parser still executes in the publication gate.
+  // Table ownership requires the namespace-aware grid projection below.
+  const scanned = hasTables ? extractReviewTransportFormattingRunsV2(xml, {
+    ...options,
+    cryptoPort: options.cryptoPort || {
+      sha256Text: text => `sha256:${sha256Hex(text)}`,
+      sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+      byteLength: text => new TextEncoder().encode(text).length,
+    },
+  }) : { ok: true, paragraphs: [...xml.matchAll(/<w:p\b[\s\S]*?<\/w:p>/gu)].map(match => ({
+    bookmarkNames: [...match[0].matchAll(/<w:bookmarkStart\b[^>]*\bw:name="([^"]*)"[^>]*\/>/gu)].map(m => normalizeString(m[1])),
+    paragraphText: [...match[0].matchAll(/<w:(?:t|delText)\b[^>]*>([\s\S]*?)<\/w:(?:t|delText)>/gu)].map(m => decodeXmlTextEntities(m[1])).join(''),
+  })) };
+  if (!scanned.ok) return { ok: false, code: scanned.code };
+  const tableTopology = validateDocxReviewTableTopology(scanned.paragraphs, exportMap);
+  if (!tableTopology.ok) return tableTopology;
   const blocksBySceneId = new Map();
   for (const sceneId of orderedSceneIds) blocksBySceneId.set(sceneId, []);
-  let paragraphMatch = paragraphRe.exec(xml);
-  while (paragraphMatch) {
-    const paragraphXml = paragraphMatch[0];
-    const bookmarkNames = [];
-    const bookmarkRe = /<w:bookmarkStart\b[^>]*\bw:name="([^"]*)"[^>]*\/>/gu;
-    let bookmarkMatch = bookmarkRe.exec(paragraphXml);
-    while (bookmarkMatch) {
-      bookmarkNames.push(normalizeString(bookmarkMatch[1]));
-      bookmarkMatch = bookmarkRe.exec(paragraphXml);
-    }
+  for (const paragraph of scanned.paragraphs) {
+    const bookmarkNames = paragraph.bookmarkNames;
     const declared = bookmarkNames.filter((name) => sceneIdByBookmarkName.has(name.toLowerCase()));
     if (declared.length !== 1 || declared[0].toLowerCase() !== orderedBookmarks[paragraphOrdinal]) {
       return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_ORDER_MISMATCH' };
     }
     paragraphOrdinal += 1;
-    const runs = [];
-    const textRe = /<w:(?:t|delText)\b[^>]*>([\s\S]*?)<\/w:(?:t|delText)>/gu;
-    let textMatch = textRe.exec(paragraphXml);
-    while (textMatch) {
-      runs.push(decodeXmlTextEntities(textMatch[1]));
-      textMatch = textRe.exec(paragraphXml);
-    }
-    const paragraphText = runs.join('');
+    const paragraphText = paragraph.paragraphText;
     let resolvedSceneId = null;
     let ambiguous = false;
     for (const rawName of bookmarkNames) {
@@ -3656,7 +3667,6 @@ export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap) {
         bookmarkNames,
       };
     }
-    paragraphMatch = paragraphRe.exec(xml);
   }
   if (paragraphOrdinal !== orderedBookmarks.length || paragraphOrdinal === 0) {
     return { ok: false, code: 'RTK_V4_PUBLICATION_GATE_PARAGRAPH_COUNT_MISMATCH' };
@@ -7005,7 +7015,6 @@ const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
   'w:bookmarkEnd',
   'w:bookmarkStart',
   'w:hyperlink',
-  'w:tbl',
 ]);
 const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS,
@@ -8812,7 +8821,18 @@ function docxInlineCanonicalContent(paragraphs) {
   });
   const content = [];
   const stack = [];
-  blocks.forEach((block, index) => {
+  groupTableParagraphs(paragraphs).forEach(group => {
+    if (group.table) {
+      hasMarks = true; stack.length = 0;
+      for (const cell of group.cells) {
+        if (cell.paragraphs.some(p => paragraphs[p.index].list !== undefined)) throw new Error('DOCX_TABLE_LIST_UNSUPPORTED');
+        cell.node.content = cell.paragraphs.map(p => blocks[p.index]);
+      }
+      content.push(group.table);
+      return;
+    }
+    const { index } = group;
+    const block = blocks[index];
     const list = paragraphs[index].list;
     if (list === undefined) {
       stack.length = 0;
@@ -8957,6 +8977,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   const seenSectionBreakKinds = new Set();
   const seenFieldHyperlinkKinds = new Set();
   const paragraphs = [];
+  const tableReader = createTableReader(paragraphs);
   const elementStack = [];
   let rootSeen = false;
   let rootTagName = '';
@@ -9111,6 +9132,8 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     // revisions and foreign-namespace lookalikes never become inline marks.
     const parentTag = closing ? elementStack.at(-1)?.semanticTagName
       : elementStack.at(selfClosing ? -1 : -2)?.semanticTagName;
+    tableReader.tag(tagName, parentTag, closing, selfClosing,
+      name => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, name));
     if (insideParagraph && tagName === 'w:r') {
       activeInlineRun = closing || selfClosing ? null : { properties: {}, styleId: '' };
     } else if (activeInlineRun && !closing && parentTag === 'w:rPr'
@@ -9305,6 +9328,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     if (pushed.failure) return pushed;
   }
 
+  tableReader.complete();
   const joinedText = paragraphs.map((paragraph) => paragraph.text).join('\n');
   return {
     diagnostics,
@@ -10410,6 +10434,9 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.fontFamily || run.fontSize))) {
       formatting.message = 'Uniform literal fonts, supported resolved theme fonts and half-point sizes are preserved. Installed font availability determines rendering. '
         + formatting.message.replace('fonts,', 'unresolved or differing script fonts,');
+    }
+    if (contentPreview.paragraphs.some(p => p.table !== undefined)) {
+      formatting.message = 'Table rows, cells, empty cell paragraphs and horizontal/vertical merges are preserved. ' + formatting.message;
     }
     if (hasBlockStyles) {
       lossReport.mode = 'block-styles-headings-lists-and-inline-marks';

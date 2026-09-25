@@ -184,13 +184,13 @@ function yrtk2CarrierDocxZip(paragraphs = ['Carrier scene one']) {
 }
 
 function lossyDocxZip() {
-  // A DOCX whose document.xml carries lossy structures (table, tracked
+  // A DOCX whose document.xml carries a preserved table and lossy tracked
   // revision, comment, hyperlink) that are known to be dropped by the
   // plain-text-only candidate. The TARGET contract persists these as typed
   // LossLedger items in the receipt; today they collapse to a summary count.
   const body = [
     paragraphXml('Has table below'),
-    '<w:tbl><w:tr><w:tc><w:p><w:r><w:t>cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
+    '<w:tbl><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc><w:p><w:r><w:t>cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
     '<w:p><w:ins w:id="1" w:author="a"><w:r><w:t>inserted</w:t></w:r></w:ins></w:p>',
     '<w:p><w:commentRangeStart w:id="2"/><w:r><w:t>annotated</w:t></w:r><w:commentReference w:id="2"/></w:p>',
     '<w:p><w:hyperlink r:id="rId1"><w:r><w:t>linked</w:t></w:r></w:hyperlink></w:p>',
@@ -580,7 +580,7 @@ test('GENERIC01-G7-loss-ledger-persists: receipt must persist the typed LossLedg
   const receipt = applied.value.receipt;
 
   // TARGET: the receipt persists the typed lossReport (with items), preserving
-  // the table/revision/comment/link categories across the apply boundary.
+  // the revision/comment/link categories across the apply boundary.
   // RED REASON (CURRENT): the receipt carries only lossReportSummary (a count);
   // the typed lossReport with its items is dropped.
   assert.ok(

@@ -1,3 +1,4 @@
+import documentTables from '../documentTables.js';
 import {
   RTK_RETURNED_REVIEW_ANALYSIS_V2_SCHEMA,
   RTK_REVIEW_IR_V2_SCHEMA,
@@ -1143,16 +1144,17 @@ function provenance(token) {
 function paragraphIndexForOffset(documentScan, offset) {
   if (typeof offset !== 'number') return null;
   let index = 0;
-  for (const token of documentScan.tokens) {
-    if (!isWordToken(token, 'p') || token.path.length !== 3 || token.path[1] !== 'body') continue;
+  const tokens = documentScan.logicalTableParagraphs?.map(record => record.token) || documentScan.tokens;
+  for (const token of tokens) {
+    if (!isWordToken(token, 'p') || (!documentScan.logicalTableParagraphs && (token.path.length !== 3 || token.path[1] !== 'body'))) continue;
     if (offset >= token.openStart && offset <= token.closeEnd) return index;
     index += 1;
   }
   // Fall back to the count of top-level body paragraphs before the offset so a revision that
   // starts before/after a paragraph boundary still maps to a stable positional index.
   let position = 0;
-  for (const token of documentScan.tokens) {
-    if (!isWordToken(token, 'p') || token.path.length !== 3 || token.path[1] !== 'body') continue;
+  for (const token of tokens) {
+    if (!isWordToken(token, 'p') || (!documentScan.logicalTableParagraphs && (token.path.length !== 3 || token.path[1] !== 'body'))) continue;
     if (token.openStart > offset) break;
     position += 1;
   }
@@ -2153,6 +2155,41 @@ function indexFormattingDocumentTokens(tokens) {
   return paragraphs;
 }
 
+// Table paragraph ordinals exclude only validated empty vertical-merge
+// continuations. The result is a read-only projection, never review authority.
+function tableDocumentParagraphs(documentXml, documentScan) {
+  if (!documentScan.tokens.some(t => isWordToken(t, 'tbl'))) return null;
+  const records = indexFormattingDocumentTokens(documentScan.tokens);
+  const byToken = new Map(records.map(record => [record.token, record]));
+  const paragraphs = [], reader = documentTables.createTableReader(paragraphs);
+  const events = documentScan.tokens.flatMap(token => [
+    { token, close: false, offset: token.openStart },
+    ...(!token.selfClosing ? [{ token, close: true, offset: token.closeStart }] : []),
+  ]).sort((a, b) => a.offset - b.offset);
+  const stack = [];
+  const name = t => t ? `${t.namespaceUri === W_NS ? 'w' : 'other'}:${t.localName}` : '';
+  for (const event of events) {
+    const { token, close } = event;
+    if (close) stack.pop();
+    reader.tag(name(token), name(stack.at(-1)), close, token.selfClosing, key => attr(token, key, W_NS));
+    if (isWordToken(token, 'p') && (!close && token.selfClosing || close)) {
+      const record = byToken.get(token);
+      if (!record) throw new Error('DOCX_TABLE_PARAGRAPH_RECORD_REQUIRED');
+      record.text = textInsideToken(documentXml, { tokens: record.tokens }, token);
+      record.continuationEmpty = !record.tokens.some(t => [
+        'ins', 'del', 'moveFrom', 'moveTo', 'bookmarkStart', 'bookmarkEnd',
+        'commentRangeStart', 'commentRangeEnd', 'commentReference',
+        'footnoteReference', 'endnoteReference', 'drawing', 'object', 'pict',
+        'fldSimple', 'instrText', 'tab', 'br', 'cr',
+      ].includes(t.localName));
+      paragraphs.push(record);
+    }
+    if (!close && !token.selfClosing) stack.push(token);
+  }
+  reader.complete();
+  return paragraphs;
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2175,7 +2212,15 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   if (blockingReason(reasons)) {
     return { ok: false, code: 'RTK_FORMATTING_SCANNER_XML_BLOCKED', reasons, paragraphs: [] };
   }
-  const paragraphs = indexFormattingDocumentTokens(documentScan.tokens);
+  let paragraphs;
+  try {
+    paragraphs = documentScan.logicalTableParagraphs
+      || tableDocumentParagraphs(documentXml, documentScan)
+      || indexFormattingDocumentTokens(documentScan.tokens);
+  } catch (error) {
+    reasons.push(reason('RTK_WORD_TABLES_MALFORMED_BLOCKED', 'reviewIr.tableParagraphs', error.message));
+    return { ok: false, code: 'RTK_WORD_TABLES_MALFORMED_BLOCKED', reasons, paragraphs: [] };
+  }
   const results = [];
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     const paragraph = paragraphRecord.token;
@@ -2252,6 +2297,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     results.push({
       paragraphIndex,
       paragraphText,
+      ...(paragraphRecord.table ? { table: paragraphRecord.table } : {}),
       trackedRevision,
       paraId: attr(paragraph, 'paraId'),
       textId: attr(paragraph, 'textId'),
@@ -2271,6 +2317,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
   return paragraphs.map((paragraph) => ({
     paragraphIndex: paragraph.paragraphIndex,
     paragraphText: paragraph.paragraphText,
+    ...(paragraph.table ? { table: paragraph.table } : {}),
     trackedRevision: paragraph.trackedRevision,
     paraId: paragraph.paraId,
     textId: paragraph.textId,
@@ -3236,12 +3283,12 @@ function parseDocumentSections(documentScan, cryptoPort) {
       },
     ));
   }
-  const paragraphs = documentScan.tokens.filter((token) => (
-    isWordToken(token, 'p')
-    && token.path.length === 3
-    && token.path[0] === 'document'
-    && token.path[1] === 'body'
-  )).sort((left, right) => left.openStart - right.openStart);
+  const paragraphs = documentScan.logicalTableParagraphs
+    ? documentScan.logicalTableParagraphs.map(record => record.token)
+    : documentScan.tokens.filter((token) => (
+      isWordToken(token, 'p') && token.path.length === 3
+      && token.path[0] === 'document' && token.path[1] === 'body'
+    )).sort((left, right) => left.openStart - right.openStart);
   const seenBoundaryParagraphs = new Set();
   const records = [];
   const providerExtensionElements = [];
@@ -3452,6 +3499,7 @@ function blockingReason(reasons) {
     'RTK_ZIP_FAKE_EOCD',
     'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
     'RTK_WORD_NOTES_MALFORMED_BLOCKED',
+    'RTK_WORD_TABLES_MALFORMED_BLOCKED',
   ].includes(item.code));
 }
 
@@ -3588,6 +3636,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const documentXml = rawString(parts['word/document.xml']);
   const documentScan = parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
   reasons.push(...documentScan.diagnostics);
+  if (!blockingReason(reasons)) {
+    try { documentScan.logicalTableParagraphs = tableDocumentParagraphs(documentXml, documentScan); }
+    catch (error) { reasons.push(reason('RTK_WORD_TABLES_MALFORMED_BLOCKED', 'reviewIr.tableParagraphs', error.message)); }
+  }
   const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort);
   reasons.push(...documentSectionsResult.reasons);
   const documentSections = documentSectionsResult.sections;

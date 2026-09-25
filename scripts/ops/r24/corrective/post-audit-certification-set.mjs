@@ -178,6 +178,29 @@ export const R24_INTEROP_WORD_PROMOTION_SUCCESSOR=Object.freeze({
     {path:'test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js',sha256:'a2b3f985050f2a0abe4d9d3f5a83091739dd9c7d5092158976fca42b0ea89dd8'},
   ]),
 });
+export const R24_INTEROP_WORD_TABLES_C1_SUCCESSOR=Object.freeze({
+  "id": "WORD_TABLES_C1_20260925",
+  "baseSha": "a4d186e026af0d532c73d2108e5369252302574b",
+  "baseTree": "5a5fcda93702460f6600dc2e67dc8e08731a0a18",
+  "successorBaseSha": "d4a095c877b9a45e2979f23c6b9f159791bacc38",
+  "successorBaseTree": "74d5d4fd403e7f5147781e478fad47aa89a23777",
+  "bindings": [
+    {
+      "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "b284159b108cf712666b1854b88af9d169fdf6341f2144896207e3e163baf975"
+    },
+    {
+      "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "a7945f6a90b99daecf70249903ddf699cef75bf520b7777adf5f83bb4256a70c"
+    }
+  ],
+  "guards": [
+    {
+      "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "8f5dc482c419330641a67cdce7a6b6e8e09ee2dab6b1459060c1cdbc1182777f"
+    }
+  ]
+});
 export const R24_PR1888_DOCX_IMPORT_CURRENT_MAIN_RECONCILIATION_PATHS=Object.freeze([
   'docs/OPS/RTK/YALKEN_DOCX_IMPORT_IDEMPOTENT_RECEIPT_INTEGRITY_GOVERNANCE_APPROVALS_V1.json',
   'src/io/revisionBridge/index.mjs',
@@ -1992,8 +2015,18 @@ export function verifyR24InteropC4LabCodePinSuccessor({candidateSha='HEAD',git=d
   return{status:'PASS',baseSha:expectation.baseSha,candidateSha:candidate,admittedPaths:bindings.map(binding=>binding.path),bindings,cellAcceptanceAuthority:false};
 }
 export function verifyR24InteropWordPromotionSuccessor({candidateSha='HEAD',git=defaultGit}={}){
-  const expectation=R24_INTEROP_WORD_PROMOTION_SUCCESSOR;
   const candidate=gitText(git,['rev-parse',candidateSha]);
+  const expectation=[R24_INTEROP_WORD_PROMOTION_SUCCESSOR,R24_INTEROP_WORD_TABLES_C1_SUCCESSOR].find(set=>
+    [...set.bindings,...(set.guards||[])].every(binding=>{
+      try{return h(objectBytes(git,candidate,binding.path))===binding.sha256;}
+      catch{return false;}
+    }));
+  assert(expectation,'E_INTEROP_WORD_PROMOTION_PIN','no complete approved binding set');
+  if(expectation.successorBaseSha){
+    assert(evaluationTree(git,expectation.successorBaseSha)===expectation.successorBaseTree,'E_INTEROP_WORD_TABLES_BASE_TREE');
+    try{git(['merge-base','--is-ancestor',expectation.successorBaseSha,candidate],{encoding:null});}
+    catch{fail('E_INTEROP_WORD_TABLES_ANCESTRY');}
+  }
   assert(evaluationTree(git,expectation.baseSha)===expectation.baseTree,'E_INTEROP_WORD_PROMOTION_BASE_TREE');
   try{git(['merge-base','--is-ancestor',expectation.baseSha,candidate],{encoding:null});}
   catch{fail('E_INTEROP_WORD_PROMOTION_ANCESTRY');}

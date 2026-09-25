@@ -1,3 +1,4 @@
+const { tableParagraphs, renderTableParagraphs } = require('../../io/documentTables.js');
 const ZIP_CRC32_TABLE = (() => {
   const table = new Uint32Array(256);
   for (let i = 0; i < 256; i += 1) {
@@ -148,6 +149,7 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
   if (!isPlainObjectValue(doc) || doc.type !== 'doc' || !Array.isArray(doc.content)) return null;
   const blocks = [];
   let nextListId = 1;
+  let nextTableId = 0;
   const visitList = (list, level) => {
     if (level > 8 || nextListId > 2048) throw new Error('DOCX_LIST_LIMIT');
     if (!Array.isArray(list.content) || !list.content.length) throw new Error('DOCX_LIST_EMPTY');
@@ -173,6 +175,15 @@ function buildSemanticBlocksFromDocument(doc, pageBreakToken) {
 
   const visit = (node, blockquoteDepth = 0) => {
     if (!isPlainObjectValue(node)) return;
+    if (node.type === 'table') {
+      for (const entry of tableParagraphs(node, `table-${nextTableId++}`)) {
+        const before = blocks.length;
+        visit(entry.node);
+        if (blocks.length !== before + 1) throw new Error('DOCX_TABLE_PARAGRAPH_INVALID');
+        blocks.at(-1).table = entry.table;
+      }
+      return;
+    }
     if (node.type === 'blockquote') {
       if (blockquoteDepth >= 8 || !Array.isArray(node.content) || !node.content.length
         || node.content.some(child => !['paragraph', 'heading', 'codeBlock', 'blockquote'].includes(child?.type))) {
@@ -291,7 +302,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const blockStyles = new Set();
   const numberings = new Map();
   const paragraphs = entries.length > 0
-    ? entries.map((entry, index) => {
+    ? renderTableParagraphs(entries, (_entry, index) => semanticBlocks?.[index]?.table, (entry, index) => {
       const semanticKind = normalizeSemanticKind(entry && entry.kind);
       const styleDescriptor = styleMap.resolve(entry);
       const headingLevel = semanticBlocks?.[index]?.headingLevel;
@@ -325,7 +336,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
       const runsXml = hasMarks || hasColors || hasTypography
         ? runs.map(run => buildDocxMarkedRunXml(run, hasColors, hasTypography)).join('') : buildDocxTextRunsXml(text);
       return `<w:p>${styleXml}${runsXml}</w:p>`;
-    }).join('')
+    })
     : '<w:p/>';
 
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>

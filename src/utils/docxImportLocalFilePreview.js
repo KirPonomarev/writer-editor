@@ -193,6 +193,7 @@ function sanitizeContentPreviewReport(report) {
                 'list',
                 'blockKind',
                 'blockquoteDepth',
+                'table',
               ]))
               .filter(isPlainObject)
             : [],

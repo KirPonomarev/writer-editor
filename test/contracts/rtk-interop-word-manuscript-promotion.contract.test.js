@@ -82,3 +82,30 @@ test('Manuscript promotion admits only the exact inspected C4 successor blobs', 
   git('commit', '-m', 'unlisted product change');
   assert.throws(() => check({repoRoot: root, runtimeIdentity, verifierIdentity: identity(), allowedPaths: ['oracle.txt']}), /PROMOTION_SCOPE/);
 });
+
+test('C1 table reader successor admits one complete set and rejects mixed or altered bindings', async () => {
+  const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
+  const expected = cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR, candidate = 'f'.repeat(40);
+  const bytes = new Map(await Promise.all([...expected.bindings, ...expected.guards].map(async b => [b.path, await fs.readFile(path.join(ROOT, b.path))])));
+  const git = args => {
+    if (args[0] === 'rev-parse') {
+      if (args[1] === expected.baseSha + '^{tree}') return expected.baseTree;
+      if (args[1] === expected.successorBaseSha + '^{tree}') return expected.successorBaseTree;
+      return candidate;
+    }
+    if (args[0] === 'merge-base') return '';
+    if (args[0] === 'show') { const b = bytes.get(args[1].slice(41)); if (!b) throw new Error('missing'); return b; }
+    throw new Error(args.join(' '));
+  };
+  const result = cert.verifyR24InteropWordPromotionSuccessor({ git });
+  assert.equal(result.status, 'PASS'); assert.equal(result.cellAcceptanceAuthority, false);
+  assert.equal(result.baseSha, cert.R24_INTEROP_WORD_PROMOTION_SUCCESSOR.baseSha);
+  assert.equal(result.bindings.length, 2);
+  for (const binding of [...expected.bindings, ...expected.guards]) {
+    const original = bytes.get(binding.path); bytes.set(binding.path, Buffer.concat([original, Buffer.from('\n')]));
+    assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ git }), /E_INTEROP_WORD_PROMOTION_PIN/);
+    bytes.set(binding.path, original);
+  }
+  bytes.set(expected.bindings[0].path, execFileSync('git', ['show', expected.successorBaseSha + ':' + expected.bindings[0].path], { cwd: ROOT }));
+  assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ git }), /E_INTEROP_WORD_PROMOTION_PIN/);
+});

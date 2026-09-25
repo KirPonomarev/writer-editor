@@ -115,7 +115,8 @@ test('C3 parser enforces maxBlocks maxRevisions maxComments and maxCandidates fa
     'word/comments.xml': `<w:comments xmlns:w="${W_NS}"><w:comment w:id="1"><w:p><w:r><w:t>one</w:t></w:r></w:p></w:comment><w:comment w:id="2"><w:p><w:r><w:t>two</w:t></w:r></w:p></w:comment></w:comments>`,
   }, { maxComments: 1 });
   const tooManyCandidates = parse(parser, baseParts(documentXml(
-    '<w:tbl/><w:tbl/><w:p><w:r><w:t>body</w:t></w:r></w:p>',
+    '<w:tbl><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc><w:p/></w:tc></w:tr></w:tbl>'.repeat(2)
+      + '<w:p><w:r><w:t>body</w:t></w:r></w:p>',
   )), { maxCandidates: 1 });
 
   for (const result of [tooManyBlocks, tooManyRevisions, tooManyComments, tooManyCandidates]) {

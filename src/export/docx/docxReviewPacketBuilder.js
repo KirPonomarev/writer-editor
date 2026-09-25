@@ -1,3 +1,4 @@
+const { renderTableParagraphs } = require('../../io/documentTables.js');
 'use strict';
 
 const { buildStoredZip } = require('./docxMinBuilder');
@@ -364,7 +365,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
   const paragraphBreaks = new Map((normalizedSections?.protectedSections || [])
     .filter((section) => section.breakPlacement === 'PARAGRAPH_PROPERTIES')
     .map((section) => [section.endParagraphIndex, section]));
-  const paragraphs = blocks.map((block, index) => buildParagraphXml(
+  const paragraphs = renderTableParagraphs(blocks, block => block.formatIr?.table, (block, index) => buildParagraphXml(
     block,
     index,
     hyperlinkByHref,
@@ -372,7 +373,7 @@ function buildDocumentXml(blocks, hyperlinkByHref, commentExport, documentSectio
     paragraphBreaks.get(index) || null,
     documentNotes,
     officeModeTransport,
-  )).join('');
+  ));
   const finalSection = normalizedSections?.protectedSections?.at(-1);
   const finalSectionXml = finalSection
     ? buildSectionPropertiesXml(finalSection, { final: true })
