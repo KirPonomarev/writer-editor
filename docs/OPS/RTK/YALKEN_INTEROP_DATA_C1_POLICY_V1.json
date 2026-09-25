@@ -830,11 +830,11 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "5cbb18004d9a58c1b6287b99c2e8f34293854a4fc125509316204e6aaa0d333d"
+        "sha256": "628fab4bb3e49835c7df51c581c54fd2e0dc6402d9fafcead582e5413865a9b9"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
-        "sha256": "c1f994240cdc445521fb5afa7ea5f095bf79b80d3a1669c775f4cb988d15ece9"
+        "sha256": "a3f368a7f4cb8286d6effdb7e5d01b33fe4f11b7679c39abd8bcce4c99064d3d"
       },
       {
         "path": "src/io/documentMedia.js",
@@ -958,7 +958,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
-        "sha256": "fab3197631b0e47c0cd9528981ffc39810ee990b09ebc2a0b1011cedbe97c580"
+        "sha256": "652d9f7f7fbf039e3dae0e76dfe6fa116072e269c55018e8bdccf29024833ebc"
       },
       {
         "path": "src/io/documentTableProperties.js",
@@ -970,7 +970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "0d4ae579c85f6dcdaa1dbfc338a4626ca4ebed8a12ee2022d249283a1a9d731c"
+        "sha256": "ac75323f0d2204ad2896a72314ea42e5de0673dd5e6b9267b001351cf23dfd27"
       }
     ],
     "followupRepair": {

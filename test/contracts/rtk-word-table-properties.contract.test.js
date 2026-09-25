@@ -140,3 +140,17 @@ print('RAW_TABLE_PROPERTIES_AND_FIVE_MUTANTS_PASS')`;
   const result=spawnSync('python3',['-I','-B','-c',code,path.join(__dirname,'../../scripts/ops/rtk-interop-word-tables-readback.py')],{input:JSON.stringify({doc,bytes:bytes.toString('base64')}),encoding:'utf8'});
   assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/FIVE_MUTANTS_PASS/u);
 });
+
+test('W5: table style inheritance is an explicit unsupported outcome, never silent literal fidelity', async () => {
+  const {plan}=await imported(await mutate(await exported(fixture()),x=>x.replace('<w:tblPr>','<w:tblPr><w:tblStyle w:val="FancyTable"/>')));
+  assert.ok(plan.lossReport.items.some(x=>x.feature==='table.borders' && /inheritance/u.test(x.transformation)));
+});
+test('W5: conflicting vertical continuation properties fail closed and matching cell widths are redundant', async () => {
+  const t=table(row(cell('vertical',1,2),cell('A')),row(cell('B')));
+  t.attrs={wordTable:{version:1,grid:[720,4320],layout:'fixed',widthDxa:null,shading:null,borders:{}}};
+  const doc={type:'doc',content:[t]},bytes=await exported(doc),[bridge]=await modules;
+  const matching=await mutate(bytes,x=>x.replace('<w:tcPr>','<w:tcPr><w:tcW w:w="720" w:type="dxa"/>'));
+  const ok=await imported(matching);assert.deepEqual(ok.doc,doc);assert.equal(ok.plan.lossReport.items.some(x=>x.feature==='table.widths'),false);
+  const mismatch=await mutate(bytes,x=>x.replace('<w:vMerge w:val="continue"/>','<w:vMerge w:val="continue"/><w:shd w:val="clear" w:fill="FF0000"/>'));
+  const report=bridge.buildDocxContentPreviewFromZipBytes(mismatch);assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_TABLE_MERGED_CELL_PROPERTIES_CONFLICT');
+});

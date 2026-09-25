@@ -38,6 +38,7 @@ def raw_properties(pr,table=False,grid=None):
     result={'version':1,'shading':None,'borders':{}}
     if table:result.update(grid=grid,layout=None,widthDxa=None)
     if pr is None:return result
+    if table:need(pr.find(W+'tblStyle') is None,'STYLE_INHERITANCE_UNSUPPORTED')
     for tag in ['shd','tblBorders' if table else 'tcBorders','tblLayout','tblW','tcW']:
         need(len(pr.findall(W+tag))<=1,'PROPERTY_DUPLICATE')
     shade=pr.find(W+'shd')

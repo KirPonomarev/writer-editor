@@ -66,7 +66,8 @@ const nodes = Object.entries(specifications).map(([key, spec]) => Node.create({
   renderHTML({ node }) {
     if (key === 'table') {
       const view = tablePresentation(node.toJSON());
-      if (view) return ['table', { style: view.style }, ['colgroup', ...view.grid.map(w => ['col', w === null ? {} : { style: `width:${w / 15}px` }])], ['tbody', 0]];
+      if (view) return ['div', { 'data-document-table-scroll': 'true', role: 'region', 'aria-label': 'Таблица документа', tabindex: '0', style: 'max-width:100%;overflow-x:auto' },
+        ['table', { style: view.style }, ['colgroup', ...view.grid.map(w => ['col', w === null ? {} : { style: `width:${w / 15}px` }])], ['tbody', 0]]];
     }
     return spec.toDOM(node);
   },

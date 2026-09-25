@@ -262,6 +262,11 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         const width = property(attribute('w'));
         if (width !== '' && (!/^[1-9]\d{0,4}$/u.test(width) || Number(width) > MAX_DXA)) fail('GRID_WIDTH_INVALID');
         active.properties.grid.push(width === '' ? null : Number(width));
+      } else if (!closing && name === 'w:tblStyle' && parent === 'w:tblPr') {
+        if (row || active.seen.has(name)) fail('PROPERTY_OWNER_INVALID');
+        active.seen.add(name);
+        const styleId = property(attribute('val'));
+        loss('borders', `w:tblStyle=${styleId || 'unspecified'}`, 'table style inheritance is not retained; only explicit literal table/cell properties are retained');
       } else if (!closing && ['w:tblW', 'w:tcW', 'w:tblLayout', 'w:shd', 'w:tblBorders', 'w:tcBorders'].includes(name)) {
         const isCell = ['w:tcW', 'w:tcBorders'].includes(name) || name === 'w:shd' && parent === 'w:tcPr';
         const owner = isCell ? cell : active;
