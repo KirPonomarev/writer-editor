@@ -133,4 +133,4 @@ Media physical counterexample: the paragraph-only page mask clipped the third re
 
 Planner integration: new media candidates remain deterministic and unique without invented duration; unmeasured totals and budget verdict are null. Accepted jobs are filtered before timing lookup. Exact affected test: `scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs`.
 
-Resource counterexample: repeated references to one asset must not bypass aggregate encoded-payload or decoded-pixel budgets. Count every placement; reuse validation only for identical full attributes within one call. Boundary tests retain distinct alt text and reject changed identity, excessive repeated bytes and pixels.
+Resource counterexample: repeated references to one asset must not bypass aggregate encoded-payload or decoded-pixel budgets. Count and validate every placement through the same strict validator; avoid a separate cache-hit acceptance path. Boundary tests retain distinct alt text and reject changed identity, excessive repeated bytes and pixels.

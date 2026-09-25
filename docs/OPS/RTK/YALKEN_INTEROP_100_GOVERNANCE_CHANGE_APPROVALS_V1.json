@@ -1540,18 +1540,18 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "7789bb142cf1672012a153997aaa7cc393036eb14e796f8fdc2cd42247dcdb42",
+      "sha256": "a69c33c1d34ed6f871b85e21ac97584fb793d7d588e499f2a08746719e2a0907",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "9e98f0117477ec046aa78258a4d33319ca516554c57ab6a87cddb3828b45f499",
+      "sha256": "364073bb90916d3f10c606b6ca0958e9ffd109458e3ae00b4895ccf78c05dc04",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
@@ -1567,36 +1567,36 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d7e25b30edd5f03501d736c988a94b59097ec4623a18defa80c422b24ccf28d9",
+      "sha256": "dc4eb4d814a9301a624721b5b31084a9e44ca3e230daae253a803865e0757d3e",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
-      "sha256": "db3fcccfe616198f0bb9af39634844577b6e0b79fa0c594b9c15ed785c5fc888",
+      "sha256": "597c89a346d6dc29d3bce1527210a0aa6f10bf3f2d8d9c7339ebc9977830ea32",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "709245f2a160218e53015fd352f79a01e8e02fd29650a058b9ecf798c25cdc84",
+      "sha256": "2560589be995ec21958e284331662247818636816b9c9d75f05f07a8a917761a",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "07fd0e881b24608d76fb72c57e75974ce2651ed911b611f7174e7c010be078fb",
+      "sha256": "42918007e469df41062578378b18c49d152e97d2ec8b5139c3295f6ae125c15c",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
@@ -1693,9 +1693,9 @@
     },
     {
       "filePath": "src/io/documentMedia.js",
-      "sha256": "ab4b9471aa29da5ce2e0976844a1a3d554f839ca927212f79214c49d7a51807c",
+      "sha256": "dac89b55fffb223b4f9debea1768a70147e303c2e15a1b90f66a88df9f2c6886",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
@@ -1855,9 +1855,9 @@
     },
     {
       "filePath": "test/unit/document-media.test.js",
-      "sha256": "0e7a223fe4450ff0e826cdf9ad3a81dc992d77e15434b9f46446007f4fd6cb7a",
+      "sha256": "5098639bb996e34017f0aff2f9f11fb5c1bb173bc425fef30a226fa97b9b4aac",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:48:31Z",
+      "approvedAtUtc": "2026-09-25T05:52:05Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."

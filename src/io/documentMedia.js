@@ -100,17 +100,13 @@ function validateImageAttrs(attrs) {
   return { attrs: expected, bytes };
 }
 function documentMedia(doc) {
-  const assets = new Map(), placements = [], validatedByEncoding = new Map();
+  const assets = new Map(), placements = [];
   let visited = 0, totalBytes = 0, referenceBytes = 0, placementPixels = 0;
   const visit = (node, position = [], parentType = '') => {
     if (++visited > 1000000 || position.length > 32) fail('DOCUMENT_BOUNDS');
     if (node?.type === 'image') {
       if (!['paragraph', 'heading'].includes(parentType) || node.content?.length || node.marks?.length) fail('IMAGE_SHAPE');
-      const cached = validatedByEncoding.get(node.attrs?.dataBase64);
-      const media = cached && typeof node.attrs === 'object' && !Array.isArray(node.attrs)
-        && Object.keys(node.attrs).length === KEYS.length
-        && KEYS.every(key => node.attrs[key] === cached.attrs[key]) ? cached : validateImageAttrs(node.attrs);
-      validatedByEncoding.set(media.attrs.dataBase64, media);
+      const media = validateImageAttrs(node.attrs);
       // Canonical nodes carry encoded bytes. Reuse must not evade the aggregate
       // serialized-document or decoded-pixel budget, even with one asset ID.
       referenceBytes += media.bytes.length;

@@ -50,8 +50,8 @@ test('repeated media cannot evade payload budgets through one content-addressed 
   const doc = copies => ({ type: 'doc', content: [{ type: 'paragraph', content: Array(copies).fill(image) }] });
   assert.equal(documentMedia(doc(3)).assets.length, 1);
   assert.throws(() => documentMedia(doc(17)), /DOCUMENT_MEDIA_DOCUMENT_BOUNDS/);
-  const arrayAttrs = Object.assign([], attrs);
-  assert.throws(() => documentMedia({ type: 'doc', content: [{ type: 'paragraph', content: [image, { type: 'image', attrs: arrayAttrs }] }] }), /DOCUMENT_MEDIA_ATTRS/);
+  const invalidShapes = [Object.assign([], attrs), Object.assign(Object.create(attrs), Object.fromEntries(Object.keys(attrs).map((_, i) => ['unknown' + i, i])))];
+  for (const bad of invalidShapes) assert.throws(() => documentMedia({ type: 'doc', content: [{ type: 'paragraph', content: [image, { type: 'image', attrs: bad }] }] }), /DOCUMENT_MEDIA_ATTRS/);
   const changed = { ...attrs, width: 2 };
   assert.throws(() => documentMedia({ type: 'doc', content: [{ type: 'paragraph', content: [image, { type: 'image', attrs: changed }] }] }), /DOCUMENT_MEDIA_IDENTITY/);
   const label = documentMedia({ type: 'doc', content: [{ type: 'paragraph', content: [image, { type: 'image', attrs: { ...attrs, alt: 'second placement' } }] }] });
