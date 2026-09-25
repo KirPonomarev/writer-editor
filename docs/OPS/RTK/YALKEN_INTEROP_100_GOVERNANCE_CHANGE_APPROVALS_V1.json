@@ -1440,15 +1440,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "320418b6fdd15e1def90b3589a00e831841d2a1441755311dc9907dfbf2b995d",
-      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
-      "approvedAtUtc": "2026-09-25T03:25:54Z",
-      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/tasks/2026-09-25--word-hostile.md",
       "sha256": "805fe692c80d4194a3218d680ec1bcfb3c2efeda86353106b8d813e8b93a5be4",
       "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
@@ -1552,6 +1543,15 @@
       "sha256": "571449084a2a0912ca409e43afad507329524659269c62d2f79945f171829675",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
       "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "12dd78f22a82e36cf4fac4b494ea25f176f89c49f957881161764363e3dea269",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "approvedAtUtc": "2026-09-25T05:42:23Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
@@ -3436,6 +3436,15 @@
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
       "sha256": "7d27eee576b414007f27d1944f8f232e2cc492583011cbff998bfbcb84688d6b",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T03:25:54Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "320418b6fdd15e1def90b3589a00e831841d2a1441755311dc9907dfbf2b995d",
       "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
       "approvedAtUtc": "2026-09-25T03:25:54Z",
       "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
