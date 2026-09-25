@@ -5681,10 +5681,12 @@ function docxReviewPreviewSessionFullTextVectorGuard(exportMap, projection, veri
   const sections = Array.isArray(verifiedSections?.protectedSections) ? verifiedSections.protectedSections : [];
   const bindings = Array.isArray(verifiedSections?.sourceBindings) ? verifiedSections.sourceBindings : [];
   const revisions = Array.isArray(projection?.textRevisions) ? projection.textRevisions : [];
+  const mediaTextByIndex = new Map((projection?.mediaBinding?.textCorrespondences || []).map(c => [c.paragraphIndex, c]));
+  const mediaTextOnly = revisions.length > 0 && revisions.every(r => mediaTextByIndex.has(r.paragraphIndex));
   if (exportMap?.scope !== 'full-manuscript'
     || verifiedSections?.status !== 'VERIFIED_PROTECTED_DOCUMENT_SECTIONS'
     || scenes.length === 0 || sections.length === 0 || sections.length !== bindings.length
-    || revisions.length !== 2 || (projection?.moveRevisions?.length || 0) !== 0
+    || (revisions.length !== 2 && !mediaTextOnly) || (projection?.moveRevisions?.length || 0) !== 0
     || (projection?.structureChanges?.length || 0) !== 0) return null;
   const ordered = scenes.flatMap((scene) => (Array.isArray(scene?.blocks) ? scene.blocks : [])
     .map((block) => ({ sceneId: normalizeString(scene.sceneId), block })));
@@ -5738,6 +5740,37 @@ function docxReviewPreviewSessionFullTextVectorGuard(exportMap, projection, veri
   }
   if (nextParagraphIndex !== ordered.length) return null;
   const sectionByEnd = new Map(sections.map((section) => [section.endParagraphIndex, section]));
+  if (mediaTextOnly) {
+    const changedIndexes = new Set(revisions.map(r => r.paragraphIndex));
+    for (const [index, { block }] of ordered.entries()) {
+      const correspondence = mediaTextByIndex.get(index);
+      let originalText = correspondence ? correspondence.segments.map(s => s.originalText).join('') : paragraphs[index].paragraphText;
+      if (correspondence && correspondence.segments.map(s => s.currentText).join('') !== paragraphs[index].paragraphText) return null;
+      if (originalText === '\u2060' && block.canonicalTextSha256 === `sha256:${sha256Hex('')}`
+        && sectionByEnd.get(index)?.breakPlacement === 'PARAGRAPH_PROPERTIES') originalText = '';
+      if (`sha256:${sha256Hex(originalText)}` !== block.canonicalTextSha256) return null;
+      if (changedIndexes.has(index) && ordered.filter(x => x.block.canonicalTextSha256 === block.canonicalTextSha256).length !== 1) return null;
+    }
+    return {
+      sourceAuthority: 'full-manuscript-export-map-full-text-vector',
+      resolveRevision(signal = {}) {
+        const index = signal.paragraphIndex, target = ordered[index];
+        return changedIndexes.has(index) && target ? { type: 'scene', id: target.sceneId, blockId: target.block.blockId,
+          paragraphIndex: index, documentParagraphIndex: index,
+          sourceAuthority: 'full-manuscript-export-map-full-text-vector' } : null;
+      },
+      resolveComment(signal = {}) {
+        const index = signal.paragraphIndex, quote = typeof signal.quote === 'string' ? signal.quote : '';
+        if (!Number.isSafeInteger(index) || !ordered[index] || !quote
+          || paragraphs.filter(p => p.paragraphText.includes(quote)).length !== 1
+          || !paragraphs[index].paragraphText.includes(quote)
+          || paragraphs[index].paragraphText.indexOf(quote) !== paragraphs[index].paragraphText.lastIndexOf(quote)) return null;
+        return { type: 'scene', id: ordered[index].sceneId, blockId: ordered[index].block.blockId,
+          paragraphIndex: index, documentParagraphIndex: index,
+          sourceAuthority: 'full-manuscript-export-map-full-text-vector' };
+      },
+    };
+  }
   const [first, second] = revisions;
   const inserted = [first, second].find((revision) => revision?.operation === 'insert');
   const deleted = [first, second].find((revision) => revision?.operation === 'delete');

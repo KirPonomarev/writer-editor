@@ -50,3 +50,13 @@ CHECK_01_PRE: bootstrap and preflight passed on clean base before edit.
 CHECK_02_POST: source correspondence and mutation authority independently tested.
 CHECK_03_POST: physical profile proofs and independent raw reader required.
 CHECK_04_POST: delivery and exact merged-head verification required.
+
+## Native-discovered rich baseline correction
+
+The real signed Word round passed media binding but failed main-owned Apply
+preparation with FULL_MANUSCRIPT_EXACT_AUTHORITY_BASELINE_STALE. The router hashed
+visible text against the full rich scene file. Preserve the raw envelope in the
+local export capsule and writer snapshot; validate its raw hash independently
+from the full authenticated block-text vector used for range coordinates. Keep
+leading/trailing replacement whitespace. Plain-text legacy capsules keep their
+existing identity path. This is the same W4 outcome and rollback, not a new lane.

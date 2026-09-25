@@ -197,7 +197,9 @@
     "test/contracts/word-import-loss-diagnostics.contract.test.js",
     "docs/tasks/2026-09-25--word-inline-png-display-size.md",
     "docs/tasks/2026-09-25--word-media-text-offset.md",
-    "test/contracts/rtk-word-media-text-correspondence.contract.test.js"
+    "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+    "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+    "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs"
   ],
   "protectedFiles": [
     {
@@ -461,7 +463,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "12cdf3cdee6ff9ac3636c895502ba5e9d01e964ab80e97027c7dcd432f188f2a"
+        "sha256": "351e7953051aeb37a0e4787b332a769d7d032cbbd2a756bdd185c515f2e030d4"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -561,7 +563,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "7843bf0c7f96fec67de9363cef8868a6e5abcb2c13c263cb5e7e215a2eb5963b"
+        "sha256": "d31e1de33fcbfe534f3ad0d905bdb83bfdc98c57a05615a5d993755fec094823"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -933,11 +935,19 @@
       },
       {
         "path": "docs/tasks/2026-09-25--word-media-text-offset.md",
-        "sha256": "3c5be31064f5920736d3300ca0295c2b6adaa8231e9ba13308d2d5de90563018"
+        "sha256": "f33629b8dda02a8b09d458fc92ba61b4ee569fc48f2d305428a21c0974630ea5"
       },
       {
         "path": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
-        "sha256": "3425e6623dcc687f41586c301faa5b46733eca314c59270dde129b4d197de934"
+        "sha256": "c3854a31dc90e819182dd3d4e18c42a3f683afa4373e1396cf47669aef3b0260"
+      },
+      {
+        "path": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+        "sha256": "91546d0c5a309a528c3fd4167c40ddbe18be22069074e3117d4598f48475d55b"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
+        "sha256": "d67728697a4fc0796bbf28b1d93f290382cc3b5df3316428176216e968618c89"
       }
     ],
     "followupRepair": {

@@ -514,7 +514,7 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "4410dbf9eabba47ee605fa56b157fcf1c8810840f4df6a907473e76b1bd9f700",
+      "sha256": "a4a466408369cb9a43031b673d7661bc4b90a1f443dbd606e14cce3a1857e304",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1639,12 +1639,12 @@
     },
     {
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "sha256": "7843bf0c7f96fec67de9363cef8868a6e5abcb2c13c263cb5e7e215a2eb5963b",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "d31e1de33fcbfe534f3ad0d905bdb83bfdc98c57a05615a5d993755fec094823",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "src/io/documentMedia.js",
@@ -1666,9 +1666,9 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "12cdf3cdee6ff9ac3636c895502ba5e9d01e964ab80e97027c7dcd432f188f2a",
+      "sha256": "351e7953051aeb37a0e4787b332a769d7d032cbbd2a756bdd185c515f2e030d4",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1677,7 +1677,7 @@
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
       "sha256": "6ffbb3c1e17fa2450d52bfb680e7b98dead7583831bc1f07b32873da7d6ce1cc",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1819,45 +1819,45 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "9821a0177dc0071e35ba073161976426ba14b7bdd51a78d1d3597f7a9e535727",
+      "sha256": "5f81a5f31462b436359e8ca02524e7106e783c12a154ceeb6b69e6e273a923ac",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "aa0631c6e60cf54ec860cfbcb681f393d2fdf227190ef128bbf40e3cca8387fb",
+      "sha256": "9c4f2f2823fe5a6a591ab541f79cd559c5cc413290fb15a96286d6c0c236f29f",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3509d6292a422e73e67b486499e8666afeb52c5458b2705f2a708270e49aabb2",
+      "sha256": "86aa90bcd1b6063fd59610045c3ab9234153d93dc7921842da16ef4f482a132b",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "f4b203201d2ecd29a4cb159652a11473b160a01d4787af83260ba338f6afcefd",
+      "sha256": "2b2dc3d3b522eec41514003a65471c6df48f6f99e14ae4f22487678bc0d6873c",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "42f04c0d3a19fe9f8f25f632172c8671548e5c0a9e8cb0ea942b68414514cbf1",
+      "sha256": "66489440e096b4c953b0ede27edf012dab92cd1f0d7c5d880452379fbe583a21",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1866,7 +1866,7 @@
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
       "sha256": "e7ef9ba8654bc9513a80d3d0fa9e24b8068e6e44ac5ddebe5571c64893e6d92c",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1990,19 +1990,37 @@
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media-text-offset.md",
-      "sha256": "3c5be31064f5920736d3300ca0295c2b6adaa8231e9ba13308d2d5de90563018",
+      "sha256": "f33629b8dda02a8b09d458fc92ba61b4ee569fc48f2d305428a21c0974630ea5",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
-      "filePath": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
-      "sha256": "3425e6623dcc687f41586c301faa5b46733eca314c59270dde129b4d197de934",
+      "filePath": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+      "sha256": "91546d0c5a309a528c3fd4167c40ddbe18be22069074e3117d4598f48475d55b",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
+      "sha256": "d67728697a4fc0796bbf28b1d93f290382cc3b5df3316428176216e968618c89",
+      "approved": true,
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+      "sha256": "c3854a31dc90e819182dd3d4e18c42a3f683afa4373e1396cf47669aef3b0260",
+      "approved": true,
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     }
@@ -4485,6 +4503,15 @@
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
       "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "sha256": "66e22c02095efc74872f06549254d00b90d6f06be9fa2dc5a7a5f9b0e2249604"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required.",
+      "sha256": "7843bf0c7f96fec67de9363cef8868a6e5abcb2c13c263cb5e7e215a2eb5963b"
     },
     {
       "approved": true,

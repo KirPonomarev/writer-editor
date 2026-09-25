@@ -26,7 +26,7 @@ function replaceRun(xml, text, replacement) {
   assert(regex.test(xml), text);
   return xml.replace(regex, () => replacement);
 }
-async function fixture({ before = 'before ', after = ' after', duplicate = false, wrap = p => p } = {}) {
+async function fixture({ before = 'before ', after = ' after', duplicate = false, duplicateParagraph = false, wrap = p => p } = {}) {
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
   const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
   const { crc32 } = await import('../../src/io/revisionBridge/reviewTransportZipEvidenceV1.mjs');
@@ -37,6 +37,7 @@ async function fixture({ before = 'before ', after = ' after', duplicate = false
   const content = [{ type: 'text', text: before }, { type: 'image', attrs }, { type: 'text', text: after }];
   if (duplicate) content.push({ type: 'image', attrs }, { type: 'text', text: ' tail' });
   const doc = { type: 'doc', content: [wrap({ type: 'paragraph', content })] };
+  if (duplicateParagraph) doc.content.push(structuredClone(doc.content[0]));
   const original = envelope.composeObservablePayload({ doc });
   const scene = { sceneId: 'roman/w4.txt', scenePath: '/synthetic/roman/w4.txt', text: envelope.deriveVisibleTextFromDocument(doc), doc, observableContent: original, order: 0 };
   const source = buildFullManuscriptDocxReviewPacketSource({ projectId: 'w4-test', projectRoot: '/synthetic', manifestPath: '/synthetic/manifest.json', scenes: [scene], expectedOrderedSceneIds: [scene.sceneId] },
@@ -166,4 +167,55 @@ test('W4 stale canonical paragraph and forged original offset cannot rescue matc
   assert.equal(f.bridge.bindDocxReviewMedia(forged, f.map).ok, false);
   const lost = structuredClone(result.reviewIr); delete lost.documentMedia.placements[0].textCorrespondence;
   assert.equal(f.bridge.bindDocxReviewMedia(lost, f.map).ok, false);
+});
+
+test('W4 full-manuscript router binds raw rich bytes separately from visible coordinates and preserves whitespace', async () => {
+  const f = await fixture();
+  const router = require('../../src/export/docx/fullManuscriptDocxReviewReturnRouter.js');
+  const sceneId = 'roman/w4.txt', baselineText = 'before  after';
+  assert.equal(f.source.localAuthorityCapsule.baselineObservableContentBySceneId[sceneId], f.original);
+  const result = f.parse(replaceRun(f.xml, 'before ', run('before ') + tracked('added ', 'ins', 951)));
+  const candidate = f.candidate(result), change = candidate.reviewPacket.textChanges[0];
+  const operations = [{ id: change.changeId, family: 'tracked_text_edit', sceneId,
+    anchor: { sceneId, selectedText: change.match.quote }, semanticIntent: { kind: 'replace', replacementText: change.replacementText } }];
+  const capsule = f.source.localAuthorityCapsule;
+  const proof = { status: 'authenticated-return-ir-ready', authenticated: true,
+    returnedArtifactSha256: 'sha256:' + digest('synthetic-router-identity'), coreManifestDigest: capsule.coreManifestDigest,
+    yrtk2Verification: { code: 'RTK_RETURN_INTAKE_YRTK2_VERIFIED', coreManifestDigest: capsule.coreManifestDigest, ...capsule.yrtk2 },
+    parserProfileDigest: 'sha256:' + digest('parser'), analysisDigest: 'sha256:' + digest('analysis'),
+    reviewIrDigest: cryptoPort.sha256Json(result.reviewIr), operationSource: 'parsed-review-ir', operationIds: operations.map(o => o.id) };
+  proof.mainIntakeAuthorityDigest = router.buildFullManuscriptReturnIntakeProofBindingDigest({ proof, localAuthority: capsule, operations });
+  const plan = router.buildFullManuscriptReviewReturnApplyPlan({ projectId: 'w4-test', localAuthorityCapsule: capsule,
+    returnedAuthority: result.authorityCarrier.selectedCarrier.payload, operations, returnIntakeProof: proof });
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  const input = plan.sceneCommands[0].input;
+  assert.equal(input.writerContext.projectSnapshot.scenes[0].text, f.original);
+  assert.equal(input.localBaseline.sceneBlocks[0].text, baselineText);
+  assert.equal(input.writerInput.reviewItems[0].replacementText, 'before added ');
+  const runtime = await import('../../src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs');
+  const preview = runtime.buildNonOverlapTrackedReplacementRuntimePreview(input, { cryptoPort });
+  assert.equal(preview.ok, true, JSON.stringify(preview));
+  const base = { sceneId, baselineText, baselineContent: f.original, exportMap: f.map, operations };
+  assert.equal(router.deriveFullManuscriptSceneExactAuthority(base).ok, true);
+  assert.equal(router.deriveFullManuscriptSceneExactAuthority({ ...base, baselineContent: f.original + 'stale' }).code, 'FULL_MANUSCRIPT_EXACT_AUTHORITY_BASELINE_STALE');
+  assert.equal(router.deriveFullManuscriptSceneExactAuthority({ ...base, baselineText: baselineText + 'stale' }).code, 'FULL_MANUSCRIPT_EXACT_AUTHORITY_VISIBLE_BASELINE_MISMATCH');
+});
+
+test('W4 complete Office locator rewrite needs signed sections, full Original vector and unique source paragraph', async () => {
+  const { validateFullManuscriptDocumentSectionsReturn } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  for (const duplicateParagraph of [false, true]) {
+    const f = await fixture({ duplicateParagraph });
+    const xml = replaceRun(f.xml, 'before ', run('before ') + tracked('added', 'ins', 960))
+      .replace(/<w:bookmark(?:Start|End)\b[^>]*\/>/gu, '');
+    const result = f.parse(xml);
+    const sections = validateFullManuscriptDocumentSectionsReturn({ expected: f.source.localAuthorityCapsule.documentSections,
+      returned: result.reviewIr.documentSections, signedDigest: result.authorityCarrier.selectedCarrier.payload.documentSectionsDigest });
+    assert.equal(sections.ok, true, JSON.stringify(sections));
+    const build = verifiedDocumentSections => f.bridge.buildDocxReviewPreviewSessionCandidateFromEvidence({ returnedProjection: result.reviewIr },
+      { fullManuscriptExportMap: f.map, verifiedDocumentSections });
+    const candidate = build({ ...sections.proof, status: sections.status });
+    assert.equal(candidate.reviewPacket.textChanges[0].match.kind, duplicateParagraph ? 'manual' : 'exact');
+    const forged = { ...sections.proof, status: sections.status, sourceBindings: [] };
+    assert.equal(build(forged).reviewPacket.textChanges[0].match.kind, 'manual');
+  }
 });

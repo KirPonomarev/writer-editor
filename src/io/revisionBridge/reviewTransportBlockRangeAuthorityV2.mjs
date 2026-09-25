@@ -119,7 +119,12 @@ export function buildLocalReviewTransportBlockRangeAuthorityV2(input = {}, optio
   const blockLocalEnd = numberOrNull(input.blockLocalEnd);
   const projectSnapshot = isPlainObject(input.projectSnapshot) ? input.projectSnapshot : {};
   const localBaseline = isPlainObject(input.localBaseline) ? input.localBaseline : {};
-  const sceneText = sceneTextFromSnapshot(projectSnapshot, sceneId);
+  const snapshotText = sceneTextFromSnapshot(projectSnapshot, sceneId);
+  const observable = parseObservablePayload(snapshotText);
+  if (observable.issue) return { ok: false, reason: 'RTK_LOCAL_BLOCK_RANGE_ENVELOPE_INVALID', sceneId, blockId };
+  // Use the same coordinate domain as the exact writer. The unchanged raw
+  // snapshot remains in writerContext for source-integrity revalidation.
+  const sceneText = observable.doc ? observable.text : snapshotText;
   const block = baselineBlocks(localBaseline, sceneId).find((item) => (
     item.sceneId === sceneId && item.blockId === blockId
   ));
@@ -177,3 +182,4 @@ export function buildLocalReviewTransportBlockRangeAuthorityV2(input = {}, optio
     },
   };
 }
+import { parseObservablePayload } from '../../renderer/documentContentEnvelope.mjs';

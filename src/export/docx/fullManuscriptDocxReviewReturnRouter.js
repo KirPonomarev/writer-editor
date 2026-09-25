@@ -206,7 +206,7 @@ function validateFullManuscriptReturnIntakeProof({ proof, localAuthority, operat
   };
 }
 
-function deriveFullManuscriptSceneExactAuthority({ sceneId, baselineText, exportMap, operations } = {}) {
+function deriveFullManuscriptSceneExactAuthority({ sceneId, baselineText, baselineContent = baselineText, exportMap, operations } = {}) {
   const mappedScenes = list(exportMap?.scenes).filter((scene) => normalizeString(scene.sceneId) === sceneId);
   if (mappedScenes.length !== 1) {
     return makeBlocked('FULL_MANUSCRIPT_EXACT_AUTHORITY_EXPORT_MAP_IDENTITY_INVALID', {
@@ -215,13 +215,25 @@ function deriveFullManuscriptSceneExactAuthority({ sceneId, baselineText, export
     });
   }
   const mappedScene = mappedScenes[0];
-  const baselineRawSha256 = sha256Text(baselineText);
+  const baselineRawSha256 = sha256Text(baselineContent);
   if (!normalizeString(mappedScene.rawSha256) || normalizeString(mappedScene.rawSha256) !== baselineRawSha256) {
     return makeBlocked('FULL_MANUSCRIPT_EXACT_AUTHORITY_BASELINE_STALE', {
       sceneId,
       expectedRawSha256: normalizeString(mappedScene.rawSha256),
       actualRawSha256: baselineRawSha256,
     });
+  }
+  if (baselineContent !== baselineText) {
+    // The file hash protects the complete rich envelope (including media and
+    // metadata). Text coordinates refer only to its authenticated block text.
+    // Never substitute a visible-text hash for raw source integrity.
+    const blocks = list(mappedScene.blocks);
+    if (!blocks.length || blocks.some(block => !Array.isArray(block?.formatIr?.runs)
+      || block.formatIr.runs.some(run => typeof run?.text !== 'string')
+      || sha256Text(block.formatIr.runs.map(run => run.text).join('')) !== block.canonicalTextSha256)
+      || blocks.map(block => block.formatIr.runs.map(run => run.text).join('')).join('\n') !== baselineText) {
+      return makeBlocked('FULL_MANUSCRIPT_EXACT_AUTHORITY_VISIBLE_BASELINE_MISMATCH', { sceneId });
+    }
   }
   const ranges = [];
   for (const operation of operations) {
@@ -355,6 +367,7 @@ function buildSceneCommand({
   sceneId,
   scenePath,
   baselineText,
+  baselineContent = baselineText,
   operations,
   projectRoot,
   verifiedAuthority,
@@ -365,7 +378,7 @@ function buildSceneCommand({
   const reviewItems = operations.map((operation) => ({
     changeId: operation.id,
     targetScope: { type: 'scene', id: sceneId },
-    replacementText: normalizeString(operation.semanticIntent?.replacementText),
+    replacementText: typeof operation.semanticIntent?.replacementText === 'string' ? operation.semanticIntent.replacementText : '',
     match: {
       quote: typeof operation.anchor?.selectedText === 'string' ? operation.anchor.selectedText : '',
       blockRange: {
@@ -490,7 +503,7 @@ function buildSceneCommand({
         scenePathBySceneId: { [sceneId]: scenePath },
         projectSnapshot: {
           projectId,
-          scenes: [{ sceneId, text: baselineText }],
+          scenes: [{ sceneId, text: baselineContent }],
         },
         reviewItems,
       },
@@ -500,7 +513,7 @@ function buildSceneCommand({
         scenePathBySceneId: { [sceneId]: scenePath },
         projectSnapshot: {
           projectId,
-          scenes: [{ sceneId, text: baselineText }],
+          scenes: [{ sceneId, text: baselineContent }],
         },
         revisionSession: {
           projectId,
@@ -547,6 +560,8 @@ function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
   const baselineFinalTextBySceneId = isPlainObjectValue(localAuthorityCapsule.baselineFinalTextBySceneId)
     ? localAuthorityCapsule.baselineFinalTextBySceneId
     : {};
+  const baselineObservableContentBySceneId = isPlainObjectValue(localAuthorityCapsule.baselineObservableContentBySceneId)
+    ? localAuthorityCapsule.baselineObservableContentBySceneId : {};
   const authenticatedExportMap = isPlainObjectValue(localAuthorityCapsule.authenticatedFullManuscriptExportMap)
     ? localAuthorityCapsule.authenticatedFullManuscriptExportMap
     : localAuthorityCapsule.exportMap;
@@ -617,6 +632,7 @@ function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
     const verifiedAuthority = deriveFullManuscriptSceneExactAuthority({
       sceneId,
       baselineText: baselineFinalTextBySceneId[sceneId],
+      baselineContent: baselineObservableContentBySceneId[sceneId] ?? baselineFinalTextBySceneId[sceneId],
       exportMap: authenticatedExportMap,
       operations: sceneOperations,
     });
@@ -637,6 +653,7 @@ function buildFullManuscriptReviewReturnApplyPlan(input = {}) {
       sceneId,
       scenePath: scenePathBySceneId[sceneId],
       baselineText: baselineFinalTextBySceneId[sceneId],
+      baselineContent: baselineObservableContentBySceneId[sceneId] ?? baselineFinalTextBySceneId[sceneId],
       operations: sceneOperations,
       projectRoot: normalizeString(localAuthorityCapsule.projectRoot),
       verifiedAuthority,
