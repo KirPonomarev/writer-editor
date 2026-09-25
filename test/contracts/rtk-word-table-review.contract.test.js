@@ -107,3 +107,34 @@ test('Tracked text inside a table can form a preview only after local topology c
   assert.equal(candidate.canAutoApply, false); assert.equal(candidate.canWriteStorage, false);
   assert.deepEqual(packet, before);
 });
+
+test('Full table review export preserves protected notes inside cells and exact comment anchors after tables', async () => {
+  const [bridge, envelope] = await modules;
+  const fixtures = await import('../../scripts/ops/rtk-interop-word-manuscript-fixtures.mjs');
+  const f = fixtures.buildWordManuscriptFixture('SINGLE_SCENE', 'C2', fixtures.TABLES_RECIPE);
+  assert.equal(f.scenes[0].doc.content[0].type, 'table');
+  const doc = f.scenes[0].doc, raw = envelope.composeObservablePayload({ doc });
+  const scenes = [{ sceneId: 'roman/table.txt', nodeId: 'test-node', scenePath: '/synthetic/roman/table.txt', doc, text: envelope.deriveVisibleTextFromDocument(doc), observableContent: raw, order: 0 }];
+  const projectId = 'table-review-test';
+  const notes = fixtures.buildWordManuscriptNoteState({ fixture: f, projectId, scenes });
+  const comments = fixtures.buildWordManuscriptCommentState({ fixture: f, projectId, sceneId: scenes[0].sceneId });
+  const source = producer.buildFullManuscriptDocxReviewPacketSource({ projectId, projectRoot: '/synthetic', manifestPath: '/synthetic/manifest.json', scenes, expectedOrderedSceneIds: scenes.map(s => s.sceneId), nonTextReturnState: comments, notesDocument: notes.document, documentNoteSelections: notes.selections },
+    { revisionBridge: bridge, cryptoPort, createdAtUtc: '2026-09-25T00:00:00Z', roundIdHex: 'a'.repeat(32), keyIdHex: 'b'.repeat(32), hmacSecret: 'synthetic-test-key' });
+  const bytes = buildDocxReviewPacketBuffer(source);
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort });
+  assert.equal(parsed.ok, true, JSON.stringify(parsed.reasons));
+  const { compareCommentExportReadback } = require('../../src/export/docx/docxReviewPacketComments.js');
+  assert.equal(compareCommentExportReadback(source.commentExport, parsed.reviewIr.commentThreads).ok, true);
+  assert.deepEqual(parsed.reviewIr.documentNotes.notes, source.documentNotes.notes);
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }, { cryptoPort }).parts;
+  const xml = parts['word/document.xml'];
+  for (const transform of [
+    x => x.replace(/(<w:r>[^]*?<w:footnoteReference[^>]*\/>[^]*?<\/w:r>)/u, '<w:ins w:id="900">$1</w:ins>'),
+    x => x.replace('<w:footnoteReference', '<x:footnoteReference xmlns:x="urn:foreign"'),
+  ]) {
+    const changed = transform(xml); assert.notEqual(changed, xml);
+    const bad = buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data: name === 'word/document.xml' ? changed : data })));
+    const analysis = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: bad }, { cryptoPort });
+    assert.equal(analysis.ok, false); assert.equal(analysis.canApply, false);
+  }
+});

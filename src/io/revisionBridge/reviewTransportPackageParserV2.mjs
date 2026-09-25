@@ -2507,8 +2507,9 @@ function relatedReplacementGroupForCommentAnchor(anchor, textRevisions, cryptoPo
 function anchorLocatorForOffset(documentScan, offset) {
   if (!Number.isSafeInteger(offset)) return null;
   let containing = null;
-  for (const token of documentScan.tokens) {
-    if (!isWordToken(token, 'p') || token.path.length !== 3 || token.path[1] !== 'body') continue;
+  const paragraphs = documentScan.logicalTableParagraphs?.map(record => record.token) || documentScan.tokens;
+  for (const token of paragraphs) {
+    if (!isWordToken(token, 'p') || (!documentScan.logicalTableParagraphs && (token.path.length !== 3 || token.path[1] !== 'body'))) continue;
     if (offset >= token.openStart && offset <= token.closeEnd) {
       containing = token;
       break;
@@ -2537,8 +2538,9 @@ function commentAnchorMap(documentXml, documentScan, textRevisions, cryptoPort, 
   const endsById = new Map();
   const refsById = new Map();
   const duplicateIds = new Set();
-  const paragraphs = documentScan.tokens.filter((token) => isWordToken(token, 'p')
-    && token.path.length === 3 && token.path[1] === 'body');
+  const paragraphs = documentScan.logicalTableParagraphs?.map(record => record.token)
+    || documentScan.tokens.filter((token) => isWordToken(token, 'p')
+      && token.path.length === 3 && token.path[1] === 'body');
   const paragraphAtoms = new Map();
   const semanticRange = (startToken, endToken, finalText = false) => {
     if (!endToken || endToken.openStart < startToken.closeEnd) return null;
@@ -3147,8 +3149,9 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
   };
   try {
     requireNote(refs.length <= 256, 'REFERENCE_COUNT');
-    const paragraphs = documentScan.tokens.filter(token => isWordToken(token, 'p')
-      && token.path.join('/') === 'document/body/p').sort((a, b) => a.openStart - b.openStart);
+    const paragraphs = documentScan.logicalTableParagraphs?.map(record => record.token)
+      || documentScan.tokens.filter(token => isWordToken(token, 'p')
+        && token.path.join('/') === 'document/body/p').sort((a, b) => a.openStart - b.openStart);
     const insertedRanges = documentScan.tokens.filter(token => isWordToken(token, 'ins') || isWordToken(token, 'moveTo'));
     const noteByKey = new Map();
     let textBytes = 0;
@@ -3216,7 +3219,9 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
     const used = new Set();
     for (const reference of refs) {
       const kind = reference.localName === 'footnoteReference' ? 'footnote' : 'endnote';
-      requireNote(reference.namespaceUri === W_NS && reference.path.join('/') === `document/body/p/r/${kind}Reference`
+      const owner = paragraphs.find(p => reference.openStart >= p.openEnd && reference.closeEnd <= p.closeStart);
+      requireNote(owner && reference.namespaceUri === W_NS
+        && reference.path.join('/') === `${owner.path.join('/')}/r/${kind}Reference`
         && !attr(reference, 'customMarkFollows', W_NS), 'REFERENCE_LOCATION_OR_CUSTOM_MARK');
       const id = attr(reference, 'id', W_NS), key = `${kind}:${id}`;
       requireNote(noteByKey.has(key) && !used.has(key), 'DANGLING_OR_DUPLICATE_REFERENCE');
