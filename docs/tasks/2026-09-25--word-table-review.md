@@ -30,3 +30,9 @@ Base: 3a5f0b2080e861d779cf5838a2a34c6e7d5e4244. Owner authorizes solo Word-first
 - lifecycle: C2 full Word review/Apply/reopen/re-export; C3 five repetitions; recovery: existing atomic writes and readable rollback snapshots.
 
 Declaration and clean-base preflight: WORD_TABLE_REVIEW_20260925. Default commit, push, PR, CI, merge and exact-head gates all remain required.
+
+## Candidate verification
+
+The source-runtime diagnostic C2 completed explicit text Apply inside a native Word table, atomic save, new-process reopen and terminal Word readback in 26.16 seconds; the independent reader checked 239 files. The C3 diagnostic completed all five physical cycles in 45.52 seconds; the independent reader checked 417 files. Both are candidate evidence with zero admission credit. Official SOURCE/PACKAGED acceptance on the exact merged SHA remains required for all sixteen targets.
+
+Table-cell notes and comment paragraph identities now use the bounded logical paragraph projection. Native Word's observed row exception is accepted only for exact zero top/bottom margins; changed grid, merged cells, tracked row/cell/property changes and other row exceptions remain blocked. The raw evidence packet remains immutable, and topology comparison never creates Apply authority.

@@ -62,14 +62,23 @@ class ManuscriptOracle(unittest.TestCase):
    else:del files['word-native-table-1-cell-1.txt']
    with self.subTest(kind=kind),self.assertRaises((ValueError,KeyError)):native(body,index,files)
 
- def test_table_recipe_is_independent_and_does_not_upgrade_review_routes(self):
+ def test_table_recipes_bind_full_review_rounds_and_exclude_google(self):
   for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
    self.assertEqual(m.fields(volume,'C1','TABLES_V1'),['TABLES'])
    docs=m.expected_docs(volume,'C1',recipe='TABLES_V1')
    graphs=m.tables.canonical_graphs(docs);self.assertEqual(len(graphs),2)
    self.assertEqual([len(t['cells']) for t in graphs],[9,7])
-  for route in ['C2','C3','C5']:
-   with self.assertRaises(ValueError):m.fields('SINGLE_SCENE',route,'TABLES_V1')
+  with self.assertRaises(ValueError):m.fields('SINGLE_SCENE','C5','TABLES_V1')
+  for volume in ['SINGLE_SCENE','MULTI_SCENE','FULL_SYNTHETIC_NOVEL','LARGE_DOCUMENT']:
+   for route in ['C2','C3']:
+    graphs=[m.tables.canonical_graphs(m.expected_docs(volume,route,n,'TABLES_V1')) for n in range(6)]
+    self.assertEqual(m.fields(volume,route,'TABLES_V1'),['TABLES'])
+    self.assertEqual(len({m.digest(m.canonical(g)) for g in graphs}),6)
+    for n,g in enumerate(graphs):
+     self.assertEqual([len(t['cells']) for t in g],[9,7])
+     self.assertIn('sentinel alpha' if n==0 else 'sentinel round'+str(n),g[0]['cells'][0]['paragraphs'][0])
+     self.assertEqual(g[0]['cells'][1:],graphs[0][0]['cells'][1:])
+     self.assertEqual(g[1],graphs[0][1])
 
  def test_single_scene_structure_recipe_binds_chapter_path_and_raw_bookmark_ranges(self):
   for route in ['C1','C2','C3']:
