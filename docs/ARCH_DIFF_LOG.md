@@ -125,3 +125,7 @@ Owner-approved bounded Word remediation. Optional paired integer EMU placement f
 - Решение: bounded Original/Current correspondence tied to entire source paragraph and ordered image occurrences; existing main-owned Apply revalidation and recovery remain mandatory.
 - Риск: ambiguous text or placement must remain blocked/manual; no new cell credit before aggregate acceptance.
 - Rollback: revert W4 delivery; original files and recovery snapshots retained.
+
+## 2026-09-25 — WORD_TABLE_PROPERTIES_20260925
+
+Owner-approved W5 continuation from e53782a9: bounded optional canonical table and cell properties preserve absolute grid widths, fixed layout, literal shading and borders through existing import/editor/export. Independent raw table reader covers those properties and mutation counterexamples. Namespace identity is checked before table interpretation. Existing command, recovery and transport authority retained. No architecture exception, dependencies, runtime network or general UI change. One rollback: revert the W5 delivery; no source document rewrite. No accepted-cell credit from this prerequisite.

@@ -135,6 +135,7 @@
     "rtk-word-saturation-c04-block-writer-binding.contract.test.js",
     "rtk-word-saturation-c05-block-range-writer.contract.test.js",
     "rtk-word-table-editor.contract.test.js",
+    "rtk-word-table-properties.contract.test.js",
     "rtk-word-table-review.contract.test.js",
     "rtk-word-tables.contract.test.js",
     "rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js",

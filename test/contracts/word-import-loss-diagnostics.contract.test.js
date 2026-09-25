@@ -18,9 +18,9 @@ function mutate(bytes, change) {
 }
 const xmlChange = change => parts => { parts['word/document.xml']=Buffer.from(change(parts['word/document.xml'].toString())); };
 const changes = {
-  widths: x => { let i=0; return x.replace(/<w:gridCol w:w="1440"\/>/gu,()=>`<w:gridCol w:w="${++i===1?720:4320}"/>`); },
-  shading: x => x.replace('<w:tcPr>','<w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="FF0000"/>'),
-  borders: x => x.replaceAll('w:val="single" w:sz="4"','w:val="double" w:sz="24"'),
+  widths: x => x.replaceAll('<w:tcPr>', '<w:tcPr><w:tcW w:type="pct" w:w="5000"/>'),
+  shading: x => x.replace('<w:tcPr>','<w:tcPr><w:shd w:val="clear" w:color="auto" w:fill="FF0000" w:themeFill="accent1"/>'),
+  borders: x => x.replaceAll('w:val="single" w:sz="4"','w:val="dotted" w:sz="24"'),
 };
 async function preview(bytes) { const [bridge]=await modules; const report=bridge.buildDocxContentPreviewFromZipBytes(bytes); return {report,plan:report.ok?bridge.buildDocxImportPreviewPlanFromContentPreview(report):null}; }
 const mediaBytes = async () => exported([{type:'paragraph',content:[{type:'image',attrs:createImageAttrs(png(),{alt:'synthetic red blue'})}]}]);
@@ -86,7 +86,7 @@ test('W2: floating drawing is specifically unsupported and original file remains
 test('W2: excessive table diagnostics block rather than hide arbitrary losses',async()=>{
   const row={type:'tableRow',content:Array.from({length:128},()=>({type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:[p('x')]}))};
   const many={type:'table',content:[row]};
-  const {report,plan}=await preview(mutate(await exported([many,many]),xmlChange(x=>x.replaceAll('w:w="1440"','w:w="720"'))));
+  const {report,plan}=await preview(mutate(await exported([many,many]),xmlChange(changes.widths)));
   assert.equal(report.code,'DOCX_CONTENT_PREVIEW_RESOURCE_LIMIT_EXCEEDED');assert.equal(report.reason,'DOCX_TABLE_DIAGNOSTIC_LIMIT');assert.equal(plan,null);
 });
 test('W2: unknown internal exception text cannot escape the typed boundary',()=>{
