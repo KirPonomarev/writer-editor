@@ -1,3 +1,4 @@
+const { buildMediaPackage } = require('./docxMedia.js');
 const { tableParagraphs, renderTableParagraphs } = require('../../io/documentTables.js');
 const ZIP_CRC32_TABLE = (() => {
   const table = new Uint32Array(256);
@@ -142,6 +143,7 @@ function readDocumentInlineRuns(node) {
     return [{ text: typeof node.text === 'string' ? node.text : '', marks: node.marks }];
   }
   if (node.type === 'hardBreak') return [{ text: '\n', marks: [] }];
+  if (node.type === 'image') return [{ text: '', image: node.attrs }];
   return (Array.isArray(node.content) ? node.content : []).flatMap(readDocumentInlineRuns);
 }
 
@@ -287,6 +289,7 @@ function assertDocxBuilderDependencies(dependencies) {
 function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const deps = assertDocxBuilderDependencies(dependencies);
   const snapshot = normalizeEditorSnapshotPayload(editorSnapshot);
+  const media = buildMediaPackage(snapshot.doc);
   const plainText = normalizeDocxTextForSerialization(String(snapshot.plainText || ''));
   const pageBreakToken = deps.semanticMappingModule.PAGE_BREAK_TOKEN_V1;
   const semanticBlocks = buildSemanticBlocksFromDocument(snapshot.doc, pageBreakToken);
@@ -323,18 +326,19 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
         + (numbering ? `<w:numPr><w:ilvl w:val="${numbering.level}"/><w:numId w:val="${numbering.numId}"/></w:numPr>` : '')
         + (textAlign ? `<w:jc w:val="${textAlign}"/>` : '');
       const styleXml = properties ? `<w:pPr>${properties}</w:pPr>` : '';
-      if (!text) {
+      const runs = semanticBlocks?.[index]?.runs;
+      const hasMedia = Array.isArray(runs) && runs.some(run => run.image);
+      if (!text && !hasMedia) {
         return `<w:p>${styleXml}</w:p>`;
       }
-      const runs = semanticBlocks?.[index]?.runs;
       // Keep the established plain serialization byte-stable when no supported
       // mark is present anywhere in the paragraph.
       const hasMarks = Array.isArray(runs) && runs.some((run) => Array.isArray(run.marks)
         && run.marks.some((mark) => ['bold', 'italic', 'underline', 'strike'].includes(mark?.type)));
       const hasColors = Array.isArray(runs) && runs.some(run => Object.keys(readRunColors(run)).length > 0);
       const hasTypography = Array.isArray(runs) && runs.some(run => Object.keys(readRunTypography(run)).length > 0);
-      const runsXml = hasMarks || hasColors || hasTypography
-        ? runs.map(run => buildDocxMarkedRunXml(run, hasColors, hasTypography)).join('') : buildDocxTextRunsXml(text);
+      const runsXml = hasMarks || hasColors || hasTypography || hasMedia
+        ? runs.map(run => run.image ? media.drawing(run.image) : buildDocxMarkedRunXml(run, hasColors, hasTypography)).join('') : buildDocxTextRunsXml(text);
       return `<w:p>${styleXml}${runsXml}</w:p>`;
     })
     : '<w:p/>';
@@ -342,7 +346,7 @@ function buildDocxMinBuffer(editorSnapshot, dependencies) {
   const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="xml" ContentType="application/xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>${media.contentTypes}
   <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
 ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>\n' : ''}${numberings.size ? '  <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>\n' : ''}</Types>`;
   const rootRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -369,9 +373,9 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     const instances = [...numberings.keys()].map((numId) => `<w:num w:numId="${numId}"><w:abstractNumId w:val="${numId}"/></w:num>`).join('');
     styleParts.push({ name: 'word/numbering.xml', data: `<?xml version="1.0" encoding="UTF-8"?><w:numbering xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">${definitions}${instances}</w:numbering>` });
   }
-  if (headingLevels.size || blockStyles.size || numberings.size) {
+  if (headingLevels.size || blockStyles.size || numberings.size || media.parts.length) {
     const relationships = (headingLevels.size || blockStyles.size ? '<Relationship Id="styles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' : '')
-      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '');
+      + (numberings.size ? '<Relationship Id="numbering" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>' : '') + media.relationships;
     styleParts.push({ name: 'word/_rels/document.xml.rels', data: `<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${relationships}</Relationships>` });
   }
   return buildStoredZip([
@@ -379,6 +383,7 @@ ${headingLevels.size || blockStyles.size ? '  <Override PartName="/word/styles.x
     { name: '_rels/.rels', data: rootRels },
     { name: 'word/document.xml', data: documentXml },
     ...styleParts,
+    ...media.parts,
   ]);
 }
 

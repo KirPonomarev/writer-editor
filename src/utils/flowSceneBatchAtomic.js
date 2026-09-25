@@ -7,7 +7,7 @@ function buildError(code, reason, details = {}) {
 }
 
 function computeContentHash(content) {
-  return crypto.createHash('sha256').update(String(content ?? ''), 'utf8').digest('hex');
+  return crypto.createHash('sha256').update(Buffer.isBuffer(content) ? content : String(content ?? ''), 'utf8').digest('hex');
 }
 
 function normalizeBatchEntries(entries) {
@@ -22,7 +22,14 @@ function normalizeBatchEntries(entries) {
       return { ok: false, error: { code: 'M7_FLOW_BATCH_INVALID', reason: 'flow_save_batch_invalid_item' } };
     }
     const targetPath = typeof entry.path === 'string' ? entry.path : '';
-    const content = typeof entry.content === 'string' ? entry.content : '';
+    // This is an internal persistence port, not a renderer payload decoder.
+    // Snapshot real binary buffers before the first await; JSON-shaped buffers
+    // or other objects must never silently become successful empty files.
+    if (entry.content != null && typeof entry.content !== 'string' && !Buffer.isBuffer(entry.content)) {
+      return { ok: false, error: { code: 'M7_FLOW_BATCH_INVALID', reason: 'flow_save_batch_content_invalid' } };
+    }
+    const content = Buffer.isBuffer(entry.content) ? Buffer.from(entry.content)
+      : typeof entry.content === 'string' ? entry.content : '';
     if (!targetPath) {
       return { ok: false, error: { code: 'M7_FLOW_BATCH_INVALID', reason: 'flow_save_batch_path_required' } };
     }

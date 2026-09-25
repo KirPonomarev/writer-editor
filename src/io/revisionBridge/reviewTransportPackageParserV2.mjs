@@ -4107,3 +4107,69 @@ export function verifyAuthorityCarrierSignatureWithSecret(selectedCarrier, input
     reasons,
   };
 }
+
+
+// A read-only projection of native inline picture references. It grants no
+// filesystem or Apply authority. Binary PNG validation occurs against the
+// corresponding bounded ZIP entry, not against a file named by the payload.
+export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
+  const fail = code => { throw new Error(`DOCUMENT_MEDIA_${code}`); };
+  if (!cryptoPort.ok) fail('CRYPTO_PORT');
+  const state = createParserBudgetState(budgets, cryptoPort);
+  const scan = (name, xml) => {
+    const result = parseXmlPart(name, xml, budgets, cryptoPort, state);
+    const roots = result.tokens.filter(t => t.depth === 0);
+    const expectedRoot = name === 'word/document.xml' ? ['document', W_NS] : name.endsWith('.rels') ? ['Relationships', REL_NS] : ['Types', CONTENT_TYPES_NS];
+    if (result.diagnostics.length || roots.length !== 1 || roots[0].localName !== expectedRoot[0] || roots[0].namespaceUri !== expectedRoot[1]) fail('XML');
+    return result.tokens;
+  };
+  const tokens = scan('word/document.xml', documentXml);
+  const drawings = tokens.filter(t => isWordToken(t, 'drawing'));
+  if (!drawings.length) return [];
+  if (drawings.length > 4096) fail('PLACEMENT_LIMIT');
+  const relTokens = scan('word/_rels/document.xml.rels', options.relationshipsXml);
+  const types = scan('[Content_Types].xml', options.contentTypesXml);
+  const NS_A = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+  const NS_WP = 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing';
+  const NS_R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+  const plain = (token, key) => rawString(token.attrsByNs?.[`|${key}`]);
+  const inside = (child, parent) => child.openStart > parent.openStart && child.closeEnd <= parent.closeStart;
+  const one = (list, name, ns) => {
+    const matches = list.filter(t => t.localName === name && t.namespaceUri === ns);
+    if (matches.length !== 1) fail('DRAWING_SHAPE');
+    return matches[0];
+  };
+  const paragraphs = tableDocumentParagraphs(documentXml, { tokens })?.map(p => p.token)
+    || indexFormattingDocumentTokens(tokens).map(p => p.token);
+  const ids = new Set();
+  return drawings.map(drawing => {
+    const owners = paragraphs.map((p, i) => inside(drawing, p) ? i : -1).filter(i => i >= 0);
+    if (owners.length !== 1) fail('PARAGRAPH_OWNERSHIP');
+    const paragraphIndex = owners[0], paragraph = paragraphs[paragraphIndex];
+    const descendants = tokens.filter(t => inside(t, drawing));
+    const inline = one(descendants, 'inline', NS_WP);
+    if (descendants.some(t => t.namespaceUri === NS_WP && t.localName === 'anchor')) fail('FLOATING_IMAGE_UNSUPPORTED');
+    const blip = one(descendants, 'blip', NS_A), props = one(descendants, 'docPr', NS_WP);
+    const extent = one(descendants.filter(t => inside(t, inline)), 'extent', NS_WP);
+    const embed = attr(blip, 'embed', NS_R);
+    if (!embed || attr(blip, 'link', NS_R)) fail('EXTERNAL_IMAGE');
+    const id = plain(props, 'id');
+    if (!/^[0-9]+$/u.test(id) || ids.has(id)) fail('DRAWING_ID');
+    ids.add(id);
+    const matches = relTokens.filter(t => t.namespaceUri === REL_NS && t.localName === 'Relationship' && plain(t, 'Id') === embed);
+    if (matches.length !== 1) fail('RELATIONSHIP_LOOKUP');
+    const rel = matches[0], target = plain(rel, 'Target');
+    if (plain(rel, 'Type') !== `${NS_R}/image` || !['', 'Internal'].includes(plain(rel, 'TargetMode'))
+      || !/^media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.png$/u.test(target) || target.includes('..')) fail('RELATIONSHIP_TARGET');
+    const partName = `word/${target}`;
+    const overrides = types.filter(t => t.namespaceUri === CONTENT_TYPES_NS && t.localName === 'Override' && plain(t, 'PartName') === `/${partName}`);
+    const defaults = types.filter(t => t.namespaceUri === CONTENT_TYPES_NS && t.localName === 'Default' && plain(t, 'Extension').toLowerCase() === 'png');
+    const typeMatches = overrides.length ? overrides : defaults;
+    if (typeMatches.length !== 1 || plain(typeMatches[0], 'ContentType') !== 'image/png') fail('CONTENT_TYPE');
+    const dimension = key => { const value = plain(extent, key); if (!/^[1-9][0-9]*$/u.test(value) || Number(value) > 8192 * 9525) fail('EXTENT'); return Number(value); };
+    const before = tokens.filter(t => inside(t, paragraph) && t.openStart < drawing.openStart);
+    const offset = before.reduce((sum, t) => sum + (isWordToken(t, 't') ? tokenText(documentXml, t).length : ['tab', 'br', 'cr'].some(n => isWordToken(t, n)) ? 1 : 0), 0);
+    return { paragraphIndex, offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy') };
+  });
+}

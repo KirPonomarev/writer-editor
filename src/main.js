@@ -10617,6 +10617,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(Array.isArray(sourceReport.contentPreview.mediaParts) ? { mediaParts: [...sourceReport.contentPreview.mediaParts] } : {}),
         paragraphCount: sourceReport.contentPreview.paragraphCount,
         textLength: sourceReport.contentPreview.textLength,
         textHash: sourceReport.contentPreview.textHash,
@@ -10635,6 +10636,7 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
                 'blockKind',
                 'blockquoteDepth',
                 'table',
+                'media',
                 'sectionBreakType',
                 'sectionBreakTypeImplicit',
               ])

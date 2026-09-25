@@ -128,3 +128,53 @@ test('M7 flow batch atomicity rejects missing commit marker after activation and
   const staleMarkers = await readFlowSceneBatchMarkers(projectRoot);
   assert.equal(staleMarkers.length, 1);
 });
+
+
+test('M7 mixed scene and binary asset commit preserves every byte and snapshots caller buffers before awaits', async t => {
+  const root = makeProjectRoot('word-media-batch-');
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const scene = path.join(root, 'roman', 'scene.txt');
+  const asset = path.join(root, 'assets', 'image.png');
+  const bytes = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0, 255, 0xc0, 0xaf, 13, 10]);
+  const expected = Buffer.from(bytes);
+  const result = await writeFlowSceneBatchAtomic({ projectRoot: root, entries: [
+    { path: scene, content: 'Scene with image 🧭' }, { path: asset, content: bytes },
+  ] }, { afterIntentRecorded() { bytes.fill(0); } });
+  assert.equal(result.ok, true);
+  assert.equal(fs.readFileSync(scene, 'utf8'), 'Scene with image 🧭');
+  assert.deepEqual(fs.readFileSync(asset), expected);
+  const receipt = result.value.receipt.entries.find(e => e.path === asset);
+  assert.equal(receipt.bytesWritten, expected.length);
+  assert.equal(receipt.contentHash, require('node:crypto').createHash('sha256').update(expected).digest('hex'));
+  assert.deepEqual(await readFlowSceneBatchMarkers(root), []);
+});
+
+test('M7 mixed batch restores old text and binary bytes after partial activation and retains recovery marker', async t => {
+  const root = makeProjectRoot('word-media-rollback-');
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const scene = path.join(root, 'scene.txt'), asset = path.join(root, 'image.png');
+  const old = Buffer.from([255, 0, 0xc0, 17]);
+  writeScene(scene, 'old scene'); fs.writeFileSync(asset, old);
+  const result = await writeFlowSceneBatchAtomic({ projectRoot: root, entries: [
+    { path: scene, content: 'new scene' }, { path: asset, content: Buffer.from([0, 1, 254]) },
+  ] }, { afterActivate({ index }) { if (index === 1) throw Error('injected-media-failure'); } });
+  assert.equal(result.ok, false);
+  assert.equal(fs.readFileSync(scene, 'utf8'), 'old scene');
+  assert.deepEqual(fs.readFileSync(asset), old);
+  const markers = await readFlowSceneBatchMarkers(root);
+  assert.equal(markers.length, 1);
+  assert.equal(JSON.parse(fs.readFileSync(markers[0])).state, 'FAILED');
+});
+
+test('M7 invalid binary-shaped objects cannot become successful empty files', async t => {
+  const root = makeProjectRoot('word-media-invalid-');
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const target = path.join(root, 'image.png');
+  for (const content of [{ type: 'Buffer', data: [137, 80] }, new Uint8Array([137, 80])]) {
+    const result = await writeFlowSceneBatchAtomic({ projectRoot: root, entries: [{ path: target, content }] });
+    assert.equal(result.ok, false);
+    assert.equal(result.error.code, 'M7_FLOW_BATCH_INVALID');
+    assert.equal(fs.existsSync(target), false);
+    assert.deepEqual(await readFlowSceneBatchMarkers(root), []);
+  }
+});

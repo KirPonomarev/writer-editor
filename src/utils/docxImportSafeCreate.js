@@ -1,3 +1,4 @@
+const { documentMedia, MEDIA_LIMITS } = require('../io/documentMedia.js');
 const fs = require('node:fs').promises;
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -1359,6 +1360,37 @@ async function validateExistingDocxImportReceipt(options) {
   };
 }
 
+// Derive every asset path from validated canonical bytes. Existing content-
+// addressed assets are reused only after exact readback; no incoming path is
+// trusted and no image becomes an independent filesystem writer.
+async function prepareDocxMediaEntries(content, projectRoot) {
+  const { parseObservablePayload } = await import('../renderer/documentContentEnvelope.mjs');
+  const parsed = parseObservablePayload(content);
+  if (parsed.issue) throw Error('DOCX_MEDIA_DOCUMENT_INVALID');
+  const graph = documentMedia(parsed.doc), entries = [];
+  for (const asset of graph.assets) {
+    const target = path.join(projectRoot, asset.attrs.assetPath);
+    if (!isPathInsideBoundary(projectRoot, target, { resolveSymlinks: true })) throw Error('DOCX_MEDIA_PATH');
+    let current = projectRoot;
+    for (const part of asset.attrs.assetPath.split('/')) {
+      current = path.join(current, part);
+      try {
+        const stat = await fs.lstat(current);
+        if (stat.isSymbolicLink() || (current !== target && !stat.isDirectory())) throw Error('DOCX_MEDIA_PATH');
+        if (current === target && (!stat.isFile() || stat.size > MEDIA_LIMITS.bytes)) throw Error('DOCX_MEDIA_FILE');
+      } catch (error) { if (error.code !== 'ENOENT') throw error; }
+    }
+    try {
+      const actual = await fs.readFile(target);
+      if (!actual.equals(asset.bytes)) throw Error('DOCX_MEDIA_EXISTING_BYTES');
+    } catch (error) {
+      if (error.code !== 'ENOENT') throw error;
+      entries.push({ path: target, content: asset.bytes });
+    }
+  }
+  return entries;
+}
+
 async function applyDocxImportSafeCreate(input = {}, options = {}) {
   const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot.trim() : '';
   const romanRoot = typeof options.romanRoot === 'string' ? options.romanRoot.trim() : '';
@@ -1400,6 +1432,9 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
       'docx_import_safe_create_scene_path_forbidden',
     );
   }
+  let mediaEntries;
+  try { mediaEntries = await prepareDocxMediaEntries(validated.value.entry.content, projectRoot); }
+  catch (error) { return buildError('DOCX_SAFE_CREATE_MEDIA_INVALID', 'docx_import_media_invalid', { code: error.message }); }
   const transactionAuthority = typeof options.transactionAuthority === 'object'
     && options.transactionAuthority !== null
     ? options.transactionAuthority
@@ -1411,6 +1446,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
   // fails closed without performing any new storage writes.
   const existingReceiptRecord = await readDurableReceiptRecord(projectRoot, importOperationId);
   if (existingReceiptRecord && existingReceiptRecord.status === 'ok') {
+    if (mediaEntries.length) return buildError('DOCX_SAFE_CREATE_MEDIA_MISSING', 'docx_import_replay_media_missing');
     const receiptValidation = await validateExistingDocxImportReceipt({
       receipt: existingReceiptRecord.receipt,
       plan,
@@ -1497,6 +1533,7 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
         {
           projectRoot,
           entries: [
+            ...mediaEntries,
             {
               path: normalizedEntry.path,
               content: normalizedEntry.content,
@@ -1505,6 +1542,8 @@ async function applyDocxImportSafeCreate(input = {}, options = {}) {
         },
         {
           beforeActivate: async ({ entry }) => {
+            if (!isPathInsideBoundary(projectRoot, entry.path, { resolveSymlinks: true })) throw Error('DOCX_MEDIA_PATH');
+            if (entry.path === normalizedEntry.path && (await prepareDocxMediaEntries(normalizedEntry.content, projectRoot)).length) throw Error('DOCX_MEDIA_ACTIVATION_INCOMPLETE');
             if (await pathExists(entry.path)) {
               throw new Error('DOCX_SAFE_CREATE_EXISTING_SCENE_BLOCKED');
             }
