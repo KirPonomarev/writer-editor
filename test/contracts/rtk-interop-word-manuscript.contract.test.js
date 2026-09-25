@@ -688,6 +688,13 @@ test('Word import transaction admission preserves every historical Lab identity 
  currentStructure.id='WORD_CURRENT_STRUCTURE_UTF8_V1';
  currentStructure.bindings.find(b=>b.path==='src/word-manuscript-fields.mjs').sha256='eaa9972c0a980274540a3b4aea2ef50c9fee7527e426d7219d1ad79dac07f85f';
  expected.labCodeBindingSets.push(currentStructure);
+ // W7's independent reader retains raw grids but distinguishes implicit auto-fit
+ // from explicitly stored geometry. All other reader bindings remain unchanged.
+ const autoFitReaderPins={
+  'scripts/ops/rtk-interop-word-manuscript-readback.py':'ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e',
+  'scripts/ops/rtk-interop-word-tables-readback.py':'40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282',
+ };
+ for(const binding of expected.wordManuscriptBatch.readerBindings)if(autoFitReaderPins[binding.path])binding.sha256=autoFitReaderPins[binding.path];
  for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],expected[key],key);
  for(const p of base.admittedPaths)assert.ok(actual.admittedPaths.includes(p),p);
  const bindings=actual.qualifiedRuntimeRepair.sourceBindings;

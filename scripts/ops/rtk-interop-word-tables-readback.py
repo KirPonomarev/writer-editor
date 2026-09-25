@@ -120,6 +120,25 @@ def canonical_graphs(docs):
     for doc in docs:visit(doc)
     return result
 
+def same_table_semantics(actual,expected_docs):
+    """Independent local-source comparison; raw/native graphs stay untouched."""
+    expected=canonical_graphs(expected_docs);implicit=[]
+    def visit(node):
+        if node.get('type')=='table':
+            implicit.append(node.get('attrs',{}).get('wordTable') is None);return
+        for child in node.get('content',[]):visit(child)
+    for doc in expected_docs:visit(doc)
+    if len(actual)!=len(expected):return False
+    compared=copy.deepcopy(actual)
+    for i,graph in enumerate(compared):
+        value=graph.get('wordTable')
+        if implicit[i] and value is not None:
+            value=property_record(value,True,expected[i]['columns'])
+            if all(type(w) is int and w>0 for w in value['grid']):
+                value['grid']=[1440]*expected[i]['columns']
+                if not compact_table_properties(value):del graph['wordTable']
+    return compared==expected
+
 def parse_body(document):
     body=document.find(W+'body');need(body is not None,'BODY');paragraphs=[];tables=[]
     for node in body:

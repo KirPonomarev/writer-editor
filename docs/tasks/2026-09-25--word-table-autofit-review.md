@@ -20,3 +20,5 @@ Product plane: existing pure canonical table comparison. Interface plane: unchan
 ## Claim boundary
 
 Only a validated positive bounded grid may vary for the legacy implicit auto-fit source. Explicitly stored properties, including an explicit default-valued grid, remain exact. The comparison yields no write capability. This is a product repair and awards zero cells until fresh official acceptance; it is not a universal Word layout-equivalence claim.
+
+The independent Python oracle applies that same declared semantic boundary from its own canonical fixture ownership, without importing product validators. It retains and hashes actual native grid values, compares all other graph members exactly, rejects explicit geometry differences, and preserves all existing topology/native-cell negative controls. Its 28 tests include property, source-ownership and text/cell mutations. The retained successful SOURCE canary verifies 239 files in diagnostic mode; it awards zero cells. Active reader pins are updated to the exact two reviewed Python files; historical Lab identities and verifier promotion scope remain unchanged.

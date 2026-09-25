@@ -40,6 +40,30 @@ def metadata_parts():
   p=ET.SubElement(custom,m.CUSTOM+'property',name=name,pid=str(i));ET.SubElement(p,m.VT+'lpwstr').text=value
  return {'docProps/core.xml':ET.tostring(core),'docProps/custom.xml':ET.tostring(custom)},protected,sha
 class ManuscriptOracle(unittest.TestCase):
+ def test_implicit_autofit_grid_is_derived_but_explicit_properties_and_graph_are_exact(self):
+  docs=m.expected_docs('SINGLE_SCENE','C2',recipe='TABLES_V1');actual=m.tables.canonical_graphs(docs)
+  legacy={'version':1,'grid':[1440]*3,'layout':None,'widthDxa':None,'shading':None,'borders':{k:{'style':'single','size':4,'color':'auto'} for k in m.tables.EDGES}}
+  for graph in actual:graph['wordTable']={**copy.deepcopy(legacy),'grid':[5772,1749,1495]}
+  before=copy.deepcopy(actual);source=copy.deepcopy(docs)
+  self.assertTrue(m.tables.same_table_semantics(actual,docs));self.assertEqual(actual,before);self.assertEqual(docs,source)
+  for key,value in [('grid',[None,1749,1495]),('layout','fixed'),('widthDxa',9016),('shading','FF0000'),('borders',{})]:
+   changed=copy.deepcopy(actual);changed[0]['wordTable'][key]=value
+   self.assertFalse(m.tables.same_table_semantics(changed,docs),key)
+  for widths in [[0,1749,1495],[-1,1749,1495],[True,1749,1495],[31681,1749,1495]]:
+   changed=copy.deepcopy(actual);changed[0]['wordTable']['grid']=widths
+   with self.assertRaises(ValueError):m.tables.same_table_semantics(changed,docs)
+  for kind in ['text','position','cell','merge']:
+   changed=copy.deepcopy(actual)
+   if kind=='text':changed[0]['cells'][0]['paragraphs'][0]+='corrupt'
+   elif kind=='position':changed[0]['startParagraphIndex']+=1
+   elif kind=='cell':changed[0]['cells'][0]['wordCell']={'version':1,'shading':'FF0000','borders':{}}
+   else:changed[0]['cells'][0]['colspan']=2
+   self.assertFalse(m.tables.same_table_semantics(changed,docs),kind)
+  explicit=copy.deepcopy(docs)
+  for node in explicit[0]['content']:
+   if node['type']=='table':node['attrs']={'wordTable':copy.deepcopy(legacy)}
+  self.assertFalse(m.tables.same_table_semantics(actual,explicit))
+
  def test_actual_word_table_bytes_native_cells_and_six_corruptions(self):
   import base64
   fixture=json.loads((ROOT/'test/fixtures/word-tables-native-v1.json').read_text())

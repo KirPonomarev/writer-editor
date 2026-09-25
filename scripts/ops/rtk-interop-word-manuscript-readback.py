@@ -1121,11 +1121,11 @@ def audit(request):
     def table_graph(round=0):return tables.canonical_graphs(expected_round(round))
     def table_docx_stage(name,document,data,round=0):
         if table_expected is None:return
-        actual=tables.parse_body(document)[1];require(actual==table_graph(round),'TABLE_GRAPH_'+name)
+        actual=tables.parse_body(document)[1];require(tables.same_table_semantics(actual,expected_round(round)),'TABLE_GRAPH_'+name)
         table_stages[name]={'graphSha256':digest(canonical(actual)),'artifactSha256':digest(data),'tableCount':len(actual)}
     def table_canonical_stage(name,documents,hashes,round):
         if table_expected is None:return
-        graph=tables.canonical_graphs(documents);require(graph==table_graph(round),'TABLE_CANONICAL_'+name)
+        graph=tables.canonical_graphs(documents);require(tables.same_table_semantics(graph,expected_round(round)),'TABLE_CANONICAL_'+name)
         table_stages[name]={'graphSha256':digest(canonical(graph)),'artifactSha256':digest(canonical(hashes)),'tableCount':len(graph)}
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_round(round)],[])

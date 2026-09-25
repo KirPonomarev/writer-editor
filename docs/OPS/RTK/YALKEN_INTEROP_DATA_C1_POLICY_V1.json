@@ -686,11 +686,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "2c536724312595a30e0d3d773af4b9fe12606fc10467a268ac2bc53831bca818"
+        "sha256": "80fd3a1919108b937ded7bad0944e4731fae4e2c7eb359f9f7c665175fb0c824"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "63b929c28ae6415be1d8ed8a661e729f2e646e645243d6873da20a96c42acdb2"
+        "sha256": "42de2ebebf6403b9c21e4889301ddb3fda2b6a88c1ec115d38927e96aad0d009"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -962,7 +962,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
-        "sha256": "35fa4d11cfbe179e546213abcb9ced1aa49a6442d154f5dba69fd227e82da0d8"
+        "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282"
       },
       {
         "path": "src/io/documentTableProperties.js",
@@ -990,11 +990,15 @@
       },
       {
         "path": "docs/tasks/2026-09-25--word-table-autofit-review.md",
-        "sha256": "e0751bf58db6fbf164ffc200b38d627f19069ac5ae6a388469e4f34cc7480722"
+        "sha256": "9192f8b304b04e2702739d78c44f8b372d2877c628b60e790a8dd1c6ab6fd6c7"
       },
       {
         "path": "test/contracts/rtk-word-table-review.contract.test.js",
         "sha256": "76f6151776ffca46afd501fd0580995ef89b457c9ebf089c42dda82bc3da8701"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+        "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e"
       }
     ],
     "followupRepair": {
@@ -1718,7 +1722,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "d0dc13abc16882cf659cad23055abb8aefb856429527456acadd29ef0d88586d"
+        "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1738,7 +1742,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
-        "sha256": "d2744159cb23e28c900ff3d76e160214a2068840fb36fa3b1adbbc879ef1d64d"
+        "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282"
       },
       {
         "path": "scripts/ops/rtk-interop-word-hostile.mjs",
