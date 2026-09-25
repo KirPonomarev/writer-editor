@@ -3652,7 +3652,35 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
         alt: attrs.alt, displayName: attrs.displayName, ...documentMediaData.imageDisplaySize(attrs) };
     }));
   } catch { return fail('SOURCE_INVALID'); }
-  const actual = observed.placements.map(x => Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName', 'cx', 'cy'].map(k => [k, x[k]])));
+  const textCorrespondences = [];
+  const originalOffsets = new Map();
+  for (const first of observed.placements.filter(x => x.textCorrespondence)) {
+    const { paragraphIndex, textCorrespondence } = first;
+    const block = blocks[paragraphIndex], segments = textCorrespondence?.segments;
+    // A legacy diagnostic map has no full-text authority. It retains only the
+    // old exact-offset comparison and can never admit a text remapping.
+    if (!block?.canonicalTextSha256) continue;
+    const placements = observed.placements.filter(x => x.paragraphIndex === paragraphIndex);
+    if (textCorrespondence.schemaVersion !== 'yalken.word.media-text-correspondence.v1'
+      || !Array.isArray(segments) || segments.length !== placements.length + 1
+      || segments.some(s => typeof s?.originalText !== 'string' || typeof s?.currentText !== 'string'
+        || !Array.isArray(s.revisionRanges))
+      || `sha256:${sha256Hex(segments.map(s => s.originalText).join(''))}` !== block.canonicalTextSha256)
+      return fail('TEXT_CORRESPONDENCE_MISMATCH');
+    let originalOffset = 0, currentOffset = 0;
+    for (const [i, placement] of placements.entries()) {
+      originalOffset += segments[i].originalText.length;
+      currentOffset += segments[i].currentText.length;
+      if (placement.originalOffset !== originalOffset || placement.offset !== currentOffset)
+        return fail('TEXT_CORRESPONDENCE_MISMATCH');
+      originalOffsets.set(placement, originalOffset);
+    }
+    textCorrespondences.push({ paragraphIndex, segments });
+  }
+  const actual = observed.placements.map(x => ({
+    ...Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName', 'cx', 'cy'].map(k => [k, x[k]])),
+    offset: originalOffsets.has(x) ? originalOffsets.get(x) : x.offset,
+  }));
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     const withoutSize = rows => rows.map(({ cx, cy, ...identity }) => identity);
     if (JSON.stringify(withoutSize(actual)) === JSON.stringify(withoutSize(expected))) return fail('RESIZE_REQUIRES_MANUAL');
@@ -3669,7 +3697,8 @@ export function bindDocxReviewMedia(reviewIr, exportMap) {
   if (actualKeys.some(k => !k) || new Set(actualKeys).size !== expected.length
     || JSON.stringify(actualKeys.slice().sort()) !== JSON.stringify(opaqueKeys.slice().sort())) return fail('OCCURRENCE_BINDING_MISMATCH');
   const proof = { schemaVersion: 'yalken.word.media-binding.v1', localExportMapDigest: `sha256:${hashCanonicalValue(exportMap)}`,
-    returnedMediaDigest: `sha256:${hashCanonicalValue(observed)}`, automaticApplyAuthority: false };
+    returnedMediaDigest: `sha256:${hashCanonicalValue(observed)}`, automaticApplyAuthority: false,
+    textCorrespondences };
   return { ok: true, applicable: true, proof, reviewIr: { ...reviewIr,
     opaqueUnsupported: unsupported.filter(x => !drawings.includes(x)), mediaBinding: proof } };
 }
@@ -6448,6 +6477,50 @@ function returnEvidenceTextChangeFromRevision(revision, options = {}) {
 // Build replacement-grouped textChanges only from pairs the parser already
 // bound into the same replacement group. Paragraph adjacency alone can join
 // independent Word operations and erase their author-derived operation IDs.
+function mediaSegmentTextCandidates(projection, authorityOptions, fallbackTargetScope) {
+  const changes = [], covered = new Set();
+  if (!authorityOptions.fullManuscriptExportMap) return { changes, covered };
+  for (const correspondence of projection?.mediaBinding?.textCorrespondences || []) {
+    const originalText = correspondence.segments.map(s => s.originalText).join('');
+    const boundaries = new Set([0, originalText.length, ...Array.from(
+      new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(originalText), s => s.index)]);
+    for (const [segmentIndex, segment] of correspondence.segments.entries()) {
+      if (!segment.originalText || segment.originalText === segment.currentText
+        || Math.max(segment.originalText.length, segment.currentText.length) > DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_BOUNDS.maxTrackedTextChars
+        || /[\r\n]/u.test(segment.originalText + segment.currentText)
+        || segment.revisionRanges.some(r => !boundaries.has(r.originalFrom) || !boundaries.has(r.originalTo))) continue;
+      const revisions = (projection.textRevisions || []).filter(r =>
+        r.paragraphIndex === correspondence.paragraphIndex && segment.revisionRanges.some(p =>
+          p.openStart === r.sourceXmlProvenance?.openStart && p.closeEnd === r.sourceXmlProvenance?.closeEnd));
+      // Keep the user's decision boundary: one native operation or one proven
+      // replacement pair, never combine independent edits into one Apply item.
+      if (revisions.length !== segment.revisionRanges.length || revisions.length < 1 || revisions.length > 2
+        || revisions.some(r => !['insert', 'delete'].includes(r.operation))
+        || (revisions.length === 2 && (!revisions[0].replacementGroupId
+          || revisions[0].replacementGroupId !== revisions[1].replacementGroupId))) continue;
+      const authorities = revisions.map(r => returnEvidenceFullManuscriptRevisionAuthority(r, fallbackTargetScope, authorityOptions));
+      const authority = authorities[0];
+      if (authorities.some(a => !a.resolved || a.targetScope.type !== 'scene'
+        || a.targetScope.id !== authority.targetScope.id || a.blockId !== authority.blockId)) continue;
+      const operationId = docxReviewPreviewSessionOperationIdFromRevisions(revisions);
+      const changeHash = revisionBlockHash({ paragraphIndex: correspondence.paragraphIndex, segmentIndex,
+        originalText: segment.originalText, currentText: segment.currentText,
+        revisionIds: revisions.map(r => r.nativeRevisionId), targetScope: authority.targetScope });
+      changes.push({ changeId: `docx-tracked-media-text-${changeHash.slice(0, 16)}`,
+        targetScope: authority.targetScope,
+        match: { kind: 'exact', quote: segment.originalText, prefix: '', suffix: '', blockId: authority.blockId },
+        replacementText: segment.currentText,
+        createdAt: normalizeString(revisions[0].date || authorityOptions.createdAt),
+        paragraphIndex: authority.paragraphIndex, documentParagraphIndex: authority.documentParagraphIndex,
+        sourceAuthority: authority.sourceAuthority, typedUnsupportedSiblingsRemainPending: true,
+        ...(operationId ? { operationId } : {}),
+      });
+      for (const revision of revisions) covered.add(revision);
+    }
+  }
+  return { changes, covered };
+}
+
 function returnEvidenceTextChangesFromProjection(projection, options = {}) {
   const revisions = Array.isArray(projection?.textRevisions) ? projection.textRevisions : [];
   const fallbackTargetScope = docxReviewPreviewSessionTargetScopeOrDefault(options.targetScope);
@@ -6467,9 +6540,11 @@ function returnEvidenceTextChangesFromProjection(projection, options = {}) {
     fullManuscriptExportMap,
     fullManuscriptScopeResolver,
   };
-  const textChanges = [];
+  const mediaCandidates = mediaSegmentTextCandidates(projection, authorityOptions, fallbackTargetScope);
+  const textChanges = [...mediaCandidates.changes];
   for (let index = 0; index < revisions.length; index += 1) {
     const current = revisions[index];
+    if (mediaCandidates.covered.has(current)) continue;
     const next = revisions[index + 1];
     const currentOp = normalizeString(current?.operation);
     const nextOp = normalizeString(next?.operation);

@@ -195,7 +195,9 @@
     "docs/tasks/2026-09-25--word-import-loss-diagnostics.md",
     "src/renderer/index.html",
     "test/contracts/word-import-loss-diagnostics.contract.test.js",
-    "docs/tasks/2026-09-25--word-inline-png-display-size.md"
+    "docs/tasks/2026-09-25--word-inline-png-display-size.md",
+    "docs/tasks/2026-09-25--word-media-text-offset.md",
+    "test/contracts/rtk-word-media-text-correspondence.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -459,7 +461,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "73a4317af69b823cb34f77dd968a53b32ed6bc78b7b27b762f25841a37beb4d5"
+        "sha256": "12cdf3cdee6ff9ac3636c895502ba5e9d01e964ab80e97027c7dcd432f188f2a"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -539,7 +541,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "0f0ac32f9b4ed144f854c7bd116bd0656eac48d5828d6804ace8759392039f66"
+        "sha256": "6ffbb3c1e17fa2450d52bfb680e7b98dead7583831bc1f07b32873da7d6ce1cc"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -895,7 +897,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "6dcaf0354d02b472751c8285adba734b0942eeab16c690f8089ab69678f396d5"
+        "sha256": "e7ef9ba8654bc9513a80d3d0fa9e24b8068e6e44ac5ddebe5571c64893e6d92c"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -928,6 +930,14 @@
       {
         "path": "test/contracts/rtk-word-media-editor.contract.test.js",
         "sha256": "64ff226f0351189a0cff3730fe57d72b4abe34a8f1d3368245205248345fd0eb"
+      },
+      {
+        "path": "docs/tasks/2026-09-25--word-media-text-offset.md",
+        "sha256": "3c5be31064f5920736d3300ca0295c2b6adaa8231e9ba13308d2d5de90563018"
+      },
+      {
+        "path": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+        "sha256": "3425e6623dcc687f41586c301faa5b46733eca314c59270dde129b4d197de934"
       }
     ],
     "followupRepair": {

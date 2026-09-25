@@ -514,12 +514,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T14:39:12.198352Z",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
-      "rationale": "Owner-approved W3 placement-size contract and rollback record; exact scope only, no gate or oracle exception and no accepted-cell credit.",
-      "sha256": "b2c911c633778bbb5c34f6553ba2ee76c50b6d75d551aabe7aae18d0783834a6"
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "a8f0296c1692f14936de4a64d8fda9d6b3edcb3b14f708318b3503f6d764b53d"
     },
     {
       "approved": true,
@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "66e22c02095efc74872f06549254d00b90d6f06be9fa2dc5a7a5f9b0e2249604",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "4410dbf9eabba47ee605fa56b157fcf1c8810840f4df6a907473e76b1bd9f700",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1666,21 +1666,21 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "73a4317af69b823cb34f77dd968a53b32ed6bc78b7b27b762f25841a37beb4d5",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "12cdf3cdee6ff9ac3636c895502ba5e9d01e964ab80e97027c7dcd432f188f2a",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "0f0ac32f9b4ed144f854c7bd116bd0656eac48d5828d6804ace8759392039f66",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "6ffbb3c1e17fa2450d52bfb680e7b98dead7583831bc1f07b32873da7d6ce1cc",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "src/main.js",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "093d452f93f47f2bcbee564c29afec0c65020f94003f2f39615d5d5373a9062e",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "9821a0177dc0071e35ba073161976426ba14b7bdd51a78d1d3597f7a9e535727",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e3f88e639f921d8af03b67087d4f44dc4cf736139a5d4cbb3be5d964d37fe3cc",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "aa0631c6e60cf54ec860cfbcb681f393d2fdf227190ef128bbf40e3cca8387fb",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3a6b9bab786d1b2d3e5547b175c140383357d7be0a8abc15a3e4fb936099e333",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "3509d6292a422e73e67b486499e8666afeb52c5458b2705f2a708270e49aabb2",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "61a3f241a9a6af3b55f8d52d006ba2f800ea0f20753f03338f44292a42990d78",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "f4b203201d2ecd29a4cb159652a11473b160a01d4787af83260ba338f6afcefd",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "da5e6ce1207ec78fee3f001402805b6f939bfe4f2525b93d3213b01a800f5293",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "42f04c0d3a19fe9f8f25f632172c8671548e5c0a9e8cb0ea942b68414514cbf1",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "6dcaf0354d02b472751c8285adba734b0942eeab16c690f8089ab69678f396d5",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
-      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "sha256": "e7ef9ba8654bc9513a80d3d0fa9e24b8068e6e44ac5ddebe5571c64893e6d92c",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -1987,6 +1987,24 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-25--word-media-text-offset.md",
+      "sha256": "3c5be31064f5920736d3300ca0295c2b6adaa8231e9ba13308d2d5de90563018",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+      "sha256": "3425e6623dcc687f41586c301faa5b46733eca314c59270dde129b4d197de934",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:12:49.770138Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     }
   ],
   "evidenceStampIds": [
@@ -4449,6 +4467,96 @@
       "filePath": "docs/ARCH_DIFF_LOG.md",
       "rationale": "Direct owner continuation authorizes repairing the observed 64-paragraph IPC transport failure through bounded main-owned preview references. Preserve the IPC limits, independent raw oracle, denominator and actual command/persistence gates. Runtime source is hash qualified; fresh native evidence is still required; approval metadata creates no product PASS.",
       "sha256": "afbfa2a28a08876a0cd2acbb8e02f69e47ce4fb7c0484d75274c622f6cd19133"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:39:12.198352Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/ARCH_DIFF_LOG.md",
+      "rationale": "Owner-approved W3 placement-size contract and rollback record; exact scope only, no gate or oracle exception and no accepted-cell credit.",
+      "sha256": "b2c911c633778bbb5c34f6553ba2ee76c50b6d75d551aabe7aae18d0783834a6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "66e22c02095efc74872f06549254d00b90d6f06be9fa2dc5a7a5f9b0e2249604"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "73a4317af69b823cb34f77dd968a53b32ed6bc78b7b27b762f25841a37beb4d5"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "0f0ac32f9b4ed144f854c7bd116bd0656eac48d5828d6804ace8759392039f66"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "093d452f93f47f2bcbee564c29afec0c65020f94003f2f39615d5d5373a9062e"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "e3f88e639f921d8af03b67087d4f44dc4cf736139a5d4cbb3be5d964d37fe3cc"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "3a6b9bab786d1b2d3e5547b175c140383357d7be0a8abc15a3e4fb936099e333"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "61a3f241a9a6af3b55f8d52d006ba2f800ea0f20753f03338f44292a42990d78"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "da5e6ce1207ec78fee3f001402805b6f939bfe4f2525b93d3213b01a800f5293"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "6dcaf0354d02b472751c8285adba734b0942eeab16c690f8089ab69678f396d5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_PNG_DISPLAY_SIZE_20260925",
+      "approvedAtUtc": "2026-09-25T14:29:06.843010Z",
+      "rationale": "Owner-approved W3 Word remediation: bounded integer-EMU PNG placement size through import, persistence, editor and export; binary identity and authenticated review guards retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }
