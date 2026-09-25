@@ -288,3 +288,58 @@ test('Word media acceptance rejects missing native hops, broken asset continuity
   assert.throws(()=>check(proof,{...row,recipe:'DEFAULT'},batch,rounds),/MANUSCRIPT_MEDIA_/);
  }
 });
+
+test('W3: independent ZIP oracle proves resized placements through five import/export cycles',async()=>{
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');
+  const envelope=await import('../../src/renderer/documentContentEnvelope.mjs');
+  const bytes=image(),legacy=createImageAttrs(bytes,{alt:'same binary'});
+  const dimensions=[[19050,9525],[38101,19051],[9526,38101]];
+  let doc={type:'doc',content:[{type:'paragraph',content:dimensions.map(([cx,cy])=>({type:'image',attrs:createImageAttrs(bytes,{alt:'same binary',displayWidthEmu:cx,displayHeightEmu:cy})}))}]};
+  for(let cycle=0;cycle<5;cycle++){
+    const zip=await exported(doc),raw=inspect(zip);
+    assert.deepEqual(raw.dimensions,dimensions.map(d=>d.map(String)));assert.deepEqual(raw.hashes,[legacy.sha256,legacy.sha256,legacy.sha256]);assert.equal(raw.targets.length,1);
+    const report=bridge.buildDocxContentPreviewFromZipBytes(zip),plan=bridge.buildDocxImportPreviewPlanFromContentPreview(report);
+    assert.equal(plan.ok,true,JSON.stringify(report));doc=envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc;
+  }
+});
+test('W3: valid Word extent mutation imports while mismatched transform and unsupported effects remain blocked',async()=>{
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+  const raw=await exported({type:'doc',content:[{type:'paragraph',content:[{type:'image',attrs:createImageAttrs(image())}]}]});
+  const parts=JSON.parse(python("import io,sys,zipfile,json,base64\nz=zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read()));print(json.dumps({n:base64.b64encode(z.read(n)).decode() for n in z.namelist()}))",raw));
+  const change=f=>buildStoredZip(Object.entries(parts).map(([name,b])=>({name,data:name==='word/document.xml'?Buffer.from(f(Buffer.from(b,'base64').toString())):Buffer.from(b,'base64')})));
+  const resized=bridge.buildDocxContentPreviewFromZipBytes(change(x=>x.replaceAll('cx="19050"','cx="38101"')));assert.equal(resized.ok,true,JSON.stringify(resized));
+  assert.equal(resized.contentPreview.paragraphs[0].media[0].attrs.displayWidthEmu,38101);
+  for(const f of [x=>x.replace('cx="19050"','cx="38101"'),x=>x.replaceAll('cx="19050"','cx="0"'),x=>x.replaceAll('cx="19050"','cx="78028801"'),x=>x.replace('<a:xfrm>','<a:xfrm rot="1">'),x=>x.replaceAll('wp:inline','wp:anchor')])assert.equal(bridge.buildDocxContentPreviewFromZipBytes(change(f)).ok,false);
+});
+
+test('W3: scaled image persists inside table/list through real authority, asset storage and idempotent replay',async t=>{
+  const fs=require('node:fs'),path=require('node:path'),os=require('node:os');
+  const bridge=await import('../../src/io/revisionBridge/index.mjs'),envelope=await import('../../src/renderer/documentContentEnvelope.mjs');
+  const attrs=createImageAttrs(image(),{displayWidthEmu:38101,displayHeightEmu:28577,alt:'scaled same asset'});
+  const paragraph={type:'paragraph',content:[{type:'image',attrs}]};
+  const doc={type:'doc',content:[{type:'table',content:[{type:'tableRow',content:[{type:'tableCell',attrs:{colspan:1,rowspan:1,colwidth:null},content:[paragraph]}]}]},{type:'bulletList',content:[{type:'listItem',content:[paragraph]}]}]};
+  const bytes=await exported(doc),{createDocxImportLocalFilePreview}=require('../../src/utils/docxImportLocalFilePreview.js');
+  const local=await createDocxImportLocalFilePreview({}, {pickLocalFile:async()=>({fileName:'resized.docx'}),readLocalFileBytes:async()=>bytes});
+  assert.equal(local.ok,true,JSON.stringify(local));const plan=local.docxImportPreviewPlan;assert.equal(plan.ok,true,JSON.stringify(local));
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'word-display-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const {applyDocxImportSafeCreate,rememberDocxImportPreviewPlanAdmission}=require('../fixtures/docx-import-real-authority.cjs');rememberDocxImportPreviewPlanAdmission(plan);
+  const options={projectRoot:root,romanRoot:path.join(root,'roman'),projectId:'word-display-test'};
+  const first=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(first.ok,true,JSON.stringify(first));
+  const again=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(again.ok,true);assert.equal(again.value.idempotent,true);
+  assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,attrs.assetPath))).digest('hex'),attrs.sha256);
+  const scenes=fs.readdirSync(path.join(root,'roman'),{recursive:true}).filter(p=>p.endsWith('.txt'));assert.equal(scenes.length,1);
+  const reopened=envelope.parseObservablePayload(fs.readFileSync(path.join(root,'roman',scenes[0]),'utf8')).doc;
+  assert.deepEqual(inspect(await exported(reopened)).dimensions,[['38101','28577'],['38101','28577']]);
+});
+test('W3: unchanged scaled review size binds local source, size-only edit is explicit manual with no authority',async()=>{
+  const bridge=await import('../../src/io/revisionBridge/index.mjs');const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const attrs=createImageAttrs(image(),{displayWidthEmu:38101,displayHeightEmu:28577});
+  const blocks=buildFormatIrParagraphs({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'image',attrs}]}]},text:'',sceneId:'scaled.txt'});
+  const bytes=buildDocxReviewPacketBuffer({blocks,customProperties:[{name:'YRTK_C01_AUTH',value:'synthetic-no-authority'},{name:'YRTK2_TOKEN',value:'synthetic-no-authority'}]});
+  const cryptoPort={sha256Text:v=>`sha256:${createHash('sha256').update(v).digest('hex')}`,sha256Json:v=>`sha256:${createHash('sha256').update(JSON.stringify(v)).digest('hex')}`,byteLength:v=>Buffer.byteLength(v)};
+  const parsed=bridge.buildDocxReviewTransportAnalysisFromZipBytes({bytes},{cryptoPort});assert.equal(parsed.ok,true,JSON.stringify(parsed.reasons));const map={scenes:[{sceneId:'scaled.txt',blocks}]};
+  const bound=bridge.bindDocxReviewMedia(parsed.reviewIr,map);assert.equal(bound.ok,true,JSON.stringify(bound));assert.equal(bound.proof.automaticApplyAuthority,false);
+  const resized=structuredClone(parsed.reviewIr);resized.documentMedia.placements[0].cx++;
+  const manual=bridge.bindDocxReviewMedia(resized,map);assert.equal(manual.ok,false);assert.equal(manual.code,'DOCX_MEDIA_RESIZE_REQUIRES_MANUAL');assert.equal(manual.proof,undefined);
+  const changed=structuredClone(resized);changed.documentMedia.placements[0].sha256='0'.repeat(64);assert.equal(bridge.bindDocxReviewMedia(changed,map).code,'DOCX_MEDIA_RETURN_MISMATCH');
+});

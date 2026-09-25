@@ -8,6 +8,7 @@ const builtin = name => {
 };
 const LIMITS = Object.freeze({ bytes: 4 * 1024 * 1024, pixels: 16 * 1024 * 1024, dimension: 8192, assets: 128, totalBytes: 16 * 1024 * 1024, placementPixels: 64 * 1024 * 1024 });
 const SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+const DISPLAY_KEYS = ['displayWidthEmu', 'displayHeightEmu'];
 const KEYS = ['assetId', 'assetPath', 'sha256', 'mimeType', 'width', 'height', 'alt', 'displayName', 'dataBase64'];
 const fail = code => { throw new Error(`DOCUMENT_MEDIA_${code}`); };
 const hash = bytes => builtin('node:crypto').createHash('sha256').update(bytes).digest('hex');
@@ -89,14 +90,26 @@ function label(value, key) {
     || /[\ud800-\udbff](?![\udc00-\udfff])|(?<![\ud800-\udbff])[\udc00-\udfff]/u.test(value)) fail(key);
   return value;
 }
-function createImageAttrs(bytes, { alt = '', displayName = '' } = {}) {
+// Optional placement dimensions are exact transport integers, not binary facts.
+function imageDisplaySize(attrs) {
+  const cx = attrs?.displayWidthEmu, cy = attrs?.displayHeightEmu;
+  if (cx === undefined && cy === undefined) return { cx: attrs.width * 9525, cy: attrs.height * 9525 };
+  if (![cx, cy].every(n => Number.isSafeInteger(n) && n > 0 && n <= LIMITS.dimension * 9525)) fail('DISPLAY_EXTENT');
+  return { cx, cy };
+}
+function createImageAttrs(bytes, options = {}) {
+  const { alt = '', displayName = '' } = options;
   const info = inspectPng(bytes);
+  const size = imageDisplaySize({ ...info, displayWidthEmu: options.displayWidthEmu, displayHeightEmu: options.displayHeightEmu });
   return { assetId: `sha256-${info.sha256}`, assetPath: `assets/media/${info.sha256}.png`, ...info,
+    ...(size.cx !== info.width * 9525 || size.cy !== info.height * 9525
+      ? { displayWidthEmu: size.cx, displayHeightEmu: size.cy } : {}),
     alt: label(alt, 'ALT'), displayName: label(displayName, 'NAME'), dataBase64: bytes.toString('base64') };
 }
 function validateImageAttrs(attrs) {
-  if (!attrs || typeof attrs !== 'object' || Array.isArray(attrs) || Object.keys(attrs).length !== KEYS.length
-    || Object.keys(attrs).some(key => !KEYS.includes(key)) || typeof attrs.dataBase64 !== 'string'
+  if (!attrs || typeof attrs !== 'object' || Array.isArray(attrs)
+    || KEYS.some(key => !Object.hasOwn(attrs, key))
+    || Object.keys(attrs).some(key => !KEYS.includes(key) && !DISPLAY_KEYS.includes(key)) || typeof attrs.dataBase64 !== 'string'
     || attrs.dataBase64.length > Math.ceil(LIMITS.bytes / 3) * 4 || attrs.dataBase64.length % 4 !== 0 || /[^A-Za-z0-9+/=]/u.test(attrs.dataBase64)) fail('ATTRS');
   const bytes = Buffer.from(attrs.dataBase64, 'base64');
   if (bytes.toString('base64') !== attrs.dataBase64) fail('ATTRS');
@@ -106,7 +119,7 @@ function validateImageAttrs(attrs) {
 }
 function documentMedia(doc) {
   const assets = new Map(), placements = [];
-  let visited = 0, totalBytes = 0, referenceBytes = 0, placementPixels = 0;
+  let visited = 0, totalBytes = 0, referenceBytes = 0, placementPixels = 0, displayAreaEmu = 0;
   const visit = (node, position = [], parentType = '') => {
     if (++visited > 1000000 || position.length > 32) fail('DOCUMENT_BOUNDS');
     if (node?.type === 'image') {
@@ -116,7 +129,9 @@ function documentMedia(doc) {
       // serialized-document or decoded-pixel budget, even with one asset ID.
       referenceBytes += media.bytes.length;
       placementPixels += media.attrs.width * media.attrs.height;
-      if (referenceBytes > LIMITS.totalBytes || placementPixels > LIMITS.placementPixels) fail('DOCUMENT_BOUNDS');
+      const size = imageDisplaySize(media.attrs);
+      displayAreaEmu += size.cx * size.cy;
+      if (referenceBytes > LIMITS.totalBytes || placementPixels > LIMITS.placementPixels || displayAreaEmu > LIMITS.placementPixels * 9525 * 9525) fail('DOCUMENT_BOUNDS');
       if (!assets.has(media.attrs.assetId)) {
         totalBytes += media.bytes.length;
         if (totalBytes > LIMITS.totalBytes) fail('DOCUMENT_BOUNDS');
@@ -131,4 +146,4 @@ function documentMedia(doc) {
   visit(doc);
   return { assets: [...assets.values()], placements };
 }
-module.exports = { MEDIA_LIMITS: LIMITS, inspectPng, createImageAttrs, validateImageAttrs, documentMedia };
+module.exports = { MEDIA_LIMITS: LIMITS, inspectPng, createImageAttrs, validateImageAttrs, imageDisplaySize, documentMedia };

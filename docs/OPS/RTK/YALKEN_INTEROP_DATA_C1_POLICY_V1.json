@@ -194,7 +194,8 @@
     "test/unit/doctor-no-dup-sector-m-phase.test.js",
     "docs/tasks/2026-09-25--word-import-loss-diagnostics.md",
     "src/renderer/index.html",
-    "test/contracts/word-import-loss-diagnostics.contract.test.js"
+    "test/contracts/word-import-loss-diagnostics.contract.test.js",
+    "docs/tasks/2026-09-25--word-inline-png-display-size.md"
   ],
   "protectedFiles": [
     {
@@ -434,7 +435,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "65e3961e1e791342a78924a3df9f433957c7abd39aa24ffac6b2580f23c58dcc"
+        "sha256": "bbb5a72f86221cbb9429235cd8a42d7998cf31d853ef13ac375947740fd44451"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -458,7 +459,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "c2907eff208680bf611a42e1f5ddc08925db55a90f93913d41b72a3cefda3f0e"
+        "sha256": "73a4317af69b823cb34f77dd968a53b32ed6bc78b7b27b762f25841a37beb4d5"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -538,7 +539,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "29e513e6c11a3c68efa1148988f53c2c6c134222c8db73d0e43e7e6914847c07"
+        "sha256": "0f0ac32f9b4ed144f854c7bd116bd0656eac48d5828d6804ace8759392039f66"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -830,15 +831,15 @@
       },
       {
         "path": "src/io/documentMedia.js",
-        "sha256": "90c10c2da33d2223df388ad9b8e3012afd641430b4455095996f972aa515ce55"
+        "sha256": "0b07e8cfb9b170acf665babc238326f72a3faacfb63ba26d48e02695547ccf08"
       },
       {
         "path": "src/export/docx/docxMedia.js",
-        "sha256": "c5b1ac68ed7022fa4754930170eb052e576264de8f69d9c699cbd639fc7bb50a"
+        "sha256": "4ed0ac22615122d810eaa29a6cafcf1e68ff626418cf8b613283fc622aa6eb6f"
       },
       {
         "path": "src/renderer/tiptap/documentMedia.mjs",
-        "sha256": "2be878f06008f8bec021df2b4ae803bb50ee462bc4f0a538efd0103bbd006c2d"
+        "sha256": "912aae7b4df113a16d8c56e0b954aaa84787c2dbfc69060fd56bd6ce7aed86a5"
       },
       {
         "path": "src/utils/flowSceneBatchAtomic.js",
@@ -858,7 +859,7 @@
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
-        "sha256": "b396f47a6b026fe8c6714466dc731c2652a3e108b1011efb1cf93c6196366918"
+        "sha256": "11a1db4689d046cbcb332e4ae5fefcef64936b13daea6e629f28695c2e114867"
       },
       {
         "path": "test/contracts/rtk-word-tables.contract.test.js",
@@ -894,7 +895,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "05bc70d77c1cd180de90df6de69b5f3a63e58afabe115c451595aac95a87d301"
+        "sha256": "6dcaf0354d02b472751c8285adba734b0942eeab16c690f8089ab69678f396d5"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -914,11 +915,19 @@
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
-        "sha256": "1c5b0de73b1ec9bc121e54486cc58962f0521c3a549879d1c1fd786737063752"
+        "sha256": "32b81d5d455e0c1fb73c2ae4cd578f40038aefd97e1ad558131b93898e9188ac"
       },
       {
         "path": "test/unit/document-media.test.js",
-        "sha256": "5d1ce99f7ff4c9a35e31ab55416e6abe679e7d3b3c8898d9791957460b864cec"
+        "sha256": "aa7519e71fbc9288dc1b914cd08b4c1c9c6e0835d2d55050d9de18c1261e1e1b"
+      },
+      {
+        "path": "docs/tasks/2026-09-25--word-inline-png-display-size.md",
+        "sha256": "73ea9fa257417d62bf66fdc88918d58ccf50de0d3bfef97457405526bbde6823"
+      },
+      {
+        "path": "test/contracts/rtk-word-media-editor.contract.test.js",
+        "sha256": "64ff226f0351189a0cff3730fe57d72b4abe34a8f1d3368245205248345fd0eb"
       }
     ],
     "followupRepair": {
