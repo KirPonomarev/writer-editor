@@ -24,7 +24,7 @@ readback and qualified physical recipe. No new dependency or runtime network.
 
 ## ALLOWLIST
 
-Exact 43 paths in the preflight-passed WORD_MEDIA_20260925 declaration. Companion
+Exact 44 paths in the preflight-passed WORD_MEDIA_20260925 declaration. Companion
 Lab must use a separate owned registered worktree and exact product admission.
 Current hostile evidence Lab and its shadow are retained without mutation.
 
@@ -71,7 +71,8 @@ FEATURE_INTEGRATION_MANIFEST_V1:
   negativeBypassChecks: unsafe relationship, substituted bytes, dropped image,
   changed alt/placement, invalid PNG, stale projection and partial activation.
 - evidenceBindings: all artifact hashes, raw independent readback and exact
-  merged SHA; currentReality: media fidelity is not yet implemented or proven.
+  merged SHA; currentReality: product media implementation and native diagnostic probes exist;
+  official MEDIA acceptance remains zero until complete delivery and proof.
 
 O: observe equivalent media bytes and semantics after the complete Word route.
 T: canonical project -> existing kernel capability -> existing atomic adapter.
@@ -120,3 +121,10 @@ checks and delivery, observed numerator, remaining limitations and next step.
 
 Retain expected/actual raw bytes, hashes and original failure; no silent retry,
 manual evidence promotion or acceptance claim from a successful unit test.
+
+Development checkpoints 239db73a and 594e3789 are not merged acceptance. Native
+Word tracked rewrite preserved PNG bytes and three placements; native text uses
+slash object markers, so field acceptance additionally requires Word inline-shape
+object readback. The XML parser remains platform-neutral: its bounded package
+adapter validates PNG bytes and supplies immutable metadata through a read-only
+port. Adjacent text Apply preserves images; crossing an image stays blocked.

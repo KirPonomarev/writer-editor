@@ -333,6 +333,7 @@ test('production publication revalidation rejects changed scenes, canonical comm
       projectName:expectedMetadata.title,projectCreatedAtUtc:expectedMetadata.createdAtUtc,
       sceneCandidates:[{sceneId:input.scenes[0].sceneId}]}),
     readFullManuscriptDocxReviewExportDocumentContent:async()=>({observableContent:raw}),
+    verifyDocxMediaAssetFiles:require('../../src/utils/docxImportSafeCreate.js').verifyDocxMediaAssetFiles,
     loadRevisionBridgeModule:async()=>({createRtkNonTextReturnFilePort:()=>({readCanonical:async()=>state})}),
   });
   await ctx.revalidateFullManuscriptDocxReviewPacketExportSource(source);
