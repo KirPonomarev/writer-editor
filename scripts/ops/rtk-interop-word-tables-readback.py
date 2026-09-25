@@ -22,7 +22,7 @@ def property_record(value,table=False,columns=None):
     borders=value['borders'];need(isinstance(borders,dict) and set(borders)<=set(EDGES),'BORDER_EDGES')
     for edge in borders.values():
         need(isinstance(edge,dict),'BORDER')
-        if edge.get('style')=='none':need(set(edge)=={'style'},'BORDER_NONE')
+        if edge.get('style') in ['none','nil']:need(set(edge)=={'style'},'BORDER_NONE')
         else:
             need(set(edge)=={'style','size','color'} and edge['style'] in ['single','double'],'BORDER')
             need(type(edge['size']) is int and 2<=edge['size']<=96,'BORDER_SIZE')
@@ -54,7 +54,7 @@ def raw_properties(pr,table=False,grid=None):
             v={k.removeprefix(W):v for k,v in edge.attrib.items()}
             need(set(v)<={'val','sz','color','space','shadow','frame'} and v.get('space','0')=='0'
                 and v.get('shadow','0') in ['0','false','off'] and v.get('frame','0') in ['0','false','off'],'BORDER_UNSUPPORTED')
-            if v.get('val') in ['none','nil']:b={'style':'none'}
+            if v.get('val') in ['none','nil']:b={'style':v['val']}
             else:
                 need(v.get('val') in ['single','double'] and re.fullmatch('[0-9]{1,2}',v.get('sz','')),'BORDER_VALUE')
                 b={'style':v['val'],'size':int(v['sz']),'color':v.get('color','auto').upper()}

@@ -18,7 +18,7 @@ Design OS read-only port: existing Tiptap document projection. No document truth
 
 ## Bounded property profile
 
-Optional versioned properties preserve positive integer absolute grid widths (1–31680 dxa per column; bounded total), absent width, fixed layout, absolute preferred table width, literal RGB/none shading, and literal none/single/double borders (2–96 eighth-points, RGB or auto). Cell widths matching the grid are redundant; conflicts and relative widths require typed diagnostics. Border edges retain table defaults and explicit cell overrides. Namespace, property owner and duplicate checks precede use. Theme, pattern, automatic layout and complex inheritance are not guessed.
+Optional versioned properties preserve positive integer absolute grid widths (1–31680 dxa per column; bounded total), absent width, fixed layout, absolute preferred table width, literal RGB/none shading, and literal nil/none/single/double borders (2–96 eighth-points, RGB or auto). Cell widths matching the grid are redundant; conflicts and relative widths require typed diagnostics. Border edges retain table defaults and explicit cell overrides. Cell none inherits the explicit table border; nil remains distinct and suppresses that fallback. Native Word preserves an opposing nonempty border; the renderer therefore does not use CSS hidden. The raw oracle rejects a nil-to-none mutation. Namespace, property owner and duplicate checks precede use. Theme, pattern, automatic layout and complex inheritance are not guessed.
 Legacy tables retain their historical default representation. New explicit absent widths do not become 1440.
 
 ## Interface discovery

@@ -13,7 +13,7 @@ function keys(value, required) {
 function validateBorders(value) {
   if (!object(value) || Object.keys(value).some(k => !EDGES.includes(k))) fail();
   for (const border of Object.values(value)) {
-    if (border?.style === 'none') keys(border, ['style']);
+    if (['none', 'nil'].includes(border?.style)) keys(border, ['style']);
     else {
       keys(border, ['style', 'size', 'color']);
       if (!['single', 'double'].includes(border.style) || !int(border.size, 2, 96) || !color(border.color)) fail();
@@ -51,7 +51,7 @@ function propertiesEqual(a, b) {
 function borderXml(borders, container) {
   const edges = EDGES.filter(k => Object.hasOwn(borders, k)).map(k => {
     const b = borders[k];
-    return `<w:${k} w:val="${b.style}"${b.style === 'none' ? '' : ` w:sz="${b.size}" w:color="${b.color}"`}/>`;
+    return `<w:${k} w:val="${b.style}"${['none', 'nil'].includes(b.style) ? '' : ` w:sz="${b.size}" w:color="${b.color}"`}/>`;
   }).join('');
   return edges ? `<w:${container}>${edges}</w:${container}>` : '';
 }

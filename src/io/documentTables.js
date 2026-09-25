@@ -302,7 +302,7 @@ function createTableReader(paragraphs, onLoss = () => {}) {
         const v = Object.fromEntries(keys.map(key => [key, property(attribute(key))]));
         const simple = EDGES.includes(edge) && ['', '0'].includes(v.space) && ['', '0', 'false', 'off'].includes(v.shadow)
           && ['', '0', 'false', 'off'].includes(v.frame) && !v.themeColor && !v.themeTint && !v.themeShade;
-        if (simple && ['none', 'nil'].includes(v.val)) owner.properties.borders[edge] = { style: 'none' };
+        if (simple && ['none', 'nil'].includes(v.val)) owner.properties.borders[edge] = { style: v.val };
         else if (simple && ['single', 'double'].includes(v.val) && /^\d{1,2}$/u.test(v.sz) && Number(v.sz) >= 2 && Number(v.sz) <= 96
           && (['', 'auto'].includes(v.color) || /^[0-9a-fA-F]{6}$/u.test(v.color))) {
           owner.properties.borders[edge] = { style: v.val, size: Number(v.sz), color: v.color ? v.color.toUpperCase().replace('AUTO', 'auto') : 'auto' };

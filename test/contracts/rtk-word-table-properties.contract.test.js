@@ -154,3 +154,37 @@ test('W5: conflicting vertical continuation properties fail closed and matching 
   const mismatch=await mutate(bytes,x=>x.replace('<w:vMerge w:val="continue"/>','<w:vMerge w:val="continue"/><w:shd w:val="clear" w:fill="FF0000"/>'));
   const report=bridge.buildDocxContentPreviewFromZipBytes(mismatch);assert.equal(report.ok,false);assert.equal(report.reason,'DOCX_TABLE_MERGED_CELL_PROPERTIES_CONFLICT');
 });
+
+
+test('W5: nil suppresses its fallback while none inherits the table border, without collapsing their canonical identity', async () => {
+  const {tablePresentation}=await import('../../src/renderer/tiptap/documentTables.mjs');
+  const doc=fixture(), t=doc.content[1];
+  t.content[0].content[0].attrs.wordCell.borders={top:{style:'nil'},right:{style:'nil'}};
+  t.content[0].content[1].attrs.wordCell={version:1,shading:null,borders:{top:{style:'none'},left:{style:'none'}}};
+  let current=doc;
+  for(let cycle=0;cycle<5;cycle++) {
+    const bytes=await exported(current);
+    assert.match(bytes.toString(),/<w:top w:val="nil"\/>/u);
+    assert.match(bytes.toString(),/<w:top w:val="none"\/>/u);
+    current=(await imported(bytes)).doc;assert.deepEqual(current,doc);
+  }
+  const view=tablePresentation(t);
+  assert.match(view.cells[0].style,/border-top:none/u);
+  assert.match(view.cells[0].style,/border-right:none/u);
+  assert.match(view.cells[1].style,/border-top:3pt double currentColor/u);
+  assert.match(view.cells[1].style,/border-left:3pt double currentColor/u);
+  const records=tables.tableParagraphs(t,'nil-none'), expected=records.map(x=>({formatIr:{table:structuredClone(x.table)}}));
+  expected[0].formatIr.table.wordCell.borders.top.style='none';
+  assert.equal(tables.compareTableParagraphTopology(records,expected).ok,false);
+  const {spawnSync}=require('node:child_process'), path=require('node:path');
+  const code=`import sys,json,base64,io,zipfile,importlib.util,copy
+from xml.etree import ElementTree as E
+s=importlib.util.spec_from_file_location('reader',sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+x=json.load(sys.stdin);r=E.fromstring(zipfile.ZipFile(io.BytesIO(base64.b64decode(x['bytes']))).read('word/document.xml'))
+expected=m.canonical_graphs([x['doc']]);assert m.parse_body(r)[1]==expected
+b=r.find('.//'+m.W+'tcBorders/'+m.W+'top');assert b.get(m.W+'val')=='nil';b.set(m.W+'val','none')
+assert m.parse_body(r)[1]!=expected
+print('NIL_NONE_MUTANT_REJECTED')`;
+  const result=spawnSync('python3',['-I','-B','-c',code,path.join(__dirname,'../../scripts/ops/rtk-interop-word-tables-readback.py')],{input:JSON.stringify({doc,bytes:(await exported(doc)).toString('base64')}),encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);assert.match(result.stdout,/NIL_NONE_MUTANT_REJECTED/u);
+});

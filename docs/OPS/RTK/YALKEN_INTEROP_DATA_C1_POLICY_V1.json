@@ -442,7 +442,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "9daa844488c2c8d8f9e09f42979a933155ef4624e4151a3dfbd3af380b27ca5b"
+        "sha256": "714077059961329ee75bc663d2e79ee5558eba1b01165e8ffed2a8b2e7e7b460"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -830,11 +830,11 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "628fab4bb3e49835c7df51c581c54fd2e0dc6402d9fafcead582e5413865a9b9"
+        "sha256": "443cebb5d02499e98d18c030ddeb73d3ae5aaf141d62c671c538cba262481b6d"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
-        "sha256": "a3f368a7f4cb8286d6effdb7e5d01b33fe4f11b7679c39abd8bcce4c99064d3d"
+        "sha256": "7b821a423ed4f2649498f2b761a1b42596a1ae3213c8e180be7ddff943d8c7bf"
       },
       {
         "path": "src/io/documentMedia.js",
@@ -954,15 +954,15 @@
       },
       {
         "path": "docs/tasks/2026-09-25--word-table-properties.md",
-        "sha256": "6eec3cb4ee0c9e3b13d630766ebed55c364381dfebcc5d58a6dae7b4184eee9d"
+        "sha256": "a2e69d27591b7c0ddcdf6692c71a129d1e0a1d5c6b2e112438c981c078f8a102"
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
-        "sha256": "652d9f7f7fbf039e3dae0e76dfe6fa116072e269c55018e8bdccf29024833ebc"
+        "sha256": "35fa4d11cfbe179e546213abcb9ced1aa49a6442d154f5dba69fd227e82da0d8"
       },
       {
         "path": "src/io/documentTableProperties.js",
-        "sha256": "499824971048ee2010058bc4e873da1a5127d3744423187c9b8a51169f362660"
+        "sha256": "d44bbc4abf523277d52530ed37b507015276a9a9bbaedfb10bae69fbc70c77da"
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
@@ -970,7 +970,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "ac75323f0d2204ad2896a72314ea42e5de0673dd5e6b9267b001351cf23dfd27"
+        "sha256": "f534eb61254e8a1d4251073b0d3666aca06f0608eeb6322f4f0a09b988294ae6"
       }
     ],
     "followupRepair": {

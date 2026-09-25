@@ -7,6 +7,7 @@ import { tableNodes, tableEditing, goToNextCell } from '@tiptap/pm/tables';
 
 // Display conversion consumes canonical document data; it never publishes truth.
 const borderCss = border => !border || border.style === 'none' ? 'none'
+  : border.style === 'nil' ? 'none'
   : `${border.size / 8}pt ${border.style === 'single' ? 'solid' : 'double'} ${border.color === 'auto' ? 'currentColor' : '#' + border.color}`;
 export function tablePresentation(json) {
   const layout = tables.inspectTable(json), explicit = json.attrs?.wordTable;
@@ -19,7 +20,13 @@ export function tablePresentation(json) {
       top: cell.row === 0 ? 'top' : 'insideH', bottom: cell.row + cell.rowspan === layout.rows ? 'bottom' : 'insideH',
       left: cell.column === 0 ? 'left' : 'insideV', right: cell.column + cell.colspan === layout.columns ? 'right' : 'insideV',
     };
-    const style = Object.entries(borders).map(([side, edge]) => `border-${side}:${borderCss(own?.borders[side] ?? props.borders[edge])}`);
+    // Word treats explicit none like an omitted cell border (table fallback),
+    // whereas nil suppresses this cell fallback. Native Word still displays
+    // an opposing nonempty cell border; CSS hidden would wrongly erase it.
+    const style = Object.entries(borders).map(([side, edge]) => {
+      const local = own?.borders[side];
+      return `border-${side}:${borderCss(!local || local.style === 'none' ? props.borders[edge] : local)}`;
+    });
     style.push(`background-color:${fill && fill !== 'none' ? '#' + fill : 'transparent'}`);
     return { style: style.join(';') };
   });
