@@ -4175,6 +4175,47 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
   };
   const paragraphs = tableDocumentParagraphs(documentXml, { tokens })?.map(p => p.token)
     || indexFormattingDocumentTokens(tokens).map(p => p.token);
+  const correspondences = new Map();
+  const correspondenceFor = paragraph => {
+    if (correspondences.has(paragraph)) return correspondences.get(paragraph);
+    const inner = tokens.filter(t => inside(t, paragraph)).sort((a, b) => a.openStart - b.openStart);
+    const revisions = inner.filter(t => t.namespaceUri === W_NS && ['ins', 'del'].includes(t.localName));
+    const forbidden = new Set(['moveFrom', 'moveTo', 'fldChar', 'instrText', 'delInstrText',
+      'fldSimple', 'sym', 'footnoteReference', 'endnoteReference', 'softHyphen', 'noBreakHyphen']);
+    let eligible = !tokens.some(t => inside(paragraph, t) && t.namespaceUri === W_NS
+      && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName))
+      && !inner.some(t => t.namespaceUri === W_NS && forbidden.has(t.localName));
+    const segments = [{ originalText: '', currentText: '', revisionRanges: [] }];
+    const offsets = new Map();
+    let originalOffset = 0, currentOffset = 0;
+    for (const token of inner) {
+      if (isWordToken(token, 'drawing')) {
+        offsets.set(token.openStart, { originalOffset, currentOffset });
+        segments.push({ originalText: '', currentText: '', revisionRanges: [] });
+        continue;
+      }
+      if (token.namespaceUri !== W_NS || !['t', 'delText', 'tab', 'br', 'cr'].includes(token.localName)) continue;
+      const owners = revisions.filter(r => inside(token, r));
+      if (owners.length > 1 || (token.localName === 'delText' && owners[0]?.localName !== 'del')
+        || (token.localName === 't' && owners[0]?.localName === 'del')
+        || (token.localName === 'br' && !['', 'textWrapping'].includes(attr(token, 'type')))) eligible = false;
+      const text = ['t', 'delText'].includes(token.localName) ? tokenText(documentXml, token)
+        : token.localName === 'tab' ? '\t' : '\n';
+      const segment = segments.at(-1), revision = owners[0];
+      const atomOriginalStart = originalOffset;
+      if (revision?.localName !== 'ins') { segment.originalText += text; originalOffset += text.length; }
+      if (revision?.localName !== 'del') { segment.currentText += text; currentOffset += text.length; }
+      if (revision) {
+        const range = segment.revisionRanges.find(r => r.openStart === revision.openStart);
+        if (range) range.originalTo = originalOffset;
+        else segment.revisionRanges.push({ openStart: revision.openStart, closeEnd: revision.closeEnd,
+          originalFrom: atomOriginalStart, originalTo: originalOffset });
+      }
+    }
+    const value = { eligible, segments, offsets };
+    correspondences.set(paragraph, value);
+    return value;
+  };
   const ids = new Set();
   return drawings.map(drawing => {
     const owners = paragraphs.map((p, i) => inside(drawing, p) ? i : -1).filter(i => i >= 0);
@@ -4226,6 +4267,10 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     const dimension = key => { const value = plain(extent, key); if (!/^[1-9][0-9]*$/u.test(value) || Number(value) > 8192 * 9525) fail('EXTENT'); return Number(value); };
     const before = tokens.filter(t => inside(t, paragraph) && t.openStart < drawing.openStart);
     const offset = before.reduce((sum, t) => sum + (isWordToken(t, 't') ? tokenText(documentXml, t).length : ['tab', 'br', 'cr'].some(n => isWordToken(t, n)) ? 1 : 0), 0);
-    return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy') };
+    const correspondence = correspondenceFor(paragraph), positions = correspondence.offsets.get(drawing.openStart);
+    const firstDrawing = correspondence.offsets.keys().next().value === drawing.openStart;
+    return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
+      ...(correspondence.eligible ? { originalOffset: positions.originalOffset,
+        ...(firstDrawing ? { textCorrespondence: { schemaVersion: 'yalken.word.media-text-correspondence.v1', segments: correspondence.segments } } : {}) } : {}) };
   });
 }

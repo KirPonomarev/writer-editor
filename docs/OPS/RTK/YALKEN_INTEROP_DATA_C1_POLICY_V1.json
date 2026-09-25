@@ -195,7 +195,11 @@
     "docs/tasks/2026-09-25--word-import-loss-diagnostics.md",
     "src/renderer/index.html",
     "test/contracts/word-import-loss-diagnostics.contract.test.js",
-    "docs/tasks/2026-09-25--word-inline-png-display-size.md"
+    "docs/tasks/2026-09-25--word-inline-png-display-size.md",
+    "docs/tasks/2026-09-25--word-media-text-offset.md",
+    "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+    "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+    "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs"
   ],
   "protectedFiles": [
     {
@@ -459,7 +463,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "73a4317af69b823cb34f77dd968a53b32ed6bc78b7b27b762f25841a37beb4d5"
+        "sha256": "351e7953051aeb37a0e4787b332a769d7d032cbbd2a756bdd185c515f2e030d4"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -539,7 +543,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "0f0ac32f9b4ed144f854c7bd116bd0656eac48d5828d6804ace8759392039f66"
+        "sha256": "6ffbb3c1e17fa2450d52bfb680e7b98dead7583831bc1f07b32873da7d6ce1cc"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -559,7 +563,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "7843bf0c7f96fec67de9363cef8868a6e5abcb2c13c263cb5e7e215a2eb5963b"
+        "sha256": "d31e1de33fcbfe534f3ad0d905bdb83bfdc98c57a05615a5d993755fec094823"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -895,7 +899,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "6dcaf0354d02b472751c8285adba734b0942eeab16c690f8089ab69678f396d5"
+        "sha256": "e7ef9ba8654bc9513a80d3d0fa9e24b8068e6e44ac5ddebe5571c64893e6d92c"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -928,6 +932,22 @@
       {
         "path": "test/contracts/rtk-word-media-editor.contract.test.js",
         "sha256": "64ff226f0351189a0cff3730fe57d72b4abe34a8f1d3368245205248345fd0eb"
+      },
+      {
+        "path": "docs/tasks/2026-09-25--word-media-text-offset.md",
+        "sha256": "f33629b8dda02a8b09d458fc92ba61b4ee569fc48f2d305428a21c0974630ea5"
+      },
+      {
+        "path": "test/contracts/rtk-word-media-text-correspondence.contract.test.js",
+        "sha256": "c3854a31dc90e819182dd3d4e18c42a3f683afa4373e1396cf47669aef3b0260"
+      },
+      {
+        "path": "src/export/docx/fullManuscriptDocxReviewReturnRouter.js",
+        "sha256": "91546d0c5a309a528c3fd4167c40ddbe18be22069074e3117d4598f48475d55b"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportBlockRangeAuthorityV2.mjs",
+        "sha256": "d67728697a4fc0796bbf28b1d93f290382cc3b5df3316428176216e968618c89"
       }
     ],
     "followupRepair": {

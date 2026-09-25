@@ -117,3 +117,11 @@ The candidate CI run 35094206293 identified a historical bundle assertion compar
 ## 2026-09-25 — W3 inline PNG display size
 
 Owner-approved bounded Word remediation. Optional paired integer EMU placement fields preserve display size independently of immutable PNG identity; legacy nodes keep intrinsic sizing. Review-only resize remains explicit manual residual without an apply capability. No new dependency, network, route, denominator or oracle exception. Rollback: revert the single W3 delivery; preserve original inputs and retained proof.
+
+## 2026-09-25 — WORD_MEDIA_TEXT_OFFSET_20260925
+
+- Контекст: owner-approved W4, authenticated tracked text adjacent to unchanged inline PNG.
+- Что нарушаем: none; no canon exception or weaker authority/oracle.
+- Решение: bounded Original/Current correspondence tied to entire source paragraph and ordered image occurrences; existing main-owned Apply revalidation and recovery remain mandatory.
+- Риск: ambiguous text or placement must remain blocked/manual; no new cell credit before aggregate acceptance.
+- Rollback: revert W4 delivery; original files and recovery snapshots retained.

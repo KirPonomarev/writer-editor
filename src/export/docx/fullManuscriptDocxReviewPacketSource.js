@@ -1366,9 +1366,11 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   };
   const scenePathBySceneId = {};
   const baselineFinalTextBySceneId = {};
+  const baselineObservableContentBySceneId = {};
   for (const scene of scenes) {
     scenePathBySceneId[scene.sceneId] = scene.scenePath;
     baselineFinalTextBySceneId[scene.sceneId] = scene.text;
+    if (scene.observableContent !== scene.text) baselineObservableContentBySceneId[scene.sceneId] = scene.observableContent;
   }
   const localAuthorityCapsule = {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.local-authority.v1',
@@ -1378,6 +1380,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
     scope: 'full-manuscript',
     scenePathBySceneId,
     baselineFinalTextBySceneId,
+    baselineObservableContentBySceneId,
     // ROUND-01 (V3): opaque keyRef + public correlation material alongside the
     // in-memory hmacSecret. The DURABLE record (buildDocxReviewReturnAuthorityStoreRecord)
     // redacts hmacSecret and keeps only keyRef; the in-memory capsule retains the
