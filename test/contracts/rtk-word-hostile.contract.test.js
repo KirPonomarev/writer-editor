@@ -4,6 +4,8 @@ const crypto = require('node:crypto');
 const path = require('node:path');
 const {pathToFileURL} = require('node:url');
 const {spawnSync} = require('node:child_process');
+const fs = require('node:fs');
+const vm = require('node:vm');
 const load = () => import(pathToFileURL(path.join(process.cwd(),'scripts/ops/rtk-interop-word-hostile.mjs')));
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 
@@ -59,4 +61,45 @@ test('independent raw classifier and snapshot tamper counterexamples execute',()
   const result=spawnSync('python3',['-I','-B','test/unit/rtk-word-hostile.test.py'],{encoding:'utf8',timeout:30000});
   assert.equal(result.status,0,result.stderr || result.stdout);
   assert.match(result.stderr,/Ran [1-9][0-9]* tests/);assert.match(result.stderr,/\bOK\b/);
+});
+
+function activationHarness() {
+  const source=fs.readFileSync(path.join(process.cwd(),'src/main.js'),'utf8');
+  const start=source.indexOf('// DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_START');
+  const end=source.indexOf('// DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_END',start);
+  assert.ok(start>=0 && end>start);
+  const prior={reviewSurface:{revisionSession:{sessionId:'previous-document'}}};
+  const context={Buffer,console,activeReviewSessionStore:prior,activeReviewSessionLifecycle:'active',
+    activeRtkNonOverlapTrackedReplacementApplyStore:{oldPreparedWrite:true},activeRtkFormattingReturnApplyStore:{oldPreparedWrite:true},activeRtkStructuralReturnApplyStore:{oldPreparedWrite:true},
+    activeDocxActivationRequestDigestGuard:{check:()=>({ok:true})},
+    isPlainObjectValue:value=>!!value && typeof value==='object' && !Array.isArray(value),cloneJsonSafe:value=>JSON.parse(JSON.stringify(value)),
+    decodeDocxIntakeGateBufferSource:()=>({ok:true,bytes:Buffer.from('malformed input')}),normalizeDocxIntakeGateRequestId:value=>value,
+    loadRevisionBridgeModule:async()=>({buildDocxReviewPreviewSessionCandidateFromZipBytes(){}})};
+  vm.createContext(context);vm.runInContext(source.slice(start,end),context);
+  context.rejectInput=async()=>({ok:false,reason:'RTK_XML_MALFORMED_BLOCKED'});
+  vm.runInContext('inspectDocxReviewReturnIntakeV2 = (...args) => rejectInput(...args);',context);
+  return context;
+}
+
+test('rejected replacement DOCX revokes every old prepared writer while retaining prior preview data',async()=>{
+  const context=activationHarness(),saved=JSON.stringify(context.activeReviewSessionStore);
+  const result=await context.handleDocxReviewPreviewSessionActivationCommandSurface({requestId:'invalid-next-document'},{buildMainReviewContext:async()=>({ok:true})});
+  assert.equal(result.ok,false);assert.equal(result.error.reason,'RTK_XML_MALFORMED_BLOCKED');
+  assert.notEqual(context.activeReviewSessionLifecycle,'active');
+  assert.equal(context.activeRtkNonOverlapTrackedReplacementApplyStore,null);
+  assert.equal(context.activeRtkFormattingReturnApplyStore,null);
+  assert.equal(context.activeRtkStructuralReturnApplyStore,null);
+  assert.equal(JSON.stringify(context.activeReviewSessionStore),saved);
+});
+
+test('late older DOCX intake cannot publish a candidate after a newer attempt',async()=>{
+  const context=activationHarness();let release,entered;
+  const reached=new Promise(resolve=>entered=resolve);
+  context.rejectInput=async({context:request})=>{if(request.marker==='old'){entered();return new Promise(resolve=>release=resolve);}return {ok:false,reason:'RTK_XML_MALFORMED_BLOCKED'};};
+  const old=context.handleDocxReviewPreviewSessionActivationCommandSurface({requestId:'old'},{buildMainReviewContext:async()=>({ok:true,marker:'old'})});
+  await reached;
+  await context.handleDocxReviewPreviewSessionActivationCommandSurface({requestId:'new'},{buildMainReviewContext:async()=>({ok:true,marker:'new'})});
+  release({ok:true,authenticated:false,packet:{}});
+  const result=await old;assert.equal(result.ok,false);assert.equal(result.error.reason,'RTK_DOCX_ACTIVATION_SUPERSEDED');
+  assert.notEqual(context.activeReviewSessionLifecycle,'active');
 });

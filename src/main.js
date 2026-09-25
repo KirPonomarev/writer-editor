@@ -1190,6 +1190,7 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
 }
 
 function resetActiveReviewSessionStore(nextLifecycle = 'passive') {
+  if (typeof activeDocxReviewIntakeGeneration === 'number') activeDocxReviewIntakeGeneration += 1;
   activeReviewSessionStore = null;
   activeReviewSessionLifecycle = nextLifecycle === 'cleared' ? 'cleared' : 'passive';
   activeReviewSessionDirtyImportBlocked = false;
@@ -1474,9 +1475,13 @@ function readActiveReviewSessionReviewSurface() {
     : {};
 }
 
-function handleReviewSurfaceImportPacketCommandSurface(payload = {}) {
+function handleReviewSurfaceImportPacketCommandSurface(payload = {}, publication = {}) {
   const dirtyAtImportStart = isReviewSessionEditorContextDirty();
   return Promise.resolve(normalizeReviewSessionImportRecord(payload)).then((normalized) => {
+    if (typeof publication.isCurrent === 'function' && !publication.isCurrent()) {
+      return makeReviewMutateTypedError('cmd.project.review.importPacket',
+        'E_REVIEW_IMPORT_SUPERSEDED', 'RTK_DOCX_ACTIVATION_SUPERSEDED');
+    }
     if (!normalized.ok) {
       return makeReviewMutateTypedError(
         'cmd.project.review.importPacket',
@@ -5360,6 +5365,7 @@ async function handleDocxReviewPreflightCommandSurface(payload = {}) {
 
 // DOCX_REVIEW_PREVIEW_SESSION_COMMAND_SURFACE_START
 const DOCX_REVIEW_PREVIEW_SESSION_COMMAND_ID = 'cmd.project.review.activateDocxReviewPreviewSession';
+let activeDocxReviewIntakeGeneration = 0;
 const DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS = new Set([
   'scene',
   'chapter-file',
@@ -7258,6 +7264,9 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
     };
   }
   if (!built) return null;
+  if (typeof options.isDocxIntakeCurrent === 'function' && !options.isDocxIntakeCurrent()) {
+    return { prepared: false, status: 'blocked', reason: 'RTK_DOCX_ACTIVATION_SUPERSEDED' };
+  }
   if (isPlainObjectValue(built.fullManuscriptPlan)) {
     const plan = built.fullManuscriptPlan;
     if (plan.ok !== true || !Array.isArray(plan.sceneCommands) || plan.sceneCommands.length === 0) {
@@ -9317,6 +9326,16 @@ async function inspectDocxReviewReturnIntakeV2({
 }
 
 async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = {}, options = {}) {
+  // A replacement file starts a new authority attempt, even when parsing fails.
+  // Retain prior review data, but revoke every prepared writer before any await.
+  const generation = ++activeDocxReviewIntakeGeneration;
+  const isCurrent = () => generation === activeDocxReviewIntakeGeneration;
+  const superseded = () => makeDocxReviewPreviewSessionTypedError(
+    'E_DOCX_REVIEW_PREVIEW_SESSION_SUPERSEDED', 'RTK_DOCX_ACTIVATION_SUPERSEDED');
+  activeReviewSessionLifecycle = 'passive';
+  activeRtkNonOverlapTrackedReplacementApplyStore = null;
+  activeRtkFormattingReturnApplyStore = null;
+  activeRtkStructuralReturnApplyStore = null;
   const decoded = decodeDocxIntakeGateBufferSource(payload);
   if (!decoded.ok) {
     return makeDocxReviewPreviewSessionTypedError(
@@ -9343,6 +9362,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
   }
 
   const context = await buildDocxReviewPreviewSessionMainContext(options);
+  if (!isCurrent()) return superseded();
   if (!context.ok) {
     return makeDocxReviewPreviewSessionTypedError(
       context.code || 'E_DOCX_REVIEW_PREVIEW_SESSION_CONTEXT_BLOCKED',
@@ -9363,6 +9383,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       },
     );
   }
+  if (!isCurrent()) return superseded();
   if (!revisionBridge || typeof revisionBridge.buildDocxReviewPreviewSessionCandidateFromZipBytes !== 'function') {
     return makeDocxReviewPreviewSessionTypedError(
       'E_DOCX_REVIEW_PREVIEW_SESSION_UNAVAILABLE',
@@ -9376,6 +9397,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     revisionBridge,
     options,
   });
+  if (!isCurrent()) return superseded();
   if (!returnIntake.ok) {
     return makeDocxReviewPreviewSessionTypedError(
       'E_DOCX_REVIEW_PREVIEW_SESSION_RETURN_INTAKE_BLOCKED',
@@ -9480,7 +9502,8 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
   }
 
   const importPayload = buildDocxReviewPreviewSessionImportPayload(activeContext, candidate, requestId);
-  const importResult = await handleReviewSurfaceImportPacketCommandSurface(importPayload);
+  const importResult = await handleReviewSurfaceImportPacketCommandSurface(importPayload, { isCurrent });
+  if (!isCurrent()) return superseded();
   if (!importResult || importResult.ok !== true) {
     const nestedError = isPlainObjectValue(importResult?.error) ? importResult.error : {};
     return makeDocxReviewPreviewSessionTypedError(
@@ -9497,6 +9520,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       commentShadowPayload,
     );
   }
+  if (!isCurrent()) return superseded();
   const nonOverlapTrackedReplacementProductPath =
     await prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProductPath({
       context: activeContext,
@@ -9504,8 +9528,9 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       requestId,
       docxBytes: decoded.bytes,
       revisionBridge,
-      options,
+      options: { ...options, isDocxIntakeCurrent: isCurrent },
     });
+  if (!isCurrent()) return superseded();
   const explicitCanonicalApplyConfirmed = payload?.explicitCanonicalApplyConfirmed === true;
   let preCommentExactTextApplyResult = null;
   if (
@@ -9518,6 +9543,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       requestId,
       options,
     });
+    if (!isCurrent()) return superseded();
     if (isPlainObjectValue(preCommentExactTextApplyResult) && preCommentExactTextApplyResult.ok === false) {
       return makeDocxReviewPreviewSessionTypedError(
         'E_DOCX_REVIEW_PREVIEW_SESSION_EXACT_TEXT_APPLY_FAILED',
@@ -9554,6 +9580,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       explicitCanonicalApplyConfirmed,
     })
     : null;
+  if (!isCurrent()) return superseded();
   const formattingProductPath = prepareAuthenticatedDocxFormattingReturnProductPath({
     context: activeContext,
     requestId,
