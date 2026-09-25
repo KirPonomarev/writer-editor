@@ -500,7 +500,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "a4c2d915f0681f92690afca5e2e73465771bbe7cc992f1afdfbaeca8c85f900a"
+        "sha256": "cc6ed5b05172f58cf48ece2b82fdfd15423e3cf964f5a0c247cecd2b2b77c485"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -2691,7 +2691,7 @@
         },
         {
           "path": "src/word-manuscript-fields.mjs",
-          "sha256": "344ca2c1fae9bd06b50e50c74eaf5abce9185dc64023f74cb7e736227d7b54dd"
+          "sha256": "a736c9494d237c8045793d3543ce87956c4911e8a26cf99420377f6f3f40ff58"
         },
         {
           "path": "src/word-metadata-mutant.py",

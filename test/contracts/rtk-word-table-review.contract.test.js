@@ -131,6 +131,8 @@ test('Full table review export preserves protected notes inside cells and exact 
   for (const transform of [
     x => x.replace(/(<w:r>[^]*?<w:footnoteReference[^>]*\/>[^]*?<\/w:r>)/u, '<w:ins w:id="900">$1</w:ins>'),
     x => x.replace('<w:footnoteReference', '<x:footnoteReference xmlns:x="urn:foreign"'),
+    x => x.replace(/<w:r>(?:(?!<\/w:r>)[^])*<w:footnoteReference[^>]*\/>(?:(?!<\/w:r>)[^])*<\/w:r>/u,
+      run => run.replace('<w:r>', '<x:r xmlns:x="urn:foreign">').replace('</w:r>', '</x:r>')),
   ]) {
     const changed = transform(xml); assert.notEqual(changed, xml);
     const bad = buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data: name === 'word/document.xml' ? changed : data })));

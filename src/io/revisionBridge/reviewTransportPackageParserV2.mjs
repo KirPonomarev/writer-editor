@@ -3220,7 +3220,11 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
     for (const reference of refs) {
       const kind = reference.localName === 'footnoteReference' ? 'footnote' : 'endnote';
       const owner = paragraphs.find(p => reference.openStart >= p.openEnd && reference.closeEnd <= p.closeStart);
-      requireNote(owner && reference.namespaceUri === W_NS
+      const ownerRun = owner && documentScan.tokens.find(token => isWordToken(token, 'r')
+        && token.depth === owner.depth + 1
+        && token.openStart >= owner.openEnd && token.closeEnd <= owner.closeStart
+        && reference.openStart >= token.openEnd && reference.closeEnd <= token.closeStart);
+      requireNote(ownerRun && reference.namespaceUri === W_NS
         && reference.path.join('/') === `${owner.path.join('/')}/r/${kind}Reference`
         && !attr(reference, 'customMarkFollows', W_NS), 'REFERENCE_LOCATION_OR_CUSTOM_MARK');
       const id = attr(reference, 'id', W_NS), key = `${kind}:${id}`;
