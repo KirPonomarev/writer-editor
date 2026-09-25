@@ -10608,6 +10608,10 @@ function canonicalizeDocxImportPreviewDiagnostic(diagnostic) {
     'listKey',
     'actual',
     'limit',
+    'feature',
+    'location',
+    'sourceProperty',
+    'transformation',
   ]);
 }
 

@@ -20004,7 +20004,19 @@ function summarizeDocxImportPreview(value) {
     : null;
   const textLength = typeof firstEntry?.content === 'string' ? firstEntry.content.length : 0;
   if (!plan || plan.ok !== true) {
-    return 'DOCX preview is not importable.';
+    const code = value?.docxContentPreviewReport?.code;
+    const reason = {
+      DOCX_CONTENT_PREVIEW_UNSUPPORTED_FEATURE: 'This document contains a feature the current importer cannot preserve.',
+      DOCX_CONTENT_PREVIEW_MEDIA_INVALID: 'An image or its document binding is invalid.',
+      DOCX_CONTENT_PREVIEW_CONTENT_INVALID: 'Document structure or formatting is invalid.',
+      DOCX_CONTENT_PREVIEW_XML_MALFORMED: 'The document XML is malformed.',
+      DOCX_CONTENT_PREVIEW_RESOURCE_LIMIT_EXCEEDED: 'The document exceeds an import safety limit.',
+      DOCX_CONTENT_PREVIEW_XML_PARSE_LIMIT_EXCEEDED: 'The document exceeds an XML parsing safety limit.',
+      DOCX_CONTENT_PREVIEW_SECURITY_REJECTED: 'The document contains an unsafe reference.',
+      DOCX_CONTENT_PREVIEW_INTERNAL_ERROR: 'The importer encountered an internal failure.',
+      DOCX_CONTENT_PREVIEW_PREFLIGHT_BLOCKED: 'The document failed package validation.',
+    }[code] || 'DOCX preview is not importable.';
+    return `${reason} Nothing was imported; the original file is unchanged.`;
   }
   return `Ready to create ${entryCount || 1} scene from DOCX preview. Text chars: ${textLength}.`;
 }
@@ -20019,7 +20031,11 @@ function summarizeDocxImportLoss(value) {
   const mode = typeof lossReport?.mode === 'string' && lossReport.mode
     ? lossReport.mode
     : 'plain-text-only';
-  return `Loss report: ${mode}; items: ${itemCount}.`;
+  const items = Array.isArray(lossReport?.items) ? lossReport.items : [];
+  const lines = items.slice(0, 200).map(item => typeof item?.message === 'string'
+    ? `${item.severity === 'warning' ? 'Warning' : 'Info'}: ${item.message.slice(0, 4096)}` : 'Loss detail unavailable.');
+  if (items.length > 200 || itemCount > items.length) lines.push('Additional loss details are unavailable; inspect the original document before importing.');
+  return [`Loss report: ${mode}; items: ${itemCount}.`, ...lines].join('\n\n');
 }
 
 function closeDocxImportPreviewModal() {
@@ -20036,7 +20052,7 @@ function openDocxImportPreviewModal(value) {
     docxImportPreviewMessage.textContent = summarizeDocxImportPreview(value);
   }
   if (docxImportPreviewLoss) {
-    docxImportPreviewLoss.textContent = summarizeDocxImportLoss(value);
+    docxImportPreviewLoss.value = summarizeDocxImportLoss(value);
   }
   docxImportPreviewConfirmButtons.forEach((button) => {
     button.disabled = !(plan && plan.ok === true);

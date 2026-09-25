@@ -7238,6 +7238,193 @@ const DOCX_CONTENT_PREVIEW_WORDPROCESSINGML_GUARD_LOCAL_NAMES = new Set([
   'type',
 ]);
 
+// Only known parser reasons may cross the public boundary. An unexpected
+// exception is an internal failure; its message may contain private host data.
+const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
+  ...[
+    'DOCUMENT_MEDIA_ANIMATED_PNG_UNSUPPORTED',
+    'DOCUMENT_MEDIA_FLOATING_IMAGE_UNSUPPORTED',
+    'DOCUMENT_MEDIA_PICTURE_EFFECT_UNSUPPORTED',
+    'DOCUMENT_MEDIA_PICTURE_FEATURE_UNSUPPORTED',
+    'DOCUMENT_MEDIA_PICTURE_TRANSFORM_UNSUPPORTED',
+    'DOCUMENT_MEDIA_RESIZED_IMAGE_UNSUPPORTED',
+    'DOCUMENT_MEDIA_TRACKED_IMAGE_UNSUPPORTED',
+    'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED',
+    'DOCX_HEADING_LEVEL_UNSUPPORTED',
+    'DOCX_INLINE_UNDERLINE_UNSUPPORTED',
+    'DOCX_TABLE_ATTR_UNSUPPORTED',
+    'DOCX_TABLE_CELL_CONTENT_UNSUPPORTED',
+    'DOCX_TABLE_COLUMN_WIDTH_UNSUPPORTED',
+    'DOCX_TABLE_LIST_UNSUPPORTED',
+    'DOCX_TABLE_MIXED_HEADER_ROW_UNSUPPORTED',
+    'DOCX_TABLE_NESTING_UNSUPPORTED',
+    'DOCX_TABLE_ROW_EXCEPTION_UNSUPPORTED',
+    'DOCX_TABLE_STRUCTURE_UNSUPPORTED',
+  ].map(reason => [reason, 'UNSUPPORTED_FEATURE']),
+  ...[
+    'DOCUMENT_MEDIA_ATTRS',
+    'DOCUMENT_MEDIA_ALT',
+    'DOCUMENT_MEDIA_NAME',
+    'DOCUMENT_MEDIA_CONTENT_TYPE',
+    'DOCUMENT_MEDIA_DRAWING_ID',
+    'DOCUMENT_MEDIA_DRAWING_SHAPE',
+    'DOCUMENT_MEDIA_EXTENT',
+    'DOCUMENT_MEDIA_IDENTITY',
+    'DOCUMENT_MEDIA_IMAGE_SHAPE',
+    'DOCUMENT_MEDIA_PARAGRAPH_OWNERSHIP',
+    'DOCUMENT_MEDIA_PART_MISSING',
+    'DOCUMENT_MEDIA_PLACEMENT',
+    'DOCUMENT_MEDIA_PNG_BYTES',
+    'DOCUMENT_MEDIA_PNG_CHUNK_CRC',
+    'DOCUMENT_MEDIA_PNG_CHUNK_SIZE',
+    'DOCUMENT_MEDIA_PNG_COMPRESSED_TRAILING_BYTES',
+    'DOCUMENT_MEDIA_PNG_DATA_ORDER',
+    'DOCUMENT_MEDIA_PNG_DECOMPRESSION',
+    'DOCUMENT_MEDIA_PNG_END',
+    'DOCUMENT_MEDIA_PNG_FILTER',
+    'DOCUMENT_MEDIA_PNG_HEADER',
+    'DOCUMENT_MEDIA_PNG_HEADER_ORDER',
+    'DOCUMENT_MEDIA_PNG_PALETTE',
+    'DOCUMENT_MEDIA_PNG_SCANLINE_SIZE',
+    'DOCUMENT_MEDIA_PNG_TRUNCATED',
+    'DOCUMENT_MEDIA_PNG_UNKNOWN_CRITICAL_CHUNK',
+    'DOCUMENT_MEDIA_RELATIONSHIP_LOOKUP',
+    'DOCUMENT_MEDIA_SURROGATE_SPLIT',
+  ].map(reason => [reason, 'MEDIA_INVALID']),
+  ...[
+    'DOCUMENT_MEDIA_CRYPTO_PORT',
+    'DOCUMENT_MEDIA_NATIVE_VALIDATOR_UNAVAILABLE',
+  ].map(reason => [reason, 'INTERNAL_ERROR']),
+  ...[
+    'DOCUMENT_MEDIA_DOCUMENT_BOUNDS',
+    'DOCUMENT_MEDIA_PLACEMENT_LIMIT',
+    'DOCUMENT_MEDIA_PNG_BYTE_LIMIT',
+    'DOCUMENT_MEDIA_PNG_DECOMPRESSION_LIMIT',
+    'DOCUMENT_MEDIA_PNG_PIXEL_LIMIT',
+    'DOCUMENT_MEDIA_TOTAL_BYTE_LIMIT',
+    'DOCUMENT_MEDIA_XML_LIMIT',
+    'DOCX_INLINE_RUN_LIMIT',
+    'DOCX_INLINE_STYLE_CYCLE_OR_DEPTH',
+    'DOCX_INLINE_STYLE_DEPTH',
+    'DOCX_INLINE_STYLE_ID_OR_LIMIT',
+    'DOCX_INLINE_STYLE_PART_LIMIT_OR_INVALID',
+    'DOCX_LIST_COUNTER_LIMIT',
+    'DOCX_LIST_DEFINITION_ID_OR_LIMIT',
+    'DOCX_LIST_PART_LIMIT_OR_INVALID',
+    'DOCX_LIST_PROPERTY_LIMIT',
+    'DOCX_LIST_XML_DEPTH',
+    'DOCX_TABLE_DIAGNOSTIC_LIMIT',
+    'DOCX_TABLE_GRID_LIMIT',
+    'DOCX_TABLE_PARAGRAPH_LIMIT',
+  ].map(reason => [reason, 'RESOURCE_LIMIT_EXCEEDED']),
+  ...[
+    'DOCUMENT_MEDIA_EXTERNAL_IMAGE',
+    'DOCUMENT_MEDIA_RELATIONSHIP_TARGET',
+    'DOCX_FONT_RELATIONSHIP_INVALID',
+  ].map(reason => [reason, 'SECURITY_REJECTED']),
+  ...[
+    'DOCUMENT_MEDIA_XML',
+    'DOCX_INLINE_STYLE_XML_INVALID',
+    'DOCX_LIST_XML_INVALID',
+  ].map(reason => [reason, 'XML_MALFORMED']),
+  ...[
+    'DOCX_BLOCK_STYLE_CONFLICT',
+    'DOCX_BLOCK_STYLE_DEFINITION_REQUIRED',
+    'DOCX_BLOCK_STYLE_LIST_CONFLICT',
+    'DOCX_BLOCK_STYLE_PROJECTION_INVALID',
+    'DOCX_FONT_ATTRIBUTES_INVALID',
+    'DOCX_FONT_ATTRIBUTE_NAMESPACE',
+    'DOCX_FONT_FACE_DUPLICATE_OR_INVALID',
+    'DOCX_FONT_FACE_REQUIRED',
+    'DOCX_FONT_GROUP_DUPLICATE',
+    'DOCX_FONT_HINT_INVALID',
+    'DOCX_FONT_LANGUAGE_DUPLICATE',
+    'DOCX_FONT_LANGUAGE_INVALID',
+    'DOCX_FONT_PACKAGE_INVALID',
+    'DOCX_FONT_PART_INVALID',
+    'DOCX_FONT_PART_ROOT',
+    'DOCX_FONT_SCHEME_DUPLICATE',
+    'DOCX_FONT_SCHEME_REQUIRED',
+    'DOCX_FONT_SCRIPT_FLAG_INVALID',
+    'DOCX_FONT_THEME_TOKEN_INVALID',
+    'DOCX_HEADING_LEVEL_INVALID',
+    'DOCX_INLINE_COLOR_INVALID',
+    'DOCX_INLINE_COLOR_PROJECTION_INVALID',
+    'DOCX_INLINE_COLOR_THEME_MODIFIER_INVALID',
+    'DOCX_INLINE_COLOR_VALUE_REQUIRED',
+    'DOCX_INLINE_FONT_SIZE_INVALID',
+    'DOCX_INLINE_HIGHLIGHT_INVALID',
+    'DOCX_INLINE_ON_OFF_INVALID',
+    'DOCX_INLINE_PROPERTY_NAMESPACE',
+    'DOCX_INLINE_RUN_INVALID',
+    'DOCX_INLINE_STYLE_INVENTORY',
+    'DOCX_INLINE_TEXT_BINDING',
+    'DOCX_INLINE_TYPOGRAPHY_PROJECTION_INVALID',
+    'DOCX_LIST_DUPLICATE_LEVEL',
+    'DOCX_LIST_DUPLICATE_PROPERTY',
+    'DOCX_LIST_INTEGER_INVALID',
+    'DOCX_LIST_INVENTORY_INVALID',
+    'DOCX_LIST_NAMESPACE',
+    'DOCX_LIST_ORPHAN_LEVEL',
+    'DOCX_LIST_OVERRIDE_LEVEL_INVALID',
+    'DOCX_LIST_PROJECTION_INVALID',
+    'DOCX_OUTLINE_LEVEL_INVALID',
+    'DOCX_OUTLINE_NAMESPACE',
+    'DOCX_PARAGRAPH_ALIGNMENT_DUPLICATE',
+    'DOCX_PARAGRAPH_ALIGNMENT_PROJECTION_INVALID',
+    'DOCX_PARAGRAPH_STYLE_DUPLICATE',
+    'DOCX_TABLE_ATTR_INVALID',
+    'DOCX_TABLE_CELL_INVALID',
+    'DOCX_TABLE_CELL_ORDER',
+    'DOCX_TABLE_CELL_PARAGRAPH_BINDING',
+    'DOCX_TABLE_EMPTY_CELL_STRUCTURE',
+    'DOCX_TABLE_GRID_BINDING',
+    'DOCX_TABLE_GRID_INVALID',
+    'DOCX_TABLE_GRID_REQUIRED',
+    'DOCX_TABLE_GRID_SPAN_OVERFLOW',
+    'DOCX_TABLE_HEADER_INVALID',
+    'DOCX_TABLE_MERGE_CONTINUATION_CONTENT',
+    'DOCX_TABLE_MERGE_INVALID',
+    'DOCX_TABLE_NESTING_INVALID',
+    'DOCX_TABLE_NONCONTIGUOUS_TABLE',
+    'DOCX_TABLE_ORPHAN_VERTICAL_MERGE',
+    'DOCX_TABLE_OVERLAP',
+    'DOCX_TABLE_PARAGRAPH_BINDING',
+    'DOCX_TABLE_PARAGRAPH_OWNER_INVALID',
+    'DOCX_TABLE_PROJECTION_INVALID',
+    'DOCX_TABLE_PROJECTION_ORDER',
+    'DOCX_TABLE_PROPERTY_INVALID',
+    'DOCX_TABLE_PROPERTY_OWNER_INVALID',
+    'DOCX_TABLE_RAGGED_GRID',
+    'DOCX_TABLE_ROW_INVALID',
+    'DOCX_TABLE_SHAPE_INVALID',
+    'DOCX_TABLE_SPAN_INVALID',
+    'DOCX_TABLE_UNCLOSED',
+  ].map(reason => [reason, 'CONTENT_INVALID']),
+ ]);
+function docxContentPreviewSemanticFailure(error) {
+  const sourceCode = typeof error?.message === 'string' && DOCX_CONTENT_PREVIEW_FAILURE_REASONS.has(error.message)
+    ? error.message : 'DOCX_CONTENT_PREVIEW_INTERNAL_ERROR';
+  const category = DOCX_CONTENT_PREVIEW_FAILURE_REASONS.get(sourceCode) || 'INTERNAL_ERROR';
+  return docxContentPreviewDiagnostic(`DOCX_CONTENT_PREVIEW_${category}`, {
+    sourceCode, sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    message: category === 'INTERNAL_ERROR' ? 'DOCX preview failed internally; the document was not imported.'
+      : `DOCX preview blocked: ${sourceCode}.`,
+  });
+}
+
+// Allowlisted bounded diagnostic data; never copy an arbitrary source object.
+function docxTableLossDetails(value) {
+  if (!['table.widths', 'table.shading', 'table.borders'].includes(value?.feature)) return {};
+  const location = value.location;
+  if (!isPlainObject(location) || !Number.isSafeInteger(location.tableIndex) || location.tableIndex < 0
+    || Object.keys(location).some(key => !['tableIndex', 'rowIndex', 'columnIndex'].includes(key)
+      || !Number.isSafeInteger(location[key]) || location[key] < 0 || location[key] > 64000)) return {};
+  if (['sourceProperty', 'transformation'].some(key => typeof value[key] !== 'string'
+    || value[key].length > 2048 || /[\u0000-\u001f\u007f]/u.test(value[key]))) return {};
+  return { feature: value.feature, location: { ...location }, sourceProperty: value.sourceProperty, transformation: value.transformation };
+}
+
 function docxContentPreviewBudgetsCopy() {
   return { ...DOCX_CONTENT_PREVIEW_BOUNDS };
 }
@@ -7257,6 +7444,7 @@ function docxContentPreviewDiagnostic(code, options = {}) {
   if (options.listKey !== undefined) diagnostic.listKey = options.listKey;
   if (options.actual !== undefined) diagnostic.actual = options.actual;
   if (options.limit !== undefined) diagnostic.limit = options.limit;
+  Object.assign(diagnostic, docxTableLossDetails(options));
   return diagnostic;
 }
 
@@ -9128,7 +9316,12 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   const seenSectionBreakKinds = new Set();
   const seenFieldHyperlinkKinds = new Set();
   const paragraphs = [];
-  const tableReader = createTableReader(paragraphs);
+  const tableReader = createTableReader(paragraphs, loss => {
+    if (diagnostics.length >= DOCX_CONTENT_PREVIEW_BOUNDS.maxDiagnostics - 1) throw Error('DOCX_TABLE_DIAGNOSTIC_LIMIT');
+    diagnostics.push(docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS', {
+      ...loss, severity: 'warning', sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    }));
+  });
   const elementStack = [];
   let rootSeen = false;
   let rootTagName = '';
@@ -9650,14 +9843,15 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         const paragraph = parsed.contentPreview.paragraphs[ref.paragraphIndex];
         if (!paragraph || !Number.isSafeInteger(ref.offset) || ref.offset < 0 || ref.offset > paragraph.text.length) throw Error('DOCUMENT_MEDIA_PLACEMENT');
         const image = auxiliary(ref.partName);
-        if (!image || (mediaBytes += image.length) > documentMediaData.MEDIA_LIMITS.totalBytes) throw Error('DOCUMENT_MEDIA_BYTES');
+        if (!image) throw Error('DOCUMENT_MEDIA_PART_MISSING');
+        if ((mediaBytes += image.length) > documentMediaData.MEDIA_LIMITS.totalBytes) throw Error('DOCUMENT_MEDIA_TOTAL_BYTE_LIMIT');
         const attrs = createImageAttrs(Buffer.from(image), { alt: ref.alt, displayName: ref.displayName });
         if (ref.cx !== attrs.width * 9525 || ref.cy !== attrs.height * 9525) throw Error('DOCUMENT_MEDIA_RESIZED_IMAGE_UNSUPPORTED');
         (paragraph.media ||= []).push({ offset: ref.offset, attrs });
       }
     }
   } catch (error) {
-    parsed = { failure: docxContentPreviewMalformedXmlDiagnostic(error.message) };
+    parsed = { failure: docxContentPreviewSemanticFailure(error) };
   }
   if (parsed.failure) {
     return docxContentPreviewResult({
@@ -9833,6 +10027,7 @@ function docxImportPreviewLossItem(code, options = {}) {
   if (options.excludedParagraphCount !== undefined) item.excludedParagraphCount = options.excludedParagraphCount;
   if (options.originAuthoritative !== undefined) item.originAuthoritative = options.originAuthoritative;
   if (Array.isArray(options.tabLabels)) item.tabLabels = options.tabLabels.slice();
+  Object.assign(item, docxTableLossDetails(options));
   return item;
 }
 
@@ -10198,6 +10393,9 @@ function docxImportPreviewDetectGoogleDocsTabs(paragraphs) {
 
 function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoundaryRecovery = null) {
   const diagnosticCode = typeof diagnostic.code === 'string' ? diagnostic.code : '';
+  if (diagnosticCode === 'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS') {
+    return { code: 'DOCX_IMPORT_PREVIEW_TABLE_PROPERTY_LOSS', category: 'formatting', message: diagnostic.message };
+  }
   const sourceCode = typeof diagnostic.sourceCode === 'string' ? diagnostic.sourceCode : '';
   if (diagnosticCode === DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC) {
     return { code: 'DOCX_IMPORT_PREVIEW_CUSTOM_METADATA_NOT_IMPORTED', category: 'metadata' };
@@ -10430,6 +10628,7 @@ function docxImportPreviewBuildLossReport(
       DOCX_PART_POLICY_DIAGNOSTIC_CODES.DIRECTORY_DIAGNOSTICS_ONLY,
     ].includes(diagnostic.code);
     const knownContentDiagnostic = [
+      'DOCX_CONTENT_PREVIEW_TABLE_PROPERTY_LOSS',
       'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC',
       DOCX_CONTENT_PREVIEW_CUSTOM_METADATA_DIAGNOSTIC,
       DOCX_CONTENT_PREVIEW_LIST_NUMBERING_DIAGNOSTIC,
@@ -10439,9 +10638,16 @@ function docxImportPreviewBuildLossReport(
       DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_DIAGNOSTIC,
     ].includes(diagnostic.code);
     if (!knownContentDiagnostic && !knownIgnoredPart) continue;
-    if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) break;
+    if (items.length >= DOCX_IMPORT_PREVIEW_BOUNDS.maxLossItems) {
+      items[items.length - 1] = docxImportPreviewLossItem('DOCX_IMPORT_PREVIEW_LOSS_DETAILS_LIMIT', {
+        severity: 'warning', category: 'diagnostics',
+        message: 'Additional loss details exceed the preview limit. This list is incomplete; cancel import to inspect the original document.',
+      });
+      break;
+    }
     const mapped = docxImportPreviewLossCategoryForDiagnostic(diagnostic, sectionBoundaryRecovery);
     items.push(docxImportPreviewLossItem(mapped.code, {
+      ...docxTableLossDetails(diagnostic),
       category: mapped.category,
       severity: 'warning',
       sourceCode: diagnostic.sourceCode || diagnostic.code,

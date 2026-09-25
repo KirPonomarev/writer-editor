@@ -2082,6 +2082,8 @@ test('DOCX content preview: result and implementation stay out of UI review impo
   ];
 
   for (const marker of forbiddenRuntimeMarkers) {
-    assert.equal(section.includes(marker), false, `${marker} must stay out of content preview contour`);
+    // Match the filesystem identifier, not the suffix in media refs.map.
+    const present = marker === 'fs.' ? /(?:^|[^\w$])fs\s*\./u.test(section) : section.includes(marker);
+    assert.equal(present, false, `${marker} must stay out of content preview contour`);
   }
 });

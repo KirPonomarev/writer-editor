@@ -686,3 +686,5 @@ test('GENERIC01-G8-control-duplicate-is-idempotent-now: duplicate apply returns 
 // process-death recovery, rather than leaving those proofs outside required CI.
 require('./word-import-transaction-remediation.contract.test.js');
 require('../unit/word-import-transaction-resources.test.js');
+
+require('./word-import-loss-diagnostics.contract.test.js');

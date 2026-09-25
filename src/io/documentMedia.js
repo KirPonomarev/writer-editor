@@ -23,7 +23,8 @@ function crc32(bytes) {
 // PNG Third Edition: validate the actual chunk stream, CRCs, dimensions and
 // bounded decompressed scanlines. Preserve original bytes, including metadata.
 function inspectPng(bytes) {
-  if (!Buffer.isBuffer(bytes) || bytes.length < 57 || bytes.length > LIMITS.bytes
+  if (Buffer.isBuffer(bytes) && bytes.length > LIMITS.bytes) fail('PNG_BYTE_LIMIT');
+  if (!Buffer.isBuffer(bytes) || bytes.length < 57
     || !bytes.subarray(0, 8).equals(SIGNATURE)) fail('PNG_BYTES');
   let offset = 8, header = null, palette = null, ended = false, idatEnded = false;
   const idats = [];
@@ -39,8 +40,8 @@ function inspectPng(bytes) {
       if (header || size !== 13) fail('PNG_HEADER');
       const width = data.readUInt32BE(0), height = data.readUInt32BE(4), depth = data[8], color = data[9];
       const depths = { 0: [1, 2, 4, 8, 16], 2: [8, 16], 3: [1, 2, 4, 8], 4: [8, 16], 6: [8, 16] };
-      if (!width || !height || width > LIMITS.dimension || height > LIMITS.dimension || width * height > LIMITS.pixels
-        || !depths[color]?.includes(depth) || data[10] !== 0 || data[11] !== 0 || data[12] > 1) fail('PNG_HEADER');
+      if (width > LIMITS.dimension || height > LIMITS.dimension || width * height > LIMITS.pixels) fail('PNG_PIXEL_LIMIT');
+      if (!width || !height || !depths[color]?.includes(depth) || data[10] !== 0 || data[11] !== 0 || data[12] > 1) fail('PNG_HEADER');
       header = { width, height, depth, color, interlace: data[12] };
     } else if (type === 'PLTE') {
       if (palette || idats.length || !size || size % 3 || size > 768 || [0, 4].includes(header.color)
@@ -73,7 +74,11 @@ function inspectPng(bytes) {
     if (result.engine.bytesWritten !== compressed.length) fail('PNG_COMPRESSED_TRAILING_BYTES');
     raw = result.buffer;
   }
-  catch { fail('PNG_DECOMPRESSION'); }
+  catch (error) {
+    if (error?.code === 'ERR_BUFFER_TOO_LARGE') fail('PNG_DECOMPRESSION_LIMIT');
+    if (['Z_DATA_ERROR', 'Z_BUF_ERROR', 'Z_NEED_DICT'].includes(error?.code)) fail('PNG_DECOMPRESSION');
+    throw error;
+  }
   if (raw.length !== expected) fail('PNG_SCANLINE_SIZE');
   let cursor = 0;
   for (const row of rows) for (let y = 0; y < row.height; y++, cursor += row.stride) if (raw[cursor] > 4) fail('PNG_FILTER');

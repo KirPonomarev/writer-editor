@@ -149,8 +149,21 @@ function renderTableParagraphs(items, metadata, renderParagraph) {
 
 // Consumes only namespace-resolved events from the existing bounded XML parser.
 // It does not tokenize XML or trust names/attributes before namespace validation.
-function createTableReader(paragraphs) {
+function createTableReader(paragraphs, onLoss = () => {}) {
   let active = null, row = null, cell = null, nextId = 0, zeroMargins = null;
+  const property = value => {
+    if (typeof value !== 'string' || value.length > 128 || /[\u0000-\u001f\u007f]/u.test(value)) fail('PROPERTY_INVALID');
+    return value;
+  };
+  const loss = (feature, sourceProperty, transformation, columnIndex) => {
+    const location = { tableIndex: nextId };
+    if (row) location.rowIndex = active.rows.length - 1;
+    if (columnIndex !== undefined) location.columnIndex = columnIndex;
+    else if (cell) location.columnIndex = row.cells.slice(0, -1).reduce((sum, item) => sum + item.colspan, 0);
+    const place = `Table ${nextId + 1}${location.rowIndex !== undefined ? ` row ${location.rowIndex + 1}` : ''}${location.columnIndex !== undefined ? ` column ${location.columnIndex + 1}` : ''}`;
+    onLoss({ feature: `table.${feature}`, location, sourceProperty, transformation,
+      message: `${place}: ${sourceProperty}; ${transformation}.` });
+  };
   const finish = () => {
     if (!active.rows.length || !active.gridColumns) fail('GRID_REQUIRED');
     const table = { type: 'table', content: [] }, sources = [], previous = [];
@@ -224,6 +237,28 @@ function createTableReader(paragraphs) {
         active.gridSeen = true;
       } else if (name === 'w:gridCol' && !closing) {
         if (parent !== 'w:tblGrid' || ++active.gridColumns > TABLE_LIMITS.columns) fail('GRID_LIMIT');
+        const width = property(attribute('w'));
+        if (width !== '1440') loss('widths', `w:gridCol width=${width || 'unspecified'} twips`, 'export uses 1440 twips per column', active.gridColumns - 1);
+      } else if (!closing && ['w:tblW', 'w:tcW'].includes(name) && ['w:tblPr', 'w:tcPr'].includes(parent)) {
+        const width = property(attribute('w')), type = property(attribute('type'));
+        if (!(name === 'w:tblW' && width === '0' && type === 'auto')) {
+          loss('widths', `${name} width=${width || 'unspecified'} type=${type || 'unspecified'}`, 'preferred width is not retained; export uses an automatic table with 1440-twip grid columns');
+        }
+      } else if (!closing && name === 'w:shd' && ['w:tblPr', 'w:tcPr'].includes(parent)) {
+        const keys = ['val', 'color', 'fill', 'themeColor', 'themeFill', 'themeTint', 'themeShade', 'themeFillTint', 'themeFillShade'];
+        const values = Object.fromEntries(keys.map(key => [key, property(attribute(key))]));
+        if (!['', 'clear', 'nil'].includes(values.val) || !['', 'auto'].includes(values.fill)
+          || keys.slice(3).some(key => values[key])) {
+          loss('shading', keys.filter(key => values[key]).map(key => `w:${key}=${values[key]}`).join(', ') || 'w:shd', 'table/cell shading is removed');
+        }
+      } else if (!closing && ['w:tblBorders', 'w:tcBorders'].includes(parent)) {
+        const keys = ['val', 'sz', 'color', 'space', 'shadow', 'frame', 'themeColor', 'themeTint', 'themeShade'];
+        const values = Object.fromEntries(keys.map(key => [key, property(attribute(key))]));
+        const defaultEdge = parent === 'w:tblBorders' && ['w:top', 'w:left', 'w:bottom', 'w:right', 'w:insideH', 'w:insideV'].includes(name)
+          && values.val === 'single' && values.sz === '4' && ['', 'auto'].includes(values.color)
+          && ['', '0'].includes(values.space) && ['', '0', 'false', 'off'].includes(values.shadow)
+          && ['', '0', 'false', 'off'].includes(values.frame) && !values.themeColor && !values.themeTint && !values.themeShade;
+        if (!defaultEdge) loss('borders', `${parent}/${name}: ${keys.filter(key => values[key]).map(key => `${key}=${values[key]}`).join(', ')}`, 'export uses single 0.5-point automatic-color table borders; cell overrides are removed');
       } else if (name === 'w:tr') {
         if (closing) { if (!row || cell) fail('ROW_INVALID'); row = null; }
         else {
