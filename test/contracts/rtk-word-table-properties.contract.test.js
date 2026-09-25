@@ -99,6 +99,31 @@ test('W5: table property change cannot pass an authenticated unchanged-table gua
   expected[0].formatIr.table.wordTable.grid[0]=721;
   assert.equal(tables.compareTableParagraphTopology(actual,expected).ok,false);
 });
+test('Implicit auto-fit changes only derived grid; explicit geometry and all other properties stay protected', () => {
+  const t = table(row(cell('A'), cell('B')));
+  const original = tables.tableParagraphs(t, 'legacy').map(x => ({ table: x.table }));
+  const expected = original.map(x => ({ formatIr: { table: structuredClone(x.table) } }));
+  const returned = structuredClone(original);
+  for (const p of returned) p.table.wordTable = { ...props.legacyTableProperties(2), grid: [5772, 1749] };
+  assert.equal(tables.compareTableParagraphTopology(returned, expected).ok, true);
+  for (const change of [
+    p => { p.grid = [null, 1749]; }, p => { p.grid = [0, 1749]; },
+    p => { p.layout = 'fixed'; }, p => { p.widthDxa = 7521; },
+    p => { p.shading = 'FF0000'; }, p => { p.borders.top.size = 8; },
+  ]) {
+    const altered = structuredClone(returned);
+    for (const p of altered) change(p.table.wordTable);
+    assert.equal(tables.compareTableParagraphTopology(altered, expected).ok, false);
+  }
+  const explicit = structuredClone(expected);
+  for (const p of explicit) p.formatIr.table.wordTable = props.legacyTableProperties(2);
+  assert.equal(tables.compareTableParagraphTopology(returned, explicit).ok, false);
+  const cellChange = structuredClone(returned);
+  cellChange[0].table.wordCell = { version: 1, shading: 'FF0000', borders: {} };
+  assert.equal(tables.compareTableParagraphTopology(cellChange, expected).ok, false);
+  const moved = structuredClone(returned); moved.unshift({});
+  assert.equal(tables.compareTableParagraphTopology(moved, expected).ok, false);
+});
 test('W5: actual editor schema and transactions retain properties through edit undo redo and supported merge/split; display uses literal data', async () => {
   const [{getSchema},{default:StarterKit},{DocumentTables,tablePresentation},{EditorState,TextSelection},{history,undo,redo},{CellSelection,mergeCells,splitCell}] = await Promise.all([
     import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTables.mjs'),import('@tiptap/pm/state'),import('@tiptap/pm/history'),import('@tiptap/pm/tables')]);

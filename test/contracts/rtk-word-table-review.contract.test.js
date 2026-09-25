@@ -42,6 +42,29 @@ test('Table review binding accounts only matching native table occurrences and l
   assert.deepEqual(ir, before); assert.deepEqual(exportMap, mapBefore);
   assert.deepEqual(result.reviewIr.formattingParagraphs, ir.formattingParagraphs);
 });
+test('Word auto-fit grid recalculation binds only an implicit legacy table and grants no write', async () => {
+  const { bridge, xml, parse, exportMap } = await fixture();
+  // Native Word recalculates a legacy auto-fit grid when tracked text is edited.
+  // Its grid is derived layout, while an explicitly stored grid stays protected.
+  const changed = xml.replace('<w:gridCol w:w="1440"/><w:gridCol w:w="1440"/>',
+    '<w:gridCol w:w="5772"/><w:gridCol w:w="1749"/>');
+  assert.notEqual(changed, xml);
+  const parsed = parse(changed); assert.equal(parsed.ok, true);
+  const before = structuredClone(parsed.reviewIr), mapBefore = structuredClone(exportMap);
+  const bound = bridge.bindDocxReviewTableTopology(parsed.reviewIr, exportMap);
+  assert.equal(bound.ok, true, JSON.stringify(bound));
+  assert.equal(bound.proof.automaticApplyAuthority, false);
+  assert.deepEqual(parsed.reviewIr, before); assert.deepEqual(exportMap, mapBefore);
+  const candidate = bridge.buildDocxReviewPreviewSessionCandidateFromEvidence(
+    { returnedProjection: parsed.reviewIr }, { fullManuscriptExportMap: exportMap });
+  assert.equal(candidate.ok, true, JSON.stringify(candidate));
+  assert.equal(candidate.canAutoApply, false); assert.equal(candidate.canWriteStorage, false);
+  const explicitMap = structuredClone(exportMap);
+  for (const scene of explicitMap.scenes) for (const block of scene.blocks) {
+    if (block.formatIr?.table) block.formatIr.table.wordTable = require('../../src/io/documentTableProperties.js').legacyTableProperties(2);
+  }
+  assert.equal(bridge.bindDocxReviewTableTopology(parsed.reviewIr, explicitMap).ok, false);
+});
 test('Table review rejects missing or altered topology, malformed occurrence inventory and packet-carried self proof', async () => {
   const { bridge, ir, exportMap } = await fixture();
   assert.equal(bridge.bindDocxReviewTableTopology(ir, null).ok, false);

@@ -205,7 +205,8 @@
     "test/contracts/rtk-word-table-properties.contract.test.js",
     "docs/tasks/2026-09-25--word-composite-fidelity.md",
     "test/contracts/rtk-word-composite-fidelity.contract.test.js",
-    "src/io/revisionBridge/exactTextApplyJournal.mjs"
+    "src/io/revisionBridge/exactTextApplyJournal.mjs",
+    "docs/tasks/2026-09-25--word-table-autofit-review.md"
   ],
   "protectedFiles": [
     {
@@ -833,7 +834,7 @@
       },
       {
         "path": "src/io/documentTables.js",
-        "sha256": "443cebb5d02499e98d18c030ddeb73d3ae5aaf141d62c671c538cba262481b6d"
+        "sha256": "7ca783398cfac227371b4b0b4b395500825f2502d014541a5c09761e357e76ee"
       },
       {
         "path": "src/renderer/tiptap/documentTables.mjs",
@@ -973,7 +974,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "f534eb61254e8a1d4251073b0d3666aca06f0608eeb6322f4f0a09b988294ae6"
+        "sha256": "b6515e2e843388423a762de306fc503d7cdf39ed24be8e24959cf0197c2bba4a"
       },
       {
         "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -986,6 +987,14 @@
       {
         "path": "src/io/revisionBridge/exactTextApplyJournal.mjs",
         "sha256": "ca1d735c97590bf584800b5b24e90c7aa9915ebba270eb0f5a62909a006bb0ef"
+      },
+      {
+        "path": "docs/tasks/2026-09-25--word-table-autofit-review.md",
+        "sha256": "e0751bf58db6fbf164ffc200b38d627f19069ac5ae6a388469e4f34cc7480722"
+      },
+      {
+        "path": "test/contracts/rtk-word-table-review.contract.test.js",
+        "sha256": "76f6151776ffca46afd501fd0580995ef89b457c9ebf089c42dda82bc3da8701"
       }
     ],
     "followupRepair": {
