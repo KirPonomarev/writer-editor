@@ -21,6 +21,7 @@ const {
   applyDocxImportSafeCreate,
   isDocxImportPreviewPlanAdmitted,
   rememberDocxImportPreviewPlanAdmission,
+  verifyDocxMediaAssetFiles,
 } = require('./utils/docxImportSafeCreate');
 const { createDocxImportPreviewReferences } = require('./utils/docxImportPreviewReferences');
 const {
@@ -1096,6 +1097,8 @@ async function buildFullManuscriptPublicationGate(source, documentBuffer, revisi
     if (!tableTopology?.ok) return { ok: false, publishAllowed: false,
       code: 'RTK_V4_PUBLICATION_TABLE_TOPOLOGY_MISMATCH', tableTopology };
   }
+  const mediaCheck = revisionBridge.bindDocxReviewMedia(finalParse.reviewIr, localAuthority.exportMap);
+  if (!mediaCheck.ok) return { ok: false, publishAllowed: false, code: 'RTK_V4_PUBLICATION_MEDIA_MISMATCH', reason: mediaCheck.code };
   if (source.commentExport) {
     const readback = compareCommentExportReadback(source.commentExport, finalParse.reviewIr?.commentThreads);
     if (!readback.ok || finalParse.reviewIr?.commentThreads?.length !== source.commentExport.threads.length) {
@@ -4734,6 +4737,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   for (let index = 0; index < sceneCandidates.length; index += 1) {
     const candidate = sceneCandidates[index];
     const content = await readFullManuscriptDocxReviewExportDocumentContent(candidate);
+    await verifyDocxMediaAssetFiles(content.observableContent, projectRoot);
     scenes.push({
       sceneId: typeof candidate.sceneId === 'string' ? candidate.sceneId.replace(/\\/g, '/') : '',
       scenePath: typeof candidate.path === 'string' ? candidate.path : '',
@@ -4851,6 +4855,7 @@ async function revalidateFullManuscriptDocxReviewPacketExportSource(source) {
   }
   for (const [index, candidate] of candidates.entries()) {
     const content = await readFullManuscriptDocxReviewExportDocumentContent(candidate);
+    await verifyDocxMediaAssetFiles(content.observableContent, scope.projectRoot);
     if (candidate.sceneId !== expected[index].sceneId
       || `sha256:${createRtkReviewTransportCryptoPort().sha256Text(content.observableContent)}` !== expected[index].rawSha256) {
       throw new Error('REVIEW_FULL_MANUSCRIPT_DOCX_EXPORT_SCENE_STALE');
@@ -9249,6 +9254,12 @@ async function inspectDocxReviewReturnIntakeV2({
   if (tableBinding.applicable) {
     verifiedParserResult.reviewIr = tableBinding.reviewIr;
     verifiedParserResult.tableTopologyBinding = tableBinding.proof;
+  }
+  const mediaBinding = revisionBridge.bindDocxReviewMedia(verifiedParserResult.reviewIr, localAuthority.exportMap);
+  if (!mediaBinding.ok) return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_MEDIA_MISMATCH', { reason: mediaBinding.code });
+  if (mediaBinding.applicable) {
+    verifiedParserResult.reviewIr = mediaBinding.reviewIr;
+    verifiedParserResult.mediaBinding = mediaBinding.proof;
   }
   const documentMetadataBinding = validateFullManuscriptDocumentMetadataReturn({
     expected: localAuthority.documentMetadata,
@@ -20332,6 +20343,7 @@ async function readCanonicalExportSnapshot(payload = {}) {
     );
   }
 
+  await verifyDocxMediaAssetFiles(content, getProjectRootPath());
   return normalizeEditorSnapshotPayload({
     content,
     plainText: parsed.text,

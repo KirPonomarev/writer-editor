@@ -1,5 +1,6 @@
 const { tableParagraphs } = require('../../io/documentTables.js');
 'use strict';
+const { documentMedia } = require('../../io/documentMedia.js');
 
 const crypto = require('crypto');
 const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
@@ -173,6 +174,7 @@ function normalizeFormatIrInlineMarks(marks, sceneId, paragraphOrdinal) {
 
 function buildFormatIrParagraphs(scene) {
   const sourceDoc = isPlainObjectValue(scene.doc) ? cloneJson(scene.doc) : null;
+  if (sourceDoc) documentMedia(sourceDoc);
   const topLevelNodes = sourceDoc
     ? (sourceDoc.type === 'doc' && Array.isArray(sourceDoc.content) ? sourceDoc.content : null)
     : scene.text.split('\n').map((line) => ({
@@ -243,8 +245,12 @@ function buildFormatIrParagraphs(scene) {
       paragraphFormat.textAlign = textAlign;
     }
     let cursor = 0;
-    const runs = [];
+    const runs = [], media = [];
     for (const inlineNode of Array.isArray(node.content) ? node.content : []) {
+      if (inlineNode?.type === 'image') {
+        media.push({ offset: cursor, attrs: cloneJson(inlineNode.attrs) });
+        continue;
+      }
       if (!isPlainObjectValue(inlineNode) || !['text', 'hardBreak'].includes(inlineNode.type)) {
         throw makeError('FULL_MANUSCRIPT_FORMAT_IR_INLINE_NODE_UNSUPPORTED', {
           sceneId: scene.sceneId,
@@ -273,6 +279,7 @@ function buildFormatIrParagraphs(scene) {
         schemaVersion: FULL_MANUSCRIPT_FORMAT_IR_SCHEMA,
         paragraph: paragraphFormat,
         runs,
+        ...(media.length ? { media } : {}),
       },
     });
   };

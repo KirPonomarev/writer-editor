@@ -1391,6 +1391,11 @@ async function prepareDocxMediaEntries(content, projectRoot) {
   return entries;
 }
 
+async function verifyDocxMediaAssetFiles(content, projectRoot) {
+  const missing = await prepareDocxMediaEntries(content, projectRoot);
+  if (missing.length) throw Error('DOCX_MEDIA_FILES_MISSING');
+}
+
 async function applyDocxImportSafeCreate(input = {}, options = {}) {
   const projectRoot = typeof options.projectRoot === 'string' ? options.projectRoot.trim() : '';
   const romanRoot = typeof options.romanRoot === 'string' ? options.romanRoot.trim() : '';
@@ -1769,6 +1774,7 @@ module.exports = {
   DOCX_IMPORT_SAFE_CREATE_READY_REASON,
   DOCX_IMPORT_RECEIPT_V2_SCHEMA,
   applyDocxImportSafeCreate,
+  verifyDocxMediaAssetFiles,
   buildImportOperationId,
   hashDocxImportPreviewPlanForAdmission,
   isDocxImportPreviewPlanAdmitted,

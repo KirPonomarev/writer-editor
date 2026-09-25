@@ -3632,6 +3632,44 @@ export function bindDocxReviewTableTopology(reviewIr, exportMap) {
   } };
 }
 
+// Compare immutable return evidence with the locally authenticated source map.
+// Unchanged images grant no independent write capability. A missing, moved or
+// substituted image keeps the entire return blocked, even when text matches.
+export function bindDocxReviewMedia(reviewIr, exportMap) {
+  const blocks = Array.isArray(exportMap?.scenes) ? exportMap.scenes.flatMap(s => s.blocks || []) : [];
+  const observed = reviewIr?.documentMedia;
+  const unsupported = Array.isArray(reviewIr?.opaqueUnsupported) ? reviewIr.opaqueUnsupported : [];
+  const drawings = unsupported.filter(x => x.elementName === 'drawing');
+  if (!observed && !drawings.length && !blocks.some(b => b.formatIr?.media?.length)) return { ok: true, applicable: false, reviewIr };
+  const fail = code => ({ ok: false, applicable: true, code: `DOCX_MEDIA_${code}` });
+  if (!blocks.length) return fail('LOCAL_EXPORT_MAP_REQUIRED');
+  if (observed?.schemaVersion !== 'yalken.word.media-return.v1' || !Array.isArray(observed.placements)) return fail('PROJECTION_REQUIRED');
+  let expected;
+  try {
+    expected = blocks.flatMap((block, paragraphIndex) => (block.formatIr?.media || []).map(item => {
+      const { attrs } = documentMediaData.validateImageAttrs(item.attrs);
+      return { paragraphIndex, offset: item.offset, sha256: attrs.sha256, width: attrs.width, height: attrs.height,
+        alt: attrs.alt, displayName: attrs.displayName };
+    }));
+  } catch { return fail('SOURCE_INVALID'); }
+  const actual = observed.placements.map(x => Object.fromEntries(['paragraphIndex', 'offset', 'sha256', 'width', 'height', 'alt', 'displayName'].map(k => [k, x[k]])));
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) return fail('RETURN_MISMATCH');
+  const key = x => {
+    const p = x?.sourceXmlProvenance;
+    return p?.partName === 'word/document.xml' && p.elementName === 'drawing'
+      && p.namespaceUri === 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+      && Number.isSafeInteger(p.openStart) && Number.isSafeInteger(p.closeEnd) && p.openStart >= 0 && p.closeEnd > p.openStart
+      ? `${p.openStart}:${p.closeEnd}` : null;
+  };
+  const actualKeys = observed.placements.map(key), opaqueKeys = drawings.map(key);
+  if (actualKeys.some(k => !k) || new Set(actualKeys).size !== expected.length
+    || JSON.stringify(actualKeys.slice().sort()) !== JSON.stringify(opaqueKeys.slice().sort())) return fail('OCCURRENCE_BINDING_MISMATCH');
+  const proof = { schemaVersion: 'yalken.word.media-binding.v1', localExportMapDigest: `sha256:${hashCanonicalValue(exportMap)}`,
+    returnedMediaDigest: `sha256:${hashCanonicalValue(observed)}`, automaticApplyAuthority: false };
+  return { ok: true, applicable: true, proof, reviewIr: { ...reviewIr,
+    opaqueUnsupported: unsupported.filter(x => !drawings.includes(x)), mediaBinding: proof } };
+}
+
 export function visibleSceneTextsFromWordDocumentXml(documentXml, exportMap, options = {}) {
   const xml = normalizeString(documentXml);
   const scenes = isPlainObject(exportMap) && Array.isArray(exportMap.scenes) ? exportMap.scenes : [];
@@ -3785,7 +3823,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     });
   }
 
-  const parts = {};
+  const parts = {}, binaryParts = {};
   const inventoryEntries = [];
   let totalInflatedBytes = 0;
   for (const entry of metadataResult.entries) {
@@ -3826,7 +3864,8 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
       dataStart,
       dataEnd,
     });
-    if (!shouldExtractDocxReviewTransportAnalysisPart(entry.entryId)) continue;
+    const isPng = /^word\/media\/[A-Za-z0-9_-][A-Za-z0-9_.-]*\.png$/u.test(entry.entryId);
+    if (!shouldExtractDocxReviewTransportAnalysisPart(entry.entryId) && !isPng) continue;
     // Pre-inflate part budget: effective.maxInflatedPartBytes (10 MiB V6),
     // NOT the 32 MiB host bound (Z6).
     if (entry.byteSize > effective.maxInflatedPartBytes) {
@@ -3860,7 +3899,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     // central CRC is the legacy-fixture sentinel (no real CRC evidence); real
     // DOCX packages always carry a non-zero CRC for non-empty parts, so this
     // never opens a bypass for tampered non-empty content in real archives.
-    if (Number.isSafeInteger(entry.centralCrc32) && entry.centralCrc32 !== 0) {
+    if (Number.isSafeInteger(entry.centralCrc32) && (entry.centralCrc32 !== 0 || isPng)) {
       const actualCrc32 = zipEvidenceCrc32(inflated.contentBytes);
       if (actualCrc32 !== entry.centralCrc32) {
         return {
@@ -3880,7 +3919,8 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
         };
       }
     }
-    parts[entry.entryId] = Buffer.from(inflated.contentBytes).toString('utf8');
+    if (isPng) binaryParts[entry.entryId] = Buffer.from(inflated.contentBytes);
+    else parts[entry.entryId] = Buffer.from(inflated.contentBytes).toString('utf8');
   }
 
   return {
@@ -3889,6 +3929,7 @@ export function extractDocxReviewTransportPackagePartsFromZipBytes(input, option
     code: 'DOCX_REVIEW_TRANSPORT_PARTS_READY',
     reason: 'DOCX_REVIEW_TRANSPORT_PARTS_READY',
     parts,
+    binaryParts,
     zipInventory: {
       eocdCount: docxZipCountEndRecordSignatures(bytes),
       entries: inventoryEntries,
@@ -3906,8 +3947,18 @@ export function buildDocxReviewTransportAnalysisFromZipBytes(input, options = {}
     zipInventory: extracted.zipInventory,
   };
   delete parserInput.bytes;
+  const mediaCache = new Map(); let mediaBytes = 0;
+  const readDocumentMediaPart = name => {
+    if (mediaCache.has(name)) return mediaCache.get(name);
+    const bytes = extracted.binaryParts?.[name];
+    if (!Buffer.isBuffer(bytes) || bytes.length > documentMediaData.MEDIA_LIMITS.bytes) throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
+    mediaBytes += bytes.length;
+    if (mediaBytes > documentMediaData.MEDIA_LIMITS.totalBytes || mediaCache.size >= documentMediaData.MEDIA_LIMITS.assets) throw Error('DOCUMENT_MEDIA_BYTES');
+    const { sha256, width, height } = createImageAttrs(bytes);
+    const result = Object.freeze({ sha256, width, height }); mediaCache.set(name, result); return result;
+  };
   return {
-    ...parseReviewTransportPackageV2(parserInput, options),
+    ...parseReviewTransportPackageV2(parserInput, { ...options, readDocumentMediaPart }),
     packagePartsFromZipBytes: {
       status: extracted.status,
       code: extracted.code,
@@ -6602,7 +6653,12 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       ok: false, status: 'blocked', code: tableBinding.code,
       reason: tableBinding.code, decision: 'diagnostics-only', bounds,
     });
-    projection = tableBinding.reviewIr;
+    const mediaBinding = bindDocxReviewMedia(tableBinding.reviewIr, fullManuscriptExportMap);
+    if (!mediaBinding.ok) return docxReviewPreviewSessionResult({
+      ok: false, status: 'blocked', code: mediaBinding.code,
+      reason: mediaBinding.code, decision: 'diagnostics-only', bounds,
+    });
+    projection = mediaBinding.reviewIr;
   }
   const fullTextVectorGuard = docxReviewPreviewSessionFullTextVectorGuard(
     fullManuscriptExportMap, projection, options.verifiedDocumentSections,
@@ -9581,6 +9637,9 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     if (!parsed.failure) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
       const refs = extractDocumentMediaReferencesV1(xmlText, {
+        // Match the existing bounded full-manuscript count profile; generic
+        // text-only intake retains its own unchanged 64k paragraph ceiling.
+        budgets: { maxBlocks: 50000 },
         relationshipsXml: Buffer.from(auxiliary('word/_rels/document.xml.rels') || []).toString('utf8'),
         contentTypesXml: Buffer.from(auxiliary('[Content_Types].xml') || []).toString('utf8'),
         cryptoPort: { sha256Text: text => `sha256:${sha256Hex(text)}`, sha256Json: value => `sha256:${hashCanonicalValue(value)}`, byteLength: text => new TextEncoder().encode(text).length },

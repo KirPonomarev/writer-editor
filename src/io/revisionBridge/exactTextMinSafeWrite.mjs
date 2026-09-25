@@ -1,3 +1,4 @@
+import documentMediaData from '../documentMedia.js';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -785,6 +786,13 @@ function applyRichInlineReplacement(block, operation) {
       }
       appendRichInlineNode(nextContent, cloneJsonSafe(sourceNode));
       cursor += 1;
+      continue;
+    }
+    if (sourceNode.type === 'image') {
+      try { documentMediaData.validateImageAttrs(sourceNode.attrs); }
+      catch { return { ok: false, code: 'REVISION_BRIDGE_EXACT_TEXT_MEDIA_INVALID' }; }
+      if (from < cursor && cursor < to) return { ok: false, code: 'REVISION_BRIDGE_EXACT_TEXT_MEDIA_RANGE_BLOCKED' };
+      appendRichInlineNode(nextContent, cloneJsonSafe(sourceNode));
       continue;
     }
     if (sourceNode.type !== 'text') {

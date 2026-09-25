@@ -138,3 +138,119 @@ sys.stdout.buffer.write(out.getvalue())`, source);
     assert.equal(bridge.buildDocxContentPreviewFromZipBytes(changed).ok, false, mode);
   }
 });
+
+test('Word media: review packet retains image-only and mixed paragraphs, reuse, marks and literal placement', async () => {
+  const { buildFormatIrParagraphs } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const red = createImageAttrs(image(), { alt: 'red', displayName: 'red.png' });
+  const blue = createImageAttrs(image(true), { alt: 'blue', displayName: 'blue.png' });
+  const doc = { type: 'doc', content: [
+    { type: 'paragraph', content: [{ type: 'image', attrs: red }] },
+    { type: 'paragraph', content: [{ type: 'text', text: 'before ', marks: [{ type: 'bold' }] }, { type: 'image', attrs: blue }, { type: 'image', attrs: red }, { type: 'text', text: ' after' }] },
+  ] };
+  const blocks = buildFormatIrParagraphs({ doc, text: envelope.deriveVisibleTextFromDocument(doc), sceneId: 'media.txt' });
+  const build = blocks => buildDocxReviewPacketBuffer({ blocks, customProperties: [{ name: 'YRTK_C01_AUTH', value: 'synthetic-without-authority' }, { name: 'YRTK2_TOKEN', value: 'synthetic-without-authority' }] });
+  const bytes = build(blocks);
+  assert.deepEqual(inspect(bytes).alts, ['red', 'blue', 'red']);
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.deepEqual(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc, envelope.canonicalizeDocumentJson(doc));
+  for (const offset of [-1, 1, 1.5, 99]) {
+    const invalid = structuredClone(blocks); invalid[0].formatIr.media[0].offset = offset;
+    assert.throws(() => build(invalid), /DOCX_MEDIA_PLACEMENT/);
+  }
+});
+
+test('Word media: review intake derives image hashes from ZIP bytes and requires exact authenticated source graph', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { buildFormatIrParagraphs } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
+  const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
+  const cryptoPort = { sha256Text: v => `sha256:${createHash('sha256').update(v).digest('hex')}`,
+    sha256Json: v => `sha256:${createHash('sha256').update(JSON.stringify(v)).digest('hex')}`, byteLength: v => Buffer.byteLength(v) };
+  const attrs = createImageAttrs(image(), { alt: 'protected alt', displayName: 'image.png' });
+  const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'prefix ' }, { type: 'image', attrs }, { type: 'text', text: ' after' }] }] };
+  const blocks = buildFormatIrParagraphs({ doc, text: 'prefix  after', sceneId: 'media.txt' });
+  const bytes = buildDocxReviewPacketBuffer({ blocks, customProperties: [{ name: 'YRTK_C01_AUTH', value: 'synthetic-without-authority' }, { name: 'YRTK2_TOKEN', value: 'synthetic-without-authority' }] });
+  const parse = bytes => bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort });
+  const result = parse(bytes);
+  assert.equal(result.ok, true, JSON.stringify(result.reasons));
+  assert.equal(result.reviewIr.documentMedia.placements[0].sha256, attrs.sha256);
+  assert.equal(JSON.stringify(result.reviewIr.documentMedia).includes(attrs.dataBase64), false);
+  const exportMap = { scenes: [{ sceneId: 'media.txt', blocks }] };
+  const binding = bridge.bindDocxReviewMedia(result.reviewIr, exportMap);
+  assert.equal(binding.ok, true, JSON.stringify(binding));
+  assert.equal(binding.proof.automaticApplyAuthority, false);
+  assert.equal(binding.reviewIr.opaqueUnsupported.some(x => x.elementName === 'drawing'), false);
+  assert.equal(bridge.bindDocxReviewMedia(result.reviewIr, null).ok, false);
+  const stripped = structuredClone(result.reviewIr); delete stripped.documentMedia;
+  assert.equal(bridge.bindDocxReviewMedia(stripped, exportMap).ok, false);
+  const unrelated = structuredClone(result.reviewIr); unrelated.opaqueUnsupported.push({ elementName: 'altChunk', writerAuthorityImpact: 'blocking' });
+  assert.equal(bridge.bindDocxReviewMedia(unrelated, exportMap).reviewIr.opaqueUnsupported.some(x => x.elementName === 'altChunk'), true);
+  const extracted = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }, { cryptoPort });
+  const all = { ...extracted.parts, ...extracted.binaryParts };
+  for (const mode of ['replace', 'drop', 'alt', 'move', 'crc']) {
+    const parts = { ...all };
+    const png = Object.keys(parts).find(n => n.startsWith('word/media/'));
+    if (mode === 'replace') parts[png] = image(true);
+    if (mode === 'drop') parts['word/document.xml'] = parts['word/document.xml'].replace(/<w:drawing>[^]*?<\/w:drawing>/u, '');
+    if (mode === 'alt') parts['word/document.xml'] = parts['word/document.xml'].replaceAll('protected alt', 'different alt');
+    if (mode === 'move') parts['word/document.xml'] = parts['word/document.xml'].replace('prefix ', 'prefix longer ');
+    if (mode === 'crc') { parts[png] = Buffer.from(parts[png]); parts[png][parts[png].length - 1] ^= 1; }
+    const changed = parse(buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data }))));
+    assert.equal(changed.ok && bridge.bindDocxReviewMedia(changed.reviewIr, exportMap).ok, false, mode);
+    if (changed.ok) assert.notEqual(changed.supportedSemanticDigest, result.supportedSemanticDigest, mode);
+  }
+});
+
+test('Word media: exact text Apply preserves adjacent image bytes and rejects a replacement crossing the image', async t => {
+  const fs = require('node:fs'), path = require('node:path'), os = require('node:os');
+  const writer = await import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs');
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const attrs = createImageAttrs(image(), { alt: 'keep me' });
+  for (const [quote, replacementText, ok] of [['before', 'changed before', true], ['after', 'changed after', true], ['beforeafter', 'flatten', false]]) {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'media-exact-'));
+    t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+    const scenePath = path.join(root, 'scene.txt');
+    const doc = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'before' }, { type: 'image', attrs }, { type: 'text', text: 'after' }] }] };
+    const original = envelope.composeObservablePayload({ doc }); fs.writeFileSync(scenePath, original);
+    const change = { changeId: 'change-1', targetScope: { type: 'scene', id: 'scene-1' }, match: { kind: 'exact', quote, prefix: '', suffix: '' }, replacementText, createdAt: '2026-09-25T00:00:00.000Z' };
+    const projectSnapshot = { projectId: 'project-1', baselineHash: 'baseline-1', scenes: [{ sceneId: 'scene-1', text: original }] };
+    const revisionSession = { projectId: 'project-1', sessionId: 'session-1', baselineHash: 'baseline-1', status: 'open', reviewGraph: { textChanges: [change], structuralChanges: [], commentThreads: [], commentPlacements: [], diagnosticItems: [], decisionStates: [] } };
+    const result = await writer.applyExactTextBatchMinSafeWrite({ projectRoot: root, projectSnapshot, revisionSession, reviewItems: [change], scenePath, scenePathBySceneId: { 'scene-1': scenePath } });
+    assert.equal(result.ok, ok, JSON.stringify(result));
+    const actual = fs.readFileSync(scenePath, 'utf8');
+    if (ok) {
+      assert.deepEqual(envelope.parseObservablePayload(actual).doc.content[0].content.find(n => n.type === 'image').attrs, attrs);
+      assert.equal(envelope.parseObservablePayload(actual).text, 'beforeafter'.replace(quote, replacementText));
+      assert.equal(fs.readFileSync(result.receipt.recovery.snapshotPath, 'utf8'), original);
+    } else assert.equal(actual, original);
+  }
+});
+
+test('Word media: unsupported drawing semantics cannot masquerade as preserved image bytes', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
+  const attrs = createImageAttrs(image());
+  const source = await exported({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs }] }] });
+  const { parts, binaryParts } = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: source });
+  const mutations = [
+    x => x.replace('<a:xfrm>', '<a:xfrm rot="5400000">'),
+    x => x.replace('<a:xfrm>', '<a:xfrm flipH="1">'),
+    x => x.replace('<a:stretch>', '<a:srcRect l="50000"/><a:stretch>'),
+    x => x.replace('<wp:docPr ', '<wp:docPr hidden="1" '),
+    x => x.replace('<a:blip ', '<a:blip r:link="external" '),
+    x => x.replace('<w:drawing>', '<w:del w:id="1"><w:drawing>').replace('</w:drawing>', '</w:drawing></w:del>'),
+    x => x.replace('prst="rect"', 'prst="ellipse"'),
+    x => x.replace('<a:off x="0"', '<a:off x="123"'),
+    x => x.replace('<a:fillRect/>', '<a:fillRect r="2000"/>'),
+    x => x.replace('<pic:spPr>', '<pic:spPr><a:effectLst><a:grayscl/></a:effectLst>'),
+  ];
+  for (const mutate of mutations) {
+    const xml = mutate(parts['word/document.xml']); assert.notEqual(xml, parts['word/document.xml']);
+    const bytes = buildStoredZip(Object.entries({ ...parts, ...binaryParts, 'word/document.xml': xml }).map(([name, data]) => ({ name, data })));
+    assert.equal(bridge.buildDocxContentPreviewFromZipBytes(bytes).ok, false, xml);
+  }
+});

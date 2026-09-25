@@ -3685,6 +3685,31 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     try { documentScan.logicalTableParagraphs = tableDocumentParagraphs(documentXml, documentScan); }
     catch (error) { reasons.push(reason('RTK_WORD_TABLES_MALFORMED_BLOCKED', 'reviewIr.tableParagraphs', error.message)); }
   }
+  let documentMedia = null;
+  if (!blockingReason(reasons) && typeof ports.readDocumentMediaPart === 'function') {
+    try {
+      const refs = extractDocumentMediaReferencesV1(documentXml, {
+        cryptoPort: ports.cryptoPort, budgets,
+        relationshipsXml: parts['word/_rels/document.xml.rels'], contentTypesXml: parts['[Content_Types].xml'],
+      });
+      if (refs.length) {
+        const placements = refs.map(ref => {
+          // Binary validation belongs to the bounded package adapter. The
+          // platform-neutral XML parser receives immutable byte-derived facts,
+          // not filesystem access or a renderer-authored media verdict.
+          const attrs = ports.readDocumentMediaPart(ref.partName);
+          if (!attrs || !/^[a-f0-9]{64}$/u.test(attrs.sha256)
+            || !Number.isSafeInteger(attrs.width) || !Number.isSafeInteger(attrs.height)
+            || attrs.width < 1 || attrs.height < 1 || attrs.width > 8192 || attrs.height > 8192)
+            throw Error('DOCUMENT_MEDIA_BINARY_REQUIRED');
+          if (ref.cx !== attrs.width * 9525 || ref.cy !== attrs.height * 9525) throw Error('DOCUMENT_MEDIA_RESIZE_UNSUPPORTED');
+          return { ...ref, sha256: attrs.sha256, width: attrs.width, height: attrs.height };
+        });
+        documentMedia = { schemaVersion: 'yalken.word.media-return.v1', placements, canWriteManuscript: false };
+        admitWorkerOutput(budgetState, reasons, 'reviewIr.documentMedia', documentMedia);
+      }
+    } catch (error) { reasons.push(reason('RTK_HOSTILE_PACKAGE_BLOCKED', 'reviewIr.documentMedia', error.message)); }
+  }
   const documentSectionsResult = parseDocumentSections(documentScan, cryptoPort);
   reasons.push(...documentSectionsResult.reasons);
   const documentSections = documentSectionsResult.sections;
@@ -3833,6 +3858,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     documentMetadata,
     documentSections,
     ...(documentNotes ? { documentNotes } : {}),
+    ...(documentMedia ? { documentMedia } : {}),
     opaqueUnsupported,
     authorityCarrier,
     commentGraphCapability,
@@ -3975,6 +4001,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       lossLedger: documentSections.lossLedger,
     },
     ...(documentNotes ? { documentNotes } : {}),
+    ...(documentMedia ? { documentMedia } : {}),
     opaqueUnsupported: opaqueUnsupported.map((item) => ({
       partName: item.partName,
       elementName: item.elementName,
@@ -4113,6 +4140,10 @@ export function verifyAuthorityCarrierSignatureWithSecret(selectedCarrier, input
 // filesystem or Apply authority. Binary PNG validation occurs against the
 // corresponding bounded ZIP entry, not against a file named by the payload.
 export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
+  // This is a media projection, not an XML validity gate. Both callers first
+  // validate the document. Absence of a drawing token avoids reparsing large
+  // text-only books under an unrelated media scanner block budget.
+  if (typeof documentXml === 'string' && !/<(?:[^\s<>/:]+:)?drawing(?=[\s/>])/u.test(documentXml)) return [];
   const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
   const fail = code => { throw new Error(`DOCUMENT_MEDIA_${code}`); };
   if (!cryptoPort.ok) fail('CRYPTO_PORT');
@@ -4152,6 +4183,29 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     if (descendants.some(t => t.namespaceUri === NS_WP && t.localName === 'anchor')) fail('FLOATING_IMAGE_UNSUPPORTED');
     const blip = one(descendants, 'blip', NS_A), props = one(descendants, 'docPr', NS_WP);
     const extent = one(descendants.filter(t => inside(t, inline)), 'extent', NS_WP);
+    const NS_PIC = 'http://schemas.openxmlformats.org/drawingml/2006/picture';
+    const supported = new Map([
+      [NS_WP, new Set(['inline', 'extent', 'effectExtent', 'docPr', 'cNvGraphicFramePr'])],
+      [NS_A, new Set(['graphicFrameLocks', 'graphic', 'graphicData', 'blip', 'stretch', 'fillRect', 'xfrm', 'off', 'ext', 'prstGeom', 'avLst'])],
+      [NS_PIC, new Set(['pic', 'nvPicPr', 'cNvPr', 'cNvPicPr', 'blipFill', 'spPr'])],
+    ]);
+    if (descendants.some(t => !supported.get(t.namespaceUri)?.has(t.localName))) fail('PICTURE_FEATURE_UNSUPPORTED');
+    // Reject unrepresented crop, rotation, reflection, links, hidden images or
+    // tracked image replacement; byte equality alone cannot prove appearance.
+    if (tokens.some(t => inside(drawing, t) && t.namespaceUri === W_NS && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName))) fail('TRACKED_IMAGE_UNSUPPORTED');
+    const zero = (t, names) => names.every(k => ['', '0', 'false'].includes(plain(t, k)));
+    if (!zero(inline, ['distT', 'distB', 'distL', 'distR']) || !zero(props, ['hidden']) || plain(props, 'title')) fail('PICTURE_FEATURE_UNSUPPORTED');
+    if (descendants.some(t => t.namespaceUri === NS_WP && t.localName === 'effectExtent' && !zero(t, ['l', 'r', 't', 'b']))) fail('PICTURE_EFFECT_UNSUPPORTED');
+    const graphic = one(descendants, 'graphicData', NS_A), transform = one(descendants, 'xfrm', NS_A);
+    const off = one(descendants.filter(t => inside(t, transform)), 'off', NS_A);
+    const size = one(descendants.filter(t => inside(t, transform)), 'ext', NS_A);
+    const geometry = one(descendants, 'prstGeom', NS_A);
+    one(descendants, 'pic', NS_PIC); one(descendants, 'stretch', NS_A);
+    const fill = one(descendants, 'fillRect', NS_A);
+    if (plain(graphic, 'uri') !== NS_PIC || !zero(transform, ['rot', 'flipH', 'flipV'])
+      || !zero(off, ['x', 'y']) || !zero(fill, ['l', 'r', 't', 'b'])
+      || plain(size, 'cx') !== plain(extent, 'cx') || plain(size, 'cy') !== plain(extent, 'cy')
+      || plain(geometry, 'prst') !== 'rect') fail('PICTURE_TRANSFORM_UNSUPPORTED');
     const embed = attr(blip, 'embed', NS_R);
     if (!embed || attr(blip, 'link', NS_R)) fail('EXTERNAL_IMAGE');
     const id = plain(props, 'id');
@@ -4170,6 +4224,6 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     const dimension = key => { const value = plain(extent, key); if (!/^[1-9][0-9]*$/u.test(value) || Number(value) > 8192 * 9525) fail('EXTENT'); return Number(value); };
     const before = tokens.filter(t => inside(t, paragraph) && t.openStart < drawing.openStart);
     const offset = before.reduce((sum, t) => sum + (isWordToken(t, 't') ? tokenText(documentXml, t).length : ['tab', 'br', 'cr'].some(n => isWordToken(t, n)) ? 1 : 0), 0);
-    return { paragraphIndex, offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy') };
+    return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy') };
   });
 }
