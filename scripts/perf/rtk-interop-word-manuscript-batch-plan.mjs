@@ -94,7 +94,9 @@ export function estimateJobSeconds(job, overrides = {}) {
     return value;
   }
   const value = DEFAULT_SECONDS[job.recipe === 'DEFAULT' ? `${job.route}_DEFAULT` : job.recipe === 'SINGLE_STRUCTURE_V2' ? `${job.route}_${job.recipe}` : job.recipe];
-  if (!value) throw new Error('PLANNER_DURATION_UNAVAILABLE');
+  // A new recipe has candidates before it has measured timing. Keep that
+  // distinction explicit rather than inventing throughput or breaking the queue.
+  if (!value) return null;
   return value + (job.profile === 'PACKAGED_BUILD_RUNTIME' ? 15 : 0);
 }
 
@@ -140,18 +142,19 @@ function validateJobKeys(values, label) {
 }
 
 function rank(available, covered, durationOverrides) {
-  return available.map((job) => {
-    const newCellIds = job.cellIds.filter((cellId) => !covered.has(cellId));
+  return available.map((job) => ({ job, newCellIds: job.cellIds.filter((cellId) => !covered.has(cellId)) }))
+    .filter(({ newCellIds }) => newCellIds.length > 0).map(({ job, newCellIds }) => {
     const estimatedSeconds = estimateJobSeconds(job, durationOverrides);
     return {
       job,
       newCellIds,
       newCells: newCellIds.length,
       estimatedSeconds,
-      cellsPerSecond: newCellIds.length / estimatedSeconds,
+      cellsPerSecond: estimatedSeconds === null ? null : newCellIds.length / estimatedSeconds,
     };
   }).filter((entry) => entry.newCells > 0).sort((left, right) => (
-    right.cellsPerSecond - left.cellsPerSecond
+    Number(left.estimatedSeconds === null) - Number(right.estimatedSeconds === null)
+    || (right.cellsPerSecond ?? 0) - (left.cellsPerSecond ?? 0)
     || right.newCells - left.newCells
     || left.estimatedSeconds - right.estimatedSeconds
     || left.job.key.localeCompare(right.job.key)
@@ -186,11 +189,11 @@ export function planBatch({
     if (!next) break;
     selected.push(next);
     next.newCellIds.forEach((cellId) => covered.add(cellId));
-    estimatedSeconds += next.estimatedSeconds;
+    estimatedSeconds = estimatedSeconds === null || next.estimatedSeconds === null ? null : estimatedSeconds + next.estimatedSeconds;
   }
 
   const plannedNewCells = selected.reduce((sum, item) => sum + item.newCells, 0);
-  const estimatedTotalSeconds = estimatedSeconds + fixedOverheadSeconds;
+  const estimatedTotalSeconds = estimatedSeconds === null ? null : estimatedSeconds + fixedOverheadSeconds;
   const supportedUncoveredCellIds = SUPPORTED_CELL_IDS.filter((cellId) => !initiallyCovered.has(cellId));
   const selectedCellIds = selected.flatMap((item) => item.newCellIds);
   if (new Set(selectedCellIds).size !== selectedCellIds.length) throw new Error('PLANNER_DUPLICATE_PLANNED_CELL');
@@ -209,10 +212,11 @@ export function planBatch({
     estimatedSeconds,
     fixedOverheadSeconds,
     estimatedTotalSeconds,
-    estimatedMinutes: Number((estimatedSeconds / 60).toFixed(3)),
-    estimatedTotalMinutes: Number((estimatedTotalSeconds / 60).toFixed(3)),
+    estimatedMinutes: estimatedSeconds === null ? null : Number((estimatedSeconds / 60).toFixed(3)),
+    estimatedTotalMinutes: estimatedTotalSeconds === null ? null : Number((estimatedTotalSeconds / 60).toFixed(3)),
     targetBudgetSeconds,
-    withinTargetBudget: targetBudgetSeconds === null ? null : estimatedTotalSeconds <= targetBudgetSeconds,
+    unmeasuredJobs: selected.filter(entry => entry.estimatedSeconds === null).length,
+    withinTargetBudget: targetBudgetSeconds === null || estimatedTotalSeconds === null ? null : estimatedTotalSeconds <= targetBudgetSeconds,
     candidatesConsidered: available.length,
     skippedCompletedJobs: completed.size,
     skippedBlockedJobs: blocked.size,
@@ -226,7 +230,7 @@ export function planBatch({
       newCellIds: entry.newCellIds,
       newCells: entry.newCells,
       estimatedSeconds: entry.estimatedSeconds,
-      cellsPerSecond: Number(entry.cellsPerSecond.toFixed(6)),
+      cellsPerSecond: entry.cellsPerSecond === null ? null : Number(entry.cellsPerSecond.toFixed(6)),
     })),
     remainingSupportedCellIds: SUPPORTED_CELL_IDS.filter((cellId) => !covered.has(cellId)),
     invariants: [

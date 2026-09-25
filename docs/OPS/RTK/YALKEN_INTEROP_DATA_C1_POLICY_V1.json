@@ -804,7 +804,7 @@
       },
       {
         "path": "scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs",
-        "sha256": "abe3aec00d23c82fc53ab174b7a6fb1660bcc72f430152f5739a51e74b9db137"
+        "sha256": "4c9b8059e4dc8cc846b98151710f94754f3bb54557a9864f2cbba9f99a08668a"
       },
       {
         "path": "src/io/documentTables.js",

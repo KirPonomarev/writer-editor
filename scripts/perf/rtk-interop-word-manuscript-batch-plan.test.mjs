@@ -9,8 +9,8 @@ import {
 } from './rtk-interop-word-manuscript-batch-plan.mjs';
 
 test('candidate matrix is bounded and deterministic', () => {
-  assert.equal(CANDIDATE_JOBS.length, 44);
-  assert.equal(SUPPORTED_CELL_IDS.length, 306);
+  assert.equal(CANDIDATE_JOBS.length, 92);
+  assert.equal(SUPPORTED_CELL_IDS.length, 354);
   assert.equal(FULL_DENOMINATOR_CELLS, 1120);
   assert.deepEqual(CANDIDATE_JOBS, [...CANDIDATE_JOBS].sort((left, right) => left.key.localeCompare(right.key)));
 });
@@ -31,7 +31,7 @@ test('planner exposes unreachable work instead of repeating accepted cells', () 
   assert.equal(plan.plannedNewCells, 24);
   assert.equal(plan.unreachableTarget, 76);
   assert.equal(plan.supportedUncoveredCells, 24);
-  assert.equal(plan.missingRecipeCells, 814);
+  assert.equal(plan.missingRecipeCells, 766);
   assert.equal(new Set(plan.jobs.flatMap((job) => job.newCellIds)).size, 24);
 });
 
@@ -72,7 +72,7 @@ test('historical state timings stay separate from fixed delivery overhead', () =
 
 test('note extension plans exactly 48 unique new cells in 24 physical jobs', () => {
   const accepted = SUPPORTED_CELL_IDS.filter(id => !/^(?:NOTES|FOOTNOTES_ENDNOTES)__/.test(id));
-  assert.equal(accepted.length, 258);
+  assert.equal(accepted.length, 306);
   const plan = planBatch({ acceptedCellIds: accepted, targetNewCells: 48 });
   assert.equal(plan.targetReached, true);
   assert.equal(plan.plannedNewCells, 48);
@@ -84,4 +84,19 @@ test('note extension plans exactly 48 unique new cells in 24 physical jobs', () 
   assert.equal(complete.plannedNewCells, 0);
   assert.equal(complete.targetReached, false);
   assert.deepEqual(complete.jobs, []);
+});
+
+
+test('media candidates remain schedulable without invented timing and accepted jobs are not remeasured', () => {
+ const accepted=SUPPORTED_CELL_IDS.filter(id=>!id.startsWith('MEDIA_ASSETS__'));
+ const plan=planBatch({acceptedCellIds:accepted,targetNewCells:24,targetBudgetSeconds:3600});
+ assert.equal(plan.plannedNewCells,24);assert.equal(plan.jobs.length,24);
+ assert.equal(plan.unmeasuredJobs,24);assert.equal(plan.estimatedSeconds,null);
+ assert.equal(plan.estimatedTotalSeconds,null);assert.equal(plan.withinTargetBudget,null);
+ assert.ok(plan.jobs.every(j=>j.cellsPerSecond===null));
+ const overrides=Object.fromEntries(plan.jobs.map(j=>[j.key,30]));
+ const measured=planBatch({acceptedCellIds:accepted,targetNewCells:24,durationOverrides:overrides});
+ assert.equal(measured.estimatedSeconds,720);assert.equal(measured.unmeasuredJobs,0);
+ const complete=planBatch({acceptedCellIds:SUPPORTED_CELL_IDS,targetNewCells:1,durationOverrides:Object.fromEntries(plan.jobs.map(j=>[j.key,-1]))});
+ assert.deepEqual(complete.jobs,[]);assert.equal(complete.estimatedSeconds,0);
 });

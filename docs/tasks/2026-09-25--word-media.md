@@ -130,3 +130,5 @@ adapter validates PNG bytes and supplies immutable metadata through a read-only
 port. Adjacent text Apply preserves images; crossing an image stays blocked.
 
 Media physical counterexample: the paragraph-only page mask clipped the third reused PNG after reopen. Use the existing continuous rich-content fallback for images; preserve canonical content and restore ordinary pagination when no images remain. Additional affected harness scope: `test/contracts/rtk-word-table-editor.contract.test.js`. Independent media oracle requires all three decoded images to pass hit testing; the first diagnostic remains rejected.
+
+Planner integration: new media candidates remain deterministic and unique without invented duration; unmeasured totals and budget verdict are null. Accepted jobs are filtered before timing lookup. Exact affected test: `scripts/perf/rtk-interop-word-manuscript-batch-plan.test.mjs`.
