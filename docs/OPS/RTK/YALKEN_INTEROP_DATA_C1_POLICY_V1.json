@@ -980,7 +980,7 @@
       },
       {
         "path": "test/contracts/rtk-word-composite-fidelity.contract.test.js",
-        "sha256": "075e5abd946bd32608ffb70875a6344249a3443809782a2efa295366e1d341fc"
+        "sha256": "26c05b1c56e9aebed93e5a1f6a3727c7842557306ccc7bb1ed5a0f03820fde3b"
       }
     ],
     "followupRepair": {

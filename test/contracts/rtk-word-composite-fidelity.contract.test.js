@@ -96,3 +96,58 @@ test('W6: page and column boundaries retain explicit loss while ordinary hard br
   assert.equal(plan.lossReport.items.some(i => i.code === 'DOCX_IMPORT_PREVIEW_LINE_BREAK_TEXT_ONLY'), false);
   assert.match(plan.lossReport.items.find(i => i.code === 'DOCX_IMPORT_PREVIEW_PAGE_BREAK_TEXT_ONLY').message, /line break/);
 });
+
+test('W6 composite: table properties and owned PNG survive failed receipt write, recovery and replay', async t => {
+  const [, envelope, docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await modules;
+  const doc = cases[0].doc;
+  const { plan } = await planFrom(buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule, semanticMappingModule, styleMapModule }));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'w6-table-media-recovery-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const options = { projectRoot: root, romanRoot: path.join(root, 'roman'), projectId: 'w6-composite-recovery' };
+  rememberDocxImportPreviewPlanAdmission(plan);
+  const fsp = require('node:fs/promises'), originalOpen = fsp.open;
+  fsp.open = async function (file, ...args) {
+    if (String(file).startsWith(root) && String(file).includes(path.sep + 'receipts' + path.sep)) throw Object.assign(Error('W6_OWNED_RECEIPT_ENOSPC'), { code: 'ENOSPC' });
+    return originalOpen.call(this, file, ...args);
+  };
+  let failed;
+  try { failed = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options); }
+  finally { fsp.open = originalOpen; }
+  assert.equal(failed.ok, false, 'No ACK when durable receipt cannot be written');
+  const imported = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+  assert.equal(imported.ok, true, JSON.stringify(imported));
+  const directory = path.join(options.romanRoot, 'Imported');
+  const files = fs.readdirSync(directory).filter(f => f.endsWith('.txt'));
+  assert.equal(files.length, 1);
+  const saved = fs.readFileSync(path.join(directory, files[0]), 'utf8');
+  assert.deepEqual(envelope.parseObservablePayload(saved).doc, envelope.canonicalizeDocumentJson(doc));
+  const attrs = doc.content[1].content[0].content[0].content[0].content.find(n => n.type === 'image').attrs;
+  assert.deepEqual(fs.readFileSync(path.join(root, attrs.assetPath)), png);
+  const replay = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
+  assert.equal(replay.ok, true, JSON.stringify(replay));
+  assert.equal(replay.value.idempotent, true);
+  assert.equal(fs.readdirSync(directory).filter(f => f.endsWith('.txt')).length, 1);
+  assert.equal(fs.readFileSync(path.join(directory, files[0]), 'utf8'), saved);
+});
+
+test('W6 composite: malformed table plus PNG and tampered admitted content never receive writer authority', async t => {
+  const [, , docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await modules;
+  const options = { docxPageSetupBindModule, semanticMappingModule, styleMapModule };
+  for (const kind of ['merge', 'binary', 'escape', 'dimensions']) {
+    const doc = structuredClone(cases[0].doc);
+    const table = doc.content[1], image = table.content[0].content[0].content[0].content.find(n => n.type === 'image');
+    if (kind === 'merge') table.content[0].content[0].attrs.colspan = 100000;
+    if (kind === 'binary') image.attrs.dataBase64 = Buffer.from('not PNG').toString('base64');
+    if (kind === 'escape') image.attrs.assetPath = '../outside.png';
+    if (kind === 'dimensions') image.attrs.displayWidthEmu = Number.MAX_SAFE_INTEGER;
+    assert.throws(() => buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, options), /TABLE|MEDIA/, kind);
+  }
+  const { plan } = await planFrom(buildDocxMinBuffer({ doc: cases[0].doc, bookProfile: { formatId: 'A4' } }, options));
+  rememberDocxImportPreviewPlanAdmission(plan);
+  const forged = structuredClone(plan); forged.candidateCreatePlan.entries[0].content += 'foreign-authority';
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'w6-no-write-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const result = await applyDocxImportSafeCreate({ docxImportPreviewPlan: forged }, { projectRoot: root, romanRoot: path.join(root, 'roman'), projectId: 'w6-hostile' });
+  assert.equal(result.ok, false);
+  assert.deepEqual(fs.readdirSync(root), []);
+});
