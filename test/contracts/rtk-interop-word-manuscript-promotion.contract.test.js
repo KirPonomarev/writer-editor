@@ -83,14 +83,14 @@ test('Manuscript promotion admits only the exact inspected C4 successor blobs', 
   assert.throws(() => check({repoRoot: root, runtimeIdentity, verifierIdentity: identity(), allowedPaths: ['oracle.txt']}), /PROMOTION_SCOPE/);
 });
 
-for(const era of ['C1','REVIEW','HOSTILE','MEDIA','REOPEN','TABLE_FILES'])test(era+' Word reader successor admits one complete set and rejects mixed or altered bindings', async () => {
+for(const era of ['C1','REVIEW','HOSTILE','MEDIA','REOPEN','TABLE_FILES','IMPORT_TRANSACTION'])test(era+' Word reader successor admits one complete set and rejects mixed or altered bindings', async () => {
   const cert = await import(pathToFileURL(path.join(ROOT, 'scripts/ops/r24/corrective/post-audit-certification-set.mjs')));
-  const expected = era==='C1'?cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR:era==='REVIEW'?cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR:era==='HOSTILE'?cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR:era==='MEDIA'?cert.R24_INTEROP_WORD_MEDIA_SUCCESSOR:era==='REOPEN'?cert.R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR:cert.R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR, candidate = 'f'.repeat(40);
-  const historicalHead = era==='C1'?'3a5f0b2080e861d779cf5838a2a34c6e7d5e4244':era==='REVIEW'?'3dbe5404aad3b583fdbf929f2b49cf016f819fc6':era==='HOSTILE'?'1c9dae7a3dcdc3fc79e22ea9b53b0c2ca67bcd5d':era==='MEDIA'?'ccc9b4b02db839241405f2667313c8ec5450455e':era==='REOPEN'?'58c408eb9799d65194d0081a8a45c509af8706ac':null;
+  const expected = era==='C1'?cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR:era==='REVIEW'?cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR:era==='HOSTILE'?cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR:era==='MEDIA'?cert.R24_INTEROP_WORD_MEDIA_SUCCESSOR:era==='REOPEN'?cert.R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR:era==='TABLE_FILES'?cert.R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR:cert.R24_INTEROP_WORD_IMPORT_TRANSACTION_SUCCESSOR, candidate = 'f'.repeat(40);
+  const historicalHead = era==='C1'?'3a5f0b2080e861d779cf5838a2a34c6e7d5e4244':era==='REVIEW'?'3dbe5404aad3b583fdbf929f2b49cf016f819fc6':era==='HOSTILE'?'1c9dae7a3dcdc3fc79e22ea9b53b0c2ca67bcd5d':era==='MEDIA'?'ccc9b4b02db839241405f2667313c8ec5450455e':era==='REOPEN'?'58c408eb9799d65194d0081a8a45c509af8706ac':era==='TABLE_FILES'?'46e050b21b472cb76e2892cc7415b58ebaf0f299':null;
   const bytes = new Map(await Promise.all([...expected.bindings, ...expected.guards].map(async b => [b.path, historicalHead?execFileSync('git',['show',historicalHead+':'+b.path],{cwd:ROOT}):await fs.readFile(path.join(ROOT, b.path))])));
   const git = args => {
     if (args[0] === 'rev-parse') {
-      for (const set of [cert.R24_INTEROP_WORD_PROMOTION_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR,cert.R24_INTEROP_WORD_MEDIA_SUCCESSOR,cert.R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,cert.R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR]) {
+      for (const set of [cert.R24_INTEROP_WORD_PROMOTION_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_C1_SUCCESSOR,cert.R24_INTEROP_WORD_TABLES_REVIEW_SUCCESSOR,cert.R24_INTEROP_WORD_HOSTILE_SUCCESSOR,cert.R24_INTEROP_WORD_MEDIA_SUCCESSOR,cert.R24_INTEROP_WORD_NATIVE_REOPEN_SUCCESSOR,cert.R24_INTEROP_WORD_TABLE_FILES_SUCCESSOR,cert.R24_INTEROP_WORD_IMPORT_TRANSACTION_SUCCESSOR]) {
         if (args[1] === set.baseSha + '^{tree}') return set.baseTree;
         if (args[1] === set.successorBaseSha + '^{tree}') return set.successorBaseTree;
       }
@@ -110,7 +110,7 @@ for(const era of ['C1','REVIEW','HOSTILE','MEDIA','REOPEN','TABLE_FILES'])test(e
     bytes.set(binding.path, original);
   }
   // These eras change Lab admission only; their runtime reader is unchanged.
-  if (!['REOPEN','TABLE_FILES'].includes(era)) {
+  if (!['REOPEN','TABLE_FILES','IMPORT_TRANSACTION'].includes(era)) {
   bytes.set(expected.bindings[0].path, execFileSync('git', ['show', expected.successorBaseSha + ':' + expected.bindings[0].path], { cwd: ROOT }));
   assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ git }), /E_INTEROP_WORD_PROMOTION_PIN/);
   }

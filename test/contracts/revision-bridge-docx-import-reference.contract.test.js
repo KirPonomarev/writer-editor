@@ -9,7 +9,7 @@ const { createDocxImportPreviewReferences } = require('../../src/utils/docxImpor
 const { buildStoredZip, escapeXml } = require('../../src/export/docx/docxMinBuilder');
 const { createEnvelope, validateIpcEnvelope } = require('../../src/core/ipc-envelope-v1.cjs');
 const admission = require('../../src/utils/docxImportSafeCreate');
-const { writeFlowSceneBatchAtomic } = require('../../src/utils/flowSceneBatchAtomic');
+const { withRealDocxImportAuthority } = require('../fixtures/docx-import-real-authority.cjs');
 const root = path.resolve(__dirname, '../..');
 const main = fs.readFileSync(path.join(root, 'src/main.js'), 'utf8');
 const bridge = () => import(pathToFileURL(path.join(root, 'src/io/revisionBridge/index.mjs')).href);
@@ -45,16 +45,21 @@ function harness(t, options = {}) {
       await state.beforeEnsure?.();
       fs.mkdirSync(sandbox.getProjectSectionPath(), { recursive: true });
     },
-    resolveProjectBindingForFile: async () => ({ projectId: 'docx-reference-project', manifestPath: '', manifestRaw: '' }),
-    getMainProjectManifestAuthority: async () => null,
-    queueDiskOperation: async operation => { await state.beforeQueue?.(); return operation(); },
-    writeFlowSceneBatchAtomic: async (input, options = {}) => {
-      state.writes += 1;
-      return writeFlowSceneBatchAtomic(input, { ...options, beforeActivate: async (...args) => {
-        await state.beforeActivate?.();
-        return options.beforeActivate?.(...args);
-      } });
+    resolveProjectBindingForFile: async () => {
+      const projectRoot = sandbox.getProjectRootPath();
+      state.binding = await withRealDocxImportAuthority({ projectRoot, projectId: 'docx-reference-project' });
+      return state.binding;
     },
+    getMainProjectManifestAuthority: async () => {
+      const real = state.binding.transactionAuthority;
+      return { ...real, commitManifestText: async args => {
+        await state.beforeActivate?.();
+        const result = await real.commitManifestText(args);
+        state.writes += 1;
+        return result;
+      } };
+    },
+    queueDiskOperation: async operation => { await state.beforeQueue?.(); return operation(); },
     module: { exports: {} },
     ...options,
   };

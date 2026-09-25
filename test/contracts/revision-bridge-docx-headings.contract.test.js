@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { buildDocxMinBuffer, buildStoredZip } = require('../../src/export/docx/docxMinBuilder.js');
 const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
-const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
 const W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
 const CT = 'http://schemas.openxmlformats.org/package/2006/content-types';
 const REL = 'http://schemas.openxmlformats.org/package/2006/relationships';
@@ -107,9 +107,9 @@ test('C1 headings: local picker preserves heading content through admitted atomi
  const projectRoot=fs.mkdtempSync(path.join(os.tmpdir(),'docx-headings-test-'));t.after(()=>fs.rmSync(projectRoot,{recursive:true,force:true}));
  const options={projectRoot,romanRoot:path.join(projectRoot,'roman'),projectId:'headings-test'};
  const applied=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(applied.ok,true,JSON.stringify(applied));
- const dir=path.join(options.romanRoot,'Imported');assert.equal(fs.readdirSync(dir).length,1);
- assert.equal(fs.readFileSync(path.join(dir,fs.readdirSync(dir)[0]),'utf8'),plan.candidateCreatePlan.entries[0].content);
- const repeat=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(repeat.ok,true,JSON.stringify(repeat));assert.equal(fs.readdirSync(dir).length,1);
+ const dir=path.join(options.romanRoot,'Imported');assert.equal(fs.readdirSync(dir).filter(name => name.endsWith('.txt')).length,1);
+ assert.equal(fs.readFileSync(path.join(dir,fs.readdirSync(dir).filter(name => name.endsWith('.txt'))[0]),'utf8'),plan.candidateCreatePlan.entries[0].content);
+ const repeat=await applyDocxImportSafeCreate({docxImportPreviewPlan:plan},options);assert.equal(repeat.ok,true,JSON.stringify(repeat));assert.equal(fs.readdirSync(dir).filter(name => name.endsWith('.txt')).length,1);
 });
 test('C1 headings: main-owned plan and local picker preserve identical candidate bytes',async()=>{
  const {report,bytes}=await roundtrip({type:'doc',content:[heading(3),heading(6,'')]});

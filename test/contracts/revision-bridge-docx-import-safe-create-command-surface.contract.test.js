@@ -72,7 +72,7 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
             projectId: helperOptions.projectId,
             operationLabel: helperOptions.operationLabel,
             hasQueueDiskOperation: typeof helperOptions.queueDiskOperation === 'function',
-            hasWriteBatchAtomic: typeof helperOptions.writeBatchAtomic === 'function',
+            hasPublicationGuard: typeof helperOptions.assertPublication === 'function',
             hasTransactionAuthority: helperOptions.transactionAuthority !== null
               && typeof helperOptions.transactionAuthority === 'object',
           }) });
@@ -173,7 +173,7 @@ function instantiateDocxImportSafeCreatePort(options = {}) {
       return { projectId: 'trusted-project-id' };
     },
     queueDiskOperation: async (operation) => operation(),
-    writeFlowSceneBatchAtomic: async () => ({ ok: true }),
+    getMainProjectManifestAuthority: async () => ({ kind: 'captured-port-for-projection-test' }),
     module: { exports: {} },
     exports: {},
   };
@@ -300,9 +300,9 @@ test('DOCX import safe create command surface: clean plan delegates with trusted
   assert.deepEqual(Object.keys(port.calls.helper[0].input), ['docxImportPreviewPlan']);
   assert.equal(port.calls.helper[0].options.projectRoot, '/trusted/project');
   assert.equal(port.calls.helper[0].options.romanRoot, '/trusted/project/roman');
-  assert.equal(port.calls.helper[0].options.operationLabel, 'safe create DOCX import scene batch');
+  assert.equal(port.calls.helper[0].options.operationLabel, 'safe create DOCX import transaction');
   assert.equal(port.calls.helper[0].options.hasQueueDiskOperation, true);
-  assert.equal(port.calls.helper[0].options.hasWriteBatchAtomic, true);
+  assert.equal(port.calls.helper[0].options.hasPublicationGuard, true);
 
   const resultKeys = collectKeys(result);
   for (const forbidden of ['path', 'filePath', 'projectRoot', 'rawBytes', 'bufferSource', 'bindingKey', 'relativeFile', 'writeReceipt', 'importReceipt', 'exportReceipt']) {

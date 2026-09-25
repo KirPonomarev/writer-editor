@@ -62,7 +62,7 @@ test('Word tables: invalid canonical grids fail before DOCX serialization instea
 });
 test('Word tables: main/local projections and safe-create preserve exact durable table bytes and reject forged plans', async t => {
   const fs = require('node:fs'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../../src/utils/docxImportSafeCreate.js');
+  const { applyDocxImportSafeCreate, rememberDocxImportPreviewPlanAdmission } = require('../fixtures/docx-import-real-authority.cjs');
   const { createDocxImportLocalFilePreview } = require('../../src/utils/docxImportLocalFilePreview.js');
   const bytes = await exported(fixture()), { report, plan } = await imported(bytes);
   const main = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
@@ -84,12 +84,12 @@ test('Word tables: main/local projections and safe-create preserve exact durable
   const result = await applyDocxImportSafeCreate({ docxImportPreviewPlan: plan }, options);
   assert.equal(result.ok, true, JSON.stringify(result));
   const folder = path.join(options.romanRoot, 'Imported');
-  const saved = fs.readFileSync(path.join(folder, fs.readdirSync(folder)[0]), 'utf8');
+  const saved = fs.readFileSync(path.join(folder, fs.readdirSync(folder).filter(name => name.endsWith('.txt'))[0]), 'utf8');
   assert.deepEqual(envelope.parseObservablePayload(saved).doc, fixture());
   assert.equal(envelope.analyzeDocumentPlainTextRoundTrip(envelope.parseObservablePayload(saved).doc).safe, false);
   const forged = structuredClone(plan); forged.candidateCreatePlan.entries[0].content += 'tamper';
   assert.equal((await applyDocxImportSafeCreate({ docxImportPreviewPlan: forged }, options)).ok, false);
-  assert.equal(fs.readdirSync(folder).length, 1);
+  assert.equal(fs.readdirSync(folder).filter(name => name.endsWith('.txt')).length, 1);
 });
 test('Word tables: malformed, reordered and noncontiguous metadata cannot create a rich table candidate', async () => {
   const { report } = await imported(await exported(fixture())); const [bridge] = await modules;
