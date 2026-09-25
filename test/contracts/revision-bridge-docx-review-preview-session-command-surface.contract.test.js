@@ -8,6 +8,8 @@ const crypto = require('node:crypto');
 const { deflateRawSync, inflateRawSync } = require('node:zlib');
 const { pathToFileURL } = require('node:url');
 const { createDocxActivationRequestDigestGuard } = require('../../src/main/rtkDocxActivationGuards.cjs');
+const { validateFullManuscriptDocumentMetadataReturn, validateFullManuscriptDocumentSectionsReturn } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+const { validateDocumentNotesReturn } = require('../../src/export/docx/docxReviewPacketNotes');
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const MAIN_PATH = path.join(REPO_ROOT, 'src', 'main.js');
@@ -189,6 +191,20 @@ async function loadBridge() {
   return import(pathToFileURL(BRIDGE_MODULE_PATH).href);
 }
 
+function fullManuscriptReturnFixture(fullSource, revisionBridge, body = null) {
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder');
+  const bytes = buildDocxReviewPacketBuffer(fullSource);
+  if (body === null) return bytes;
+  const extracted = revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }, { cryptoPort: c05CryptoPort });
+  assert.equal(extracted.ok, true);
+  const parts = extracted.parts;
+  const original = parts['word/document.xml'];
+  assert.equal((original.match(/<w:sectPr\b/gu) || []).length, 1);
+  parts['word/document.xml'] = original.replace(/(<w:body>)[\s\S]*?(?=<w:sectPr\b)/u, (_, opening) => opening + body);
+  assert.notEqual(parts['word/document.xml'], original);
+  return zipFixture(Object.entries(parts).map(([name, value]) => ({ name, method: 8, body: value })));
+}
+
 function instantiateDocxReviewPreviewSessionPort(options = {}) {
   const mainSource = readMainSource();
   const mutateSection = extractMarkedSection(mainSource, MUTATE_SECTION_START, MUTATE_SECTION_END);
@@ -212,6 +228,9 @@ function instantiateDocxReviewPreviewSessionPort(options = {}) {
     COMMAND_SURFACE_KERNEL_COMMAND_IDS,
     ...MENU_HANDLER_COMPUTED_KEY_GLOBALS,
     cloneJsonSafe,
+    validateFullManuscriptDocumentMetadataReturn,
+    validateFullManuscriptDocumentSectionsReturn,
+    validateDocumentNotesReturn,
     computeHash,
     fs: options.fs || { readFile: async () => 'Anchored text' },
     fsSync: options.fsSync || {
@@ -2050,7 +2069,7 @@ test('DOCX review preview session command: full-manuscript return exposes only e
       status: 'verified-baseline-bound',
       selectedCarrier: {
         encoded: customPropertyFromSource(fullSource, 'YRTK_C01_AUTH'),
-        payload: returnedAuthority,
+        payload: JSON.parse(Buffer.from(customPropertyFromSource(fullSource, 'YRTK_C01_AUTH').slice(6), 'base64url').toString('utf8')).payload,
         baselineBinding: { allExpectedMatched: true },
       },
     },
@@ -2058,7 +2077,15 @@ test('DOCX review preview session command: full-manuscript return exposes only e
     parserProfileDigest: c05Sha256Text('parser-full-route'),
     analysisDigest: c05Sha256Text('analysis-full-route'),
     sourceMode: 'TRACKED',
-    reviewIr: c05ReviewIr(),
+    reviewIr: {
+      ...c05ReviewIr(),
+      ...(() => {
+        const observed = revisionBridge.buildDocxReviewTransportAnalysisFromZipBytes(
+          { bytes: fullManuscriptReturnFixture(fullSource, revisionBridge) }, { cryptoPort: c05CryptoPort });
+        assert.equal(observed.ok, true);
+        return { documentMetadata: observed.reviewIr.documentMetadata, documentSections: observed.reviewIr.documentSections };
+      })(),
+    },
   };
   const result = await port.handleDocxReviewPreviewSessionActivationCommandSurface(
     toPayload(cleanDocxZip([
@@ -2185,7 +2212,7 @@ test('DOCX review preview session command: current-profile YRTK carrier authenti
   );
   fullSource.localAuthorityCapsule.lifecycleState = 'PUBLISHED_ACTIVE';
   const declaredBookmark = fullSource.localAuthorityCapsule.exportMap.scenes[0].blocks[0].wordSignals.find((signal) => signal.kind === 'bookmarkName').value.name;
-  const returnedBytes = cleanDocxZip([
+  const returnedBytes = fullManuscriptReturnFixture(fullSource, revisionBridge, [
     '<w:p>',
     `<w:bookmarkStart w:id="7" w:name="${declaredBookmark}"/>`,
     '<w:r><w:t>Alpha </w:t></w:r>',
@@ -2194,27 +2221,7 @@ test('DOCX review preview session command: current-profile YRTK carrier authenti
     '<w:r><w:t> gamma.</w:t></w:r>',
     '<w:bookmarkEnd w:id="7"/>',
     '</w:p>',
-  ].join(''), [
-    {
-      name: '[Content_Types].xml',
-      method: 8,
-      body: productContentTypesXml({ includeComments: false }),
-    },
-    {
-      name: '_rels/.rels',
-      method: 8,
-      body: productRootRelsXml(),
-    },
-    {
-      name: 'docProps/custom.xml',
-      method: 8,
-      body: customPropertiesXml([
-        { name: 'YRTK_C01_AUTH', value: customPropertyFromSource(fullSource, 'YRTK_C01_AUTH') },
-        { name: 'YRTK2_TOKEN', value: customPropertyFromSource(fullSource, 'YRTK2_TOKEN') },
-        { name: 'YRTK_CORE_DIGEST', value: fullSource.localAuthorityCapsule.coreManifestDigest },
-      ]),
-    },
-  ]);
+  ].join(''));
   const port = instantiateDocxReviewPreviewSessionPort({
     dispatchCommandSurfaceKernel: async () => {
       throw new Error('current-profile intake preview must not dispatch without explicit apply');
