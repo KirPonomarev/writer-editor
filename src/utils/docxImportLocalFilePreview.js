@@ -114,6 +114,10 @@ function sanitizeDiagnostics(items) {
       'listKey',
       'actual',
       'limit',
+      'feature',
+      'location',
+      'sourceProperty',
+      'transformation',
     ]))
     .filter(isPlainObject);
 }
@@ -308,6 +312,10 @@ function sanitizeImportPreviewPlan(plan) {
                 'sourceCode',
                 'sourcePart',
                 'tagName',
+                'feature',
+                'location',
+                'sourceProperty',
+                'transformation',
               ]))
               .filter(isPlainObject)
             : [],

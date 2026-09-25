@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "922649ae926317ef263f5d5789e43e2be0b0fc6c1d0f0ff2eb7d8d6c39c69949",
+      "sha256": "32f58351b809bbe03e3d8e28f89e4e31584e4521316ea9234c6f3e9bd770b12f",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1729,12 +1729,12 @@
     },
     {
       "filePath": "src/utils/docxImportLocalFilePreview.js",
-      "sha256": "8a141fb70b66ab382565f7175a95f3e4088c2e0bbf3ae0f69218472fa043a1a7",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "7adfeac54ccdb7bf1f42080288ee1b6374d543658bbcc2229e32d320dc88c187",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "src/utils/docxImportSafeCreate.js",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2eee54a41b65fa92e5f665475895786874167f968309a5b58fd52f72657a0f1e",
+      "sha256": "b728fb9b4b65ed041ff1ea0edc87a9e412edafdd32b987805eb8af412eec7556",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "1699b32e205763cd4a638c6b3e8fa837743fa947ecc1e6c44fbb6ef90dd31df1",
+      "sha256": "d7a1d22b4a60279d0f6a48456d512197a71021b3276e19f1ace7d246088ab129",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "141ad6c635abd92014d5e05023cc45de0fb0a3d0a7e981f6fadf59bef0238073",
+      "sha256": "56c3d9ce3a2a1c27964cebdf04965e32c0fc5e959a0d3e9add359ad76d1361a3",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "b21b687e73562fb5c530a83c75d4e41b35cb6dd34fb4b0ce50edab9e726db57e",
+      "sha256": "d63deae3481126c9b856d9784288928721b56571ddaff9e7d44664e094b6ddb3",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "19fe6ca6ad8780586081fa195cc10cca927d8902de3d5f8766f502847b8d4ece",
+      "sha256": "6afb36f179a935aefe2cd18b33212f73984426e53b61a03065a20a1a02409329",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "e4f4f4a7b421f4b5afadd9bdfcec3bef08f7ab19daf04d8244af608745a556e2",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
-      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
+      "sha256": "05bc70d77c1cd180de90df6de69b5f3a63e58afabe115c451595aac95a87d301",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -1954,9 +1954,9 @@
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-import-loss-diagnostics.md",
-      "sha256": "a97b3e33216dc9eeae7fbcf6a170f3139fc04403ece983ab65f10b66cc5254a3",
+      "sha256": "ad4bbd8fc3ce1986e8bf72f8ad209852f49411180b606eddd00d6870f5ef355d",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
@@ -1972,10 +1972,10 @@
     },
     {
       "filePath": "test/contracts/word-import-loss-diagnostics.contract.test.js",
-      "sha256": "eb9877d9d6eeacf59a72793b70ffa70c6e8b694786489f241f97801cfc261326",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "sha256": "1c5b0de73b1ec9bc121e54486cc58962f0521c3a549879d1c1fd786737063752",
       "approved": true,
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
+      "approvedAtUtc": "2026-09-25T13:57:34.398772Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     }
@@ -4208,6 +4208,15 @@
       "sha256": "535a7fd7df6182ad8b955c3c67561d65b2d448cdc0fc76a5da5433b4d0c0a641"
     },
     {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/utils/docxImportLocalFilePreview.js",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required.",
+      "sha256": "8a141fb70b66ab382565f7175a95f3e4088c2e0bbf3ae0f69218472fa043a1a7"
+    },
+    {
       "filePath": "test/unit/document-media.test.js",
       "sha256": "5098639bb996e34017f0aff2f9f11fb5c1bb173bc425fef30a226fa97b9b4aac",
       "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
@@ -4260,6 +4269,15 @@
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
       "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
       "sha256": "0d21a75762aa5f1c5cf2edaa511b625b2a48646c9c47740841b5173d24be46db"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "e4f4f4a7b421f4b5afadd9bdfcec3bef08f7ab19daf04d8244af608745a556e2",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
+      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
+      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }

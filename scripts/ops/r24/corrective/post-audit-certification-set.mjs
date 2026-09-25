@@ -352,13 +352,13 @@ export const R24_INTEROP_WORD_IMPORT_LOSS_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "e4f4f4a7b421f4b5afadd9bdfcec3bef08f7ab19daf04d8244af608745a556e2"
+      "sha256": "05bc70d77c1cd180de90df6de69b5f3a63e58afabe115c451595aac95a87d301"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "141ad6c635abd92014d5e05023cc45de0fb0a3d0a7e981f6fadf59bef0238073"
+      "sha256": "56c3d9ce3a2a1c27964cebdf04965e32c0fc5e959a0d3e9add359ad76d1361a3"
     }
   ]
 });

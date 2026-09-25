@@ -466,7 +466,7 @@
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "8a141fb70b66ab382565f7175a95f3e4088c2e0bbf3ae0f69218472fa043a1a7"
+        "sha256": "7adfeac54ccdb7bf1f42080288ee1b6374d543658bbcc2229e32d320dc88c187"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -894,7 +894,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "e4f4f4a7b421f4b5afadd9bdfcec3bef08f7ab19daf04d8244af608745a556e2"
+        "sha256": "05bc70d77c1cd180de90df6de69b5f3a63e58afabe115c451595aac95a87d301"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -906,7 +906,7 @@
       },
       {
         "path": "docs/tasks/2026-09-25--word-import-loss-diagnostics.md",
-        "sha256": "a97b3e33216dc9eeae7fbcf6a170f3139fc04403ece983ab65f10b66cc5254a3"
+        "sha256": "ad4bbd8fc3ce1986e8bf72f8ad209852f49411180b606eddd00d6870f5ef355d"
       },
       {
         "path": "src/renderer/index.html",
@@ -914,7 +914,7 @@
       },
       {
         "path": "test/contracts/word-import-loss-diagnostics.contract.test.js",
-        "sha256": "eb9877d9d6eeacf59a72793b70ffa70c6e8b694786489f241f97801cfc261326"
+        "sha256": "1c5b0de73b1ec9bc121e54486cc58962f0521c3a549879d1c1fd786737063752"
       },
       {
         "path": "test/unit/document-media.test.js",

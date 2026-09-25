@@ -7,7 +7,7 @@ import {performance} from 'node:perf_hooks';
 import {ORDER_CELL,readOrderFile,stableOrderJson,validateOrderRunId,selectOrderObservation,hashOrderObservation} from './rtk-interop-order-c1.mjs';
 import {TEXT_CELL,TEXT_SUBCASES,TEXT_CONTROL_IDS} from './rtk-interop-text-order-c1.mjs';
 export const DATA_POLICY_PATH='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
-export const DATA_POLICY_SHA256='141ad6c635abd92014d5e05023cc45de0fb0a3d0a7e981f6fadf59bef0238073';
+export const DATA_POLICY_SHA256='56c3d9ce3a2a1c27964cebdf04965e32c0fc5e959a0d3e9add359ad76d1361a3';
 export const DATA_MODE='DATA_C1_MACHINE_REVIEW_V1';
 export const CELLS=[TEXT_CELL,ORDER_CELL];
 export const stableSharedJson=stableOrderJson;

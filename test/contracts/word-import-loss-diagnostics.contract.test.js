@@ -46,7 +46,12 @@ test('W2: preserved default table has no invented property loss',async()=>{
 });
 test('W2: combined loss survives main projection, durable receipt and replay',async t=>{
   const bytes=mutate(await exported([table]),xmlChange(x=>changes.borders(changes.shading(changes.widths(x)))));
-  const {report,plan}=await preview(bytes);const [bridge]=await modules;
+  const direct=await preview(bytes);const [bridge]=await modules;
+  const {createDocxImportLocalFilePreview}=require('../../src/utils/docxImportLocalFilePreview.js');
+  const local=await createDocxImportLocalFilePreview({}, {pickLocalFile:async()=>({fileName:'synthetic.docx',size:bytes.length}),readLocalFileBytes:async()=>bytes});
+  assert.equal(local.ok,true,JSON.stringify(local));
+  const report=local.docxContentPreviewReport,plan=local.docxImportPreviewPlan;
+  assert.deepEqual(plan.lossReport,direct.plan.lossReport); // Covers both local-file sanitizers before main admission.
   const main=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');const start=main.indexOf('function copyDocxImportPreviewAllowedFields('),end=main.indexOf('function validateDocxImportPreviewPayload(',start);
   const projected=vm.runInNewContext(main.slice(start,end)+'\ncanonicalizeDocxImportPreviewSourceReport(report);',{report,isPlainObjectValue:v=>v&&typeof v==='object'&&!Array.isArray(v),cloneJsonSafe:v=>JSON.parse(JSON.stringify(v))});
   const projectedPlan=bridge.buildDocxImportPreviewPlanFromContentPreview(JSON.parse(JSON.stringify(projected)));

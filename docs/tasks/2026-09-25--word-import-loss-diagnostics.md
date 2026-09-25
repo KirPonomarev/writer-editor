@@ -87,3 +87,7 @@ writes. The implementation checkout's owned WIP was preserved. No unrelated
 bundle or stylesheet change is authorized. Source and generated bundle are
 sealed together; the finite exception vocabulary lives inside the existing
 DOCX preview contract, not a new runtime ReasonRegistry or authority service.
+
+## Native canary correction
+
+The real local-file picker route exposed a loss of structured feature/location/sourceProperty/transformation fields in both existing local preview sanitizers. Added that exact source file to the W2 declaration and passed preflight on the clean binding base before changing it. The combined regression now traverses the actual local-file helper, main projection and durable receipt/replay; it failed before the allowlist repair. Historical IMPORT_TRANSACTION proof stays pinned to its merged era; IMPORT_LOSS has its own complete and mutated binding tests.
