@@ -685,7 +685,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "3147cdfe1685eb79548bcb04d4416e048ca7efe51d6d7a0642b6784adb61f578"
+        "sha256": "d5a4e50bc2132c478bfb4cd6082f28296ee9c812fec186c25c24513923f81303"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",

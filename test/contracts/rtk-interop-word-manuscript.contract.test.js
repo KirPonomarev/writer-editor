@@ -676,7 +676,14 @@ test('Word import transaction admission preserves every historical Lab identity 
  const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
  const base=JSON.parse(execFileSync('git',['show','46e050b21b472cb76e2892cc7415b58ebaf0f299:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
  const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
- for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],base[key],key);
+ const expected=structuredClone(base);
+ // W6's only Lab successor repairs the obsolete current-product test fixture.
+ // Pin that exact delta; every historical identity and all runtime code stay intact.
+ const currentFixture=structuredClone(base.labCodeBindingSets.find(s=>s.id==='WORD_NATIVE_UTF8_V1'));
+ currentFixture.id='WORD_CURRENT_SAFE_CREATE_TEST_V1';
+ currentFixture.bindings.find(b=>b.path==='test/m0-audit-repair.test.mjs').sha256='71ea6b01db1b2af71a26910686eddef09e3b65e35b4db0a7a4cde0c0dcf296f4';
+ expected.labCodeBindingSets.push(currentFixture);
+ for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],expected[key],key);
  for(const p of base.admittedPaths)assert.ok(actual.admittedPaths.includes(p),p);
  const bindings=actual.qualifiedRuntimeRepair.sourceBindings;
  assert.equal(new Set(bindings.map(b=>b.path)).size,bindings.length);
