@@ -65,7 +65,12 @@ def parse_body(document):
         need(len(node.findall('.//'+W+'tbl'))==0,'NESTED')
         graph={'startParagraphIndex':len(paragraphs),'rows':len(rows),'columns':width,'cells':[]};previous={}
         for y,row in enumerate(rows):
-            need(all(c.tag in [W+'trPr',W+'tc'] for c in row),'ROW_OWNER')
+            need(all(c.tag in [W+'trPr',W+'tc',W+'tblPrEx'] for c in row),'ROW_OWNER')
+            exceptions=row.findall(W+'tblPrEx');need(len(exceptions)<=1,'ROW_EXCEPTION')
+            for exception in exceptions:
+                need(not exception.attrib and len(exception)==1 and exception[0].tag==W+'tblCellMar' and not exception[0].attrib,'ROW_EXCEPTION')
+                margins=list(exception[0]);need(len(margins)==2 and {n.tag for n in margins}=={W+'top',W+'bottom'},'ROW_EXCEPTION')
+                need(all(not list(n) and not n.text and n.attrib=={W+'w':'0',W+'type':'dxa'} for n in margins),'ROW_EXCEPTION')
             headers=row.findall('./'+W+'trPr/'+W+'tblHeader');need(len(headers)<=1,'HEADER')
             header=bool(headers) and headers[0].get(W+'val','1') not in ['0','false','off']
             need(not row.findall('.//'+W+'gridBefore') and not row.findall('.//'+W+'gridAfter'),'ROW_SKIP')
