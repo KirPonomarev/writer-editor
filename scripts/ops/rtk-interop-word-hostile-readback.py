@@ -208,3 +208,118 @@ def classify_invalid(field, source_bytes, artifact_bytes):
     reason = invalid_reason(field, candidate, source)
     return {'field': field, 'invalid': bool(reason), 'reason': reason,
             'sourceSha256': digest(source_bytes), 'artifactSha256': digest(artifact_bytes)}
+
+
+CAMPAIGN = 'WORD_HOSTILE_V1'
+COMMANDS = ['cmd.project.review.activateDocxReviewPreviewSession', 'cmd.project.review.applyExactTextChangesBatch']
+
+
+def snapshot_class(name):
+    if re.fullmatch(r'backups/revision-bridge-rtk-comment-shadow-(sessions|receipts)/[A-Za-z0-9_.-]+\.json', name):
+        return 'DERIVED_REVIEW'
+    if name == '.stage10-local/command-receipt-authority-store.v2.json':
+        return 'COMMAND_RECEIPTS'
+    return 'PROTECTED'
+
+
+def checked_snapshot(snapshot, raw, scene_paths):
+    require(isinstance(snapshot, dict) and set(snapshot) == {'files', 'authoring'}, 'HOSTILE_SNAPSHOT_SCHEMA')
+    files = snapshot['files']
+    require(isinstance(files, list) and 0 < len(files) <= 2048, 'HOSTILE_SNAPSHOT_INVENTORY')
+    names = set()
+    protected = []
+    for row in files:
+        require(isinstance(row, dict) and set(row) == {'path', 'bytes', 'sha256', 'stateClass', 'blob'}, 'HOSTILE_SNAPSHOT_ROW')
+        name = row['path']
+        require(isinstance(name, str) and name and not name.startswith('/') and '\\' not in name
+                and not any(p in ['', '.', '..'] for p in name.split('/')) and name not in names, 'HOSTILE_SNAPSHOT_PATH')
+        names.add(name)
+        sha = row['sha256']
+        require(isinstance(sha, str) and re.fullmatch('[a-f0-9]{64}', sha) and row['blob'] == 'hostile-blobs/' + sha, 'HOSTILE_SNAPSHOT_BLOB')
+        data = raw(row['blob'])
+        require(type(row['bytes']) is int and len(data) == row['bytes'] and digest(data) == sha, 'HOSTILE_SNAPSHOT_BYTES')
+        state_class = snapshot_class(name)
+        require(row['stateClass'] == state_class, 'HOSTILE_SNAPSHOT_CLASS')
+        if state_class == 'PROTECTED':
+            protected.append({'path': name, 'sha256': sha, 'bytes': len(data)})
+    required = {'project.craftsman.json', 'notes.craftsman.json',
+                '.yalken/word-review/non-text-return-state.v1.json', '.yalken/word-review/return-authority-store.v1.json', *scene_paths}
+    require(required <= names, 'HOSTILE_CANONICAL_COVERAGE')
+    authoring = snapshot['authoring']
+    require(isinstance(authoring, dict) and set(authoring) == {'renderer', 'html', 'tree'}
+            and isinstance(authoring['html'], str) and authoring['html']
+            and isinstance(authoring['renderer'], dict) and isinstance(authoring['tree'], dict), 'HOSTILE_AUTHORING_SNAPSHOT')
+    return {'files': sorted(protected, key=lambda row: row['path']), 'authoring': authoring}
+
+
+def typed_refusal(value, command):
+    require(isinstance(value, dict) and value.get('applied') is not True
+            and (value.get('ok') is False or value.get('status') == 'blocked'), 'HOSTILE_TYPED_REFUSAL')
+    error = value.get('value', {}).get('error', {}) if isinstance(value.get('value'), dict) else value.get('error', {})
+    code = value.get('code') or (error.get('code') if isinstance(error, dict) else None)
+    require(isinstance(code, str) and re.fullmatch('[A-Z][A-Z0-9_]{2,200}', code), 'HOSTILE_TYPED_CODE')
+    require(isinstance(error, dict) and error.get('op') == command, 'HOSTILE_REFUSAL_COMMAND')
+    return code
+
+
+def audit_hostile(*, run, route, profile, raw, read, round_proofs, required_hops, oracles):
+    require(route in ['C1', 'C2', 'C3'] and profile in ['SOURCE_RUNTIME', 'PACKAGED_BUILD_RUNTIME'], 'HOSTILE_ROUTE_PROFILE')
+    cycles = 5 if route == 'C3' else 1
+    require(len(round_proofs) == cycles, 'HOSTILE_FIVE_CYCLES')
+    scenes = read('source-scenes.json')['createdScenes']
+    scene_paths = [scene['sceneId'] for scene in scenes]
+    require(len(scene_paths) == len(set(scene_paths)) == 3, 'HOSTILE_CARRIER_SCENES')
+    rows = {field: [] for field in FIELDS}
+    for ordinal in range(1, cycles + 1):
+        round_proof = round_proofs[ordinal - 1]
+        source = raw(f'rounds/{ordinal}/returned.docx')
+        require(digest(source) == round_proof['returnedSha256'], 'HOSTILE_NATIVE_RETURN_BINDING')
+        summary = read(f'rounds/{ordinal}/hostile-round.json')
+        require(summary['schemaVersion'] == 'WORD_HOSTILE_ROUND_V1' and summary['round'] == ordinal
+                and summary['sourceSha256'] == digest(source) and summary['admissionCredit'] == 0
+                and [r['field'] for r in summary['fields']] == FIELDS, 'HOSTILE_ROUND_COMPLETE')
+        hashes = set()
+        for field in FIELDS:
+            prefix = f'rounds/{ordinal}/hostile/{field}/'
+            invalid = raw(prefix + 'invalid.docx')
+            classification = classify_invalid(field, source, invalid)
+            require(classification['invalid'] is True and classification['sourceSha256'] != classification['artifactSha256'], 'HOSTILE_INVALID_CLASSIFICATION')
+            hashes.add(classification['artifactSha256'])
+            probe = read(prefix + 'observed.json')
+            require(probe == read(prefix + 'probe.json'), 'HOSTILE_COMPLETED_PROBE')
+            require(probe['schemaVersion'] == 'WORD_HOSTILE_COMMAND_PROBE_V1' and probe['field'] == field
+                    and probe['round'] == ordinal and probe['commandIds'] == COMMANDS and probe['admissionCredit'] == 0
+                    and probe['sourceSha256'] == digest(source) and probe['mutantSha256'] == digest(invalid), 'HOSTILE_COMMAND_BINDING')
+            control = probe['control']
+            require(control.get('ok') is True and control.get('commandId') == COMMANDS[0]
+                    and control['returnIntake']['authenticated'] is True
+                    and control['returnIntake']['returnedArtifactSha256'] == 'sha256:' + digest(source), 'HOSTILE_POSITIVE_NATIVE_CONTROL')
+            changes = control['reviewSurface']['revisionSession']['reviewGraph']['textChanges']
+            require(len(changes) == 1 and changes[0]['match']['kind'] == 'exact', 'HOSTILE_CONTROL_SAFE_CANDIDATE')
+            intake = probe['intake']
+            require(intake.get('canAutoApply') is not True and intake.get('canWriteStorage') is not True, 'HOSTILE_INPUT_NO_WRITE_AUTHORITY')
+            if intake.get('ok') is True:
+                require(intake.get('commandId') == COMMANDS[0] and intake['returnIntake']['returnedArtifactSha256'] == 'sha256:' + digest(invalid), 'HOSTILE_MANUAL_BINDING')
+                candidates = intake['reviewSurface']['revisionSession']['reviewGraph']['textChanges']
+                require(candidates and all(c['match']['kind'] == 'manual' for c in candidates), 'HOSTILE_MANUAL_ONLY')
+                require(probe['changeIds'] == [c['changeId'] for c in candidates], 'HOSTILE_ACTUAL_MANUAL_APPLY')
+                intake_code = 'MANUAL_ONLY_NO_SAFE_APPLY'
+            else:
+                intake_code = typed_refusal(intake, COMMANDS[0])
+                require(probe['changeIds'] == [c['changeId'] for c in changes], 'HOSTILE_STALE_CONTROL_APPLY')
+            apply_code = typed_refusal(probe['apply'], COMMANDS[1])
+            before = checked_snapshot(probe['before'], raw, scene_paths)
+            require(before == checked_snapshot(probe['afterIntake'], raw, scene_paths)
+                    and before == checked_snapshot(probe['afterApply'], raw, scene_paths), 'HOSTILE_ZERO_CANONICAL_MUTATION')
+            expected_hashes = round_proofs[ordinal - 2]['savedSceneHashes'] if ordinal > 1 else [scene['sha256'] for scene in read('source.json')['scenes']]
+            by_path = {f['path']: f['sha256'] for f in before['files']}
+            require([by_path[name] for name in scene_paths] == expected_hashes, 'HOSTILE_ROUND_CANONICAL_BASELINE')
+            rows[field].append({'ordinal': ordinal, 'sourceSha256': digest(source), 'artifactSha256': digest(invalid),
+                                'classification': classification, 'intakeCode': intake_code, 'applyCode': apply_code,
+                                'probeSha256': digest(raw(prefix + 'observed.json')), 'canonicalStateSha256': digest(canonical(before)),
+                                'protectedFileCount': len(before['files']), 'mutationCount': 0})
+        require(len(hashes) == len(FIELDS) and {r['mutantSha256'] for r in summary['fields']} == hashes, 'HOSTILE_DISTINCT_FIELD_BYTES')
+    return [{'field': field, 'cellId': f'{field}__MALFORMED_HOSTILE_INPUT__{route}__{profile}',
+             'runId': run, 'status': 'PASS', 'outcome': 'REJECTED_INVALID_NO_MUTATION', 'typedResult': True,
+             'mutationCount': 0, 'requiredCycles': cycles, 'requiredHops': required_hops, 'oracles': oracles,
+             'rounds': rows[field], 'authorityScope': 'CANONICAL_PROJECT_AND_AUTHORING_UNCHANGED_DERIVED_DIAGNOSTICS_RETAINED'} for field in FIELDS]

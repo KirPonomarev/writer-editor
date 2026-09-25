@@ -8,6 +8,8 @@ v=importlib.util.module_from_spec(_spec);_spec.loader.exec_module(v)
 W=v.W;require=v.require;digest=v.digest;canonical=v.canonical;exact=v.exact
 _ts=importlib.util.spec_from_file_location('table_oracle',Path(__file__).with_name('rtk-interop-word-tables-readback.py'))
 tables=importlib.util.module_from_spec(_ts);_ts.loader.exec_module(tables)
+_hs=importlib.util.spec_from_file_location('hostile_oracle',Path(__file__).with_name('rtk-interop-word-hostile-readback.py'))
+hostile=importlib.util.module_from_spec(_hs);_hs.loader.exec_module(hostile)
 def body_paragraphs(document):return tables.parse_body(document)[0]
 
 UNICODE=['[normalization] NFC é Å ö; NFD e\u0301 A\u030a o\u0308; Hangul 한 한.','[bidi] LTR abc \u2067שלום 123\u2069 xyz العربية.','[ime] 日本語.']
@@ -1062,6 +1064,10 @@ def audit(request):
     files={b['path']:v.checked_read(root,b) for b in bindings};raw=lambda name:files[prefix+name];read=lambda name:json.loads(raw(name))
     obs=read('observation.json');require((obs['runId'],obs['cellId'],obs['field'],obs['volume'],obs['route'],obs['profile'])==(run,run.rsplit('__',1)[0],'ORDER',volume,route,profile),'MANUSCRIPT_OBSERVATION')
     require(obs.get('recipe')==recipe,'MANUSCRIPT_RECIPE_BINDING')
+    campaign=obs.get('campaign','')
+    hostile_run=suffix.startswith('hostile-v1-') or suffix.startswith('review-return-hostile-v1-')
+    require((campaign==hostile.CAMPAIGN)==hostile_run and campaign in ['',hostile.CAMPAIGN],'MANUSCRIPT_HOSTILE_CAMPAIGN_BINDING')
+    if hostile_run:require(volume=='MULTI_SCENE' and route in ['C1','C2','C3'] and recipe==('C1_REVIEW_RETURN' if route=='C1' else 'DEFAULT'),'MANUSCRIPT_HOSTILE_SCOPE')
     require(obs['manuscriptProofVersion']=='WORD_MANUSCRIPT_NATIVE_V1' and obs['status']=='PASS' and (request.get('diagnosticOnly') is True or obs['candidateDiagnosticOnly'] is False),'MANUSCRIPT_CANDIDATE')
     require(obs['candidateOverlay']=={'id':'baseline','changed':False} and (obs['yalkenShadowHead'],obs['yalkenShadowTree'])==(head,tree),'MANUSCRIPT_ACTUAL_SOURCE')
     rt=obs['yalkenShadowRuntime'];require(rt['headBefore']==rt['headAfter']==head and rt['treeBefore']==rt['treeAfter']==tree and rt['statusBefore']==rt['statusAfter']=='','MANUSCRIPT_CLEAN_RUNTIME')
@@ -1627,8 +1633,9 @@ def audit(request):
         if proof['field']=='IDENTIFIERS_ANCHORS':proof['identifierProof']={'stages':identifier_stages,'locators':locator_stages,'negativeControls':identifier_negative,'intakeControls':identifier_intakes,'lossLedger':{'lostIdentifiers':[],'duplicateIdentifiers':[],'unsafeHyperlinks':[],'scope':'Declared per-round locator names and all three explicit hyperlink ranges across saved, applied and reopened project state; intentional negative-control losses are recorded separately.'}}
         if proof['field']=='METADATA':proof['metadataProof']=metadata_proof
         if proof['field']=='SECTIONS':proof['sectionsProof']=sections_proof
+    hostile_proofs=hostile.audit_hostile(run=run,route=route,profile=profile,raw=raw,read=read,round_proofs=round_proofs,required_hops=HOPS[route],oracles=v.ORACLES) if hostile_run else None
     require(all(v.checked_read(root,b)==files[b['path']] for b in bindings),'CHANGED_DURING_READ')
-    return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'recipe':recipe,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},'seconds':time.perf_counter()-started}
+    return {'ok':True,'schemaVersion':'WORD_MANUSCRIPT_RAW_READBACK_V1','admissionCredit':0,'runId':run,'recipe':recipe,'productHead':head,'productTree':tree,'observationSha256':digest(raw('observation.json')),'filesVerified':len(files),'fieldProofs':proofs,'roundProofs':round_proofs,'finalHops':{'ok':True,'acceptanceCredit':0},**({'campaign':campaign,'hostileProofs':hostile_proofs} if hostile_run else {}),'seconds':time.perf_counter()-started}
 
 if __name__=='__main__':
     try:

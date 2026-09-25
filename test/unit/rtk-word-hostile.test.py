@@ -122,4 +122,26 @@ class HostileClassifier(unittest.TestCase):
         bad = pack(mutate('COMMENTS', parts()))
         with self.assertRaises(ValueError): h.classify_invalid('COMMENTS', bad, bad)
 
+    def test_snapshot_cannot_omit_canonical_data_relabel_a_writer_or_replace_a_blob(self):
+        paths = ['project.craftsman.json', 'notes.craftsman.json', '.yalken/word-review/non-text-return-state.v1.json',
+                 '.yalken/word-review/return-authority-store.v1.json', 'roman/one.txt', 'roman/two.txt', 'roman/three.txt']
+        data = b'owned canonical bytes'; sha = hashlib.sha256(data).hexdigest()
+        rows = [{'path': p, 'bytes': len(data), 'sha256': sha, 'stateClass': 'PROTECTED', 'blob': 'hostile-blobs/' + sha} for p in paths]
+        snapshot = {'files': rows, 'authoring': {'renderer': {'paragraphs': ['same']}, 'html': '<p>same</p>', 'tree': {'projectId': 'unit'}}}
+        read = lambda name: data if name == 'hostile-blobs/' + sha else self.fail(name)
+        self.assertEqual(len(h.checked_snapshot(snapshot, read, paths[-3:])['files']), 7)
+        omitted = copy.deepcopy(snapshot); omitted['files'].pop(0)
+        with self.assertRaisesRegex(ValueError, 'CANONICAL_COVERAGE'): h.checked_snapshot(omitted, read, paths[-3:])
+        relabelled = copy.deepcopy(snapshot); relabelled['files'][0]['stateClass'] = 'DERIVED_REVIEW'
+        with self.assertRaisesRegex(ValueError, 'SNAPSHOT_CLASS'): h.checked_snapshot(relabelled, read, paths[-3:])
+        with self.assertRaisesRegex(ValueError, 'SNAPSHOT_BYTES'): h.checked_snapshot(snapshot, lambda name: b'forged', paths[-3:])
+        escaped = copy.deepcopy(snapshot); escaped['files'][0]['blob'] = '../outside'
+        with self.assertRaisesRegex(ValueError, 'SNAPSHOT_BLOB'): h.checked_snapshot(escaped, read, paths[-3:])
+
+    def test_typed_refusal_binds_actual_apply_command_and_cannot_be_success(self):
+        refusal = {'ok': False, 'code': 'EXACT_MATCH_REQUIRED', 'value': {'error': {'op': h.COMMANDS[1]}}}
+        self.assertEqual(h.typed_refusal(refusal, h.COMMANDS[1]), 'EXACT_MATCH_REQUIRED')
+        for changed in [dict(refusal, ok=True), dict(refusal, applied=True), dict(refusal, code=''), dict(refusal, value={'error': {'op': h.COMMANDS[0]}})]:
+            with self.assertRaises(ValueError): h.typed_refusal(changed, h.COMMANDS[1])
+
 if __name__ == '__main__': unittest.main()
