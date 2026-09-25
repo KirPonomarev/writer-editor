@@ -161,7 +161,14 @@
     "test/fixtures/word-tables-native-v1.json",
     "test/contracts/rtk-word-safety-c3-parser-resource-envelope.contract.test.js",
     "docs/tasks/2026-09-25--word-table-review.md",
-    "test/contracts/rtk-word-table-review.contract.test.js"
+    "test/contracts/rtk-word-table-review.contract.test.js",
+    "docs/tasks/2026-09-25--word-hostile.md",
+    "scripts/ops/rtk-interop-word-hostile-readback.py",
+    "scripts/ops/rtk-interop-word-hostile.mjs",
+    "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
+    "test/contracts/rtk-word-hostile.contract.test.js",
+    "test/contracts/rtk-word-latest-semantic-b04-classifier.contract.test.js",
+    "test/unit/rtk-word-hostile.test.py"
   ],
   "protectedFiles": [
     {
@@ -292,7 +299,10 @@
     "test/native-cua-target.test.mjs",
     "src/word-table-readback.mjs",
     "test/word-table-readback.test.mjs",
-    "test/fixtures/word-tables-native-v1.json"
+    "test/fixtures/word-tables-native-v1.json",
+    "src/word-hostile-mutant.py",
+    "src/word-hostile-probe.mjs",
+    "test/word-hostile.test.mjs"
   ],
   "labCodeBindings": [
     {
@@ -384,7 +394,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c9c879eb85df229f497c8aa0af04bf84d40d50af31c5ac85d50ad01a4d0bd2fa"
+        "sha256": "6730a0a01d47cba6004fb1593cda757d38b503801d091ca9c2a21d50687d604f"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -500,7 +510,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "cc6ed5b05172f58cf48ece2b82fdfd15423e3cf964f5a0c247cecd2b2b77c485"
+        "sha256": "a711f9594826c1053592fa3f0baad227cc4a29bd81bd5ba4408a7af84598c1c2"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -688,7 +698,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-        "sha256": "c03a8280f83fe32fda0e106185b5f0e1e490e146d28c391115656f9f1fb874cf"
+        "sha256": "3355a01b7246f63e78f97322132e6e74e0acb5318222d08dead7d7e832def6f0"
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -716,7 +726,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
-        "sha256": "a80c822829a4a4f52e8ccbb851266d735d5b2539c1de4b2e6493f22c9da422a7"
+        "sha256": "804fe6f07149a895f3f38dd3e777af12bdc40545f388e490898983145f1f1f0d"
       },
       {
         "path": "test/contracts/rtk-c4-canonical-comment-product-query.contract.test.js",
@@ -744,7 +754,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-        "sha256": "76e77bc3fa80895b8e03a62a4960d6b49f80328a6fd444a5855096870d3a4ab8"
+        "sha256": "5ebeada4fd2ece4139c3151ce4057064c811e26cbe8d482b4e621f9f360e60f7"
       },
       {
         "path": "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
@@ -877,6 +887,13 @@
       "id": "WORD_TABLES_REVIEW_V1",
       "scope": "Authenticated unchanged table topology, explicit text Apply inside cells and five full C3 cycles; independent native, returned DOCX, saved and reopened graph proofs. Changed table structures remain blocked.",
       "candidateIds": 16,
+      "physicalAcceptanceRequired": true,
+      "admissionCredit": 0
+    },
+    "wordHostile": {
+      "id": "WORD_HOSTILE_V1",
+      "scope": "Independent classification of fourteen malformed input families, actual typed intake and Apply refusal with unchanged canonical and authoring state, positive native control, full C1/C2/C3 five-cycle closure; SOURCE and PACKAGED independently.",
+      "candidateIds": 84,
       "physicalAcceptanceRequired": true,
       "admissionCredit": 0
     }
@@ -1470,11 +1487,11 @@
     "readerBindings": [
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-        "sha256": "0323bed3803f667f6af69d34952000da2778406883e08afb97c7f3ef44fd4272"
+        "sha256": "002a1096d134b2563801393230a873471d3ae6c3685c1a44f44ba20b0145ea8b"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "11095e87914b91fdbe26c6f8db83b4d254e4839aef9f119ef7d75c66eb352832"
+        "sha256": "4e15b203aeae36557ef67bf5ffa2cd18649e4994602087f372b91394a6c1fa33"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1495,6 +1512,14 @@
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
         "sha256": "d2744159cb23e28c900ff3d76e160214a2068840fb36fa3b1adbbc879ef1d64d"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-hostile.mjs",
+        "sha256": "29f85a0450d294ae7c5c3e9164036be6d15c1dab530f3aed01a8e39ee14efe28"
+      },
+      {
+        "path": "scripts/ops/rtk-interop-word-hostile-readback.py",
+        "sha256": "b1799af096341f2d5370dba3353980496ac496f7a27b9cbadb0a3e30c21b32bf"
       }
     ],
     "paragraphHashes": {
@@ -1994,7 +2019,93 @@
         "003e37c584b3b3a931ec6322142a2db020be6d6e2540a230679bb454fe9c15ff",
         "d3dc3f9d28fa523fafaf3051984a3f953e55d8984df431d865cfc011dc093de8"
       ]
-    }
+    },
+    "hostileCellIds": [
+      "COMMENTS__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "COMMENTS__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "COMMENTS__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "COMMENTS__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "FOOTNOTES_ENDNOTES__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "IDENTIFIERS_ANCHORS__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "MEDIA_ASSETS__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "MEDIA_ASSETS__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "MEDIA_ASSETS__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "MEDIA_ASSETS__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "MEDIA_ASSETS__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "MEDIA_ASSETS__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "METADATA__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "METADATA__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "METADATA__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "METADATA__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "METADATA__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "METADATA__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "NOTES__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "NOTES__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "NOTES__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "NOTES__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "NOTES__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "NOTES__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "NOVEL_SCENE_STRUCTURE__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "ORDER__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "ORDER__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "ORDER__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "ORDER__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "SECTIONS__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "SECTIONS__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "SECTIONS__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "SECTIONS__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "STYLES__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "STYLES__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "STYLES__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "STYLES__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "STYLES__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "STYLES__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "TABLES__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "TABLES__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "TABLES__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "TABLES__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "TABLES__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "TABLES__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "TEXT__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "TEXT__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "TEXT__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "TEXT__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "TRACKED_REVIEW_SEMANTICS__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MALFORMED_HOSTILE_INPUT__C1__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MALFORMED_HOSTILE_INPUT__C1__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MALFORMED_HOSTILE_INPUT__C2__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MALFORMED_HOSTILE_INPUT__C2__SOURCE_RUNTIME",
+      "UNICODE_IME_LOCALE__MALFORMED_HOSTILE_INPUT__C3__PACKAGED_BUILD_RUNTIME",
+      "UNICODE_IME_LOCALE__MALFORMED_HOSTILE_INPUT__C3__SOURCE_RUNTIME"
+    ]
   },
   "labCodeBindingSets": [
     {
@@ -2732,6 +2843,111 @@
         {
           "path": "test/fixtures/word-tables-native-v1.json",
           "sha256": "2f59b881f82dcb1168abb25f390590920205de2a4aeaa3f7a6142436164f7800"
+        }
+      ]
+    },
+    {
+      "id": "WORD_HOSTILE_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "c69733233f9ef2d154ed1d9ae916d2d079ed68afce99a8992e9c7d6cab33573e"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "2213faa386ffb0be51a6329b8b1dc59705c2c265bdd1e6db8a6513522751f0a3"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        },
+        {
+          "path": "src/word-sections-mutant.py",
+          "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
+        },
+        {
+          "path": "test/m0-audit-repair.test.mjs",
+          "sha256": "4492e13f5ba945c1205dec1fb46518a6835ab3e62392f3d4157bab769f4ed403"
+        },
+        {
+          "path": "test/word-manuscript-fields.test.mjs",
+          "sha256": "21accb28802ea0696cebbd3c9e26f891658e70a61736be1a62113d7257e306a4"
+        },
+        {
+          "path": "src/word-notes-mutant.py",
+          "sha256": "b89142042611e1dc05708727a3bfd2f12ddd9e92c2a9cad5f7988dcdfa283bf1"
+        },
+        {
+          "path": "scripts/native-cua-target.mjs",
+          "sha256": "0ca57312401750018eb459cc70c9930592deae74be601cda33703e6effbf259a"
+        },
+        {
+          "path": "test/native-cua-target.test.mjs",
+          "sha256": "da4dea27274e93ac5ceb74e8cbb78f1c22deb73f7a255631fdecf898c2175285"
+        },
+        {
+          "path": "src/word-table-readback.mjs",
+          "sha256": "ba906acfb3c44b223ff49ab4fe2a8b731795795eaf8dd572d53c2d95a15de09a"
+        },
+        {
+          "path": "test/word-table-readback.test.mjs",
+          "sha256": "065b234f4f237887e31fdf0a2e3a42aa15d458cb6fc367ae87cef9407e64a765"
+        },
+        {
+          "path": "test/fixtures/word-tables-native-v1.json",
+          "sha256": "2f59b881f82dcb1168abb25f390590920205de2a4aeaa3f7a6142436164f7800"
+        },
+        {
+          "path": "src/word-hostile-mutant.py",
+          "sha256": "b3bc8e868f9e6be28d93780f5f953da27ee30f6dde3a9d2e52461696119b36c7"
+        },
+        {
+          "path": "src/word-hostile-probe.mjs",
+          "sha256": "5e8d3ebcdb3a70b488785973f1bcc80f5761c953db703b78c8809de54de83208"
+        },
+        {
+          "path": "test/word-hostile.test.mjs",
+          "sha256": "7287eb871ff70b1bc1a6b14529250f42bbb389084c7d0d93fb492f9be7e38a6e"
         }
       ]
     }

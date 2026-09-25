@@ -1066,15 +1066,6 @@
       "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
       "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "a80c822829a4a4f52e8ccbb851266d735d5b2539c1de4b2e6493f22c9da422a7"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
-      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "filePath": "docs/tasks/2026-09-17--word-canonical-comment-reexport.md",
       "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
       "sha256": "86ba7b00630604622acc2c3e1383f61c1ae5d10ade353f9b7419c684f8c511d1"
@@ -1114,15 +1105,6 @@
       "filePath": "test/contracts/rtk-word-link-anchor-continuity.contract.test.js",
       "rationale": "Owner-authorized bounded C4 Office returned-DOCX full text vector and protected-section identity proof, focused negative tests, and exact-byte binding refresh. Missing or conflicting evidence remains manual; physical proof, independent oracle and exact merged-head official acceptance remain mandatory. This approval grants zero cells.",
       "sha256": "179c95b68cd0c737b77162a7d59d4a0b5c258a3ca9444ccd1ee48f259a1ed315"
-    },
-    {
-      "approved": true,
-      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
-      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
-      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
-      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
-      "sha256": "76e77bc3fa80895b8e03a62a4960d6b49f80328a6fd444a5855096870d3a4ab8"
     },
     {
       "approved": true,
@@ -1485,15 +1467,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "sha256": "c03a8280f83fe32fda0e106185b5f0e1e490e146d28c391115656f9f1fb874cf",
-      "approvedBy": "owner-delegated-codex:WORD_TABLES_20260925",
-      "approvedAtUtc": "2026-09-25T00:04:51Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C1 table data, import/export/editor, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "test/contracts/rtk-word-safety-c3-parser-resource-envelope.contract.test.js",
       "sha256": "afa81d8e2f3fd5d56c953568d41bbf986782b7ae46504a72ec380a37a18c2be4",
       "approvedBy": "owner-delegated-codex:WORD_TABLES_20260925",
@@ -1530,42 +1503,6 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "8c292dde84af1956b5ce278ab98db6bd47a9cef782b354775c6b490dc8f102d9",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b9617a8d17d1fe6345b80e22b159e99d015305baa2b639dfb1da1fa5cc22da15",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "45a3825e7993ff3edd896461587a1306ee9e9b9f0c848df1a16116049886c58a",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c3d7e6e5dd3a281a98a80526a721633426658e90bccdefd1ecdd83a5f74e1932",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "docs/tasks/2026-09-25--word-table-review.md",
       "sha256": "a5eb74c44de376b1f88fdd5eb62633a67936555c63b7f9708c598bc783a48f4d",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
@@ -1575,44 +1512,8 @@
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
-      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "dc8e5b754b0318653fa23cf0c5148a0e5bb1dbb46ad170efb74eb0317527667e",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ca19d8324809ad3dd83a53949f8154ae15b30945e859b9075c861c983d9a1be8",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "sha256": "0323bed3803f667f6af69d34952000da2778406883e08afb97c7f3ef44fd4272",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
       "sha256": "1ed4536adc8c5a83c02d5b44a5fef6e0ba576b68bbfb593b87b2a42add67b332",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "sha256": "11095e87914b91fdbe26c6f8db83b4d254e4839aef9f119ef7d75c66eb352832",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
       "approvedAtUtc": "2026-09-25T01:22:48Z",
       "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
@@ -1640,24 +1541,6 @@
     {
       "filePath": "src/io/revisionBridge/index.mjs",
       "sha256": "c502b8d6cb1b38c92a4d31729d420e0742e412d7b6419f3979e86a2a62f5de88",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "cc6ed5b05172f58cf48ece2b82fdfd15423e3cf964f5a0c247cecd2b2b77c485",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
-      "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
-    },
-    {
-      "filePath": "src/main.js",
-      "sha256": "c9c879eb85df229f497c8aa0af04bf84d40d50af31c5ac85d50ad01a4d0bd2fa",
       "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
       "approvedAtUtc": "2026-09-25T01:22:48Z",
       "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
@@ -1697,6 +1580,186 @@
       "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
       "approvedAtUtc": "2026-09-25T01:22:48Z",
       "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "055e2f0246b7c87fd60850de4a0cc008b4bcf4668858ac7bd93f26b2f59dc6a9",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b6bc2abc6dff6aa98564a4843ea2057fc0be5f01ef3108d0c7d581573e546fe9",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "b2a81a9b9e6d87d5767f33ec3b83bfc061d8fbe6d45bff962181606498ee7194",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "0316fcac5a0846267b3fee6a6f63649b548db9647455f98114031ede3dd2e2fa",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-25--word-hostile.md",
+      "sha256": "82a3b73d89f887beade1e325e4e57b6cdf4271b4ffa2ec9f35cd8890fcb4ef66",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "9da99e98363eeda84d0da1fe901056af890de9eb042086fb28aa540737c36efb",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ca78459b4daed59706ff4e3dfca6c17979cefe31f182b443177c58e7a57c6746",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-hostile-readback.py",
+      "sha256": "b1799af096341f2d5370dba3353980496ac496f7a27b9cbadb0a3e30c21b32bf",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-hostile.mjs",
+      "sha256": "29f85a0450d294ae7c5c3e9164036be6d15c1dab530f3aed01a8e39ee14efe28",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "002a1096d134b2563801393230a873471d3ae6c3685c1a44f44ba20b0145ea8b",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "sha256": "4e15b203aeae36557ef67bf5ffa2cd18649e4994602087f372b91394a6c1fa33",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "a711f9594826c1053592fa3f0baad227cc4a29bd81bd5ba4408a7af84598c1c2",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "6730a0a01d47cba6004fb1593cda757d38b503801d091ca9c2a21d50687d604f",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "sha256": "5ebeada4fd2ece4139c3151ce4057064c811e26cbe8d482b4e621f9f360e60f7",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-parser01-namespace-atoms.contract.test.js",
+      "sha256": "60e5150823b99b62f77214baca655c03dd82c92a24adc552f436eb12ebf78f8b",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-hostile.contract.test.js",
+      "sha256": "52fe826c3c08857f8851f1d2e60f72f931c283f63a6dfdb5eb3909e63534e319",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "3355a01b7246f63e78f97322132e6e74e0acb5318222d08dead7d7e832def6f0",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
+      "sha256": "804fe6f07149a895f3f38dd3e777af12bdc40545f388e490898983145f1f1f0d",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b04-classifier.contract.test.js",
+      "sha256": "a3e0a45d98e8e7389cbd01608030e56cd37ef5006c25fd5cd9340842a8daeb07",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/rtk-word-hostile.test.py",
+      "sha256": "28520101208f0e26101e7b874886794866dec75e3b61e37c87fc7c1fa9556447",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T02:56:01Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -3108,6 +3171,123 @@
       "rationale": "Owner-authorized solo Word-first implementation: bounded C1 table data, import/export/editor, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "8c292dde84af1956b5ce278ab98db6bd47a9cef782b354775c6b490dc8f102d9",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b9617a8d17d1fe6345b80e22b159e99d015305baa2b639dfb1da1fa5cc22da15",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "45a3825e7993ff3edd896461587a1306ee9e9b9f0c848df1a16116049886c58a",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c3d7e6e5dd3a281a98a80526a721633426658e90bccdefd1ecdd83a5f74e1932",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "dc8e5b754b0318653fa23cf0c5148a0e5bb1dbb46ad170efb74eb0317527667e",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ca19d8324809ad3dd83a53949f8154ae15b30945e859b9075c861c983d9a1be8",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "0323bed3803f667f6af69d34952000da2778406883e08afb97c7f3ef44fd4272",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "sha256": "11095e87914b91fdbe26c6f8db83b4d254e4839aef9f119ef7d75c66eb352832",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "cc6ed5b05172f58cf48ece2b82fdfd15423e3cf964f5a0c247cecd2b2b77c485",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "c9c879eb85df229f497c8aa0af04bf84d40d50af31c5ac85d50ad01a4d0bd2fa",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T16:43:21.237482+00:00",
+      "approvedBy": "owner-direct-task:WORD_LINK_ANCHOR_CONTINUITY_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded identifier/link implementation retains all 158 prior predicates and requires complete native bookmark/range/relationship/locator proof, independently corrupted controls and typed zero-mutation rejection of missing or duplicate anchors. Background Word and reduced runtime copies retain exact pinned source identity and all raw evidence. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "76e77bc3fa80895b8e03a62a4960d6b49f80328a6fd444a5855096870d3a4ab8"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "c03a8280f83fe32fda0e106185b5f0e1e490e146d28c391115656f9f1fb874cf",
+      "approvedBy": "owner-delegated-codex:WORD_TABLES_20260925",
+      "approvedAtUtc": "2026-09-25T00:04:51Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C1 table data, import/export/editor, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-17T14:22:44.969716+00:00",
+      "approvedBy": "owner-direct-task:WORD_CANONICAL_COMMENT_REEXPORT_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "filePath": "test/contracts/rtk-word-latest-semantic-b03-modern-comments.contract.test.js",
+      "rationale": "Owner authorized personally implemented import/export and rapid whole-cell progress. This bounded canonical comment preservation implementation retains every prior native predicate and requires independently verified bodies, replies, anchors, literal authors/timestamps, state, intentional deletion and actual loss detection with no duplicate product apply. Frozen denominator, corruption guards and protected delivery remain mandatory; credit requires fresh merged runtime and independent raw proof.",
+      "sha256": "a80c822829a4a4f52e8ccbb851266d735d5b2539c1de4b2e6493f22c9da422a7"
     }
   ]
 }
