@@ -138,3 +138,12 @@ test('Full table review export preserves protected notes inside cells and exact 
     assert.equal(analysis.ok, false); assert.equal(analysis.canApply, false);
   }
 });
+
+test('Only the observed neutral Word row margin exception is accepted; semantic row exceptions stay blocked', async () => {
+  const { xml, parse } = await fixture();
+  const margin = '<w:tblPrEx><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/></w:tblCellMar></w:tblPrEx>';
+  assert.equal(parse(xml.replaceAll('<w:tr>', '<w:tr>' + margin)).ok, true);
+  for (const invalid of [margin.replace('w:w="0"', 'w:w="10"'), margin.replace('w:type="dxa"', 'w:type="pct"'), margin.replace('<w:top', '<w:left'), margin.replace('</w:tblCellMar>', '<w:top w:w="0" w:type="dxa"/></w:tblCellMar>'), margin.replace('</w:tblPrEx>', '<w:tblPrExChange/></w:tblPrEx>'), '<w:tblPrEx/>']) {
+    assert.equal(parse(xml.replace('<w:tr>', '<w:tr>' + invalid)).ok, false, invalid);
+  }
+});
