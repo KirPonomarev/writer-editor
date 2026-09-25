@@ -237,13 +237,13 @@ export const R24_INTEROP_WORD_HOSTILE_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "cd54c557cd70379e7c15add2d75fe9a35fd4d773b9ed3f5bb46f18c6f7c74264"
+      "sha256": "68b6d07f5800692de0ff1cdb6f8b55598b239233780053f9e35760c247300e53"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "0316fcac5a0846267b3fee6a6f63649b548db9647455f98114031ede3dd2e2fa"
+      "sha256": "643a91166b962fa4f8c4ea727e721015259dda5487f013133d9abd2cbc4e32fd"
     }
   ]
 });

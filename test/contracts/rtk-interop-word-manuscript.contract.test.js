@@ -419,7 +419,7 @@ test('Lab native-CUA manuscript revision requires the exact new identity set and
   {path:'scripts/native-cua-target.mjs',sha256:'0ca57312401750018eb459cc70c9930592deae74be601cda33703e6effbf259a'},
   {path:'test/native-cua-target.test.mjs',sha256:'da4dea27274e93ac5ceb74e8cbb78f1c22deb73f7a255631fdecf898c2175285'}
  ]};
- const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json'];
+ const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json','src/word-hostile-mutant.py','src/word-hostile-probe.mjs','test/word-hostile.test.mjs'];
  const matchesExactAdmission=candidate=>{
   const sets=candidate.labCodeBindingSets.filter(set=>set.id===expected.id);
   return sets.length===1&&JSON.stringify(sets[0])===JSON.stringify(expected)

@@ -24,7 +24,7 @@ counterexamples, and integration into the existing official aggregate.
 
 ## ALLOWLIST
 
-Exact paths are the twenty-seven paths in the preflight-passed declaration
+Exact paths are the twenty-eight paths in the preflight-passed declaration
 WORD_HOSTILE_20260925. Product implementation uses the existing parser, command
 boundary, official manuscript consumer and certification seams. Companion Lab
 changes are isolated in codex/interop-word-hostile-lab-20260925. The active table
