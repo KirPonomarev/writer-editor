@@ -132,3 +132,5 @@ Owner-approved W5 continuation from e53782a9: bounded optional canonical table a
 
 ## 2026-09-25 — W6 Word composite fidelity
 Owner-approved WORD_COMPOSITE_FIDELITY_20260925 on b6986aea: preserve unformatted hardBreak structure in the existing canonical document model and align diagnostics with actual rich candidates. Page/column and other unsupported losses, G/R authority separation, fenced persistence and frozen acceptance remain unchanged. No architecture exception, new dependency or runtime network. Rollback: revert bounded W6 delivery.
+
+W6 composite follow-up: authenticated media text Apply preserves unchanged hyperlink context; existing Apply journal carries a bounded, exact snapshot-verified canonical comment anchor transition. No gate exception or new mutation entry point; ambiguous/changed anchors remain blocked.

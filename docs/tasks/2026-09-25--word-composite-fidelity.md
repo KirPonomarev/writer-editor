@@ -44,3 +44,11 @@ Required interactions remain the approved nine W6 cases: merged/property tables 
 ## Current claim
 
 Implementation prerequisite only until real physical proof, delivery and exact merged verification. Zero self-awarded cells. W6 closure requires all nine interactions and route distinctions; W7 then verifies the official Word420 set. Two older donor tests reproduce failures on unchanged base (obsolete batch-label assertion; lexical http prohibition over XML namespace text); they are not hidden or described as passing. Historical dirty-scope donor assertions must be evaluated on committed identity, not widened silently.
+
+## Authenticated composite repair
+
+Native Word reproduced a blocked prefix edit because the media segment included an unchanged Unicode hyperlink. In image-bearing rich blocks the writer validates the entire original authority range first, then retains equal grapheme-bound prefix/suffix context with its original marks. Actual replacements across incompatible marks, image atoms or grapheme boundaries remain blocked. Insertions retain one whole source grapheme to derive formatting.
+
+Canonical comment anchors outside the changed span in the same paragraph now advance through the existing exact Apply journal. The journal binds before/after comment bytes; the transition is independently recomputed from the verified recovery snapshot and exact saved scene before publication. Comments use a fixed internal path, bounded 64 KiB state, project identity, no symlinks, byte CAS and atomic replacement. Startup reconciliation can complete the same transition after a scene commit; it cannot manufacture an Apply receipt. Changed, ambiguous, legacy, structurally moved or stale anchors fail closed. Bodies, replies and all other state remain unchanged. This is a bounded authenticated exact-text capability, not a generic foreign-comment import or free-edit annotation model.
+
+Regression evidence includes replace/insert/delete with Unicode hyperlink and PNG preservation; canonical comment re-export; stale/overlapping anchors, competing state, tampered recovery/transition and crash-after-scene recovery. The obsolete direct scene fixture mutation was correctly rejected by project commit integrity and is retained as failed diagnostic evidence, not credited.
