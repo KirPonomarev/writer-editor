@@ -610,7 +610,7 @@ test('Actual intake result preserves revision metadata without sharing state, se
 test('Word native reopen admission preserves old sets and pins only native alias repair and regression',()=>{
  const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
  const base=JSON.parse(execFileSync('git',['show','ccc9b4b02db839241405f2667313c8ec5450455e:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
- const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ const actual=JSON.parse(execFileSync('git',['show','58c408eb9799d65194d0081a8a45c509af8706ac:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
  const replacements=[
   {
     "prior": "WORD_SINGLE_STRUCTURE_V2",
@@ -636,8 +636,37 @@ test('Word native reopen admission preserves old sets and pins only native alias
   for(const binding of entry.bindings)if(change.overrides[binding.path])binding.sha256=change.overrides[binding.path];
   expected.labCodeBindingSets.push(entry);
  }
- expected.qualifiedRuntimeRepair.sourceBindings.find(b=>b.path==='test/contracts/rtk-interop-word-manuscript.contract.test.js').sha256=digest(fs.readFileSync(__filename));
+ expected.qualifiedRuntimeRepair.sourceBindings.find(b=>b.path==='test/contracts/rtk-interop-word-manuscript.contract.test.js').sha256=digest(execFileSync('git',['show','58c408eb9799d65194d0081a8a45c509af8706ac:test/contracts/rtk-interop-word-manuscript.contract.test.js'],{cwd:ROOT}));
  assert.deepEqual(actual,expected,'admission adds only the two exact Lab sets and the updated regression-file binding');
+ assert.equal(actual.wordManuscriptBatch.cellIds.length,354);
+ assert.equal(actual.wordManuscriptBatch.hostileCellIds.length,84);
+});
+
+
+test('Word native file transport admits only exact Lab successors and their negative regressions',()=>{
+ const policyPath='docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json';
+ const base=JSON.parse(execFileSync('git',['show','58c408eb9799d65194d0081a8a45c509af8706ac:'+policyPath],{cwd:ROOT,encoding:'utf8'}));
+ const actual=JSON.parse(fs.readFileSync(path.join(ROOT,policyPath),'utf8'));
+ const expected=structuredClone(base),entry=structuredClone(base.labCodeBindingSets.find(s=>s.id==='WORD_MEDIA_REOPEN_V1'));
+ const overrides={
+  "src/m1-text-single-scene-source-runtime.mjs": "8ca52faeaf512e97fe22f8b8213936444fb02be30169bdc4bf5b862cdf3b5421",
+  "src/word-table-readback.mjs": "e13eba289791df939a74ccaeac4bd5374b29cd5d2978f05b1448b34d713dd6ff",
+  "test/word-table-readback.test.mjs": "62dcad2ff7be9224a12fd3d80adfc0e9af3089a94f33d94ff009fc20a1a3d157"
+};
+ entry.id='WORD_TABLE_FILE_PREPARATION_V1';
+ for(const binding of entry.bindings)if(overrides[binding.path])binding.sha256=overrides[binding.path];
+ expected.labCodeBindingSets.push(entry);
+ const utf8=structuredClone(entry);utf8.id='WORD_NATIVE_UTF8_V1';
+ const utf8Overrides={
+  "src/m1-text-single-scene-source-runtime.mjs": "5dfae53ba88fb53991d957a10742d91c2de233cf1dbadd1860ce7480e9cf8a8a",
+  "test/m0-audit-repair.test.mjs": "6f5f0e2a2a4bc739e79cdd9fcf607c90f205ab1357de44fb049528e7a4d5ef49",
+  "src/word-table-readback.mjs": "1ad5806475cffee506a4937fd4c0fe8fc1a3d8a1d80e1f5fcf4f2b1e4d483a09",
+  "src/word-media-native.mjs": "62f67b133a3aa48de02132dd080cb7dafaf9a3c77dfa74e5c566982122425e97"
+};
+ for(const binding of utf8.bindings)if(utf8Overrides[binding.path])binding.sha256=utf8Overrides[binding.path];
+ expected.labCodeBindingSets.push(utf8);
+ expected.qualifiedRuntimeRepair.sourceBindings.find(b=>b.path==='test/contracts/rtk-interop-word-manuscript.contract.test.js').sha256=digest(fs.readFileSync(__filename));
+ assert.deepEqual(actual,expected);
  assert.equal(actual.wordManuscriptBatch.cellIds.length,354);
  assert.equal(actual.wordManuscriptBatch.hostileCellIds.length,84);
 });

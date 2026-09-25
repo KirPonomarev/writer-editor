@@ -1819,66 +1819,66 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "d19447a6a52591af301b4cbd23988354850c668e7232dc6b62146d29a068c899",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "c6d0a0b5e2bea85134ee33c3d3c913924876eb026868811c38fc3690645d8205",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c738fc0f756892a2b030564976f9716568d83b88af7a7870238fbf862d0fe399",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "93c80610f25c51447dc7355560921596fb698636a25d33518ba40c2610b3c9c6",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "65f51b575789e2ac45555c4f0b9e929f2220124866eed782757379cd92424dd8",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "95e8bb1d90c661f31baa24cb6b1924304dc55993995ca54a3413cc856eff5c66",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "a93ce1c991ee6531aedf6083cf2ff0faa8dd8db093c707d262d19d28c393cedd",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "3c9322993e57e9945cb898578052485afdd0148e3abd446ca918bd218bf86870",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "de4ddbb0edc86a70ab9320542875cb73fc2dbc0af1f7d61fe6cf286ae0416eea",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "9f0ac90aa1d3a10da8ab40ca5323c2d4826444d1603b1c12f4621ff6f95cb528",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "ac87e40a5cca7f5cdc5fb96808d41d21ff1112bd443d10dcb6d6073ca7803c02",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "1d34a7df469dd3b31e90d3cd086fe4c8e74cb2838c89dfac83a9bda8003dac3c",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "sha256": "0b62ff4f6b8d27fb7aa34c8891795a7120b3da3a923158b21e1e2cc704592665",
-      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
-      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "sha256": "d53ddba7e6161849aa03ad7cb191350d3aaedfc9b425fa15a1a3913fa2552b0d",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_TABLE_FILE_PREPARATION_20260925",
+      "approvedAtUtc": "2026-09-25T09:32:25Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+      "rationale": "Owner-authorized bounded Word native Lab repair: isolate Standard Additions UTF-8 write failures, prepare empty bounded carriers and use atomic native UTF-8 host writes for Word-observed evidence; retain all historical Lab bindings and admit both exact tested successor sets, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     }
   ],
   "evidenceStampIds": [
@@ -3720,6 +3720,69 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d19447a6a52591af301b4cbd23988354850c668e7232dc6b62146d29a068c899",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "c738fc0f756892a2b030564976f9716568d83b88af7a7870238fbf862d0fe399",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "65f51b575789e2ac45555c4f0b9e929f2220124866eed782757379cd92424dd8",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "a93ce1c991ee6531aedf6083cf2ff0faa8dd8db093c707d262d19d28c393cedd",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "de4ddbb0edc86a70ab9320542875cb73fc2dbc0af1f7d61fe6cf286ae0416eea",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "ac87e40a5cca7f5cdc5fb96808d41d21ff1112bd443d10dcb6d6073ca7803c02",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "0b62ff4f6b8d27fb7aa34c8891795a7120b3da3a923158b21e1e2cc704592665",
+      "approvedBy": "owner-delegated-codex:WORD_NATIVE_REOPEN_20260925",
+      "approvedAtUtc": "2026-09-25T08:42:12Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word native Lab repair: refresh exact owned staging alias after save, retain all old Lab code bindings, admit two exact successor sets and regression, preserve current product runtime and independent native/readback proof. No physical credit from admission; normal tests, CI, merge and official exact-head verification required."
     }
   ]
 }
