@@ -116,7 +116,16 @@ def package_graph(parts,document):
         visit(p)
     need(used==image_targets and len(graph)==len(list(document.iter(W+'drawing'))),'ALL_PLACEMENTS');return graph
 
-def native_body(body,index,read_alt,graph,paragraphs,notes=()):
+def deleted_prefixes(document):
+    # Word range coordinates include retained deletion markup although its
+    # content text stream projects only the accepted text. Read actual raw XML.
+    deleted=0;out=[]
+    for node in document.find(W+'body').iter():
+        if node.tag==W+'delText':deleted+=u16(node.text or '')
+        if node.tag==W+'drawing':out.append(deleted)
+    return out
+
+def native_body(body,index,read_alt,graph,paragraphs,notes=(),deleted=()):
     text=body.decode('utf8');rows=index.decode('utf8').splitlines()
     need(rows and rows[0]==str(len(graph)) and len(rows)==len(graph)+1,'NATIVE_COUNT')
     positions=[]
@@ -124,7 +133,7 @@ def native_body(body,index,read_alt,graph,paragraphs,notes=()):
         cols=rows[i+1].split('\t');need(len(cols)==5 and cols[0]==str(i+1) and all(re.fullmatch(r'\d+(?:[.,]\d+)?',s) for s in cols),'NATIVE_ROW')
         nums=[float(s.replace(',','.')) for s in cols]
         start=sum(u16(p)+1 for p in paragraphs[:m['paragraphIndex']])+m['offset']+i+sum(n['paragraphIndex']<m['paragraphIndex'] or (n['paragraphIndex']==m['paragraphIndex'] and n['offsetUtf16']<=m['offset']) for n in notes)
-        need(nums[1:]==[m['width']*.75,m['height']*.75,start,start+1],'NATIVE_SIZE_POSITION')
+        need(nums[1:]==[m['width']*.75,m['height']*.75,start+(deleted[i] if deleted else 0),start+1+(deleted[i] if deleted else 0)],'NATIVE_SIZE_POSITION')
         need(read_alt(f'word-media-alt-{i+1}.txt').decode('utf8')==m['alt'],'NATIVE_ALT');positions.append(start)
     raw=text.encode('utf-16-le')
     for start in reversed(positions):

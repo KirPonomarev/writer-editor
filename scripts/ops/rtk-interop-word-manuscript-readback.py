@@ -1107,13 +1107,13 @@ def audit(request):
         if media_expected is None:return
         graph=media.canonical_graph(documents);require(graph==media.canonical_graph(expected_round(round)),'MEDIA_CANONICAL_'+name)
         media_stages[name]={'graphSha256':digest(canonical(graph)),'artifactSha256':artifact_hash,'placementCount':len(graph),'assetCount':len({m['sha256'] for m in graph})}
-    def media_native_body(name,directory,ps,notes=()):
+    def media_native_body(name,directory,ps,notes=(),document=None):
         body=raw(directory+'/word-native-readback.txt')
         if media_expected is None:return body
         # Native absolute positions derive from raw expected text and the actual
         # object index, never from the producer's expected/ok fields.
         graph=media_expected;index=raw(directory+'/word-media.tsv')
-        clean=media.native_body(body,index,lambda f:raw(directory+'/'+f),graph,ps,notes)
+        clean=media.native_body(body,index,lambda f:raw(directory+'/'+f),graph,ps,notes,media.deleted_prefixes(document) if document is not None else ())
         media_native[name]={'method':'INDEPENDENT_WORD_INLINE_SHAPES_AND_COMPLETE_BODY_V1','bodySha256':digest(body),'indexSha256':digest(index),'altHashes':[digest(raw(directory+f'/word-media-alt-{i+1}.txt')) for i in range(len(graph))],'placementCount':len(graph)}
         return clean
     def table_graph(round=0):return tables.canonical_graphs(expected_round(round))
@@ -1225,8 +1225,8 @@ def audit(request):
         require(proof['notes']==note_contract['notes'] and proof['protectedDigest']==note_contract['protectedDigest'],'NOTES_STAGE:'+name)
         require(not any(marker in b for b in parts.values() for marker in [b'PRIVATE_NOTE_MUST_NOT_LEAVE_PROJECT',b'DELETED_NOTE_MUST_NOT_LEAVE_PROJECT']),'NOTES_PRIVATE_EXCLUSION')
         note_stages[name]=proof
-    def native_note_check(name,directory,life,ps):
-        actual=media_native_body(name,directory,ps,note_contract['notes'])
+    def native_note_check(name,directory,life,ps,document=None):
+        actual=media_native_body(name,directory,ps,note_contract['notes'],document)
         if table_expected is None:parsed_ps=None
         else:
             breaks=[section['startParagraphIndex'] for section in section_expected['protectedSections'][1:]]
@@ -1321,7 +1321,7 @@ def audit(request):
                 'cellHashes':[digest(raw(directory+f'/word-native-table-{ti+1}-cell-{ci+1}.txt')) for ti,t in enumerate(table_expected) for ci in range(len(t['cells']))],
                 'method':'INDEPENDENT_NATIVE_CELLS_AND_COMPLETE_BODY_V1','tableCount':len(table_expected)}
         else:
-            native_ps=v.native(media_native_body(name,directory,sum([paragraphs(d) for d in expected_round(round)],[]))) if generic else native_note_check(name,directory,life,sum([paragraphs(d) for d in expected_round(round)],[]))
+            native_ps=v.native(media_native_body(name,directory,sum([paragraphs(d) for d in expected_round(round)],[]))) if generic else native_note_check(name,directory,life,sum([paragraphs(d) for d in expected_round(round)],[]),docx(raw(returned_file),round if tracked else 0)[2])
         stage(name+'-native',native_ps,round)
         ps,parts,d=docx(raw(returned_file),round if tracked else 0);stage(name+'-docx',ps,round);table_docx_stage(name,d,raw(returned_file),round);media_docx_stage(name,parts,d,raw(returned_file),round)
         if not generic:
@@ -1428,7 +1428,7 @@ def audit(request):
                 comment_doc(base+'/review-probe',parts,pdoc,probe)
                 identifier_stages[base+'/review-probe']={**identifier_doc(parts,pdoc,cap['roundId'],ids,expected_round(1)),'artifactSha256':digest(probe),'roundId':cap['roundId']}
                 require(lifecycle['screenshotProof']['ok'] is True and raw(base+'/review-probe/word.png').startswith(b'\x89PNG\r\n\x1a\n'),'REVIEW_PROBE_SCREENSHOT')
-                exact(native_note_check(base+'/review-probe',base+'/review-probe',lifecycle,ps),ps,'REVIEW_PROBE_NATIVE_TEXT')
+                exact(native_note_check(base+'/review-probe',base+'/review-probe',lifecycle,ps,pdoc),ps,'REVIEW_PROBE_NATIVE_TEXT')
                 note_check(base+'/review-probe',parts,pdoc,probe)
                 require(lifecycle['evidencePath'].endswith('/'+run+'/'+probe_file) and lifecycle['nativeReadbackPath'].endswith('/'+run+'/'+base+'/review-probe/word-native-readback.txt'),'REVIEW_PROBE_NATIVE_PATH')
                 probe_intake=read(base+'/review-probe-intake.json');pr=probe_intake['result']['returnIntake']
