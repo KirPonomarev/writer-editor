@@ -659,6 +659,22 @@ function graphemeBoundaries(text) {
   return boundaries;
 }
 
+// This is a subordinate range, never an alternative quote or authority. Its
+// substitution must reproduce the complete already-authorized replacement.
+function validateRichReplacementRange(range, expectedText, replacementText) {
+  if (!isPlainObject(range) || Object.keys(range).length !== 4
+    || Object.keys(range).some(key => !['from', 'to', 'expectedText', 'replacementText'].includes(key))
+    || !Number.isSafeInteger(range.from) || !Number.isSafeInteger(range.to)
+    || range.from < 0 || range.to <= range.from || range.to > expectedText.length
+    || typeof range.expectedText !== 'string' || typeof range.replacementText !== 'string'
+    || expectedText.slice(range.from, range.to) !== range.expectedText
+    || expectedText.slice(0, range.from) + range.replacementText + expectedText.slice(range.to) !== replacementText
+    || /[\r\n]/u.test(range.expectedText + range.replacementText)) return false;
+  const before = graphemeBoundaries(expectedText), after = graphemeBoundaries(replacementText);
+  return Boolean(before?.has(range.from) && before.has(range.to)
+    && after?.has(range.from) && after.has(range.from + range.replacementText.length));
+}
+
 function collectRichTextBlocks(doc) {
   const blocks = [];
   const visit = (node, nodePath) => {
@@ -763,7 +779,17 @@ function applyRichInlineReplacement(block, operation) {
     };
   }
 
-  if ((block.content || []).some(node => node.type === 'image')) {
+  if (operation.richReplacementRange) {
+    const range = operation.richReplacementRange;
+    if (!validateRichReplacementRange(range, operation.expectedText, operation.replacementText)) {
+      return { ok: false, code: 'REVISION_BRIDGE_EXACT_TEXT_RICH_CONTEXT_RANGE_INVALID' };
+    }
+    to = from + range.to;
+    from += range.from;
+    operation = { ...operation, expectedText: range.expectedText, replacementText: range.replacementText };
+  }
+
+  if (!operation.richReplacementRange && (block.content || []).some(node => node.type === 'image')) {
     // The authenticated range may include unchanged context (notably a whole
     // text segment next to an image). Keep that context's original marks rather
     // than treating a surviving hyperlink as part of the replacement. Authority
@@ -1205,6 +1231,18 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       ));
     }
 
+    const hasRichRange = Object.hasOwn(item?.match || {}, 'richReplacementRange');
+    const richReplacementRange = hasRichRange ? item.match.richReplacementRange : null;
+    if (hasRichRange && (!currentObservable.doc
+      || !validateRichReplacementRange(richReplacementRange, expectedText, replacementText))) {
+      return block(buildReason(
+        'REVISION_BRIDGE_EXACT_TEXT_RICH_CONTEXT_RANGE_INVALID',
+        'reviewItems.match.richReplacementRange',
+        'inner rich range must exactly reconstruct the entire authorized replacement at grapheme boundaries',
+        { changeId },
+      ));
+    }
+
     const blockRangeOperation = resolveBlockRangeOperation({
       item,
       sceneId,
@@ -1255,6 +1293,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       expectedText,
       replacementText,
       authority: operationAuthority,
+      ...(hasRichRange ? { richReplacementRange: cloneJsonSafe(richReplacementRange) } : {}),
     };
     const overlappingOperation = operations.find((existing) => hasOverlappingRange(existing, operation));
     if (overlappingOperation) {

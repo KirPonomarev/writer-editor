@@ -229,7 +229,9 @@
     "docs/tasks/2026-09-26--word-structural-transaction.md",
     "test/contracts/rtk-word-structural-transaction.contract.test.js",
     "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs",
-    "docs/tasks/2026-09-26--word-preserve-authored-topology.md"
+    "docs/tasks/2026-09-26--word-preserve-authored-topology.md",
+    "docs/tasks/2026-09-26--word-link-label-context.md",
+    "test/contracts/rtk-word-link-label-context.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -722,7 +724,7 @@
       },
       {
         "path": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
-        "sha256": "7c133510cb9ced270fb4aa7ba5aea9060f05d01695d52025da23fcc2b2d828a5"
+        "sha256": "b41c402181d11dacea13fcc9c63671cc5469ace6e9a560446176668929553f23"
       },
       {
         "path": "src/io/markdown/index.mjs",
@@ -930,7 +932,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "fdef3addde82165d14e91321401043c8865bc4134327b0e012673fc836901d70"
+        "sha256": "a8f2f975bb3c3fbece12bb2c49310a8f9de2946c994b5dd70c3c148ec9b2ccf3"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1078,7 +1080,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
-        "sha256": "02734f421ff996216faecda906aadc34ca3278c89ef7e52e96910a0ac4f3d8fe"
+        "sha256": "a71a10b99f527c2f65333836171ca25978c2a39b113a9baa8fad8881a9b989e8"
       },
       {
         "path": "test/contracts/rtk-word-structural-transaction.contract.test.js",
@@ -1087,6 +1089,10 @@
       {
         "path": "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs",
         "sha256": "1b807bebcb41ca06317204f8d66f513b71f5a420ced061cf75491116f9ae103e"
+      },
+      {
+        "path": "test/contracts/rtk-word-link-label-context.contract.test.js",
+        "sha256": "a20cd4e9afb291afd88fd0c533980ff0e2cdbaf718ca244678f183802f032016"
       }
     ],
     "followupRepair": {
