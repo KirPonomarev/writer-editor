@@ -419,7 +419,7 @@ test('Lab native-CUA manuscript revision requires the exact new identity set and
   {path:'scripts/native-cua-target.mjs',sha256:'0ca57312401750018eb459cc70c9930592deae74be601cda33703e6effbf259a'},
   {path:'test/native-cua-target.test.mjs',sha256:'da4dea27274e93ac5ceb74e8cbb78f1c22deb73f7a255631fdecf898c2175285'}
  ]};
- const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json','src/word-hostile-mutant.py','src/word-hostile-probe.mjs','test/word-hostile.test.mjs','src/word-media-native.mjs','test/word-media-native.test.mjs'];
+ const supportPaths=['scripts/native-cua-target.mjs','test/native-cua-target.test.mjs','src/word-table-readback.mjs','test/word-table-readback.test.mjs','test/fixtures/word-tables-native-v1.json','src/word-hostile-mutant.py','src/word-hostile-probe.mjs','test/word-hostile.test.mjs','src/word-media-native.mjs','test/word-media-native.test.mjs','test/runtime-os-identity.test.mjs'];
  const matchesExactAdmission=candidate=>{
   const sets=candidate.labCodeBindingSets.filter(set=>set.id===expected.id);
   return sets.length===1&&require('node:util').isDeepStrictEqual(sets[0],expected)
@@ -688,6 +688,14 @@ test('Word import transaction admission preserves every historical Lab identity 
  currentStructure.id='WORD_CURRENT_STRUCTURE_UTF8_V1';
  currentStructure.bindings.find(b=>b.path==='src/word-manuscript-fields.mjs').sha256='eaa9972c0a980274540a3b4aea2ef50c9fee7527e426d7219d1ad79dac07f85f';
  expected.labCodeBindingSets.push(currentStructure);
+ // Same-device round-key durability requires the inspected OS-identity launch
+ // repair. Admit its exact successor while preserving every predecessor byte.
+ const osIdentity=structuredClone(currentStructure);
+ osIdentity.id='WORD_OS_IDENTITY_PRESERVED_V1';
+ osIdentity.bindings.find(b=>b.path==='src/m1-text-single-scene-source-runtime.mjs').sha256='3dc6c59e79c6ffcb7072ef0efc6eb691e307949467fa03a672cd69a0cd537430';
+ osIdentity.bindings.push({path:'test/runtime-os-identity.test.mjs',sha256:'0bc97c63179df8fba58b883c0047e0f10ade5d9a30366f265697615e638dd35b'});
+ expected.labCodeBindingSets.push(osIdentity);
+ expected.allowedLabDeltaPaths.push('test/runtime-os-identity.test.mjs');
  // W7's independent reader retains raw grids but distinguishes implicit auto-fit
  // from explicitly stored geometry. All other reader bindings remain unchanged.
  const autoFitReaderPins={
