@@ -720,7 +720,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "67657203efe96aeec9787ef0251df3baef9eb77911061fb195fb6d54a19fc951"
+        "sha256": "e057b11a274f39fd01807ae70b70f3bc8d87f597ceb50566ee0c5fdbe7836f3f"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
