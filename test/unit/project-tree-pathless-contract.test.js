@@ -43,7 +43,13 @@ test('project tree renderer emits project and node identity only for tree comman
 
   for (const [name, next] of functionNames) {
     const section = functionSection(editor, name, next);
-    assert.match(section, /projectId: currentProjectId/u);
+    if (name === 'handleCreateNode' || name === 'handleRenameNode') {
+      assert.match(section, /const target = captureNodeNameTarget\(node\)/u);
+      assert.match(section, /isNodeNameTargetCurrent\(target\)/u);
+      assert.match(section, /projectId: target\.projectId/u);
+    } else {
+      assert.match(section, /projectId: currentProjectId/u);
+    }
     assert.match(section, /nodeId|parentNodeId/u);
     assert.equal(/\bpath\s*:/u.test(section), false, `${name} must not emit a path`);
   }

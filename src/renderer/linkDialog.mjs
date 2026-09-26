@@ -5,7 +5,24 @@ let activeDialog = null;
 export function isLinkDialogOpen() { return activeDialog !== null; }
 export function cancelLinkDialog() { activeDialog?.cancel(); }
 
-export function openLinkDialog({ title, initialValue, canRemove, normalize }) {
+export function openNodeNameDialog({ title, initialValue = '', rename = false }) {
+  return openLinkDialog({
+    title, initialValue, canRemove: false,
+    fieldLabel: 'Название', inputMode: 'text', submitLabel: rename ? 'Переименовать' : 'Создать',
+    cancelLabel: 'Отмена', errorMessage: 'Введите название от 1 до 80 символов без символов пути.',
+    normalize: normalizeNodeName,
+  });
+}
+
+export function normalizeNodeName(value) {
+  return { ok: typeof value === 'string' && value.trim().length > 0
+    && value.length <= 80 && !/[\\/<>:"|?*\u0000-\u001F\u007F]/u.test(value)
+    && !/\.$/u.test(value.trim()) };
+}
+
+export function openLinkDialog({ title, initialValue, canRemove, normalize,
+  fieldLabel = 'Link address', inputMode = 'url', submitLabel = 'Apply',
+  cancelLabel = 'Cancel', errorMessage = 'Enter a valid http, https or mailto address.' }) {
   if (activeDialog) return Promise.resolve(null);
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
@@ -23,13 +40,13 @@ export function openLinkDialog({ title, initialValue, canRemove, normalize }) {
     const label = document.createElement('label');
     label.className = 'modal__label';
     label.htmlFor = 'link-dialog-address';
-    label.textContent = 'Link address';
+    label.textContent = fieldLabel;
     const input = document.createElement('input');
     input.id = 'link-dialog-address';
     input.name = 'link-address';
     input.className = 'modal__input';
     input.type = 'text';
-    input.inputMode = 'url';
+    input.inputMode = inputMode;
     input.autocomplete = 'off';
     input.spellcheck = false;
     input.value = initialValue;
@@ -60,7 +77,7 @@ export function openLinkDialog({ title, initialValue, canRemove, normalize }) {
     };
     const submit = () => {
       if (!normalize(input.value).ok) {
-        error.textContent = 'Enter a valid http, https or mailto address.';
+        error.textContent = errorMessage;
         error.hidden = false;
         input.setAttribute('aria-invalid', 'true');
         input.focus({ preventScroll: true });
@@ -68,9 +85,9 @@ export function openLinkDialog({ title, initialValue, canRemove, normalize }) {
       }
       finish(input.value);
     };
-    button('Cancel', () => finish(null));
+    button(cancelLabel, () => finish(null));
     if (canRemove) button('Remove link', () => finish(''));
-    button('Apply', submit, true);
+    button(submitLabel, submit, true);
     dialog.append(heading, label, input, error, actions);
     dialog.addEventListener('cancel', (event) => { event.preventDefault(); finish(null); });
     dialog.addEventListener('close', () => finish(null));

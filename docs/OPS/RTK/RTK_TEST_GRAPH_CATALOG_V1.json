@@ -109,6 +109,7 @@
     "rtk-word-media.contract.test.js",
     "rtk-word-n3-formatting-return.contract.test.js",
     "rtk-word-n4-structural-return.contract.test.js",
+    "rtk-word-node-name-input.contract.test.js",
     "rtk-word-normalized-capability-matrix.contract.test.js",
     "rtk-word-p0-modern-comment-replies-typed-limitation.contract.test.js",
     "rtk-word-p0-modern-comment-resolve-reopen-typed-limitation.contract.test.js",
