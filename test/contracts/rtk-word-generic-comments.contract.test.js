@@ -279,3 +279,22 @@ test('actual main preview canonicalization retains comments through import plann
   assert.equal(plan.candidateCreatePlan.entries[0].comments[0].messages[0].body, 'Check literal 😀');
   assert.equal(plan.lossReport.items.some(item => /COMMENTS_NOT_IMPORTED/.test(item.code)), false);
 });
+
+
+test('legacy scene export cannot silently drop canonical comments before key or publication', async () => {
+  const source = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const body = source.slice(source.indexOf('async function readDocxReviewPacketExportSource()'),
+    source.indexOf('async function readCanonicalNotesForDocxExport('));
+  const vm = require('node:vm');
+  const context = vm.createContext({ isDirty: false, autoSaveInProgress: false,
+    currentFilePath: '/synthetic/roman/a.txt', isAllowedFilePath: () => true,
+    getDocumentContextFromPath: () => ({ kind: 'scene' }),
+    DOCX_REVIEW_PREVIEW_SESSION_ALLOWED_CONTEXT_KINDS: new Set(['scene']),
+    readReviewExactTextApplyProjectBinding: async () => ({ ok: true, projectId: 'p', projectRoot: '/synthetic', manifestPath: '/synthetic/project.json' }),
+    fs: { readFile: async () => 'unchanged' }, loadDocumentContentEnvelopeModule: async () => ({ parseObservablePayload: () => ({ text: 'unchanged' }) }),
+    docxReviewPreviewSessionDetailString: value => value, getProjectRelativeFilePath: () => 'roman/a.txt',
+    loadRevisionBridgeModule: async () => ({ createRtkNonTextReturnFilePort: () => ({ readCanonical: async () => ({ threads: [{ sceneId: 'roman/a.txt' }] }) }) }),
+  });
+  vm.runInContext(body, context);
+  await assert.rejects(context.readDocxReviewPacketExportSource(), /REVIEW_DOCX_EXPORT_COMMENTS_REQUIRE_FULL_MANUSCRIPT/);
+});

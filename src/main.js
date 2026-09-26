@@ -4460,6 +4460,11 @@ async function readDocxReviewPacketExportSource() {
   const projectId = docxReviewPreviewSessionDetailString(binding.projectId);
   const projectRoot = docxReviewPreviewSessionDetailString(binding.projectRoot) || path.dirname(binding.manifestPath);
   const sceneId = getProjectRelativeFilePath(currentFilePath, binding.manifestPath).replace(/\\/g, '/');
+  const commentBridge = await loadRevisionBridgeModule();
+  const commentState = await commentBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot });
+  if (commentState.threads.some(thread => thread.sceneId === sceneId)) {
+    throw new Error('REVIEW_DOCX_EXPORT_COMMENTS_REQUIRE_FULL_MANUSCRIPT');
+  }
   const rawSha256 = `sha256:${computeHash(sceneRawContent)}`;
   const sceneRevision = rawSha256;
   const createdAtUtc = new Date().toISOString();

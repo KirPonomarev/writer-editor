@@ -42,3 +42,10 @@ again receive fresh local IDs; no arbitrary replacement target or old-thread edi
 This is the import/recovery slice of P1b-G. Ordinary comment authoring controls,
 full rich comment bodies, P1c return edits and complete native qualification are
 still open. It does not close P1b or create official accepted cell IDs by itself.
+
+Native-path qualification found and repaired a missing main preview field:
+canonicalization must carry genericComments into the private import plan.
+A second native check found that the legacy single-scene review exporter does
+not include canonical comments. That path now refuses annotated scenes before
+round-key creation; the full-manuscript exporter is the qualified comment route.
+Single-scene comment export remains an explicit follow-up, not silent success.
