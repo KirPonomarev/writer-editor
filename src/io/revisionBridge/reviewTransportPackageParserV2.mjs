@@ -2337,6 +2337,74 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
   return result;
 }
 
+function leadingBodyBookmarkNames(tokens) {
+  // Word for Mac can serialize a paragraph bookmarkStart as the immediately
+  // preceding body sibling, with its bookmarkEnd still inside that paragraph.
+  // Admit only one matching pair and that single paragraph, never a search for
+  // similar text or a bookmark spanning another paragraph/table.
+  const starts = new Map(), ends = new Map(), result = new Map();
+  const bodies = tokens.filter(t => isWordToken(t, 'body') && t.depth === 1);
+  if (bodies.length !== 1) return result;
+  const body = bodies[0];
+  for (const token of tokens) {
+    const map = isWordToken(token, 'bookmarkStart') ? starts : isWordToken(token, 'bookmarkEnd') ? ends : null;
+    if (!map) continue;
+    const id = attr(token, 'id', W_NS);
+    if (!id) continue;
+    map.set(id, [...(map.get(id) || []), token]);
+  }
+  let pending = [];
+  for (const token of [...tokens].sort((a,b) => a.openStart - b.openStart)) {
+    if (token.path?.length !== 3 || token.path[1] !== 'body'
+      || token.openStart < body.openEnd || token.closeEnd > body.closeStart) continue;
+    if (isWordToken(token, 'bookmarkStart')) { pending.push(token); continue; }
+    if (isWordToken(token, 'p')) {
+      const names = pending.filter(start => {
+        const id = attr(start, 'id', W_NS), matches = ends.get(id) || [];
+        const end = matches[0];
+        return starts.get(id)?.length === 1 && matches.length === 1
+          && start.closeEnd <= token.openStart && end.openStart >= token.openEnd
+          && end.closeEnd <= token.closeStart && end.depth === token.depth + 1;
+      }).map(start => attr(start, 'name', W_NS)).filter(Boolean);
+      if (names.length) result.set(token.openStart, names);
+    }
+    pending = [];
+  }
+  return result;
+}
+
+function reviewDefaultFontSize(stylesScan) {
+  const tokens = stylesScan.tokens;
+  const defaults = tokens.filter(t => isWordToken(t, 'docDefaults'));
+  if (defaults.length !== 1) return null;
+  const sizeAt = (parent) => {
+    const properties = tokens.filter(t => isWordToken(t, 'rPr') && t.openStart > parent.openEnd
+      && t.closeEnd <= parent.closeStart && (parent.localName === 'docDefaults'
+        ? t.path.slice(-3).join('/') === 'docDefaults/rPrDefault/rPr' : t.depth === parent.depth + 1));
+    if (properties.length > 1) return false;
+    if (!properties.length) return null;
+    const sizes = childTokensWithin(stylesScan, properties[0]).filter(t => t.namespaceUri === W_NS && ['sz','szCs'].includes(t.localName));
+    if (!sizes.length) return null;
+    const values = sizes.map(t => attr(t, 'val', W_NS));
+    if (new Set(values).size !== 1 || !/^\d{1,4}$/.test(values[0]) || Number(values[0]) < 2 || Number(values[0]) > 3276) return false;
+    return `${Number(values[0]) / 2}pt`;
+  };
+  let size = sizeAt(defaults[0]);
+  if (size === false) return null;
+  for (const kind of ['paragraph','character']) {
+    const styles = tokens.filter(t => isWordToken(t, 'style') && attr(t, 'type', W_NS) === kind
+      && ['1','true','on'].includes(attr(t, 'default', W_NS)));
+    if (styles.length > 1) return null;
+    const style = styles[0];
+    if (!style) continue;
+    if (childTokensWithin(stylesScan, style).some(t => isWordToken(t, 'basedOn'))) return null;
+    const own = sizeAt(style);
+    if (own === false || (kind === 'character' && own !== null)) return null;
+    if (own !== null) size = own;
+  }
+  return size;
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2379,6 +2447,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     ? reviewHyperlinkRelationships(options.relationshipsXml, budgets, cryptoPort, budgetState) : new Map(); }
   catch (error) { return { ok:false, code:'RTK_WORD_HYPERLINK_UNSUPPORTED', reasons:[reason('RTK_WORD_HYPERLINK_UNSUPPORTED','word/_rels/document.xml.rels',error.message)], paragraphs:[] }; }
   const results = [];
+  const leadingBookmarks = leadingBodyBookmarkNames(documentScan.tokens);
+  const defaultFontSize = reviewDefaultFontSize(visibilityStyles);
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
     try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
@@ -2391,10 +2461,10 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     ));
     const bookmarks = paragraphRecord.tokens
       .filter((token) => (
-        token.localName === 'bookmarkStart'
+        isWordToken(token, 'bookmarkStart')
       ))
       .map((token) => attr(token, 'name'))
-      .filter(Boolean);
+      .filter(Boolean).concat(leadingBookmarks.get(paragraph.openStart) || []);
     const paragraphProperties = paragraphRecord.tokens.find((token) => (
       token.localName === 'pPr'
       && token.namespaceUri === W_NS
@@ -2451,6 +2521,10 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         text,
         inline,
         inlineState: formattingInlineState(inline),
+        ...(defaultFontSize && !paragraphRecord.table
+          && !paragraphSemanticNames.includes('pStyle') && !semanticNames.includes('rStyle')
+          && !semanticNames.includes('sz') && !semanticNames.includes('szCs')
+          ? { inheritedFontSize: defaultFontSize } : {}),
         unsupportedNames,
         invalidSupportedValue,
         sourceXmlProvenance: provenance(properties || run),
@@ -2495,6 +2569,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
       text: run.text,
       inline: run.inline,
       inlineState: run.inlineState,
+      ...(run.inheritedFontSize ? { inheritedFontSize: run.inheritedFontSize } : {}),
       unsupportedNames: run.unsupportedNames,
       invalidSupportedValue: run.invalidSupportedValue,
     })),

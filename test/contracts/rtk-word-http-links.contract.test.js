@@ -71,12 +71,13 @@ test('P1a malformed link fields and nested links reject without a partial succes
  }
 });
 
-async function signedLinkSource() {
+async function signedLinkSource(fontSize = null) {
  const [b,e]=await mods, crypto=require('node:crypto');
  const stable=v=>Array.isArray(v)?'['+v.map(stable).join(',')+']':v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}':JSON.stringify(v);
  const sha=v=>crypto.createHash('sha256').update(v).digest('hex');
  const cryptoPort={sha256Text:sha,sha256Json:v=>'sha256:'+sha(stable(v)),byteLength:v=>Buffer.byteLength(v),hmacSha256Text:(v,s)=>'hmac-sha256:'+crypto.createHmac('sha256',s).update(v).digest('hex'),hmacSha256Json:(v,s)=>'hmac-sha256:'+crypto.createHmac('sha256',s).update(stable(v)).digest('hex')};
  const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'before '},{type:'text',text:'Ссылка 😀',marks:[{type:'link',attrs:{href:HREF,target:'_blank',rel:'noopener noreferrer nofollow'}},{type:'bold'}]},{type:'text',text:' after'}]}]};
+ if(fontSize) doc.content[0].content[1].marks.push({type:'textStyle',attrs:{fontSize}});
  const content=e.composeObservablePayload({doc});
  const {buildFullManuscriptDocxReviewPacketSource}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
  const {buildDocxReviewPacketBuffer}=require('../../src/export/docx/docxReviewPacketBuilder');
@@ -196,4 +197,27 @@ test('P1a local scene scope is recovered from verified local export map, never f
  const local={exportMap:{scope:'scene',scenes:[{sceneId:'s1'}]}};
  const result=await ctx.buildDocxReviewReturnIntakeLocalAuthorityCapsule(local,{authorityCarrier:{selectedCarrier:{payload:{scope:'full-manuscript'}}}},{});
  assert.equal(result.scope,'scene');assert.equal(result.authenticatedSceneExportMap.scenes[0].sceneId,'s1');assert.equal(result.authenticatedFullManuscriptExportMap,null);assert.equal(result.returnedArtifactExportMapAccepted,false);
+});
+
+test('P1a native Word body bookmark and inherited default size retain exact link authority',async()=>{
+ const {b,source,parts,cryptoPort}=await signedLinkSource('12pt');
+ const href='https://example.invalid/native-default';
+ const bm=parts['word/document.xml'].match(/<w:bookmarkStart\b[^>]*\/>/)[0];
+ const doc=parts['word/document.xml'].replace(bm,'').replace('<w:body>','<w:body>'+bm)
+   .replace(/ w14:(?:paraId|textId)="[^"]*"/g,'').replace(/<w:sz(?:Cs)?\b[^>]*\/>/g,'');
+ const styles=size=>`<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>`;
+ const bytes=(size,document=doc)=>buildStoredZip(Object.entries({...parts,'word/document.xml':document,'word/styles.xml':styles(size),'word/_rels/document.xml.rels':parts['word/_rels/document.xml.rels'].replace(xml(HREF),href)}).map(([name,data])=>({name,data})));
+ const options={fullManuscriptExportMap:source.localAuthorityCapsule.exportMap,cryptoPort};
+ const exact=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24'),options);
+ assert.equal(exact.candidates.length,1,JSON.stringify(exact));assert.deepEqual(exact.candidates[0].inline,{link:{action:'set',value:href}});
+ const changed=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('28'),options);
+ assert.equal(changed.candidates[0].inline.fontSize.value,'14pt');
+ const invalid=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('bad'),options);
+ assert.equal(invalid.candidates.length,0);assert(invalid.diagnostics.some(d=>d.code==='RTK_FORMATTING_RETURN_EFFECTIVE_RUN_STYLE_UNRESOLVED'));
+ const duplicate=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24',doc.replace(bm,bm+bm)),options);
+ assert.equal(duplicate.candidates.length,0);
+ const wrongNs=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24',doc.replace(bm,bm.replace('<w:bookmarkStart','<x:bookmarkStart xmlns:x="urn:spoof"'))),options);
+ assert.equal(wrongNs.candidates.length,0);
+ const noEnd=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24',doc.replace(/<w:bookmarkEnd\b[^>]*\/>/g,'')),options);
+ assert.equal(noEnd.candidates.length,0);
 });

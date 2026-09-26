@@ -9499,6 +9499,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
         createdAt: activeContext.createdAt,
         fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
         formattingExportMap: authenticatedFormattingExportMap,
+        cryptoPort: createRtkReviewTransportCryptoPort(),
         verifiedDocumentSections: authenticatedFullManuscriptExportMap
           ? returnIntake.parserResult?.documentSectionsBinding
           : null,

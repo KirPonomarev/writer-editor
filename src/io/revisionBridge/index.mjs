@@ -4674,6 +4674,7 @@ export function buildDocxReviewFormattingReturnCandidatesFromZipBytes(input, opt
     cryptoPort: options.cryptoPort,
     budgets: options.budgets,
     relationshipsXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/_rels/document.xml.rels', 1024 * 1024) || new Uint8Array()),
+    stylesXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/styles.xml', 1024 * 1024) || new Uint8Array()),
   });
   if (!scanned.ok) {
     return {
@@ -4837,7 +4838,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       if (from === to) continue;
       const baselineState = docxReviewFormattingStateAt(baselineRuns, from, to);
       const returnedRun = returnedRuns.find((run) => run.from <= from && run.to >= to);
-      const returnedState = returnedRun && isPlainObject(returnedRun.inlineState) ? returnedRun.inlineState : null;
+      const returnedState = returnedRun && isPlainObject(returnedRun.inlineState) ? { ...returnedRun.inlineState } : null;
       if (!baselineState || !returnedState) {
         diagnostics.push({
           code: 'RTK_FORMATTING_RETURN_RANGE_COVERAGE_INVALID',
@@ -4847,6 +4848,10 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
           to,
         });
         continue;
+      }
+      if (Object.hasOwn(baselineState, 'fontSize') && !Object.hasOwn(returnedState, 'fontSize')
+        && typeof returnedRun.inheritedFontSize === 'string') {
+        returnedState.fontSize = returnedRun.inheritedFontSize;
       }
       const ambiguousRemovalKeys = docxReviewFormattingAmbiguousRemovalKeys(
         baselineState,
