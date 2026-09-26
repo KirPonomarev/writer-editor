@@ -686,11 +686,11 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "c8d60a5e644f0c96c72640d041c498f44d8da48e82ea220332f1632ac05accca"
+        "sha256": "8ab1fe8277022345aa9424fa823634692987dd90fb72de287c55074341f21772"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
-        "sha256": "42de2ebebf6403b9c21e4889301ddb3fda2b6a88c1ec115d38927e96aad0d009"
+        "sha256": "3840339a3608140979b892a295f432407351160f80d7ab7ee1e2c2b7fe7e3f67"
       },
       {
         "path": "docs/tasks/2026-09-17--interop-word-manuscript-fields.md",
@@ -962,7 +962,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
-        "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282"
+        "sha256": "c45a0e141b18e3e9dde2961ad22c8ba3d8ac7927684686e6f37a5fcd046f2395"
       },
       {
         "path": "src/io/documentTableProperties.js",
@@ -998,7 +998,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e"
+        "sha256": "9f3c081cae141a539bea38f6de284251ffa67d0a873689da728c3180e72511af"
       }
     ],
     "followupRepair": {
@@ -1722,7 +1722,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-        "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e"
+        "sha256": "9f3c081cae141a539bea38f6de284251ffa67d0a873689da728c3180e72511af"
       },
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1742,7 +1742,7 @@
       },
       {
         "path": "scripts/ops/rtk-interop-word-tables-readback.py",
-        "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282"
+        "sha256": "c45a0e141b18e3e9dde2961ad22c8ba3d8ac7927684686e6f37a5fcd046f2395"
       },
       {
         "path": "scripts/ops/rtk-interop-word-hostile.mjs",

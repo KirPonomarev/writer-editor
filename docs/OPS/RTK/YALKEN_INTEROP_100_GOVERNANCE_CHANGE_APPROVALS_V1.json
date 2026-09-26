@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "3a5558826fdacb2c03da8e7ffbc0fee7178da2acb84db002c4487c6ac1a16ff5",
+      "sha256": "716d654af9dc40bb1b65244bd9b095560e13aa1d7ebff9cef13f7383b9319450",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1405,10 +1405,10 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-tables-readback.py",
-      "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
-      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
-      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
+      "sha256": "c45a0e141b18e3e9dde2961ad22c8ba3d8ac7927684686e6f37a5fcd046f2395",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1432,10 +1432,10 @@
     },
     {
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "sha256": "42de2ebebf6403b9c21e4889301ddb3fda2b6a88c1ec115d38927e96aad0d009",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
-      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
-      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
+      "sha256": "3840339a3608140979b892a295f432407351160f80d7ab7ee1e2c2b7fe7e3f67",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1576,12 +1576,12 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
-      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "sha256": "9f3c081cae141a539bea38f6de284251ffa67d0a873689da728c3180e72511af",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-media-readback.py",
@@ -1819,48 +1819,48 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "688720d47abe532b09e79a33e6b5f62e0020542b6ef83ae7a33d9f42048388e7",
+      "sha256": "31fdda940f2ce1dacd4fdcdd61a1cf855c3c9593054146415326752061ea6648",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "ef69b53c7573f53475f54e27e6ba66f133321d35658d46558e0c6c2a36cbcd84",
+      "sha256": "728133090a3032bdd6e46ceaa70049a3a3ffc6f7552e6adc694918e4351856ec",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "ca409a8a5b7ad9f73815e77dcbc48d3a6f738f1d520da538560d196f05c31746",
+      "sha256": "a1e92485a0c5502ff199d51ceea3c25e5d1f1d0f0dcb2a4dbbc681e1bce17cce",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3b85dfa8b8e2b7546cca0fe43caaab71fac1b63a93dbbf70ee8130313a9401df",
+      "sha256": "e0e529e812a21559b802a027f718e5ec43c800ecd35dd612a106d0536c488f3b",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "58ab9a18667f29c3943e7023e50ce9379dadcdf5647fbf46b898952ae526453f",
+      "sha256": "ffcd9e4f1571327ffb56e7e3e3f35589d5a1c4b02b9e68ac78d1497b92d21b0c",
       "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -1873,12 +1873,12 @@
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "sha256": "c8d60a5e644f0c96c72640d041c498f44d8da48e82ea220332f1632ac05accca",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "sha256": "8ab1fe8277022345aa9424fa823634692987dd90fb72de287c55074341f21772",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-import-transaction-remediation.md",
@@ -5259,6 +5259,96 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "688720d47abe532b09e79a33e6b5f62e0020542b6ef83ae7a33d9f42048388e7",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ef69b53c7573f53475f54e27e6ba66f133321d35658d46558e0c6c2a36cbcd84",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "3a5558826fdacb2c03da8e7ffbc0fee7178da2acb84db002c4487c6ac1a16ff5",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "ca409a8a5b7ad9f73815e77dcbc48d3a6f738f1d520da538560d196f05c31746",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3b85dfa8b8e2b7546cca0fe43caaab71fac1b63a93dbbf70ee8130313a9401df",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "58ab9a18667f29c3943e7023e50ce9379dadcdf5647fbf46b898952ae526453f",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-tables-readback.py",
+      "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "sha256": "c8d60a5e644f0c96c72640d041c498f44d8da48e82ea220332f1632ac05accca",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
+      "sha256": "42de2ebebf6403b9c21e4889301ddb3fda2b6a88c1ec115d38927e96aad0d009",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }
