@@ -63,8 +63,9 @@ import/Apply -> save -> reopen; derived output supplies no mutation authority.
 negativeBypassChecks: unsafe schemes, duplicate/missing/spoofed relationships,
 stale/replayed source, grapheme/range mismatch, no-write on reject.
 evidenceBindings: exact SHA and independent input/output/oracle hashes.
-currentReality: the editor already has link marks; generic import/export drop
-their target and review lacks href-delta application.
+baseReality: the editor already had link marks; generic import/export dropped
+their target and review lacked href-delta application. Candidate implementation
+repairs these paths; delivery and exact merged qualification remain required.
 
 ## Closed profile and acceptance boundary
 
@@ -117,3 +118,42 @@ UI evidence: ui-craft and Lazyweb consulted; bounded ClickUp editing-toolbar
 reference only, not a new design language or a claim about its link dialog.
 Lazyweb search: 6995d7b2-23e5-4315-9b83-eb1a74d088d8.
 No new dependency, cloud runtime, global style or renderer structure change.
+
+## Native findings and bounded repairs
+
+Word 16.112 Mac physically rewrites links into complex HYPERLINK fields, moves
+paragraph bookmark starts to the immediately preceding body position, and may
+move a 12pt run size into docDefaults. The parser admits only namespace-exact,
+unique start/end pairs for the immediately following paragraph. Default size
+resolution is bounded: unknown inheritance never becomes guessed formatting.
+Both the standalone scanner and the verified evidence-packet path consume the
+same validated styles and relationships. Full Word style support remains P3.
+
+The scene return path now extracts paragraph text from the rich document
+projection while retaining the full original raw hash for revision guards. A
+locally authenticated scene export map may prepare formatting-only review;
+the foreign DOCX cannot provide that map or write authority. The main command
+still rejects caller operations, dirty buffers, stale scene hashes and replay.
+
+PACKAGED WRITER_LOCAL_V1 previously allowed review export/intake and text Apply,
+but rejected the formatting Apply command. Owner authorization to implement
+this Word plan covers admitting this one existing guarded command. No optional
+system, cloud, signing, distribution or general review capability is enabled.
+The source profile, capability revalidation and transaction writer are unchanged.
+
+## Evidence boundary during implementation
+
+On cb08c8b2 SOURCE completed five real native Word hyperlink target changes,
+with authenticated main preview/Apply and independent saved rich-run comparison
+after every cycle. New-process reopen preserved the fifth result. Earlier
+failed experiments remain evidence of defects, not accepted cycles.
+The packaged import and native Yalken create/change/remove/label edits worked;
+its first Apply found the profile denial described above. The repair requires a
+fresh packaged build and fresh signed exports before claiming this route.
+
+The round-key vault currently survives only within a main-process session.
+Export-before-restart then return-after-restart is blocked with missing local
+secret; no fallback reconstructs authority from the foreign artifact. This is
+an explicit durability gap for the subsequent round lifecycle work, not a
+successful cross-restart return. Reopen of already applied content is tested
+separately. Historical 420 and global 1120 coverage are not recalculated here.

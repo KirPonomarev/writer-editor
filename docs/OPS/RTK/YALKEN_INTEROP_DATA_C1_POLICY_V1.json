@@ -212,7 +212,13 @@
     "test/contracts/rtk-word-inline-atoms.contract.test.js",
     "docs/tasks/2026-09-26--word-visibility-ruby.md",
     "test/contracts/rtk-word-visibility-ruby.contract.test.js",
-    "test/contracts/revision-bridge-docx-review-preflight.contract.test.js"
+    "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
+    "docs/tasks/2026-09-26--word-http-links.md",
+    "test/contracts/rtk-word-http-links.contract.test.js",
+    "test/contracts/rtk-word-link-authoring.contract.test.js",
+    "src/io/docxHyperlinks.cjs",
+    "src/renderer/linkDialog.mjs",
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs"
   ],
   "protectedFiles": [
     {
@@ -440,7 +446,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "3576f592524569074b55ba44231fb3cebc99b0324c78fb3c094f6048649d146d"
+        "sha256": "a03492d4624752487b1067cd6267cfba5aef7a5ca7e64afcf063614d769e8ba0"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -472,11 +478,11 @@
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
-        "sha256": "11223cb2354de5e757adf0ced3894f3336a4c64ba4bb335ab7542064c22b51e4"
+        "sha256": "691237f783867356c0f33686917fb8ee6a4b010ba7cb84f4be9da634d82e8aee"
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "9fe0aa1f8ef0e6312196dd2436016a2e249072fdf4cd449e17eba569d69e0fe2"
+        "sha256": "cbe1557335672326d2e6bc772e76ce8ead03bb65d40a4e41b4c154774d36efa4"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -536,7 +542,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-        "sha256": "a2b501433c157c8193e80b352ff7f05855a20ab45b51eb8e6cb85943feedd127"
+        "sha256": "190541bbca3a3675b17bf00681b0f967b8fd4bd3b665f52432d997e6d396f340"
       },
       {
         "path": "src/renderer/styles.css",
@@ -556,7 +562,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "ce9e0e02bb7f82ea230a727208595ed86e78039cc136cbf27acc38a77a9f0ed6"
+        "sha256": "787d57ff9de9863bee307bf0d8262024da1627a997278348a298332920829fab"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -576,7 +582,7 @@
       },
       {
         "path": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-        "sha256": "d31e1de33fcbfe534f3ad0d905bdb83bfdc98c57a05615a5d993755fec094823"
+        "sha256": "b468ad76e0e7221fa277e1910fd58efb8b49f475e2c58f40083e96170fd9ced2"
       },
       {
         "path": "src/renderer/tiptap/index.js",
@@ -616,7 +622,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "78772a9c498385d39438d971938f1f157195bfb65b33a03453b94b6ae8e163e0"
+        "sha256": "f81948d2faa5115c49902391cb06e1963ae82329a1427fdb0315c97ded6e2b80"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -680,11 +686,11 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "19d5e5864ac9e1f0750f701e92f5ec2c159f1986259f80d70d8b8fcffcaf6b58"
+        "sha256": "9e2f9d8eaea749181cbff379a30ec7ec51c4d6fffc5448393fd366dbdd26d242"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "6e26db0fc686c1deea8da26489d73dd4aa305156f25126b30078e2e735a26f70"
+        "sha256": "c1475d31da7c50fea72da05aaf0cd6ef79bb34cd5f84b09afadd28952ae2c400"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -744,7 +750,7 @@
       },
       {
         "path": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-        "sha256": "3355a01b7246f63e78f97322132e6e74e0acb5318222d08dead7d7e832def6f0"
+        "sha256": "74558cb7706177fb86f86da5e9ff01a5b6f70061c88b63a74fe6d8f52ef96190"
       },
       {
         "path": "src/export/docx/docxReviewPacketExportHandler.js",
@@ -912,7 +918,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "29255ace387d77258f52fda245a6c1b9b7c23ffa1dfbf81171306c35fce68dd2"
+        "sha256": "d287fc2b05834a7e653bb6af983628b39972d8a434ff78297f6b41f72c42ad24"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1021,6 +1027,26 @@
       {
         "path": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
         "sha256": "acb55f7b111af93e6c862d755bd36b1074c42c0944846d39c7a4c203e1a63706"
+      },
+      {
+        "path": "test/contracts/rtk-word-http-links.contract.test.js",
+        "sha256": "8bc2aa3e0ba63fbccede31361c8ae7205f354c58868b71c22c176e3d44b191ea"
+      },
+      {
+        "path": "test/contracts/rtk-word-link-authoring.contract.test.js",
+        "sha256": "6d35c69e4e3e7c649bb2efe945a4eb61930603fa31b5988c3b4dd5896780f660"
+      },
+      {
+        "path": "src/io/docxHyperlinks.cjs",
+        "sha256": "a477270214585395d4c6773549b4a706fa77c1eb137f422a7441ddd49122c7d8"
+      },
+      {
+        "path": "src/renderer/linkDialog.mjs",
+        "sha256": "e7a3d99182b153cd052f8e900b99bbbe0f0d6672ee12e6d85ecbdcc968f5bac8"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+        "sha256": "ff37c55dd31b8961bc695cf3bc6297f11324d444c140a66d7df8f078e07adbb4"
       }
     ],
     "followupRepair": {

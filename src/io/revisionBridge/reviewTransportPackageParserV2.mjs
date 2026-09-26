@@ -2405,6 +2405,60 @@ function reviewDefaultFontSize(stylesScan) {
   return size;
 }
 
+function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan) {
+  const refs = direct.filter(t => isWordToken(t, 'rStyle'));
+  if (refs.length === 0) return direct;
+  if (!href || refs.length !== 1) return null;
+  const inherited = new Map(), seen = new Set();
+  const visit = id => {
+    if (!id || seen.has(id) || seen.size >= 16) return false;
+    seen.add(id);
+    const matches = stylesScan.tokens.filter(t => isWordToken(t, 'style') && attr(t,'styleId',W_NS) === id);
+    if (matches.length !== 1 || attr(matches[0],'type',W_NS) !== 'character') return false;
+    const style = matches[0];
+    const children = childTokensWithin(stylesScan,style).filter(t => t.depth === style.depth+1);
+    if (children.some(t => t.namespaceUri !== W_NS || !['name','basedOn','uiPriority','semiHidden','unhideWhenUsed','rsid','qFormat','rPr'].includes(t.localName))) return false;
+    const parents = children.filter(t => isWordToken(t,'basedOn'));
+    if (parents.length > 1 || (parents.length === 1 && !visit(attr(parents[0],'val',W_NS)))) return false;
+    const properties = children.filter(t => isWordToken(t,'rPr'));
+    if (properties.length > 1) return false;
+    if (properties.length) {
+      const values = childTokensWithin(stylesScan,properties[0]);
+      const keys = new Set();
+      // Only the ordinary hyperlink decoration is admitted here. Full named
+      // character-style semantics, including toggle inheritance, are separate.
+      for (const value of values) {
+        if (value.namespaceUri !== W_NS || !['color','u'].includes(value.localName) || keys.has(value.localName)) return false;
+        keys.add(value.localName); inherited.set(value.localName,value);
+      }
+    }
+    return true;
+  };
+  if (!visit(attr(refs[0],'val',W_NS))) return null;
+  for (const token of direct) if (!isWordToken(token,'rStyle')) inherited.set(token.localName,token);
+  const color = inherited.get('color');
+  if (color && attr(color,'themeColor',W_NS)) {
+    const name = attr(color,'themeColor',W_NS);
+    if (!['hyperlink','followedHyperlink'].includes(name) || attr(color,'themeTint',W_NS) || attr(color,'themeShade',W_NS)) return null;
+    const mappings = settingsScan.tokens.filter(t => isWordToken(t,'clrSchemeMapping'));
+    if (mappings.length > 1) return null;
+    const mapped = mappings.length ? attr(mappings[0],name,W_NS) : '';
+    const target = mapped || name;
+    const key = target === 'hyperlink' ? 'hlink' : target === 'followedHyperlink' ? 'folHlink' : target;
+    const a = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+    const schemes = themeScan.tokens.filter(t => t.namespaceUri === a && t.localName === 'clrScheme');
+    if (schemes.length !== 1) return null;
+    const entries = childTokensWithin(themeScan,schemes[0]).filter(t => t.namespaceUri === a && t.localName === key && t.depth === schemes[0].depth+1);
+    if (entries.length !== 1) return null;
+    const values = childTokensWithin(themeScan,entries[0]);
+    if (values.length !== 1 || values[0].namespaceUri !== a || values[0].localName !== 'srgbClr') return null;
+    const rgb = attr(values[0],'val');
+    if (!/^[a-fA-F0-9]{6}$/.test(rgb)) return null;
+    inherited.set('color',{...color,attrsByLocal:{...color.attrsByLocal,val:rgb},attrsByNs:{...color.attrsByNs,[`${W_NS}|val`]:rgb}});
+  }
+  return [...inherited.values()];
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2428,6 +2482,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     ? parseXmlPart('word/styles.xml', options.stylesXml, budgets, cryptoPort, budgetState)
     : { tokens: [], diagnostics: [] };
   reasons.push(...visibilityStyles.diagnostics);
+  const linkTheme = options.themeXml ? parseXmlPart('word/theme/theme1.xml', options.themeXml, budgets, cryptoPort, budgetState) : {tokens:[],diagnostics:[]};
+  const linkSettings = options.settingsXml ? parseXmlPart('word/settings.xml', options.settingsXml, budgets, cryptoPort, budgetState) : {tokens:[],diagnostics:[]};
+  reasons.push(...linkTheme.diagnostics,...linkSettings.diagnostics);
   const visibilityFailure = reviewVisibilityReason(documentScan, visibilityStyles);
   if (visibilityFailure) reasons.push(visibilityFailure);
   if (blockingReason(reasons)) {
@@ -2494,14 +2551,16 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         && token.namespaceUri === W_NS
       ));
       if (!text) continue;
-      const children = properties
+      const directChildren = properties
         ? childTokensWithin(runScan, properties).filter((token) => token.namespaceUri === W_NS)
         : [];
+      const href = linkRuns.get(run.openStart);
+      const resolvedStyle = reviewLinkStyleChildren(directChildren,href,visibilityStyles,linkTheme,linkSettings);
+      const children = resolvedStyle || directChildren;
       const semanticNames = [...new Set(children.map((token) => token.localName))];
       const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs']);
       const unsupportedNames = semanticNames.filter((name) => !supportedNames.has(name));
       const inline = formattingInlineActions(children);
-      const href = linkRuns.get(run.openStart);
       inline.link = href ? { action:'set', value:href } : { action:'remove' };
       const expectedActionKeys = [
         ...[['b', 'bold'], ['i', 'italic'], ['u', 'underline'], ['strike', 'strike']]
@@ -4026,6 +4085,8 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     documentScan,
     relationshipsXml: parts['word/_rels/document.xml.rels'],
     stylesXml: parts['word/styles.xml'],
+    themeXml: parts['word/theme/theme1.xml'],
+    settingsXml: parts['word/settings.xml'],
   });
   const formattingParagraphs = [];
   if (!formattingParagraphScan.ok) {

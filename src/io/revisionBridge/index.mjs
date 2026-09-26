@@ -4675,6 +4675,8 @@ export function buildDocxReviewFormattingReturnCandidatesFromZipBytes(input, opt
     budgets: options.budgets,
     relationshipsXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/_rels/document.xml.rels', 1024 * 1024) || new Uint8Array()),
     stylesXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/styles.xml', 1024 * 1024) || new Uint8Array()),
+    themeXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/theme/theme1.xml', 1024 * 1024) || new Uint8Array()),
+    settingsXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/settings.xml', 1024 * 1024) || new Uint8Array()),
   });
   if (!scanned.ok) {
     return {

@@ -228,3 +228,24 @@ test('P1a native Word body bookmark and inherited default size retain exact link
  const noEnd=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24',doc.replace(/<w:bookmarkEnd\b[^>]*\/>/g,'')),options);
  assert.equal(noEnd.candidates.length,0);
 });
+
+test('P1a native Hyperlink character style resolves theme color, rejects ambiguous inheritance and never trusts cached RGB',async()=>{
+ const {b,source,parts,cryptoPort}=await signedLinkSource('12pt');
+ const a='http://schemas.openxmlformats.org/drawingml/2006/main';
+ const style=`<w:styles xmlns:w="${W}"><w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults><w:style w:type="character" w:default="1" w:styleId="base"><w:name w:val="Default Paragraph Font"/></w:style><w:style w:type="character" w:styleId="native"><w:name w:val="Hyperlink"/><w:basedOn w:val="base"/><w:rPr><w:color w:val="FF0000" w:themeColor="hyperlink"/><w:u w:val="single"/></w:rPr></w:style></w:styles>`;
+ const theme=`<a:theme xmlns:a="${a}"><a:themeElements><a:clrScheme name="test"><a:hlink><a:srgbClr val="467886"/></a:hlink><a:accent1><a:srgbClr val="112233"/></a:accent1></a:clrScheme></a:themeElements></a:theme>`;
+ const href='https://example.invalid/created';
+ const document=parts['word/document.xml'].replace(/(<w:hyperlink\b[^>]*><w:r><w:rPr>)/,'$1<w:rStyle w:val="native"/>').replace(/<w:sz(?:Cs)?\b[^>]*\/>/g,'');
+ const changed={...parts,'word/document.xml':document,'word/styles.xml':style,'word/theme/theme1.xml':theme,'word/_rels/document.xml.rels':parts['word/_rels/document.xml.rels'].replace(xml(HREF),href)};
+ const analyze=(overrides,mayBlock=false)=>{const bytes=buildStoredZip(Object.entries({...changed,...overrides}).map(([name,data])=>({name,data})));const analysis=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});if(mayBlock && !analysis.ok)return {candidates:[],diagnostics:analysis.reasons};assert.equal(analysis.ok,true,JSON.stringify(analysis.reasons));return b.buildDocxReviewFormattingReturnCandidatesFromEvidence({returnedProjection:analysis.reviewIr},{fullManuscriptExportMap:source.localAuthorityCapsule.exportMap,cryptoPort});};
+ const exact=analyze({});assert.equal(exact.candidates.length,1,JSON.stringify(exact));assert.deepEqual(exact.candidates[0].inline,{underline:{action:'set',value:true},color:{action:'set',value:'#467886'},link:{action:'set',value:href}});
+ const mapped=analyze({'word/settings.xml':`<w:settings xmlns:w="${W}"><w:clrSchemeMapping w:hyperlink="accent1"/></w:settings>`});assert.equal(mapped.candidates[0].inline.color.value,'#112233');
+ for(const overrides of [
+  {'word/theme/theme1.xml':''},
+  {'word/theme/theme1.xml':theme.replace('<a:srgbClr val="467886"/>','<a:srgbClr val="467886"><a:tint val="50000"/></a:srgbClr>')},
+  {'word/styles.xml':style.replace('<w:basedOn w:val="base"/>','<w:basedOn w:val="native"/>')},
+  {'word/styles.xml':style.replace('<w:basedOn w:val="base"/>','<w:basedOn w:val="missing"/>')},
+  {'word/styles.xml':style.replace('<w:u w:val="single"/>','<w:u w:val="single"/><w:b/>')},
+  {'word/styles.xml':style.replace('</w:styles>',style.match(/<w:style w:type="character" w:styleId="native">.*?<\/w:style>/)[0]+'</w:styles>')},
+ ]) {const result=analyze(overrides,true);assert.equal(result.candidates.length,0,JSON.stringify(result));assert(result.diagnostics.length>0);}
+});
