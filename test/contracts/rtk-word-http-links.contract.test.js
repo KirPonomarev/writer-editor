@@ -29,6 +29,8 @@ test('P1a URL grammar is inert, bounded and rejects confusing or unsupported tar
  for(const s of [HREF,'HTTP://example.invalid/a','https://example.invalid/'])assert.equal(normalizeDocxHttpHref(s),s);
  for(const s of ['',null,'file:///tmp/a','javascript:alert(1)','data:x','mailto:x@y','https://u:p@example.invalid/','https://example.invalid/ a','https:\\example.invalid','https://example.invalid/\n','https://example.invalid/'+ 'a'.repeat(2048)])assert.throws(()=>normalizeDocxHttpHref(s),/DOCX_LINK_TARGET_UNSUPPORTED/);
  assert.equal(parseDocxHyperlinkInstruction(` HYPERLINK "${HREF}" \\h `),HREF);
+ assert.equal(parseDocxHyperlinkInstruction('HYPERLINK "https://example.invalid/a" \\l "part" \\h'), 'https://example.invalid/a#part');
+ assert.throws(()=>parseDocxHyperlinkInstruction('HYPERLINK "https://example.invalid/a" \\h \\h'), /DOCX_LINK_FIELD_UNSUPPORTED/);
  for(const s of ['DDE "x"',`HYPERLINK "${HREF}" \\l "x"`,`HYPERLINK "${HREF}" \\o "tip"`,'HYPERLINK "file:///tmp/a"'])assert.throws(()=>parseDocxHyperlinkInstruction(s),/DOCX_LINK_/);
 });
 
@@ -106,4 +108,44 @@ test('P1a unlink and unchanged signed returns produce exact removal or no operat
  const bytes=buildStoredZip(Object.entries(next).map(([name,data])=>({name,data})));
  const c=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes,opts);assert.equal(c.candidates.length,1,JSON.stringify(c));assert.deepEqual(c.candidates[0].inline,{link:{action:'remove'}});
  const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');const applied=runtime.applyFormattingOperationsToObservableContent(content,c.candidates);assert.equal(applied.ok,true);assert(characters(applied.doc)[0].every(x=>x.href===null));
+});
+
+test('P1a signed href change persists atomically, reopens in another process and rejects stale or repeated writes',async()=>{
+ const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
+ const {b,doc,content,source,parts,cryptoPort}=await signedLinkSource();
+ const href='https://example.invalid/durable#target';
+ const bytes=buildStoredZip(Object.entries({...parts,'word/_rels/document.xml.rels':parts['word/_rels/document.xml.rels'].replace(xml(HREF),xml(href))}).map(([name,data])=>({name,data})));
+ const candidates=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes,{fullManuscriptExportMap:source.localAuthorityCapsule.exportMap,cryptoPort});assert.equal(candidates.candidates.length,1);
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'yalken-p1a-link-transaction-'));const scene=path.join(root,'roman/a.txt');fs.mkdirSync(path.dirname(scene));fs.writeFileSync(scene,content);
+ const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+ const input={commandId:'cmd.rtk.review.applyMultiSceneFormattingReturn',callerRole:'main',commandAuthority:{issuer:'main',intent:'rtk.formattingApply',commandId:'cmd.rtk.review.applyMultiSceneFormattingReturn'},projectId:'p1a-synthetic-review',projectRoot:root,requestId:'p1a-durable',returnArtifactSha256:'sha256:'+cryptoPort.sha256Text(bytes),scenePathBySceneId:{'roman/a.txt':scene},previewConfirmed:true,operations:candidates.candidates};
+ try {
+  const applied=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort});assert.equal(applied.status,'applied',JSON.stringify(applied));assert(applied.readback.every(x=>x.matchesAfter));
+  const envelope=require('node:url').pathToFileURL(path.resolve(__dirname,'../../src/renderer/documentContentEnvelope.mjs')).href;
+  const child=cp.execFileSync(process.execPath,['--input-type=module','-e',`import fs from 'node:fs';import {parseObservablePayload} from ${JSON.stringify(envelope)};console.log(JSON.stringify(parseObservablePayload(fs.readFileSync(process.argv[1],'utf8')).doc));`,scene],{encoding:'utf8'});
+  assert.deepEqual(characters(JSON.parse(child)),characters(doc).map(row=>row.map(x=>({...x,href:x.href?href:null}))));
+  const after=fs.readFileSync(scene);const replay=await runtime.applyMultiSceneFormattingReturnRuntime(input,{cryptoPort});assert.equal(replay.status,'replay');assert.equal(replay.writerCalled,false);assert.deepEqual(fs.readFileSync(scene),after);
+  const conflict=await runtime.applyMultiSceneFormattingReturnRuntime({...input,requestId:'p1a-conflict',returnArtifactSha256:'sha256:'+ 'b'.repeat(64)},{cryptoPort});assert.equal(conflict.code,'RTK_FORMATTING_OPERATION_REPLAY_CONFLICT');assert.deepEqual(fs.readFileSync(scene),after);
+  const stale=await runtime.applyMultiSceneFormattingReturnRuntime({...input,requestId:'p1a-stale',operations:input.operations.map(op=>({...op,operationId:op.operationId+'-new'})),returnArtifactSha256:'sha256:'+ 'c'.repeat(64)},{cryptoPort});assert.equal(stale.ok,false);assert.equal(stale.code,'RTK_FORMATTING_SOURCE_SCENE_STALE');assert.deepEqual(fs.readFileSync(scene),after);
+ } finally {fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('P1a native hyperlink theme uses the selected theme RGB, never cached color or unrelated namespaces',async()=>{
+ const [b]=await mods;const A='http://schemas.openxmlformats.org/drawingml/2006/main';
+ const basic=pack(`<w:p><w:hyperlink r:id="link1">${run('label','<w:rStyle w:val="Hyperlink"/>')}</w:hyperlink></w:p>`);
+ const parts=b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:basic}).parts;
+ parts['word/_rels/document.xml.rels']=parts['word/_rels/document.xml.rels'].replace('</Relationships>',`<Relationship Id="theme" Type="${O}/theme" Target="theme/theme1.xml"/><Relationship Id="settings" Type="${O}/settings" Target="settings.xml"/></Relationships>`);
+ parts['word/styles.xml']=`<w:styles xmlns:w="${W}"><w:style w:type="character" w:styleId="Hyperlink"><w:rPr><w:color w:val="FF0000" w:themeColor="hyperlink"/><w:u w:val="single"/></w:rPr></w:style></w:styles>`;
+ parts['word/theme/theme1.xml']=`<a:theme xmlns:a="${A}"><a:themeElements><a:clrScheme name="Proof"><a:hlink><a:srgbClr val="123456"/></a:hlink><a:accent1><a:srgbClr val="654321"/></a:accent1></a:clrScheme><a:fontScheme name="Proof"><a:majorFont><a:latin typeface="Aptos"/></a:majorFont><a:minorFont><a:latin typeface="Aptos"/></a:minorFont></a:fontScheme></a:themeElements></a:theme>`;
+ parts['word/settings.xml']=`<w:settings xmlns:w="${W}"><w:clrSchemeMapping w:hyperlink="hyperlink"/></w:settings>`;
+ const zip=p=>buildStoredZip(Object.entries(p).map(([name,data])=>({name,data})));
+ const resolved=await read(zip(parts));const marks=resolved.doc.content[0].content[0].marks;assert.equal(marks.find(m=>m.type==='textStyle').attrs.color,'#123456');assert(marks.some(m=>m.type==='underline'));assert.equal(marks.find(m=>m.type==='link').attrs.href,HREF);
+ const mapped=await read(zip({...parts,'word/settings.xml':parts['word/settings.xml'].replace('w:hyperlink="hyperlink"','w:hyperlink="accent1"')}));assert.equal(mapped.doc.content[0].content[0].marks.find(m=>m.type==='textStyle').attrs.color,'#654321');
+ for(const theme of [parts['word/theme/theme1.xml'].replace('<a:srgbClr val="123456"/>','<a:srgbClr val="123456"><a:tint val="10000"/></a:srgbClr>'),parts['word/theme/theme1.xml'].replace('<a:srgbClr val="123456"/>','<a:sysClr val="windowText" lastClr="123456"/>')]){
+  const preview=b.buildDocxContentPreviewFromZipBytes(zip({...parts,'word/theme/theme1.xml':theme}));
+  const plan=b.buildDocxImportPreviewPlanFromContentPreview(preview);
+  // Unsupported theme effects must remain an explicit loss, never use FF0000.
+  assert.equal(plan.ok,true);assert(plan.lossReport.items.some(x=>x.code==='DOCX_IMPORT_PREVIEW_COLOR_NOT_IMPORTED'));
+  assert.equal(plan.candidateCreatePlan.entries[0].content.includes('#ff0000'),false);
+ }
 });

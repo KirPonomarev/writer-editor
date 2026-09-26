@@ -19,11 +19,26 @@ function parseDocxHyperlinkInstruction(instruction) {
   if (typeof instruction !== 'string' || instruction.length > 4096) {
     throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
   }
-  // No nested fields, arbitrary switches, evaluation, DDE, frame or tooltip
-  // semantics. The optional navigation switch adds no document content.
-  const match = /^\s*HYPERLINK\s+(?:"([^"\r\n]+)"|([^\s"]+))(?:\s+\\h)?\s*$/iu.exec(instruction);
+  // Only a bounded external address, an optional document fragment and the
+  // navigation switch are interpreted. No field evaluation or arbitrary args.
+  const match = /^\s*HYPERLINK\s+(?:"([^"\r\n]+)"|([^\s"]+))([\s\S]*)$/iu.exec(instruction);
   if (!match) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
-  return normalizeDocxHttpHref(match[1] || match[2]);
+  let tail = match[3].trim(), fragment = '', sawNavigation = false, sawFragment = false;
+  while (tail) {
+    const flag = /^\\(h|l)(?=\s|$)/iu.exec(tail);
+    if (!flag) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
+    tail = tail.slice(flag[0].length).trimStart();
+    if (flag[1].toLowerCase() === 'h') {
+      if (sawNavigation) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
+      sawNavigation = true;
+    } else {
+      const value = /^(?:"([^"\r\n]+)"|([^\s"\\]+))(?=\s|$)/u.exec(tail);
+      if (sawFragment || !value) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
+      sawFragment = true; fragment = value[1] || value[2];
+      tail = tail.slice(value[0].length).trimStart();
+    }
+  }
+  return docxHttpHrefWithFragment(match[1] || match[2], fragment);
 }
 
 function docxHttpHrefWithFragment(target, fragment = '') {

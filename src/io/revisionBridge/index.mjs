@@ -9073,12 +9073,15 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
 
 function docxHyperlinkCatalog(bytes) {
   const result = new Map();
+  result.usedIds = new Set();
+  result.onlyHyperlinks = false;
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
   if (!metadata.entries.some(entry => entry.entryId === 'word/_rels/document.xml.rels')) return result;
   const ids = new Set();
   docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, stack, attr) => {
-    if (stack.length !== 1 || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
+    if (stack.length !== 1 || stack[0].namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE
+      || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
     const id = attr('Id');
     if (!id || ids.has(id)) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
     ids.add(id);
@@ -9086,6 +9089,7 @@ function docxHyperlinkCatalog(bytes) {
     // A relationship is inert until a validated document occurrence uses it.
     result.set(id, { target: attr('Target'), mode: attr('TargetMode') });
   }, { allowUnqualifiedRoot: true });
+  result.onlyHyperlinks = ids.size > 0 && ids.size === result.size;
   return result;
 }
 
@@ -9810,6 +9814,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         if (semanticExtra) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
         if (!relation || relation.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
         activeParagraphMetadata.currentHref = docxHttpHrefWithFragment(relation.target, docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'anchor'));
+        inlineStyles.hyperlinks.usedIds.add(id);
         activeParagraphMetadata.elementLink = true;
       }
     } else if (insideParagraph && tagName === 'w:fldSimple') {
@@ -10155,8 +10160,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     });
   }
   let parsed;
+  let allDocumentRelationshipsPreserved = false;
   try {
-    parsed = docxContentPreviewParseMainDocumentXml(xmlText, docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
+    const inlineStyles = docxInlineStyleCatalog(bytes);
+    parsed = docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, docxNumberingCatalog(bytes));
+    allDocumentRelationshipsPreserved = !parsed.failure && inlineStyles.hyperlinks.onlyHyperlinks
+      && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;
     if (!parsed.failure) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
       const refs = extractDocumentMediaReferencesV1(xmlText, {
@@ -10216,7 +10225,9 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     diagnostics: [
       ...parsed.diagnostics,
       ...docxContentPreviewBuildCustomMetadataDiagnostics(bytes),
-      ...preflight.diagnostics.map((diagnostic) => ({
+      ...preflight.diagnostics.filter(diagnostic => !(allDocumentRelationshipsPreserved
+        && diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY
+        && diagnostic.entryId === 'word/_rels/document.xml.rels')).map((diagnostic) => ({
         ...diagnostic,
         message: diagnostic.message || 'DOCX package part is ignored by plain text content preview',
       })),
@@ -11147,6 +11158,9 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       : hasHeadings
       ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+    if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.href))) {
+      formatting.message = 'Supported external HTTP(S) link labels and targets are preserved as inert link marks. ' + formatting.message;
+    }
     if (contentPreview.paragraphs.some(p => p.textAlign !== undefined)) {
       formatting.message = 'Left, center, right and justified paragraph alignment are preserved. '
         + formatting.message.replace('Paragraph appearance', 'Other paragraph appearance').replace('paragraph appearance', 'other paragraph appearance');

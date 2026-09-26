@@ -1097,7 +1097,7 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
     && item.entryId === 'word/_rels/document.xml.rels'
-  )), true);
+  )), false);
   assert.equal(importPreview.ok, true);
   assert.equal(importPreview.writeEffects, false);
   assert.equal(importPreview.lossReport.items.some((item) => (
@@ -1109,8 +1109,9 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
   ));
-  assert.equal(relationshipLossItems.length, 1);
-  assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
+  assert.equal(relationshipLossItems.length, 0);
+  const parsed = (await import('../../src/renderer/documentContentEnvelope.mjs')).parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content);
+  assert.equal(parsed.doc.content[0].content[1].marks.find(m => m.type === 'link').attrs.href, 'https://example.invalid');
 });
 
 test('DOCX content preview: Google Docs tab structure preserves labels in import candidate with explicit diagnostic', async () => {

@@ -204,7 +204,7 @@ test('B02 parser preserves modern comment graph bodies authors replies resolve a
 test('B02 parser keeps revision property structure and formatting lanes separate', async () => {
   const parser = await loadParser();
   const result = parser.parseReviewTransportPackageV2({
-    parts: baseParts(documentXml(`
+    parts: { ...baseParts(documentXml(`
       <w:p>
         <w:pPr><w:pStyle w:val="Heading1"/><w:jc w:val="center"/><w:numPr><w:ilvl w:val="0"/><w:numId w:val="4"/></w:numPr><w:pPrChange w:id="11" w:author="Editor"/></w:pPr>
         <w:del w:id="1" w:author="A"><w:r><w:delText>old</w:delText></w:r></w:del><w:ins w:id="2" w:author="A"><w:r><w:t>new</w:t></w:r></w:ins>
@@ -212,6 +212,8 @@ test('B02 parser keeps revision property structure and formatting lanes separate
         <w:r><w:rPr><w:b/><w:i/><w:u w:val="single"/><w:strike/><w:color w:val="FF0000"/><w:highlight w:val="yellow"/><w:rFonts w:ascii="Literata"/><w:sz w:val="24"/><w:rPrChange w:id="12"/></w:rPr><w:t>styled</w:t></w:r>
         <w:hyperlink r:id="rId5" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:r><w:t>link</w:t></w:r></w:hyperlink>
       </w:p>`)),
+      'word/_rels/document.xml.rels': '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid/" TargetMode="External"/></Relationships>',
+    },
     untrackedDrift: true,
   }, { cryptoPort });
 
