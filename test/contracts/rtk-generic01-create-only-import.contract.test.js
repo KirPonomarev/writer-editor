@@ -184,10 +184,9 @@ function yrtk2CarrierDocxZip(paragraphs = ['Carrier scene one']) {
 }
 
 function lossyDocxZip() {
-  // A DOCX whose document.xml carries a preserved table and lossy tracked
-  // revision, comment, hyperlink) that are known to be dropped by the
-  // plain-text-only candidate. The TARGET contract persists these as typed
-  // LossLedger items in the receipt; today they collapse to a summary count.
+  // A valid DOCX with preserved table and HTTP link, plus tracked revision
+  // and comment content that must be disclosed by the generic import ledger.
+  // The receipt must preserve every typed item across the apply boundary.
   const body = [
     paragraphXml('Has table below'),
     '<w:tbl><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc><w:p><w:r><w:t>cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
@@ -200,7 +199,7 @@ function lossyDocxZip() {
     {
       name: 'word/_rels/document.xml.rels',
       method: 8,
-      body: '<Relationships><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid/generic01" TargetMode="External"/></Relationships>',
+      body: '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid/generic01" TargetMode="External"/></Relationships>',
     },
   ]);
 }
@@ -570,7 +569,7 @@ test('GENERIC01-G7-loss-ledger-persists: receipt must persist the typed LossLedg
   const projectRoot = makeProjectRoot();
   const romanRoot = makeRomanRoot(projectRoot);
   const plan = await previewPlanFromBytes(lossyDocxZip());
-  assert.equal(plan.ok, true);
+  assert.equal(plan.ok, true, JSON.stringify(plan));
   // CONTROL: the preview plan itself carries typed loss items.
   assert.equal(Array.isArray(plan.lossReport.items), true);
   assert.ok(plan.lossReport.items.length > 0, 'CONTROL: preview plan lossReport must carry typed loss items');
@@ -578,6 +577,8 @@ test('GENERIC01-G7-loss-ledger-persists: receipt must persist the typed LossLedg
   const applied = await applyPlan(plan, projectRoot, romanRoot);
   assert.equal(applied.ok, true, JSON.stringify(applied, null, 2));
   const receipt = applied.value.receipt;
+  assert.deepEqual(receipt.lossReport.items, plan.lossReport.items,
+    'The exact typed loss items must survive persistence, including details');
 
   // TARGET: the receipt persists the typed lossReport (with items), preserving
   // the revision/comment/link categories across the apply boundary.

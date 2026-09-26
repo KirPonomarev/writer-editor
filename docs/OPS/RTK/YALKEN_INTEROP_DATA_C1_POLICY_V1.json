@@ -458,7 +458,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "48a14817d9e1013c72c96cdfd482587a59a32c1dc112c17d609c889bdfbbd993"
+        "sha256": "2825ddb69357da8061046371f4acbf4bf05db33454eb5b5b5e146d1a5d947801"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -878,7 +878,7 @@
       },
       {
         "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-        "sha256": "23c8c203a7e8f7d2ecb28b7d254830f4ad156ca11c91391e3f4edf31587c0370"
+        "sha256": "ec14c0e5b43265a14edabad6688228be7f6c8ed486e5d65007e5a42eda7a0210"
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",

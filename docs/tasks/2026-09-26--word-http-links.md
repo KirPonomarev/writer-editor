@@ -167,3 +167,10 @@ characters 0..10; neighboring labels, spaces, targets and formatting survived.
 Unresolved styles are surfaced as explicit review diagnostics, never a guessed
 RGB or a generic empty review. Style inheritance is cached per parse, not on
 keystrokes. These receipts do not by themselves complete the full P1a matrix.
+
+The maintained 1467-test graph exposed one malformed historical generic fixture:
+its relationships root lacked the package namespace. The fixture now uses a
+valid namespace and additionally requires exact equality of persisted typed loss
+items; all 59 generic import/transaction tests pass. Namespace rejection remains
+covered by the hyperlink negatives. The generated renderer bundle is rebuilt
+from the same source rather than relying on physical-run copies to build it.
