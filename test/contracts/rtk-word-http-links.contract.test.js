@@ -187,3 +187,13 @@ test('P1a formatting-only signed return opens explicit review, while an unbound 
  const unbound=b.buildDocxReviewPreviewSessionCandidateFromEvidence(packet,{});
  assert.equal(unbound.reviewPacket,null);
 });
+
+test('P1a local scene scope is recovered from verified local export map, never from foreign payload',async()=>{
+ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+ const main=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+ const ctx=vm.createContext({isPlainObjectValue:v=>!!v&&typeof v==='object'&&!Array.isArray(v),docxReviewPreviewSessionDetailString:v=>typeof v==='string'?v:'',cloneJsonSafe:v=>JSON.parse(JSON.stringify(v)),buildDocxReviewReturnIntakeSceneExportMapAuthority:async()=>({ok:true,applicable:true}),docxReviewReturnIntakeBlocked:reason=>({ok:false,reason})});
+ vm.runInContext(main.slice(main.indexOf('async function buildDocxReviewReturnIntakeLocalAuthorityCapsule('),main.indexOf('function runDocxReviewReturnIntakeParserV2Inline(')),ctx);
+ const local={exportMap:{scope:'scene',scenes:[{sceneId:'s1'}]}};
+ const result=await ctx.buildDocxReviewReturnIntakeLocalAuthorityCapsule(local,{authorityCarrier:{selectedCarrier:{payload:{scope:'full-manuscript'}}}},{});
+ assert.equal(result.scope,'scene');assert.equal(result.authenticatedSceneExportMap.scenes[0].sceneId,'s1');assert.equal(result.authenticatedFullManuscriptExportMap,null);assert.equal(result.returnedArtifactExportMapAccepted,false);
+});

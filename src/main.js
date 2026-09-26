@@ -8668,7 +8668,9 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
   const payload = isPlainObjectValue(parserResult?.authorityCarrier?.selectedCarrier?.payload)
     ? parserResult.authorityCarrier.selectedCarrier.payload
     : {};
-  const localScope = docxReviewPreviewSessionDetailString(localAuthority?.scope || localAuthority?.expectedAuthority?.scope);
+  const localScope = docxReviewPreviewSessionDetailString(
+    localAuthority?.scope || localAuthority?.expectedAuthority?.scope || localAuthority?.exportMap?.scope,
+  );
   const localExportMap = isPlainObjectValue(localAuthority?.exportMap)
     ? cloneJsonSafe(localAuthority.exportMap)
     : null;
@@ -8699,6 +8701,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
   return {
     ...cloneJsonSafe(localAuthority),
     ...sceneAuthorityFields,
+    scope: localScope,
     hmacSecret: sessionHmacSecret,
     roundId: docxReviewPreviewSessionDetailString(localAuthority?.roundId)
       || docxReviewPreviewSessionDetailString(payload.roundId),
