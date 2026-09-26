@@ -2315,7 +2315,9 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
         field=null;
       } else throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
     } else if (isWordToken(token,'instrText')) {
-      if (!field || field.phase!=='instruction') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      // An orphan instruction is inventory-only, never an executable link.
+      if (!field) continue;
+      if (field.phase!=='instruction') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
       field.instruction+=tokenText(documentXml,token);
       if (field.instruction.length>4096) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
     }
@@ -2373,7 +2375,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     return { ok: false, code: 'RTK_WORD_TABLES_MALFORMED_BLOCKED', reasons, paragraphs: [] };
   }
   let linkRelationships;
-  try { linkRelationships = reviewHyperlinkRelationships(options.relationshipsXml, budgets, cryptoPort, budgetState); }
+  try { linkRelationships = documentScan.tokens.some(token => isWordToken(token, 'hyperlink'))
+    ? reviewHyperlinkRelationships(options.relationshipsXml, budgets, cryptoPort, budgetState) : new Map(); }
   catch (error) { return { ok:false, code:'RTK_WORD_HYPERLINK_UNSUPPORTED', reasons:[reason('RTK_WORD_HYPERLINK_UNSUPPORTED','word/_rels/document.xml.rels',error.message)], paragraphs:[] }; }
   const results = [];
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {

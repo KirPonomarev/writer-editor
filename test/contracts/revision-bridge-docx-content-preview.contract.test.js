@@ -1077,7 +1077,7 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
     {
       name: 'word/_rels/document.xml.rels',
       method: 8,
-      body: '<Relationships><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
+      body: '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdLink" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
     },
   ]));
   const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
@@ -1093,7 +1093,7 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
     && item.tagName === 'w:hyperlink'
-  )), true);
+  )), false);
   assert.equal(result.diagnostics.some((item) => (
     item.code === 'DOCX_PART_POLICY_RELATIONSHIP_DIAGNOSTICS_ONLY'
     && item.entryId === 'word/_rels/document.xml.rels'
@@ -1104,7 +1104,7 @@ test('DOCX content preview: safe external hyperlinks preserve visible labels but
     item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
     && item.category === 'link'
     && item.tagName === 'w:hyperlink'
-  )), true);
+  )), false);
   const relationshipLossItems = importPreview.lossReport.items.filter((item) => (
     item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
     && item.category === 'relationship'
@@ -1142,7 +1142,7 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
     {
       name: 'word/_rels/document.xml.rels',
       method: 8,
-      body: '<Relationships><Relationship Id="rIdGDoc" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
+      body: '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdGDoc" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://example.invalid" TargetMode="External"/></Relationships>',
     },
   ]));
   const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
@@ -1171,7 +1171,7 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
   assert.equal(importPreview.writeEffects, false);
   assert.equal(importPreview.candidateCreatePlan.sceneStrategy, 'google-docs-tabs-flattened-single-scene');
   assert.equal(
-    importPreview.candidateCreatePlan.entries[0].content,
+    (await import('../../src/renderer/documentContentEnvelope.mjs')).parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content).doc.content.map(p => (p.content || []).map(n => n.text || '').join('')).join('\n'),
     'Tab 1\nT02_TAB_A prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n\nT02 G03 tab B\nT02_TAB_B prefix 👩‍💻 combining:é NFC:café SAME_TARGET end\n',
   );
   assert.equal(importPreview.candidateCreatePlan.entries[0].content.includes('Tab 1'), true);
@@ -1194,10 +1194,13 @@ test('DOCX content preview: Google Docs tab structure preserves labels in import
     && item.excludedParagraphCount === 0
     && item.tabLabels.includes('T02 G03 tab B')
   )), true);
-  assert.equal(importPreview.lossReport.items.some((item) => item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'), true);
+  assert.equal(importPreview.lossReport.items.some((item) => item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'), false);
+  const envelope = await import('../../src/renderer/documentContentEnvelope.mjs');
+  const linked = envelope.parseObservablePayload(importPreview.candidateCreatePlan.entries[0].content);
+  assert.equal(linked.doc.content[4].content.find(n => n.marks?.some(m => m.type === 'link')).marks.find(m => m.type === 'link').attrs.href, 'https://example.invalid');
 });
 
-test('DOCX content preview: field hyperlink instructions produce explicit link loss only for Word field frames', async () => {
+test('DOCX content preview: field hyperlinks preserve only namespace-proven Word instructions', async () => {
   const bridge = await loadBridge();
   const docxWithNamespaces = (body, prefix = 'w') => rawStoredDocxZip([
     `<${prefix}:document xmlns:${prefix}="${WORDPROCESSINGML_NS}" xmlns:x="urn:yalken:foreign-field-instruction">`,
@@ -1272,7 +1275,7 @@ test('DOCX content preview: field hyperlink instructions produce explicit link l
     ['isolated-instrtext-without-complex-field', docxWithNamespaces(isolatedInstrText), false],
   ];
 
-  for (const [name, bytes, expectedLoss] of cases) {
+  for (const [name, bytes, expectedLink] of cases) {
     const result = bridge.buildDocxContentPreviewFromZipBytes(bytes);
     const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
     const content = importPreview?.candidateCreatePlan?.entries?.[0]?.content || '';
@@ -1288,9 +1291,13 @@ test('DOCX content preview: field hyperlink instructions produce explicit link l
     assert.equal(result.ok, true, `${name}: content preview must be ready`);
     assert.equal(importPreview.ok, true, `${name}: import preview must be ready`);
     assert.deepEqual(result.contentPreview.paragraphs.map((paragraph) => paragraph.text), ['LABEL'], `${name}: visible label`);
-    assert.equal(content.includes('target.example'), false, `${name}: field target must not leak into candidate text`);
-    assert.equal(hasDiagnostic, expectedLoss, `${name}: content diagnostic`);
-    assert.equal(hasLoss, expectedLoss, `${name}: import loss`);
+    const parsed = (await import('../../src/renderer/documentContentEnvelope.mjs')).parseObservablePayload(content);
+    assert.equal(parsed.text, 'LABEL', `${name}: target never becomes visible text`);
+    const links = parsed.doc?.content.flatMap(p => p.content || []).flatMap(n => (n.marks || []).filter(m => m.type === 'link')) || [];
+    assert.equal(links.length, expectedLink ? 1 : 0, `${name}: only namespace-proven instructions produce inert links`);
+    if (expectedLink) assert.match(links[0].attrs.href, /^https:\/\/target\.example\//);
+    assert.equal(hasDiagnostic, false, `${name}: no obsolete loss diagnostic`);
+    assert.equal(hasLoss, false, `${name}: no loss for preserved link`);
   }
 });
 
@@ -1663,7 +1670,7 @@ test('DOCX content preview: malformed namespace attributes block before semantic
   });
 });
 
-test('DOCX content preview: hyperlink visible text survives split runs anchors and Unicode', async () => {
+test('DOCX content preview: internal bookmark links fail closed until the anchor profile is implemented', async () => {
   const bridge = await loadBridge();
   const result = bridge.buildDocxContentPreviewFromZipBytes(cleanDocxZip([
     '<w:p>',
@@ -1682,7 +1689,7 @@ test('DOCX content preview: hyperlink visible text survives split runs anchors a
       name: 'word/_rels/document.xml.rels',
       method: 8,
       body: [
-        '<Relationships>',
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">',
         '<Relationship Id="rIdAlpha" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://target.example/alpha?secret=1" TargetMode="External"/>',
         '<Relationship Id="rIdUnicode" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://target.example/unicode?label=%D0%AE" TargetMode="External"/>',
         '</Relationships>',
@@ -1692,42 +1699,10 @@ test('DOCX content preview: hyperlink visible text survives split runs anchors a
   const importPreview = bridge.buildDocxImportPreviewPlanFromContentPreview(result);
 
   assertContentPreviewShell(result);
-  assert.equal(result.ok, true);
-  assert.equal(result.code, 'DOCX_CONTENT_PREVIEW_READY');
-  assert.equal(
-    result.contentPreview.paragraphs[0].text,
-    'Before Visible Label Alpha | Anchor Label | Юникод Ω label After',
-  );
-  assert.equal(result.contentPreview.paragraphs[0].text.includes('https://target.example'), false);
-  assert.equal(result.diagnostics.filter((item) => (
-    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
-    && item.tagName === 'w:hyperlink'
-  )).length, 1);
-  assert.equal(result.diagnostics.some((item) => (
-    item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
-    && item.tagName === 'w:bookmarkStart'
-  )), true);
-  assert.equal(importPreview.ok, true);
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, 'DOCX_LINK_RELATIONSHIP_INVALID');
+  assert.equal(importPreview.ok, false);
   assert.equal(importPreview.writeEffects, false);
-  assert.equal(
-    importPreview.candidateCreatePlan.entries[0].content,
-    'Before Visible Label Alpha | Anchor Label | Юникод Ω label After',
-  );
-  assert.equal(importPreview.lossReport.items.some((item) => (
-    item.code === 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED'
-    && item.category === 'link'
-    && item.tagName === 'w:hyperlink'
-  )), true);
-  assert.equal(importPreview.lossReport.items.some((item) => (
-    item.code === 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED'
-    && item.category === 'bookmark'
-  )), true);
-  const relationshipLossItems = importPreview.lossReport.items.filter((item) => (
-    item.code === 'DOCX_IMPORT_PREVIEW_RELATIONSHIPS_NOT_IMPORTED'
-    && item.category === 'relationship'
-  ));
-  assert.equal(relationshipLossItems.length, 1);
-  assert.equal(relationshipLossItems[0].sourcePart, 'word/document.xml');
 });
 
 test('DOCX content preview: unsupported Roman paragraph numbering is explicit list loss', async () => {
