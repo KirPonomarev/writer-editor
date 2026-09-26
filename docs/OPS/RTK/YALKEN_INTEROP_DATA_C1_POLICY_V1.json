@@ -457,7 +457,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "bed2cbcce19cd73516a4101faf9232b3b8ecf2e9b114c9c68be5ccf4c5accbfe"
+        "sha256": "9be67ae471e9d2d393a90cfe88c75eae2f3ba09bf457879dda42cd7061e52e4e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -481,7 +481,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "88c1b93eab4ccf560642f80affd0e1809a8b3bd70ed903b842970adfcb4eb067"
+        "sha256": "c9d887830a7dd936af3551018ab71c740562fe4a9f42ff10aae262a3ea573740"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -697,11 +697,11 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "9e2f9d8eaea749181cbff379a30ec7ec51c4d6fffc5448393fd366dbdd26d242"
+        "sha256": "f1918a8944e8ae848aa7e5ead567a2411e2c52b2c448a73b93c65821203e93af"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "c1475d31da7c50fea72da05aaf0cd6ef79bb34cd5f84b09afadd28952ae2c400"
+        "sha256": "67657203efe96aeec9787ef0251df3baef9eb77911061fb195fb6d54a19fc951"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",

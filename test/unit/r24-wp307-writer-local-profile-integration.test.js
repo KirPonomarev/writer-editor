@@ -52,6 +52,7 @@ test('WP307 main revalidates profile before command/query dispatch and package l
     'cmd.project.review.exportFullManuscriptDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
+    'cmd.project.review.applyStructuralReturn',
   ]) {
     assert.equal(profileSource.includes(commandId), true, commandId);
   }
@@ -64,6 +65,7 @@ test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near ma
     'cmd.project.review.exportDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
+    'cmd.project.review.applyStructuralReturn',
   ];
   const allowlistStart = source.indexOf('const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([');
   const allowlistEnd = source.indexOf(']);', allowlistStart);
@@ -88,6 +90,8 @@ test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near ma
     'cmd.project.review.exportFullManuscriptDocxReviewPacket.extra',
     'cmd.project.review.activateDocxReviewPreviewSession.extra',
     'cmd.project.review.applyExactTextChangesBatchAll',
+    'cmd.project.review.applyStructuralReturnAll',
+    'cmd.project.review.applyStructuralReturn.extra',
     'cmd.project.review.applyExactTextChange',
     'cmd.project.review.exportLocalPacket',
     'cmd.project.review.openDocxReviewPreviewSession',

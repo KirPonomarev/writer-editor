@@ -22058,7 +22058,7 @@ async function reconcileReviewStructuralReturnAtStartup() {
     await buildRtkStructuralReturnRuntimeProjectScope(),
     {
       cryptoPort: createRtkReviewTransportCryptoPort(),
-    publishScene: publishReviewSceneWithProjectTransaction,
+      publishScene: publishReviewSceneWithProjectTransaction,
     },
   );
   if (!result || result.ok !== true) {

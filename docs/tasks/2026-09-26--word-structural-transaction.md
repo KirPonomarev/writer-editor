@@ -38,3 +38,18 @@ negativeChecks: stale scene, parent replacement, refused publisher, partial
 failure, abrupt exit and restart, subsequent ordinary transaction.
 performance/accessibility: no new typing work or UI contract.
 rollback: revert bounded PR; no automatic rewriting of old corrupt records.
+
+## Packaged profile route
+
+Native PACKAGED execution exposed WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED
+for the existing cmd.project.review.applyStructuralReturn after successful
+authenticated intake. Direct owner Word-plan authority admits this exact guarded
+command alongside the existing text and formatting commands. This does not enable
+optional systems, broad Review, network, signing or public distribution.
+Near-match command IDs stay denied; main key/session/CAS revalidation is unchanged.
+A fresh packaged build and native full-manuscript return must prove the repair.
+
+Ordinary editor save currently adds default null attributes and a trailing empty
+paragraph after a heading. The native continuity oracle records these exact
+existing editor transformations separately; it does not claim byte-identical
+full-feature roundtrip acceptance or conceal them through broad normalization.
