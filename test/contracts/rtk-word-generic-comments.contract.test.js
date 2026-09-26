@@ -62,6 +62,11 @@ test('generic comment identities derive from local operation and preserve litera
   assert.deepEqual(module.materializeGenericComments({ ...options, candidates: [forged] }).threadIds, first.threadIds);
   assert.notDeepEqual(module.materializeGenericComments({ ...options, importOperationId: 'second' }).threadIds, first.threadIds);
   assert.throws(() => module.materializeGenericComments({ ...options, beforeText: first.afterText }), /IDENTITY_CONFLICT/);
+  for (const malformed of [{ ...candidate(), paragraphIndex: '0' }, { ...candidate(), writePath: '/foreign' }]) {
+    assert.throws(() => module.materializeGenericComments({ ...options, candidates: [malformed] }), /CANDIDATE/);
+  }
+  const injected = candidate(); injected.messages[0].command = 'write';
+  assert.throws(() => module.materializeGenericComments({ ...options, candidates: [injected] }), /MESSAGE/);
   const bad = candidate(); bad.startUtf16 = 8; bad.selectedText = '\udded anchor';
   assert.throws(() => module.materializeGenericComments({ ...options, candidates: [bad] }), /ANCHOR/);
 });
@@ -181,7 +186,15 @@ test('generic import preserves resolved roots, ordered replies and distinct lite
     { cryptoPort: { sha256Text: sha, sha256Json: value => `sha256:${sha(JSON.stringify(value))}`, byteLength: value => Buffer.byteLength(value) } });
   assert.equal(analysis.ok, true, JSON.stringify(analysis.reasons));
   const { genericCommentCandidates } = await generic;
-  assert.doesNotThrow(() => assert.equal(genericCommentCandidates(analysis, [{ text }]).length, 1), JSON.stringify(analysis.reasons));
+  const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: exported }).parts;
+  const ports = { cryptoPort: { sha256Text: sha, sha256Json: value => `sha256:${sha(JSON.stringify(value))}`, byteLength: value => Buffer.byteLength(value) } };
+  const metadataValidated = validateGenericCommentMetadataV1(parts, ports);
+  assert.equal(genericCommentCandidates(analysis, [{ text }], { metadataValidated }).length, 1);
+  for (const extra of ['unrepresented text', '<w16cex:unknown/>', '<w16cex:commentExtensible w16cex:durableId="X" w16cex:unknown="hidden"/>']) {
+    const changed = { ...parts, 'word/commentsExtensible.xml': parts['word/commentsExtensible.xml'].replace('</w16cex:commentsExtensible>', `${extra}</w16cex:commentsExtensible>`) };
+    assert.throws(() => validateGenericCommentMetadataV1(changed, ports), /METADATA_UNSUPPORTED/);
+  }
   const preview = bridge.buildDocxContentPreviewFromZipBytes(exported);
   const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(preview);
   assert.equal(plan.ok, true, JSON.stringify(preview));
@@ -211,4 +224,25 @@ test('comment-state symlink and recovery divergence preserve the existing foreig
   await assert.rejects(tx.recoverProjectTransaction(input), /COMMENT_CAS/);
   assert.equal(fs.readFileSync(commentPath, 'utf8'), foreign);
   assert.deepEqual(fs.readFileSync(input.scenePath), sceneBefore); assert.deepEqual(fs.readFileSync(input.manifestPath), manifestBefore);
+});
+
+
+test('generic comment plaintext admission rejects rich effects instead of losing their contents', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  for (const body of [
+    '</w:t><w:drawing/><w:t>image',
+    '</w:t><w:fldChar w:fldCharType="begin"/><w:instrText>HYPERLINK hidden</w:instrText><w:t>label',
+    '</w:t><w:rPr><w:b/></w:rPr><w:t>bold',
+    '</w:t><w:br w:type="page"/><w:t>page',
+    '</w:t>unrepresented text<w:t>literal',
+  ]) {
+    const preview = bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes({ body }));
+    assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(preview).ok, false, body);
+    assert.match(JSON.stringify(preview), /DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED/);
+    assert.doesNotMatch(JSON.stringify(preview), /DOCX_CONTENT_PREVIEW_INTERNAL_ERROR/);
+  }
+  const body = '  literal &amp; &lt;tag&gt;</w:t><w:tab/><w:t>tab</w:t><w:br/><w:t>line</w:t><w:noBreakHyphen/><w:softHyphen/><w:t>  ';
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes({ body })));
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(plan.candidateCreatePlan.entries[0].comments[0].messages[0].body, '  literal & <tag>\ttab\nline\u2011\u00ad  ');
 });

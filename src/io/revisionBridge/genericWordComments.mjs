@@ -33,7 +33,7 @@ function message(source, reply = false) {
     body: literal(source.body, 16384, true), provenance };
 }
 
-export function genericCommentCandidates(analysis, paragraphs) {
+export function genericCommentCandidates(analysis, paragraphs, { metadataValidated = false } = {}) {
   demand(analysis?.ok === true && analysis.reviewIr?.sourceMode === 'CLEAN', 'ANALYSIS');
   const ir = analysis.reviewIr;
   demand(Array.isArray(ir.commentThreads) && ir.commentThreads.length <= 128
@@ -41,8 +41,15 @@ export function genericCommentCandidates(analysis, paragraphs) {
   demand(!(ir.textRevisions?.length || ir.moveRevisions?.length || ir.propertyRevisions?.length), 'TRACKED_UNSUPPORTED');
   // Missing/orphan/truncated comments may not disappear behind an empty lane.
   const reasons = analysis.reasons || [];
-  demand(!reasons.some(item => /COMMENT|BUDGET|HOSTILE|MALFORMED/u.test(item.code || '')
-    && !['RTK_COMMENT_ANCHORED', 'RTK_COMMENT_RESOLVED'].includes(item.code)), 'INCOMPLETE');
+  demand(!reasons.some(item => {
+    if (/BUDGET|HOSTILE|MALFORMED/u.test(item.code || '')) return true;
+    if (!/COMMENT/u.test(item.code || '')) return false;
+    if (['RTK_COMMENT_ANCHORED', 'RTK_COMMENT_RESOLVED'].includes(item.code)) return false;
+    if (item.typedDiagnostic === 'RTK_MODERN_COMMENT_EXTENSIBLE_NOT_CERTIFIED') return !metadataValidated;
+    // The return parser labels unrelated advisory parts with COMMENT_UNSUPPORTED.
+    // Ordinary import retains their existing typed losses; they confer no IDs.
+    return !item.field?.startsWith('opaque.') || /^opaque\.word\/(comments|people)/u.test(item.field);
+  }), 'INCOMPLETE');
   const nativeIds = new Set();
   const candidates = ir.commentThreads.map(thread => {
     demand(['ANCHORED', 'RESOLVED'].includes(thread.status)
@@ -95,7 +102,9 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
   const operation = sha256Hex(`${projectId}\n${sceneId}\n${importOperationId}`);
   const reserve = id => { demand(!existing.has(id), 'IDENTITY_CONFLICT'); existing.add(id); return id; };
   const threads = candidates.map((candidate, ordinal) => {
-    demand(plain(candidate) && ['open', 'resolved'].includes(candidate.status)
+    demand(plain(candidate) && Object.keys(candidate).every(key => ['paragraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256', 'status', 'messages'].includes(key))
+      && Number.isSafeInteger(candidate.paragraphIndex) && candidate.paragraphIndex >= 0
+      && ['open', 'resolved'].includes(candidate.status)
       && Array.isArray(candidate.messages) && candidate.messages.length > 0 && candidate.messages.length <= 129, 'CANDIDATE');
     const text = paragraphs[candidate.paragraphIndex]?.text;
     demand(typeof text === 'string' && sha256Hex(text) === candidate.blockTextSha256
@@ -104,7 +113,8 @@ export function materializeGenericComments({ candidates, paragraphs, projectId, 
       && text.slice(candidate.startUtf16, candidate.startUtf16 + candidate.selectedText.length) === candidate.selectedText, 'ANCHOR');
     const threadId = reserve(`generic-comment-${operation}-${ordinal}`);
     const messages = candidate.messages.map((item, index) => {
-      demand(plain(item) && plain(item.provenance), 'MESSAGE');
+      demand(plain(item) && Object.keys(item).every(key => ['sourceCommentId', 'body', 'provenance'].includes(key))
+        && plain(item.provenance), 'MESSAGE');
       const body = literal(item.body, 16384, true);
       for (const [key, value] of Object.entries(item.provenance)) {
         demand(['author', 'initials', 'date', 'dateUtc'].includes(key), 'PROVENANCE');

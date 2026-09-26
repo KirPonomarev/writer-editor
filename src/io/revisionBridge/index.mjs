@@ -13,6 +13,7 @@ import { genericCommentCandidates } from './genericWordComments.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
   extractDocumentMediaReferencesV1,
+  validateGenericCommentMetadataV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
 } from './reviewTransportPackageParserV2.mjs';
@@ -7446,6 +7447,9 @@ const DOCX_CONTENT_PREVIEW_WORDPROCESSINGML_GUARD_LOCAL_NAMES = new Set([
 // Only known parser reasons may cross the public boundary. An unexpected
 // exception is an internal failure; its message may contain private host data.
 const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
+  ...['ANALYSIS', 'BUDGET', 'TRACKED_UNSUPPORTED', 'INCOMPLETE', 'PLACEMENT', 'ANCHOR',
+    'REPLIES', 'NESTED_REPLY_UNSUPPORTED', 'DUPLICATE', 'LITERAL', 'MESSAGE', 'TOPOLOGY',
+    'METADATA_UNSUPPORTED'].map(suffix => [`DOCX_GENERIC_COMMENT_${suffix}`, 'CONTENT_INVALID']),
   ...[
     'DOCUMENT_MEDIA_ANIMATED_PNG_UNSUPPORTED',
     'DOCUMENT_MEDIA_FLOATING_IMAGE_UNSUPPORTED',
@@ -10199,11 +10203,15 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     if (!parsed.failure) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
       if (auxiliary('word/comments.xml') || parsed.diagnostics.some(item => /^w:comment/u.test(item.tagName || ''))) {
-        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+        const commentPorts = { cryptoPort: {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
-        } });
-        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs);
+        } };
+        const metadataParts = Object.fromEntries(['word/comments.xml', 'word/commentsExtended.xml', 'word/commentsIds.xml', 'word/commentsExtensible.xml']
+          .map(name => [name, Buffer.from(auxiliary(name) || []).toString('utf8')]));
+        const metadataValidated = validateGenericCommentMetadataV1(metadataParts, commentPorts);
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
+        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated });
       }
       const refs = extractDocumentMediaReferencesV1(xmlText, {
         // Match the existing bounded full-manuscript count profile; generic
