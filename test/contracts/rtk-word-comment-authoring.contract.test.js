@@ -141,13 +141,15 @@ test('actual main handler captures committed scene and rejects forged identity, 
     requestEditorSnapshot: async () => { if (switchDuringCapture) sandbox.currentFilePath = '/other/scene.txt'; return { content: unsaved ? 'not saved' : scene, generation: 0 }; },
   };
   const ctx = vm.createContext(sandbox); vm.runInContext(fragment, ctx);
+  const kernel = require('../../src/command/commandSurfaceKernel.js').createCommandSurfaceKernel({ [model.COMMAND_ID]: ctx.handleCommentAuthoringCommand });
+  const command = payload => kernel.dispatch(model.COMMAND_ID, payload);
   const projection = await ctx.readCommentAuthoringProjection(); assert.equal(projection.available, true);
   const input = { ...intent(null, 'create', { body: 'main-owned', anchor: { paragraphIndex: 0, startUtf16: 7, selectedText: 'anchor' } }), subjectId: projection.subjectId };
-  assert.equal((await ctx.handleCommentAuthoringCommand({ ...input, projectId: 'forged' })).ok, false); assert.equal(fs.existsSync(statePath), false);
-  unsaved = true; assert.equal((await ctx.handleCommentAuthoringCommand(input)).reason, 'COMMENT_SAVE_SCENE_FIRST'); assert.equal(fs.existsSync(statePath), false);
-  unsaved = false; switchDuringCapture = true; assert.equal((await ctx.handleCommentAuthoringCommand(input)).reason, 'COMMENT_SCENE_CHANGED'); assert.equal(fs.existsSync(statePath), false);
+  assert.equal((await command({ ...input, projectId: 'forged' })).ok, false); assert.equal(fs.existsSync(statePath), false);
+  unsaved = true; assert.equal((await command(input)).error.reason, 'COMMENT_SAVE_SCENE_FIRST'); assert.equal(fs.existsSync(statePath), false);
+  unsaved = false; switchDuringCapture = true; assert.equal((await command(input)).error.reason, 'COMMENT_SCENE_CHANGED'); assert.equal(fs.existsSync(statePath), false);
   switchDuringCapture = false; sandbox.currentFilePath = scenePath;
-  const result = await ctx.handleCommentAuthoringCommand(input); assert.equal(result.ok, true, JSON.stringify(result));
+  const result = await command(input); assert.equal(result.ok, true, JSON.stringify(result));
   assert.equal(JSON.parse(fs.readFileSync(statePath)).threads[0].messages[0].body, 'main-owned');
 });
 

@@ -1919,7 +1919,7 @@ async function handleWordCommentAction(button) {
     }
     wordCommentBusy = true; wordCommentNotice = 'Сохранение…'; renderReviewSurface();
     const result = reviewSurfaceUnwrapCommandResult(await invokePreloadUiCommandBridge('cmd.project.review.editComment', payload));
-    if (!result?.ok) throw new Error(result?.reason || result?.code || 'Изменение не подтверждено. Черновик сохранён.');
+    if (!result?.ok) throw new Error(result?.reason || result?.error?.reason || result?.code || 'Изменение не подтверждено. Черновик сохранён.');
     wordCommentDraft = null; wordCommentNotice = 'Комментарий сохранён.';
     await loadReviewSurfaceFromQuery();
   } catch (error) { wordCommentNotice = 'Не удалось сохранить: ' + error.message; }
