@@ -246,3 +246,14 @@ test('generic comment plaintext admission rejects rich effects instead of losing
   assert.equal(plan.ok, true, JSON.stringify(plan));
   assert.equal(plan.candidateCreatePlan.entries[0].comments[0].messages[0].body, '  literal & <tag>\ttab\nline\u2011\u00ad  ');
 });
+
+
+test('Word localized annotation marker style is admitted only on the non-message run', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const body = '</w:t></w:r><w:r><w:rPr><w:rStyle w:val="a5"/></w:rPr><w:annotationRef/></w:r><w:r><w:t>native marker';
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes({ body })));
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(plan.candidateCreatePlan.entries[0].comments[0].messages[0].body, 'native marker');
+  const unsafe = body.replace('<w:annotationRef/>', '<w:annotationRef/><w:t>styled</w:t>');
+  assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes({ body: unsafe }))).ok, false);
+});

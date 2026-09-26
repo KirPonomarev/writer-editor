@@ -4463,10 +4463,18 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   if (!cryptoPort.ok) fail();
   const state = createParserBudgetState(budgets, cryptoPort);
-  const rejectUnrepresentedText = (xml, scan, token) => {
-    const children = scan.tokens.filter(child => child.depth === token.depth + 1
-      && child.openStart >= token.openEnd && child.closeEnd <= token.closeStart)
-      .sort((a, b) => a.openStart - b.openStart);
+  const childrenFor = scan => {
+    const map = new Map(), stack = [];
+    for (const token of [...scan.tokens].sort((a, b) => a.openStart - b.openStart)) {
+      while (stack.length && stack.at(-1).closeEnd <= token.openStart) stack.pop();
+      if (stack.length) map.get(stack.at(-1)).push(token);
+      map.set(token, []);
+      if (!token.selfClosing) stack.push(token);
+    }
+    return map;
+  };
+  const rejectUnrepresentedText = (xml, childrenMap, token) => {
+    const children = childrenMap.get(token) || [];
     let cursor = token.openEnd;
     for (const child of children) {
       if (xml.slice(cursor, child.openStart).trim()) fail();
@@ -4477,6 +4485,7 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   if (parts['word/comments.xml']) {
     const xml = rawString(parts['word/comments.xml']);
     const scan = parseXmlPart('word/comments.xml', xml, budgets, cryptoPort, state);
+    const childrenMap = childrenFor(scan);
     const paths = new Set(['comments', 'comments/comment', 'comments/comment/p',
       'comments/comment/p/r', 'comments/comment/p/r/t', 'comments/comment/p/r/tab',
       'comments/comment/p/r/br', 'comments/comment/p/r/cr', 'comments/comment/p/r/annotationRef',
@@ -4501,9 +4510,18 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
         if (token.localName === 'br' && ns === W_NS && name === 'type' && attribute.value === 'textWrapping') continue;
         if (['pStyle', 'rStyle'].includes(token.localName) && ns === W_NS && name === 'val'
           && attribute.value === (token.localName === 'pStyle' ? 'CommentText' : 'CommentReference')) continue;
+        // Word localizes the annotation-reference style ID. It is safe only
+        // on the generated marker run, which contains no author message text.
+        if (token.localName === 'rStyle' && ns === W_NS && name === 'val') {
+          const run = scan.tokens.find(parent => parent.localName === 'r' && parent.depth === 3
+            && parent.openStart < token.openStart && parent.closeEnd > token.closeEnd);
+          const children = childrenMap.get(run) || [];
+          if (children.some(child => child.localName === 'annotationRef')
+            && children.every(child => ['annotationRef', 'rPr'].includes(child.localName))) continue;
+        }
         fail();
       }
-      if (token.localName !== 't') rejectUnrepresentedText(xml, scan, token);
+      if (token.localName !== 't') rejectUnrepresentedText(xml, childrenMap, token);
     }
   }
   for (const [partName, ns, rootName, childName, attributes] of [
@@ -4513,6 +4531,7 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   ]) {
     if (!parts[partName]) continue;
     const xml = rawString(parts[partName]), scan = parseXmlPart(partName, xml, budgets, cryptoPort, state);
+    const childrenMap = childrenFor(scan);
     const roots = scan.tokens.filter(token => token.depth === 0);
     if (scan.diagnostics.length || roots.length !== 1 || roots[0].namespaceUri !== ns || roots[0].localName !== rootName) fail();
     for (const token of scan.tokens) {
@@ -4524,7 +4543,7 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
         if (token.depth !== 1 || attribute.namespaceUri !== ns || !attributes.includes(attribute.localName)) fail();
         if (['done', 'reopened'].includes(attribute.localName) && !['0', '1', 'true', 'false'].includes(attribute.value)) fail();
       }
-      rejectUnrepresentedText(xml, scan, token);
+      rejectUnrepresentedText(xml, childrenMap, token);
     }
   }
   return true;

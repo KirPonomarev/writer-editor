@@ -183,15 +183,16 @@ function yrtk2CarrierDocxZip(paragraphs = ['Carrier scene one']) {
   ]);
 }
 
-function lossyDocxZip() {
+function lossyDocxZip({ orphanComment = false } = {}) {
   // A valid DOCX with preserved table and HTTP link, plus tracked revision
-  // and comment content that must be disclosed by the generic import ledger.
+  // that must be disclosed by the generic import ledger. Orphan comments now
+  // block intake rather than becoming silent text-only imports.
   // The receipt must preserve every typed item across the apply boundary.
   const body = [
     paragraphXml('Has table below'),
     '<w:tbl><w:tblGrid><w:gridCol/></w:tblGrid><w:tr><w:tc><w:p><w:r><w:t>cell</w:t></w:r></w:p></w:tc></w:tr></w:tbl>',
     '<w:p><w:ins w:id="1" w:author="a"><w:r><w:t>inserted</w:t></w:r></w:ins></w:p>',
-    '<w:p><w:commentRangeStart w:id="2"/><w:r><w:t>annotated</w:t></w:r><w:commentReference w:id="2"/></w:p>',
+    orphanComment ? '<w:p><w:commentRangeStart w:id="2"/><w:r><w:t>annotated</w:t></w:r><w:commentReference w:id="2"/></w:p>' : paragraphXml('unannotated'),
     '<w:p><w:hyperlink r:id="rId1"><w:r><w:t>linked</w:t></w:r></w:hyperlink></w:p>',
   ].join('');
   return zipFixture([
@@ -689,3 +690,9 @@ require('./word-import-transaction-remediation.contract.test.js');
 require('../unit/word-import-transaction-resources.test.js');
 
 require('./word-import-loss-diagnostics.contract.test.js');
+
+test('GENERIC01 orphan comment markers without a body part block intake', async () => {
+  const plan = await previewPlanFromBytes(lossyDocxZip({ orphanComment: true }));
+  assert.equal(plan.ok, false);
+  assert.equal(plan.candidateCreatePlan, null);
+});

@@ -587,7 +587,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "a91eac3f77e70460fe339e341053219d9f000fae307de255659863b5a33759aa"
+        "sha256": "cc83fee3ed983f1b424346f831b14c9c3a6cfe7c2707bf73b952b0b6ac0d09e3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -903,7 +903,7 @@
       },
       {
         "path": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-        "sha256": "ec14c0e5b43265a14edabad6688228be7f6c8ed486e5d65007e5a42eda7a0210"
+        "sha256": "f9fabae94ec3c8ab3ec5317f93271e463a0ddc2333d92b32eb107a33e37586c0"
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
@@ -1127,7 +1127,7 @@
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
-        "sha256": "7c2471f4f48e443f054e0273cfb0e50d66495da7beed785cb9f8004bda23cb39"
+        "sha256": "2e7c0c0ca7f8a2f4a6d8e216620534353314d1dffb5963eb4423a8b7e0df30f3"
       },
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
