@@ -66,6 +66,9 @@ function segmentDocxTextForSerialization(value, options = {}) {
     } else if (char === '\n') {
       flushText();
       segments.push({ kind: 'lineBreak' });
+    } else if (char === '\u2011' || char === '\u00ad') {
+      flushText();
+      segments.push({ kind: char === '\u2011' ? 'noBreakHyphen' : 'softHyphen' });
     } else if (char === '\f') {
       if (!allowFormFeedPageBreak) {
         throw createDocxTextXmlError(DOCX_TEXT_XML_ERRORS.UNSUPPORTED_CONTROL, {
@@ -97,6 +100,8 @@ function buildDocxRunContentXml(value, options = {}) {
     if (segment.kind === 'tab') return '<w:tab/>';
     if (segment.kind === 'lineBreak') return '<w:br/>';
     if (segment.kind === 'pageBreak') return '<w:br w:type="page"/>';
+    if (segment.kind === 'noBreakHyphen') return '<w:noBreakHyphen/>';
+    if (segment.kind === 'softHyphen') return '<w:softHyphen/>';
     return `<w:t xml:space="preserve">${escapeXml(segment.text)}</w:t>`;
   }).join('');
 }

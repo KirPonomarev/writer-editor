@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "724cfd42630ccc94dd5ec9818bceac477e4fb1dfa04803c11c0bdddcd8e4fa0c",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone.",
+      "sha256": "fb81977ff63390c292eae01d2d94400656971d63a47f64776ce2fdd4856eb8e5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1540,12 +1540,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "e3f6ae7bd7ccca5a43824f4e93bd9d31af373dc8e0010c657197cd91da88f845",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "a74c9eb2007a451eeb1aa7b6050d05962500545b5e892639b173d0950ac043f4",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1666,21 +1666,21 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "46d960e7a317cbeb70a581389226542fff018300f5fb86a105bcd76f2eab216c",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "3b1393dfd9835bb8690612c2ca82bcde87e3367a8eb510911f7b5e403faf429a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "b00e4dad983377667898374ca39814c7927ece76f01f19112f2433186c1abf4b",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "51d77a5dbaa0d540e2aac9e5e2eda5fbbc15cc793796f477a9f06f9232613fa2",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "src/main.js",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "f87fd54ee01a39d44b9c30adf47e22de20f4660bbb98efeefb2dbe1b7df16946",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "sha256": "9f61f573914c3d0e59a71698e8b54f71de7a2a2bdc49b2d44eb7914f58fb1c28",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "4c60d9e63865114aa721a2861e07904bfb902fcae2229c15151f016a6c77e0bd",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "sha256": "d5ab570dd621531fd5c29c0538398109536292000f78c8f2bf1bb69c6a5f25ea",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c11ec74055edda97b4b9142cb04b92a10fa255ad49622d8e9d1067d2ed613229",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "sha256": "c847d4b81f470d873fe4e249956e203851a90782e2fe8d0c640f52e4f4b2bae0",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "5b55ac32e5aa7f3da12663f6226c58ac69b778faa4a057d4bef90c17c5b93864",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "sha256": "165e55bb863ed0718aec5e355ace0627e2b8aab6df95948377891c5d4ea90123",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "74d29099f109532adc294c099e2aac9ae5109a6597a39a05ebb2b1d2d0de6b31",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "sha256": "61d25198fe74bbebdbf3d3eb030e884fd61351990eacfaf2f9cf828d9c2d3420",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "a2e2195709218106a2f0694e35ae6965efc818d67eb4d543eb4cea16771f3cb0",
-      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "sha256": "342d849ba373bfab6ce9ccff7427dfdaab9840b3987d9b23f43e63b7917ba664",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2086,6 +2086,33 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-inline-atoms-audit.md",
+      "sha256": "252aab9b35ed96f5d432862ef7bdafbaeca2465aebf2ad050fcd8f76ce0d3d7e",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/export/docx/docxTextXml.js",
+      "sha256": "f38c5c6bb0415a8b907bcc0acf7a3575edb2a08fd8a0c571dd199c39101a1f0d",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-inline-atoms.contract.test.js",
+      "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ],
   "evidenceStampIds": [
@@ -5493,6 +5520,150 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f87fd54ee01a39d44b9c30adf47e22de20f4660bbb98efeefb2dbe1b7df16946",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "4c60d9e63865114aa721a2861e07904bfb902fcae2229c15151f016a6c77e0bd",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "724cfd42630ccc94dd5ec9818bceac477e4fb1dfa04803c11c0bdddcd8e4fa0c",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "e3f6ae7bd7ccca5a43824f4e93bd9d31af373dc8e0010c657197cd91da88f845",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c11ec74055edda97b4b9142cb04b92a10fa255ad49622d8e9d1067d2ed613229",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "5b55ac32e5aa7f3da12663f6226c58ac69b778faa4a057d4bef90c17c5b93864",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "74d29099f109532adc294c099e2aac9ae5109a6597a39a05ebb2b1d2d0de6b31",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "46d960e7a317cbeb70a581389226542fff018300f5fb86a105bcd76f2eab216c",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "b00e4dad983377667898374ca39814c7927ece76f01f19112f2433186c1abf4b",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "a2e2195709218106a2f0694e35ae6965efc818d67eb4d543eb4cea16771f3cb0",
+      "approvedBy": "owner-delegated-codex:WORD_READER_PIN_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:49:59.652011Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "be503a94cc59bdf236843faa526377a611975359c7f1950af048184792e0730e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "2735613e7fb6b552f110f865538ff308857fbfb1819e0f3b0e4057552521d5d5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "092b590dff77b302a1951eb20911d97edba3f56fddc19136b78239f70480f306",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "4a5cb195126d15c3e00ef73c588c32ddb36f4999407f5f378de978e811f86c53",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b68328efba1d37ebc4070960070293651c83bab6bf8f72bb300f5c3ff0a6ec77",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ddc38843e4c120d4adab8e7e05995ba0ac470404d6a2a00ce980dcdf8aa370eb",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     }
   ]
 }

@@ -6064,14 +6064,22 @@ function docxReviewPreviewSessionTrackedTextCandidates(documentXml, options = {}
           activeTextDepth += 1;
           visibleTextDepth += 1;
         }
-      } else if (!closing && (tagName === 'w:tab' || tagName === 'w:br' || tagName === 'w:cr')) {
-        activeRevision.text += tagName === 'w:tab' ? '\t' : '\n';
+      } else if (!closing && ['w:tab', 'w:br', 'w:cr', 'w:softHyphen', 'w:noBreakHyphen'].includes(tagName)) {
+        const marker = tagName === 'w:tab' ? '\t' : tagName === 'w:noBreakHyphen' ? '\u2011'
+          : tagName === 'w:softHyphen' ? '\u00ad' : '\n';
+        if (activeRevision.text.length < bounds.maxTrackedTextChars) activeRevision.text += marker;
+        else if (!activeRevision.truncated) {
+          activeRevision.truncated = true;
+          addDiagnostic('DOCX_REVIEW_TRACKED_CHANGE_TEXT_TRUNCATED',
+            'DOCX tracked change text was truncated to the bounded review budget.',
+            'warning', `docx-revision-${activeRevision.revisionId}`);
+        }
       } else if (['w:p', 'w:tbl', 'w:tr', 'w:tc', 'w:moveFrom', 'w:moveTo'].includes(tagName)) {
         activeRevision.complex = true;
       }
     } else if (!selfClosing && (tagName === 'w:t' || tagName === 'w:delText')) {
       visibleTextDepth += 1;
-    } else if (paragraphDepth > 0 && (tagName === 'w:tab' || tagName === 'w:br' || tagName === 'w:cr')) {
+    } else if (paragraphDepth > 0 && ['w:tab', 'w:br', 'w:cr', 'w:softHyphen', 'w:noBreakHyphen'].includes(tagName)) {
       plainBoundaryVersion += 1;
     }
 
@@ -7247,6 +7255,8 @@ const DOCX_CONTENT_PREVIEW_BOUNDS = Object.freeze({
 });
 
 const DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS = new Set([
+  'w:sym',
+  'w:ptab',
   'w:commentRangeEnd',
   'w:commentRangeStart',
   'w:commentReference',
@@ -7330,6 +7340,7 @@ const DOCX_CONTENT_PREVIEW_LEGACY_PREFIX_NAMESPACES = new Map([
   ['w99', 'urn:yalken:legacy-unsupported-wordprocessingml-choice'],
 ]);
 const DOCX_CONTENT_PREVIEW_WORDPROCESSINGML_GUARD_LOCAL_NAMES = new Set([
+  'noBreakHyphen', 'softHyphen', 'sym', 'ptab',
   'body',
   'bookmarkEnd',
   'bookmarkStart',
@@ -7484,6 +7495,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_INLINE_ON_OFF_INVALID',
     'DOCX_INLINE_PROPERTY_NAMESPACE',
     'DOCX_INLINE_RUN_INVALID',
+    'DOCX_INLINE_ATOM_OWNER_INVALID',
     'DOCX_INLINE_STYLE_INVENTORY',
     'DOCX_INLINE_TEXT_BINDING',
     'DOCX_INLINE_TYPOGRAPHY_PROJECTION_INVALID',
@@ -9769,8 +9781,12 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       } else if (!selfClosing) {
         textDepth += 1;
       }
-    } else if (insideParagraph && !closing && (tagName === 'w:tab' || tagName === 'w:br')) {
-      const marker = tagName === 'w:tab' ? '\t' : '\n';
+    } else if (insideParagraph && !closing && ['w:tab', 'w:br', 'w:cr', 'w:noBreakHyphen', 'w:softHyphen'].includes(tagName)) {
+      // Word stores these as run atoms, not w:t text. They count in the same
+      // UTF-16 coordinate system as text and inline media; never drop them.
+      if (parentTag !== 'w:r') throw new Error('DOCX_INLINE_ATOM_OWNER_INVALID');
+      const marker = tagName === 'w:tab' ? '\t' : tagName === 'w:noBreakHyphen' ? '\u2011'
+        : tagName === 'w:softHyphen' ? '\u00ad' : '\n';
       if (tagName === 'w:br') {
         docxContentPreviewAddTypedBreakDiagnostic(
           diagnostics,
@@ -10667,6 +10683,10 @@ function docxImportPreviewLossCategoryForDiagnostic(diagnostic = {}, sectionBoun
     return { code: 'DOCX_IMPORT_PREVIEW_BOOKMARKS_NOT_IMPORTED', category: 'bookmark' };
   }
   if (tagName === 'w:hyperlink') return { code: 'DOCX_IMPORT_PREVIEW_LINK_NOT_IMPORTED', category: 'link' };
+  if (tagName === 'w:sym') return { code: 'DOCX_IMPORT_PREVIEW_SYMBOL_NOT_IMPORTED', category: 'content',
+    message: 'A font-specific Word symbol is not imported; its character cannot be inferred safely from a glyph code.' };
+  if (tagName === 'w:ptab') return { code: 'DOCX_IMPORT_PREVIEW_POSITIONED_TAB_NOT_IMPORTED', category: 'formatting',
+    message: 'A positioned Word tab is not imported; its page-relative alignment is outside the supported text-tab profile.' };
   return { code: 'DOCX_IMPORT_PREVIEW_STRUCTURE_NOT_IMPORTED', category: 'structure' };
 }
 

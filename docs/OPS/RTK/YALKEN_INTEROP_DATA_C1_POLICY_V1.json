@@ -206,7 +206,10 @@
     "docs/tasks/2026-09-25--word-composite-fidelity.md",
     "test/contracts/rtk-word-composite-fidelity.contract.test.js",
     "src/io/revisionBridge/exactTextApplyJournal.mjs",
-    "docs/tasks/2026-09-25--word-table-autofit-review.md"
+    "docs/tasks/2026-09-25--word-table-autofit-review.md",
+    "docs/tasks/2026-09-26--word-inline-atoms-audit.md",
+    "src/export/docx/docxTextXml.js",
+    "test/contracts/rtk-word-inline-atoms.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -470,7 +473,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "46d960e7a317cbeb70a581389226542fff018300f5fb86a105bcd76f2eab216c"
+        "sha256": "3b1393dfd9835bb8690612c2ca82bcde87e3367a8eb510911f7b5e403faf429a"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -550,7 +553,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "b00e4dad983377667898374ca39814c7927ece76f01f19112f2433186c1abf4b"
+        "sha256": "51d77a5dbaa0d540e2aac9e5e2eda5fbbc15cc793796f477a9f06f9232613fa2"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -906,7 +909,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "a2e2195709218106a2f0694e35ae6965efc818d67eb4d543eb4cea16771f3cb0"
+        "sha256": "342d849ba373bfab6ce9ccff7427dfdaab9840b3987d9b23f43e63b7917ba664"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -999,6 +1002,14 @@
       {
         "path": "scripts/ops/rtk-interop-word-manuscript-readback.py",
         "sha256": "9f3c081cae141a539bea38f6de284251ffa67d0a873689da728c3180e72511af"
+      },
+      {
+        "path": "src/export/docx/docxTextXml.js",
+        "sha256": "f38c5c6bb0415a8b907bcc0acf7a3575edb2a08fd8a0c571dd199c39101a1f0d"
+      },
+      {
+        "path": "test/contracts/rtk-word-inline-atoms.contract.test.js",
+        "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66"
       }
     ],
     "followupRepair": {
