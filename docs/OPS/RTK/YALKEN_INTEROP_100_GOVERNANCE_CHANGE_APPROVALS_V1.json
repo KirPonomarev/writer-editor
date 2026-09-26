@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "fb81977ff63390c292eae01d2d94400656971d63a47f64776ce2fdd4856eb8e5",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "sha256": "57a886f858796f6cc83eec4c54fa064eb4fa35784f399b5b976c5dff3b1008fd",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:25:12.176417Z",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1540,12 +1540,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "a74c9eb2007a451eeb1aa7b6050d05962500545b5e892639b173d0950ac043f4",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "sha256": "e39751feeeac1b999186c5b402618e980c9e695e0c6d7bd66608aedc1744ce5d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1666,12 +1666,12 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "3b1393dfd9835bb8690612c2ca82bcde87e3367a8eb510911f7b5e403faf429a",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "sha256": "951b1a20de056c25f6ff4e41b75b9f615be97c4f32526e81135da06d364a39a3",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
@@ -1819,48 +1819,48 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "9f61f573914c3d0e59a71698e8b54f71de7a2a2bdc49b2d44eb7914f58fb1c28",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "sha256": "fab65dc2046bd36fa96aa815287996d8180694c14b7426cfd8b890854db925f6",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "d5ab570dd621531fd5c29c0538398109536292000f78c8f2bf1bb69c6a5f25ea",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "sha256": "16acfa6399a6ddcdcd6adc3a499ee5970f3fcde98ab372b7854d8dd54cce396b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c847d4b81f470d873fe4e249956e203851a90782e2fe8d0c640f52e4f4b2bae0",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "sha256": "abebebb3e4e5b0848849b77413a83ca0c109edfade2765da5ef38e90b1b8c83d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "165e55bb863ed0718aec5e355ace0627e2b8aab6df95948377891c5d4ea90123",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "sha256": "ac60265ac87827544b91f6bbf0f7e121f1b176dec2eec78cc82e2a774bb71644",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "61d25198fe74bbebdbf3d3eb030e884fd61351990eacfaf2f9cf828d9c2d3420",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "sha256": "d1720734b76c11816d2cdb014c3325c7135eb960ebb265d9d2a8be960f66e867",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2111,6 +2111,33 @@
       "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
       "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-visibility-ruby.md",
+      "sha256": "13f203ee1e71087eb3e195fe99f6eeea611fca1d64e75697c21757a33588ad27",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedBy": "owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/word-import-visibility-ruby.contract.test.js",
+      "sha256": "2f065544fa77df9e443ac4b0592925f2f44641a8ce2c864acfe6a635431e68ff",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedBy": "owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
+      "sha256": "acb55f7b111af93e6c862d755bd36b1074c42c0944846d39c7a4c203e1a63706",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedBy": "owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -5664,6 +5691,78 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "a74c9eb2007a451eeb1aa7b6050d05962500545b5e892639b173d0950ac043f4",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "3b1393dfd9835bb8690612c2ca82bcde87e3367a8eb510911f7b5e403faf429a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9f61f573914c3d0e59a71698e8b54f71de7a2a2bdc49b2d44eb7914f58fb1c28",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "d5ab570dd621531fd5c29c0538398109536292000f78c8f2bf1bb69c6a5f25ea",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c847d4b81f470d873fe4e249956e203851a90782e2fe8d0c640f52e4f4b2bae0",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "165e55bb863ed0718aec5e355ace0627e2b8aab6df95948377891c5d4ea90123",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "61d25198fe74bbebdbf3d3eb030e884fd61351990eacfaf2f9cf828d9c2d3420",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "fb81977ff63390c292eae01d2d94400656971d63a47f64776ce2fdd4856eb8e5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T05:00:52.059068Z",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }

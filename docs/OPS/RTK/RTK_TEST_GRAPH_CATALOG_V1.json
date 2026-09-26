@@ -190,6 +190,7 @@
   },
   "extraMaintainedContractBasenames": [
     "b3c07-security-runtime-boundary.contract.test.js",
-    "donor-port-command-surface-kernel.contract.test.js"
+    "donor-port-command-surface-kernel.contract.test.js",
+    "word-import-visibility-ruby.contract.test.js"
   ]
 }

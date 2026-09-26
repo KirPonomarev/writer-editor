@@ -105,9 +105,42 @@ test('P0a rejected plan cannot write through real fenced import persistence', as
   assert.equal(fs.readFileSync(path.join(root,'protected.txt'),'utf8'),'original');
 });
 
-test('P0a character styles and image-only/empty hidden runs cannot bypass validation', async () => {
+test('P0a character styles and empty hidden runs cannot bypass validation', async () => {
   const styles = '<w:style w:type="character" w:styleId="Secret" w:default="1"><w:rPr><w:vanish/></w:rPr></w:style>';
   await blocked(pack(`<w:p>${run()}</w:p>`, styles), 'DOCX_HIDDEN_TEXT_UNSUPPORTED');
   await blocked(pack(`<w:p>${run('<w:rStyle w:val="Secret"/>')}</w:p>`, styles), 'DOCX_HIDDEN_TEXT_UNSUPPORTED');
   await blocked(pack('<w:p><w:r><w:rPr><w:vanish/></w:rPr></w:r></w:p>'), 'DOCX_HIDDEN_TEXT_UNSUPPORTED');
+});
+
+
+test('P0a actual main preview command never admits hidden or Ruby plans', async () => {
+  const vm = require('node:vm');
+  const source = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const start = source.indexOf('// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_START');
+  const end = source.indexOf('// DOCX_IMPORT_PREVIEW_COMMAND_SURFACE_END');
+  assert.ok(start >= 0 && end > start);
+  const admissions = [];
+  const sandbox = {
+    module: { exports: {} },
+    cloneJsonSafe: value => value === undefined ? undefined : JSON.parse(JSON.stringify(value)),
+    isPlainObjectValue: value => Boolean(value) && typeof value === 'object' && !Array.isArray(value),
+    loadRevisionBridgeModule: () => bridge,
+    rememberDocxImportPreviewPlanAdmission: plan => admissions.push(plan),
+  };
+  vm.runInNewContext(source.slice(start, end) + '\nmodule.exports = handleDocxImportPreviewCommandSurface;', sandbox);
+  for (const body of [
+    `<w:p>${run('<w:vanish/>')}</w:p>`,
+    `<w:p>${run('<w:webHidden/>')}</w:p>`,
+    '<w:p><w:r><w:ruby><w:rt><w:r><w:t>reading</w:t></w:r></w:rt><w:rubyBase><w:r><w:t>base</w:t></w:r></w:rubyBase></w:ruby></w:r></w:p>',
+  ]) {
+    const { preview } = await inspect(pack(body));
+    const result = await sandbox.module.exports({ requestId: 'p0a', docxContentPreviewReport: preview });
+    assert.equal(result.importPreviewOk, false, JSON.stringify(result));
+    assert.equal(result.docxImportPreviewPlan.candidateCreatePlan, null);
+    assert.equal(admissions.length, 0);
+  }
+  const { preview } = await inspect(pack(`<w:p>${run('', 'visible control')}</w:p>`));
+  const control = await sandbox.module.exports({ requestId: 'control', docxContentPreviewReport: preview });
+  assert.equal(control.importPreviewOk, true, JSON.stringify(control));
+  assert.equal(admissions.length, 1);
 });

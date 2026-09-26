@@ -209,7 +209,10 @@
     "docs/tasks/2026-09-25--word-table-autofit-review.md",
     "docs/tasks/2026-09-26--word-inline-atoms-audit.md",
     "src/export/docx/docxTextXml.js",
-    "test/contracts/rtk-word-inline-atoms.contract.test.js"
+    "test/contracts/rtk-word-inline-atoms.contract.test.js",
+    "docs/tasks/2026-09-26--word-visibility-ruby.md",
+    "test/contracts/word-import-visibility-ruby.contract.test.js",
+    "test/contracts/revision-bridge-docx-review-preflight.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -473,7 +476,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "3b1393dfd9835bb8690612c2ca82bcde87e3367a8eb510911f7b5e403faf429a"
+        "sha256": "951b1a20de056c25f6ff4e41b75b9f615be97c4f32526e81135da06d364a39a3"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1010,6 +1013,14 @@
       {
         "path": "test/contracts/rtk-word-inline-atoms.contract.test.js",
         "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66"
+      },
+      {
+        "path": "test/contracts/word-import-visibility-ruby.contract.test.js",
+        "sha256": "2f065544fa77df9e443ac4b0592925f2f44641a8ce2c864acfe6a635431e68ff"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
+        "sha256": "acb55f7b111af93e6c862d755bd36b1074c42c0944846d39c7a4c203e1a63706"
       }
     ],
     "followupRepair": {
