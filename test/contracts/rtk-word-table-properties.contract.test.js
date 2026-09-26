@@ -19,6 +19,15 @@ function fixture() {
   t.content[0].content[0].content.push(p('second paragraph 日本語 é'));
   return { type: 'doc', content: [p('before'), t, p('after'), table(row(cell('untouched')))] };
 }
+function withReviewDefaultSize(doc) {
+  const result = structuredClone(doc);
+  function visit(node) {
+    if (node.type === 'text') node.marks = [...(node.marks || []), { type: 'textStyle', attrs: { fontSize: '12pt' } }];
+    for (const child of node.content || []) visit(child);
+  }
+  visit(result);
+  return result;
+}
 async function exported(doc) {
   const [,,docxPageSetupBindModule,semanticMappingModule,styleMapModule] = await modules;
   return buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule, semanticMappingModule, styleMapModule });
@@ -38,7 +47,7 @@ async function mutate(bytes, change) {
   return buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data: name === 'word/document.xml' ? change(data) : data })));
 }
 test('W5: 720/4320 dxa, red cell and double 24 borders survive five ordinary and review cycles with neighboring legacy table unchanged', async () => {
-  const expected = fixture(); let current = expected;
+  const expected = fixture(); const reviewExpected = withReviewDefaultSize(expected); let current = expected;
   const [, envelope] = await modules;
   for (let i = 0; i < 5; i++) {
     const bytes = await exported(current);
@@ -47,11 +56,11 @@ test('W5: 720/4320 dxa, red cell and double 24 borders survive five ordinary and
     assert.match(bytes.toString(), /w:val="double" w:sz="24"/u);
     assert.match(bytes.toString(), /w:fill="FF0000"/u);
     const result = await imported(bytes);
-    assert.deepEqual(result.doc, expected);
+    assert.deepEqual(result.doc, i === 0 ? expected : reviewExpected);
     assert.equal(result.plan.lossReport.items.some(x => x.feature?.startsWith('table.')), false);
     const blocks = buildFormatIrParagraphs({ doc: result.doc, text: envelope.deriveVisibleTextFromDocument(result.doc), sceneId: 'table.txt' });
     current = (await imported(buildDocxReviewPacketBuffer({ blocks, customProperties: [{name:'YRTK_C01_AUTH',value:'synthetic-no-authority'},{name:'YRTK2_TOKEN',value:'synthetic-no-authority'}] }))).doc;
-    assert.deepEqual(current, expected);
+    assert.deepEqual(current, reviewExpected);
   }
 });
 test('W5: absent widths stay absent; explicit none and cell border override survive empty/header and both merge axes', async () => {

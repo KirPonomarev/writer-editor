@@ -36,6 +36,9 @@ const WORD_STYLES_CONTENT_TYPE = 'application/vnd.openxmlformats-officedocument.
 const WORD_STYLES_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles';
 const WORD_COMPATIBILITY_URI = 'http://schemas.microsoft.com/office/word';
 const FORMAT_IR_SCHEMA = 'yalken.rtk.format-ir.v1';
+const REVIEW_DOCX_TYPOGRAPHY_DEFAULTS = Object.freeze({
+  schemaVersion: 'yalken.review-docx.typography-defaults.v1', fontSize: '12pt',
+});
 const WORD_DOCUMENT_SECTIONS_SCHEMA = 'yalken.rtk.word.document-sections.v1';
 const RTK_WORD_BOOKMARK_V1_DOMAIN = 'word-bookmark-v1';
 
@@ -588,6 +591,7 @@ function buildStylesXml(blocks) {
   )).filter(Boolean)];
   return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="${WORD_MAIN_NS}">
+  <w:docDefaults><w:rPrDefault><w:rPr><w:sz w:val="24"/><w:szCs w:val="24"/></w:rPr></w:rPrDefault></w:docDefaults>
   ${buildDocxBlockStyleDefinitions(ids)}
   <w:style w:type="character" w:styleId="YalkenInlineCode"><w:name w:val="Yalken Inline Code"/><w:rPr><w:rFonts w:ascii="Menlo" w:hAnsi="Menlo"/><w:shd w:val="clear" w:color="auto" w:fill="F3F4F6"/></w:rPr></w:style>
 </w:styles>`;
@@ -755,6 +759,7 @@ function buildDocxReviewPacketBuffer(input = {}) {
 }
 
 module.exports = {
+  REVIEW_DOCX_TYPOGRAPHY_DEFAULTS,
   buildDocxReviewPacketBuffer,
   buildCorePropertiesXml,
   buildSettingsXml,

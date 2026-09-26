@@ -3,7 +3,7 @@ const { tableParagraphs } = require('../../io/documentTables.js');
 const { documentMedia } = require('../../io/documentMedia.js');
 
 const crypto = require('crypto');
-const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
+const { buildDocxReviewPacketBuffer, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require('./docxReviewPacketBuilder');
 const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
 const { buildCanonicalNotesExport } = require('./docxReviewPacketNotes.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
@@ -1165,6 +1165,7 @@ function buildFullManuscriptDocxReviewPacketSource(input = {}, deps = {}) {
   const exportMap = {
     exportMapId: `export-map-${roundIdHex}`,
     profileId: FULL_MANUSCRIPT_REVIEW_DOCX_PROFILE_ID,
+    exportTypography: { ...REVIEW_DOCX_TYPOGRAPHY_DEFAULTS },
     scope: 'full-manuscript',
     roundId,
     ...(commentExport ? { commentExport } : {}),

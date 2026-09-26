@@ -156,7 +156,11 @@ test('Word media: review packet retains image-only and mixed paragraphs, reuse, 
   assert.deepEqual(inspect(bytes).alts, ['red', 'blue', 'red']);
   const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(bytes));
   assert.equal(plan.ok, true, JSON.stringify(plan));
-  assert.deepEqual(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc, envelope.canonicalizeDocumentJson(doc));
+  const expected = structuredClone(doc);
+  for (const node of expected.content[1].content) {
+    if (node.type === 'text') node.marks = [...(node.marks || []), { type: 'textStyle', attrs: { fontSize: '12pt' } }];
+  }
+  assert.deepEqual(envelope.parseObservablePayload(plan.candidateCreatePlan.entries[0].content).doc, envelope.canonicalizeDocumentJson(expected));
   for (const offset of [-1, 1, 1.5, 99]) {
     const invalid = structuredClone(blocks); invalid[0].formatIr.media[0].offset = offset;
     assert.throws(() => build(invalid), /DOCX_MEDIA_PLACEMENT/);
