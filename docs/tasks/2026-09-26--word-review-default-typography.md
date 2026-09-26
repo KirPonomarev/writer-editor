@@ -45,3 +45,9 @@ choose the baseline descriptor. This is a defined export equivalence, not a
 blanket normalization of font changes or an assertion of pixel/pagination parity.
 
 No new official accepted IDs or complete P1a acceptance follows from this repair.
+
+Ordinary import of a review DOCX resolves its explicit 12pt document default
+into textStyle marks, as it does for external Word documents. Full-graph media
+and table tests assert that exact result, including five repeated cycles; they
+do not strip font marks before comparison. Authenticated label Apply instead
+preserves absent canonical font marks, proven by exact saved-file readback.

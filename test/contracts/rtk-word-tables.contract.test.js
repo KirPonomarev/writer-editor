@@ -24,6 +24,15 @@ function fixture() {
     row(cell('R3C1'), cell('R3C2'), cell('R3C3')),
   ), p('after')] };
 }
+function withReviewDefaultSize(doc) {
+  const result = structuredClone(doc);
+  function visit(node) {
+    if (node.type === 'text') node.marks = [...(node.marks || []), { type: 'textStyle', attrs: { fontSize: '12pt' } }];
+    for (const child of node.content || []) visit(child);
+  }
+  visit(result);
+  return result;
+}
 async function exported(doc) {
   const [,, docxPageSetupBindModule, semanticMappingModule, styleMapModule] = await modules;
   return buildDocxMinBuffer({ doc, bookProfile: { formatId: 'A4' } }, { docxPageSetupBindModule, semanticMappingModule, styleMapModule });
@@ -53,7 +62,7 @@ test('Word tables: manuscript review export and ordinary import share table topo
   const expected = fixture(); const [, envelope] = await modules;
   const blocks = buildFormatIrParagraphs({ doc: expected, text: envelope.deriveVisibleTextFromDocument(expected), sceneId: 'fixture.txt' });
   const bytes = buildDocxReviewPacketBuffer({ blocks, customProperties: [{ name: 'YRTK_C01_AUTH', value: 'synthetic-without-authority' }, { name: 'YRTK2_TOKEN', value: 'synthetic-without-authority' }] });
-  assert.deepEqual((await imported(bytes)).doc, expected);
+  assert.deepEqual((await imported(bytes)).doc, withReviewDefaultSize(expected));
 });
 test('Word tables: invalid canonical grids fail before DOCX serialization instead of flattening', async () => {
   for (const invalid of [table(row(cell('wide', 2)), row(cell('narrow'))), table(row(cell('overshoot', 1, 2))), table(row(cell('bad', 0))), table(row(cell('huge', 1000000)))]) {

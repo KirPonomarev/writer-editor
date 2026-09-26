@@ -685,7 +685,7 @@
       },
       {
         "path": "test/contracts/rtk-word-c2-rich-scene-reexport.contract.test.js",
-        "sha256": "cd76893405ab2d3098b4884d0f07eb884c0e1c64e98234cd6834eb342f4c5d84"
+        "sha256": "c71f813bf6342743912aa1712fc0a835c37e8c6c9ee11c510f67b474bd6854a0"
       },
       {
         "path": "test/contracts/rtk-interop-word-volume.contract.test.js",
@@ -901,11 +901,11 @@
       },
       {
         "path": "test/contracts/rtk-word-media.contract.test.js",
-        "sha256": "11a1db4689d046cbcb332e4ae5fefcef64936b13daea6e629f28695c2e114867"
+        "sha256": "7029315519b73841f64af24e19eddf1023d24c5e3c710369ffae49cef8400bba"
       },
       {
         "path": "test/contracts/rtk-word-tables.contract.test.js",
-        "sha256": "207913438401d808a1b44a3344ba7f9719592e6f709cc7f77394aa29d24c3cde"
+        "sha256": "957a9be7cf5fc7b53cacf5ec95e3d662b3f7edf95f3341816124f454362f18f1"
       },
       {
         "path": "test/unit/docx-import-safe-create.test.js",
@@ -1005,7 +1005,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
-        "sha256": "b6515e2e843388423a762de306fc503d7cdf39ed24be8e24959cf0197c2bba4a"
+        "sha256": "30fcfc1113419d30b2fa0eee2cbe269c5ea417ceebdc5a66006370beaf9cd4cb"
       },
       {
         "path": "docs/tasks/2026-09-25--word-composite-fidelity.md",

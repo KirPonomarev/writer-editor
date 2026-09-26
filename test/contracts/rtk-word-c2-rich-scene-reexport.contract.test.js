@@ -37,6 +37,7 @@ async function harness(raw, changes = {}) {
     cloneJsonSafe: plain,
     isPlainObjectValue: value => Boolean(value && typeof value === 'object' && !Array.isArray(value)),
     buildDocxReviewPacketBufferCore: builder.buildDocxReviewPacketBuffer,
+    REVIEW_DOCX_TYPOGRAPHY_DEFAULTS: builder.REVIEW_DOCX_TYPOGRAPHY_DEFAULTS,
     deriveWordBookmarkNameV1Cjs: builder.deriveWordBookmarkNameV1,
     buildFormatIrParagraphs,
     importDocxReviewRoundKey: async ({ roundId }) => { keyImports++; return { keyRef: 'opaque-key', keyIdHex: 'a'.repeat(32), roundIdHex: roundId.slice(6) }; },
@@ -70,6 +71,10 @@ test('C2 reexport uses rich paragraphs while signing the exact saved envelope by
   assert.ok(xml.includes('Привет Café 🧑‍💻'));
   assert.ok(xml.includes('<w:b/>'));
   assert.ok(!xml.includes('[doc-v2 length='));
+  const expectedTypography = { schemaVersion: 'yalken.review-docx.typography-defaults.v1', fontSize: '12pt' };
+  assert.deepEqual(plain(source.pendingAuthorityStore.roundsById[source.exportCapsule.roundId].exportMap.exportTypography), expectedTypography);
+  // Typography authority remains in the main-owned round record, never the returned advisory map.
+  assert.equal(source.advisoryManifest.coreManifest.exportMap.exportTypography, undefined);
   const mapped = source.advisoryManifest.coreManifest.exportMap.scenes[0].blocks;
   assert.equal(mapped.length, paragraphs.length);
   assert.deepEqual(plain(mapped.map(b => b.formatIr)), plain(source.blocks.map(b => b.formatIr)));
