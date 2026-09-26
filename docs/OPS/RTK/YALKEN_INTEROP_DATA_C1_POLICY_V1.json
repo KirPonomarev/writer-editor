@@ -222,7 +222,10 @@
     "docs/tasks/2026-09-26--word-round-key-durability.md",
     "test/contracts/rtk-word-round-key-durability.contract.test.js",
     "src/core/review-secret-store-v1.cjs",
-    "src/io/revisionBridge/reviewTransportRoundStoreV3.mjs"
+    "src/io/revisionBridge/reviewTransportRoundStoreV3.mjs",
+    "docs/tasks/2026-09-26--word-clean-link-label.md",
+    "test/contracts/rtk-word-clean-link-label.contract.test.js",
+    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs"
   ],
   "protectedFiles": [
     {
@@ -451,7 +454,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "1fce2aa4e754b17f825af68b49aa45f65291b380e78e34a37e03ab0716743f46"
+        "sha256": "c0bfd4415681c94451c376f5295cef264c3089b2ead4572444ec57b29a776edd"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -811,7 +814,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-        "sha256": "5ebeada4fd2ece4139c3151ce4057064c811e26cbe8d482b4e621f9f360e60f7"
+        "sha256": "879a0d840bdc1ddc95ca45736fa34db7b1df64cce84888499b2b2f9bd4f8e1e7"
       },
       {
         "path": "test/contracts/rtk-export01-unified-bookmark.contract.test.js",
@@ -1064,6 +1067,14 @@
       {
         "path": "src/io/revisionBridge/reviewTransportRoundStoreV3.mjs",
         "sha256": "469465c7d5afd06443e56cf31b8e05ecace7384383d58cd2cb4f361613f07267"
+      },
+      {
+        "path": "test/contracts/rtk-word-clean-link-label.contract.test.js",
+        "sha256": "da240c00c996f839bf6ab82a97ff5fbfe0c98b5204bb8ba0cc6033d693a2e446"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+        "sha256": "05a12b61697bbada44b4f733fd3a8685298eec941227a67da6982c6a3e3efff2"
       }
     ],
     "followupRepair": {

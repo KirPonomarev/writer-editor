@@ -225,6 +225,9 @@ function instantiateDocxReviewPreviewSessionPort(options = {}) {
     isDirty: false,
     crypto,
     Buffer,
+    app:{getPath:()=>'/synthetic/userData'},
+    safeStorage:{},
+    createReviewSecretStore:()=>testKeyPersistence,
     COMMAND_SURFACE_KERNEL_COMMAND_IDS,
     ...MENU_HANDLER_COMPUTED_KEY_GLOBALS,
     cloneJsonSafe,
@@ -725,10 +728,19 @@ function customPropertyFromSource(source, name) {
     .find((property) => property?.name === name)?.value || '';
 }
 
+// In-process fixture adapter for the durable key port. OS encryption and
+// wrong-project persistence are exercised by the round-key durability suite.
+const testDurableKeys = new Map();
+const testKeyPersistence = {
+  projectBinding:'preview-command-synthetic-project',
+  write(ref,entry) { testDurableKeys.set(ref,JSON.parse(JSON.stringify(entry))); },
+  read(ref) { const entry=testDurableKeys.get(ref);return entry?JSON.parse(JSON.stringify(entry)):null; },
+};
+
 function importTestRoundKeyRef(roundId, secret) {
   const { createRequire: createNodeRequire } = require('node:module');
   const bridge = createNodeRequire(__filename)('../../src/io/revisionBridge/index.mjs');
-  const result = bridge.importRoundKey({ roundId, secret });
+  const result = bridge.importRoundKey({ roundId, secret, persistence:testKeyPersistence });
   if (!result || result.ok !== true || typeof result.keyRef !== 'string' || !result.keyRef) {
     throw new Error('TEST_ROUND_KEY_IMPORT_FAILED');
   }
@@ -1979,6 +1991,9 @@ test('DOCX review preview session command: full-manuscript return exposes only e
     fullSource.localAuthorityCapsule.roundId,
     fullSource.localAuthorityCapsule.hmacSecret,
   );
+  const durableKey = testDurableKeys.get(fullSource.localAuthorityCapsule.keyRef);
+  fullSource.localAuthorityCapsule.keyIdHex = durableKey.keyIdHex;
+  fullSource.localAuthorityCapsule.roundIdHex = durableKey.roundIdHex;
   fullSource.localAuthorityCapsule.lifecycleState = 'PUBLISHED_ACTIVE';
   const returnedAuthority = {
     scope: 'full-manuscript',
@@ -2210,6 +2225,9 @@ test('DOCX review preview session command: current-profile YRTK carrier authenti
     fullSource.localAuthorityCapsule.roundId,
     fullSource.localAuthorityCapsule.hmacSecret,
   );
+  const durableKey = testDurableKeys.get(fullSource.localAuthorityCapsule.keyRef);
+  fullSource.localAuthorityCapsule.keyIdHex = durableKey.keyIdHex;
+  fullSource.localAuthorityCapsule.roundIdHex = durableKey.roundIdHex;
   fullSource.localAuthorityCapsule.lifecycleState = 'PUBLISHED_ACTIVE';
   const declaredBookmark = fullSource.localAuthorityCapsule.exportMap.scenes[0].blocks[0].wordSignals.find((signal) => signal.kind === 'bookmarkName').value.name;
   const returnedBytes = fullManuscriptReturnFixture(fullSource, revisionBridge, [
