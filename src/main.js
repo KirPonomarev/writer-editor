@@ -228,7 +228,7 @@ const {
 } = require('./main/blackBoxRuntimeCreateOnlyTargetBindingV1.cjs');
 const { buildDocxMinBuffer: buildDocxMinBufferCore } = require('./export/docx/docxMinBuilder');
 const { runDocxMinExport } = require('./export/docx/docxMinExportHandler');
-const { buildDocxReviewPacketBuffer: buildDocxReviewPacketBufferCore, deriveWordBookmarkNameV1: deriveWordBookmarkNameV1Cjs } = require('./export/docx/docxReviewPacketBuilder');
+const { buildDocxReviewPacketBuffer: buildDocxReviewPacketBufferCore, deriveWordBookmarkNameV1: deriveWordBookmarkNameV1Cjs, REVIEW_DOCX_TYPOGRAPHY_DEFAULTS } = require('./export/docx/docxReviewPacketBuilder');
 const { runDocxReviewPacketExport } = require('./export/docx/docxReviewPacketExportHandler');
 const { commentStateDigest, normalizeCommentProvenance, compareCommentExportReadback } = require('./export/docx/docxReviewPacketComments.js');
 const { normalizeDocumentNoteSelections, notesStateDigest, validateDocumentNotesReturn } = require('./export/docx/docxReviewPacketNotes.js');
@@ -4495,6 +4495,7 @@ async function readDocxReviewPacketExportSource() {
   const exportMap = {
     exportMapId: `export-map-${roundIdHex}`,
     profileId: REVIEW_DOCX_PACKET_PROFILE_ID,
+    exportTypography: { ...REVIEW_DOCX_TYPOGRAPHY_DEFAULTS },
     scope: 'scene',
     roundId,
     scenes: [
@@ -6475,6 +6476,7 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
     cleanLinkLabel = module.analyzeCleanLinkLabelReturn({
       baselineParagraphs: buildFormatIrParagraphs({sceneId, text:parsed.text, doc:parsed.doc}),
       returnedParagraphs: paragraphAuthority.paragraphs, sceneId, reviewIr:parserResult.reviewIr,
+      exportTypography: exportMap.exportTypography,
     });
     if (!cleanLinkLabel.ok) return returnedTexts;
   }

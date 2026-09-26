@@ -18,7 +18,7 @@ function shape(state) {
   if (Object.hasOwn(out,'link')) out.link = links.normalizeDocxHttpHref(out.link);
   return out;
 }
-function runs(input, text, returned) {
+function runs(input, text, returned, defaultFontSize = null) {
   if (!Array.isArray(input) || input.length > 4096 || typeof text !== 'string' || text.length > 65536) throw Error('run-budget');
   const out = []; let offset=0;
   for (const r of input) {
@@ -34,6 +34,7 @@ function runs(input, text, returned) {
         inline.link=mark.attrs?.href;
       }
       inline=shape(inline);
+      if (defaultFontSize && !inline.fontSize) inline.fontSize=defaultFontSize;
     }
     const signature=stable(inline), previous=out.at(-1);
     if (previous?.signature===signature) { previous.text+=r.text; previous.to=r.to; }
@@ -47,8 +48,17 @@ function boundaries(text) {
   return new Set([0,text.length,...Array.from(new Intl.Segmenter('und',{granularity:'grapheme'}).segment(text),x=>x.index)]);
 }
 
-export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagraphs, sceneId, reviewIr = {} } = {}) {
+export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagraphs, sceneId, reviewIr = {}, exportTypography } = {}) {
   try {
+    // Only the main-owned authenticated export map supplies this descriptor.
+    // A returned stylesheet or historical round cannot invent its own baseline.
+    let defaultFontSize=null;
+    if (exportTypography !== undefined) {
+      if (!plain(exportTypography) || Object.keys(exportTypography).sort().join(',')!=='fontSize,schemaVersion'
+        || exportTypography.schemaVersion!=='yalken.review-docx.typography-defaults.v1'
+        || exportTypography.fontSize!=='12pt') return reject('export-typography-binding');
+      defaultFontSize=exportTypography.fontSize;
+    }
     if (!sceneId || !Array.isArray(baselineParagraphs) || !baselineParagraphs.length
       || baselineParagraphs.length>256 || !Array.isArray(returnedParagraphs)
       || baselineParagraphs.length!==returnedParagraphs.length) return reject('paragraph-budget-or-cardinality');
@@ -94,7 +104,7 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       } else if (Object.hasOwn(p,'headingLevel') || Object.hasOwn(structure,'headingLevel')) {
         return reject('unexpected-heading-level');
       }
-      const oldRuns=runs(format.runs,base.text,false), newRuns=runs(next.formattedRuns,next.paragraphText,true);
+      const oldRuns=runs(format.runs,base.text,false,defaultFontSize), newRuns=runs(next.formattedRuns,next.paragraphText,true);
       total+=base.text.length+next.paragraphText.length;
       if (total>262144 || oldRuns.length!==newRuns.length) return reject('shape-or-total-budget');
       for (let j=0;j<oldRuns.length;j++) {
