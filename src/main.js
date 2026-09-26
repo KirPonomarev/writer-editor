@@ -20702,6 +20702,7 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
       observeLegacy,
       observeGateway,
       executeGateway: async () => {
+        if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
         let expectedSceneContent = null;
         try {
           expectedSceneContent = await fs.readFile(filePath, 'utf8');
@@ -21805,6 +21806,7 @@ async function handleRtkFormattingReturnCommandSurface(payload = {}) {
   if (keyGate.ok !== true) return keyGate;
   return module.createRtkFormattingReturnCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
+    publishScene: publishReviewSceneWithProjectTransaction,
   })(payload);
 }
 
@@ -22030,6 +22032,7 @@ async function reconcileReviewFormattingReturnAtStartup() {
     await buildRtkFormattingReturnRuntimeProjectScope(),
     {
     cryptoPort: createRtkReviewTransportCryptoPort(),
+    publishScene: publishReviewSceneWithProjectTransaction,
     },
   );
   if (!result || result.ok !== true) {
@@ -22590,7 +22593,7 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
   }
   const receipt = await commitWriterProjectSnapshot(
     filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
-    'review exact scene and manifest transaction', { expectedSceneContent: options.expectedText },
+    'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename },
   );
   if (receipt.success !== true || receipt.projectTransaction !== true) {
     throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {

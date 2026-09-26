@@ -45,3 +45,13 @@ stale input, revoked key, forged candidate, cancellation, queued identity drift.
 performance: linear run comparison with explicit paragraph/run/text budgets;
 no typing-path work. Existing accessibility and review UI retained.
 rollback: revert this delivery. No new official accepted cell claim until proof.
+
+Physical chained-return finding: an earlier native formatting Apply changed a
+scene while its WP201 scene digest remained unchanged. A following text Apply
+correctly failed E_PROJECT_COMMIT_CORRUPT; recovery preserved all original bytes.
+This slice therefore routes formatting publication, rollback and startup
+reconciliation through the existing main scene+manifest transaction port. The
+formatting runtime retains its path/revision guard and exact expected content;
+production supplies the port, while isolated runtime tests retain their existing
+atomic adapter. No old corrupt marker is deleted or silently trusted. Tests
+cover formatting -> text, rollback, restart, concurrent edit and failed publisher.

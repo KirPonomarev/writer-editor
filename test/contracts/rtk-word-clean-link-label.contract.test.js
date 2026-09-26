@@ -101,3 +101,49 @@ test('real parser accounts only balanced inert hyperlink instructions, never orp
  for(const errorCode of ['/private/secret','secret message','X'.repeat(129),null])assert.equal(summarize({reasons:[{errorCode}]}).writerFailureCode,'');
  assert.equal(summarize({}).writerFailureCode,'');
  });
+
+for (const mode of ['success','rollback','restart','stale','publisher-reject']) test('formatting/text transaction continuity: '+mode,async t=>{
+ const crypto=require('node:crypto');
+ const digest=v=>crypto.createHash('sha256').update(String(v)).digest('hex');
+ const canonical=v=>Array.isArray(v)?'['+v.map(canonical).join(',')+']':v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonical(v[k])).join(',')+'}':JSON.stringify(v);
+ const cryptoPort={sha256Text:digest,sha256Json:v=>'sha256:'+digest(canonical(v)),byteLength:v=>Buffer.byteLength(String(v))};
+ const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'label-continuity-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'roman'));const paths={'scene-a':path.join(root,'roman/a.txt'),'scene-b':path.join(root,'roman/b.txt')};
+ for(const [id,p] of Object.entries(paths))fs.writeFileSync(p,id==='scene-a'?'Alpha scene':'Beta scene');
+ const manifestPath=path.join(root,'project.json');fs.writeFileSync(manifestPath,JSON.stringify({projectId:'project-formatting-n3'}));
+ const fixtureSource=fs.readFileSync(path.join(__dirname,'rtk-word-n3-formatting-return.contract.test.js'),'utf8');
+ const start=fixtureSource.indexOf('function runtimeInput('),end=fixtureSource.indexOf('\nfunction runtimeProject',start);
+ const box={fs,cryptoPort};vm.createContext(box);vm.runInContext(fixtureSource.slice(start,end),box);const input=box.runtimeInput(root,paths);
+ const runtime=await import('../../src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs');
+ const {commitProjectTransaction,recoverProjectTransaction}=require('../../src/core/project-transaction-v1.cjs');
+ const {createMainProjectManifestAuthority}=await import('../../src/product/mainProjectManifestAuthority.mjs');
+ const authority=createMainProjectManifestAuthority({anchorRoot:path.join(root,'anchors'),useLeaseHeartbeatWorker:false});
+ const verifyManifestContinuation=r=>authority.verifyManifestContinuation({...r,projectId:input.projectId});
+ const publishManifest=({manifestPath:targetPath,expectedText,nextText})=>authority.commitManifestText({projectId:input.projectId,targetPath,expectedText,nextText});
+ let revision=0,calls=0,fixtureReady=false;
+ const publishScene=async(file,content,options)=>{
+  calls++;if(fixtureReady&&mode==='publisher-reject')return {ok:0};
+  if(options.beforeRename)await options.beforeRename();
+  const manifest=fs.readFileSync(manifestPath,'utf8');
+  const receipt=await commitProjectTransaction({scenePath:file,sceneContent:content,expectedSceneContent:options.expectedText,manifestPath,manifestContent:manifest,expectedManifestContent:manifest,revision:++revision,publishManifest,verifyManifestContinuation});
+  assert.equal(receipt.success,true);return {ok:1,receipt};
+ };
+ // Establish real pre-existing commit records, exactly as an imported project has.
+ for(const p of Object.values(paths))await publishScene(p,fs.readFileSync(p,'utf8'),{expectedText:fs.readFileSync(p,'utf8')});calls=0;fixtureReady=true;
+ const options={cryptoPort,publishScene};
+ if(mode==='rollback')options.beforeSceneWrite=({index})=>{if(index===1)throw Error('INJECTED_SECOND_SCENE_FAILURE');};
+ if(mode==='restart')options.simulateAbruptFailureAtSceneIndex=0;
+ if(mode==='stale')options.beforeAtomicSceneRename=()=>{fs.writeFileSync(paths['scene-a'],'concurrent author text');};
+ let result;
+ if(mode==='restart'){
+  await assert.rejects(runtime.applyMultiSceneFormattingReturnRuntime(input,options),/SIMULATED_ABRUPT_PROCESS_EXIT/);
+  result=await runtime.reconcileFormattingReturnRuntimeAtStartup({projectRoot:root,projectId:input.projectId,scenePathBySceneId:paths,startupSingleInstanceAuthority:true},{cryptoPort,publishScene});assert.equal(result.ok,true,JSON.stringify(result));
+ }else result=await runtime.applyMultiSceneFormattingReturnRuntime(input,options);
+ if(mode==='success'){
+  assert.equal(result.status,'applied',JSON.stringify(result));assert.equal(calls,2);
+  const [,envelope]=await mods;const before=fs.readFileSync(paths['scene-a'],'utf8');assert.equal(envelope.parseObservablePayload(before).doc.content[0].content[0].marks[0].type,'bold');
+  await publishScene(paths['scene-a'],before.replace('Alpha','Omega'),{expectedText:before});
+ }else if(mode==='stale'){assert.equal(result.ok,false);assert.equal(fs.readFileSync(paths['scene-a'],'utf8'),'concurrent author text');}
+ else {assert.equal(fs.readFileSync(paths['scene-a'],'utf8'),'Alpha scene');if(mode!=='restart')assert.equal(result.ok,false);}
+ if(mode!=='stale')for(const p of Object.values(paths))await recoverProjectTransaction({scenePath:p,manifestPath,publishManifest,verifyManifestContinuation});
+});

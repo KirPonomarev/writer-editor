@@ -680,7 +680,7 @@ export const R24_INTEROP_WORD_CLEAN_LINK_LABEL_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "35e4aca3693b9bf7505270f5e816129290ba9673c57d8569b5ddbad34267861b"
+      "sha256": "dae82359cf683406c1f5ce1b0f56d6afb0195ee5abb7fad1a4bc2c9ca35f0a76"
     }
   ]
 });

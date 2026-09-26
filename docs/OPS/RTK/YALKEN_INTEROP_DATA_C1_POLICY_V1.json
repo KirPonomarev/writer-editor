@@ -454,7 +454,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "511b4d9af25cd73ddb290ba49433f521208b21fb2a69943365943e7b1ad1b92f"
+        "sha256": "f5311d9959a853dd4cec33f6425397711329c7cf5dac01adcafb16861655a1b1"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1054,7 +1054,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-        "sha256": "ff37c55dd31b8961bc695cf3bc6297f11324d444c140a66d7df8f078e07adbb4"
+        "sha256": "1db925753d21fba10f34c8d47d9c84eafd857af2314fb0397b1c5d82cf80a872"
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
@@ -1070,7 +1070,7 @@
       },
       {
         "path": "test/contracts/rtk-word-clean-link-label.contract.test.js",
-        "sha256": "2f90b264435f3dfba7110f78403aa4b3e5cab0cf5498747c174fe0159383aab6"
+        "sha256": "0503e6b6d4e5d77c4f9378c232237f3d1d6dc4382ca26b39d053eed2b0b0ef28"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
