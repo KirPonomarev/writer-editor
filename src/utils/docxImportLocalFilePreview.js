@@ -275,6 +275,7 @@ function sanitizeImportPreviewPlan(plan) {
                   kind: entry.kind,
                   title: entry.title,
                   content: entry.content,
+                  ...(entry.comments !== undefined ? { comments: cloneJsonSafe(entry.comments) } : {}),
                   contentTextHash: entry.contentTextHash,
                   candidateContentSha256: typeof entry.candidateContentSha256 === 'string'
                     ? entry.candidateContentSha256
