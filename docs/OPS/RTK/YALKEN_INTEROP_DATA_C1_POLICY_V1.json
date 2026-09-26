@@ -209,7 +209,10 @@
     "docs/tasks/2026-09-25--word-table-autofit-review.md",
     "docs/tasks/2026-09-26--word-inline-atoms-audit.md",
     "src/export/docx/docxTextXml.js",
-    "test/contracts/rtk-word-inline-atoms.contract.test.js"
+    "test/contracts/rtk-word-inline-atoms.contract.test.js",
+    "docs/tasks/2026-09-26--word-visibility-ruby.md",
+    "test/contracts/rtk-word-visibility-ruby.contract.test.js",
+    "test/contracts/revision-bridge-docx-review-preflight.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -473,7 +476,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "3b1393dfd9835bb8690612c2ca82bcde87e3367a8eb510911f7b5e403faf429a"
+        "sha256": "9fe0aa1f8ef0e6312196dd2436016a2e249072fdf4cd449e17eba569d69e0fe2"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -553,7 +556,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "51d77a5dbaa0d540e2aac9e5e2eda5fbbc15cc793796f477a9f06f9232613fa2"
+        "sha256": "ce9e0e02bb7f82ea230a727208595ed86e78039cc136cbf27acc38a77a9f0ed6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -909,7 +912,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "342d849ba373bfab6ce9ccff7427dfdaab9840b3987d9b23f43e63b7917ba664"
+        "sha256": "29255ace387d77258f52fda245a6c1b9b7c23ffa1dfbf81171306c35fce68dd2"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1010,6 +1013,14 @@
       {
         "path": "test/contracts/rtk-word-inline-atoms.contract.test.js",
         "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66"
+      },
+      {
+        "path": "test/contracts/rtk-word-visibility-ruby.contract.test.js",
+        "sha256": "bc3961981518ba5500ed49b7b839b890ef8cecb4e15d17c3d2ca02a6f8ba1974"
+      },
+      {
+        "path": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",
+        "sha256": "acb55f7b111af93e6c862d755bd36b1074c42c0944846d39c7a4c203e1a63706"
       }
     ],
     "followupRepair": {

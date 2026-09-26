@@ -268,7 +268,10 @@ test('DOCX review preflight: malformed and unsafe target XML fail closed', async
 });
 
 test('DOCX review preflight: implementation stays out of session apply storage layers', () => {
-  const section = extractMarkedSection(readBridgeSource(), SECTION_START, SECTION_END);
+  // Namespace identifiers are inert XML vocabulary, not network operations.
+  // Remove only the two exact quoted WML literals; keep every executable token.
+  const section = extractMarkedSection(readBridgeSource(), SECTION_START, SECTION_END)
+    .replaceAll("'http://schemas.openxmlformats.org/wordprocessingml/2006/main'", "'WML_NAMESPACE'");
   for (const marker of [
     'fs.',
     'readFile',
