@@ -1,4 +1,5 @@
-const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, session, utilityProcess, safeStorage } = require('electron');
+const { createReviewSecretStore } = require('./core/review-secret-store-v1.cjs');
 const { performance } = require('perf_hooks');
 const { spawnSync } = require('child_process');
 const path = require('path');
@@ -4618,7 +4619,7 @@ async function readDocxReviewPacketExportSource() {
   // key vault and the durable capsule carries only an opaque keyRef plus public
   // correlation material (keyIdHex/roundIdHex). The secret NEVER reaches the
   // durable record / renderer / worker / DOCX.
-  const roundKeyImport = await importDocxReviewRoundKey({ roundId, secret: hmacSecret });
+  const roundKeyImport = await importDocxReviewRoundKey({ roundId, secret: hmacSecret, projectRoot });
   const roundKeyRef = docxReviewPreviewSessionDetailString(roundKeyImport?.keyRef);
   const localAuthorityCapsule = {
     schemaVersion: 'yalken.rtk.word.product-review-docx-export.local-authority.v1',
@@ -4785,6 +4786,7 @@ async function readFullManuscriptDocxReviewPacketExportSource(payload = {}) {
   // correlation material. The raw secret never reaches the durable store.
   const fullManuscriptRoundKey = await importDocxReviewRoundKey({
     roundId: source.localAuthorityCapsule.roundId,
+    projectRoot,
     secret: typeof source.forbiddenSecret === 'string' ? source.forbiddenSecret : '',
   });
   source.localAuthorityCapsule.keyRef = docxReviewPreviewSessionDetailString(fullManuscriptRoundKey?.keyRef);
@@ -6776,7 +6778,7 @@ async function buildDocxReviewPreviewSessionDefaultRtkApplyInput({
   // automatic apply with a typed RTK_ROUND_KEY_* code (preview/manuscript read
   // stays available through the secret-free paths).
   const applyKeyRef = docxReviewPreviewSessionDetailString(authorityCapsule.keyRef);
-  const applyKeyHandle = await resolveDocxReviewRoundKeyHandle(applyKeyRef);
+  const applyKeyHandle = await resolveDocxReviewRoundKeyHandle(applyKeyRef, authorityCapsule);
   const applyKeyState = applyKeyHandle && typeof applyKeyHandle.state === 'string' ? applyKeyHandle.state : 'LOST';
   if (typeof revisionBridge.evaluateRoundKeyStateAuthority === 'function') {
     const keyStateGate = revisionBridge.evaluateRoundKeyStateAuthority({
@@ -7417,7 +7419,7 @@ function sanitizeRtkFormattingReturnDiagnostics(diagnostics) {
     .filter((diagnostic) => diagnostic.code);
 }
 
-function attachRtkFormattingReturnProductPreview({ input, candidates, diagnostics } = {}) {
+function attachRtkFormattingReturnProductPreview({ input, candidates, diagnostics, keyAuthority } = {}) {
   if (
     activeReviewSessionLifecycle !== 'active'
     || !isPlainObjectValue(activeReviewSessionStore)
@@ -7431,6 +7433,7 @@ function attachRtkFormattingReturnProductPreview({ input, candidates, diagnostic
         schemaVersion: 'yalken.rtk.word.n3.main-owned-formatting-apply-store.v1',
         sessionToken,
         input: cloneJsonSafe(input),
+        keyAuthority: cloneJsonSafe(keyAuthority || {}),
         writerAuthorityExposedToRenderer: false,
       }
     : null;
@@ -7538,6 +7541,7 @@ function prepareAuthenticatedDocxFormattingReturnProductPath({
   const diagnostics = Array.isArray(extracted.diagnostics) ? extracted.diagnostics : [];
   const reviewSurface = attachRtkFormattingReturnProductPreview({
     input,
+    keyAuthority: { keyRef: capsule.keyRef, roundId: capsule.roundId, keyIdHex: capsule.keyIdHex, roundIdHex: capsule.roundIdHex },
     candidates: extracted.candidates,
     diagnostics,
   });
@@ -7582,7 +7586,7 @@ function sanitizeRtkStructuralReturnDiagnostics(diagnostics) {
     .filter((diagnostic) => diagnostic.code);
 }
 
-function attachRtkStructuralReturnProductPreview({ input, candidates, diagnostics } = {}) {
+function attachRtkStructuralReturnProductPreview({ input, candidates, diagnostics, keyAuthority } = {}) {
   if (
     activeReviewSessionLifecycle !== 'active'
     || !isPlainObjectValue(activeReviewSessionStore)
@@ -7596,6 +7600,7 @@ function attachRtkStructuralReturnProductPreview({ input, candidates, diagnostic
         schemaVersion: 'yalken.rtk.word.n4.main-owned-structural-apply-store.v1',
         sessionToken,
         input: cloneJsonSafe(input),
+        keyAuthority: cloneJsonSafe(keyAuthority || {}),
         writerAuthorityExposedToRenderer: false,
       }
     : null;
@@ -7702,6 +7707,7 @@ function prepareAuthenticatedDocxStructuralReturnProductPath({
   const diagnostics = Array.isArray(extracted.diagnostics) ? extracted.diagnostics : [];
   const reviewSurface = attachRtkStructuralReturnProductPreview({
     input,
+    keyAuthority: { keyRef: capsule.keyRef, roundId: capsule.roundId, keyIdHex: capsule.keyIdHex, roundIdHex: capsule.roundIdHex },
     candidates: extracted.candidates,
     diagnostics,
   });
@@ -8061,20 +8067,29 @@ function readActiveDocxReviewReturnAuthorityStore(options = {}) {
 // ROUND-01 (V3): import an export-time hmacSecret into the main-process-only
 // round key vault and return the opaque keyRef + public correlation material.
 // The secret bytes are never persisted to the durable authority store.
-async function importDocxReviewRoundKey({ roundId, secret }) {
+function docxReviewSecretStore(projectRoot = getProjectRootPath()) {
+  return createReviewSecretStore({userDataRoot:app.getPath('userData'),projectRoot,safeStorage});
+}
+
+async function importDocxReviewRoundKey({ roundId, secret, projectRoot }) {
   const bridge = await loadRevisionBridgeModule();
   if (!bridge || typeof bridge.importRoundKey !== 'function') return { keyRef: '', keyIdHex: '', roundIdHex: '' };
-  const result = bridge.importRoundKey({ roundId, secret });
+  const result = bridge.importRoundKey({ roundId, secret, persistence:docxReviewSecretStore(projectRoot) });
   if (!result || result.ok !== true) return { keyRef: '', keyIdHex: '', roundIdHex: '' };
   return { keyRef: result.keyRef, keyIdHex: result.keyIdHex, roundIdHex: result.roundIdHex };
 }
 
 // ROUND-01 (V3): resolve the main-process-only vault handle for a round's
 // keyRef. Returns null when the keyRef is unknown (foreign/expired round).
-async function resolveDocxReviewRoundKeyHandle(keyRef) {
+async function resolveDocxReviewRoundKeyHandle(keyRef, authority = {}) {
   const bridge = await loadRevisionBridgeModule();
   if (!bridge || typeof bridge.resolveRoundKey !== 'function') return null;
-  return bridge.resolveRoundKey(keyRef);
+  try {
+    return bridge.resolveRoundKey(keyRef, {
+      persistence:docxReviewSecretStore(), roundId:authority.roundId,
+      keyIdHex:authority.keyIdHex, roundIdHex:authority.roundIdHex,
+    });
+  } catch { return null; }
 }
 
 function docxReviewReturnAuthorityStorePath(projectRootRaw) {
@@ -9189,7 +9204,7 @@ async function inspectDocxReviewReturnIntakeV2({
   // automatic apply but preview/manuscript read stays available; here the
   // return-intake verification still proceeds because it is a verify-only path.
   const roundKeyRef = docxReviewPreviewSessionDetailString(localAuthority.keyRef);
-  const roundKeyHandle = await resolveDocxReviewRoundKeyHandle(roundKeyRef);
+  const roundKeyHandle = await resolveDocxReviewRoundKeyHandle(roundKeyRef, localAuthority);
   const hmacSecret = roundKeyHandle && typeof roundKeyHandle.hmacSecret === 'function'
     ? docxReviewPreviewSessionDetailString(roundKeyHandle.hmacSecret())
     : '';
@@ -21673,6 +21688,30 @@ function loadRtkStructuralReturnModule() {
   return rtkStructuralReturnModulePromise;
 }
 
+// Main-owned authority is rechecked at Kernel dispatch, after module loading.
+// A verified preview (or a renderer payload) cannot confer key authority.
+async function revalidateRtkReturnApplyKey(kind, payload) {
+  const readStore = () => kind === 'formatting'
+    ? activeRtkFormattingReturnApplyStore : activeRtkStructuralReturnApplyStore;
+  const matches = () => kind === 'formatting'
+    ? rtkFormattingReturnStoreMatchesActiveSession() : rtkStructuralReturnStoreMatchesActiveSession();
+  const blocked = code => ({ok:false,status:'blocked',code,reason:code,writerCalled:false});
+  const store = readStore();
+  if (!matches() || !isPlainObjectValue(store?.keyAuthority)
+    || !store.keyAuthority.keyRef || !store.keyAuthority.roundId
+    || store.input?.projectRoot !== getProjectRootPath()
+    || JSON.stringify(payload) !== JSON.stringify(store.input)) return blocked('RTK_ROUND_KEY_AUTHORITY_REQUIRED');
+  const handle = await resolveDocxReviewRoundKeyHandle(store.keyAuthority.keyRef, store.keyAuthority);
+  // Resolving the port may yield: project/session identity must still match.
+  if (readStore() !== store || !matches() || store.input.projectRoot !== getProjectRootPath()) {
+    return blocked('RTK_ROUND_KEY_STALE_AUTHORITY');
+  }
+  if (handle?.state !== 'ACTIVE') return blocked(
+    handle?.state === 'REVOKED' ? 'RTK_ROUND_KEY_REVOKED'
+      : handle?.state === 'VERIFY_ONLY' ? 'RTK_ROUND_KEY_VERIFY_ONLY' : 'RTK_ROUND_KEY_LOST');
+  return {ok:true};
+}
+
 async function handleRtkFormattingReturnCommandSurface(payload = {}) {
   let module = null;
   try {
@@ -21692,6 +21731,8 @@ async function handleRtkFormattingReturnCommandSurface(payload = {}) {
       'RTK_FORMATTING_RETURN_HANDLER_UNAVAILABLE',
     );
   }
+  const keyGate = await revalidateRtkReturnApplyKey('formatting', payload);
+  if (keyGate.ok !== true) return keyGate;
   return module.createRtkFormattingReturnCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
   })(payload);
@@ -21716,6 +21757,8 @@ async function handleRtkStructuralReturnCommandSurface(payload = {}) {
       'RTK_STRUCTURAL_RETURN_HANDLER_UNAVAILABLE',
     );
   }
+  const keyGate = await revalidateRtkReturnApplyKey('structural', payload);
+  if (keyGate.ok !== true) return keyGate;
   return module.createRtkStructuralReturnCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
   })(payload);

@@ -139,8 +139,8 @@ function roundError(code, message, details = {}) {
 }
 
 // ---------------------------------------------------------------------------
-// Main-process-only key vault. The secret bytes live ONLY here; nothing leaves
-// the vault except sign()/verify() operations and a state field. keyRef is an
+// Main-process-only key vault. An explicit ReviewSecretStorePort may persist
+// OS-encrypted bytes outside the project. Public results contain no secret. keyRef is an
 // opaque random hex handle that never reveals the secret.
 // ---------------------------------------------------------------------------
 
@@ -151,7 +151,7 @@ function makeOpaqueKeyRef() {
   return crypto.randomBytes(32).toString('hex');
 }
 
-export function createRoundKey({ roundId } = {}) {
+export function createRoundKey({ roundId, persistence } = {}) {
   const roundIdText = rawString(roundId);
   if (!roundIdText) {
     return roundError('RTK_ROUND_KEY_REQUIRED_ROUND_ID', 'createRoundKey requires a roundId');
@@ -167,6 +167,10 @@ export function createRoundKey({ roundId } = {}) {
     roundIdHex,
     createdAt: new Date().toISOString(),
   };
+  if (persistence) {
+    persistence.write(keyRef, entry);
+    Object.defineProperty(entry, 'persistence', {value:persistence});
+  }
   roundKeyVault.set(keyRef, entry);
   // Public correlation material returned to the caller. The secret is NEVER
   // exported; callers persist only keyRef + keyIdHex/roundIdHex.
@@ -183,7 +187,7 @@ export function createRoundKey({ roundId } = {}) {
 // envelope signing and needs the SAME secret to be resolvable at return intake
 // via an opaque keyRef, without creating a second independent secret. The
 // secret bytes never leave the vault after this call.
-export function importRoundKey({ roundId, secret } = {}) {
+export function importRoundKey({ roundId, secret, persistence } = {}) {
   const roundIdText = rawString(roundId);
   const secretText = rawString(secret);
   if (!roundIdText || !secretText) {
@@ -199,51 +203,72 @@ export function importRoundKey({ roundId, secret } = {}) {
     roundIdHex,
     createdAt: new Date().toISOString(),
   };
+  if (persistence) {
+    persistence.write(keyRef, entry);
+    Object.defineProperty(entry, 'persistence', {value:persistence});
+  }
   roundKeyVault.set(keyRef, entry);
   return { ok: true, keyRef, keyIdHex, roundIdHex };
 }
 
-export function resolveRoundKey(keyRef) {
-  const entry = roundKeyVault.get(rawString(keyRef));
-  if (!entry) return null;
-  const state = entry.state;
+export function resolveRoundKey(keyRef, { persistence, roundId, keyIdHex, roundIdHex } = {}) {
+  const ref = rawString(keyRef);
+  let entry = roundKeyVault.get(ref);
+  if (persistence) {
+    if (entry && entry.persistence?.projectBinding !== persistence.projectBinding) return null;
+    try {
+      const durable = persistence.read(ref);
+      if (!durable) { if (entry) entry.state = 'LOST'; return null; }
+      if (entry) {
+        if (entry.secret !== durable.secret || entry.keyIdHex !== durable.keyIdHex
+          || entry.roundIdHex !== durable.roundIdHex || entry.createdAt !== durable.createdAt) {
+          entry.state = 'LOST'; return null;
+        }
+        // Re-read the durable restriction; never revive a stricter live handle.
+        if (ROUND_KEY_STATES.indexOf(durable.state) > ROUND_KEY_STATES.indexOf(entry.state)) entry.state = durable.state;
+      } else {
+        entry = durable;
+        Object.defineProperty(entry, 'persistence', {value:persistence});
+        roundKeyVault.set(ref, entry);
+      }
+    } catch { if (entry) entry.state = 'LOST'; return null; }
+  }
+  if (!entry || (persistence && entry.persistence?.projectBinding !== persistence.projectBinding)
+    || (roundId && entry.roundIdHex !== sha256Text(rawString(roundId)).slice(0,32))
+    || (keyIdHex && entry.keyIdHex !== keyIdHex) || (roundIdHex && entry.roundIdHex !== roundIdHex)) return null;
   return {
-    state,
+    get state() { return entry.state; },
     sign(payload) {
-      // VERIFY_ONLY / REVOKED / LOST cannot sign (no apply authority).
-      if (state !== 'ACTIVE') return null;
+      // Read live state: a handle obtained before revocation must lose authority.
+      if (entry.state !== 'ACTIVE') return null;
       return hmacSha256Json(payload, entry.secret);
     },
     verify(payload, signature) {
-      // Verify is allowed in ACTIVE and VERIFY_ONLY (a revoked key can still
-      // authenticate a returned artifact for preview); REVOKED/LOST also verify
-      // so preview/manuscript read stays available, but never sign.
-      if (state === 'LOST') return false;
+      if (entry.state === 'LOST') return false;
       const expected = hmacSha256Json(payload, entry.secret);
-      return rawString(signature) === expected;
+      const actual = rawString(signature);
+      return /^[a-f0-9]{64}$/u.test(actual)
+        && crypto.timingSafeEqual(Buffer.from(actual,'hex'), Buffer.from(expected,'hex'));
     },
-    // Secret accessor for the SAME main-process contour only (return-intake
-    // HMAC verification). Never exported across IPC/renderer/worker/DOCX.
-    hmacSecret() {
-      if (state === 'LOST') return '';
-      return entry.secret;
-    },
+    // Main-only accessor. Never exported across IPC/worker/DOCX.
+    hmacSecret() { return entry.state === 'LOST' ? '' : entry.secret; },
   };
 }
 
-export function revokeRoundKey(keyRef) {
-  const entry = roundKeyVault.get(rawString(keyRef));
+function restrictRoundKey(keyRef, state) {
+  const ref = rawString(keyRef), entry = roundKeyVault.get(ref);
   if (!entry) return roundError('RTK_ROUND_KEY_NOT_FOUND', 'keyRef not found in vault');
-  entry.state = 'REVOKED';
-  return { ok: true, state: 'REVOKED' };
+  if (entry.state === 'LOST') return {ok:true, state:'LOST'};
+  const next = {...entry, state};
+  // A failed durable restriction fails closed for existing in-memory handles too.
+  entry.state = state;
+  try { entry.persistence?.write(ref,next); }
+  catch { return roundError('RTK_ROUND_KEY_PERSIST_FAILED', 'key restriction was not durably confirmed'); }
+  return {ok:true,state};
 }
 
-export function markRoundKeyLost(keyRef) {
-  const entry = roundKeyVault.get(rawString(keyRef));
-  if (!entry) return roundError('RTK_ROUND_KEY_NOT_FOUND', 'keyRef not found in vault');
-  entry.state = 'LOST';
-  return { ok: true, state: 'LOST' };
-}
+export function revokeRoundKey(keyRef) { return restrictRoundKey(keyRef,'REVOKED'); }
+export function markRoundKeyLost(keyRef) { return restrictRoundKey(keyRef,'LOST'); }
 
 // ---------------------------------------------------------------------------
 // RoundRecordV3 store digest + validation.
