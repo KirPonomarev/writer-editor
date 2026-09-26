@@ -482,7 +482,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "cbe1557335672326d2e6bc772e76ce8ead03bb65d40a4e41b4c154774d36efa4"
+        "sha256": "fc91308d72ceabc51192e4434d8e0eabe424609cca33d4960af191600c9af399"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -562,7 +562,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "787d57ff9de9863bee307bf0d8262024da1627a997278348a298332920829fab"
+        "sha256": "f73347f67b31133ac9e82f2051696746d3fe9bb335773c9e47d88160776bdcc1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1030,7 +1030,7 @@
       },
       {
         "path": "test/contracts/rtk-word-http-links.contract.test.js",
-        "sha256": "8bc2aa3e0ba63fbccede31361c8ae7205f354c58868b71c22c176e3d44b191ea"
+        "sha256": "54972ef99d9a7acf77ce89c053a3d955a1621eca9feb8bf3861b37975a671a38"
       },
       {
         "path": "test/contracts/rtk-word-link-authoring.contract.test.js",

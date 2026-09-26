@@ -2405,15 +2405,25 @@ function reviewDefaultFontSize(stylesScan) {
   return size;
 }
 
-function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan) {
+function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan, cache) {
   const refs = direct.filter(t => isWordToken(t, 'rStyle'));
   if (refs.length === 0) return direct;
   if (!href || refs.length !== 1) return null;
+  if (!cache.styles) {
+    cache.validRoot = stylesScan.tokens.filter(t => isWordToken(t,'styles') && t.depth === 0).length === 1;
+    cache.styles = new Map();
+    for (const token of stylesScan.tokens) if (isWordToken(token,'style')) {
+      const id = attr(token,'styleId',W_NS);
+      cache.styles.set(id,[...(cache.styles.get(id)||[]),token]);
+    }
+    cache.resolved = new Map();
+  }
+  if (!cache.validRoot) return null;
   const inherited = new Map(), seen = new Set();
   const visit = id => {
     if (!id || seen.has(id) || seen.size >= 16) return false;
     seen.add(id);
-    const matches = stylesScan.tokens.filter(t => isWordToken(t, 'style') && attr(t,'styleId',W_NS) === id);
+    const matches = cache.styles.get(id) || [];
     if (matches.length !== 1 || attr(matches[0],'type',W_NS) !== 'character') return false;
     const style = matches[0];
     const children = childTokensWithin(stylesScan,style).filter(t => t.depth === style.depth+1);
@@ -2434,7 +2444,15 @@ function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsSc
     }
     return true;
   };
-  if (!visit(attr(refs[0],'val',W_NS))) return null;
+  const styleId = attr(refs[0],'val',W_NS);
+  if (cache.resolved.has(styleId)) {
+    const saved = cache.resolved.get(styleId);
+    if (saved === null) return null;
+    for (const [key,value] of saved) inherited.set(key,value);
+  } else {
+    if (!visit(styleId)) { cache.resolved.set(styleId,null); return null; }
+    cache.resolved.set(styleId,new Map(inherited));
+  }
   for (const token of direct) if (!isWordToken(token,'rStyle')) inherited.set(token.localName,token);
   const color = inherited.get('color');
   if (color && attr(color,'themeColor',W_NS)) {
@@ -2446,7 +2464,7 @@ function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsSc
     const target = mapped || name;
     const key = target === 'hyperlink' ? 'hlink' : target === 'followedHyperlink' ? 'folHlink' : target;
     const a = 'http://schemas.openxmlformats.org/drawingml/2006/main';
-    const schemes = themeScan.tokens.filter(t => t.namespaceUri === a && t.localName === 'clrScheme');
+    const schemes = themeScan.tokens.filter(t => t.namespaceUri === a && t.localName === 'clrScheme' && t.path?.join('/') === 'theme/themeElements/clrScheme');
     if (schemes.length !== 1) return null;
     const entries = childTokensWithin(themeScan,schemes[0]).filter(t => t.namespaceUri === a && t.localName === key && t.depth === schemes[0].depth+1);
     if (entries.length !== 1) return null;
@@ -2506,6 +2524,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const results = [];
   const leadingBookmarks = leadingBodyBookmarkNames(documentScan.tokens);
   const defaultFontSize = reviewDefaultFontSize(visibilityStyles);
+  const linkStyleCache = {};
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
     let linkRuns;
     try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
@@ -2555,7 +2574,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         ? childTokensWithin(runScan, properties).filter((token) => token.namespaceUri === W_NS)
         : [];
       const href = linkRuns.get(run.openStart);
-      const resolvedStyle = reviewLinkStyleChildren(directChildren,href,visibilityStyles,linkTheme,linkSettings);
+      const resolvedStyle = reviewLinkStyleChildren(directChildren,href,visibilityStyles,linkTheme,linkSettings,linkStyleCache);
       const children = resolvedStyle || directChildren;
       const semanticNames = [...new Set(children.map((token) => token.localName))];
       const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs']);

@@ -6975,6 +6975,11 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
       fullManuscriptExportMap: formattingExportMap,
       cryptoPort: options.cryptoPort,
     });
+    for (const item of (formatting.diagnostics || []).slice(0, bounds.maxDiagnostics)) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(normalizeString(item.code), {
+        message: normalizeString(item.code), severity: 'warning', targetScope, createdAt,
+      }));
+    }
     if (formatting.candidates?.length > 0) diagnostics.push(docxReviewPreviewSessionDiagnostic(
       'DOCX_REVIEW_PREVIEW_SESSION_FORMATTING_CHANGES', {
         message: `Formatting changes ready for explicit review (${formatting.candidates.length}).`,

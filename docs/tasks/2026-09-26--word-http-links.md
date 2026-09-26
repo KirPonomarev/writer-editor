@@ -157,3 +157,13 @@ secret; no fallback reconstructs authority from the foreign artifact. This is
 an explicit durability gap for the subsequent round lifecycle work, not a
 successful cross-restart return. Reopen of already applied content is tested
 separately. Historical 420 and global 1120 coverage are not recalculated here.
+
+Further native proof: on 95a92643 PACKAGED completed the same five target-change
+cycles and new-process reopen with the exact same canonical output hashes as
+SOURCE. Native Word deletion then removed only the selected link. On c31476ea
+native Word creation (character style inherited from Default Paragraph Font,
+Hyperlink theme RGB and underline) was authenticated and applied to exactly
+characters 0..10; neighboring labels, spaces, targets and formatting survived.
+Unresolved styles are surfaced as explicit review diagnostics, never a guessed
+RGB or a generic empty review. Style inheritance is cached per parse, not on
+keystrokes. These receipts do not by themselves complete the full P1a matrix.
