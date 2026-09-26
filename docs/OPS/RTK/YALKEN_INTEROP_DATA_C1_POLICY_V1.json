@@ -238,7 +238,8 @@
     "docs/tasks/2026-09-26--word-review-default-typography.md",
     "test/contracts/rtk-word-review-default-typography.contract.test.js",
     "docs/tasks/2026-09-27--word-combined-link-return.md",
-    "test/contracts/rtk-word-combined-link-return.contract.test.js"
+    "test/contracts/rtk-word-combined-link-return.contract.test.js",
+    "test/unit/sector-m-preload-ui-command-bridge.test.js"
   ],
   "protectedFiles": [
     {
@@ -1116,6 +1117,10 @@
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
         "sha256": "4e4948268c10ffdff3db5ffbc26a53b756dde42806b35191f8e0b409ed14462b"
+      },
+      {
+        "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",
+        "sha256": "c9f890e80c5ea65010571b36cfff11b908ac8224a1111723d8e2d3c402dd475c"
       }
     ],
     "followupRepair": {
