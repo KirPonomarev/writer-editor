@@ -10212,6 +10212,10 @@ export function buildDocxContentPreviewFromZipBytes(input) {
         const metadataValidated = validateGenericCommentMetadataV1(metadataParts, commentPorts);
         const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
         parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated });
+        if (parsed.contentPreview.genericComments.length) {
+          parsed.diagnostics = parsed.diagnostics.filter(item => !(item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+            && ['w:commentRangeStart', 'w:commentRangeEnd', 'w:commentReference'].includes(item.tagName)));
+        }
       }
       const refs = extractDocumentMediaReferencesV1(xmlText, {
         // Match the existing bounded full-manuscript count profile; generic

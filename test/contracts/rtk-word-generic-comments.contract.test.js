@@ -257,3 +257,25 @@ test('Word localized annotation marker style is admitted only on the non-message
   const unsafe = body.replace('<w:annotationRef/>', '<w:annotationRef/><w:t>styled</w:t>');
   assert.equal(bridge.buildDocxImportPreviewPlanFromContentPreview(bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes({ body: unsafe }))).ok, false);
 });
+
+
+test('actual main preview canonicalization retains comments through import planning', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const source = fs.readFileSync(path.join(__dirname, '../../src/main.js'), 'utf8');
+  const section = source.slice(source.indexOf('function copyDocxImportPreviewAllowedFields('),
+    source.indexOf('function validateDocxImportPreviewPayload('));
+  const canonicalize = new Function('isPlainObjectValue', 'cloneJsonSafe',
+    section + '; return canonicalizeDocxImportPreviewSourceReport;')(
+    value => !!value && typeof value === 'object' && !Array.isArray(value),
+    value => value === undefined ? undefined : JSON.parse(JSON.stringify(value)));
+  const preview = bridge.buildDocxContentPreviewFromZipBytes(ordinaryBytes());
+  assert.equal(preview.diagnostics.some(item => /^w:comment/.test(item.tagName || '')), false);
+  const normalized = canonicalize(preview);
+  assert.deepEqual(normalized.contentPreview.genericComments, preview.contentPreview.genericComments);
+  normalized.contentPreview.genericComments[0].messages[0].body = 'isolated clone';
+  assert.equal(preview.contentPreview.genericComments[0].messages[0].body, 'Check literal 😀');
+  const plan = bridge.buildDocxImportPreviewPlanFromContentPreview(canonicalize(preview));
+  assert.equal(plan.ok, true, JSON.stringify(plan));
+  assert.equal(plan.candidateCreatePlan.entries[0].comments[0].messages[0].body, 'Check literal 😀');
+  assert.equal(plan.lossReport.items.some(item => /COMMENTS_NOT_IMPORTED/.test(item.code)), false);
+});

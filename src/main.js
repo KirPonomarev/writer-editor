@@ -10742,6 +10742,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(Array.isArray(sourceReport.contentPreview.genericComments)
+          ? { genericComments: cloneJsonSafe(sourceReport.contentPreview.genericComments) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.mediaParts) ? { mediaParts: [...sourceReport.contentPreview.mediaParts] } : {}),
         paragraphCount: sourceReport.contentPreview.paragraphCount,
         textLength: sourceReport.contentPreview.textLength,

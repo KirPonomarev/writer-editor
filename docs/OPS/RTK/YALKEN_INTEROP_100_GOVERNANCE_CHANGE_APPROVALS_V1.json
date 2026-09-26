@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "6584625365b95d2709f1687bd8f0bcd6763104dea1557821e4700f8c11b36966",
+      "sha256": "aef68724bce680774c56995932a5eb1fe18a92f78e398fc7c64ddb2f43832003",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1666,9 +1666,9 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "e612568f93100194abd3343f02b4b4e22b430187b41e29a58015ead5e6e534db",
+      "sha256": "3472d340578786d56dc5fa8dd377289db5ae582dfb4af8472576b3c6075d17fd",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
@@ -1684,12 +1684,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "9666262c031d5f8415178e45c6ed9f4dd6402c3758c8466787a8fd9ed33f6b18",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
-      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "sha256": "1d19de3d3d54481e2f4afd9bbe1c3cd993dd717706b8330acd4e11bb4279fe36",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -1819,45 +1819,45 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "c786824c5802eb612ba026539babde089cc96305a8b9d9de241415da4027ff28",
+      "sha256": "cbba2c0832b9d1d793fa1d148c8459f06f6a3f85c3f22e1e3c767c2f0e3fe2fe",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "236e113ce3cdc0d5688fb74de5f007e4b495a9b61f2391d9d7910a3fd77e52bf",
+      "sha256": "c2c7448ef0f72fafc12988e56e82a021d17045b8c5daef717364d07bb390857f",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "2f69a9fdf344f6232705c89a885514c23b5d76c423fbc952c602016877f69ce9",
+      "sha256": "dd65f958edcfba033dd4bbfdd8396e03219568b30f47419753c6c7925319af4b",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "d5e661829c04090e2a0f03c34f275ef73b30118cb2541d642b39787a8593982a",
+      "sha256": "044de359ff8812c1b67c48185e7c5ec335d1c35d00797420598d0c7e7c68c5a5",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "c9f9397ed4f63b339b7d9bbaabd101c30a74a3f26ac368bfd1d7ee393c3354dd",
+      "sha256": "c3bdfb752516f1e89e1081ac85a871c95c6707d765133c72206453e879fb49c1",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
@@ -2395,8 +2395,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
-      "sha256": "2e7c0c0ca7f8a2f4a6d8e216620534353314d1dffb5963eb4423a8b7e0df30f3",
-      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "sha256": "d05a094e7182b7a5b8f7c7de56e306bd49285990db6cc557979f81391bbd8cfc",
+      "approvedAtUtc": "2026-09-26T22:58:24.087236Z",
       "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
@@ -8987,6 +8987,87 @@
       "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
       "sha256": "7c2471f4f48e443f054e0273cfb0e50d66495da7beed785cb9f8004bda23cb39",
       "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
+      "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "6584625365b95d2709f1687bd8f0bcd6763104dea1557821e4700f8c11b36966",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "e612568f93100194abd3343f02b4b4e22b430187b41e29a58015ead5e6e534db",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:44:34.231600Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "9666262c031d5f8415178e45c6ed9f4dd6402c3758c8466787a8fd9ed33f6b18",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "c786824c5802eb612ba026539babde089cc96305a8b9d9de241415da4027ff28",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "236e113ce3cdc0d5688fb74de5f007e4b495a9b61f2391d9d7910a3fd77e52bf",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "2f69a9fdf344f6232705c89a885514c23b5d76c423fbc952c602016877f69ce9",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "d5e661829c04090e2a0f03c34f275ef73b30118cb2541d642b39787a8593982a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "c9f9397ed4f63b339b7d9bbaabd101c30a74a3f26ac368bfd1d7ee393c3354dd",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-generic-comments.contract.test.js",
+      "sha256": "2e7c0c0ca7f8a2f4a6d8e216620534353314d1dffb5963eb4423a8b7e0df30f3",
+      "approvedAtUtc": "2026-09-26T22:53:02.826859Z",
       "approvedBy": "owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927",
       "rationale": "Owner-authorized revision-3 Word plan: import ordinary comment threads with locally generated IDs through the existing Core transaction; preserve old threads and recover scene, manifest, comments and receipt together. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,

@@ -471,7 +471,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "9666262c031d5f8415178e45c6ed9f4dd6402c3758c8466787a8fd9ed33f6b18"
+        "sha256": "1d19de3d3d54481e2f4afd9bbe1c3cd993dd717706b8330acd4e11bb4279fe36"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -507,7 +507,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "e612568f93100194abd3343f02b4b4e22b430187b41e29a58015ead5e6e534db"
+        "sha256": "3472d340578786d56dc5fa8dd377289db5ae582dfb4af8472576b3c6075d17fd"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1127,7 +1127,7 @@
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
-        "sha256": "2e7c0c0ca7f8a2f4a6d8e216620534353314d1dffb5963eb4423a8b7e0df30f3"
+        "sha256": "d05a094e7182b7a5b8f7c7de56e306bd49285990db6cc557979f81391bbd8cfc"
       },
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
