@@ -711,6 +711,7 @@ let internalCommandSurfaceKernel = null;
 // CONTOUR_01A_REVIEW_MUTATE_PORT_START
 let activeReviewSessionDirtyImportBlocked = false;
 let activeRtkNonOverlapTrackedReplacementApplyStore = null;
+let activeRtkCleanLinkLabelApplyStore = null;
 let activeRtkFormattingReturnApplyStore = null;
 let activeRtkStructuralReturnApplyStore = null;
 let activeReviewDocxExportAuthorityStore = null;
@@ -1199,6 +1200,7 @@ function resetActiveReviewSessionStore(nextLifecycle = 'passive') {
   activeReviewSessionLifecycle = nextLifecycle === 'cleared' ? 'cleared' : 'passive';
   activeReviewSessionDirtyImportBlocked = false;
   activeRtkNonOverlapTrackedReplacementApplyStore = null;
+  if (typeof activeRtkCleanLinkLabelApplyStore !== 'undefined') activeRtkCleanLinkLabelApplyStore = null;
   activeRtkFormattingReturnApplyStore = null;
   activeRtkStructuralReturnApplyStore = null;
   activeReviewDocxExportAuthorityStore = null;
@@ -1499,7 +1501,8 @@ function handleReviewSurfaceImportPacketCommandSurface(payload = {}, publication
     activeReviewSessionLifecycle = 'active';
     activeReviewSessionDirtyImportBlocked = dirtyAtImportStart;
     activeRtkNonOverlapTrackedReplacementApplyStore = null;
-    activeRtkFormattingReturnApplyStore = null;
+    if (typeof activeRtkCleanLinkLabelApplyStore !== 'undefined') activeRtkCleanLinkLabelApplyStore = null;
+  activeRtkFormattingReturnApplyStore = null;
     activeRtkStructuralReturnApplyStore = null;
     currentReviewSurfacePayload = cloneJsonSafe(normalized.value.reviewSurface) || {};
     currentReviewSurfacePayloadSource = 'session';
@@ -2435,6 +2438,12 @@ async function handleReviewSurfaceApplyExactTextChangeCommandSurface(payload = {
     );
   }
 
+  if (String(selected.value.textChange.changeId).startsWith('docx-clean-link-label-')) {
+    return handleReviewSurfaceApplyExactTextChangesBatchCommandSurface({
+      requestId:normalizedPayload.value.requestId, changeIds:[selected.value.textChange.changeId],
+    }, options);
+  }
+
   const rtkProductApply = await runRtkNonOverlapTrackedReplacementProductApplyFromMainState({
     commandId: REVIEW_EXACT_TEXT_APPLY_COMMAND_ID,
     activeSession,
@@ -2815,12 +2824,13 @@ async function handleReviewSurfaceApplyExactTextChangesBatchCommandSurface(paylo
 
   let applyContext = null;
   try {
-    applyContext = await buildBatchInput({
-      activeSession: initialSession,
-      payload: normalizedPayload.value,
-      revisionSession: initialRevisionSession,
-      textChanges: selectedBatch.value.textChanges,
-    });
+    const cleanRequested = selectedBatch.value.textChanges.some(change => String(change.changeId).startsWith('docx-clean-link-label-'));
+    applyContext = cleanRequested
+      ? buildCleanLinkLabelApplyInput(selectedBatch.value.textChanges)
+      : await buildBatchInput({
+        activeSession: initialSession, payload: normalizedPayload.value,
+        revisionSession: initialRevisionSession, textChanges: selectedBatch.value.textChanges,
+      });
   } catch (error) {
     return makeReviewMutateTypedError(
       REVIEW_EXACT_TEXT_APPLY_BATCH_COMMAND_ID,
@@ -6449,8 +6459,22 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
     paragraphTexts,
     ordinalBinding,
   );
-  if (returnedTexts.ok === false) return returnedTexts;
-  const targetOrdinal = ordinalBinding.ordinal;
+  let cleanLinkLabel = null;
+  if (returnedTexts.ok === false) {
+    // This exception is limited to a separately compared label-only semantic
+    // effect, after signed local scene identity, topology and baseline checks.
+    if (returnedTexts.reason !== 'RTK_RETURN_INTAKE_SCENE_RETURNED_TEXT_MISMATCH'
+      || !baselineFinalText.includes('[doc-v2')) return returnedTexts;
+    const envelope = await loadDocumentContentEnvelopeModule();
+    const parsed = envelope.parseObservablePayload(baselineFinalText);
+    const module = await import(pathToFileURL(path.join(__dirname, 'io', 'revisionBridge', 'reviewTransportCleanLinkLabel.mjs')).href);
+    cleanLinkLabel = module.analyzeCleanLinkLabelReturn({
+      baselineParagraphs: buildFormatIrParagraphs({sceneId, text:parsed.text, doc:parsed.doc}),
+      returnedParagraphs: paragraphAuthority.paragraphs, sceneId, reviewIr:parserResult.reviewIr,
+    });
+    if (!cleanLinkLabel.ok) return returnedTexts;
+  }
+  const targetOrdinal = cleanLinkLabel ? cleanLinkLabel.effect.paragraphOrdinal : ordinalBinding.ordinal;
   const targetBlock = targetOrdinal === null
     ? orderedBlocks.find((block) => docxReviewPreviewSessionDetailString(block.blockId)
       === docxReviewPreviewSessionDetailString(expectedAuthority.blockId || payload.blockId))
@@ -6555,6 +6579,7 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
       },
     },
     sceneOrdinalAuthority,
+    cleanLinkLabel,
   };
 }
 
@@ -8717,6 +8742,7 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       localBaseline: sceneAuthority.localBaseline,
       writerContext: sceneAuthority.writerContext,
       sceneOrdinalAuthority: sceneAuthority.sceneOrdinalAuthority,
+      cleanLinkLabel: sceneAuthority.cleanLinkLabel,
     }
     : {};
   return {
@@ -9389,6 +9415,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     'E_DOCX_REVIEW_PREVIEW_SESSION_SUPERSEDED', 'RTK_DOCX_ACTIVATION_SUPERSEDED');
   activeReviewSessionLifecycle = 'passive';
   activeRtkNonOverlapTrackedReplacementApplyStore = null;
+  if (typeof activeRtkCleanLinkLabelApplyStore !== 'undefined') activeRtkCleanLinkLabelApplyStore = null;
   activeRtkFormattingReturnApplyStore = null;
   activeRtkStructuralReturnApplyStore = null;
   const decoded = decodeDocxIntakeGateBufferSource(payload);
@@ -9536,6 +9563,18 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     );
   }
 
+  const cleanLabel = returnIntake.authenticated === true
+    ? returnIntake.localAuthorityCapsule?.cleanLinkLabel : null;
+  if (cleanLabel?.ok === true && authenticatedSceneExportMap) {
+    // Main-owned derivative, never a synthetic Word revision or worker mutation.
+    candidate = { ...candidate, ok:true, status:'ready', reason:'RTK_CLEAN_LINK_LABEL_PREVIEW_READY',
+      canAutoApply:false, canImportMutate:false, canWriteStorage:false, canOpenReviewSession:true,
+      reviewPacket:{commentThreads:[],commentPlacements:[],textChanges:[cloneJsonSafe(cleanLabel.change)],
+        structuralChanges:[],diagnosticItems:[],decisionStates:[]},
+      sourceViewState:{packetHash:returnIntake.returnedArtifactSha256, mode:'docx-clean-link-label-preview'},
+    };
+  }
+
   const isReadyPreviewCandidate = isPlainObjectValue(candidate)
     && candidate.status === 'ready'
     && isPlainObjectValue(candidate.reviewPacket);
@@ -9576,6 +9615,17 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       docxReviewPreviewSessionDetailString(nestedError.reason) || 'DOCX_REVIEW_PREVIEW_SESSION_IMPORT_FAILED',
       isPlainObjectValue(nestedError.details) ? nestedError.details : undefined,
     );
+  }
+  if (cleanLabel?.ok === true) {
+    const capsule = returnIntake.localAuthorityCapsule;
+    const input = cloneJsonSafe(capsule.writerContext);
+    input.reviewItems = [cloneJsonSafe(cleanLabel.change)];
+    input.revisionSession.reviewGraph.textChanges = cloneJsonSafe(input.reviewItems);
+    activeRtkCleanLinkLabelApplyStore = {
+      input, keyAuthority:cloneJsonSafe(capsule),
+      sessionToken:readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore),
+      intakeGeneration:activeDocxReviewIntakeGeneration,
+    };
   }
   const commentShadowPayload = buildDocxReviewPreviewSessionCommentShadowPayload(activeContext, candidate, requestId, revisionBridge);
   let commentShadowResult = null;
@@ -22574,12 +22624,43 @@ async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWri
   );
 }
 
+function cleanLinkLabelStoreMatches(store) {
+  if (!store || activeReviewSessionLifecycle !== 'active' || !activeReviewSessionStore
+    || activeRtkCleanLinkLabelApplyStore !== store || isDirty || autoSaveInProgress
+    || store.intakeGeneration !== activeDocxReviewIntakeGeneration
+    || store.input.projectRoot !== getProjectRootPath() || store.input.scenePath !== currentFilePath) return false;
+  const token = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
+  return Boolean(token.sessionId && token.sourcePacketHash
+    && token.sessionId === store.sessionToken.sessionId && token.sourcePacketHash === store.sessionToken.sourcePacketHash);
+}
+
+function buildCleanLinkLabelApplyInput(changes) {
+  const store = activeRtkCleanLinkLabelApplyStore;
+  if (!cleanLinkLabelStoreMatches(store) || changes.length !== 1
+    || changes[0].changeId !== store.input.reviewItems[0].changeId) {
+    return makeReviewExactTextApplyContextBlock('RTK_CLEAN_LINK_LABEL_AUTHORITY_REQUIRED');
+  }
+  // Private baseline and candidate, not the renderer's quote or replacement.
+  return {ok:true,input:cloneJsonSafe(store.input)};
+}
+
+async function revalidateCleanLinkLabelApplyInput(input) {
+  const store = activeRtkCleanLinkLabelApplyStore;
+  const blocked = reason => ({ok:false,status:'blocked',reason,code:reason,applied:false,writerCalled:false});
+  if (!cleanLinkLabelStoreMatches(store) || JSON.stringify(input)!==JSON.stringify(store.input))
+    return blocked('RTK_CLEAN_LINK_LABEL_AUTHORITY_REQUIRED');
+  const handle = await resolveDocxReviewRoundKeyHandle(store.keyAuthority.keyRef,store.keyAuthority);
+  if (!cleanLinkLabelStoreMatches(store)) return blocked('RTK_CLEAN_LINK_LABEL_STALE_SESSION');
+  if (handle?.state !== 'ACTIVE') return blocked('RTK_CLEAN_LINK_LABEL_INACTIVE_KEY');
+  return {ok:true};
+}
+
 async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatchMinSafeWrite, input, safeWriteOptions = {}) {
   if (typeof applyExactTextBatchMinSafeWrite !== 'function') {
     throw new Error('applyExactTextBatchMinSafeWrite is required');
   }
   return queueDiskOperation(
-    () => {
+    async () => {
       if (isDirty || autoSaveInProgress) {
         return {
           ok: false,
@@ -22595,6 +22676,10 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
             },
           ],
         };
+      }
+      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-'))) {
+        const gate = await revalidateCleanLinkLabelApplyInput(input);
+        if (!gate.ok) return gate;
       }
       return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
     },

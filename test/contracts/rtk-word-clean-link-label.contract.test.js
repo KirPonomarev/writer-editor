@@ -1,0 +1,72 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const os=require('node:os');
+const path=require('node:path');
+const vm=require('node:vm');
+const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
+const mods=Promise.all([import('../../src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs'),import('../../src/renderer/documentContentEnvelope.mjs'),import('../../src/io/revisionBridge/exactTextMinSafeWrite.mjs')]);
+const href='https://example.invalid/label';
+function fixture(label='old label',next='новая 😀 é') {
+ const doc={type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'before '},{type:'text',text:label,marks:[{type:'bold'},{type:'link',attrs:{href}}]},{type:'text',text:' after'}]}]};
+ const baselineParagraphs=buildFormatIrParagraphs({sceneId:'roman/a.txt',text:'before '+label+' after',doc});
+ const returnedParagraphs=baselineParagraphs.map((p,i)=>({paragraphIndex:i,paragraphText:'before '+next+' after',paragraphState:{},paragraphStructure:{},formattedRuns:[{from:0,to:7,text:'before ',inlineState:{}},{from:7,to:7+next.length,text:next,inlineState:{bold:true,link:href}},{from:7+next.length,to:13+next.length,text:' after',inlineState:{}}]}));
+ return {doc,baselineParagraphs,returnedParagraphs,sceneId:'roman/a.txt',reviewIr:{textRevisions:[],opaqueUnsupported:[]}};
+}
+
+test('clean label: single Unicode semantic effect has no writer authority and preserves provenance',async()=>{
+ const [m]=await mods,f=fixture(),r=m.analyzeCleanLinkLabelReturn(f);
+ assert.equal(r.ok,true,JSON.stringify(r));assert.equal(r.canWriteManuscript,false);assert.equal(r.analysisOnly,true);
+ assert.equal(r.change.match.quote,'old label');assert.equal(r.change.replacementText,'новая 😀 é');assert.equal(r.effect.href,href);
+ assert.equal(r.change.nativeRevisionId,undefined);assert.equal(r.change.author,undefined);
+});
+
+test('clean label: split runs with identical meaning produce the same bounded label',async()=>{
+ const [m]=await mods,f=fixture('old label','new label'),p=f.returnedParagraphs[0];
+ const old=p.formattedRuns[1];p.formattedRuns.splice(1,1,{...old,text:'new ',to:11},{...old,text:'label',from:11});
+ assert.equal(m.analyzeCleanLinkLabelReturn(f).ok,true);
+});
+
+for(const fault of ['target','style','neighbor','duplicate','unknown','tracked','comment','second','cardinality','range','grapheme','budget']) test('clean label rejects '+fault,async()=>{
+ const [m]=await mods,f=fixture();const p=f.returnedParagraphs[0];
+ if(fault==='target')p.formattedRuns[1].inlineState.link='https://example.invalid/other';
+ if(fault==='style')p.formattedRuns[1].inlineState.bold=false;
+ if(fault==='neighbor')p.formattedRuns[0].text='BEFORE ';
+ if(fault==='duplicate'){f.baselineParagraphs.push(structuredClone(f.baselineParagraphs[0]));f.returnedParagraphs.push(structuredClone(p));}
+ if(fault==='unknown')p.formattedRuns[1].unsupportedNames=['vanish'];
+ if(fault==='tracked')f.reviewIr.textRevisions=[{operation:'insert',text:'x'}];
+ if(fault==='comment')f.reviewIr.commentThreads=[{id:'c'}];
+ if(fault==='second'){f.baselineParagraphs.push(fixture('other','changed').baselineParagraphs[0]);f.returnedParagraphs.push(fixture('other','changed').returnedParagraphs[0]);}
+ if(fault==='cardinality')f.returnedParagraphs.push(p);
+ if(fault==='range')p.formattedRuns[1].from++;
+ if(fault==='grapheme'){const g=fixture('\u0301','x');g.baselineParagraphs[0].formatIr.runs[0].text='beforea';g.baselineParagraphs[0].text='beforea\u0301 after';Object.assign(f,g);}
+ if(fault==='budget')f.baselineParagraphs=Array(257).fill(f.baselineParagraphs[0]);
+ const r=m.analyzeCleanLinkLabelReturn(f);assert.equal(r.ok,false,JSON.stringify(r));assert.equal(r.canWriteManuscript,false);
+});
+
+test('clean label uses real rich writer, restart readback, replay and stale baseline rejection',async t=>{
+ const [m,e,w]=await mods,f=fixture(),r=m.analyzeCleanLinkLabelReturn(f);assert.equal(r.ok,true);
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'yalken-clean-label-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const scenePath=path.join(root,'roman/a.txt');fs.mkdirSync(path.dirname(scenePath));
+ const before=e.composeObservablePayload({doc:f.doc,metaEnabled:false});fs.writeFileSync(scenePath,before);
+ const input={projectRoot:root,projectSnapshot:{projectId:'label-test',baselineHash:'baseline',scenes:[{sceneId:f.sceneId,text:before}]},revisionSession:{projectId:'label-test',sessionId:'label-session',baselineHash:'baseline',status:'open',reviewGraph:{textChanges:[r.change]}},reviewItems:[r.change],scenePath,scenePathBySceneId:{[f.sceneId]:scenePath}};
+ const result=await w.applyExactTextBatchMinSafeWrite(input,{operationId:'op_clean_label_test'});assert.equal(result.applied,true,JSON.stringify(result));
+ const after=fs.readFileSync(scenePath,'utf8'),parsed=e.parseObservablePayload(after);
+ assert.equal(parsed.text,'before новая 😀 é after');assert.deepEqual(parsed.doc.content[0].content,[f.doc.content[0].content[0],{...f.doc.content[0].content[1],text:'новая 😀 é'},f.doc.content[0].content[2]]);
+ const replay=await w.applyExactTextBatchMinSafeWrite(input,{operationId:'op_clean_label_test'});assert.equal(replay.status,'replay');assert.equal(fs.readFileSync(scenePath,'utf8'),after);
+ fs.writeFileSync(scenePath,before+'local drift');const blocked=await w.applyExactTextBatchMinSafeWrite(input,{operationId:'op_clean_label_stale'});assert.notEqual(blocked.applied,true);assert.equal(fs.readFileSync(scenePath,'utf8'),before+'local drift');
+});
+
+function extracted(name) {
+ const source=fs.readFileSync(path.join(__dirname,'../../src/main.js'),'utf8');
+ const start=source.indexOf('function '+name+'('),asyncStart=source.slice(start-6,start)==='async '?start-6:start;
+ const end=source.indexOf('\n}\n',start)+3;assert(start>=0&&end>start);return source.slice(asyncStart,end);
+}
+for(const fault of ['none','forged','revoked','session-during-key','project','dirty'])test('clean label main queued authority '+fault,async()=>{
+ const input={projectRoot:'/synthetic/project',scenePath:'/synthetic/project/roman/a.txt',reviewItems:[{changeId:'docx-clean-link-label-test',replacementText:'bound'}]};
+ const store={input,sessionToken:{sessionId:'s',sourcePacketHash:'p'},intakeGeneration:7,keyAuthority:{keyRef:'k',roundId:'r'}};
+ const sandbox={activeRtkCleanLinkLabelApplyStore:store,activeReviewSessionLifecycle:'active',activeReviewSessionStore:{sessionId:'s',sourcePacketHash:'p'},activeDocxReviewIntakeGeneration:7,isDirty:fault==='dirty',autoSaveInProgress:false,currentFilePath:input.scenePath,getProjectRootPath:()=>fault==='project'?'/different':input.projectRoot,readRtkNonOverlapTrackedReplacementSessionToken:s=>s,resolveDocxReviewRoundKeyHandle:async()=>{if(fault==='session-during-key')sandbox.activeDocxReviewIntakeGeneration++;return {state:fault==='revoked'?'REVOKED':'ACTIVE'};}};
+ vm.createContext(sandbox);vm.runInContext(extracted('cleanLinkLabelStoreMatches')+'\n'+extracted('revalidateCleanLinkLabelApplyInput'),sandbox);
+ const supplied=structuredClone(input);if(fault==='forged')supplied.reviewItems[0].replacementText='unbound';
+ const result=await sandbox.revalidateCleanLinkLabelApplyInput(supplied);assert.equal(result.ok,fault==='none');
+});
