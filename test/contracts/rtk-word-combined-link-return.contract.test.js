@@ -79,3 +79,27 @@ test('existing read-only review item exposes both targets before explicit Apply'
  assert.equal(items.length,1);assert.equal(items[0].body,diagnostic.message);assert.equal(items[0].tone,'readonly');
  delete item.richReplacementLink;assert.equal(sandbox.buildCleanLinkLabelPreviewPacket(item).diagnosticItems.length,0);
 });
+
+for(const clean of [true,false])test('actual single-item click preserves profile gates and routes only clean links; clean='+clean,async()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+ const fn=name=>{const a=source.indexOf('function '+name+'('),b=source.indexOf('\n}\n',a)+3;assert(a>=0&&b>a);return source.slice(source.slice(a-6,a)==='async '?a-6:a,b);};
+ class Element {} class HTMLElement extends Element {} class HTMLButtonElement extends HTMLElement {}
+ const changeId=clean?'docx-clean-link-label-selected':'ordinary-change';
+ const button=new HTMLButtonElement();button.dataset={changeId};button.disabled=false;
+ button.closest=selector=>selector==='[data-review-apply-exact-change]'?button:null;
+ const host=new HTMLElement();host.contains=x=>x===button;const calls=[];
+ const ui={Element,HTMLElement,HTMLButtonElement,reviewSurfaceHost:host,
+ REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID:'cmd.project.review.applyExactTextChange',
+ REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID:'cmd.project.review.applyExactTextChangesBatch',
+ reviewSurfaceText:x=>typeof x==='string'?x:'',reviewSurfaceArray:x=>Array.isArray(x)?x:[],
+ reviewSurfaceCreateExactTextApplyRequestId:()=> 'explicit-click',setReviewSurfaceExactTextApplyTransientState:()=>{},
+ invokePreloadUiCommandBridge:async(id,payload)=>{calls.push({id,payload});return {ok:true,value:{ok:true,applied:true,reviewSurface:{}}};},
+ reviewSurfaceUnwrapCommandResult:x=>x.value,reviewSurfaceIsPlainObject:x=>!!x&&typeof x==='object',setReviewSurfaceState:()=>{}};
+ vm.createContext(ui);for(const name of ['reviewSurfaceBuildExactTextApplyPayload','reviewSurfaceBuildExactTextApplyBatchPayload','handleReviewSurfaceExactTextApplyClick'])vm.runInContext(fn(name),ui);
+ await ui.handleReviewSurfaceExactTextApplyClick({target:button});assert.equal(calls.length,1);
+ assert.equal(calls[0].id,clean?ui.REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID:ui.REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID);
+ assert.deepEqual(JSON.parse(JSON.stringify(calls[0].payload)),clean?{requestId:'explicit-click',changeIds:[changeId]}:{requestId:'explicit-click',changeId});
+ const law=require('../../src/core/entitlement-law-v1.cjs');assert.equal(law.isFreeAlwaysAvailableCommandId(calls[0].id),clean);
+ const local=require('../../src/core/writer-local-profile-v1.cjs');assert.equal(local.evaluateWriterLocalCommandAccess({profile:local.createWriterLocalProfileProjection({isPackaged:true,platform:'darwin'}),commandId:calls[0].id}).allowed,clean);
+ button.disabled=true;await ui.handleReviewSurfaceExactTextApplyClick({target:button});assert.equal(calls.length,1);
+});

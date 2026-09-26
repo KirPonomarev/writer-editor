@@ -479,7 +479,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "757f9d1a83c6b9f7706f307df61f954401acb758bf8e76f9b6e71dbc8565ca4b"
+        "sha256": "cc48789bb9f5edb73fe0810bbe95ae05ffb169de0a4863c333dd54cde890d8f3"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -643,7 +643,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "eefab01956f13dbc4c180ec89cdb6746268a6e0d552952296a0bd198c4cec98e"
+        "sha256": "34c0eabae7b8ec028ec6d05599496cb714e7899dcb2a79fbcd917aa98a37641c"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1115,7 +1115,7 @@
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
-        "sha256": "547eea0b8c26d95e0ad6f1f5bc82604a7ce1bf0326f4ed96cff727e16a2ab187"
+        "sha256": "4e4948268c10ffdff3db5ffbc26a53b756dde42806b35191f8e0b409ed14462b"
       }
     ],
     "followupRepair": {

@@ -41,3 +41,9 @@ No official accepted IDs are created by a commit or a synthetic test result.
 The existing read-only diagnostic projection displays the original and new href
 alongside the label preview before Apply. It grants no writer authority and adds
 no renderer layout, component, state model or visual language.
+
+Native UI verification found that the single-item button used a FREE-denied
+legacy command although the main handler delegated clean links to the batch
+writer. Route only clean-link button requests through the already admitted
+Word batch command with one ID. Entitlement policy remains unchanged; the
+main-private candidate, session, revision and publication checks remain final.
