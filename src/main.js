@@ -6477,6 +6477,7 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
       baselineParagraphs: buildFormatIrParagraphs({sceneId, text:parsed.text, doc:parsed.doc}),
       returnedParagraphs: paragraphAuthority.paragraphs, sceneId, reviewIr:parserResult.reviewIr,
       exportTypography: exportMap.exportTypography,
+      allowTargetChange: true,
     });
     if (!cleanLinkLabel.ok) return returnedTexts;
   }
@@ -22688,11 +22689,17 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
           ],
         };
       }
-      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-'))) {
+      let trustedLinkReplacementDigest = null;
+      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
+        || Object.hasOwn(change, 'richReplacementLink'))) {
         const gate = await revalidateCleanLinkLabelApplyInput(input);
         if (!gate.ok) return gate;
+        if (input.reviewItems.length === 1 && input.reviewItems[0].richReplacementLink) {
+          trustedLinkReplacementDigest = computeHash(JSON.stringify(input.reviewItems[0]));
+        }
       }
-      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
+      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, trustedLinkReplacementDigest,
+        publishScene: publishReviewSceneWithProjectTransaction });
     },
     'review exact text batch safe apply',
   );

@@ -1,4 +1,5 @@
 import documentMediaData from '../documentMedia.js';
+import docxHyperlinks from '../docxHyperlinks.cjs';
 import { assertExactTextCommentRebasePending } from './reviewTransportNonTextReturnRuntime.mjs';
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
@@ -51,6 +52,15 @@ function isPlainObject(value) {
 
 function cloneJsonSafe(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function validateRichLinkReplacement(value) {
+  if (!isPlainObject(value) || Object.keys(value).sort().join(',') !== 'expectedHref,replacementHref'
+    || !value.expectedHref || !value.replacementHref || value.expectedHref === value.replacementHref) return false;
+  try {
+    return docxHyperlinks.normalizeDocxHttpHref(value.expectedHref) === value.expectedHref
+      && docxHyperlinks.normalizeDocxHttpHref(value.replacementHref) === value.replacementHref;
+  } catch { return false; } // Validation failure is returned as a typed no-write block below.
 }
 
 function sha256Text(text) {
@@ -874,6 +884,12 @@ function applyRichInlineReplacement(block, operation) {
       continue;
     }
 
+    if (operation.richReplacementLink) {
+      const links = (sourceNode.marks || []).filter(mark => mark.type === 'link');
+      if (links.length !== 1 || links[0].attrs?.href !== operation.richReplacementLink.expectedHref) {
+        return { ok:false, code:'REVISION_BRIDGE_EXACT_TEXT_LINK_BASELINE_MISMATCH' };
+      }
+    }
     const shape = textNodeShape(sourceNode);
     if (replacementShape === null) replacementShape = shape;
     else if (stableJson(replacementShape) !== stableJson(shape)) {
@@ -887,7 +903,12 @@ function applyRichInlineReplacement(block, operation) {
     const after = value.slice(overlapEnd - nodeStart);
     if (before) appendRichInlineNode(nextContent, { ...cloneJsonSafe(sourceNode), text: before });
     if (!replacementInserted && operation.replacementText) {
-      appendRichInlineNode(nextContent, { ...cloneJsonSafe(sourceNode), text: operation.replacementText });
+      const replacement = { ...cloneJsonSafe(sourceNode), text: operation.replacementText };
+      if (operation.richReplacementLink) {
+        replacement.marks = replacement.marks.map(mark => mark.type === 'link'
+          ? { ...mark, attrs:{ ...mark.attrs, href:operation.richReplacementLink.replacementHref } } : mark);
+      }
+      appendRichInlineNode(nextContent, replacement);
       replacementInserted = true;
     }
     if (after) appendRichInlineNode(nextContent, { ...cloneJsonSafe(sourceNode), text: after });
@@ -1231,6 +1252,15 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       ));
     }
 
+    const hasLinkReplacement = Object.hasOwn(item || {}, 'richReplacementLink');
+    const linkReplacement = hasLinkReplacement ? item.richReplacementLink : null;
+    if (hasLinkReplacement && (!currentObservable.doc || reviewItems.length !== 1
+      || options.trustedLinkReplacementDigest !== sha256Text(JSON.stringify(item))
+      || !validateRichLinkReplacement(linkReplacement))) {
+      return block(buildReason('REVISION_BRIDGE_EXACT_TEXT_LINK_REPLACEMENT_AUTHORITY_REQUIRED',
+        'reviewItems.richReplacementLink', 'compound link edits require an exact main-private item digest and two inert HTTP(S) targets', { changeId }));
+    }
+
     const hasRichRange = Object.hasOwn(item?.match || {}, 'richReplacementRange');
     const richReplacementRange = hasRichRange ? item.match.richReplacementRange : null;
     if (hasRichRange && (!currentObservable.doc
@@ -1294,6 +1324,7 @@ export async function applyExactTextBatchMinSafeWrite(input = {}, options = {}) 
       replacementText,
       authority: operationAuthority,
       ...(hasRichRange ? { richReplacementRange: cloneJsonSafe(richReplacementRange) } : {}),
+      ...(hasLinkReplacement ? { richReplacementLink: cloneJsonSafe(linkReplacement) } : {}),
     };
     const overlappingOperation = operations.find((existing) => hasOverlappingRange(existing, operation));
     if (overlappingOperation) {
