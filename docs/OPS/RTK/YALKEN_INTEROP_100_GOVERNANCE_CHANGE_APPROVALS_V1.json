@@ -514,12 +514,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "docs/ARCH_DIFF_LOG.md",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
-      "sha256": "1e4e701f3f7803d6bd2671f4308e326de131ef2b19403a40508ae5c13d750216"
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
+      "sha256": "f833cd9c4de9eae15af609b4d37c698f49629fff0ee8e23352d5647e8cb33b1f"
     },
     {
       "approved": true,
@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e090d05d9388ddee5a5ad40adf342c8715532471d83fff00c5a888eff3751fb8",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "bd67d6243bd274e3212e0089cab019c87f9df18453c64fa7d4e0cb49fee83f40",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1405,37 +1405,37 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-tables-readback.py",
-      "sha256": "35fa4d11cfbe179e546213abcb9ced1aa49a6442d154f5dba69fd227e82da0d8",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
-      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "src/io/documentTables.js",
-      "sha256": "443cebb5d02499e98d18c030ddeb73d3ae5aaf141d62c671c538cba262481b6d",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
-      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "7ca783398cfac227371b4b0b4b395500825f2502d014541a5c09761e357e76ee",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "test/contracts/rtk-word-table-review.contract.test.js",
-      "sha256": "894a91455c5917b8bfe81fb747c39c9d61f5826d33c55aaa9d7fd08ce5c916ef",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "sha256": "76f6151776ffca46afd501fd0580995ef89b457c9ebf089c42dda82bc3da8701",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
-      "sha256": "63b929c28ae6415be1d8ed8a661e729f2e646e645243d6873da20a96c42acdb2",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
-      "approvedAtUtc": "2026-09-25T01:22:48Z",
-      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "sha256": "42de2ebebf6403b9c21e4889301ddb3fda2b6a88c1ec115d38927e96aad0d009",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1576,12 +1576,12 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
-      "sha256": "d0dc13abc16882cf659cad23055abb8aefb856429527456acadd29ef0d88586d",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-media-readback.py",
@@ -1693,12 +1693,12 @@
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "c0ad962c90d932a324b4790d81da5d5be90bebf7f4c1544a58dc00ade744bc0a",
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "sha256": "48a14817d9e1013c72c96cdfd482587a59a32c1dc112c17d609c889bdfbbd993",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "src/renderer/editor.js",
@@ -1819,66 +1819,66 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "cd82eebb3073c06e138550891c60a4374015002520e4baa2f0b526a56f6d16ef",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "f8fc54043cb2d2f51a4419096ba6f542bb3064fcc6f732b3776923ce7df9d849",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "fe368726f7703c4c7852c463000b126ba27530bbf8c16b5381e10bb557669566",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "deef7ac09b8c269a7badd01692098dceee57160cc491b3781adf785885cdf0c6",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "104ef3ed9cf3939f7c1e11372320d7f87b30424eb2fa74b8da07008057a2b9d6",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "31b25b9c498281b961860efd5afe5d0603a56058d732b4d481ba69c42c761e36",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "9208ee36d807054087342cb850924cda1b5dedf836f6b1bbadb92eda35f293a7",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "08c8f189258bf6c5b2aa6d8c9310f4ba4ceb4eb339a97eb10b94bf9906a5650e",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ff99acd823b7d648671e455ce17cb7da974658555ad8c5d5ff7749cefd41dd33",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "7215af340aa49a054e7b0cfc2c4e4e5eb1158809981b85920c8b121ed3ced4d6",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "69125951b9bc3adc5fd33ccc8e71920e9fb138560807b34beaf4176c6b17905c",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "5210542872648910557b9318989a087ae4e9e12490371e587b910d9d2e7388c4",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-      "sha256": "d5a4e50bc2132c478bfb4cd6082f28296ee9c812fec186c25c24513923f81303",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "sha256": "80fd3a1919108b937ded7bad0944e4731fae4e2c7eb359f9f7c665175fb0c824",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-import-transaction-remediation.md",
@@ -2044,12 +2044,12 @@
     },
     {
       "filePath": "test/contracts/rtk-word-table-properties.contract.test.js",
-      "sha256": "f534eb61254e8a1d4251073b0d3666aca06f0608eeb6322f4f0a09b988294ae6",
+      "sha256": "b6515e2e843388423a762de306fc503d7cdf39ed24be8e24959cf0197c2bba4a",
       "approved": true,
-      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
-      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-composite-fidelity.md",
@@ -2077,6 +2077,15 @@
       "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-25--word-table-autofit-review.md",
+      "sha256": "9192f8b304b04e2702739d78c44f8b372d2877c628b60e790a8dd1c6ab6fd6c7",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
     }
   ],
   "evidenceStampIds": [
@@ -4944,6 +4953,150 @@
       "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/ARCH_DIFF_LOG.md",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "1e4e701f3f7803d6bd2671f4308e326de131ef2b19403a40508ae5c13d750216"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "e090d05d9388ddee5a5ad40adf342c8715532471d83fff00c5a888eff3751fb8"
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-tables-readback.py",
+      "sha256": "35fa4d11cfbe179e546213abcb9ced1aa49a6442d154f5dba69fd227e82da0d8",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/documentTables.js",
+      "sha256": "443cebb5d02499e98d18c030ddeb73d3ae5aaf141d62c671c538cba262481b6d",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-table-review.contract.test.js",
+      "sha256": "894a91455c5917b8bfe81fb747c39c9d61f5826d33c55aaa9d7fd08ce5c916ef",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T01:22:48Z",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_REVIEW_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/unit/rtk-interop-word-manuscript.test.py",
+      "rationale": "Owner-authorized solo Word-first implementation: bounded C2/C3 table text Apply, protected notes and comment anchors, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "sha256": "63b929c28ae6415be1d8ed8a661e729f2e646e645243d6873da20a96c42acdb2"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-readback.py",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required.",
+      "sha256": "d0dc13abc16882cf659cad23055abb8aefb856429527456acadd29ef0d88586d"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "src/renderer/editor.bundle.js",
+      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "c0ad962c90d932a324b4790d81da5d5be90bebf7f4c1544a58dc00ade744bc0a"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "cd82eebb3073c06e138550891c60a4374015002520e4baa2f0b526a56f6d16ef"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "fe368726f7703c4c7852c463000b126ba27530bbf8c16b5381e10bb557669566"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "104ef3ed9cf3939f7c1e11372320d7f87b30424eb2fa74b8da07008057a2b9d6"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "9208ee36d807054087342cb850924cda1b5dedf836f6b1bbadb92eda35f293a7"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "ff99acd823b7d648671e455ce17cb7da974658555ad8c5d5ff7749cefd41dd33"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "69125951b9bc3adc5fd33ccc8e71920e9fb138560807b34beaf4176c6b17905c",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "d5a4e50bc2132c478bfb4cd6082f28296ee9c812fec186c25c24513923f81303"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-table-properties.contract.test.js",
+      "sha256": "f534eb61254e8a1d4251073b0d3666aca06f0608eeb6322f4f0a09b988294ae6",
+      "approved": true,
+      "approvedBy": "owner-delegated-codex:WORD_TABLE_PROPERTIES_20260925",
+      "approvedAtUtc": "2026-09-25T16:50:04.972210Z",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W5 Word remediation: bounded canonical table widths, literal shading and borders; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
     }
   ]
 }

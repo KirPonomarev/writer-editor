@@ -128,6 +128,18 @@ function compareTableParagraphTopology(actual, expected) {
   };
   try {
     const left = projection(actual, item => item.table), right = projection(expected, item => item.formatIr?.table);
+    // A legacy table has no stored geometry: its exported auto-fit grid is a
+    // layout hint which Word recomputes after edits. Only the authenticated
+    // local map may establish this case. Explicit grids and every other table
+    // or cell property remain part of the strict comparison below.
+    for (let i = 0; i < left.length; i++) {
+      const returned = left[i].wordTable;
+      if (right[i] && right[i].wordTable === undefined && returned) {
+        const implicit = legacyTableProperties(left[i].columnCount);
+        if (returned.grid.every(w => Number.isSafeInteger(w) && w > 0)
+          && propertiesEqual({ ...returned, grid: implicit.grid }, implicit)) delete left[i].wordTable;
+      }
+    }
     return { ok: propertiesEqual(left, right),
       code: propertiesEqual(left, right) ? 'DOCX_TABLE_TOPOLOGY_EQUAL' : 'DOCX_TABLE_TOPOLOGY_MISMATCH' };
   } catch (error) { return { ok: false, code: 'DOCX_TABLE_TOPOLOGY_INVALID', reason: error.message }; }

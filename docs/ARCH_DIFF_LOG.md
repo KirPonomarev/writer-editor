@@ -134,3 +134,7 @@ Owner-approved W5 continuation from e53782a9: bounded optional canonical table a
 Owner-approved WORD_COMPOSITE_FIDELITY_20260925 on b6986aea: preserve unformatted hardBreak structure in the existing canonical document model and align diagnostics with actual rich candidates. Page/column and other unsupported losses, G/R authority separation, fenced persistence and frozen acceptance remain unchanged. No architecture exception, new dependency or runtime network. Rollback: revert bounded W6 delivery.
 
 W6 composite follow-up: authenticated media text Apply preserves unchanged hyperlink context; existing Apply journal carries a bounded, exact snapshot-verified canonical comment anchor transition. No gate exception or new mutation entry point; ambiguous/changed anchors remain blocked.
+
+## 2026-09-25 — W7 implicit auto-fit table review
+
+Owner-approved WORD420_TABLE_AUTOFIT_CLOSURE_20260925 repairs a native Word return blocked by derived grid widths in an implicit legacy auto-fit table. Only the authenticated local map can establish absence of stored geometry; explicit properties, cell topology and no-write preview remain strict. No canon or oracle exception, new dependency or authority. This is a runtime repair requiring fresh physical evidence, not proof-only promotion. Rollback: revert the bounded W7 delivery; all original DOCX and failed/successful evidence retained.
