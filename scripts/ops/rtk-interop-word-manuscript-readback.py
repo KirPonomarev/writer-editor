@@ -14,6 +14,14 @@ _ms=importlib.util.spec_from_file_location('media_oracle',Path(__file__).with_na
 media=importlib.util.module_from_spec(_ms);_ms.loader.exec_module(media)
 def body_paragraphs(document):return tables.parse_body(document)[0]
 
+def table_stage_proof(actual,expected_docs,artifact_sha256,label):
+    # Hash the independently verified semantic graph, retaining observed geometry
+    # separately. Exact raw artifact binding and source-explicit widths stay strict.
+    semantic=tables.semantic_table_graphs(actual,expected_docs)
+    require(semantic==tables.canonical_graphs(expected_docs),label)
+    return {'graphSha256':digest(canonical(semantic)),'observedGraphSha256':digest(canonical(actual)),
+            'artifactSha256':artifact_sha256,'tableCount':len(actual)}
+
 UNICODE=['[normalization] NFC é Å ö; NFD e\u0301 A\u030a o\u0308; Hangul 한 한.','[bidi] LTR abc \u2067שלום 123\u2069 xyz العربية.','[ime] 日本語.']
 SUBCASES={
  'MEDIA_ASSETS':media.SUBCASES,
@@ -1121,12 +1129,12 @@ def audit(request):
     def table_graph(round=0):return tables.canonical_graphs(expected_round(round))
     def table_docx_stage(name,document,data,round=0):
         if table_expected is None:return
-        actual=tables.parse_body(document)[1];require(tables.same_table_semantics(actual,expected_round(round)),'TABLE_GRAPH_'+name)
-        table_stages[name]={'graphSha256':digest(canonical(actual)),'artifactSha256':digest(data),'tableCount':len(actual)}
+        actual=tables.parse_body(document)[1]
+        table_stages[name]=table_stage_proof(actual,expected_round(round),digest(data),'TABLE_GRAPH_'+name)
     def table_canonical_stage(name,documents,hashes,round):
         if table_expected is None:return
-        graph=tables.canonical_graphs(documents);require(tables.same_table_semantics(graph,expected_round(round)),'TABLE_CANONICAL_'+name)
-        table_stages[name]={'graphSha256':digest(canonical(graph)),'artifactSha256':digest(canonical(hashes)),'tableCount':len(graph)}
+        graph=tables.canonical_graphs(documents)
+        table_stages[name]=table_stage_proof(graph,expected_round(round),digest(canonical(hashes)),'TABLE_CANONICAL_'+name)
     def stage(name,ps,round=0):
         es=sum([paragraphs(d) for d in expected_round(round)],[])
         stages[name]={**exact(ps,es,name),'round':round,'sortKeysSha256':digest(canonical([[i,digest(p.encode())] for i,p in enumerate(ps)]))}

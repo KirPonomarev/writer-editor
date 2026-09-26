@@ -691,8 +691,8 @@ test('Word import transaction admission preserves every historical Lab identity 
  // W7's independent reader retains raw grids but distinguishes implicit auto-fit
  // from explicitly stored geometry. All other reader bindings remain unchanged.
  const autoFitReaderPins={
-  'scripts/ops/rtk-interop-word-manuscript-readback.py':'ac92d34b6b2c94019cdd12fbbbfb822b6305a400baaf5fdbc72a2b1226e3124e',
-  'scripts/ops/rtk-interop-word-tables-readback.py':'40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282',
+  'scripts/ops/rtk-interop-word-manuscript-readback.py':'9f3c081cae141a539bea38f6de284251ffa67d0a873689da728c3180e72511af',
+  'scripts/ops/rtk-interop-word-tables-readback.py':'c45a0e141b18e3e9dde2961ad22c8ba3d8ac7927684686e6f37a5fcd046f2395',
  };
  for(const binding of expected.wordManuscriptBatch.readerBindings)if(autoFitReaderPins[binding.path])binding.sha256=autoFitReaderPins[binding.path];
  // Host upgraded; exact native qualification changes only these OS identity fields.

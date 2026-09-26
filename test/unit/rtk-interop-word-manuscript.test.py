@@ -64,6 +64,31 @@ class ManuscriptOracle(unittest.TestCase):
    if node['type']=='table':node['attrs']={'wordTable':copy.deepcopy(legacy)}
   self.assertFalse(m.tables.same_table_semantics(actual,explicit))
 
+ def test_autofit_stage_proof_binds_verified_semantics_and_retains_observed_graph(self):
+  docs=m.expected_docs('SINGLE_SCENE','C2',recipe='TABLES_V1');expected=m.tables.canonical_graphs(docs)
+  actual=copy.deepcopy(expected);legacy={'version':1,'grid':[5772,1749,1495],'layout':None,'widthDxa':None,'shading':None,'borders':{k:{'style':'single','size':4,'color':'auto'} for k in m.tables.EDGES}}
+  for graph in actual:graph['wordTable']=copy.deepcopy(legacy)
+  before=copy.deepcopy(actual);source=copy.deepcopy(docs);artifact='a'*64
+  proof=m.table_stage_proof(actual,docs,artifact,'TABLE_GRAPH_REGRESSION')
+  self.assertEqual(proof['graphSha256'],m.digest(m.canonical(expected)))
+  self.assertEqual(proof['observedGraphSha256'],m.digest(m.canonical(actual)))
+  self.assertNotEqual(proof['graphSha256'],proof['observedGraphSha256'])
+  self.assertEqual(proof['artifactSha256'],artifact);self.assertEqual(proof['tableCount'],2)
+  self.assertEqual(actual,before);self.assertEqual(docs,source)
+  explicit=copy.deepcopy(docs)
+  for node in explicit[0]['content']:
+   if node['type']=='table':node['attrs']={'wordTable':{**copy.deepcopy(legacy),'grid':[1440]*3}}
+  with self.assertRaisesRegex(ValueError,'TABLE_GRAPH_REGRESSION'):m.table_stage_proof(actual,explicit,artifact,'TABLE_GRAPH_REGRESSION')
+  for kind in ['text','cell','width','count','position','merge']:
+   changed=copy.deepcopy(actual)
+   if kind=='text':changed[0]['cells'][0]['paragraphs'][0]+='corrupt'
+   elif kind=='cell':changed[0]['cells'][0]['wordCell']={'version':1,'shading':'FF0000','borders':{}}
+   elif kind=='width':changed[0]['wordTable']['grid'][0]=0
+   elif kind=='count':changed.pop()
+   elif kind=='position':changed[0]['startParagraphIndex']+=1
+   else:changed[0]['cells'][0]['colspan']=2
+   with self.subTest(kind=kind),self.assertRaises(ValueError):m.table_stage_proof(changed,docs,artifact,'TABLE_GRAPH_REGRESSION')
+
  def test_actual_word_table_bytes_native_cells_and_six_corruptions(self):
   import base64
   fixture=json.loads((ROOT/'test/fixtures/word-tables-native-v1.json').read_text())

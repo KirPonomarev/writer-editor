@@ -604,7 +604,7 @@ test('DOCX import e2e command chain: clean DOCX creates one local scene with pat
   assert.equal(result.safeCreate.receipt.projectId, 'docx-e2e-project');
   assert.equal(result.ports.safeCreate.calls.ensureProjectStructure, 1);
   assert.deepEqual(result.ports.safeCreate.calls.resolveProjectBindingForFile, [result.romanRoot]);
-  assert.deepEqual(result.ports.safeCreate.calls.queueDiskOperation, ['safe create DOCX import scene batch']);
+  assert.deepEqual(result.ports.safeCreate.calls.queueDiskOperation, ['safe create DOCX import transaction']);
   assertNoPublicAuthorityLeak(result.intake);
   assertNoPublicAuthorityLeak(result.content);
   assertNoPublicAuthorityLeak(result.preview);
