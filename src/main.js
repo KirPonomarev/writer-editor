@@ -21833,6 +21833,7 @@ async function handleRtkStructuralReturnCommandSurface(payload = {}) {
   if (keyGate.ok !== true) return keyGate;
   return module.createRtkStructuralReturnCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
+    publishScene: publishReviewSceneWithProjectTransaction,
   })(payload);
 }
 
@@ -22057,6 +22058,7 @@ async function reconcileReviewStructuralReturnAtStartup() {
     await buildRtkStructuralReturnRuntimeProjectScope(),
     {
       cryptoPort: createRtkReviewTransportCryptoPort(),
+    publishScene: publishReviewSceneWithProjectTransaction,
     },
   );
   if (!result || result.ok !== true) {

@@ -225,7 +225,9 @@
     "src/io/revisionBridge/reviewTransportRoundStoreV3.mjs",
     "docs/tasks/2026-09-26--word-clean-link-label.md",
     "test/contracts/rtk-word-clean-link-label.contract.test.js",
-    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs"
+    "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+    "docs/tasks/2026-09-26--word-structural-transaction.md",
+    "test/contracts/rtk-word-structural-transaction.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -454,7 +456,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "f5311d9959a853dd4cec33f6425397711329c7cf5dac01adcafb16861655a1b1"
+        "sha256": "bed2cbcce19cd73516a4101faf9232b3b8ecf2e9b114c9c68be5ccf4c5accbfe"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -926,7 +928,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "d5abe78cd9b80fffd67e592fdfe96432a0d4c7529255ff2c852f3ff30ae3c30a"
+        "sha256": "3a018445955770b86f7fe24e0ba6d90feb2a4ed7c0ed3d8c981587927112d7b6"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1075,6 +1077,10 @@
       {
         "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
         "sha256": "02734f421ff996216faecda906aadc34ca3278c89ef7e52e96910a0ac4f3d8fe"
+      },
+      {
+        "path": "test/contracts/rtk-word-structural-transaction.contract.test.js",
+        "sha256": "f1e30bd3eb3b39982223fac03ee50db67f218e460322b5171973e528e2b39dea"
       }
     ],
     "followupRepair": {
