@@ -534,8 +534,9 @@ export function initTiptap(mountEl, options = {}) {
     },
     extensions: [
       StarterKit.configure({
-        // Loading a table must not silently append authored document content.
-        trailingNode: { notAfter: ['table'] },
+        // Loading or focusing a document must not invent authored paragraphs.
+        // Enter, list splitting and exitCode remain explicit authoring commands.
+        trailingNode: false,
         link: false,
         underline: false,
       }),
