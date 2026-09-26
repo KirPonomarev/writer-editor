@@ -152,7 +152,7 @@ test('P1a native hyperlink theme uses the selected theme RGB, never cached color
 
 test('P1a real editor RGB serialization remains exactly equivalent in signed export', async()=>{
  const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
- const scene=color=>({sceneId:'roman/link.txt',doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'правка 😀',marks:[{type:'textStyle',attrs:{color,fontFamily:'Aptos',fontSize:'12pt'}},{type:'underline'},{type:'link',attrs:{href:HREF,title:null,class:null}}]}]}]}});
+ const scene=color=>({sceneId:'roman/link.txt',text:'правка 😀',doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'правка 😀',marks:[{type:'textStyle',attrs:{color,fontFamily:'Aptos',fontSize:'12pt'}},{type:'underline'},{type:'link',attrs:{href:HREF,title:null,class:null}}]}]}]}});
  assert.deepEqual(buildFormatIrParagraphs(scene('rgb(70, 120, 134)')),buildFormatIrParagraphs(scene('#467886')));
  assert.equal(buildFormatIrParagraphs(scene('rgb(70, 120, 134)'))[0].formatIr.runs[0].inline.color,'#467886');
  for(const bad of ['rgba(70,120,134,0.5)','rgb(256,0,0)','var(--color)','red']) assert.throws(()=>buildFormatIrParagraphs(scene(bad)),/FULL_MANUSCRIPT_FORMAT_IR_COLOR_UNSUPPORTED/);
