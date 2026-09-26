@@ -51,7 +51,7 @@ test('table editor: production trailing-node policy preserves a table-only docum
     import('@tiptap/core'),import('@tiptap/starter-kit'),import('../../src/renderer/tiptap/documentTables.mjs'),import('@tiptap/pm/state')]);
   const kit=StarterKit.configure(options),schema=getSchema([kit,DocumentTables]);
   const trailing=kit.config.addExtensions.call(kit).find(e=>e.name==='trailingNode');
-  const plugins=trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}});
+  const plugins=trailing ? trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}}) : [];
   const table=schema.nodeFromJSON({type:'table',content:[{type:'tableRow',content:[{type:'tableCell',content:[{type:'paragraph',content:[{type:'text',text:'Only table'}]}]}]}]});
   let state=EditorState.create({schema,doc:schema.node('doc',null,[table]),plugins});
   const initial=state.doc.toJSON();state=state.applyTransaction(state.tr.setMeta('focus',true)).state;
@@ -59,7 +59,47 @@ test('table editor: production trailing-node policy preserves a table-only docum
   state=state.applyTransaction(state.tr.insert(state.doc.content.size,schema.node('paragraph'))).state;
   assert.equal(state.doc.childCount,2);assert.equal(state.doc.lastChild.type.name,'paragraph');
   state=state.applyTransaction(state.tr.setMeta('focus',true)).state;assert.equal(state.doc.childCount,2);
-  // Keep the pre-existing policy for unrelated document node types.
+  // Focus is not authoring authority for headings either.
   let heading=EditorState.create({schema,doc:schema.node('doc',null,[schema.node('heading',{level:1},schema.text('Heading'))]),plugins});
-  heading=heading.applyTransaction(heading.tr.setMeta('focus',true)).state;assert.equal(heading.doc.lastChild.type.name,'paragraph');
+  heading=heading.applyTransaction(heading.tr.setMeta('focus',true)).state;assert.equal(heading.doc.childCount,1);assert.equal(heading.doc.lastChild.type.name,'heading');
 });
+
+for (const kind of ['heading','codeBlock','blockquote','bulletList','orderedList']) {
+  test(`editor topology: ${kind} survives focus/reopen, explicit authoring and undo/redo`, async () => {
+    const source=fs.readFileSync(path.join(__dirname,'../../src/renderer/tiptap/index.js'),'utf8');
+    const options=JSON.parse(JSON.stringify(vm.runInNewContext('('+source.match(/StarterKit\.configure\((\{[\s\S]*?\})\)/u)[1]+')')));
+    const [{getSchema},{default:StarterKit},{EditorState,TextSelection},{splitBlock,exitCode},{splitListItem},{history,undo,redo}]=await Promise.all([
+      import('@tiptap/core'),import('@tiptap/starter-kit'),import('@tiptap/pm/state'),
+      import('@tiptap/pm/commands'),import('@tiptap/pm/schema-list'),import('@tiptap/pm/history'),
+    ]);
+    const kit=StarterKit.configure(options),schema=getSchema([kit]);
+    const trailing=kit.config.addExtensions.call(kit).find(e=>e.name==='trailingNode');
+    const plugins=trailing ? trailing.config.addProseMirrorPlugins.call({name:trailing.name,options:trailing.options,editor:{schema}}) : [];
+    const text='  Authored é 😀 text  ';
+    const paragraph=()=>schema.node('paragraph',null,schema.text(text));
+    const block=kind==='heading'?schema.node(kind,{level:2},schema.text(text))
+      :kind==='codeBlock'?schema.node(kind,null,schema.text(text))
+      :kind==='blockquote'?schema.node(kind,null,[paragraph()])
+      :schema.node(kind,null,[schema.node('listItem',null,[paragraph()])]);
+    const original=schema.node('doc',null,[block]).toJSON();
+    let state,serialized=JSON.stringify(original);
+    for(let cycle=0;cycle<5;cycle++) {
+      state=EditorState.create({schema,doc:schema.nodeFromJSON(JSON.parse(serialized)),plugins:[...plugins,history()]});
+      state=state.applyTransaction(state.tr.setMeta('focus',true)).state;
+      state=state.applyTransaction(state.tr.setMeta('blur',true)).state;
+      assert.deepEqual(state.doc.toJSON(),original,'Non-authoring transactions cannot append content');
+      serialized=JSON.stringify(state.doc.toJSON());
+    }
+    state=state.apply(state.tr.setSelection(TextSelection.atEnd(state.doc)));
+    const command=kind==='codeBlock'?exitCode:kind.endsWith('List')?splitListItem(schema.nodes.listItem):splitBlock;
+    assert.equal(command(state,tr=>{state=state.applyTransaction(tr).state;}),true);
+    const authored=state.doc.toJSON();assert.notDeepEqual(authored,original);
+    assert.equal(state.doc.textContent,text,'Enter preserves all authored codepoints');
+    assert.equal(undo(state,tr=>{state=state.applyTransaction(tr).state;}),true);
+    assert.deepEqual(state.doc.toJSON(),original);
+    assert.equal(redo(state,tr=>{state=state.applyTransaction(tr).state;}),true);
+    assert.deepEqual(state.doc.toJSON(),authored);
+    const reopened=EditorState.create({schema,doc:schema.nodeFromJSON(authored),plugins});
+    assert.deepEqual(reopened.applyTransaction(reopened.tr.setMeta('focus',true)).state.doc.toJSON(),authored,'Explicitly authored empty paragraphs must survive');
+  });
+}

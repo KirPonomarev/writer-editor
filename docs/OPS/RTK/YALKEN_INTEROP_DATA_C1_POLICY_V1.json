@@ -228,7 +228,8 @@
     "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
     "docs/tasks/2026-09-26--word-structural-transaction.md",
     "test/contracts/rtk-word-structural-transaction.contract.test.js",
-    "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs"
+    "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs",
+    "docs/tasks/2026-09-26--word-preserve-authored-topology.md"
   ],
   "protectedFiles": [
     {
@@ -469,7 +470,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "2825ddb69357da8061046371f4acbf4bf05db33454eb5b5b5e146d1a5d947801"
+        "sha256": "0c86fe85dde49f64a49bc18cbd193c45ab8cabe21958006b39995662297052de"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -597,7 +598,7 @@
       },
       {
         "path": "src/renderer/tiptap/index.js",
-        "sha256": "8b791ceaf22668027f70b28e412e5eb39a3827211a8d714e82ef8af2c2f07a05"
+        "sha256": "3a8df9fc6e59b91e8d126cf82829ff1f5298a89a7ab1af265b8bddf439692447"
       },
       {
         "path": "src/renderer/tiptap/documentTextStyle.mjs",
@@ -929,7 +930,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "3a018445955770b86f7fe24e0ba6d90feb2a4ed7c0ed3d8c981587927112d7b6"
+        "sha256": "fdef3addde82165d14e91321401043c8865bc4134327b0e012673fc836901d70"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -993,7 +994,7 @@
       },
       {
         "path": "test/contracts/rtk-word-table-editor.contract.test.js",
-        "sha256": "ee2d57971200bb4942b5261770e349ecfe5ddf1b414f9856096827d120c3b3e5"
+        "sha256": "06ac2f1f6f72267e5c95cb5db03706c231175a3cc2868af1f610e4d91297cc72"
       },
       {
         "path": "test/contracts/rtk-word-table-properties.contract.test.js",
