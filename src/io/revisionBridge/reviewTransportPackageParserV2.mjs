@@ -1,3 +1,5 @@
+import docxHyperlinks from '../docxHyperlinks.cjs';
+const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentTables from '../documentTables.js';
 import {
   RTK_RETURNED_REVIEW_ANALYSIS_V2_SCHEMA,
@@ -2258,6 +2260,81 @@ function reviewVisibilityReason(documentScan, stylesScan = { tokens: [] }) {
   return null;
 }
 
+function reviewHyperlinkRelationships(xml, budgets, cryptoPort, budgetState) {
+  const result = new Map();
+  if (!xml) return result;
+  const scan = parseXmlPart('word/_rels/document.xml.rels', xml, budgets, cryptoPort, budgetState);
+  if (scan.diagnostics.length) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+  const tokens = [...scan.tokens].sort((a,b) => a.openStart-b.openStart);
+  const root = tokens.shift();
+  if (!root || root.namespaceUri !== REL_NS || root.localName !== 'Relationships') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+  for (const token of tokens) {
+    if (token.namespaceUri !== REL_NS || token.localName !== 'Relationship'
+      || token.openStart < root.openEnd || token.closeEnd > root.closeStart) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+    const plain = key => rawString(token.attrsByNs?.[`|${key}`]);
+    const id = plain('Id');
+    if (!id || result.has(id)) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+    result.set(id, { type:plain('Type'), mode:plain('TargetMode'), target:plain('Target') });
+  }
+  return result;
+}
+
+// Resolve values only. Relationship IDs never identify a local block or grant
+// Apply authority; the existing authenticated export-map resolver does that.
+function reviewHyperlinkRuns(record, documentXml, relationships) {
+  const result = new Map(), stack = [];
+  let field = null;
+  for (const token of record.tokens) {
+    while (stack.length && stack.at(-1).end <= token.openStart) stack.pop();
+    const parent = stack.at(-1);
+    let href = parent?.href || null;
+    if (isWordToken(token, 'hyperlink')) {
+      if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      const id = attr(token, 'id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+      const rel = relationships.get(id);
+      if (!rel || rel.type !== HYPERLINK_REL_TYPE || rel.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+      if (['tooltip','tgtFrame','docLocation'].some(key => attr(token,key,W_NS))) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      href = docxHttpHrefWithFragment(rel.target, attr(token,'anchor',W_NS));
+    } else if (isWordToken(token, 'fldSimple')) {
+      const instruction = attr(token,'instr',W_NS);
+      if (/\bHYPERLINK\b/iu.test(instruction)) {
+        if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        href = parseDocxHyperlinkInstruction(instruction);
+      }
+    }
+    if (isWordToken(token,'fldChar')) {
+      const kind=attr(token,'fldCharType',W_NS);
+      if (kind==='begin') {
+        if (field || href) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        field={instruction:'',phase:'instruction',href:null};
+      } else if (kind==='separate' && field?.phase==='instruction') {
+        field.phase='result';
+        if (/\bHYPERLINK\b/iu.test(field.instruction)) field.href=parseDocxHyperlinkInstruction(field.instruction);
+      } else if (kind==='end' && field) {
+        if (/\bHYPERLINK\b/iu.test(field.instruction) && field.phase!=='result') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        field=null;
+      } else throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+    } else if (isWordToken(token,'instrText')) {
+      if (!field || field.phase!=='instruction') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      field.instruction+=tokenText(documentXml,token);
+      if (field.instruction.length>4096) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
+    }
+    // The run token precedes its field controls. Bind text atoms to their run
+    // after those controls so even compact single-run fields have exact values.
+    const owner = isWordToken(token,'r') ? token : parent?.run;
+    if (isWordToken(token,'t') || ['tab','br','cr','softHyphen','noBreakHyphen'].some(name=>isWordToken(token,name))) {
+      if (owner) {
+        const effective=href || (field?.phase==='result' ? field.href : null);
+        if (result.has(owner.openStart) && result.get(owner.openStart)!==effective) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        result.set(owner.openStart,effective);
+      }
+    }
+    if (!token.selfClosing) stack.push({end:token.closeEnd,href,run:owner});
+  }
+  if (field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+  return result;
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2295,8 +2372,14 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     reasons.push(reason('RTK_WORD_TABLES_MALFORMED_BLOCKED', 'reviewIr.tableParagraphs', error.message));
     return { ok: false, code: 'RTK_WORD_TABLES_MALFORMED_BLOCKED', reasons, paragraphs: [] };
   }
+  let linkRelationships;
+  try { linkRelationships = reviewHyperlinkRelationships(options.relationshipsXml, budgets, cryptoPort, budgetState); }
+  catch (error) { return { ok:false, code:'RTK_WORD_HYPERLINK_UNSUPPORTED', reasons:[reason('RTK_WORD_HYPERLINK_UNSUPPORTED','word/_rels/document.xml.rels',error.message)], paragraphs:[] }; }
   const results = [];
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
+    let linkRuns;
+    try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
+    catch (error) { return { ok:false, code:'RTK_WORD_HYPERLINK_UNSUPPORTED', reasons:[reason('RTK_WORD_HYPERLINK_UNSUPPORTED','word/document.xml',error.message)], paragraphs:[] }; }
     const paragraph = paragraphRecord.token;
     const paragraphScan = { tokens: paragraphRecord.tokens };
     const paragraphText = textInsideToken(documentXml, paragraphScan, paragraph);
@@ -2345,6 +2428,8 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs']);
       const unsupportedNames = semanticNames.filter((name) => !supportedNames.has(name));
       const inline = formattingInlineActions(children);
+      const href = linkRuns.get(run.openStart);
+      inline.link = href ? { action:'set', value:href } : { action:'remove' };
       const expectedActionKeys = [
         ...[['b', 'bold'], ['i', 'italic'], ['u', 'underline'], ['strike', 'strike']]
           .filter(([name]) => semanticNames.includes(name))
@@ -3585,6 +3670,7 @@ function blockingReason(reasons) {
     'RTK_WORD_TABLES_MALFORMED_BLOCKED',
     'RTK_WORD_VISIBILITY_UNSUPPORTED',
     'RTK_WORD_RUBY_UNSUPPORTED',
+    'RTK_WORD_HYPERLINK_UNSUPPORTED',
   ].includes(item.code));
 }
 
@@ -3860,6 +3946,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     cryptoPort,
     budgets,
     documentScan,
+    relationshipsXml: parts['word/_rels/document.xml.rels'],
   });
   const formattingParagraphs = [];
   if (!formattingParagraphScan.ok) {

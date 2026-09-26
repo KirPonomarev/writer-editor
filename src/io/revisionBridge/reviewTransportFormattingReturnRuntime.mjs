@@ -1,3 +1,5 @@
+import docxHyperlinks from '../docxHyperlinks.cjs';
+const { normalizeDocxHttpHref } = docxHyperlinks;
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -15,7 +17,7 @@ export const RTK_FORMATTING_RETURN_RUNTIME_SCHEMA = 'yalken.rtk.formatting-retur
 
 const INLINE_BOOLEAN_MARKS = new Set(['bold', 'italic', 'underline', 'strike']);
 const TEXT_STYLE_KEYS = new Set(['color', 'fontFamily', 'fontSize']);
-const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight']);
+const INLINE_KEYS = new Set([...INLINE_BOOLEAN_MARKS, ...TEXT_STYLE_KEYS, 'highlight', 'link']);
 const PARAGRAPH_KEYS = new Set(['textAlign']);
 const OPERATION_KEYS = new Set([
   'operationId', 'sceneId', 'blockId', 'paragraphOrdinal', 'from', 'to', 'selectedText',
@@ -76,6 +78,9 @@ function normalizeAction(value, key) {
   if (INLINE_BOOLEAN_MARKS.has(key)) return value.value === true ? { action: 'set', value: true } : null;
   const stringValue = rawString(value.value);
   if (!stringValue || /[\u0000-\u001f\u007f]/u.test(stringValue)) return null;
+  if (key === 'link') {
+    try { return { action:'set', value:normalizeDocxHttpHref(stringValue) }; } catch { return null; }
+  }
   if (key === 'color' || key === 'highlight') {
     return /^#[a-f0-9]{6}(?:[a-f0-9]{2})?$/iu.test(stringValue)
       ? { action: 'set', value: stringValue.toLowerCase() }
@@ -211,6 +216,10 @@ function applyInlineActions(marks, actions) {
     if (INLINE_BOOLEAN_MARKS.has(key)) next = applyBooleanMark(next, key, action);
     else if (TEXT_STYLE_KEYS.has(key)) next = applyTextStyle(next, key, action);
     else if (key === 'highlight') next = applyHighlight(next, action);
+    else if (key === 'link') {
+      next = next.filter(mark => mark.type !== 'link');
+      if (action.action === 'set') next.push({ type:'link', attrs:{ href:action.value, target:'_blank', rel:'noopener noreferrer nofollow' } });
+    }
   }
   return canonicalMarks(next);
 }
