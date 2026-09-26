@@ -86,7 +86,14 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       const structure=next.paragraphStructure||{};
       if (Object.keys(structure).some(k=>!['nodeType','headingLevel'].includes(k))) return reject('returned-structure');
       if ((p.textAlign||'left')!==(next.paragraphState?.textAlign||'left')) return reject('paragraph-format-change');
-      if (p.nodeType==='heading' || structure.headingLevel) return reject('heading-label-outside-profile');
+      const nextType=Object.hasOwn(structure,'nodeType')?structure.nodeType:'paragraph';
+      if (nextType!==p.nodeType) return reject('paragraph-kind-change');
+      if (p.nodeType==='heading') {
+        if (!Number.isSafeInteger(p.headingLevel) || p.headingLevel<1 || p.headingLevel>6
+          || structure.headingLevel!==p.headingLevel) return reject('heading-level-change');
+      } else if (Object.hasOwn(p,'headingLevel') || Object.hasOwn(structure,'headingLevel')) {
+        return reject('unexpected-heading-level');
+      }
       const oldRuns=runs(format.runs,base.text,false), newRuns=runs(next.formattedRuns,next.paragraphText,true);
       total+=base.text.length+next.paragraphText.length;
       if (total>262144 || oldRuns.length!==newRuns.length) return reject('shape-or-total-budget');
@@ -103,11 +110,22 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
     }
     if (!effect) return reject('no-label-change');
     const fullText=baselineParagraphs.map(p=>p.text).join('\n');
-    if (fullText.indexOf(effect.selectedText)!==fullText.lastIndexOf(effect.selectedText)) return reject('ambiguous-label');
+    let quote=effect.selectedText, replacementText=effect.replacementText, richReplacementRange;
+    if (fullText.indexOf(quote)!==fullText.lastIndexOf(quote)) {
+      // Keep global exact-quote uniqueness. A repeated label is admissible only
+      // inside a unique, fully compared paragraph; the writer must verify the
+      // inner substitution before touching any rich node or neighboring mark.
+      quote=baselineParagraphs[effect.paragraphOrdinal].text;
+      replacementText=returnedParagraphs[effect.paragraphOrdinal].paragraphText;
+      if (!quote || /[\r\n]/u.test(quote+replacementText)
+        || fullText.indexOf(quote)!==fullText.lastIndexOf(quote)) return reject('ambiguous-paragraph');
+      richReplacementRange={from:effect.from,to:effect.to,
+        expectedText:effect.selectedText,replacementText:effect.replacementText};
+    }
     const digest=sha(JSON.stringify({sceneId,baselineParagraphs,returnedParagraphs,effect}));
     return {ok:true,code:'RTK_CLEAN_LINK_LABEL_ANALYZED',analysisOnly:true,canWriteManuscript:false,effect,
       change:{changeId:'docx-clean-link-label-'+digest.slice(0,24),targetScope:{type:'scene',id:sceneId},
-        match:{kind:'exact',quote:effect.selectedText,prefix:'',suffix:''},replacementText:effect.replacementText,
+        match:{kind:'exact',quote,prefix:'',suffix:'',...(richReplacementRange?{richReplacementRange}:{})},replacementText,
         sourceAuthority:'authenticated-clean-link-label-v1',rtkProductPath:'cleanLinkLabel',
         paragraphIndex:effect.paragraphOrdinal,documentParagraphIndex:effect.paragraphOrdinal},digest};
   } catch(error) { return reject(error.message); }

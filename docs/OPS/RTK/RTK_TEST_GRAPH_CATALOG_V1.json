@@ -103,6 +103,7 @@
     "rtk-word-latest-semantic-b06-physical-certification.contract.test.js",
     "rtk-word-link-anchor-continuity.contract.test.js",
     "rtk-word-link-authoring.contract.test.js",
+    "rtk-word-link-label-context.contract.test.js",
     "rtk-word-media-editor.contract.test.js",
     "rtk-word-media-text-correspondence.contract.test.js",
     "rtk-word-media.contract.test.js",
