@@ -751,6 +751,13 @@ function trackedRejectedText(documentXml, documentScan) {
   return stripTagsToTextOutsideRanges(documentXml, insertedRanges);
 }
 
+const WORD_INLINE_TEXT_MARKERS = Object.freeze({ tab: '\t', br: '\n', cr: '\n', softHyphen: '\u00ad', noBreakHyphen: '\u2011' });
+function wordInlineTextValue(xml, token) {
+  if (token.namespaceUri !== W_NS) return '';
+  if (Object.hasOwn(WORD_INLINE_TEXT_MARKERS, token.localName)) return WORD_INLINE_TEXT_MARKERS[token.localName];
+  return ['t', 'delText'].includes(token.localName) ? decodeEntities(elementBody(xml, token)) : '';
+}
+
 function wordDocumentText(documentXml, documentScan, options = {}) {
   const insertedRanges = options.skipInsertedRevisions === true
     ? normalizeRanges(documentScan.tokens
@@ -759,13 +766,11 @@ function wordDocumentText(documentXml, documentScan, options = {}) {
     : [];
   let output = '';
   const textTokens = documentScan.tokens
-    .filter((token) => ['t', 'delText', 'tab', 'br', 'cr'].includes(token.localName))
+    .filter((token) => ['t', 'delText', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen'].includes(token.localName))
     .sort((left, right) => left.openStart - right.openStart || left.closeEnd - right.closeEnd);
   for (const token of textTokens) {
     if (positionInsideRanges(token.openStart, insertedRanges)) continue;
-    if (token.localName === 'tab') output += '\t';
-    else if (token.localName === 'br' || token.localName === 'cr') output += '\n';
-    else output += decodeEntities(elementBody(documentXml, token));
+    output += wordInlineTextValue(documentXml, token);
   }
   return output;
 }
@@ -1798,8 +1803,8 @@ function parseMoveRevisions(documentXml, documentScan, cryptoPort, budgetState, 
     };
     const side = token.localName === 'moveFrom' ? 'moveFrom' : 'moveTo';
     entry[side] = {
-      text: tokenText(documentXml, token),
-      textDigest: tokenDigest(cryptoPort, { side, text: tokenText(documentXml, token) }),
+      text: tokenTextSemantic(documentXml, documentScan, token),
+      textDigest: tokenDigest(cryptoPort, { side, text: tokenTextSemantic(documentXml, documentScan, token) }),
       sourceXmlProvenance: provenance(token),
     };
     byId.set(nativeRevisionId, entry);
@@ -1959,16 +1964,14 @@ function textInsideToken(documentXml, documentScan, container) {
   let output = '';
   const textTokens = documentScan.tokens
     .filter((token) => (
-      ['t', 'tab', 'br', 'cr'].includes(token.localName)
+      ['t', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen'].includes(token.localName)
       && token.openStart >= container.openEnd
       && token.closeEnd <= container.closeStart
       && !positionInsideRanges(token.openStart, blockedRanges)
     ))
     .sort((left, right) => left.openStart - right.openStart || left.closeEnd - right.closeEnd);
   for (const token of textTokens) {
-    if (token.localName === 'tab') output += '\t';
-    else if (token.localName === 'br' || token.localName === 'cr') output += '\n';
-    else output += decodeEntities(elementBody(documentXml, token));
+    output += wordInlineTextValue(documentXml, token);
   }
   return output;
 }
@@ -2192,7 +2195,7 @@ function tableDocumentParagraphs(documentXml, documentScan) {
         'ins', 'del', 'moveFrom', 'moveTo', 'bookmarkStart', 'bookmarkEnd',
         'commentRangeStart', 'commentRangeEnd', 'commentReference',
         'footnoteReference', 'endnoteReference', 'drawing', 'object', 'pict',
-        'fldSimple', 'instrText', 'tab', 'br', 'cr',
+        'fldSimple', 'instrText', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen',
       ].includes(t.localName));
       paragraphs.push(record);
     }
@@ -2363,7 +2366,7 @@ function parseFormattingDeltas(documentXml, documentScan, budgetState, reasons) 
         values: {
           relationshipId: attr(token, 'id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships') || attr(token, 'id'),
           anchor: attr(token, 'anchor'),
-          text: tokenText(documentXml, token),
+          text: textInsideToken(documentXml, documentScan, token),
         },
         sourceXmlProvenance: provenance(token),
         classification: 'MANUAL_REVIEW',
@@ -3193,7 +3196,7 @@ function parseDocumentNotes(parts, documentXml, documentScan, relationships, con
         const body = ps.map(paragraph => {
           for (const token of childTokensWithin(scan, paragraph)) {
             const property = token.path.includes('pPr') || token.path.includes('rPr');
-            if (['t', 'tab', 'br', 'cr', `${kind}Ref`].includes(token.localName)) {
+            if (['t', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen', `${kind}Ref`].includes(token.localName)) {
               requireNote(token.namespaceUri === W_NS && token.path.at(-2) === 'r' && !property, 'NOTE_ATOM_LOCATION');
               if (token.localName === `${kind}Ref`) markCount++;
               if (token.localName === 'br') requireNote(['', 'textWrapping'].includes(attr(token, 'type', W_NS)), 'NOTE_BREAK_KIND');
@@ -4181,7 +4184,7 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     const inner = tokens.filter(t => inside(t, paragraph)).sort((a, b) => a.openStart - b.openStart);
     const revisions = inner.filter(t => t.namespaceUri === W_NS && ['ins', 'del'].includes(t.localName));
     const forbidden = new Set(['moveFrom', 'moveTo', 'delInstrText',
-      'fldSimple', 'sym', 'footnoteReference', 'endnoteReference', 'softHyphen', 'noBreakHyphen']);
+      'fldSimple', 'sym', 'footnoteReference', 'endnoteReference']);
     let eligible = !tokens.some(t => inside(paragraph, t) && t.namespaceUri === W_NS
       && ['ins', 'del', 'moveFrom', 'moveTo'].includes(t.localName))
       && !inner.some(t => t.namespaceUri === W_NS && forbidden.has(t.localName));
@@ -4235,14 +4238,13 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
         }
         continue;
       }
-      if (token.namespaceUri !== W_NS || !['t', 'delText', 'tab', 'br', 'cr'].includes(token.localName)) continue;
+      if (token.namespaceUri !== W_NS || !['t', 'delText', 'tab', 'br', 'cr', 'softHyphen', 'noBreakHyphen'].includes(token.localName)) continue;
       const owners = revisions.filter(r => inside(token, r));
       if (field && (field.phase !== 'result' || owners.length)) eligible = false;
       if (owners.length > 1 || (token.localName === 'delText' && owners[0]?.localName !== 'del')
         || (token.localName === 't' && owners[0]?.localName === 'del')
         || (token.localName === 'br' && !['', 'textWrapping'].includes(attr(token, 'type')))) eligible = false;
-      const text = ['t', 'delText'].includes(token.localName) ? tokenText(documentXml, token)
-        : token.localName === 'tab' ? '\t' : '\n';
+      const text = wordInlineTextValue(documentXml, token);
       const segment = segments.at(-1), revision = owners[0];
       const atomOriginalStart = originalOffset;
       if (revision?.localName !== 'ins') { segment.originalText += text; originalOffset += text.length; }
@@ -4309,7 +4311,7 @@ export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
     if (typeMatches.length !== 1 || plain(typeMatches[0], 'ContentType') !== 'image/png') fail('CONTENT_TYPE');
     const dimension = key => { const value = plain(extent, key); if (!/^[1-9][0-9]*$/u.test(value) || Number(value) > 8192 * 9525) fail('EXTENT'); return Number(value); };
     const before = tokens.filter(t => inside(t, paragraph) && t.openStart < drawing.openStart);
-    const offset = before.reduce((sum, t) => sum + (isWordToken(t, 't') ? tokenText(documentXml, t).length : ['tab', 'br', 'cr'].some(n => isWordToken(t, n)) ? 1 : 0), 0);
+    const offset = before.reduce((sum, t) => sum + (isWordToken(t, 'delText') ? 0 : wordInlineTextValue(documentXml, t).length), 0);
     const correspondence = correspondenceFor(paragraph), positions = correspondence.offsets.get(drawing.openStart);
     const firstDrawing = correspondence.offsets.keys().next().value === drawing.openStart;
     return { sourceXmlProvenance: provenance(drawing), paragraphIndex, offset: correspondence.eligible ? positions.currentOffset : offset, partName, embed, alt: plain(props, 'descr'), displayName: plain(props, 'name'), cx: dimension('cx'), cy: dimension('cy'),
