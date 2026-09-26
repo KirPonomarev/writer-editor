@@ -21,6 +21,9 @@ export const MANUSCRIPT_BATCH_MODE='WORD_MANUSCRIPT_BATCH_V1';
 export const MANUSCRIPT_PROMOTION_EXACT_SUCCESSOR_BINDINGS=Object.freeze([
   {path:'src/io/revisionBridge/reviewTransportNonOverlapTrackedReplacementRuntime.mjs',sha256:'78318e4c11fa2b6a8eccdd933d024b8699a675394f13747ca9f8777f831b7f5a'},
   {path:'test/contracts/rtk-word-v4-a03-c02-non-overlap-tracked-replacement-runtime.contract.test.js',sha256:'0e72e5e20db8ee31e38d9b495efdb034433b48f3b3c0695874ebbfd5568f1ddd'},
+  // PR1997 proof-only blobs; exact pins do not authorize subsequent changes.
+  {path:'scripts/ops/rtk-interop-word-tables-readback.py',sha256:'c45a0e141b18e3e9dde2961ad22c8ba3d8ac7927684686e6f37a5fcd046f2395'},
+  {path:'test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js',sha256:'acc439ffc628832bac6b00cdb7eef1850e4ec536c4a97d67d13efee3744998c5'},
 ]);
 const MANUSCRIPT_PROMOTION_PROOF_CARRIERS=Object.freeze([
   'scripts/ops/r24/corrective/post-audit-certification-set.mjs',

@@ -906,7 +906,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "6675fa025eb606bd99b5011cc6c89fc1316c1617fc7b1a74fce8126f8e720ca1"
+        "sha256": "7cf5330c240e1ee2d79a402786a6d9d3ca3d355eae34a38ecf3b8b62741f00a8"
       },
       {
         "path": "scripts/doctor.mjs",
