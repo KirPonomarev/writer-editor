@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "c68f9833665a764e8240036040d6be41c3603215c097be2042bf687ce31a1888",
+      "sha256": "647b4bb324878231646c07961ff951b07a2b6cc52b27a1dd06784dedad3663a3",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
-      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
       "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1693,12 +1693,12 @@
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "0c86fe85dde49f64a49bc18cbd193c45ab8cabe21958006b39995662297052de",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926",
-      "approvedAtUtc": "2026-09-26T18:14:12.290998Z",
+      "sha256": "757f9d1a83c6b9f7706f307df61f954401acb758bf8e76f9b6e71dbc8565ca4b",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: prevent automatic authored paragraph insertion on editor load/focus while preserving explicit keyboard authoring, existing content and undo/redo. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.js",
@@ -1837,27 +1837,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "46c23f12416d1d6bd8b20ad6ea4d135bed63c5eddf2f318601faccdba14b1b08",
+      "sha256": "f6fbfb29f318c946dbb2cfc19edde6e2b36cbc5d42f122d5f836ec43601ebe00",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
-      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "94afaa09809498f12ef1c2da4bca23d1d51cd6c2c2b65b8a4fa8e3ef5548fe55",
+      "sha256": "551cc28c8466e73bf3d0c378b208c3d47e6bcd63ba58eb43e25f980807c899b1",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
-      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "38c6aaab167336756a5cfd344681ccda591bd067ec3c3237ef0f0565bca9fd5a",
+      "sha256": "51c5f5486c10d0ca611fc9c07feebf75e96debcba5facb2eef352b72a02caf97",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
-      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
@@ -8007,6 +8007,51 @@
       "sha256": "ea861ec6567031a282fc2613efc25fcb32795d47275a57095225bd1ef709fc16",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
       "approvedAtUtc": "2026-09-26T20:11:43.963115Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "c68f9833665a764e8240036040d6be41c3603215c097be2042bf687ce31a1888",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "0c86fe85dde49f64a49bc18cbd193c45ab8cabe21958006b39995662297052de",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926",
+      "approvedAtUtc": "2026-09-26T18:14:12.290998Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: prevent automatic authored paragraph insertion on editor load/focus while preserving explicit keyboard authoring, existing content and undo/redo. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "46c23f12416d1d6bd8b20ad6ea4d135bed63c5eddf2f318601faccdba14b1b08",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "94afaa09809498f12ef1c2da4bca23d1d51cd6c2c2b65b8a4fa8e3ef5548fe55",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "38c6aaab167336756a5cfd344681ccda591bd067ec3c3237ef0f0565bca9fd5a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:15:43.213441Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
