@@ -1,3 +1,5 @@
+import docxHyperlinks from '../docxHyperlinks.cjs';
+const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentTables from '../documentTables.js';
 import {
   RTK_RETURNED_REVIEW_ANALYSIS_V2_SCHEMA,
@@ -2258,6 +2260,223 @@ function reviewVisibilityReason(documentScan, stylesScan = { tokens: [] }) {
   return null;
 }
 
+function reviewHyperlinkRelationships(xml, budgets, cryptoPort, budgetState) {
+  const result = new Map();
+  if (!xml) return result;
+  const scan = parseXmlPart('word/_rels/document.xml.rels', xml, budgets, cryptoPort, budgetState);
+  if (scan.diagnostics.length) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+  const tokens = [...scan.tokens].sort((a,b) => a.openStart-b.openStart);
+  const root = tokens.shift();
+  if (!root || root.namespaceUri !== REL_NS || root.localName !== 'Relationships') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+  for (const token of tokens) {
+    if (token.namespaceUri !== REL_NS || token.localName !== 'Relationship'
+      || token.openStart < root.openEnd || token.closeEnd > root.closeStart) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+    const plain = key => rawString(token.attrsByNs?.[`|${key}`]);
+    const id = plain('Id');
+    if (!id || result.has(id)) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+    result.set(id, { type:plain('Type'), mode:plain('TargetMode'), target:plain('Target') });
+  }
+  return result;
+}
+
+// Resolve values only. Relationship IDs never identify a local block or grant
+// Apply authority; the existing authenticated export-map resolver does that.
+function reviewHyperlinkRuns(record, documentXml, relationships) {
+  const result = new Map(), stack = [];
+  let field = null;
+  for (const token of record.tokens) {
+    while (stack.length && stack.at(-1).end <= token.openStart) stack.pop();
+    const parent = stack.at(-1);
+    let href = parent?.href || null;
+    if (isWordToken(token, 'hyperlink')) {
+      if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      const id = attr(token, 'id', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships');
+      const rel = relationships.get(id);
+      if (!rel || rel.type !== HYPERLINK_REL_TYPE || rel.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+      if (['tooltip','tgtFrame','docLocation'].some(key => attr(token,key,W_NS))) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      href = docxHttpHrefWithFragment(rel.target, attr(token,'anchor',W_NS));
+    } else if (isWordToken(token, 'fldSimple')) {
+      const instruction = attr(token,'instr',W_NS);
+      if (/\bHYPERLINK\b/iu.test(instruction)) {
+        if (href || field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        href = parseDocxHyperlinkInstruction(instruction);
+      }
+    }
+    if (isWordToken(token,'fldChar')) {
+      const kind=attr(token,'fldCharType',W_NS);
+      if (kind==='begin') {
+        if (field || href) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        field={instruction:'',phase:'instruction',href:null};
+      } else if (kind==='separate' && field?.phase==='instruction') {
+        field.phase='result';
+        if (/\bHYPERLINK\b/iu.test(field.instruction)) field.href=parseDocxHyperlinkInstruction(field.instruction);
+      } else if (kind==='end' && field) {
+        if (/\bHYPERLINK\b/iu.test(field.instruction) && field.phase!=='result') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        field=null;
+      } else throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+    } else if (isWordToken(token,'instrText')) {
+      // An orphan instruction is inventory-only, never an executable link.
+      if (!field) continue;
+      if (field.phase!=='instruction') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      field.instruction+=tokenText(documentXml,token);
+      if (field.instruction.length>4096) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
+    }
+    // The run token precedes its field controls. Bind text atoms to their run
+    // after those controls so even compact single-run fields have exact values.
+    const owner = isWordToken(token,'r') ? token : parent?.run;
+    if (isWordToken(token,'t') || ['tab','br','cr','softHyphen','noBreakHyphen'].some(name=>isWordToken(token,name))) {
+      if (owner) {
+        const effective=href || (field?.phase==='result' ? field.href : null);
+        if (result.has(owner.openStart) && result.get(owner.openStart)!==effective) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        result.set(owner.openStart,effective);
+      }
+    }
+    if (!token.selfClosing) stack.push({end:token.closeEnd,href,run:owner});
+  }
+  if (field) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+  return result;
+}
+
+function leadingBodyBookmarkNames(tokens) {
+  // Word for Mac can serialize a paragraph bookmarkStart as the immediately
+  // preceding body sibling, with its bookmarkEnd still inside that paragraph.
+  // Admit only one matching pair and that single paragraph, never a search for
+  // similar text or a bookmark spanning another paragraph/table.
+  const starts = new Map(), ends = new Map(), result = new Map();
+  const bodies = tokens.filter(t => isWordToken(t, 'body') && t.depth === 1);
+  if (bodies.length !== 1) return result;
+  const body = bodies[0];
+  for (const token of tokens) {
+    const map = isWordToken(token, 'bookmarkStart') ? starts : isWordToken(token, 'bookmarkEnd') ? ends : null;
+    if (!map) continue;
+    const id = attr(token, 'id', W_NS);
+    if (!id) continue;
+    map.set(id, [...(map.get(id) || []), token]);
+  }
+  let pending = [];
+  for (const token of [...tokens].sort((a,b) => a.openStart - b.openStart)) {
+    if (token.path?.length !== 3 || token.path[1] !== 'body'
+      || token.openStart < body.openEnd || token.closeEnd > body.closeStart) continue;
+    if (isWordToken(token, 'bookmarkStart')) { pending.push(token); continue; }
+    if (isWordToken(token, 'p')) {
+      const names = pending.filter(start => {
+        const id = attr(start, 'id', W_NS), matches = ends.get(id) || [];
+        const end = matches[0];
+        return starts.get(id)?.length === 1 && matches.length === 1
+          && start.closeEnd <= token.openStart && end.openStart >= token.openEnd
+          && end.closeEnd <= token.closeStart && end.depth === token.depth + 1;
+      }).map(start => attr(start, 'name', W_NS)).filter(Boolean);
+      if (names.length) result.set(token.openStart, names);
+    }
+    pending = [];
+  }
+  return result;
+}
+
+function reviewDefaultFontSize(stylesScan) {
+  const tokens = stylesScan.tokens;
+  const defaults = tokens.filter(t => isWordToken(t, 'docDefaults'));
+  if (defaults.length !== 1) return null;
+  const sizeAt = (parent) => {
+    const properties = tokens.filter(t => isWordToken(t, 'rPr') && t.openStart > parent.openEnd
+      && t.closeEnd <= parent.closeStart && (parent.localName === 'docDefaults'
+        ? t.path.slice(-3).join('/') === 'docDefaults/rPrDefault/rPr' : t.depth === parent.depth + 1));
+    if (properties.length > 1) return false;
+    if (!properties.length) return null;
+    const sizes = childTokensWithin(stylesScan, properties[0]).filter(t => t.namespaceUri === W_NS && ['sz','szCs'].includes(t.localName));
+    if (!sizes.length) return null;
+    const values = sizes.map(t => attr(t, 'val', W_NS));
+    if (new Set(values).size !== 1 || !/^\d{1,4}$/.test(values[0]) || Number(values[0]) < 2 || Number(values[0]) > 3276) return false;
+    return `${Number(values[0]) / 2}pt`;
+  };
+  let size = sizeAt(defaults[0]);
+  if (size === false) return null;
+  for (const kind of ['paragraph','character']) {
+    const styles = tokens.filter(t => isWordToken(t, 'style') && attr(t, 'type', W_NS) === kind
+      && ['1','true','on'].includes(attr(t, 'default', W_NS)));
+    if (styles.length > 1) return null;
+    const style = styles[0];
+    if (!style) continue;
+    if (childTokensWithin(stylesScan, style).some(t => isWordToken(t, 'basedOn'))) return null;
+    const own = sizeAt(style);
+    if (own === false || (kind === 'character' && own !== null)) return null;
+    if (own !== null) size = own;
+  }
+  return size;
+}
+
+function reviewLinkStyleChildren(direct, href, stylesScan, themeScan, settingsScan, cache) {
+  const refs = direct.filter(t => isWordToken(t, 'rStyle'));
+  if (refs.length === 0) return direct;
+  if (!href || refs.length !== 1) return null;
+  if (!cache.styles) {
+    cache.validRoot = stylesScan.tokens.filter(t => isWordToken(t,'styles') && t.depth === 0).length === 1;
+    cache.styles = new Map();
+    for (const token of stylesScan.tokens) if (isWordToken(token,'style')) {
+      const id = attr(token,'styleId',W_NS);
+      cache.styles.set(id,[...(cache.styles.get(id)||[]),token]);
+    }
+    cache.resolved = new Map();
+  }
+  if (!cache.validRoot) return null;
+  const inherited = new Map(), seen = new Set();
+  const visit = id => {
+    if (!id || seen.has(id) || seen.size >= 16) return false;
+    seen.add(id);
+    const matches = cache.styles.get(id) || [];
+    if (matches.length !== 1 || attr(matches[0],'type',W_NS) !== 'character') return false;
+    const style = matches[0];
+    const children = childTokensWithin(stylesScan,style).filter(t => t.depth === style.depth+1);
+    if (children.some(t => t.namespaceUri !== W_NS || !['name','basedOn','uiPriority','semiHidden','unhideWhenUsed','rsid','qFormat','rPr'].includes(t.localName))) return false;
+    const parents = children.filter(t => isWordToken(t,'basedOn'));
+    if (parents.length > 1 || (parents.length === 1 && !visit(attr(parents[0],'val',W_NS)))) return false;
+    const properties = children.filter(t => isWordToken(t,'rPr'));
+    if (properties.length > 1) return false;
+    if (properties.length) {
+      const values = childTokensWithin(stylesScan,properties[0]);
+      const keys = new Set();
+      // Only the ordinary hyperlink decoration is admitted here. Full named
+      // character-style semantics, including toggle inheritance, are separate.
+      for (const value of values) {
+        if (value.namespaceUri !== W_NS || !['color','u'].includes(value.localName) || keys.has(value.localName)) return false;
+        keys.add(value.localName); inherited.set(value.localName,value);
+      }
+    }
+    return true;
+  };
+  const styleId = attr(refs[0],'val',W_NS);
+  if (cache.resolved.has(styleId)) {
+    const saved = cache.resolved.get(styleId);
+    if (saved === null) return null;
+    for (const [key,value] of saved) inherited.set(key,value);
+  } else {
+    if (!visit(styleId)) { cache.resolved.set(styleId,null); return null; }
+    cache.resolved.set(styleId,new Map(inherited));
+  }
+  for (const token of direct) if (!isWordToken(token,'rStyle')) inherited.set(token.localName,token);
+  const color = inherited.get('color');
+  if (color && attr(color,'themeColor',W_NS)) {
+    const name = attr(color,'themeColor',W_NS);
+    if (!['hyperlink','followedHyperlink'].includes(name) || attr(color,'themeTint',W_NS) || attr(color,'themeShade',W_NS)) return null;
+    const mappings = settingsScan.tokens.filter(t => isWordToken(t,'clrSchemeMapping'));
+    if (mappings.length > 1) return null;
+    const mapped = mappings.length ? attr(mappings[0],name,W_NS) : '';
+    const target = mapped || name;
+    const key = target === 'hyperlink' ? 'hlink' : target === 'followedHyperlink' ? 'folHlink' : target;
+    const a = 'http://schemas.openxmlformats.org/drawingml/2006/main';
+    const schemes = themeScan.tokens.filter(t => t.namespaceUri === a && t.localName === 'clrScheme' && t.path?.join('/') === 'theme/themeElements/clrScheme');
+    if (schemes.length !== 1) return null;
+    const entries = childTokensWithin(themeScan,schemes[0]).filter(t => t.namespaceUri === a && t.localName === key && t.depth === schemes[0].depth+1);
+    if (entries.length !== 1) return null;
+    const values = childTokensWithin(themeScan,entries[0]);
+    if (values.length !== 1 || values[0].namespaceUri !== a || values[0].localName !== 'srgbClr') return null;
+    const rgb = attr(values[0],'val');
+    if (!/^[a-fA-F0-9]{6}$/.test(rgb)) return null;
+    inherited.set('color',{...color,attrsByLocal:{...color.attrsByLocal,val:rgb},attrsByNs:{...color.attrsByNs,[`${W_NS}|val`]:rgb}});
+  }
+  return [...inherited.values()];
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2281,6 +2500,9 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     ? parseXmlPart('word/styles.xml', options.stylesXml, budgets, cryptoPort, budgetState)
     : { tokens: [], diagnostics: [] };
   reasons.push(...visibilityStyles.diagnostics);
+  const linkTheme = options.themeXml ? parseXmlPart('word/theme/theme1.xml', options.themeXml, budgets, cryptoPort, budgetState) : {tokens:[],diagnostics:[]};
+  const linkSettings = options.settingsXml ? parseXmlPart('word/settings.xml', options.settingsXml, budgets, cryptoPort, budgetState) : {tokens:[],diagnostics:[]};
+  reasons.push(...linkTheme.diagnostics,...linkSettings.diagnostics);
   const visibilityFailure = reviewVisibilityReason(documentScan, visibilityStyles);
   if (visibilityFailure) reasons.push(visibilityFailure);
   if (blockingReason(reasons)) {
@@ -2295,8 +2517,18 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     reasons.push(reason('RTK_WORD_TABLES_MALFORMED_BLOCKED', 'reviewIr.tableParagraphs', error.message));
     return { ok: false, code: 'RTK_WORD_TABLES_MALFORMED_BLOCKED', reasons, paragraphs: [] };
   }
+  let linkRelationships;
+  try { linkRelationships = documentScan.tokens.some(token => isWordToken(token, 'hyperlink'))
+    ? reviewHyperlinkRelationships(options.relationshipsXml, budgets, cryptoPort, budgetState) : new Map(); }
+  catch (error) { return { ok:false, code:'RTK_WORD_HYPERLINK_UNSUPPORTED', reasons:[reason('RTK_WORD_HYPERLINK_UNSUPPORTED','word/_rels/document.xml.rels',error.message)], paragraphs:[] }; }
   const results = [];
+  const leadingBookmarks = leadingBodyBookmarkNames(documentScan.tokens);
+  const defaultFontSize = reviewDefaultFontSize(visibilityStyles);
+  const linkStyleCache = {};
   for (const [paragraphIndex, paragraphRecord] of paragraphs.entries()) {
+    let linkRuns;
+    try { linkRuns = reviewHyperlinkRuns(paragraphRecord, documentXml, linkRelationships); }
+    catch (error) { return { ok:false, code:'RTK_WORD_HYPERLINK_UNSUPPORTED', reasons:[reason('RTK_WORD_HYPERLINK_UNSUPPORTED','word/document.xml',error.message)], paragraphs:[] }; }
     const paragraph = paragraphRecord.token;
     const paragraphScan = { tokens: paragraphRecord.tokens };
     const paragraphText = textInsideToken(documentXml, paragraphScan, paragraph);
@@ -2305,10 +2537,10 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
     ));
     const bookmarks = paragraphRecord.tokens
       .filter((token) => (
-        token.localName === 'bookmarkStart'
+        isWordToken(token, 'bookmarkStart')
       ))
       .map((token) => attr(token, 'name'))
-      .filter(Boolean);
+      .filter(Boolean).concat(leadingBookmarks.get(paragraph.openStart) || []);
     const paragraphProperties = paragraphRecord.tokens.find((token) => (
       token.localName === 'pPr'
       && token.namespaceUri === W_NS
@@ -2338,13 +2570,17 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         && token.namespaceUri === W_NS
       ));
       if (!text) continue;
-      const children = properties
+      const directChildren = properties
         ? childTokensWithin(runScan, properties).filter((token) => token.namespaceUri === W_NS)
         : [];
+      const href = linkRuns.get(run.openStart);
+      const resolvedStyle = reviewLinkStyleChildren(directChildren,href,visibilityStyles,linkTheme,linkSettings,linkStyleCache);
+      const children = resolvedStyle || directChildren;
       const semanticNames = [...new Set(children.map((token) => token.localName))];
       const supportedNames = new Set(['b', 'i', 'u', 'strike', 'color', 'highlight', 'shd', 'rFonts', 'sz', 'szCs']);
       const unsupportedNames = semanticNames.filter((name) => !supportedNames.has(name));
       const inline = formattingInlineActions(children);
+      inline.link = href ? { action:'set', value:href } : { action:'remove' };
       const expectedActionKeys = [
         ...[['b', 'bold'], ['i', 'italic'], ['u', 'underline'], ['strike', 'strike']]
           .filter(([name]) => semanticNames.includes(name))
@@ -2363,6 +2599,10 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
         text,
         inline,
         inlineState: formattingInlineState(inline),
+        ...(defaultFontSize && !paragraphRecord.table
+          && !paragraphSemanticNames.includes('pStyle') && !semanticNames.includes('rStyle')
+          && !semanticNames.includes('sz') && !semanticNames.includes('szCs')
+          ? { inheritedFontSize: defaultFontSize } : {}),
         unsupportedNames,
         invalidSupportedValue,
         sourceXmlProvenance: provenance(properties || run),
@@ -2407,6 +2647,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
       text: run.text,
       inline: run.inline,
       inlineState: run.inlineState,
+      ...(run.inheritedFontSize ? { inheritedFontSize: run.inheritedFontSize } : {}),
       unsupportedNames: run.unsupportedNames,
       invalidSupportedValue: run.invalidSupportedValue,
     })),
@@ -3585,6 +3826,7 @@ function blockingReason(reasons) {
     'RTK_WORD_TABLES_MALFORMED_BLOCKED',
     'RTK_WORD_VISIBILITY_UNSUPPORTED',
     'RTK_WORD_RUBY_UNSUPPORTED',
+    'RTK_WORD_HYPERLINK_UNSUPPORTED',
   ].includes(item.code));
 }
 
@@ -3860,6 +4102,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     cryptoPort,
     budgets,
     documentScan,
+    relationshipsXml: parts['word/_rels/document.xml.rels'],
+    stylesXml: parts['word/styles.xml'],
+    themeXml: parts['word/theme/theme1.xml'],
+    settingsXml: parts['word/settings.xml'],
   });
   const formattingParagraphs = [];
   if (!formattingParagraphScan.ok) {

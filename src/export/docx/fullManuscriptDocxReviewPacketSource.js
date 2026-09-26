@@ -7,6 +7,7 @@ const { buildDocxReviewPacketBuffer } = require('./docxReviewPacketBuilder');
 const { buildCanonicalCommentExport } = require('./docxReviewPacketComments.js');
 const { buildCanonicalNotesExport } = require('./docxReviewPacketNotes.js');
 const { normalizeFontFamily, normalizeFontSize } = require('../../io/inlineTypography.cjs');
+const { normalizeOpaqueRgb } = require('./docxInlineColors.js');
 
 const FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID = 'cmd.project.review.exportFullManuscriptDocxReviewPacket';
 const FULL_MANUSCRIPT_REVIEW_DOCX_CAPABILITY_ID = 'cap.project.review.exportFullManuscriptDocxReviewPacket';
@@ -77,9 +78,8 @@ function cloneJson(value) {
 }
 
 function normalizeFormatColor(value, code) {
-  const color = normalizeString(value).toLowerCase();
-  if (!/^#[a-f0-9]{6}$/u.test(color)) throw makeError(code, { value });
-  return color;
+  try { return normalizeOpaqueRgb(value); }
+  catch { throw makeError(code, { value }); }
 }
 
 function normalizeFormatFontSize(value) {

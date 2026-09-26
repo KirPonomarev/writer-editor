@@ -1,3 +1,5 @@
+import docxHyperlinks from '../docxHyperlinks.cjs';
+const { normalizeDocxHttpHref, parseDocxHyperlinkInstruction, docxHttpHrefWithFragment } = docxHyperlinks;
 import documentMediaData from '../documentMedia.js';
 const { createImageAttrs, validateImageAttrs } = documentMediaData;
 import documentTables from '../documentTables.js';
@@ -4591,7 +4593,11 @@ function docxReviewFormattingStateAt(runs, from, to) {
     && entry.from <= from
     && entry.to >= to
   ));
-  return run && isPlainObject(run.inline) ? run.inline : null;
+  if (!run || !isPlainObject(run.inline)) return null;
+  const links = (Array.isArray(run.preservedMarks) ? run.preservedMarks : []).filter(mark => mark.type === 'link');
+  if (links.length > 1) return null;
+  try { return { ...run.inline, ...(links.length ? { link: normalizeDocxHttpHref(links[0].attrs?.href) } : {}) }; }
+  catch { return null; }
 }
 
 function docxReviewFormattingDiffActions(baseline = {}, returned = {}) {
@@ -4667,6 +4673,10 @@ export function buildDocxReviewFormattingReturnCandidatesFromZipBytes(input, opt
   const scanned = extractReviewTransportFormattingRunsV2(documentXml, {
     cryptoPort: options.cryptoPort,
     budgets: options.budgets,
+    relationshipsXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/_rels/document.xml.rels', 1024 * 1024) || new Uint8Array()),
+    stylesXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/styles.xml', 1024 * 1024) || new Uint8Array()),
+    themeXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/theme/theme1.xml', 1024 * 1024) || new Uint8Array()),
+    settingsXml: docxZipDecodeUtf8Xml(docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/settings.xml', 1024 * 1024) || new Uint8Array()),
   });
   if (!scanned.ok) {
     return {
@@ -4830,7 +4840,7 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
       if (from === to) continue;
       const baselineState = docxReviewFormattingStateAt(baselineRuns, from, to);
       const returnedRun = returnedRuns.find((run) => run.from <= from && run.to >= to);
-      const returnedState = returnedRun && isPlainObject(returnedRun.inlineState) ? returnedRun.inlineState : null;
+      const returnedState = returnedRun && isPlainObject(returnedRun.inlineState) ? { ...returnedRun.inlineState } : null;
       if (!baselineState || !returnedState) {
         diagnostics.push({
           code: 'RTK_FORMATTING_RETURN_RANGE_COVERAGE_INVALID',
@@ -4840,6 +4850,10 @@ function buildDocxReviewFormattingReturnCandidatesFromFormattingParagraphs(
           to,
         });
         continue;
+      }
+      if (Object.hasOwn(baselineState, 'fontSize') && !Object.hasOwn(returnedState, 'fontSize')
+        && typeof returnedRun.inheritedFontSize === 'string') {
+        returnedState.fontSize = returnedRun.inheritedFontSize;
       }
       const ambiguousRemovalKeys = docxReviewFormattingAmbiguousRemovalKeys(
         baselineState,
@@ -6951,6 +6965,28 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
     ));
   });
   diagnostics.push(...bookmarkDiagnostics, ...commentTopologyDiagnostics, ...trackedDiagnostics);
+  // A formatting-only return is still reviewable. Its diagnostic opens the
+  // preview; only the separately authenticated main command can prepare/apply
+  // operations. An unbound artifact cannot supply this local map.
+  const formattingExportMap = isPlainObject(options.formattingExportMap)
+    ? options.formattingExportMap : fullManuscriptExportMap;
+  if (formattingExportMap) {
+    const formatting = buildDocxReviewFormattingReturnCandidatesFromEvidence(packet, {
+      fullManuscriptExportMap: formattingExportMap,
+      cryptoPort: options.cryptoPort,
+    });
+    for (const item of (formatting.diagnostics || []).slice(0, bounds.maxDiagnostics)) {
+      diagnostics.push(docxReviewPreviewSessionDiagnostic(normalizeString(item.code), {
+        message: normalizeString(item.code), severity: 'warning', targetScope, createdAt,
+      }));
+    }
+    if (formatting.candidates?.length > 0) diagnostics.push(docxReviewPreviewSessionDiagnostic(
+      'DOCX_REVIEW_PREVIEW_SESSION_FORMATTING_CHANGES', {
+        message: `Formatting changes ready for explicit review (${formatting.candidates.length}).`,
+        severity: 'info', targetScope, createdAt,
+      },
+    ));
+  }
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;
@@ -7307,7 +7343,6 @@ const DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS = new Set([
 const DOCX_CONTENT_PREVIEW_TRANSPARENT_DIAGNOSTIC_TAGS = new Set([
   'w:bookmarkEnd',
   'w:bookmarkStart',
-  'w:hyperlink',
 ]);
 const DOCX_CONTENT_PREVIEW_DIAGNOSTIC_TAGS = new Set([
   ...DOCX_CONTENT_PREVIEW_UNSUPPORTED_TAGS,
@@ -7424,6 +7459,10 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED',
     'DOCX_TABLE_VISIBILITY_UNSUPPORTED',
     'DOCX_RUBY_UNSUPPORTED',
+    'DOCX_LINK_TARGET_UNSUPPORTED',
+    'DOCX_LINK_FIELD_UNSUPPORTED',
+    'DOCX_LINK_RELATIONSHIP_INVALID',
+    'DOCX_LINK_STRUCTURE_UNSUPPORTED',
     'DOCX_INLINE_UNDERLINE_UNSUPPORTED',
     'DOCX_TABLE_ATTR_UNSUPPORTED',
     'DOCX_TABLE_CELL_CONTENT_UNSUPPORTED',
@@ -8835,7 +8874,7 @@ function docxFontVisitPart(bytes, entryId, rootNamespace, rootName, visitor, { a
 }
 
 function docxFontThemeCatalog(bytes) {
-  const catalog = { groups: new Map(), languages: new Map() };
+  const catalog = { groups: new Map(), languages: new Map(), colors: new Map(), linkColorMap: new Map([['hyperlink', 'hlink'], ['followedHyperlink', 'folHlink']]) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_FONT_PACKAGE_INVALID');
   const entries = new Set(metadata.entries.map(entry => entry.entryId));
@@ -8856,12 +8895,21 @@ function docxFontThemeCatalog(bytes) {
     selected.set(kind, resolved.normalizedTarget);
   }, { allowUnqualifiedRoot: true });
   if (!selected.has('theme')) return catalog;
-  let schemes = 0;
+  let schemes = 0, colorSchemes = 0;
   docxFontVisitPart(bytes, selected.get('theme'), DOCX_FONT_DRAWING_NAMESPACE, 'theme', (node, stack, attr) => {
     const path = [...stack, node];
     if (!path.every(frame => frame.namespaceUri === DOCX_FONT_DRAWING_NAMESPACE)) return;
     const names = path.map(frame => frame.localName).join('/');
     if (names === 'theme/themeElements/fontScheme' && ++schemes !== 1) throw new Error('DOCX_FONT_SCHEME_DUPLICATE');
+    if (names === 'theme/themeElements/clrScheme' && ++colorSchemes !== 1) throw new Error('DOCX_FONT_SCHEME_DUPLICATE');
+    if (path.length === 5 && path[1]?.localName === 'themeElements' && path[2]?.localName === 'clrScheme') {
+      const key = path[3].localName;
+      if (catalog.colors.has(key)) throw new Error('DOCX_INLINE_COLOR_INVALID');
+      const value = attr('val');
+      // Only explicit sRGB without transforms is resolved. A cached w:val is
+      // never substituted for an unknown/system-dependent theme definition.
+      catalog.colors.set(key, node.localName === 'srgbClr' && node.selfClosing && /^[a-f0-9]{6}$/iu.test(value || '') ? `#${value.toLowerCase()}` : DOCX_UNSUPPORTED_COLOR);
+    }
     const groupName = path[3]?.localName;
     if (!['majorFont', 'minorFont'].includes(groupName) || path[1]?.localName !== 'themeElements' || path[2]?.localName !== 'fontScheme') return;
     if (path.length === 4) {
@@ -8878,9 +8926,17 @@ function docxFontThemeCatalog(bytes) {
   });
   if (schemes !== 1) throw new Error('DOCX_FONT_SCHEME_REQUIRED');
   if (selected.has('settings')) {
-    let count = 0;
+    let count = 0, colorMaps = 0;
     docxFontVisitPart(bytes, selected.get('settings'), DOCX_WORDPROCESSINGML_MAIN_NAMESPACE, 'settings', (node, stack, attr) => {
-      if (stack.length !== 1 || node.namespaceUri !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE || node.localName !== 'themeFontLang') return;
+      if (stack.length !== 1 || node.namespaceUri !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) return;
+      if (node.localName === 'clrSchemeMapping') {
+        if (++colorMaps !== 1) throw new Error('DOCX_INLINE_COLOR_INVALID');
+        for (const key of ['hyperlink', 'followedHyperlink']) {
+          const value = attr(key, DOCX_WORDPROCESSINGML_MAIN_NAMESPACE);
+          if (value !== undefined) catalog.linkColorMap.set(key, value === 'hyperlink' ? 'hlink' : value === 'followedHyperlink' ? 'folHlink' : value);
+        }
+      }
+      if (node.localName !== 'themeFontLang') return;
       if (++count !== 1) throw new Error('DOCX_FONT_LANGUAGE_DUPLICATE');
       for (const key of ['val', 'eastAsia', 'bidi']) {
         const value = attr(key, DOCX_WORDPROCESSINGML_MAIN_NAMESPACE);
@@ -9006,7 +9062,9 @@ function docxInlineReadColor(properties, tag, token, namespaces) {
   if (modifiers.some(v => v && !/^[a-f0-9]{2}$/iu.test(v))) throw new Error('DOCX_INLINE_COLOR_THEME_MODIFIER_INVALID');
   const key = tag === 'w:color' ? 'color' : 'shading';
   if (tag === 'w:shd' && value === 'nil') { properties.shading = null; return; }
-  if (themeName || modifiers.some(Boolean) || (tag === 'w:shd' && !['', 'clear'].includes(value))) {
+  if (tag === 'w:color' && ['hyperlink', 'followedHyperlink'].includes(themeName) && !modifiers.some(Boolean)) {
+    properties[key] = { linkThemeColor: themeName };
+  } else if (themeName || modifiers.some(Boolean) || (tag === 'w:shd' && !['', 'clear'].includes(value))) {
     properties[key] = DOCX_UNSUPPORTED_COLOR;
   } else if (!fill || fill === 'auto') {
     if (tag === 'w:color' && !fill) throw new Error('DOCX_INLINE_COLOR_VALUE_REQUIRED');
@@ -9042,8 +9100,30 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
   }
 }
 
+function docxHyperlinkCatalog(bytes) {
+  const result = new Map();
+  result.usedIds = new Set();
+  result.onlyHyperlinks = false;
+  const metadata = docxHostileFileGateCentralEntries(bytes);
+  if (metadata.failure) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+  if (!metadata.entries.some(entry => entry.entryId === 'word/_rels/document.xml.rels')) return result;
+  const ids = new Set();
+  docxFontVisitPart(bytes, 'word/_rels/document.xml.rels', DOCX_FONT_RELATIONSHIP_NAMESPACE, 'Relationships', (node, stack, attr) => {
+    if (stack.length !== 1 || stack[0].namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE
+      || node.namespaceUri !== DOCX_FONT_RELATIONSHIP_NAMESPACE || node.localName !== 'Relationship') return;
+    const id = attr('Id');
+    if (!id || ids.has(id)) throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+    ids.add(id);
+    if (attr('Type') !== `${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE}/hyperlink`) return;
+    // A relationship is inert until a validated document occurrence uses it.
+    result.set(id, { target: attr('Target'), mode: attr('TargetMode') });
+  }, { allowUnqualifiedRoot: true });
+  result.onlyHyperlinks = ids.size > 0 && ids.size === result.size;
+  return result;
+}
+
 function docxInlineStyleCatalog(bytes) {
-  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', defaultTable: '', themeFonts: docxFontThemeCatalog(bytes) };
+  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', defaultTable: '', themeFonts: docxFontThemeCatalog(bytes), hyperlinks: docxHyperlinkCatalog(bytes) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
   if (!metadata.entries.some((entry) => entry.entryId === 'word/styles.xml')) return catalog;
@@ -9195,7 +9275,9 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
   if (!metadata || !text) return;
   const properties = docxInlineEffectiveRunProperties(metadata, run, catalog);
   const marks = Object.values(DOCX_INLINE_MARKS).filter((mark) => properties[mark] === true);
-  const color = properties.color;
+  const color = isPlainObject(properties.color) && properties.color.linkThemeColor
+    ? catalog.themeFonts.colors.get(catalog.themeFonts.linkColorMap.get(properties.color.linkThemeColor)) || DOCX_UNSUPPORTED_COLOR
+    : properties.color;
   // Highlight supersedes shading, even when inherited from a style. Clearing
   // highlight reveals effective shading; the properties cascade separately.
   const highlight = properties.highlight ?? properties.shading;
@@ -9205,13 +9287,15 @@ function docxInlineAppendText(metadata, run, text, catalog, budget) {
     ...(typeof highlight === 'string' && highlight !== DOCX_UNSUPPORTED_COLOR ? { highlight } : {}),
   };
   const typography = docxInlineEffectiveTypography(properties, metadata, catalog, text);
+  const href = metadata.currentHref;
   const last = metadata.inlineRuns.at(-1);
   if (last && JSON.stringify(last.marks) === JSON.stringify(marks)
     && last.color === colors.color && last.highlight === colors.highlight
-    && last.fontFamily === typography.fontFamily && last.fontSize === typography.fontSize) last.text += text;
+    && last.fontFamily === typography.fontFamily && last.fontSize === typography.fontSize
+    && last.href === href) last.text += text;
   else {
     if (++budget.count > DOCX_INLINE_MAX_RUNS) throw new Error('DOCX_INLINE_RUN_LIMIT');
-    metadata.inlineRuns.push({ text, marks, ...colors, ...typography });
+    metadata.inlineRuns.push({ text, marks, ...colors, ...typography, ...(href ? { href } : {}) });
   }
 }
 
@@ -9319,10 +9403,11 @@ function docxInlineCanonicalContent(paragraphs) {
     const nodes = [];
     let joined = '';
     for (const run of runs) {
-      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight', 'fontFamily', 'fontSize'].includes(key))
+      if (!isPlainObject(run) || Object.keys(run).some((key) => !['text', 'marks', 'color', 'highlight', 'fontFamily', 'fontSize', 'href'].includes(key))
         || typeof run.text !== 'string' || !run.text || !Array.isArray(run.marks)
         || run.marks.length > 4 || new Set(run.marks).size !== run.marks.length
         || run.marks.some((mark) => !Object.values(DOCX_INLINE_MARKS).includes(mark))) throw new Error('DOCX_INLINE_RUN_INVALID');
+      if (Object.hasOwn(run, 'href')) normalizeDocxHttpHref(run.href);
       for (const key of ['color', 'highlight']) {
         if (Object.hasOwn(run, key) && (typeof run[key] !== 'string' || !/^#[a-f0-9]{6}$/u.test(run[key]))) {
           throw new Error('DOCX_INLINE_COLOR_PROJECTION_INVALID');
@@ -9335,15 +9420,16 @@ function docxInlineCanonicalContent(paragraphs) {
       if (codeBlock) {
         // The editor code node has no marks. Only its fixed presentation may
         // be folded into the node; arbitrary Word formatting cannot disappear.
-        if (run.marks.length || run.color || run.highlight
+        if (run.marks.length || run.color || run.highlight || run.href
           || (run.fontFamily !== undefined && run.fontFamily !== 'Menlo')
           || (run.fontSize !== undefined && run.fontSize !== '10pt')) {
           throw new Error('DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED');
         }
         continue;
       }
-      needsRichContent ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize);
+      needsRichContent ||= run.marks.length > 0 || Boolean(run.color || run.highlight || run.fontFamily || run.fontSize || run.href);
       const marks = run.marks.map((type) => ({ type }));
+      if (run.href) marks.push({ type: 'link', attrs: { href: run.href, target: '_blank', rel: 'noopener noreferrer nofollow' } });
       const textStyle = Object.fromEntries(['color', 'fontFamily', 'fontSize'].filter(key => run[key]).map(key => [key, run[key]]));
       if (Object.keys(textStyle).length) marks.push({ type: 'textStyle', attrs: textStyle });
       if (run.highlight) marks.push({ type: 'highlight', attrs: { color: run.highlight } });
@@ -9446,7 +9532,7 @@ function docxContentPreviewBuildParagraph(order, text, metadata = {}) {
     textHash: docxContentPreviewStableHash(text),
     charCount: text.length,
   };
-  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight || run.fontFamily || run.fontSize)) {
+  if (metadata.inlineRuns?.some((run) => run.marks.length > 0 || run.color || run.highlight || run.fontFamily || run.fontSize || run.href)) {
     paragraph.inlineRuns = metadata.inlineRuns;
   }
   if (typeof metadata.paragraphStyleId === 'string' && metadata.paragraphStyleId) {
@@ -9743,42 +9829,57 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       if (tagName === 'w:rStyle') activeInlineRun.styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
     }
 
-    if (insideParagraph && !closing && tagName === 'w:fldSimple') {
-      const instruction = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'instr');
-      if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
-        docxContentPreviewAddFieldHyperlinkDiagnostic(
-          diagnostics,
-          seenFieldHyperlinkKinds,
-          DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE,
-          'w:fldSimple',
-        );
+    if (insideParagraph && tagName === 'w:hyperlink') {
+      if (closing) {
+        if (!activeParagraphMetadata.elementLink) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        delete activeParagraphMetadata.currentHref;
+        delete activeParagraphMetadata.elementLink;
+      } else {
+        if (activeParagraphMetadata.currentHref || complexFieldStack.length || selfClosing) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        const attrs = docxFontAttributes(token, tokenNamespaceMap);
+        const id = attrs.get(`${DOCX_OFFICE_DOCUMENT_RELATIONSHIPS_NAMESPACE}\u0000id`);
+        const relation = inlineStyles.hyperlinks.get(id);
+        const semanticExtra = ['docLocation', 'tooltip', 'tgtFrame'].some(key => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, key));
+        if (semanticExtra) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        if (!relation || relation.mode !== 'External') throw new Error('DOCX_LINK_RELATIONSHIP_INVALID');
+        activeParagraphMetadata.currentHref = docxHttpHrefWithFragment(relation.target, docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'anchor'));
+        inlineStyles.hyperlinks.usedIds.add(id);
+        activeParagraphMetadata.elementLink = true;
       }
-    } else if (insideParagraph && !closing && tagName === 'w:fldChar') {
-      const fldCharType = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'fldCharType').trim();
-      if (fldCharType === 'begin') {
-        complexFieldStack.push({ instructionText: '', sawSeparate: false });
-      } else if (fldCharType === 'separate' && complexFieldStack.length > 0) {
-        complexFieldStack[complexFieldStack.length - 1].sawSeparate = true;
-      } else if (fldCharType === 'end' && complexFieldStack.length > 0) {
-        const fieldFrame = complexFieldStack.pop();
-        if (
-          fieldFrame.sawSeparate
-          && docxContentPreviewFieldInstructionHasHyperlink(fieldFrame.instructionText)
-        ) {
-          docxContentPreviewAddFieldHyperlinkDiagnostic(
-            diagnostics,
-            seenFieldHyperlinkKinds,
-            DOCX_CONTENT_PREVIEW_FIELD_HYPERLINK_SOURCE_CODE,
-            'w:instrText',
-          );
+    } else if (insideParagraph && tagName === 'w:fldSimple') {
+      if (closing && activeParagraphMetadata.simpleLink) {
+        delete activeParagraphMetadata.currentHref;
+        delete activeParagraphMetadata.simpleLink;
+      } else if (!closing) {
+        const instruction = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'instr');
+        if (docxContentPreviewFieldInstructionHasHyperlink(instruction)) {
+          if (selfClosing || activeParagraphMetadata.currentHref || complexFieldStack.length) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+          activeParagraphMetadata.currentHref = parseDocxHyperlinkInstruction(instruction);
+          activeParagraphMetadata.simpleLink = true;
         }
       }
-    } else if (insideParagraph && tagName === 'w:instrText') {
-      if (closing) {
-        fieldInstructionTextDepth = Math.max(0, fieldInstructionTextDepth - 1);
-      } else if (!selfClosing && complexFieldStack.length > 0 && !complexFieldStack[complexFieldStack.length - 1].sawSeparate) {
-        fieldInstructionTextDepth += 1;
+    } else if (insideParagraph && !closing && tagName === 'w:fldChar') {
+      const kind = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'fldCharType').trim();
+      if (kind === 'begin') {
+        if (activeParagraphMetadata.currentHref) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        complexFieldStack.push({ instructionText: '', sawSeparate: false });
+      } else if (kind === 'separate' && complexFieldStack.length) {
+        const frame = complexFieldStack.at(-1);
+        if (frame.sawSeparate) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        frame.sawSeparate = true;
+        if (docxContentPreviewFieldInstructionHasHyperlink(frame.instructionText)) {
+          if (complexFieldStack.length !== 1 || activeParagraphMetadata.currentHref) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+          frame.href = parseDocxHyperlinkInstruction(frame.instructionText);
+          activeParagraphMetadata.currentHref = frame.href;
+        }
+      } else if (kind === 'end' && complexFieldStack.length) {
+        const frame = complexFieldStack.pop();
+        if (docxContentPreviewFieldInstructionHasHyperlink(frame.instructionText) && !frame.sawSeparate) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        if (frame.href) delete activeParagraphMetadata.currentHref;
       }
+    } else if (insideParagraph && tagName === 'w:instrText') {
+      if (closing) fieldInstructionTextDepth = Math.max(0, fieldInstructionTextDepth - 1);
+      else if (!selfClosing && complexFieldStack.length && !complexFieldStack.at(-1).sawSeparate) fieldInstructionTextDepth += 1;
     }
 
     if (tagName === 'w:sectPr') {
@@ -9840,6 +9941,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         activeParagraphMetadata = null;
       }
     } else if (tagName === 'w:p' && closing && insideParagraph) {
+      if (activeParagraphMetadata.currentHref || complexFieldStack.some(frame => docxContentPreviewFieldInstructionHasHyperlink(frame.instructionText))) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
       const pushed = docxContentPreviewPushParagraph(paragraphs, paragraphText, activeParagraphMetadata, inlineStyles, numberings, diagnostics);
       if (pushed.failure) return pushed;
       insideParagraph = false;
@@ -10087,8 +10189,12 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     });
   }
   let parsed;
+  let allDocumentRelationshipsPreserved = false;
   try {
-    parsed = docxContentPreviewParseMainDocumentXml(xmlText, docxInlineStyleCatalog(bytes), docxNumberingCatalog(bytes));
+    const inlineStyles = docxInlineStyleCatalog(bytes);
+    parsed = docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, docxNumberingCatalog(bytes));
+    allDocumentRelationshipsPreserved = !parsed.failure && inlineStyles.hyperlinks.onlyHyperlinks
+      && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;
     if (!parsed.failure) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
       const refs = extractDocumentMediaReferencesV1(xmlText, {
@@ -10148,7 +10254,9 @@ export function buildDocxContentPreviewFromZipBytes(input) {
     diagnostics: [
       ...parsed.diagnostics,
       ...docxContentPreviewBuildCustomMetadataDiagnostics(bytes),
-      ...preflight.diagnostics.map((diagnostic) => ({
+      ...preflight.diagnostics.filter(diagnostic => !(allDocumentRelationshipsPreserved
+        && diagnostic.code === DOCX_PART_POLICY_DIAGNOSTIC_CODES.RELATIONSHIP_DIAGNOSTICS_ONLY
+        && diagnostic.entryId === 'word/_rels/document.xml.rels')).map((diagnostic) => ({
         ...diagnostic,
         message: diagnostic.message || 'DOCX package part is ignored by plain text content preview',
       })),
@@ -11079,6 +11187,9 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       : hasHeadings
       ? 'Heading levels 1 to 6, bold, italic, single underline and strike are preserved. Paragraph appearance, numbering/list styles, fonts, colors and other formatting are not imported.'
       : 'Bold, italic, single underline and strike are preserved. Paragraph/list styles, fonts, colors and other formatting are not imported.';
+    if (contentPreview.paragraphs.some(p => p.inlineRuns?.some(run => run.href))) {
+      formatting.message = 'Supported external HTTP(S) link labels and targets are preserved as inert link marks. ' + formatting.message;
+    }
     if (contentPreview.paragraphs.some(p => p.textAlign !== undefined)) {
       formatting.message = 'Left, center, right and justified paragraph alignment are preserved. '
         + formatting.message.replace('Paragraph appearance', 'Other paragraph appearance').replace('paragraph appearance', 'other paragraph appearance');

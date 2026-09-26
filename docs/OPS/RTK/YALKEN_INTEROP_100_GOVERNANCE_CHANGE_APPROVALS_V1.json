@@ -316,15 +316,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
-      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "src/core/writer-local-profile-v1.cjs",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "19d5e5864ac9e1f0750f701e92f5ec2c159f1986259f80d70d8b8fcffcaf6b58"
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "sha256": "9e2f9d8eaea749181cbff379a30ec7ec51c4d6fffc5448393fd366dbdd26d242"
     },
     {
       "approved": true,
@@ -340,15 +340,15 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
-      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
       "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
       "evidenceStampIds": [
         "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
       ],
       "filePath": "test/unit/r24-wp307-writer-local-profile.test.js",
-      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
-      "sha256": "6e26db0fc686c1deea8da26489d73dd4aa305156f25126b30078e2e735a26f70"
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "sha256": "c1475d31da7c50fea72da05aaf0cd6ef79bb34cd5f84b09afadd28952ae2c400"
     },
     {
       "approved": true,
@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "690edb6bbba5eca44aec56d840d5892c73d59af9a873095dff438a45914be488",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T12:02:25.614146Z",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
+      "sha256": "c34ce0932dce25802108ebffff1b43e50ade26a1718214108a915c7a81ec296d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1342,19 +1342,19 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
-      "sha256": "a2b501433c157c8193e80b352ff7f05855a20ab45b51eb8e6cb85943feedd127",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
-      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
-      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "190541bbca3a3675b17bf00681b0f967b8fd4bd3b665f52432d997e6d396f340",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
-      "sha256": "23c8c203a7e8f7d2ecb28b7d254830f4ad156ca11c91391e3f4edf31587c0370",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
-      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "ec14c0e5b43265a14edabad6688228be7f6c8ed486e5d65007e5a42eda7a0210",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1495,10 +1495,10 @@
     },
     {
       "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
-      "sha256": "3355a01b7246f63e78f97322132e6e74e0acb5318222d08dead7d7e832def6f0",
-      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
-      "approvedAtUtc": "2026-09-25T03:25:54Z",
-      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "sha256": "74558cb7706177fb86f86da5e9ff01a5b6f70061c88b63a74fe6d8f52ef96190",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1540,12 +1540,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "c4c2a1ba750256b4728bc97e65266a466af8625a078dbf778c8940c8a2ef6b97",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "sha256": "bf9244dba9f583947b1e57e917a4fd44cd3329622ad493cc0c1777ee329421fd",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1621,12 +1621,12 @@
     },
     {
       "filePath": "src/export/docx/docxMinBuilder.js",
-      "sha256": "11223cb2354de5e757adf0ced3894f3336a4c64ba4bb335ab7542064c22b51e4",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "691237f783867356c0f33686917fb8ee6a4b010ba7cb84f4be9da634d82e8aee",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/export/docx/docxReviewPacketBuilder.js",
@@ -1639,12 +1639,12 @@
     },
     {
       "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
-      "sha256": "d31e1de33fcbfe534f3ad0d905bdb83bfdc98c57a05615a5d993755fec094823",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
-      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
+      "sha256": "b468ad76e0e7221fa277e1910fd58efb8b49f475e2c58f40083e96170fd9ced2",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/io/documentMedia.js",
@@ -1666,48 +1666,48 @@
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
-      "sha256": "9fe0aa1f8ef0e6312196dd2436016a2e249072fdf4cd449e17eba569d69e0fe2",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:47:19.233671Z",
+      "sha256": "fc91308d72ceabc51192e4434d8e0eabe424609cca33d4960af191600c9af399",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "ce9e0e02bb7f82ea230a727208595ed86e78039cc136cbf27acc38a77a9f0ed6",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:47:19.233671Z",
+      "sha256": "f73347f67b31133ac9e82f2051696746d3fe9bb335773c9e47d88160776bdcc1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "3576f592524569074b55ba44231fb3cebc99b0324c78fb3c094f6048649d146d",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "sha256": "a03492d4624752487b1067cd6267cfba5aef7a5ca7e64afcf063614d769e8ba0",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "48a14817d9e1013c72c96cdfd482587a59a32c1dc112c17d609c889bdfbbd993",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
-      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "sha256": "2825ddb69357da8061046371f4acbf4bf05db33454eb5b5b5e146d1a5d947801",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "78772a9c498385d39438d971938f1f157195bfb65b33a03453b94b6ae8e163e0",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
-      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "sha256": "f81948d2faa5115c49902391cb06e1963ae82329a1427fdb0315c97ded6e2b80",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "182a4ed695d26ddc75c0571d9c062a1f0e472b4053bb995a02f79364797f4227",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "sha256": "a32b9dc24f014f2feee8f15de647158bbc8113f5e58f66943f5fa59ee58ea346",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b8aae976afb4154d5221a7915cc8feaf95fde956457ea279bb676132c118f731",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T12:02:25.614146Z",
+      "sha256": "59e3d342b4697ba3b5d82ae4d6f6a439dc19a6f2cb30aaf21254d6bf1798f143",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "aa76404503f078a8959bc07e62d57279d9f5cee353771bb3effbd8d39869454c",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "sha256": "322b997b7bb4ff1ecbf85809f076e7f944568fc815a8e959ee770804b34c3b68",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "c16de66f9c1af2b77db6b851edec227635bd9f969d3f40805e8ef518f1c8c724",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "sha256": "a38f09aaa49dee12dfc4565e9b412a8479f9d5951fef409f604bf974fac782c7",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "448a13c987a14d3537a38c933733e4dc3cc91a800e8c3d2a2cac8b2739ad453f",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "sha256": "60e0848c441ab6cb6ba7ae183650274f6ce2ed1c33af91f252cd8c6d6068fd46",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:28:16.602628Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "29255ace387d77258f52fda245a6c1b9b7c23ffa1dfbf81171306c35fce68dd2",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
+      "sha256": "d287fc2b05834a7e653bb6af983628b39972d8a434ff78297f6b41f72c42ad24",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2138,6 +2138,60 @@
       "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
       "approvedBy": "owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-http-links.md",
+      "sha256": "e642a7130e45e2299f6ff049d4bb73cfb43f293e765af800af10a00f04b6c89b",
+      "approvedAtUtc": "2026-09-26T13:28:49.188323Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-http-links.contract.test.js",
+      "sha256": "54972ef99d9a7acf77ce89c053a3d955a1621eca9feb8bf3861b37975a671a38",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-link-authoring.contract.test.js",
+      "sha256": "6d35c69e4e3e7c649bb2efe945a4eb61930603fa31b5988c3b4dd5896780f660",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/docxHyperlinks.cjs",
+      "sha256": "a477270214585395d4c6773549b4a706fa77c1eb137f422a7441ddd49122c7d8",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/renderer/linkDialog.mjs",
+      "sha256": "e7a3d99182b153cd052f8e900b99bbbe0f0d6672ee12e6d85ecbdcc968f5bac8",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+      "sha256": "ff37c55dd31b8961bc695cf3bc6297f11324d444c140a66d7df8f078e07adbb4",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -6078,6 +6132,426 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
+      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "src/core/writer-local-profile-v1.cjs",
+      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
+      "sha256": "19d5e5864ac9e1f0750f701e92f5ec2c159f1986259f80d70d8b8fcffcaf6b58"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-16T23:15:31.159139+00:00",
+      "approvedBy": "owner-direct-task:WORD_VOLUME_TEXT_ORDER_C1_C2_20260917",
+      "authority": "DIRECT_OWNER_CONTINUED_IMPORT_EXPORT_IMPLEMENTATION",
+      "evidenceStampIds": [
+        "C2_PACKAGED_DOCX_REVIEW_ROUNDTRIP_PROFILE_EXPANSION_SUCCESSOR_20260915"
+      ],
+      "filePath": "test/unit/r24-wp307-writer-local-profile.test.js",
+      "rationale": "Owner authorized continued import/export implementation, complete native C1/C2 journeys and independent evidence admission. This bounded batch preserves the frozen denominator, legacy evidence, existing product authority and mandatory delivery gates. Credit requires fresh merged runtime and raw field proofs.",
+      "sha256": "6e26db0fc686c1deea8da26489d73dd4aa305156f25126b30078e2e735a26f70"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "690edb6bbba5eca44aec56d840d5892c73d59af9a873095dff438a45914be488",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T12:02:25.614146Z",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-content-preview.contract.test.js",
+      "sha256": "a2b501433c157c8193e80b352ff7f05855a20ab45b51eb8e6cb85943feedd127",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925",
+      "approvedAtUtc": "2026-09-25T18:27:53.842145Z",
+      "rationale": "Owner-approved W6 Word remediation: line-break identity and truthful composite loss reporting; existing topology, text authority, native/raw oracles and fenced persistence retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-latest-semantic-b02-package-parser.contract.test.js",
+      "sha256": "3355a01b7246f63e78f97322132e6e74e0acb5318222d08dead7d7e832def6f0",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T03:25:54Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "c4c2a1ba750256b4728bc97e65266a466af8625a078dbf778c8940c8a2ef6b97",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "src/export/docx/docxMinBuilder.js",
+      "sha256": "11223cb2354de5e757adf0ced3894f3336a4c64ba4bb335ab7542064c22b51e4",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+    },
+    {
+      "filePath": "src/export/docx/fullManuscriptDocxReviewPacketSource.js",
+      "sha256": "d31e1de33fcbfe534f3ad0d905bdb83bfdc98c57a05615a5d993755fec094823",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_TEXT_OFFSET_20260925",
+      "approvedAtUtc": "2026-09-25T15:25:12.297111Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W4 Word remediation: authenticated Original/Current text correspondence around unchanged inline PNG; full source text, ordered placement identity and existing Apply/recovery authority retained. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "9fe0aa1f8ef0e6312196dd2436016a2e249072fdf4cd449e17eba569d69e0fe2",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:47:19.233671Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "ce9e0e02bb7f82ea230a727208595ed86e78039cc136cbf27acc38a77a9f0ed6",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:47:19.233671Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "3576f592524569074b55ba44231fb3cebc99b0324c78fb3c094f6048649d146d",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
+      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "78772a9c498385d39438d971938f1f157195bfb65b33a03453b94b6ae8e163e0",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
+      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "182a4ed695d26ddc75c0571d9c062a1f0e472b4053bb995a02f79364797f4227",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b8aae976afb4154d5221a7915cc8feaf95fde956457ea279bb676132c118f731",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T12:02:25.614146Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "aa76404503f078a8959bc07e62d57279d9f5cee353771bb3effbd8d39869454c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "c16de66f9c1af2b77db6b851edec227635bd9f969d3f40805e8ef518f1c8c724",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "448a13c987a14d3537a38c933733e4dc3cc91a800e8c3d2a2cac8b2739ad453f",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:49:40.682628Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "29255ace387d77258f52fda245a6c1b9b7c23ffa1dfbf81171306c35fce68dd2",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "7f796bd6caa1c58ac61f4bdaffc2373fe3661d3ec5a9aacb5ed2d0e2d9762576",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "1a0a91a26d8bb30056f0f2453d47975ef7cd75a29e33d848b3bfa6dc058fa22a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "673d0c1b13a118b81168ffaa5f590b6e25500f146212bb4cb9da8d9bceede3e4",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "076c20cf8b8539a72ef2dff11c2018e7d18d56576997a771c0ffea7b7bd7f016",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a43a854e32e7099c159c7ca4e18670449c46381d4d714fbb952c28f60970cf1a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "bd2ec7960ad5034ef30bc3595cd34d2ddb80599c7a6660059c47439b61c9091a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "6f7a49c38f6ac6e45563de62cab6f6c5f9d387ba8f65fb55de7c8d719e0b35ec",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "a6ac0e73199803fe8aacdd90fef702e1f3be55299bbdf51fecc6eaa34cf63fa2",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-http-links.contract.test.js",
+      "sha256": "e2da5b35b1e744ea5a84f634f73e4956ca3f3c911a98f9258f66edbc229c2e48",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "4cf112cc04c6ea89c73e5dbb63ea270d2555073ddee9bf3e84d2c7d85d086f12",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/index.mjs",
+      "sha256": "cbe1557335672326d2e6bc772e76ce8ead03bb65d40a4e41b4c154774d36efa4",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "787d57ff9de9863bee307bf0d8262024da1627a997278348a298332920829fab",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "24032bb73430c770ddeace815ff6fb6afa5083b3b2366e820a28ca755a5f61bc",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "28428e3947cadab43269f8d960df47067b37e86d2b873070a7b7fe5ede64f81e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "b111696132ccc7a109ba7760649f6d8aa455a83487cc31f02d059f7ca8822640",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "e3e83f865dc64ca97fef9f005b0d7f117c31c120ca6fbb1b3ccb4d12aac72f84",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "10e12694ddda20b452a875707f635af50744018476702235f066ae0a88f0099d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-http-links.contract.test.js",
+      "sha256": "8bc2aa3e0ba63fbccede31361c8ae7205f354c58868b71c22c176e3d44b191ea",
+      "approvedAtUtc": "2026-09-26T13:16:00.876339Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-http-links.md",
+      "sha256": "d41ecb20dd476f208e86eaf4922aa93cbe01df4e3696ae34ca8b785afaea4b1d",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f8682faf310714c3940102a23800dd188552843e4e9d4d5adb2161c72f61faec",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-generic01-create-only-import.contract.test.js",
+      "sha256": "23c8c203a7e8f7d2ecb28b7d254830f4ad156ca11c91391e3f4edf31587c0370",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925",
+      "approvedAtUtc": "2026-09-25T13:41:43.537578Z",
+      "rationale": "Owner-approved W2 Word remediation: bounded typed diagnostics and concrete table losses through preview, existing confirmation, durable receipt and replay. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "48a14817d9e1013c72c96cdfd482587a59a32c1dc112c17d609c889bdfbbd993",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925",
+      "approvedAtUtc": "2026-09-25T21:12:11.873488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "9c05cd6b5c06b9da969aa340b789c687d28591dc925d5436b23196d50cdb9b11",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "429f41c9457b04d95386b27fd3c5cab672b16cc41f140bea0be9426f6efedba9",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "42fcacb86616688e1fff1f48a01fd787fc49b23a5ba997e6ca25fa6b8212d13f",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f5eadc9cd5b77ecd4fea7462a96378dba25a3235999440f521ec014b39376e59",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "c38d4a711c17f6363b1e9121166798edcde45674122f305f3f1c24a319319b9f",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-http-links.md",
+      "sha256": "af0bd0a36b6219128152a741b7cca0b5e7a1e14f02ae7ca4361b1bf037b75981",
+      "approvedAtUtc": "2026-09-26T13:21:48.447326Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }
