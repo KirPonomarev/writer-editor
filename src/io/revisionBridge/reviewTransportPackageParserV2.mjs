@@ -4025,6 +4025,7 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     budgets,
     documentScan,
     relationshipsXml: parts['word/_rels/document.xml.rels'],
+    stylesXml: parts['word/styles.xml'],
   });
   const formattingParagraphs = [];
   if (!formattingParagraphScan.ok) {

@@ -210,6 +210,13 @@ test('P1a native Word body bookmark and inherited default size retain exact link
  const options={fullManuscriptExportMap:source.localAuthorityCapsule.exportMap,cryptoPort};
  const exact=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('24'),options);
  assert.equal(exact.candidates.length,1,JSON.stringify(exact));assert.deepEqual(exact.candidates[0].inline,{link:{action:'set',value:href}});
+ const analysis=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:bytes('24'),hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+ assert.equal(analysis.ok,true,JSON.stringify(analysis.reasons));
+ const packet={returnedProjection:analysis.reviewIr};
+ const projected=b.buildDocxReviewFormattingReturnCandidatesFromEvidence(packet,options);
+ assert.deepEqual(projected.candidates,exact.candidates);
+ const preview=b.buildDocxReviewPreviewSessionCandidateFromEvidence(packet,{formattingExportMap:options.fullManuscriptExportMap,cryptoPort});
+ assert(preview.reviewPacket?.diagnosticItems.some(d=>d.diagnosticId.endsWith('FORMATTING_CHANGES')));
  const changed=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('28'),options);
  assert.equal(changed.candidates[0].inline.fontSize.value,'14pt');
  const invalid=b.buildDocxReviewFormattingReturnCandidatesFromZipBytes(bytes('bad'),options);
