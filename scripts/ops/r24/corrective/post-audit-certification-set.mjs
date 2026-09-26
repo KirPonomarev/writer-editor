@@ -588,7 +588,7 @@ export const R24_INTEROP_WORD_INLINE_ATOMS_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "4a5cb195126d15c3e00ef73c588c32ddb36f4999407f5f378de978e811f86c53"
+      "sha256": "c847d4b81f470d873fe4e249956e203851a90782e2fe8d0c640f52e4f4b2bae0"
     }
   ]
 });
