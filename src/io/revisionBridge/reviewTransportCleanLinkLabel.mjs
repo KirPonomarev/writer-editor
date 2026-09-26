@@ -48,7 +48,7 @@ function boundaries(text) {
   return new Set([0,text.length,...Array.from(new Intl.Segmenter('und',{granularity:'grapheme'}).segment(text),x=>x.index)]);
 }
 
-export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagraphs, sceneId, reviewIr = {}, exportTypography } = {}) {
+export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagraphs, sceneId, reviewIr = {}, exportTypography, allowTargetChange = false } = {}) {
   try {
     // Only the main-owned authenticated export map supplies this descriptor.
     // A returned stylesheet or historical round cannot invent its own baseline.
@@ -109,13 +109,21 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       if (total>262144 || oldRuns.length!==newRuns.length) return reject('shape-or-total-budget');
       for (let j=0;j<oldRuns.length;j++) {
         const a=oldRuns[j], b=newRuns[j];
-        if (a.signature!==b.signature) return reject('marks-or-target-changed');
-        if (a.text===b.text) continue;
+        const targetChanged = a.inline.link !== b.inline.link;
+        if (a.signature!==b.signature) {
+          const {link:oldLink,...oldMarks}=a.inline, {link:newLink,...newMarks}=b.inline;
+          if (allowTargetChange!==true || !oldLink || !newLink || !targetChanged
+            || stable(oldMarks)!==stable(newMarks)) return reject('marks-or-target-changed');
+        }
+        if (a.text===b.text) {
+          if (targetChanged) return reject('separate-target-change');
+          continue;
+        }
         if (effect || !a.inline.link || /[\r\n\t\u0000-\u001f\u007f]/u.test(a.text+b.text)
           || a.text.length>4096 || b.text.length>4096) return reject('not-single-link-label');
         if (!boundaries(base.text).has(a.from) || !boundaries(base.text).has(a.to)
           || !boundaries(next.paragraphText).has(b.from) || !boundaries(next.paragraphText).has(b.to)) return reject('grapheme-boundary');
-        effect={paragraphOrdinal:i,from:a.from,to:a.to,selectedText:a.text,replacementText:b.text,href:a.inline.link};
+        effect={paragraphOrdinal:i,from:a.from,to:a.to,selectedText:a.text,replacementText:b.text,href:a.inline.link,...(targetChanged?{replacementHref:b.inline.link}:{})};
       }
     }
     if (!effect) return reject('no-label-change');
@@ -137,6 +145,7 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       change:{changeId:'docx-clean-link-label-'+digest.slice(0,24),targetScope:{type:'scene',id:sceneId},
         match:{kind:'exact',quote,prefix:'',suffix:'',...(richReplacementRange?{richReplacementRange}:{})},replacementText,
         sourceAuthority:'authenticated-clean-link-label-v1',rtkProductPath:'cleanLinkLabel',
+        ...(effect.replacementHref?{richReplacementLink:{expectedHref:effect.href,replacementHref:effect.replacementHref}}:{}),
         paragraphIndex:effect.paragraphOrdinal,documentParagraphIndex:effect.paragraphOrdinal},digest};
   } catch(error) { return reject(error.message); }
 }

@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "1b510785cbb0452689b13cb11a8347e731d24dd5317c2c1962583ad03bfa09d8",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "b91e4c21f9290ef10e71b3bcfac007b8a301d6e3e504423e7acd4750690f1c71",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:53:38.742550Z",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1540,12 +1540,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "b7be92ed5a7e7549cb650304439a5e33f73aa1bc0cf2ef4645873e0c1838e25c",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "sha256": "fd7c792031bb7fc20517db883836a33989a72c3e25fd716358532ea0c4ae89b8",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1657,12 +1657,12 @@
     },
     {
       "filePath": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
-      "sha256": "b41c402181d11dacea13fcc9c63671cc5469ace6e9a560446176668929553f23",
-      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926",
-      "approvedAtUtc": "2026-09-26T18:51:06.349834Z",
+      "sha256": "752a326b5f7ec70f140328c53a7369e92f8c568e6973f99f2fae864aee6927d2",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: preserve authenticated hyperlink label edits in unchanged headings and unique repeated-label context with exact subordinate-range validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/io/revisionBridge/index.mjs",
@@ -1684,30 +1684,30 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "505e42d92812356a54f0414b2c8c51055ce26370467ff442988ae2198770add4",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "sha256": "9666262c031d5f8415178e45c6ed9f4dd6402c3758c8466787a8fd9ed33f6b18",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
-      "sha256": "757f9d1a83c6b9f7706f307df61f954401acb758bf8e76f9b6e71dbc8565ca4b",
-      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
-      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
+      "sha256": "cc48789bb9f5edb73fe0810bbe95ae05ffb169de0a4863c333dd54cde890d8f3",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.js",
-      "sha256": "eefab01956f13dbc4c180ec89cdb6746268a6e0d552952296a0bd198c4cec98e",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
-      "approvedAtUtc": "2026-09-26T20:11:43.963115Z",
+      "sha256": "34c0eabae7b8ec028ec6d05599496cb714e7899dcb2a79fbcd917aa98a37641c",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/tiptap/documentMedia.mjs",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "d993e2c3f830ad9f4f30fc2de72ec941066897501c22da97b4b3f46b27057a42",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "sha256": "45b7c2601bfc68c43b5053f7861b794ef7fcf7f7ad83d113fb1861112eb88adf",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:49:26.201273Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "e2daa01ca249244b0516ef1d5e21f203d74edcd55a4d7649edc5a6434b4a5ace",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "sha256": "5d176799344f26cd8ba6989d5336f52c8a6893fa90474d2705d7b834ac902d60",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:49:26.201273Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "55461c931aa0e01bc21fdae0c747002e50b2c6aed925f1b5ad7b8a377a27e61b",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "sha256": "ac93a1bd21f28b264e8b8c45f99386a6d9c86616a878148203ed821313739ba8",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:53:38.742550Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "7925d4730d762759528022ef39660443257fe7b1fb2d7e2b015de6b43dbc0358",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "sha256": "024faedacd94adf104a7a519966d8ff9cd97fe1e1c40f1db9deb6cdf27a4ceae",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:53:38.742550Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "fa9f61a64bd9402529a275f865b9146d26a34b98f45a513e8224c3a6d388cb31",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "sha256": "e29f850099618d47fa911de30ad0dbc3bfbd928bde719c5b39fffc36d524a143",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:53:38.742550Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "0c9b5c6123e58038c73b3964bb3c68405bc7e89d6be8143d62d961c2f58162ef",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "sha256": "2252e701f1416d69ff81cdf074a61a73fb5822934df4cbdd285bfcfc985bcca6",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2251,10 +2251,10 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
-      "sha256": "708d7ac8fee08d4694ea7a7a97789bb0c2f63c414c49a9d4ee668cc93aba6574",
-      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
-      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
-      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "2a95ccc2aff765988f72afe223265dcf270bea119c444d1b57e952b4952e6d61",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2354,6 +2354,33 @@
       "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
       "approvedBy": "owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
       "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-combined-link-return.md",
+      "sha256": "1908a552f2d18b1c0bac5b7310b0d91263f55e3cf828d3476dd71a8804be2d0c",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
+      "sha256": "4e4948268c10ffdff3db5ffbc26a53b756dde42806b35191f8e0b409ed14462b",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/unit/sector-m-preload-ui-command-bridge.test.js",
+      "sha256": "c9f890e80c5ea65010571b36cfff11b908ac8224a1111723d8e2d3c402dd475c",
+      "approvedAtUtc": "2026-09-26T21:53:38.742550Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -8343,6 +8370,402 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "1b510785cbb0452689b13cb11a8347e731d24dd5317c2c1962583ad03bfa09d8",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "b7be92ed5a7e7549cb650304439a5e33f73aa1bc0cf2ef4645873e0c1838e25c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/io/revisionBridge/exactTextMinSafeWrite.mjs",
+      "sha256": "b41c402181d11dacea13fcc9c63671cc5469ace6e9a560446176668929553f23",
+      "approvedBy": "owner-delegated-codex:WORD_COMPOSITE_FIDELITY_20260925|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926",
+      "approvedAtUtc": "2026-09-26T18:51:06.349834Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: preserve authenticated hyperlink label edits in unchanged headings and unique repeated-label context with exact subordinate-range validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "505e42d92812356a54f0414b2c8c51055ce26370467ff442988ae2198770add4",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "d993e2c3f830ad9f4f30fc2de72ec941066897501c22da97b4b3f46b27057a42",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "e2daa01ca249244b0516ef1d5e21f203d74edcd55a4d7649edc5a6434b4a5ace",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "55461c931aa0e01bc21fdae0c747002e50b2c6aed925f1b5ad7b8a377a27e61b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7925d4730d762759528022ef39660443257fe7b1fb2d7e2b015de6b43dbc0358",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "fa9f61a64bd9402529a275f865b9146d26a34b98f45a513e8224c3a6d388cb31",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:55:17.820933Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "0c9b5c6123e58038c73b3964bb3c68405bc7e89d6be8143d62d961c2f58162ef",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+      "sha256": "708d7ac8fee08d4694ea7a7a97789bb0c2f63c414c49a9d4ee668cc93aba6574",
+      "approvedAtUtc": "2026-09-26T20:45:39.381357Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bind explicit review serialization defaults to authenticated local export metadata while preserving strict actual-format-change rejection. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a2a51016f7f51fa789241d05cb93c1b1401541461d435114d3eb8f8219649eb7",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "72d42d814401d65376b524968073030dde6d302ca1a79d2ae770983150c5bff0",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "8a60c5d0ac585800badc3302d513bc9ab345af860ee5161d3a8c00f443fc992c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "10618ef09b468798782379cd2c4a54e3d6cca3562b467bf42ae1516333b9c37b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "7b5570f290dc523bd3ba7e3a138389d632409b0ce7cc3cab9df82aa9300de9e0",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "aeaaecdd0da942aa7c808b12e4cf7aa197b0c4f2c46fface329a8f52ed509a7c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "a3d7f5ccb8eeee07ec13fff20f4aca9b12f69872930c7da58b272eeb333ac0ba",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "56d6eafebbaa6d7eb827b2f243fcc9468a02b243a9c7f6ca6c6cb00b02abee28",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "2ea41162e506a343c63cbce468215750d0ef758b8e63d97539982f46eb62acb0",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "adc16c150fa08ffe3b206c30f6e28695cfd0acccd652fecb28f0bcd29b70f945",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f9dd4e2bda417f02031f6d340602b671f9bb8f5c36464d2d1ba50ee391aff7be",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "fce5ec3f5cf66846f12ba7b193303c0a297c442b10f0b49b43481e3c2cb5e283",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b3fb6d9ebfacbe55bd05772e8c9a2b4d87226bd017149c9b9a7d8ca827acb797",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "642284e21af2102504177b42565df4039af1e572c5b2986cb05ca2ebbb69eb1a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:23:42.045524Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-combined-link-return.md",
+      "sha256": "76900266c6333c150786ac190fdc773fac7aa7c3d1b0a839b76e890bcff6119e",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
+      "sha256": "1ff17b148847f8376530e39b6afdfb4a5d05c4fdef1959e623215065385d30ab",
+      "approvedAtUtc": "2026-09-26T21:22:59.060488Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "fdd6e92eb623f8abf6c629daf53de16c9df3242c23c9af271a036b8e45f67bd1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/renderer/editor.bundle.js",
+      "sha256": "757f9d1a83c6b9f7706f307df61f954401acb758bf8e76f9b6e71dbc8565ca4b",
+      "approvedBy": "owner-delegated-codex:WORD420_TABLE_AUTOFIT_CLOSURE_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:22:55.320637Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/renderer/editor.js",
+      "sha256": "eefab01956f13dbc4c180ec89cdb6746268a6e0d552952296a0bd198c4cec98e",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926",
+      "approvedAtUtc": "2026-09-26T20:11:43.963115Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: restore existing create/rename name input with captured project/tree identity validation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "e325fa0d51df97074671aa00921e939a9e6f8647de5c3dc5af4632d539b5f27d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "0494c801f62b58e3f53ae279f5889c7b30eca4aa512fa5f180d9eddaa8516405",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "eec45d19e12f1862341be2533835ca697c4739427fd39ef0d10ae3e63219acf1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "0d80e1c6a6ed135b8cd4cbd4099d40c620f9e5415fbf42af7bd3babe667e342b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "a9ca1fb1a80eeac6b286f1ddc99ea793caa297b06d9bf0b1fc56caa98579a66b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-combined-link-return.md",
+      "sha256": "e3b5b1aec45fc75780286952d9e549f1351e3aef632da0196dc3e7414fd05cfb",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-combined-link-return.contract.test.js",
+      "sha256": "547eea0b8c26d95e0ad6f1f5bc82604a7ce1bf0326f4ed96cff727e16a2ab187",
+      "approvedAtUtc": "2026-09-26T21:29:53.639885Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "e94265e2eb8823b15698cccac197425a68782a920c58f814192c1dbd65099861",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "34b2acf5b47ec008ef0ff20d7301ec9693e8fbcea5dad50d7423af407892996e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "66ebe143a12b03a17e44e43cddba4fab23048d9cfb15326b3855073048dc5a91",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a4272b55a9f4cdd539700bd2d43df4fb0addadcee519d31bf7e67c8434b89923",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:49:26.201273Z",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "9807a2427d7adbd56d40ef3da676d7e07ff653857fbd2218a466f39de4a2fafe",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "a001aca4f23edeaa12d6e83811744cabc499e391b1cd7af4fd3f4428d355d398",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "d57946a9131801d67bce3b18a1a256006203d15676f01f067d7374632ccaca09",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927",
+      "approvedAtUtc": "2026-09-26T21:38:03.173530Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: apply one combined label and target return through a main-private digest and existing atomic writer; preserve all other marks and authority guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     }
   ]
 }
