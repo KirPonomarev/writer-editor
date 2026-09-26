@@ -211,7 +211,7 @@
     "src/export/docx/docxTextXml.js",
     "test/contracts/rtk-word-inline-atoms.contract.test.js",
     "docs/tasks/2026-09-26--word-visibility-ruby.md",
-    "test/contracts/word-import-visibility-ruby.contract.test.js",
+    "test/contracts/rtk-word-visibility-ruby.contract.test.js",
     "test/contracts/revision-bridge-docx-review-preflight.contract.test.js"
   ],
   "protectedFiles": [
@@ -1015,7 +1015,7 @@
         "sha256": "22d034f26c9bee63906a503c3d91fc4308e452d6bffb60a8d9da3b8bab476c66"
       },
       {
-        "path": "test/contracts/word-import-visibility-ruby.contract.test.js",
+        "path": "test/contracts/rtk-word-visibility-ruby.contract.test.js",
         "sha256": "bc3961981518ba5500ed49b7b839b890ef8cecb4e15d17c3d2ca02a6f8ba1974"
       },
       {

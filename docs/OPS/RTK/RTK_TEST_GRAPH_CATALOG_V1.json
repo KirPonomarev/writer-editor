@@ -161,6 +161,7 @@
     "rtk-word-v4-e12-modern-comment-native-ui-followup.contract.test.js",
     "rtk-word-v4-e12-multi-scene-apply-followup.contract.test.js",
     "rtk-word-v4-e12-saturation-ledger.contract.test.js",
+    "rtk-word-visibility-ruby.contract.test.js",
     "rtk-yalken-scientific-assurance-r1.contract.test.js",
     "rtk-zip01-budget-crc-evidence.contract.test.js"
   ],
@@ -190,7 +191,6 @@
   },
   "extraMaintainedContractBasenames": [
     "b3c07-security-runtime-boundary.contract.test.js",
-    "donor-port-command-surface-kernel.contract.test.js",
-    "word-import-visibility-ruby.contract.test.js"
+    "donor-port-command-surface-kernel.contract.test.js"
   ]
 }
