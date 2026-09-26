@@ -93,3 +93,11 @@ test('real parser accounts only balanced inert hyperlink instructions, never orp
   }
  }
 });
+
+ test('writer failure summary exposes only bounded codes without private diagnostics',()=>{
+ const box={isPlainObjectValue:v=>v!==null&&typeof v==='object'&&!Array.isArray(v),cloneJsonSafe:structuredClone};vm.createContext(box);vm.runInContext(extracted('summarizeReviewExactTextBatchSafeWriteResult'),box);
+ const summarize=box.summarizeReviewExactTextBatchSafeWriteResult;
+ assert.equal(summarize({reasons:[{errorCode:'E_SCENE_CAS_MISMATCH'}]}).writerFailureCode,'E_SCENE_CAS_MISMATCH');
+ for(const errorCode of ['/private/secret','secret message','X'.repeat(129),null])assert.equal(summarize({reasons:[{errorCode}]}).writerFailureCode,'');
+ assert.equal(summarize({}).writerFailureCode,'');
+ });

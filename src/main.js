@@ -2658,6 +2658,10 @@ function summarizeReviewExactTextBatchSafeWriteResult(result) {
     code: typeof result.code === 'string' ? result.code : '',
     reason: typeof result.reason === 'string' ? result.reason : '',
     applied: result.applied === true,
+    writerFailureCode: Array.isArray(result.reasons)
+      ? (result.reasons.map((reason) => reason?.errorCode)
+        .find((code) => typeof code === 'string' && /^[A-Z][A-Z0-9_]{1,127}$/.test(code)) || '')
+      : '',
     changes: Array.isArray(result.changes)
       ? result.changes
         .filter((change) => isPlainObjectValue(change))

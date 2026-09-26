@@ -454,7 +454,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "c0bfd4415681c94451c376f5295cef264c3089b2ead4572444ec57b29a776edd"
+        "sha256": "511b4d9af25cd73ddb290ba49433f521208b21fb2a69943365943e7b1ad1b92f"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1070,7 +1070,7 @@
       },
       {
         "path": "test/contracts/rtk-word-clean-link-label.contract.test.js",
-        "sha256": "e2fe0ecafff166a597f59681b64b9e744fcada5e40ed6fe01df0d12e16a80c94"
+        "sha256": "2f90b264435f3dfba7110f78403aa4b3e5cab0cf5498747c174fe0159383aab6"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
