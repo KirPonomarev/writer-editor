@@ -157,3 +157,18 @@ test('P1a real editor RGB serialization remains exactly equivalent in signed exp
  assert.equal(buildFormatIrParagraphs(scene('rgb(70, 120, 134)'))[0].formatIr.runs[0].inline.color,'#467886');
  for(const bad of ['rgba(70,120,134,0.5)','rgb(256,0,0)','var(--color)','red']) assert.throws(()=>buildFormatIrParagraphs(scene(bad)),/FULL_MANUSCRIPT_FORMAT_IR_COLOR_UNSUPPORTED/);
 });
+
+test('P1a scene return matches rich paragraph projection without treating envelope JSON as text',async()=>{
+ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+ const main=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
+ const [,envelope]=await mods;
+ const {buildFormatIrParagraphs}=require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+ const ctx=vm.createContext({loadDocumentContentEnvelopeModule:async()=>envelope,buildFormatIrParagraphs});
+ vm.runInContext(main.slice(main.indexOf('function docxReviewReturnIntakeSceneParagraphTexts('),main.indexOf('function docxReviewReturnIntakeSceneRevisionOrdinal(')),ctx);
+ const paragraphs=['P1A_NATIVE правка 😀','','last'];
+ const doc={type:'doc',content:paragraphs.map(text=>({type:'paragraph',content:text?[{type:'text',text,marks:[{type:'link',attrs:{href:HREF}}]}]:[]}))};
+ const raw=envelope.composeObservablePayload({doc,meta:{synopsis:'not document text'}});
+ assert.deepEqual(Array.from(await ctx.readDocxReviewReturnIntakeSceneParagraphTexts(raw,'scene')),paragraphs);
+ assert.deepEqual(Array.from(await ctx.readDocxReviewReturnIntakeSceneParagraphTexts('plain\n\nlast','scene')),['plain','','last']);
+ await assert.rejects(ctx.readDocxReviewReturnIntakeSceneParagraphTexts('[doc-v2 length=10]\n{}','scene'),/DOCUMENT_ENVELOPE_INVALID/);
+});

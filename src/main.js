@@ -5928,6 +5928,19 @@ function docxReviewReturnIntakeSceneParagraphTexts(text) {
   return String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
 }
 
+async function readDocxReviewReturnIntakeSceneParagraphTexts(rawContent, sceneId) {
+  // Match the exporter's rich-document projection while retaining rawContent
+  // unchanged for revision hashes and persistence. JSON envelope lines are not
+  // document paragraphs. Plain scenes retain their existing signed semantics.
+  if (!rawContent.includes('[doc-v2')) return docxReviewReturnIntakeSceneParagraphTexts(rawContent);
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = envelope.parseObservablePayload(rawContent);
+  if (!parsed || parsed.issue || !parsed.doc || typeof parsed.text !== 'string') {
+    throw new Error('RTK_RETURN_INTAKE_SCENE_DOCUMENT_ENVELOPE_INVALID');
+  }
+  return buildFormatIrParagraphs({ sceneId, text: parsed.text, doc: parsed.doc }).map(paragraph => paragraph.text);
+}
+
 function docxReviewReturnIntakeSceneRevisionOrdinal(revision) {
   if (Number.isSafeInteger(revision?.documentParagraphIndex) && revision.documentParagraphIndex >= 0) {
     return revision.documentParagraphIndex;
@@ -6286,7 +6299,7 @@ function verifyDocxReviewReturnIntakeSceneReturnedParagraphTexts(paragraphAuthor
   return { ok: true };
 }
 
-function buildDocxReviewReturnIntakeSceneExportMapAuthority({
+async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
   context,
   localAuthority,
   parserResult,
@@ -6352,7 +6365,13 @@ function buildDocxReviewReturnIntakeSceneExportMapAuthority({
   if (rawBlocks.length === 0) {
     return { ok: true, applicable: false };
   }
-  const paragraphTexts = docxReviewReturnIntakeSceneParagraphTexts(baselineFinalText);
+  let paragraphTexts;
+  try { paragraphTexts = await readDocxReviewReturnIntakeSceneParagraphTexts(baselineFinalText, sceneId); }
+  catch (error) {
+    return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_DOCUMENT_ENVELOPE_INVALID', {
+      reason: error?.message || 'INVALID_DOCUMENT',
+    });
+  }
   if (rawBlocks.length !== paragraphTexts.length) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_SCENE_EXPORT_MAP_PARAGRAPH_COUNT_MISMATCH', {
       expectedBlockCount: rawBlocks.length,
@@ -8645,7 +8664,7 @@ function verifyDocxReviewReturnIntakeLocalBinding({ context, localAuthority, par
   return { ok: true };
 }
 
-function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, parserResult, options = {}) {
+async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, parserResult, options = {}) {
   const payload = isPlainObjectValue(parserResult?.authorityCarrier?.selectedCarrier?.payload)
     ? parserResult.authorityCarrier.selectedCarrier.payload
     : {};
@@ -8656,7 +8675,7 @@ function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, parser
   if (localScope === 'full-manuscript' && !localExportMap) {
     return docxReviewReturnIntakeBlocked('RTK_RETURN_INTAKE_LOCAL_FULL_MANUSCRIPT_EXPORT_MAP_REQUIRED');
   }
-  const sceneAuthority = buildDocxReviewReturnIntakeSceneExportMapAuthority({
+  const sceneAuthority = await buildDocxReviewReturnIntakeSceneExportMapAuthority({
     context: options.context,
     localAuthority,
     parserResult,
@@ -9313,7 +9332,7 @@ async function inspectDocxReviewReturnIntakeV2({
   // hmacSecret so the downstream full-manuscript return-router proof binding
   // can compute its HMAC during the live session. The secret lives only in
   // this in-memory capsule; the DURABLE authority store never persists it.
-  const localAuthorityCapsule = buildDocxReviewReturnIntakeLocalAuthorityCapsule(
+  const localAuthorityCapsule = await buildDocxReviewReturnIntakeLocalAuthorityCapsule(
     localAuthority,
     verifiedParserResult,
     { hmacSecret, context },
