@@ -159,3 +159,56 @@ test('P0a selected table styles with unresolved visibility reject without reject
     }
   }
 });
+
+test('P0a review worker and legacy entrypoint cannot turn hidden or Ruby tracked inserts into plain replacements', async () => {
+  const crypto = require('node:crypto');
+  const { buildFullManuscriptDocxReviewPacketSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource');
+  const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder');
+  const stable = v => Array.isArray(v) ? '['+v.map(stable).join(',')+']' : v && typeof v === 'object'
+    ? '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}' : JSON.stringify(v);
+  const sha = v => crypto.createHash('sha256').update(v).digest('hex');
+  const cryptoPort = { sha256Text: sha, sha256Json: v => 'sha256:'+sha(stable(v)), byteLength: v => Buffer.byteLength(v),
+    hmacSha256Text: (v,s) => 'hmac-sha256:'+crypto.createHmac('sha256',s).update(v).digest('hex'),
+    hmacSha256Json: (v,s) => 'hmac-sha256:'+crypto.createHmac('sha256',s).update(stable(v)).digest('hex') };
+  const b = await bridge;
+  const source = buildFullManuscriptDocxReviewPacketSource({ projectId:'p0a-review', projectRoot:'/synthetic',
+    scenes:[{sceneId:'roman/a.txt',scenePath:'/synthetic/roman/a.txt',text:'old',order:0}] }, {revisionBridge:b,cryptoPort});
+  const original = buildDocxReviewPacketBuffer(source);
+  const extracted = b.extractDocxReviewTransportPackagePartsFromZipBytes({bytes:original});
+  assert.equal(extracted.ok,true);
+  for (const [props, ruby, expected] of [['<w:vanish/>',false,'RTK_WORD_VISIBILITY_UNSUPPORTED'],
+    ['<w:webHidden/>',false,'RTK_WORD_VISIBILITY_UNSUPPORTED'],['',true,'RTK_WORD_RUBY_UNSUPPORTED'],
+    ['<w:vanish w:val="0"/><w:webHidden w:val="false"/>',false,null]]) {
+    const parts = {...extracted.parts};
+    const inserted = ruby ? '<w:r><w:ruby><w:rt><w:r><w:t>reading</w:t></w:r></w:rt><w:rubyBase><w:r><w:t>new</w:t></w:r></w:rubyBase></w:ruby></w:r>' : `<w:r><w:rPr>${props}</w:rPr><w:t>new</w:t></w:r>`;
+    const xml = parts['word/document.xml'];
+    parts['word/document.xml'] = xml.replace(/<w:r>.*?<\/w:r>/s, `<w:del w:id="1" w:author="synthetic"><w:r><w:delText>old</w:delText></w:r></w:del><w:ins w:id="2" w:author="synthetic">${inserted}</w:ins>`);
+    assert.notEqual(parts['word/document.xml'],xml);
+    const bytes = buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})));
+    const analysis = b.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,
+      expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+    const legacy = b.buildDocxReviewPreviewSessionCandidateFromZipBytes(bytes,{targetScope:{type:'scene',id:'roman/a.txt'},
+      createdAt:'2026-09-26T12:00:00.000Z',fullManuscriptExportMap:source.localAuthorityCapsule.exportMap});
+    if (expected) {
+      assert.equal(analysis.ok,false,JSON.stringify(analysis.reasons));assert.equal(analysis.code,expected);
+      assert.equal(analysis.canApply,false);assert.deepEqual(analysis.reviewIr.textRevisions,[]);
+      assert.equal(legacy.ok,false);assert.equal(legacy.reason,expected);assert.equal(legacy.reviewPacket,null);
+    } else {
+      assert.equal(analysis.ok,true,JSON.stringify(analysis.reasons));assert.equal(legacy.ok,true,JSON.stringify(legacy));
+      assert.equal(legacy.reviewPacket.textChanges[0].replacementText,'new');
+    }
+  }
+});
+
+test('P0a review style guard follows used styles and leaves unused hidden definitions inert', async () => {
+  const crypto = require('node:crypto');
+  const {extractReviewTransportFormattingRunsV2: scan} = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const port = {sha256Text: s => crypto.createHash('sha256').update(s).digest('hex'),
+    sha256Json: x => 'sha256:'+crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex'),byteLength:s=>Buffer.byteLength(s)};
+  const stylesXml = `<w:styles xmlns:w="${W}"><w:style w:type="paragraph" w:styleId="Hidden"><w:rPr><w:vanish/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Child"><w:basedOn w:val="Hidden"/></w:style></w:styles>`;
+  for(const id of ['Hidden','Child','Visible']) {
+    const doc = `<w:document xmlns:w="${W}"><w:body><w:p><w:pPr><w:pStyle w:val="${id}"/></w:pPr>${run()}</w:p></w:body></w:document>`;
+    const result=scan(doc,{stylesXml,cryptoPort:port});assert.equal(result.ok,id==='Visible',JSON.stringify(result));
+    if(id!=='Visible')assert(result.reasons.some(r=>r.code==='RTK_WORD_VISIBILITY_UNSUPPORTED'));
+  }
+});

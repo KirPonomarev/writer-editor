@@ -476,7 +476,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "c902747a75e08e74dddda403e6cc8f84899db5bae7ec4df33a1737c63a150615"
+        "sha256": "9fe0aa1f8ef0e6312196dd2436016a2e249072fdf4cd449e17eba569d69e0fe2"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -556,7 +556,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "51d77a5dbaa0d540e2aac9e5e2eda5fbbc15cc793796f477a9f06f9232613fa2"
+        "sha256": "ce9e0e02bb7f82ea230a727208595ed86e78039cc136cbf27acc38a77a9f0ed6"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1016,7 +1016,7 @@
       },
       {
         "path": "test/contracts/word-import-visibility-ruby.contract.test.js",
-        "sha256": "ac0604567884ce01852eddb97500f0d0c86e98841ec3c08e6c82d2276d329638"
+        "sha256": "bc3961981518ba5500ed49b7b839b890ef8cecb4e15d17c3d2ca02a6f8ba1974"
       },
       {
         "path": "test/contracts/revision-bridge-docx-review-preflight.contract.test.js",

@@ -2205,6 +2205,59 @@ function tableDocumentParagraphs(documentXml, documentScan) {
   return paragraphs;
 }
 
+// Review replacements carry plain text. They cannot silently inherit hidden
+// display semantics or flatten phonetic annotations into an Apply operation.
+function reviewVisibilityReason(documentScan, stylesScan = { tokens: [] }) {
+  const enabled = token => !['0', 'false', 'off'].includes(attr(token, 'val', W_NS));
+  const visibility = token => token.namespaceUri === W_NS && ['vanish', 'webHidden'].includes(token.localName);
+  const fail = (code, token, field = 'word/document.xml') => reason(code, field,
+    'Word visibility or Ruby is not representable by plain-text review Apply.',
+    { elementName: token.localName, openStart: token.openStart });
+  for (const token of documentScan.tokens) {
+    if (isWordToken(token, 'ruby')) return fail('RTK_WORD_RUBY_UNSUPPORTED', token);
+    if (visibility(token) && enabled(token)) return fail('RTK_WORD_VISIBILITY_UNSUPPORTED', token);
+  }
+  const kinds = new Set(documentScan.tokens.filter(t => t.namespaceUri === W_NS).map(t => t.localName));
+  const used = new Set(documentScan.tokens.filter(t => t.namespaceUri === W_NS
+    && ['pStyle', 'rStyle', 'tblStyle'].includes(t.localName)).map(t => attr(t, 'val', W_NS)));
+  const styles = stylesScan.tokens.filter(t => isWordToken(t, 'style')).sort((a,b) => a.openStart-b.openStart);
+  const catalog = new Map(styles.map(t => [attr(t, 'styleId', W_NS), { token:t, basedOn:'', visibility:null }]));
+  for (const style of catalog.values()) {
+    const kind = attr(style.token, 'type', W_NS);
+    if (['1','true','on'].includes(attr(style.token, 'default', W_NS))
+      && kinds.has(kind === 'table' ? 'tbl' : kind === 'paragraph' ? 'p' : kind === 'character' ? 'r' : '')) {
+      used.add(attr(style.token, 'styleId', W_NS));
+    }
+  }
+  const defaults = stylesScan.tokens.find(t => isWordToken(t, 'docDefaults'));
+  for (const token of stylesScan.tokens) {
+    if (!visibility(token) && !isWordToken(token, 'basedOn')) continue;
+    let lo=0,hi=styles.length;
+    while(lo<hi){const mid=(lo+hi)>>>1;if(styles[mid].openStart<token.openStart)lo=mid+1;else hi=mid;}
+    const owner = styles[lo-1];
+    const style = owner && token.closeEnd <= owner.closeStart ? catalog.get(attr(owner,'styleId',W_NS)) : null;
+    if (style) {
+      if (isWordToken(token,'basedOn')) style.basedOn=attr(token,'val',W_NS);
+      else if (enabled(token)) style.visibility=token;
+    } else if (visibility(token) && enabled(token) && defaults
+      && token.openStart > defaults.openEnd && token.closeEnd <= defaults.closeStart) {
+      return fail('RTK_WORD_VISIBILITY_UNSUPPORTED',token,'word/styles.xml');
+    }
+  }
+  // The return lane has no style-cascade writer. A used style with visibility
+  // is conservatively unsupported; an unused declaration has no effect.
+  for (const first of used) {
+    let id=first;const seen=new Set();
+    while(id){
+      if(seen.has(id)||seen.size>=64) return reason('RTK_WORD_VISIBILITY_UNSUPPORTED','word/styles.xml','Unresolved review style inheritance.');
+      seen.add(id);const style=catalog.get(id);if(!style)break;
+      if(style.visibility)return fail('RTK_WORD_VISIBILITY_UNSUPPORTED',style.visibility,'word/styles.xml');
+      id=style.basedOn;
+    }
+  }
+  return null;
+}
+
 export function extractReviewTransportFormattingRunsV2(documentXml, options = {}) {
   const cryptoPort = resolveCryptoPort(options.cryptoPort);
   if (!cryptoPort.ok) {
@@ -2224,6 +2277,12 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
   const documentScan = suppliedDocumentScan
     || parseXmlPart('word/document.xml', documentXml, budgets, cryptoPort, budgetState);
   const reasons = suppliedDocumentScan ? [] : [...documentScan.diagnostics];
+  const visibilityStyles = options.stylesXml
+    ? parseXmlPart('word/styles.xml', options.stylesXml, budgets, cryptoPort, budgetState)
+    : { tokens: [], diagnostics: [] };
+  reasons.push(...visibilityStyles.diagnostics);
+  const visibilityFailure = reviewVisibilityReason(documentScan, visibilityStyles);
+  if (visibilityFailure) reasons.push(visibilityFailure);
   if (blockingReason(reasons)) {
     return { ok: false, code: 'RTK_FORMATTING_SCANNER_XML_BLOCKED', reasons, paragraphs: [] };
   }
@@ -3524,6 +3583,8 @@ function blockingReason(reasons) {
     'RTK_WORD_SECTIONS_MALFORMED_BLOCKED',
     'RTK_WORD_NOTES_MALFORMED_BLOCKED',
     'RTK_WORD_TABLES_MALFORMED_BLOCKED',
+    'RTK_WORD_VISIBILITY_UNSUPPORTED',
+    'RTK_WORD_RUBY_UNSUPPORTED',
   ].includes(item.code));
 }
 
@@ -3747,6 +3808,10 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
   const stylesScan = parseXmlPart('word/styles.xml', rawString(parts['word/styles.xml']), budgets, cryptoPort, budgetState);
   reasons.push(...stylesScan.diagnostics, ...scans.comments.diagnostics);
   if (!blockingReason(reasons)) validateWordSemanticTypes(documentScan, scans.comments, stylesScan, reasons);
+  if (!blockingReason(reasons)) {
+    const visibilityFailure = reviewVisibilityReason(documentScan, stylesScan);
+    if (visibilityFailure) reasons.push(visibilityFailure);
+  }
 
   const opaqueUnsupported = [
     ...collectOpaqueUnsupportedParts(partNames),

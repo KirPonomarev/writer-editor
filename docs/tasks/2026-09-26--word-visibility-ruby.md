@@ -13,7 +13,9 @@ This is its first bounded slice. Execution is personal/solo as directed by the
 owner, not the historical orchestrator-only mode in factual documents.
 
 O: generic DOCX import cannot silently expose hidden runs or concatenate Ruby
-base and pronunciation into a successful writable candidate.
+base and pronunciation into a successful writable candidate. The related
+review worker and legacy return entrypoint must not emit a plain-text replacement
+for these semantics, even with a valid locally authenticated export map.
 T: untrusted bytes -> existing bounded package/XML reader -> derived preview
 and plan -> existing main admission and Command Kernel -> fenced persistence.
 H: parse visibility using the existing style cascade, distinguish vanish toggle
@@ -73,3 +75,10 @@ References: Microsoft Open XML Vanish and WebHidden semantics; vanish is a
 style toggle, webHidden is an independently inherited web-view property.
 https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.vanish
 https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.wordprocessing.webhidden
+
+
+Return-path boundary: direct enabled visibility and Ruby block review analysis
+before text revisions acquire candidate status. Used/default styles with enabled
+visibility are conservatively unsupported in the return lane; this lane does not
+claim to resolve override/toggle cancellation. Unused styles remain inert.
+This rejection is not positive R fidelity or full P3-09 support.

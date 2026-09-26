@@ -6279,6 +6279,38 @@ export function buildDocxReviewPreviewSessionCandidateFromZipBytes(input, option
   }
 
   const documentXml = targets.extractedTargets.get('word/document.xml') || '';
+  // Legacy byte entrypoint and the evidence-worker parser must agree before
+  // a replacement can be offered; no repeated ZIP read is added to main V3.
+  const visibilityInventory = docxHostileFileGateCentralEntries(bytes);
+  const hasVisibilityStyles = visibilityInventory.entries?.some(entry => entry.entryId === 'word/styles.xml');
+  const visibilityStyleBytes = hasVisibilityStyles
+    ? docxContentPreviewExtractAuxiliaryPartBytes(bytes, 'word/styles.xml', 1024 * 1024) : null;
+  const visibilityStylesXml = visibilityStyleBytes ? docxZipDecodeUtf8Xml(visibilityStyleBytes) : '';
+  if (visibilityInventory.failure || (hasVisibilityStyles && (!visibilityStylesXml
+    || docxContentPreviewValidateXmlAttributesAndNamespaces(visibilityStylesXml).failure))) {
+    return docxReviewPreviewSessionResult({
+      ok: false, status: 'blocked', code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.BLOCKED,
+      reason: 'DOCX_REVIEW_STYLE_VISIBILITY_UNRESOLVED', decision: 'blocked', preflightReport,
+      summary: { targetScope, trackedTextCandidateCount: 0 },
+    });
+  }
+  const visibilityCheck = extractReviewTransportFormattingRunsV2(documentXml, {
+    cryptoPort: options.cryptoPort || {
+      sha256Text: text => `sha256:${sha256Hex(text)}`,
+      sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+      byteLength: text => new TextEncoder().encode(text).length,
+    },
+    stylesXml: visibilityStylesXml,
+  });
+  const visibilityFailure = visibilityCheck.reasons?.find(item =>
+    ['RTK_WORD_VISIBILITY_UNSUPPORTED', 'RTK_WORD_RUBY_UNSUPPORTED'].includes(item.code));
+  if (visibilityFailure) return docxReviewPreviewSessionResult({
+    ok: false, status: 'blocked', code: DOCX_REVIEW_PREVIEW_SESSION_CANDIDATE_CODES.BLOCKED,
+    reason: visibilityFailure.code, decision: 'blocked', preflightReport,
+    diagnostics: [docxReviewPreviewSessionDiagnostic(visibilityFailure.code, {
+      message: visibilityFailure.message, severity: 'warning', targetScope, createdAt,
+    })], summary: { targetScope, trackedTextCandidateCount: 0 },
+  });
   const commentsXml = targets.extractedTargets.has('word/comments.xml')
     ? targets.extractedTargets.get('word/comments.xml')
     : '';
