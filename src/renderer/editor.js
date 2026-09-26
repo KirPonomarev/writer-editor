@@ -18734,10 +18734,18 @@ async function handleReviewSurfaceExactTextApplyClick(event) {
     changeId,
   });
 
-  const payload = reviewSurfaceBuildExactTextApplyPayload(requestId, changeId);
+  // A clean-link return uses the admitted Word roundtrip command. The main
+  // process still resolves and revalidates the selected private candidate.
+  const cleanLinkReturn = changeId.startsWith('docx-clean-link-label-');
+  const commandId = cleanLinkReturn
+    ? REVIEW_SURFACE_EXACT_TEXT_APPLY_BATCH_COMMAND_ID
+    : REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID;
+  const payload = cleanLinkReturn
+    ? reviewSurfaceBuildExactTextApplyBatchPayload(requestId, [changeId])
+    : reviewSurfaceBuildExactTextApplyPayload(requestId, changeId);
   let bridgeResult = null;
   try {
-    bridgeResult = await invokePreloadUiCommandBridge(REVIEW_SURFACE_EXACT_TEXT_APPLY_COMMAND_ID, payload);
+    bridgeResult = await invokePreloadUiCommandBridge(commandId, payload);
   } catch (error) {
     setReviewSurfaceExactTextApplyTransientState({
       state: 'failed',

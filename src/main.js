@@ -6477,6 +6477,7 @@ async function buildDocxReviewReturnIntakeSceneExportMapAuthority({
       baselineParagraphs: buildFormatIrParagraphs({sceneId, text:parsed.text, doc:parsed.doc}),
       returnedParagraphs: paragraphAuthority.paragraphs, sceneId, reviewIr:parserResult.reviewIr,
       exportTypography: exportMap.exportTypography,
+      allowTargetChange: true,
     });
     if (!cleanLinkLabel.ok) return returnedTexts;
   }
@@ -9575,8 +9576,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     // Main-owned derivative, never a synthetic Word revision or worker mutation.
     candidate = { ...candidate, ok:true, status:'ready', reason:'RTK_CLEAN_LINK_LABEL_PREVIEW_READY',
       canAutoApply:false, canImportMutate:false, canWriteStorage:false, canOpenReviewSession:true,
-      reviewPacket:{commentThreads:[],commentPlacements:[],textChanges:[cloneJsonSafe(cleanLabel.change)],
-        structuralChanges:[],diagnosticItems:[],decisionStates:[]},
+      reviewPacket:buildCleanLinkLabelPreviewPacket(cleanLabel.change),
       sourceViewState:{packetHash:returnIntake.returnedArtifactSha256, mode:'docx-clean-link-label-preview'},
     };
   }
@@ -22635,6 +22635,17 @@ async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWri
   );
 }
 
+function buildCleanLinkLabelPreviewPacket(change) {
+  const link = change.richReplacementLink;
+  const diagnosticItems = link ? [{
+    diagnosticId: `${change.changeId}-link-target`, severity:'info',
+    message: `Вместе с подписью изменится адрес ссылки: ${link.expectedHref} → ${link.replacementHref}`,
+    targetScope:cloneJsonSafe(change.targetScope), relatedItemId:change.changeId, createdAt:'',
+  }] : [];
+  return {commentThreads:[],commentPlacements:[],textChanges:[cloneJsonSafe(change)],
+    structuralChanges:[],diagnosticItems,decisionStates:[]};
+}
+
 function cleanLinkLabelStoreMatches(store) {
   if (!store || activeReviewSessionLifecycle !== 'active' || !activeReviewSessionStore
     || activeRtkCleanLinkLabelApplyStore !== store || isDirty || autoSaveInProgress
@@ -22688,11 +22699,17 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
           ],
         };
       }
-      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-'))) {
+      let trustedLinkReplacementDigest = null;
+      if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
+        || Object.hasOwn(change, 'richReplacementLink'))) {
         const gate = await revalidateCleanLinkLabelApplyInput(input);
         if (!gate.ok) return gate;
+        if (input.reviewItems.length === 1 && input.reviewItems[0].richReplacementLink) {
+          trustedLinkReplacementDigest = computeHash(JSON.stringify(input.reviewItems[0]));
+        }
       }
-      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, publishScene: publishReviewSceneWithProjectTransaction });
+      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, trustedLinkReplacementDigest,
+        publishScene: publishReviewSceneWithProjectTransaction });
     },
     'review exact text batch safe apply',
   );
