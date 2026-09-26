@@ -19,7 +19,7 @@ import {
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
-import { openLinkDialog, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
+import { openLinkDialog, openNodeNameDialog, normalizeNodeName, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
 import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
@@ -9873,33 +9873,46 @@ async function openDocumentNode(node) {
   }
 }
 
+function captureNodeNameTarget(node) {
+  const nodeId = getEffectiveDocumentId(node);
+  const current = findTreeNodeById(treeRoot, nodeId);
+  if (!currentProjectId || !current) return null;
+  return { projectId: currentProjectId, tree: treeRoot, nodeId,
+    kind: current.kind, label: current.label };
+}
+
+function isNodeNameTargetCurrent(target) {
+  if (!target || currentProjectId !== target.projectId || treeRoot !== target.tree) return false;
+  const current = findTreeNodeById(treeRoot, target.nodeId);
+  return Boolean(current && current.kind === target.kind && current.label === target.label);
+}
+
 async function handleCreateNode(node, kind, promptLabel) {
-  const name = window.prompt(promptLabel || 'Название', '');
-  if (!name) return;
+  const target = captureNodeNameTarget(node);
+  if (!target) return;
+  const name = await openNodeNameDialog({ title: promptLabel || 'Название' });
+  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) return;
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_CREATE_NODE, {
-    projectId: currentProjectId,
-    parentNodeId: getEffectiveDocumentId(node),
+    projectId: target.projectId,
+    parentNodeId: target.nodeId,
     kind,
-    name
+    name: name.trim(),
   });
-  if (!result || result.ok === false) {
-    return;
-  }
+  if (!result || result.ok === false || !isNodeNameTargetCurrent(target)) return;
   await loadTree();
 }
 
 async function handleRenameNode(node) {
-  const name = window.prompt('Новое имя', node.label || '');
-  if (!name) return;
-  const nodeId = getEffectiveDocumentId(node);
+  const target = captureNodeNameTarget(node);
+  if (!target) return;
+  const name = await openNodeNameDialog({ title: 'Новое имя', initialValue: target.label || '', rename: true });
+  if (!normalizeNodeName(name).ok || !isNodeNameTargetCurrent(target)) return;
   const result = await dispatchUiCommand(EXTRA_COMMAND_IDS.TREE_RENAME_NODE, {
-    projectId: currentProjectId,
-    nodeId,
-    name,
+    projectId: target.projectId,
+    nodeId: target.nodeId,
+    name: name.trim(),
   });
-  if (!result || result.ok === false) {
-    return;
-  }
+  if (!result || result.ok === false || !isNodeNameTargetCurrent(target)) return;
   await loadTree();
 }
 
