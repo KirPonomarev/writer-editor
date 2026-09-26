@@ -300,8 +300,8 @@
     "wordAppPath": "/Applications/Microsoft Word.app",
     "wordVersion": "16.112",
     "wordBuild": "16.112.26081010",
-    "macosVersion": "26.6.1",
-    "macosBuild": "25G76",
+    "macosVersion": "27.0",
+    "macosBuild": "26A428",
     "locale": "ru_FI"
   },
   "labRegistrySha256": "6ff83d79ea88b61f77f7c660c396f75ec55dabc07eb17ef354e6e2c179faaa51",
@@ -686,7 +686,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "80fd3a1919108b937ded7bad0944e4731fae4e2c7eb359f9f7c665175fb0c824"
+        "sha256": "c8d60a5e644f0c96c72640d041c498f44d8da48e82ea220332f1632ac05accca"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -906,7 +906,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "5210542872648910557b9318989a087ae4e9e12490371e587b910d9d2e7388c4"
+        "sha256": "c79c913a998ebe936161e50deb918e94e61c001f50d79687edeea44a7504756a"
       },
       {
         "path": "scripts/doctor.mjs",
