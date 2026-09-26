@@ -7388,6 +7388,9 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCUMENT_MEDIA_TRACKED_IMAGE_UNSUPPORTED',
     'DOCX_CODE_BLOCK_FORMAT_UNSUPPORTED',
     'DOCX_HEADING_LEVEL_UNSUPPORTED',
+    'DOCX_HIDDEN_TEXT_UNSUPPORTED',
+    'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED',
+    'DOCX_RUBY_UNSUPPORTED',
     'DOCX_INLINE_UNDERLINE_UNSUPPORTED',
     'DOCX_TABLE_ATTR_UNSUPPORTED',
     'DOCX_TABLE_CELL_CONTENT_UNSUPPORTED',
@@ -7551,6 +7554,10 @@ function docxContentPreviewSemanticFailure(error) {
   const category = DOCX_CONTENT_PREVIEW_FAILURE_REASONS.get(sourceCode) || 'INTERNAL_ERROR';
   return docxContentPreviewDiagnostic(`DOCX_CONTENT_PREVIEW_${category}`, {
     sourceCode, sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
+    ...(['DOCX_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED'].includes(sourceCode)
+      && Number.isInteger(error.paragraphIndex) && error.paragraphIndex >= 0
+      && error.paragraphIndex < DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs
+      ? { paragraphIndex: error.paragraphIndex, tagName: sourceCode === 'DOCX_HIDDEN_TEXT_UNSUPPORTED' ? 'w:vanish' : 'w:webHidden' } : {}),
     message: category === 'INTERNAL_ERROR' ? 'DOCX preview failed internally; the document was not imported.'
       : `DOCX preview blocked: ${sourceCode}.`,
   });
@@ -8978,12 +8985,20 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
   const mark = DOCX_INLINE_MARKS[tag];
   const isColor = ['w:color', 'w:highlight', 'w:shd'].includes(tag);
   const isTypography = ['w:rFonts', 'w:sz', 'w:szCs', 'w:cs', 'w:rtl'].includes(tag);
-  if (!mark && !isColor && !isTypography) return;
+  const visibility = tag === 'w:vanish' ? 'vanish' : tag === 'w:webHidden' ? 'webHidden' : null;
+  if (!mark && !isColor && !isTypography && !visibility) return;
   if (docxContentPreviewNamespaceUriForTagName(docxContentPreviewTagName(token), namespaces)
     !== DOCX_WORDPROCESSINGML_MAIN_NAMESPACE) throw new Error('DOCX_INLINE_PROPERTY_NAMESPACE');
   if (isColor) { docxInlineReadColor(properties, tag, token, namespaces); return; }
   if (isTypography) { docxInlineReadTypography(properties, tag, token, namespaces); return; }
   const value = docxContentPreviewWordAttributeValue(token, namespaces, 'val').trim();
+  if (visibility) {
+    if (Object.hasOwn(properties, visibility) || !['', 'true', 'false', 'on', 'off', '1', '0'].includes(value)) {
+      throw new Error('DOCX_INLINE_ON_OFF_INVALID');
+    }
+    properties[visibility] = !['false', 'off', '0'].includes(value);
+    return;
+  }
   if (tag === 'w:u') {
     // Other underline patterns cannot be represented by the editor mark.
     if (!['', 'single', 'none'].includes(value)) throw new Error('DOCX_INLINE_UNDERLINE_UNSUPPORTED');
@@ -8995,7 +9010,7 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
 }
 
 function docxInlineStyleCatalog(bytes) {
-  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', themeFonts: docxFontThemeCatalog(bytes) };
+  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', themeFonts: docxFontThemeCatalog(bytes) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
   if (!metadata.entries.some((entry) => entry.entryId === 'word/styles.xml')) return catalog;
@@ -9042,6 +9057,7 @@ function docxInlineStyleCatalog(bytes) {
       catalog.styles.set(id, current);
       const defaultValue = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'default');
       if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
+      if (type === 'character' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultCharacter = id;
     } else if (current && tag === 'w:basedOn' && parent === 'w:style') {
       current.basedOn = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'val');
     } else if (parent === 'w:numPr' && stack.at(-2)?.tag === 'w:pPr') {
@@ -9096,18 +9112,36 @@ function docxInlineApplyStyle(properties, id, type, catalog) {
   }
   for (const style of chain.reverse()) {
     for (const [mark, enabled] of Object.entries(style.properties)) {
-      if (['underline', 'color', 'highlight', 'shading'].includes(mark) || mark.startsWith('font_')) properties[mark] = enabled;
+      if (['underline', 'color', 'highlight', 'shading', 'webHidden'].includes(mark) || mark.startsWith('font_')) properties[mark] = enabled;
       else if (enabled) properties[mark] = !properties[mark];
     }
   }
 }
 
-function docxInlineAppendText(metadata, run, text, catalog, budget) {
-  if (!metadata || !text) return;
+function docxInlineEffectiveRunProperties(metadata, run, catalog) {
   const properties = { ...catalog.defaults };
   docxInlineApplyStyle(properties, metadata.paragraphStyleId || catalog.defaultParagraph, 'paragraph', catalog);
+  if (!run?.styleId && catalog.defaultCharacter) {
+    const defaults = { ...properties };
+    docxInlineApplyStyle(defaults, catalog.defaultCharacter, 'character', catalog);
+    // This repair extends only visibility handling, not other font/mark policy.
+    for (const key of ['vanish', 'webHidden']) {
+      if (Object.hasOwn(defaults, key)) properties[key] = defaults[key];
+    }
+  }
   docxInlineApplyStyle(properties, run?.styleId || '', 'character', catalog);
   Object.assign(properties, run?.properties || {});
+  // Neither hidden-display property has an editable representation yet.
+  // Reject before publishing a writable projection, including image-only runs.
+  const reason = properties.vanish ? 'DOCX_HIDDEN_TEXT_UNSUPPORTED'
+    : properties.webHidden ? 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED' : null;
+  if (reason) throw Object.assign(new Error(reason), { paragraphIndex: metadata.sourceParagraphIndex });
+  return properties;
+}
+
+function docxInlineAppendText(metadata, run, text, catalog, budget) {
+  if (!metadata || !text) return;
+  const properties = docxInlineEffectiveRunProperties(metadata, run, catalog);
   const marks = Object.values(DOCX_INLINE_MARKS).filter((mark) => properties[mark] === true);
   const color = properties.color;
   // Highlight supersedes shading, even when inherited from a style. Clearing
@@ -9618,6 +9652,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     }
     if (unsupportedDepth > 0) continue;
 
+    if (!closing && tagName === 'w:ruby') {
+      return { failure: docxContentPreviewDiagnostic('DOCX_CONTENT_PREVIEW_UNSUPPORTED_FEATURE', {
+        sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART, sourceCode: 'DOCX_RUBY_UNSUPPORTED',
+        tagName: 'w:ruby', paragraphIndex: activeParagraphIndex,
+        message: 'Ruby base text and pronunciation cannot be represented as ordinary manuscript text.',
+      }) };
+    }
+
     // Only properties owned by this run apply; paragraph-mark properties,
     // revisions and foreign-namespace lookalikes never become inline marks.
     const parentTag = closing ? elementStack.at(-1)?.semanticTagName
@@ -9632,6 +9674,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
     tableReader.tag(tableTag, tableParentTag, closing, selfClosing,
       name => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, name));
     if (insideParagraph && tagName === 'w:r') {
+      if (closing && activeInlineRun) docxInlineEffectiveRunProperties(activeParagraphMetadata, activeInlineRun, inlineStyles);
       activeInlineRun = closing || selfClosing ? null : { properties: {}, styleId: '' };
     } else if (activeInlineRun && !closing && parentTag === 'w:rPr'
       && elementStack.at(selfClosing ? -2 : -3)?.semanticTagName === 'w:r') {
@@ -9720,6 +9763,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
         activeParagraphIndex = paragraphs.length;
         activeListNumbering = null;
         activeParagraphMetadata = {
+          sourceParagraphIndex: activeParagraphIndex,
           inlineRuns: [],
           bookmarkStartIds: new Set(),
           zeroLengthBookmarkCount: 0,
