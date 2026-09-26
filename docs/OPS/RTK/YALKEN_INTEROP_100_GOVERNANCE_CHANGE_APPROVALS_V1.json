@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "fa7222f4948ba88ee968fe026e3d37f60f0327281b6824e7b376fe5734d34f15",
+      "sha256": "90633a3ffb9e66368cfeb1a18e091eec43d8f3b565d5691ebadd14b4d4fed6cc",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
-      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approvedAtUtc": "2026-09-26T17:35:51.379331Z",
       "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1837,27 +1837,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d192a8a9539f5140e609dd3437f109c753f30c53e6741bb43eec2640074adc74",
+      "sha256": "8b91917b6ee549274a13726bc79a118295bcda62d8f467acfd9a0e75939ad53f",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
-      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approvedAtUtc": "2026-09-26T17:35:51.379331Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "c8f6f0912594f675911731e28419129dbd7eebb3ef8e292bbaa5f8a5511ffc0b",
+      "sha256": "21b531c7bc4c29fece199a0a52b164ec5102439072f2c284bd80bbc6b6c3f348",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
-      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approvedAtUtc": "2026-09-26T17:35:51.379331Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "50be3eff07e84906fc7ab434bc3377215e7883f6621be5c8ab790282117ddc09",
+      "sha256": "9de954f34b722952572d307a40a0de888d07880437eb3d98bbc7492ca30c9597",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
-      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approvedAtUtc": "2026-09-26T17:35:51.379331Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
@@ -2271,6 +2271,15 @@
       "filePath": "test/contracts/rtk-word-structural-transaction.contract.test.js",
       "sha256": "f1e30bd3eb3b39982223fac03ee50db67f218e460322b5171973e528e2b39dea",
       "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approvedBy": "owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs",
+      "sha256": "1b807bebcb41ca06317204f8d66f513b71f5a420ced061cf75491116f9ae103e",
+      "approvedAtUtc": "2026-09-26T17:35:51.379331Z",
       "approvedBy": "owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
       "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
@@ -7425,6 +7434,42 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "fa7222f4948ba88ee968fe026e3d37f60f0327281b6824e7b376fe5734d34f15",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
+      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "d192a8a9539f5140e609dd3437f109c753f30c53e6741bb43eec2640074adc74",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
+      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "c8f6f0912594f675911731e28419129dbd7eebb3ef8e292bbaa5f8a5511ffc0b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
+      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "50be3eff07e84906fc7ab434bc3377215e7883f6621be5c8ab790282117ddc09",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926",
+      "approvedAtUtc": "2026-09-26T17:27:29.374227Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded structural publication and rollback through the existing main scene-manifest transaction, preserving path and revision guards. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     }
   ]
 }

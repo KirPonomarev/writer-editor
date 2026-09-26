@@ -227,7 +227,8 @@
     "test/contracts/rtk-word-clean-link-label.contract.test.js",
     "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
     "docs/tasks/2026-09-26--word-structural-transaction.md",
-    "test/contracts/rtk-word-structural-transaction.contract.test.js"
+    "test/contracts/rtk-word-structural-transaction.contract.test.js",
+    "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs"
   ],
   "protectedFiles": [
     {
@@ -1081,6 +1082,10 @@
       {
         "path": "test/contracts/rtk-word-structural-transaction.contract.test.js",
         "sha256": "f1e30bd3eb3b39982223fac03ee50db67f218e460322b5171973e528e2b39dea"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportStructuralReturnRuntime.mjs",
+        "sha256": "1b807bebcb41ca06317204f8d66f513b71f5a420ced061cf75491116f9ae103e"
       }
     ],
     "followupRepair": {
