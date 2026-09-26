@@ -37,3 +37,7 @@ writer requires an options permit computed after private input revalidation.
 
 This closes one compound operation, not all P1a or all Word qualification.
 No official accepted IDs are created by a commit or a synthetic test result.
+
+The existing read-only diagnostic projection displays the original and new href
+alongside the label preview before Apply. It grants no writer authority and adds
+no renderer layout, component, state model or visual language.

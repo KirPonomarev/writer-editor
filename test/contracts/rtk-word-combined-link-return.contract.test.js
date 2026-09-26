@@ -65,3 +65,17 @@ for(const valid of [true,false])test('queued main mints compound permit only aft
  await sandbox.runReviewExactTextBatchSafeWriteFromMainState(async(i,o)=>{calls++;options=o;},{...input},{trustedLinkReplacementDigest:'forged'});
  assert.equal(calls,valid?1:0);if(valid)assert.equal(options.trustedLinkReplacementDigest,hash(JSON.stringify(item)));
 });
+
+test('existing read-only review item exposes both targets before explicit Apply',async()=>{
+ const item={changeId:'docx-clean-link-label-test',targetScope:{type:'scene',id:sceneId},richReplacementLink:{expectedHref:oldHref,replacementHref:newHref}};
+ const sandbox={cloneJsonSafe:x=>JSON.parse(JSON.stringify(x))};vm.createContext(sandbox);vm.runInContext(extracted('buildCleanLinkLabelPreviewPacket'),sandbox);
+ const packet=sandbox.buildCleanLinkLabelPreviewPacket(item);assert.equal(packet.diagnosticItems.length,1);
+ const bridge=await import('../../src/io/revisionBridge/index.mjs');const diagnostic=bridge.normalizeDiagnosticItem(packet.diagnosticItems[0]);
+ assert.equal(diagnostic.message,`Вместе с подписью изменится адрес ссылки: ${oldHref} → ${newHref}`);
+ const renderer=fs.readFileSync(path.join(__dirname,'../../src/renderer/editor.js'),'utf8');
+ const a=renderer.indexOf('function reviewSurfaceBuildReviewItems('),b=renderer.indexOf('function reviewSurfaceBuildManualOnlyReasons(',a);assert(a>=0&&b>a);
+ const ui={reviewSurfaceIsPlainObject:x=>!!x&&typeof x==='object'&&!Array.isArray(x),reviewSurfaceText:x=>typeof x==='string'?x:'',reviewSurfaceArray:x=>Array.isArray(x)?x:[]};vm.createContext(ui);vm.runInContext(renderer.slice(a,b),ui);
+ const items=ui.reviewSurfaceBuildReviewItems({revisionSession:{reviewGraph:{diagnosticItems:[diagnostic]}}});
+ assert.equal(items.length,1);assert.equal(items[0].body,diagnostic.message);assert.equal(items[0].tone,'readonly');
+ delete item.richReplacementLink;assert.equal(sandbox.buildCleanLinkLabelPreviewPacket(item).diagnosticItems.length,0);
+});

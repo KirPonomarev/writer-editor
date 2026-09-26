@@ -9576,8 +9576,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     // Main-owned derivative, never a synthetic Word revision or worker mutation.
     candidate = { ...candidate, ok:true, status:'ready', reason:'RTK_CLEAN_LINK_LABEL_PREVIEW_READY',
       canAutoApply:false, canImportMutate:false, canWriteStorage:false, canOpenReviewSession:true,
-      reviewPacket:{commentThreads:[],commentPlacements:[],textChanges:[cloneJsonSafe(cleanLabel.change)],
-        structuralChanges:[],diagnosticItems:[],decisionStates:[]},
+      reviewPacket:buildCleanLinkLabelPreviewPacket(cleanLabel.change),
       sourceViewState:{packetHash:returnIntake.returnedArtifactSha256, mode:'docx-clean-link-label-preview'},
     };
   }
@@ -22634,6 +22633,17 @@ async function runReviewExactTextSafeWriteFromMainState(applyExactTextMinSafeWri
     },
     'review exact text safe apply',
   );
+}
+
+function buildCleanLinkLabelPreviewPacket(change) {
+  const link = change.richReplacementLink;
+  const diagnosticItems = link ? [{
+    diagnosticId: `${change.changeId}-link-target`, severity:'info',
+    message: `Вместе с подписью изменится адрес ссылки: ${link.expectedHref} → ${link.replacementHref}`,
+    targetScope:cloneJsonSafe(change.targetScope), relatedItemId:change.changeId, createdAt:'',
+  }] : [];
+  return {commentThreads:[],commentPlacements:[],textChanges:[cloneJsonSafe(change)],
+    structuralChanges:[],diagnosticItems,decisionStates:[]};
 }
 
 function cleanLinkLabelStoreMatches(store) {
