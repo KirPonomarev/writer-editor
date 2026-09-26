@@ -233,7 +233,8 @@
     "docs/tasks/2026-09-26--word-link-label-context.md",
     "test/contracts/rtk-word-link-label-context.contract.test.js",
     "docs/tasks/2026-09-26--word-node-name-input.md",
-    "test/contracts/rtk-word-node-name-input.contract.test.js"
+    "test/contracts/rtk-word-node-name-input.contract.test.js",
+    "test/unit/project-tree-pathless-contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1099,6 +1100,10 @@
       {
         "path": "test/contracts/rtk-word-node-name-input.contract.test.js",
         "sha256": "1d228d0f9659c7311bcbb5d045528e514dc8171dcfb34e8bf65a9772fb3d977f"
+      },
+      {
+        "path": "test/unit/project-tree-pathless-contract.test.js",
+        "sha256": "0465f6b9d374e3b412a4ec8987e1b73e912e81a3fdd7c694b113af7547a8f10f"
       }
     ],
     "followupRepair": {
