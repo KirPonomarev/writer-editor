@@ -605,13 +605,13 @@ export const R24_INTEROP_WORD_VISIBILITY_RUBY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "342d849ba373bfab6ce9ccff7427dfdaab9840b3987d9b23f43e63b7917ba664"
+      "sha256": "29255ace387d77258f52fda245a6c1b9b7c23ffa1dfbf81171306c35fce68dd2"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "abebebb3e4e5b0848849b77413a83ca0c109edfade2765da5ef38e90b1b8c83d"
+      "sha256": "fc5cb216bd8761c5be5c6a3fb352897660d604a49a1eefd16b083121ca5e1c29"
     }
   ]
 });

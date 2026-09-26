@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "57a886f858796f6cc83eec4c54fa064eb4fa35784f399b5b976c5dff3b1008fd",
+      "sha256": "10050aaceebe1977f23af6aca26a0278b273e78883af090802c23c9d5f57a2dc",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:25:12.176417Z",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "fab65dc2046bd36fa96aa815287996d8180694c14b7426cfd8b890854db925f6",
+      "sha256": "21cc370299b9ac296d22a16b70a0c950d0c94d463239f5ff7d368ac2211b8327",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "16acfa6399a6ddcdcd6adc3a499ee5970f3fcde98ab372b7854d8dd54cce396b",
+      "sha256": "b5c7f78dddf5798eb1b8fe13b9e16d339fe6132af435da9414d227bbaf8bff92",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "abebebb3e4e5b0848849b77413a83ca0c109edfade2765da5ef38e90b1b8c83d",
+      "sha256": "fc5cb216bd8761c5be5c6a3fb352897660d604a49a1eefd16b083121ca5e1c29",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "ac60265ac87827544b91f6bbf0f7e121f1b176dec2eec78cc82e2a774bb71644",
+      "sha256": "84dccc83cd117f7525aaae5bbc435be509ffe18148182b7eb7a5a818676cd107",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "d1720734b76c11816d2cdb014c3325c7135eb960ebb265d9d2a8be960f66e867",
+      "sha256": "29f962bcafb6b347814abb32e64419bc941388d0907d24044de71bcdede0f2b9",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
-      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "342d849ba373bfab6ce9ccff7427dfdaab9840b3987d9b23f43e63b7917ba664",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
-      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "sha256": "29255ace387d77258f52fda245a6c1b9b7c23ffa1dfbf81171306c35fce68dd2",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:29:13.059177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -5763,6 +5763,69 @@
       "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "57a886f858796f6cc83eec4c54fa064eb4fa35784f399b5b976c5dff3b1008fd",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:25:12.176417Z",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "fab65dc2046bd36fa96aa815287996d8180694c14b7426cfd8b890854db925f6",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "16acfa6399a6ddcdcd6adc3a499ee5970f3fcde98ab372b7854d8dd54cce396b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "abebebb3e4e5b0848849b77413a83ca0c109edfade2765da5ef38e90b1b8c83d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "ac60265ac87827544b91f6bbf0f7e121f1b176dec2eec78cc82e2a774bb71644",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "d1720734b76c11816d2cdb014c3325c7135eb960ebb265d9d2a8be960f66e867",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926",
+      "approvedAtUtc": "2026-09-26T11:23:37.411710Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P0a: reject effective hidden/webHidden runs and Ruby before generic import admission and persistence. Exact implementation, regression and companion bindings only; no positive cell acceptance. Preserve prior evidence, denominator, independent native/raw oracles, profiles, C3 cycles and all mutation authority gates."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "342d849ba373bfab6ce9ccff7427dfdaab9840b3987d9b23f43e63b7917ba664",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926",
+      "approvedAtUtc": "2026-09-26T04:49:33.161437Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized independent Word audit repair: preserve native carriage-return and hyphen atoms through generic import/export, review coordinates and notes; report unsupported symbol and positioned-tab losses. Exact changed-byte admission only. All prior eras, 1120 IDs, native/raw evidence, profiles, five C3 cycles and authority gates remain required. Runtime changes require fresh physical evidence; no cell acceptance from this approval."
     }
   ]
 }
