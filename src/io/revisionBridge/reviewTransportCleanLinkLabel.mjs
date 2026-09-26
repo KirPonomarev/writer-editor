@@ -52,10 +52,28 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
     if (!sceneId || !Array.isArray(baselineParagraphs) || !baselineParagraphs.length
       || baselineParagraphs.length>256 || !Array.isArray(returnedParagraphs)
       || baselineParagraphs.length!==returnedParagraphs.length) return reject('paragraph-budget-or-cardinality');
-    for (const name of ['textRevisions','moveRevisions','commentThreads']) {
+    for (const name of ['textRevisions','moveRevisions','propertyRevisions','commentThreads','comments']) {
       if ((reviewIr[name] || []).length) return reject('mixed-or-unsupported-effects');
     }
-    if ((reviewIr.opaqueUnsupported || []).some(x=>x.writerAuthorityImpact!=='inventory-only')) return reject('unsupported-effects');
+    const instructionKey = p => p?.partName==='word/document.xml' && p.elementName==='instrText'
+      && p.namespaceUri==='http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+      && Number.isSafeInteger(p.openStart) && Number.isSafeInteger(p.closeEnd) && p.openStart>=0 && p.closeEnd>p.openStart
+      ? `${p.openStart}:${p.closeEnd}` : null;
+    const accounted = new Set();
+    for (const paragraph of returnedParagraphs) for (const p of paragraph.inertHyperlinkInstructions || []) {
+      const key=instructionKey(p);
+      if (!key || accounted.has(key) || links.normalizeDocxHttpHref(p.href)!==p.href
+        || !paragraph.formattedRuns?.some(r=>r.inlineState?.link===p.href)) return reject('field-proof');
+      accounted.add(key);
+    }
+    for (const item of reviewIr.opaqueUnsupported || []) {
+      if (item.writerAuthorityImpact==='inventory-only') continue;
+      const key=instructionKey(item.sourceXmlProvenance);
+      if (item.kind!=='unsupported-element' || item.elementName!=='instrText'
+        || item.typedDiagnostic!=='RTK_STRUCTURAL_OR_FORMAT_ELEMENT_MANUAL' || !key || !accounted.has(key)) return reject('unsupported-effects');
+      accounted.delete(key);
+    }
+    if (accounted.size) return reject('field-inventory-mismatch');
     if ((reviewIr.structureChanges || []).some(x=>x.writerAuthorityImpact!=='inventory-only')) return reject('structure');
     let effect=null, total=0;
     for (let i=0;i<baselineParagraphs.length;i++) {

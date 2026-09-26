@@ -70,3 +70,26 @@ for(const fault of ['none','forged','revoked','session-during-key','project','di
  const supplied=structuredClone(input);if(fault==='forged')supplied.reviewItems[0].replacementText='unbound';
  const result=await sandbox.revalidateCleanLinkLabelApplyInput(supplied);assert.equal(result.ok,fault==='none');
 });
+
+test('real parser accounts only balanced inert hyperlink instructions, never orphan or arbitrary fields',async()=>{
+ const [m]=await mods,b=await import('../../src/io/revisionBridge/index.mjs');
+ const {buildStoredZip}=require('../../src/export/docx/docxMinBuilder.js');
+ const crypto=require('node:crypto'),hash=x=>crypto.createHash('sha256').update(x).digest('hex');
+ const cryptoPort={sha256Text:hash,sha256Json:x=>hash(JSON.stringify(x)),byteLength:x=>Buffer.byteLength(x)};
+ const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+ for(const kind of ['valid','arbitrary','orphan','unbalanced','nested']) {
+  const instruction=kind==='arbitrary'?'DATE':`HYPERLINK "${href}"`;
+  const controls=kind==='orphan'?`<w:r><w:instrText>${instruction}</w:instrText></w:r>`:
+   '<w:r><w:fldChar w:fldCharType="begin"/></w:r>'+(kind==='nested'?'<w:r><w:fldChar w:fldCharType="begin"/></w:r>':'')+`<w:r><w:instrText>${instruction}</w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>`;
+  const xml=`<w:document xmlns:w="${W}"><w:body><w:p><w:r><w:t>before </w:t></w:r>${controls}<w:r><w:rPr><w:b/></w:rPr><w:t>new label</w:t></w:r>${kind==='unbalanced'||kind==='orphan'?'':'<w:r><w:fldChar w:fldCharType="end"/></w:r>'}<w:r><w:t> after</w:t></w:r></w:p></w:body></w:document>`;
+  const parts={'word/document.xml':xml,'[Content_Types].xml':'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="xml" ContentType="application/xml"/><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>','_rels/.rels':'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="doc" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'};
+  const analysis=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes:buildStoredZip(Object.entries(parts).map(([name,data])=>({name,data})))},{cryptoPort});
+  const f=fixture('old label','new label');f.returnedParagraphs=analysis.reviewIr.formattingParagraphs;f.reviewIr=analysis.reviewIr;
+  const r=m.analyzeCleanLinkLabelReturn(f);assert.equal(r.ok,kind==='valid',JSON.stringify({kind,r,reasons:analysis.reasons}));
+  if(kind==='valid') {
+   assert.equal(f.returnedParagraphs[0].inertHyperlinkInstructions.length,1);
+   f.returnedParagraphs[0].inertHyperlinkInstructions[0].openStart++;
+   assert.equal(m.analyzeCleanLinkLabelReturn(f).ok,false);
+  }
+ }
+});

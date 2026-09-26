@@ -674,13 +674,13 @@ export const R24_INTEROP_WORD_CLEAN_LINK_LABEL_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "eb2699666ceb57036150f74c385d5cb1e6d6e958281ea613306b8760c399f7bb"
+      "sha256": "d5abe78cd9b80fffd67e592fdfe96432a0d4c7529255ff2c852f3ff30ae3c30a"
     }
   ],
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "5f92225cdbc850071c6bda47926b32fd79c3496f7a555fca8b999cd7ad615561"
+      "sha256": "524bc30fb5c3660d17c8f51e34d713007f26edf97bd129a32e39a1288eb23172"
     }
   ]
 });
