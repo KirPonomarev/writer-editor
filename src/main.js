@@ -4460,6 +4460,11 @@ async function readDocxReviewPacketExportSource() {
   const projectId = docxReviewPreviewSessionDetailString(binding.projectId);
   const projectRoot = docxReviewPreviewSessionDetailString(binding.projectRoot) || path.dirname(binding.manifestPath);
   const sceneId = getProjectRelativeFilePath(currentFilePath, binding.manifestPath).replace(/\\/g, '/');
+  const commentBridge = await loadRevisionBridgeModule();
+  const commentState = await commentBridge.createRtkNonTextReturnFilePort().readCanonical({ projectId, projectRoot });
+  if (commentState.threads.some(thread => thread.sceneId === sceneId)) {
+    throw new Error('REVIEW_DOCX_EXPORT_COMMENTS_REQUIRE_FULL_MANUSCRIPT');
+  }
   const rawSha256 = `sha256:${computeHash(sceneRawContent)}`;
   const sceneRevision = rawSha256;
   const createdAtUtc = new Date().toISOString();
@@ -10742,6 +10747,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
   const contentPreview = isPlainObjectValue(sourceReport.contentPreview)
     ? {
         sourcePart: sourceReport.contentPreview.sourcePart,
+        ...(Array.isArray(sourceReport.contentPreview.genericComments)
+          ? { genericComments: cloneJsonSafe(sourceReport.contentPreview.genericComments) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.mediaParts) ? { mediaParts: [...sourceReport.contentPreview.mediaParts] } : {}),
         paragraphCount: sourceReport.contentPreview.paragraphCount,
         textLength: sourceReport.contentPreview.textLength,

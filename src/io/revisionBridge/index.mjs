@@ -9,9 +9,11 @@ import { normalizeFontFamily, normalizeFontSize } from '../inlineTypography.mjs'
 import { normalizeParagraphAlignment, fromWordParagraphAlignment } from '../paragraphAlignment.mjs';
 import { readDocxBlockStyleId } from '../../export/docx/docxBlockStyles.js';
 import { hashCanonicalValue, sha256Hex } from '../../core/browser-safe-hash.mjs';
+import { genericCommentCandidates } from './genericWordComments.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
   extractDocumentMediaReferencesV1,
+  validateGenericCommentMetadataV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
 } from './reviewTransportPackageParserV2.mjs';
@@ -7445,6 +7447,9 @@ const DOCX_CONTENT_PREVIEW_WORDPROCESSINGML_GUARD_LOCAL_NAMES = new Set([
 // Only known parser reasons may cross the public boundary. An unexpected
 // exception is an internal failure; its message may contain private host data.
 const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
+  ...['ANALYSIS', 'BUDGET', 'TRACKED_UNSUPPORTED', 'INCOMPLETE', 'PLACEMENT', 'ANCHOR',
+    'REPLIES', 'NESTED_REPLY_UNSUPPORTED', 'DUPLICATE', 'LITERAL', 'MESSAGE', 'TOPOLOGY',
+    'METADATA_UNSUPPORTED'].map(suffix => [`DOCX_GENERIC_COMMENT_${suffix}`, 'CONTENT_INVALID']),
   ...[
     'DOCUMENT_MEDIA_ANIMATED_PNG_UNSUPPORTED',
     'DOCUMENT_MEDIA_FLOATING_IMAGE_UNSUPPORTED',
@@ -10197,6 +10202,21 @@ export function buildDocxContentPreviewFromZipBytes(input) {
       && inlineStyles.hyperlinks.usedIds.size === inlineStyles.hyperlinks.size;
     if (!parsed.failure) {
       const auxiliary = name => docxContentPreviewExtractAuxiliaryPartBytes(bytes, name, DOCX_CONTENT_PREVIEW_BOUNDS.maxMainDocumentBytes);
+      if (auxiliary('word/comments.xml') || parsed.diagnostics.some(item => /^w:comment/u.test(item.tagName || ''))) {
+        const commentPorts = { cryptoPort: {
+          sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
+          byteLength: value => new TextEncoder().encode(value).length,
+        } };
+        const metadataParts = Object.fromEntries(['word/comments.xml', 'word/commentsExtended.xml', 'word/commentsIds.xml', 'word/commentsExtensible.xml']
+          .map(name => [name, Buffer.from(auxiliary(name) || []).toString('utf8')]));
+        const metadataValidated = validateGenericCommentMetadataV1(metadataParts, commentPorts);
+        const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
+        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated });
+        if (parsed.contentPreview.genericComments.length) {
+          parsed.diagnostics = parsed.diagnostics.filter(item => !(item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
+            && ['w:commentRangeStart', 'w:commentRangeEnd', 'w:commentReference'].includes(item.tagName)));
+        }
+      }
       const refs = extractDocumentMediaReferencesV1(xmlText, {
         // Match the existing bounded full-manuscript count profile; generic
         // text-only intake retains its own unchanged 64k paragraph ceiling.
@@ -11175,6 +11195,20 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
     sectionBoundaryRecovery,
     richContent !== null,
   );
+  if (contentPreview.genericComments?.length) {
+    // These are new-scene candidates only. A carrier, Word comment ID, author,
+    // or return-looking package cannot target an existing canonical thread.
+    if (googleDocsTabs || sectionBoundaryRecovery.recoveredAfterParagraphIndexes.length) {
+      return docxImportPreviewBlocked(DOCX_IMPORT_PREVIEW_CODES.CONTENT_INVALID, { sourceCode: 'DOCX_GENERIC_COMMENT_TOPOLOGY' });
+    }
+    candidateCreatePlan.entries[0].comments = cloneJsonSafe(contentPreview.genericComments);
+    lossReport.items = lossReport.items.filter(item => item.code !== 'DOCX_IMPORT_PREVIEW_COMMENTS_NOT_IMPORTED');
+    lossReport.items.push(docxImportPreviewLossItem('DOCX_GENERIC_COMMENTS_PRESERVED', {
+      category: 'comments', severity: 'info', sourcePart: 'word/comments.xml',
+      message: 'Supported comment bodies, replies, status, literal provenance and exact anchors will receive new local identities with the imported scene.',
+    }));
+    lossReport.itemCount = lossReport.items.length;
+  }
   if (richContent !== null) {
     const hasHeadings = contentPreview.paragraphs.some((paragraph) => paragraph.headingLevel !== undefined);
     const hasLists = contentPreview.paragraphs.some((paragraph) => paragraph.list !== undefined);

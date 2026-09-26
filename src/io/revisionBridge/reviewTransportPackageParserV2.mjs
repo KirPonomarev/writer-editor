@@ -4456,9 +4456,99 @@ export function verifyAuthorityCarrierSignatureWithSecret(selectedCarrier, input
 }
 
 
-// A read-only projection of native inline picture references. It grants no
-// filesystem or Apply authority. Binary PNG validation occurs against the
-// corresponding bounded ZIP entry, not against a file named by the payload.
+// Closed ordinary-comment intake profile. Unknown body effects and metadata
+// must not disappear when the canonical message model stores literal text.
+export function validateGenericCommentMetadataV1(parts, options = {}) {
+  const cryptoPort = resolveCryptoPort(options.cryptoPort), budgets = normalizeBudgets(options.budgets);
+  const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
+  if (!cryptoPort.ok) fail();
+  const state = createParserBudgetState(budgets, cryptoPort);
+  const childrenFor = scan => {
+    const map = new Map(), stack = [];
+    for (const token of [...scan.tokens].sort((a, b) => a.openStart - b.openStart)) {
+      while (stack.length && stack.at(-1).closeEnd <= token.openStart) stack.pop();
+      if (stack.length) map.get(stack.at(-1)).push(token);
+      map.set(token, []);
+      if (!token.selfClosing) stack.push(token);
+    }
+    return map;
+  };
+  const rejectUnrepresentedText = (xml, childrenMap, token) => {
+    const children = childrenMap.get(token) || [];
+    let cursor = token.openEnd;
+    for (const child of children) {
+      if (xml.slice(cursor, child.openStart).trim()) fail();
+      cursor = child.closeEnd;
+    }
+    if (!token.selfClosing && xml.slice(cursor, token.closeStart).trim()) fail();
+  };
+  if (parts['word/comments.xml']) {
+    const xml = rawString(parts['word/comments.xml']);
+    const scan = parseXmlPart('word/comments.xml', xml, budgets, cryptoPort, state);
+    const childrenMap = childrenFor(scan);
+    const paths = new Set(['comments', 'comments/comment', 'comments/comment/p',
+      'comments/comment/p/r', 'comments/comment/p/r/t', 'comments/comment/p/r/tab',
+      'comments/comment/p/r/br', 'comments/comment/p/r/cr', 'comments/comment/p/r/annotationRef',
+      'comments/comment/p/r/noBreakHyphen', 'comments/comment/p/r/softHyphen',
+      'comments/comment/p/pPr', 'comments/comment/p/pPr/pStyle',
+      'comments/comment/p/r/rPr', 'comments/comment/p/r/rPr/rStyle']);
+    if (scan.diagnostics.length || scan.tokens.filter(token => token.depth === 0).length !== 1) fail();
+    for (const token of scan.tokens) {
+      if (token.namespaceUri !== W_NS || !paths.has(token.path.join('/'))) fail();
+      for (const attribute of token.attributes) {
+        if (attribute.qName === 'xmlns' || attribute.prefix === 'xmlns') continue;
+        const name = attribute.localName, ns = attribute.namespaceUri;
+        if (token.localName === 'comments' && ns === 'http://schemas.openxmlformats.org/markup-compatibility/2006' && name === 'Ignorable') continue;
+        if (token.localName === 'comment' && ((ns === W_NS && ['id', 'author', 'initials', 'date'].includes(name))
+          || (ns === W16DU_NS && name === 'dateUtc'))) continue;
+        if (token.localName === 'p' && ((ns === W14_NS && ['paraId', 'textId'].includes(name))
+          || (ns === W_NS && ['rsidR', 'rsidRDefault', 'rsidP'].includes(name)))) continue;
+        if (token.localName === 'r' && ns === W_NS && ['rsidR', 'rsidRPr'].includes(name)) continue;
+        if (token.localName === 't' && attribute.prefix === 'xml'
+          && ['', 'http://www.w3.org/XML/1998/namespace'].includes(ns) && name === 'space'
+          && ['preserve', 'default'].includes(attribute.value)) continue;
+        if (token.localName === 'br' && ns === W_NS && name === 'type' && attribute.value === 'textWrapping') continue;
+        if (['pStyle', 'rStyle'].includes(token.localName) && ns === W_NS && name === 'val'
+          && attribute.value === (token.localName === 'pStyle' ? 'CommentText' : 'CommentReference')) continue;
+        // Word localizes the annotation-reference style ID. It is safe only
+        // on the generated marker run, which contains no author message text.
+        if (token.localName === 'rStyle' && ns === W_NS && name === 'val') {
+          const run = scan.tokens.find(parent => parent.localName === 'r' && parent.depth === 3
+            && parent.openStart < token.openStart && parent.closeEnd > token.closeEnd);
+          const children = childrenMap.get(run) || [];
+          if (children.some(child => child.localName === 'annotationRef')
+            && children.every(child => ['annotationRef', 'rPr'].includes(child.localName))) continue;
+        }
+        fail();
+      }
+      if (token.localName !== 't') rejectUnrepresentedText(xml, childrenMap, token);
+    }
+  }
+  for (const [partName, ns, rootName, childName, attributes] of [
+    ['word/commentsExtended.xml', W15_NS, 'commentsEx', 'commentEx', ['paraId', 'paraIdParent', 'done']],
+    ['word/commentsIds.xml', W16CID_NS, 'commentsIds', 'commentId', ['paraId', 'durableId', 'dateUtc']],
+    ['word/commentsExtensible.xml', W16CEX_NS, 'commentsExtensible', 'commentExtensible', ['durableId', 'paraId', 'dateUtc', 'reopened']],
+  ]) {
+    if (!parts[partName]) continue;
+    const xml = rawString(parts[partName]), scan = parseXmlPart(partName, xml, budgets, cryptoPort, state);
+    const childrenMap = childrenFor(scan);
+    const roots = scan.tokens.filter(token => token.depth === 0);
+    if (scan.diagnostics.length || roots.length !== 1 || roots[0].namespaceUri !== ns || roots[0].localName !== rootName) fail();
+    for (const token of scan.tokens) {
+      if (token.depth > 1 || token.namespaceUri !== ns || token.localName !== (token.depth ? childName : rootName)) fail();
+      for (const attribute of token.attributes) {
+        if (attribute.qName === 'xmlns' || attribute.prefix === 'xmlns') continue;
+        if (token.depth === 0 && attribute.namespaceUri === 'http://schemas.openxmlformats.org/markup-compatibility/2006'
+          && attribute.localName === 'Ignorable') continue;
+        if (token.depth !== 1 || attribute.namespaceUri !== ns || !attributes.includes(attribute.localName)) fail();
+        if (['done', 'reopened'].includes(attribute.localName) && !['0', '1', 'true', 'false'].includes(attribute.value)) fail();
+      }
+      rejectUnrepresentedText(xml, childrenMap, token);
+    }
+  }
+  return true;
+}
+
 export function extractDocumentMediaReferencesV1(documentXml, options = {}) {
   // This is a media projection, not an XML validity gate. Both callers first
   // validate the document. Absence of a drawing token avoids reparsing large

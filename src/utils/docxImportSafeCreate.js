@@ -63,6 +63,7 @@ const DOCX_IMPORT_SAFE_CREATE_ALLOWED_PLAN_KEYS = new Set([
   'carrierIgnored',
 ]);
 const DOCX_IMPORT_SAFE_CREATE_ALLOWED_ENTRY_KEYS = new Set([
+  'comments',
   'sceneId',
   'kind',
   'title',
@@ -481,6 +482,10 @@ function validateDocxImportPreviewPlan(plan) {
     );
   }
   const content = normalizeText(entry.content);
+  if (entry.comments !== undefined && (!Array.isArray(entry.comments) || !entry.comments.length
+    || entry.comments.length > 128 || Buffer.byteLength(JSON.stringify(entry.comments)) > 65536)) {
+    return buildError('DOCX_SAFE_CREATE_COMMENTS_INVALID', 'docx_import_comments_invalid');
+  }
   if (entry.contentTextHash !== docxStableHash(content)) {
     return buildError(
       'DOCX_SAFE_CREATE_PREVIEW_TAMPERED',
@@ -570,6 +575,7 @@ function validateDocxImportPreviewPlan(plan) {
           ? entry.title.trim()
           : 'Imported DOCX preview',
         content,
+        ...(entry.comments !== undefined ? { comments: cloneJsonSafe(entry.comments) } : {}),
         contentTextHash: entry.contentTextHash,
         candidateContentSha256: typeof entry.candidateContentSha256 === 'string'
           && /^[a-f0-9]{64}$/u.test(entry.candidateContentSha256)
@@ -1213,11 +1219,21 @@ async function validateExistingDocxImportReceipt(options) {
       verifyManifestContinuation: args => transactionAuthority.verifyManifestContinuation({ ...args, projectId }) });
     const receiptPath = buildReceiptStorePath(projectRoot, importOperationId);
     const stored = await fs.readFile(receiptPath);
-    if (commit.schemaVersion !== 'yalken.project-transaction.commit.v2'
+    if (!['yalken.project-transaction.commit.v2', 'yalken.project-transaction.commit.v3'].includes(commit.schemaVersion)
       || commit.revision !== receipt.manifestAuthority.fencingGeneration
       || commit.manifestDigest !== receipt.manifestAuthority.nextHash
       || !commit.resources.some(resource => resource.path === receiptPath && resource.digest === hashExactBytes(stored))) {
       return fail('transactionEvidence', 'committed_receipt_binding_mismatch');
+    }
+    if (validated.value.entry.comments?.length) {
+      const expected = await prepareGenericCommentState({ entry: validated.value.entry, projectRoot,
+        targetPath, projectId, importOperationId, empty: true });
+      const actual = JSON.parse((await readGenericCommentState(projectRoot)).text);
+      const expectedThreads = JSON.parse(expected.afterText).threads;
+      for (const thread of expectedThreads) {
+        const matches = actual.threads.filter(item => item.threadId === thread.threadId);
+        if (matches.length !== 1 || !jsonStableEqual(matches[0], thread)) return fail('comments', 'comment_readback_mismatch');
+      }
     }
   } catch { return fail('transactionEvidence', 'committed_transaction_readback_failed'); }
 
@@ -1263,6 +1279,42 @@ async function prepareDocxMediaEntries(content, projectRoot) {
 async function verifyDocxMediaAssetFiles(content, projectRoot) {
   const missing = await prepareDocxMediaEntries(content, projectRoot);
   if (missing.length) throw Error('DOCX_MEDIA_FILES_MISSING');
+}
+
+async function readGenericCommentState(projectRoot) {
+  const relative = ['.yalken', 'word-review', 'non-text-return-state.v1.json'];
+  let target = projectRoot;
+  for (const part of relative) {
+    target = path.join(target, part);
+    try {
+      const stat = await fs.lstat(target);
+      if (stat.isSymbolicLink() || (part.endsWith('.json')
+        ? !stat.isFile() || stat.nlink !== 1 || stat.size > 65536 : !stat.isDirectory())) throw Error('DOCX_GENERIC_COMMENT_STATE_BOUNDARY');
+    } catch (error) {
+      if (error.code === 'ENOENT') return { path: path.join(projectRoot, ...relative), text: null };
+      throw error;
+    }
+  }
+  return { path: target, text: await fs.readFile(target, 'utf8') };
+}
+
+async function prepareGenericCommentState({ entry, projectRoot, targetPath, projectId, importOperationId, empty = false }) {
+  if (!entry.comments?.length) return null;
+  const { parseObservablePayload, deriveVisibleTextFromDocument } = await import('../renderer/documentContentEnvelope.mjs');
+  const { materializeGenericComments } = await import('../io/revisionBridge/genericWordComments.mjs');
+  const parsed = parseObservablePayload(entry.content);
+  if (parsed.issue) throw Error('DOCX_GENERIC_COMMENT_CONTENT');
+  const paragraphs = [];
+  const visit = node => {
+    if (['paragraph', 'heading', 'codeBlock'].includes(node.type)) {
+      paragraphs.push({ text: deriveVisibleTextFromDocument({ type: 'doc', content: [node] }) });
+    } else for (const child of node.content || []) visit(child);
+  };
+  if (parsed.doc) visit(parsed.doc); else paragraphs.push(...parsed.text.split('\n').map(text => ({ text })));
+  const saved = await readGenericCommentState(projectRoot);
+  return { path: saved.path, ...materializeGenericComments({ candidates: entry.comments, paragraphs, projectId,
+    sceneId: path.relative(projectRoot, targetPath).split(path.sep).join('/'), importOperationId,
+    beforeText: empty ? null : saved.text }) };
 }
 
 async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
@@ -1369,6 +1421,10 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
     );
   }
 
+  let commentState;
+  try { commentState = await prepareGenericCommentState({ entry: validated.value.entry, projectRoot, targetPath, projectId, importOperationId }); }
+  catch (error) { return buildError('DOCX_SAFE_CREATE_COMMENTS_INVALID', 'docx_import_comments_invalid', { code: error.message }); }
+
   const normalizedEntry = {
     sceneId: validated.value.entry.sceneId,
     path: targetPath,
@@ -1467,7 +1523,10 @@ async function applyDocxImportSafeCreateInLease(input = {}, options = {}) {
   await commitProjectTransaction({ scenePath: targetPath, sceneContent: normalizedEntry.content,
     expectedSceneContent: null, manifestPath: options.manifestPath, manifestContent,
     expectedManifestContent: options.manifestRaw, revision: options.lease.fencingGeneration,
-    createResources: [...mediaEntries, { path: receiptPath, content: `${JSON.stringify(receipt, null, 2)}\n` }],
+    createResources: [...mediaEntries,
+      ...(commentState?.beforeText === null ? [{ path: commentState.path, content: commentState.afterText }] : []),
+      { path: receiptPath, content: `${JSON.stringify(receipt, null, 2)}\n` }],
+    ...(commentState?.beforeText ? { commentState: { beforeText: commentState.beforeText, afterText: commentState.afterText } } : {}),
     publishManifest: options.publishManifest, verifyManifestContinuation: options.verifyManifestContinuation,
     fsAdapter: options.fsAdapter });
   // Precomputed receipt fields confer no success until independent durable
