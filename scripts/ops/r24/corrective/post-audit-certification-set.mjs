@@ -657,7 +657,7 @@ export const R24_INTEROP_WORD_ROUND_KEY_DURABILITY_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d5eb790bffc96e096a882b46bfadcb86b460da340606036775bb4c4dd5664f27"
+      "sha256": "0d201903971e6cf2ccb24c61a9165518dfd58085ac588a222d01533b331bd794"
     }
   ]
 });

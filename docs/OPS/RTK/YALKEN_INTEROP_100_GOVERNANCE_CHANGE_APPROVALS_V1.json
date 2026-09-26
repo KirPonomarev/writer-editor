@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "4df02784fd71200e07193039d193115cd4c84f6d1516d321686887e3b770a4fa",
+      "sha256": "588ce719fbf722135ec47b802593e4de5349aecefc565bfea64b68a987bceb36",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approvedAtUtc": "2026-09-26T16:06:00.808321Z",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1837,27 +1837,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d5eb790bffc96e096a882b46bfadcb86b460da340606036775bb4c4dd5664f27",
+      "sha256": "0d201903971e6cf2ccb24c61a9165518dfd58085ac588a222d01533b331bd794",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approvedAtUtc": "2026-09-26T16:06:00.808321Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "f93c093e10e8f89ad37524a00832598c51f14b64866c6b6126dd828d99a2805b",
+      "sha256": "5eff521a8b3e0612eb9594e5c3981ab8f2cd7f1526ad571924f706b0659307c9",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approvedAtUtc": "2026-09-26T16:06:00.808321Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "061f5db240d4f778917309def69825ef831f2f97be90921de262807ac390300b",
+      "sha256": "338867ab49fe2bbf7976ee3d44493e057a417d8f205a349f1055d0fe19341bc5",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approvedAtUtc": "2026-09-26T16:06:00.808321Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
@@ -2197,8 +2197,8 @@
     },
     {
       "filePath": "docs/tasks/2026-09-26--word-round-key-durability.md",
-      "sha256": "5a7d90b86b3555b3d6762edaf78f7939ed933a13830fbf991461a26237dfde0d",
-      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "sha256": "cb253fad05fb78e0a24fa0771a5098bbea6d6ab511545859e81bd06f5f0ade1b",
+      "approvedAtUtc": "2026-09-26T16:06:00.808321Z",
       "approvedBy": "owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
@@ -6784,6 +6784,51 @@
       "approvedAtUtc": "2026-09-26T14:23:37.527202Z",
       "approvedBy": "owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "4df02784fd71200e07193039d193115cd4c84f6d1516d321686887e3b770a4fa",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "d5eb790bffc96e096a882b46bfadcb86b460da340606036775bb4c4dd5664f27",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f93c093e10e8f89ad37524a00832598c51f14b64866c6b6126dd828d99a2805b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "061f5db240d4f778917309def69825ef831f2f97be90921de262807ac390300b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-round-key-durability.md",
+      "sha256": "5a7d90b86b3555b3d6762edaf78f7939ed933a13830fbf991461a26237dfde0d",
+      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approvedBy": "owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }

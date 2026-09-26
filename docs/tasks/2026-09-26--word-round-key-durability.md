@@ -67,3 +67,15 @@ Test encryption is injected in contract tests only. Real OS storage must be
 proved in actual SOURCE and PACKAGED app processes; a Node subprocess test does
 not certify Electron safeStorage or native Word. No independent acceptance is
 claimed before physical proof, delivery and exact-head verification.
+
+## Native launch companion
+
+Registered Lab commit 326aefc66e1e0dcaabeac944ca4a684780cd3a17 preserves
+the parent OS HOME in source, packaged and one-shot launchers. Product-owned
+YALKEN_AUTONOMOUS_APP_PATH_ROOT still isolates documents, appData and userData.
+The previous synthetic HOME made macOS fail to locate the ordinary keychain.
+No keychain reset, credential access or plaintext fallback is introduced.
+WORD_OS_IDENTITY_PRESERVED_V1 adds an exact 28-file binding set and one test
+path; all prior sets remain immutable. Lab regression: 94 tests passed with
+zero skipped; historical September 14 inputs remain unchanged test fixtures.
+This companion authorizes no cell acceptance by itself.
