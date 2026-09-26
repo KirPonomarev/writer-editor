@@ -1153,9 +1153,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "bbb8aea5f0fccf96a9d76b3d406b19110bc3c46a7381cb04cd2b4329083a65ae",
+      "sha256": "9a0b45a375b879d7c05ea9c1ed1634b44e4272f1e511a2c81d9960bbe23da77c",
       "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approvedAtUtc": "2026-09-26T00:48:22.014432Z",
       "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
@@ -1828,9 +1828,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "861b20baf5b535efd0634207e7745bbfdcc5e555909fa02363b7d12cfaebcfe6",
+      "sha256": "bab1e96b743fe1738adc58e231a7ae16d43b03137b2c54ab83893498e2359902",
       "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approvedAtUtc": "2026-09-26T00:48:22.014432Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
@@ -5169,6 +5169,24 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "861b20baf5b535efd0634207e7745bbfdcc5e555909fa02363b7d12cfaebcfe6",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "bbb8aea5f0fccf96a9d76b3d406b19110bc3c46a7381cb04cd2b4329083a65ae",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }
