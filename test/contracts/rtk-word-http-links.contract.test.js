@@ -172,3 +172,18 @@ test('P1a scene return matches rich paragraph projection without treating envelo
  assert.deepEqual(Array.from(await ctx.readDocxReviewReturnIntakeSceneParagraphTexts('plain\n\nlast','scene')),['plain','','last']);
  await assert.rejects(ctx.readDocxReviewReturnIntakeSceneParagraphTexts('[doc-v2 length=10]\n{}','scene'),/DOCUMENT_ENVELOPE_INVALID/);
 });
+
+test('P1a formatting-only signed return opens explicit review, while an unbound packet cannot',async()=>{
+ const {b,source,parts,cryptoPort}=await signedLinkSource();
+ const changed={...parts,'word/_rels/document.xml.rels':parts['word/_rels/document.xml.rels'].replace(xml(HREF),'https://example.invalid/new')};
+ const bytes=buildStoredZip(Object.entries(changed).map(([name,data])=>({name,data})));
+ const analysis=b.buildDocxReviewTransportAnalysisFromZipBytes({bytes,hmacSecret:source.forbiddenSecret,expectedAuthority:source.localAuthorityCapsule.expectedAuthority},{cryptoPort});
+ assert.equal(analysis.ok,true);
+ const packet={returnedProjection:analysis.reviewIr};
+ const bound=b.buildDocxReviewPreviewSessionCandidateFromEvidence(packet,{formattingExportMap:source.localAuthorityCapsule.exportMap,cryptoPort});
+ assert.equal(bound.status,'diagnostics');
+ assert(bound.reviewPacket.diagnosticItems.some(x=>x.diagnosticId==='docx-review-diagnostic-DOCX_REVIEW_PREVIEW_SESSION_FORMATTING_CHANGES'));
+ assert.equal(bound.canAutoApply,false); assert.equal(bound.canWriteStorage,false);
+ const unbound=b.buildDocxReviewPreviewSessionCandidateFromEvidence(packet,{});
+ assert.equal(unbound.reviewPacket,null);
+});

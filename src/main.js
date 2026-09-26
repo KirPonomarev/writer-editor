@@ -7503,7 +7503,7 @@ function prepareAuthenticatedDocxFormattingReturnProductPath({
     && Array.isArray(formattingPacket.returnedProjection.formattingDeltas);
   if (
     intake.authenticated !== true
-    || capsule.scope !== 'full-manuscript'
+    || !['full-manuscript', 'scene'].includes(capsule.scope)
     || !isPlainObjectValue(fullManuscriptExportMap)
     || !formattingPacket
     || !formattingProjectionReady
@@ -8710,7 +8710,8 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       || docxReviewPreviewSessionDetailString(payload.coreManifestDigest),
     semanticReturnId: docxReviewPreviewSessionDetailString(payload.semanticReturnId),
     authenticatedFullManuscriptExportMap: localScope === 'full-manuscript' ? localExportMap : null,
-    exportMapAuthority: localScope === 'full-manuscript'
+    authenticatedSceneExportMap: localScope === 'scene' && sceneAuthority.applicable === true ? localExportMap : null,
+    exportMapAuthority: localScope === 'full-manuscript' || (localScope === 'scene' && sceneAuthority.applicable === true)
       ? 'main-owned-active-export-authority-store-after-return-authentication'
       : 'not-applicable',
     returnedArtifactExportMapAccepted: false,
@@ -9461,6 +9462,14 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     );
   }
 
+  const authenticatedSceneExportMap = returnIntake.authenticated === true
+    && returnIntake.localAuthorityCapsule?.scope === 'scene'
+    && returnIntake.localAuthorityCapsule?.exportMapAuthority === 'main-owned-active-export-authority-store-after-return-authentication'
+    && returnIntake.localAuthorityCapsule?.returnedArtifactExportMapAccepted === false
+    && isPlainObjectValue(returnIntake.localAuthorityCapsule?.authenticatedSceneExportMap)
+    ? returnIntake.localAuthorityCapsule.authenticatedSceneExportMap : null;
+  const authenticatedFormattingExportMap = authenticatedFullManuscriptExportMap || authenticatedSceneExportMap;
+
   let candidate = null;
   try {
     // EVID-01 (V4): the preview candidate is built from the verified packet
@@ -9486,6 +9495,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
         targetScope: activeContext.targetScope,
         createdAt: activeContext.createdAt,
         fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
+        formattingExportMap: authenticatedFormattingExportMap,
         verifiedDocumentSections: authenticatedFullManuscriptExportMap
           ? returnIntake.parserResult?.documentSectionsBinding
           : null,
@@ -9616,7 +9626,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     requestId,
     docxBytes: decoded.bytes,
     revisionBridge,
-    fullManuscriptExportMap: authenticatedFullManuscriptExportMap,
+    fullManuscriptExportMap: authenticatedFormattingExportMap,
     budgets: docxReviewReturnIntakeProductBudgets(options),
   });
   const structuralProductPath = prepareAuthenticatedDocxStructuralReturnProductPath({

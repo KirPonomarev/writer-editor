@@ -6958,6 +6958,23 @@ export function buildDocxReviewPreviewSessionCandidateFromEvidence(packet, optio
     ));
   });
   diagnostics.push(...bookmarkDiagnostics, ...commentTopologyDiagnostics, ...trackedDiagnostics);
+  // A formatting-only return is still reviewable. Its diagnostic opens the
+  // preview; only the separately authenticated main command can prepare/apply
+  // operations. An unbound artifact cannot supply this local map.
+  const formattingExportMap = isPlainObject(options.formattingExportMap)
+    ? options.formattingExportMap : fullManuscriptExportMap;
+  if (formattingExportMap) {
+    const formatting = buildDocxReviewFormattingReturnCandidatesFromEvidence(packet, {
+      fullManuscriptExportMap: formattingExportMap,
+      cryptoPort: options.cryptoPort,
+    });
+    if (formatting.candidates?.length > 0) diagnostics.push(docxReviewPreviewSessionDiagnostic(
+      'DOCX_REVIEW_PREVIEW_SESSION_FORMATTING_CHANGES', {
+        message: `Formatting changes ready for explicit review (${formatting.candidates.length}).`,
+        severity: 'info', targetScope, createdAt,
+      },
+    ));
+  }
   const hasReviewGraphCandidate = commentThreads.length > 0
     || textChanges.length > 0
     || structuralChanges.length > 0;
