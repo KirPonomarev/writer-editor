@@ -19,6 +19,7 @@ import {
 import { createCommandRegistry } from './commands/registry.mjs';
 import { createCommandRunner } from './commands/runCommand.mjs';
 import { enforceCapabilityForCommand } from './commands/capabilityPolicy.mjs';
+import { openLinkDialog, cancelLinkDialog, isLinkDialogOpen } from './linkDialog.mjs';
 import { listCommandCatalog } from './commands/command-catalog.v1.mjs';
 import {
   COMMAND_IDS,
@@ -21133,7 +21134,7 @@ function normalizeToolbarLinkPromptValue(value) {
   if (!raw) {
     return { ok: true, href: '' };
   }
-  if (/\s/.test(raw)) {
+  if (raw.length > 2048 || /[\s\x00-\x1f\x7f\\]/.test(raw)) {
     return { ok: false, reason: 'UNSAFE_SCHEME' };
   }
 
@@ -21155,6 +21156,9 @@ function normalizeToolbarLinkPromptValue(value) {
     const parsed = new URL(normalized);
     const protocol = parsed.protocol.toLowerCase();
     if (protocol !== 'http:' && protocol !== 'https:' && protocol !== 'mailto:') {
+      return { ok: false, reason: 'UNSAFE_SCHEME' };
+    }
+    if ((protocol === 'http:' || protocol === 'https:') && (!parsed.hostname || parsed.username || parsed.password)) {
       return { ok: false, reason: 'UNSAFE_SCHEME' };
     }
     if (protocol === 'mailto:' && !parsed.pathname) {
@@ -21585,7 +21589,7 @@ function handleTiptapFormatCommand(commandName, payload = {}) {
   return result;
 }
 
-function handleInsertLinkPrompt(payload = {}) {
+async function handleInsertLinkPrompt(payload = {}) {
   if (!isTiptapMode) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'EDITOR_MODE_UNSUPPORTED' };
   }
@@ -21595,14 +21599,32 @@ function handleInsertLinkPrompt(payload = {}) {
     syncToolbarFormattingState(state);
     return { performed: false, action: 'insertLinkPrompt', reason: 'NO_SELECTION' };
   }
-  if (typeof window.prompt !== 'function') {
-    return { performed: false, action: 'insertLinkPrompt', reason: 'PROMPT_UNAVAILABLE' };
-  }
-
-  const response = window.prompt(LINK_PROMPT_TITLE, readToolbarLinkPromptInitialValue(payload, state));
+  const identity = {
+    projectId: currentProjectId, documentId: currentDocumentId,
+    generation: localEditGeneration, content: composeDocumentContent(),
+  };
+  const selection = getTiptapSelectionOffsets();
+  const response = await openLinkDialog({
+    title: LINK_PROMPT_TITLE,
+    initialValue: readToolbarLinkPromptInitialValue(payload, state),
+    canRemove: state.link,
+    normalize: normalizeToolbarLinkPromptValue,
+  });
   if (response === null) {
     return { performed: false, action: 'insertLinkPrompt', reason: 'USER_CANCELLED' };
   }
+  if (!isTiptapMode || currentProjectId !== identity.projectId
+    || currentDocumentId !== identity.documentId || localEditGeneration !== identity.generation
+    || composeDocumentContent() !== identity.content) {
+    return { performed: false, action: 'insertLinkPrompt', reason: 'STALE_DOCUMENT' };
+  }
+  const capability = enforceCapabilityForCommand(
+    EXTRA_COMMAND_IDS.INSERT_LINK_PROMPT, withEditorModeCommandPayload(),
+    { defaultPlatformId: window.electronAPI ? 'node' : 'web' },
+  );
+  if (!capability.ok) return capability;
+  const restored = setTiptapSelectionOffsets(selection.start, selection.end);
+  if (restored.performed !== true) return restored;
 
   const normalized = normalizeToolbarLinkPromptValue(response);
   if (!normalized.ok) {
@@ -22722,6 +22744,7 @@ diagnosticsCloseButtons.forEach((button) => {
 });
 
 document.addEventListener('keydown', (event) => {
+  if (isLinkDialogOpen()) return;
   if (event.key === 'Escape' && configuratorPanel && !configuratorPanel.hidden) {
     event.preventDefault();
     setConfiguratorOpen(false);
@@ -22857,6 +22880,12 @@ document.addEventListener('keydown', (event) => {
       void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_FLOW_OPEN);
       return;
     }
+    if ((key === 'K' || key === 'k') && !event.shiftKey && !event.isComposing) {
+      if (event.target instanceof Element && event.target.closest('input, textarea, [role="dialog"]')) return;
+      event.preventDefault();
+      void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_LINK_PROMPT);
+      return;
+    }
     if ((key === 'K' || key === 'k') && event.shiftKey) {
       event.preventDefault();
       void dispatchUiCommand(EXTRA_COMMAND_IDS.INSERT_ADD_CARD);
@@ -22896,6 +22925,7 @@ window.addEventListener('resize', () => {
 
 if (window.electronAPI) {
   window.electronAPI.onEditorSetText((payload) => {
+    cancelLinkDialog();
     const content = typeof payload === 'string' ? payload : payload?.content || '';
     const title = typeof payload === 'object' && payload ? payload.title : '';
     const hasDocumentId = typeof payload === 'object' && payload && Object.prototype.hasOwnProperty.call(payload, 'documentId');

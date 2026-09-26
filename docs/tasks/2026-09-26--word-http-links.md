@@ -3,7 +3,7 @@
 TASK_ID: WORD_P1A_HTTP_LINKS_20260926
 BASE_SHA: 396938247b5480dc24d4c5d4d01b744a6dc13e82
 STATUS: TARGET_IMPLEMENTATION_NOT_ACCEPTED
-DESIGN_TOOL_ROUTER: NOT_APPLICABLE
+DESIGN_TOOL_ROUTER: APPLICABLE_LAZYWEB_FIRST
 
 Owner directly authorized personal implementation of the revision-3 Word plan.
 P0a is delivered by PR 2001. This slice has one rollback and one delivery chain.
@@ -27,7 +27,8 @@ I: base above, exact Node 22.12.0/npm 10.9.0, owned synthetic documents only.
 
 featureId: word-http-links; featureVersion: 1; integrationMode: EXISTING_SEAM.
 productPlane: Core owns canonical rich link marks and transaction history.
-interfacePlane: existing editor and review projections; no surface redesign.
+interfacePlane: existing editor/review projections and modal tokens; native
+link address dialog repairs the existing command input seam.
 domainOwner/authoritativeData: existing document Core; no retained XML truth.
 derivedData: bounded foreign href/range projections and review candidates.
 commandIds: cmd.project.docx.previewContent, cmd.project.docx.previewImportPlan,
@@ -46,7 +47,7 @@ readPath: bounded ZIP/XML -> semantic projection -> authenticated correspondence
 requiredProductPorts: existing file intake, export and persistence adapters.
 requiredDesignOsPorts: existing editor/review read-only projections.
 adapterRequirements: offline bounded bytes, exact native process/document.
-surfaceManifests/slotRequirements: no new surface. supportedWorkspaces: existing
+surfaceManifests/slotRequirements: bounded native link dialog described below. supportedWorkspaces: existing
 WRITE/REVIEW commands. platformAvailability: qualify SOURCE/PACKAGED separately;
 native Word for Mac proof does not certify Windows or arbitrary Word versions.
 accessibilityRequirements: existing link command and review surface retained.
@@ -80,3 +81,39 @@ zero new complete bidirectional cases. A positive claim requires all declared
 hops and independent full label/target comparison; positive and negative
 denominators are separate. Completion requires commit/push/PR/CI/merge and
 exact merged verification, with no open blocking finding for this profile.
+
+## Bounded link command surface
+
+The declared Cmd/Ctrl+K was not dispatched by the global key handler. The
+existing input used synchronous window.prompt. Replace that input only;
+preserve the command registry, canonical link marks, persistence and tokens.
+The address is transient input, never product authority. The command checks
+captured project/document/content/generation and capability after awaiting it.
+An incoming document cancels the dialog, including reload/ABA cases.
+
+SURFACE_MANIFEST_V1:
+- surfaceId: word-link-address; surfaceKind: native modal dialog.
+- featureId: word-http-links; allowedPostures: existing WRITE editor.
+- allowedTransforms: fit existing viewport; slotMap: title, address, error, actions.
+- platformAvailability: existing Electron renderer and browser dialog API.
+- fallbackSurface: cancellation on lifecycle invalidation; no prompt fallback.
+- designBindings: existing modal classes and card/foreground/control tokens.
+- projectionAdapter: editor formatting and selected range, read only.
+- inputIntents: accept, remove, cancel; commandRepresentations: existing
+  cmd.project.insert.linkPrompt via toolbar, menu/palette and Cmd/Ctrl+K.
+- contextRequirements: current editable Tiptap document and selected/link range.
+- readProjectionIds: existing editor formatting state and selection offsets.
+- stateOwnership: transient address; AUTHORING_WORKING_STATE remains editor owned.
+- interactionStates: initial, invalid address, accepted, removed, cancelled,
+  stale document, capability denied; no network resolution or URL opening.
+- accessibilityContract: native modal top layer, labelled address, initial focus,
+  focus containment/restoration, Enter, Escape and inline live error.
+- responsiveContract: bounded width/height with scrolling, existing typography.
+- performanceClass: one dialog and snapshots on invocation/acceptance only.
+- evidenceBindings: actual async-handler race/capability tests plus exact-build
+  native keyboard authoring, pending until physical proof and delivery complete.
+
+UI evidence: ui-craft and Lazyweb consulted; bounded ClickUp editing-toolbar
+reference only, not a new design language or a claim about its link dialog.
+Lazyweb search: 6995d7b2-23e5-4315-9b83-eb1a74d088d8.
+No new dependency, cloud runtime, global style or renderer structure change.
