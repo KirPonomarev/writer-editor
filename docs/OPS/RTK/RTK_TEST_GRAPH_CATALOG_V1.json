@@ -130,6 +130,7 @@
     "rtk-word-release-audit-p0-return-intake-v2.contract.test.js",
     "rtk-word-release-audit-p0-review-docx-exporter.contract.test.js",
     "rtk-word-release-audit-p0-varied-wave64-product-loop.contract.test.js",
+    "rtk-word-round-key-durability.contract.test.js",
     "rtk-word-safety-c1-effect-reservation.contract.test.js",
     "rtk-word-safety-c2-multiscene-command-path.contract.test.js",
     "rtk-word-safety-c3-parser-resource-envelope.contract.test.js",

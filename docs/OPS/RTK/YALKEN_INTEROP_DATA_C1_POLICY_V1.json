@@ -218,7 +218,11 @@
     "test/contracts/rtk-word-link-authoring.contract.test.js",
     "src/io/docxHyperlinks.cjs",
     "src/renderer/linkDialog.mjs",
-    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs"
+    "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+    "docs/tasks/2026-09-26--word-round-key-durability.md",
+    "test/contracts/rtk-word-round-key-durability.contract.test.js",
+    "src/core/review-secret-store-v1.cjs",
+    "src/io/revisionBridge/reviewTransportRoundStoreV3.mjs"
   ],
   "protectedFiles": [
     {
@@ -354,7 +358,8 @@
     "src/word-hostile-probe.mjs",
     "test/word-hostile.test.mjs",
     "src/word-media-native.mjs",
-    "test/word-media-native.test.mjs"
+    "test/word-media-native.test.mjs",
+    "test/runtime-os-identity.test.mjs"
   ],
   "labCodeBindings": [
     {
@@ -446,7 +451,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "a03492d4624752487b1067cd6267cfba5aef7a5ca7e64afcf063614d769e8ba0"
+        "sha256": "1fce2aa4e754b17f825af68b49aa45f65291b380e78e34a37e03ab0716743f46"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -698,7 +703,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
-        "sha256": "2c212b5de10751c90ac3e834bc14490cc36db07706a8db0e80b7dd0c72a8dad5"
+        "sha256": "6171268f03f9dd96f024db9ce3a89e89113cdb351c513979ca657bfd3d660246"
       },
       {
         "path": "test/unit/rtk-interop-word-manuscript.test.py",
@@ -918,7 +923,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "d287fc2b05834a7e653bb6af983628b39972d8a434ff78297f6b41f72c42ad24"
+        "sha256": "eb2699666ceb57036150f74c385d5cb1e6d6e958281ea613306b8760c399f7bb"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1047,6 +1052,18 @@
       {
         "path": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
         "sha256": "ff37c55dd31b8961bc695cf3bc6297f11324d444c140a66d7df8f078e07adbb4"
+      },
+      {
+        "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
+        "sha256": "402a67659a0b65b2b259323327caa04652c725491ee41b3a89c3cca6e8e1d51d"
+      },
+      {
+        "path": "src/core/review-secret-store-v1.cjs",
+        "sha256": "921197484566d73926e95b88cd08fa29c31894d7a94d4923b072e3115b750231"
+      },
+      {
+        "path": "src/io/revisionBridge/reviewTransportRoundStoreV3.mjs",
+        "sha256": "469465c7d5afd06443e56cf31b8e05ecace7384383d58cd2cb4f361613f07267"
       }
     ],
     "followupRepair": {
@@ -4174,6 +4191,123 @@
         {
           "path": "test/word-media-native.test.mjs",
           "sha256": "161259a3eb246875ca820e5d174c3a5dabe968497ed00a8a3df9872ea609e0cf"
+        }
+      ]
+    },
+    {
+      "id": "WORD_OS_IDENTITY_PRESERVED_V1",
+      "bindings": [
+        {
+          "path": "cli/lab.mjs",
+          "sha256": "150b9ef5b2ffa34d70f38ea24fe8d2502ea525e625e086aaec5e9aab51840ba6"
+        },
+        {
+          "path": "scripts/run_sequential.py",
+          "sha256": "f5e5092590f6444fa06102a378a8c04cf607fbd61574ba8be8d68c1bd5d660d2"
+        },
+        {
+          "path": "src/m1-text-single-scene-source-runtime.mjs",
+          "sha256": "3dc6c59e79c6ffcb7072ef0efc6eb691e307949467fa03a672cd69a0cd537430"
+        },
+        {
+          "path": "src/c1-data-case.mjs",
+          "sha256": "6fe3fc064fd2ae032c2c9f79893bd6be8fce9b55fbcbe0c8e96f94af4fcd7680"
+        },
+        {
+          "path": "src/data-c1-machine-review.mjs",
+          "sha256": "162f4b13d31a3891b931117cff46b43f497c636362701fe11397e6b0f6ec59fd"
+        },
+        {
+          "path": "src/m0-validators.mjs",
+          "sha256": "6e4c3d1a0ac5d6fb183abe95387ea1ca052b2e7ebb6157a3aeb20bc942c15dc9"
+        },
+        {
+          "path": "src/order-single-scene.mjs",
+          "sha256": "50ca1e1bda1f8240c61e80225113c99ce94ed624bb5b1eef797401471ecd2ab2"
+        },
+        {
+          "path": "src/order-machine-review.mjs",
+          "sha256": "bc7b86387ec4ec3f612646b42abdf9c5fc97b1cf61f3ad265bd31a09b66a2351"
+        },
+        {
+          "path": "src/text-order-machine-review.mjs",
+          "sha256": "cf18ba8ebb051781fb3736186b9829931ac6aaa6248379ceab9726d8997c20fb"
+        },
+        {
+          "path": "scripts/check-physical-run.mjs",
+          "sha256": "ef16dbc87b3e5e1a6cf758b8759015077b4de6c93597535552b3a9a548eea11b"
+        },
+        {
+          "path": "src/word-volume-text-order.mjs",
+          "sha256": "f3919aa7878e4f5b14603184381de6290116dbceb2896ed3f439b676407dfe22"
+        },
+        {
+          "path": "src/word-manuscript-fields.mjs",
+          "sha256": "eaa9972c0a980274540a3b4aea2ef50c9fee7527e426d7219d1ad79dac07f85f"
+        },
+        {
+          "path": "src/word-metadata-mutant.py",
+          "sha256": "e7658e0e7e8eecd51580d3bf0e710aaea3dbcedf131fc13fb22b311736b1eeeb"
+        },
+        {
+          "path": "src/word-sections-mutant.py",
+          "sha256": "c82868e8479ea1e71ddddcee3f820d08ecf8564fa3467bd7c2691ff0ef14c5df"
+        },
+        {
+          "path": "test/m0-audit-repair.test.mjs",
+          "sha256": "71ea6b01db1b2af71a26910686eddef09e3b65e35b4db0a7a4cde0c0dcf296f4"
+        },
+        {
+          "path": "test/word-manuscript-fields.test.mjs",
+          "sha256": "21accb28802ea0696cebbd3c9e26f891658e70a61736be1a62113d7257e306a4"
+        },
+        {
+          "path": "src/word-notes-mutant.py",
+          "sha256": "b89142042611e1dc05708727a3bfd2f12ddd9e92c2a9cad5f7988dcdfa283bf1"
+        },
+        {
+          "path": "scripts/native-cua-target.mjs",
+          "sha256": "0ca57312401750018eb459cc70c9930592deae74be601cda33703e6effbf259a"
+        },
+        {
+          "path": "test/native-cua-target.test.mjs",
+          "sha256": "da4dea27274e93ac5ceb74e8cbb78f1c22deb73f7a255631fdecf898c2175285"
+        },
+        {
+          "path": "src/word-table-readback.mjs",
+          "sha256": "1ad5806475cffee506a4937fd4c0fe8fc1a3d8a1d80e1f5fcf4f2b1e4d483a09"
+        },
+        {
+          "path": "test/word-table-readback.test.mjs",
+          "sha256": "62dcad2ff7be9224a12fd3d80adfc0e9af3089a94f33d94ff009fc20a1a3d157"
+        },
+        {
+          "path": "test/fixtures/word-tables-native-v1.json",
+          "sha256": "2f59b881f82dcb1168abb25f390590920205de2a4aeaa3f7a6142436164f7800"
+        },
+        {
+          "path": "src/word-hostile-mutant.py",
+          "sha256": "b3bc8e868f9e6be28d93780f5f953da27ee30f6dde3a9d2e52461696119b36c7"
+        },
+        {
+          "path": "src/word-hostile-probe.mjs",
+          "sha256": "5e8d3ebcdb3a70b488785973f1bcc80f5761c953db703b78c8809de54de83208"
+        },
+        {
+          "path": "test/word-hostile.test.mjs",
+          "sha256": "7287eb871ff70b1bc1a6b14529250f42bbb389084c7d0d93fb492f9be7e38a6e"
+        },
+        {
+          "path": "src/word-media-native.mjs",
+          "sha256": "62f67b133a3aa48de02132dd080cb7dafaf9a3c77dfa74e5c566982122425e97"
+        },
+        {
+          "path": "test/word-media-native.test.mjs",
+          "sha256": "161259a3eb246875ca820e5d174c3a5dabe968497ed00a8a3df9872ea609e0cf"
+        },
+        {
+          "path": "test/runtime-os-identity.test.mjs",
+          "sha256": "0bc97c63179df8fba58b883c0047e0f10ade5d9a30366f265697615e638dd35b"
         }
       ]
     }
