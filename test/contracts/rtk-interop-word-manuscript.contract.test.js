@@ -691,6 +691,7 @@ test('Word import transaction admission preserves every historical Lab identity 
  // W7's independent reader retains raw grids but distinguishes implicit auto-fit
  // from explicitly stored geometry. All other reader bindings remain unchanged.
  const autoFitReaderPins={
+  'scripts/ops/rtk-interop-word-manuscript-batch.mjs':'917bf2423fe94cbe3f846f335bbc3ca63f16e3dc0ade75ef4f307f22f81d9bbe',
   'scripts/ops/rtk-interop-word-manuscript-readback.py':'9f3c081cae141a539bea38f6de284251ffa67d0a873689da728c3180e72511af',
   'scripts/ops/rtk-interop-word-tables-readback.py':'c45a0e141b18e3e9dde2961ad22c8ba3d8ac7927684686e6f37a5fcd046f2395',
  };
@@ -703,4 +704,11 @@ test('Word import transaction admission preserves every historical Lab identity 
  assert.equal(new Set(bindings.map(b=>b.path)).size,bindings.length);
  for(const b of bindings)assert.equal(digest(fs.readFileSync(path.join(ROOT,b.path))),b.sha256,b.path);
  for(const b of base.qualifiedRuntimeRepair.sourceBindings)assert.ok(bindings.some(a=>a.path===b.path),b.path);
+});
+
+test('Current manuscript policy binds every actual reader before any physical cohort starts',()=>{
+ const policy=JSON.parse(fs.readFileSync(path.join(ROOT,'docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json'),'utf8'));
+ const readers=policy.wordManuscriptBatch.readerBindings;
+ assert.equal(readers.length,10);
+ for(const binding of readers)assert.equal(digest(fs.readFileSync(path.join(ROOT,binding.path))),binding.sha256,binding.path);
 });
