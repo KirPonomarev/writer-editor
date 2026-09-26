@@ -66,24 +66,28 @@ test('a cached handle observes durable revocation and missing ciphertext fails c
 
 const vm=require('node:vm');
 const mainSource=fs.readFileSync(path.resolve(__dirname,'../../src/main.js'),'utf8');
-function mainFunction(name,next){const start=mainSource.indexOf('async function '+name+'(');assert(start>=0);const end=mainSource.indexOf('async function '+next+'(',start);assert(end>start);return mainSource.slice(start,end);}
+function mainFunction(name,next){const start=mainSource.indexOf('async function '+name+'(');assert(start>=0);const end=mainSource.indexOf('async function '+next+'(',start);assert(end>start);return mainSource.slice(start,end).split("\nlet ")[0];}
 test('Kernel formatting and structural Apply revalidate the private live key and session before any writer',async()=>{
- for(const kind of ['formatting','structural'])for(const state of ['ACTIVE','REVOKED','VERIFY_ONLY','LOST',null]){
+ for(const kind of ['formatting','structural','text','full-text'])for(const state of ['ACTIVE','REVOKED','VERIFY_ONLY','LOST',null]){
   let writes=0;let keyState=state;
   const input={projectRoot:'/test-project',requestId:'private-request',operations:[{operationId:'op'}]};
-  const store={input,keyAuthority:{keyRef:'private-ref',roundId:'private-round'}};
+  const store={input,keyAuthority:{keyRef:'private-ref',roundId:'private-round',projectRoot:'/test-project'},inputsByKey:{change:input},fullManuscriptInput:input};
   const env={isPlainObjectValue:x=>!!x&&typeof x==='object'&&!Array.isArray(x),getProjectRootPath:()=>'/test-project',
    activeRtkFormattingReturnApplyStore:store,activeRtkStructuralReturnApplyStore:store,
+   activeRtkNonOverlapTrackedReplacementApplyStore:store,activeReviewSessionStore:{},rtkNonOverlapTrackedReplacementStoreTokenMatches:()=>true,
+   queueDiskOperation:async f=>f(),publishReviewSceneWithProjectTransaction:()=>{throw Error("unexpected writer");},
+   loadRtkNonOverlapTrackedReplacementModule:async()=>({createRtkNonOverlapTrackedReplacementCommandHandler:()=>async()=>{writes++;return{ok:true};}}),
+   loadRtkMultiSceneNonOverlapTrackedReplacementModule:async()=>({createRtkMultiSceneNonOverlapTrackedReplacementCommandHandler:()=>async()=>{writes++;return{ok:true};}}),
    rtkFormattingReturnStoreMatchesActiveSession:()=>true,rtkStructuralReturnStoreMatchesActiveSession:()=>true,
    resolveDocxReviewRoundKeyHandle:async(ref,authority)=>{assert.equal(ref,'private-ref');assert.equal(authority.roundId,'private-round');return keyState?{state:keyState}:null;},
    createRtkReviewTransportCryptoPort:()=>({}),makeReviewMutateTypedError:()=>({ok:false}),
    loadRtkFormattingReturnModule:async()=>({createRtkFormattingReturnCommandHandler:()=>async()=>{writes++;return{ok:true};}}),
    loadRtkStructuralReturnModule:async()=>({createRtkStructuralReturnCommandHandler:()=>async()=>{writes++;return{ok:true};}})};
-  vm.createContext(env);vm.runInContext(mainFunction('revalidateRtkReturnApplyKey','handleRtkFormattingReturnCommandSurface')+mainFunction('handleRtkFormattingReturnCommandSurface','handleRtkStructuralReturnCommandSurface')+mainFunction('handleRtkStructuralReturnCommandSurface','buildRtkFormattingReturnRuntimeProjectScope'),env);
-  const call=kind==='formatting'?env.handleRtkFormattingReturnCommandSurface:env.handleRtkStructuralReturnCommandSurface;
-  const result=await call(JSON.parse(JSON.stringify(input)));assert.equal(result.ok,state==='ACTIVE');assert.equal(writes,state==='ACTIVE'?1:0);
+  vm.createContext(env);vm.runInContext(mainFunction('handleRtkNonOverlapTrackedReplacementCommandSurface','handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface')+mainFunction('handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface','revalidateRtkReturnApplyKey')+mainFunction('revalidateRtkReturnApplyKey','handleRtkFormattingReturnCommandSurface')+mainFunction('handleRtkFormattingReturnCommandSurface','handleRtkStructuralReturnCommandSurface')+mainFunction('handleRtkStructuralReturnCommandSurface','buildRtkFormattingReturnRuntimeProjectScope'),env);
+  const call=kind==='text'?env.handleRtkNonOverlapTrackedReplacementCommandSurface:kind==='full-text'?env.handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface:kind==='formatting'?env.handleRtkFormattingReturnCommandSurface:env.handleRtkStructuralReturnCommandSurface;
+  const result=await call(JSON.parse(JSON.stringify(input)));assert.equal(result.ok,state==='ACTIVE',JSON.stringify({kind,state,result}));assert.equal(writes,state==='ACTIVE'?1:0);
   writes=0;keyState='ACTIVE';assert.equal((await call({...input,requestId:'forged'})).ok,false);assert.equal(writes,0);
-  env.resolveDocxReviewRoundKeyHandle=async()=>{env.activeRtkFormattingReturnApplyStore=null;env.activeRtkStructuralReturnApplyStore=null;return{state:'ACTIVE'};};
+  env.resolveDocxReviewRoundKeyHandle=async()=>{env.activeRtkFormattingReturnApplyStore=null;env.activeRtkStructuralReturnApplyStore=null;env.activeRtkNonOverlapTrackedReplacementApplyStore=null;return{state:'ACTIVE'};};
   assert.equal((await call(input)).code,'RTK_ROUND_KEY_STALE_AUTHORITY');assert.equal(writes,0);
  }
 });

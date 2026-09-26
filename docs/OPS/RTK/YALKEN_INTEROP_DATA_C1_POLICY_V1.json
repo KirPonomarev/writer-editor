@@ -450,7 +450,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "ab8a0f150500550808c8623c0c3f3992c6933838a1152eb85568eb9586adeb7f"
+        "sha256": "1fce2aa4e754b17f825af68b49aa45f65291b380e78e34a37e03ab0716743f46"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1054,7 +1054,7 @@
       },
       {
         "path": "test/contracts/rtk-word-round-key-durability.contract.test.js",
-        "sha256": "fa82411959135866ba0f91baf866cce59b88fafc1fd3915d4a018b07e72ad239"
+        "sha256": "402a67659a0b65b2b259323327caa04652c725491ee41b3a89c3cca6e8e1d51d"
       },
       {
         "path": "src/core/review-secret-store-v1.cjs",

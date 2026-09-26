@@ -7128,6 +7128,7 @@ function attachRtkFullManuscriptNonOverlapTrackedReplacementProductPreview({
   plan,
   previews,
   sessionToken,
+  keyAuthority,
 } = {}) {
   if (
     activeReviewSessionLifecycle !== 'active'
@@ -7148,6 +7149,7 @@ function attachRtkFullManuscriptNonOverlapTrackedReplacementProductPreview({
   activeRtkNonOverlapTrackedReplacementApplyStore = {
     schemaVersion: 'yalken.rtk.word.a03.c05.main-owned-apply-store.v2',
     sessionToken: cloneJsonSafe(sessionToken),
+    keyAuthority: cloneJsonSafe(keyAuthority || {}),
     fullManuscriptInput: cloneJsonSafe(plan) || {},
     fullManuscriptChangeIds: changeIds,
     fullManuscriptSceneIds: sceneIds,
@@ -7206,6 +7208,7 @@ function attachRtkNonOverlapTrackedReplacementProductPreview({
   runtimePreview,
   commandInput,
   sessionToken,
+  keyAuthority,
 } = {}) {
   if (
     activeReviewSessionLifecycle !== 'active'
@@ -7225,6 +7228,7 @@ function attachRtkNonOverlapTrackedReplacementProductPreview({
   activeRtkNonOverlapTrackedReplacementApplyStore = {
     schemaVersion: 'yalken.rtk.word.a03.c05.main-owned-apply-store.v1',
     sessionToken: cloneJsonSafe(sessionToken),
+    keyAuthority: cloneJsonSafe(keyAuthority || {}),
     inputsByChangeId: Object.fromEntries(changeIds.map((changeId) => [changeId, input])),
     inputsByKey: {
       [changeIds.join('\n')]: input,
@@ -7339,6 +7343,7 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
     }
     const sessionToken = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
     const reviewSurface = attachRtkFullManuscriptNonOverlapTrackedReplacementProductPreview({
+      keyAuthority: (() => { const c = readDocxReviewPreviewSessionRtkAuthorityCapsule(context) || {}; return {keyRef:c.keyRef,roundId:c.roundId,keyIdHex:c.keyIdHex,roundIdHex:c.roundIdHex,projectRoot:c.projectRoot || context.projectRoot}; })(),
       plan,
       previews,
       sessionToken,
@@ -7387,6 +7392,7 @@ async function prepareDocxReviewPreviewSessionNonOverlapTrackedReplacementProduc
   }
   const sessionToken = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
   const reviewSurface = attachRtkNonOverlapTrackedReplacementProductPreview({
+      keyAuthority: (() => { const c = readDocxReviewPreviewSessionRtkAuthorityCapsule(context) || {}; return {keyRef:c.keyRef,roundId:c.roundId,keyIdHex:c.keyIdHex,roundIdHex:c.roundIdHex,projectRoot:c.projectRoot || context.projectRoot}; })(),
     runtimePreview,
     commandInput,
     sessionToken,
@@ -21599,10 +21605,14 @@ async function handleRtkNonOverlapTrackedReplacementCommandSurface(payload = {})
       },
     };
   }
-  return queueDiskOperation(() => module.createRtkNonOverlapTrackedReplacementCommandHandler({
-    cryptoPort: createRtkReviewTransportCryptoPort(),
-    exactWriterOptions: { publishScene: publishReviewSceneWithProjectTransaction },
-  })(payload), 'review tracked replacement project transaction');
+  return queueDiskOperation(async () => {
+    const keyGate = await revalidateRtkReturnApplyKey('text', payload);
+    if (keyGate.ok !== true) return keyGate;
+    return module.createRtkNonOverlapTrackedReplacementCommandHandler({
+      cryptoPort: createRtkReviewTransportCryptoPort(),
+      exactWriterOptions: { publishScene: publishReviewSceneWithProjectTransaction },
+    })(payload);
+  }, 'review tracked replacement project transaction');
 }
 
 let rtkMultiSceneNonOverlapTrackedReplacementModulePromise = null;
@@ -21649,6 +21659,8 @@ async function handleRtkMultiSceneNonOverlapTrackedReplacementCommandSurface(pay
       },
     };
   }
+  const keyGate = await revalidateRtkReturnApplyKey('full-text', payload);
+  if (keyGate.ok !== true) return keyGate;
   return module.createRtkMultiSceneNonOverlapTrackedReplacementCommandHandler({
     cryptoPort: createRtkReviewTransportCryptoPort(),
   })(payload);
@@ -21691,19 +21703,23 @@ function loadRtkStructuralReturnModule() {
 // Main-owned authority is rechecked at Kernel dispatch, after module loading.
 // A verified preview (or a renderer payload) cannot confer key authority.
 async function revalidateRtkReturnApplyKey(kind, payload) {
-  const readStore = () => kind === 'formatting'
-    ? activeRtkFormattingReturnApplyStore : activeRtkStructuralReturnApplyStore;
-  const matches = () => kind === 'formatting'
-    ? rtkFormattingReturnStoreMatchesActiveSession() : rtkStructuralReturnStoreMatchesActiveSession();
+  const textKind = kind === 'text' || kind === 'full-text';
+  const readStore = () => textKind ? activeRtkNonOverlapTrackedReplacementApplyStore
+    : kind === 'formatting' ? activeRtkFormattingReturnApplyStore : activeRtkStructuralReturnApplyStore;
+  const matches = () => textKind ? rtkNonOverlapTrackedReplacementStoreTokenMatches(activeReviewSessionStore)
+    : kind === 'formatting' ? rtkFormattingReturnStoreMatchesActiveSession() : rtkStructuralReturnStoreMatchesActiveSession();
   const blocked = code => ({ok:false,status:'blocked',code,reason:code,writerCalled:false});
   const store = readStore();
+  const projectRoot = () => textKind ? store?.keyAuthority?.projectRoot : store?.input?.projectRoot;
+  const inputs = kind === 'text' ? Object.values(store?.inputsByKey || {})
+    : kind === 'full-text' ? [store?.fullManuscriptInput] : [store?.input];
   if (!matches() || !isPlainObjectValue(store?.keyAuthority)
     || !store.keyAuthority.keyRef || !store.keyAuthority.roundId
-    || store.input?.projectRoot !== getProjectRootPath()
-    || JSON.stringify(payload) !== JSON.stringify(store.input)) return blocked('RTK_ROUND_KEY_AUTHORITY_REQUIRED');
+    || projectRoot() !== getProjectRootPath()
+    || !inputs.some(input => isPlainObjectValue(input) && JSON.stringify(payload) === JSON.stringify(input))) return blocked('RTK_ROUND_KEY_AUTHORITY_REQUIRED');
   const handle = await resolveDocxReviewRoundKeyHandle(store.keyAuthority.keyRef, store.keyAuthority);
   // Resolving the port may yield: project/session identity must still match.
-  if (readStore() !== store || !matches() || store.input.projectRoot !== getProjectRootPath()) {
+  if (readStore() !== store || !matches() || projectRoot() !== getProjectRootPath()) {
     return blocked('RTK_ROUND_KEY_STALE_AUTHORITY');
   }
   if (handle?.state !== 'ACTIVE') return blocked(

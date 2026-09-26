@@ -9,7 +9,7 @@ Owner authorized personal implementation of the revision-3 Word plan.
 One bounded repair, one rollback, no global cell or cross-platform claim.
 
 O: locally published review export remains authentic after restarting the app;
-revoked/lost/foreign keys cannot authorize any formatting or structure writer.
+revoked/lost/foreign keys cannot authorize text, formatting or structure writers.
 T: main-owned export authority -> private ReviewSecretStorePort -> OS-encrypted
 app-local file; foreign DOCX, renderer and project files never supply a key.
 H: persist the existing per-round secret rather than replacing the signing
@@ -29,7 +29,7 @@ productPlane: existing Core authority/lifecycle owns the round and documents.
 interfacePlane: existing read-only diagnostics; no visual or renderer change.
 authoritativeData: existing local round record, publication status, key state.
 derivedData: verified return preview; it confers no write authority.
-commandIds: existing review export, return intake and formatting/structural Apply.
+commandIds: existing review export, return intake and text/formatting/structural Apply.
 queryIds: existing review session projection; eventTypes: existing outcomes.
 productPorts: ReviewSecretStorePort (main-only), existing round store and writers.
 designOsPorts: existing immutable review projection; no key exposure.
@@ -40,7 +40,7 @@ readPath: main-owned real project-root binding + opaque keyRef -> bounded privat
 ciphertext -> OS decrypt -> in-memory handle. No secret in logs or evidence.
 identityKeys: real project root digest, opaque ref, round digest, key digest,
 existing session/project/revision/artifact identities.
-capabilityRevalidation: formatting/structural Kernel handlers compare the private
+capabilityRevalidation: text/formatting/structural Kernel handlers compare the private
 session input and resolve the current key after asynchronous module loading;
 recheck project/session after resolution, then invoke existing transaction guards.
 stateClasses: private durable product authority; derived review preview only.
