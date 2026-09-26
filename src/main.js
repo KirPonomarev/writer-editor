@@ -695,6 +695,7 @@ const COMMAND_SURFACE_KERNEL_COMMAND_IDS = Object.freeze({
   PROJECT_IMPORT_MARKDOWN_V1: 'cmd.project.importMarkdownV1',
   PROJECT_EXPORT_MARKDOWN_V1: 'cmd.project.exportMarkdownV1',
   PROJECT_REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET: FULL_MANUSCRIPT_REVIEW_DOCX_COMMAND_ID,
+  PROJECT_REVIEW_EDIT_COMMENT: 'cmd.project.review.editComment',
   PROJECT_RELEASE_CLAIM_ADMIT: 'cmd.project.releaseClaim.admit',
   PROJECT_RELEASE_CLAIM_EXECUTE: 'cmd.project.releaseClaim.execute',
   RTK_REVIEW_SESSION_IMPORT_COMMENTS: 'cmd.rtk.reviewSession.importComments',
@@ -13150,6 +13151,7 @@ function getInternalCommandSurfaceKernel() {
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_EXPORT_MARKDOWN_V1]: async (payload = {}) => {
       return handleExportMarkdownV1(payload);
     },
+    [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EDIT_COMMENT]: handleCommentAuthoringCommand,
     [COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET]: async (payload = {}) => {
       return handleFullManuscriptReviewDocxExportPacketCommandSurface(payload);
     },
@@ -22100,6 +22102,82 @@ function loadRtkNonTextReturnModule() {
   return rtkNonTextReturnModulePromise;
 }
 
+// Ordinary comment authoring uses committed scene truth, never returned Word IDs.
+let commentAuthoringSessionId = crypto.randomUUID();
+async function readCommentAuthoringContext() {
+  if (isDirty || autoSaveInProgress) throw new Error('COMMENT_SAVE_SCENE_FIRST');
+  const filePath = currentFilePath;
+  const subjectId = currentLifecycleSubjectId() + ':' + commentAuthoringSessionId;
+  if (typeof filePath !== 'string' || !isAllowedFilePath(filePath)
+    || !['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) throw new Error('COMMENT_SCENE_REQUIRED');
+  const binding = await readReviewExactTextApplyProjectBinding(filePath);
+  if (!binding.ok || !binding.projectId) throw new Error('COMMENT_PROJECT_BINDING_REQUIRED');
+  const relative = path.relative(binding.projectRoot, filePath);
+  let entry = binding.projectRoot;
+  for (const component of relative.split(path.sep)) {
+    entry = path.join(entry, component);
+    const stat = await fs.lstat(entry);
+    if (stat.isSymbolicLink() || (entry === filePath ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_SCENE_PATH_UNSAFE');
+  }
+  const raw = await fs.readFile(filePath, 'utf8');
+  const envelope = await loadDocumentContentEnvelopeModule();
+  const parsed = envelope.parseObservablePayload(raw);
+  if (parsed.issue) throw new Error('COMMENT_SCENE_INVALID');
+  const paragraphs = parsed.doc ? parsed.doc.content.map(node => {
+    if (!['paragraph', 'heading', 'codeBlock'].includes(node.type)) throw new Error('COMMENT_STORY_UNSUPPORTED');
+    return envelope.deriveVisibleTextFromDocument({ type: 'doc', content: [node] });
+  }) : parsed.text.split('\n');
+  if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId
+    || isDirty || autoSaveInProgress) throw new Error('COMMENT_SCENE_CHANGED');
+  const module = await loadRtkNonTextReturnModule();
+  const saved = await module.readCommentAuthoringState(binding);
+  if (filePath !== currentFilePath || subjectId !== currentLifecycleSubjectId() + ':' + commentAuthoringSessionId || isDirty) throw new Error('COMMENT_SCENE_CHANGED');
+  return { ...binding, filePath, subjectId, sceneId: relative.split(path.sep).join('/'), raw,
+    sceneSha256: computeHash(raw), paragraphs, parsed, saved };
+}
+
+async function readCommentAuthoringProjection() {
+  try {
+    const context = await readCommentAuthoringContext();
+    return { available: true, projectId: context.projectId, sceneId: context.sceneId, subjectId: context.subjectId,
+      expectedStateSha256: context.saved.stateSha256, expectedSceneSha256: context.sceneSha256,
+      threads: context.saved.state.threads.filter(t => t.sceneId === context.sceneId && t.status !== 'deleted')
+        .map(normalizeRtkNonTextReturnThreadProjection) };
+  } catch (error) { return { available: false, reason: error.message, threads: [] }; }
+}
+
+async function handleCommentAuthoringCommand(payload = {}) {
+  try {
+    return await queueDiskOperation(async () => {
+      const context = await readCommentAuthoringContext();
+      if (payload.subjectId !== context.subjectId || payload.projectId !== context.projectId
+        || payload.sceneId !== context.sceneId) throw new Error('COMMENT_IDENTITY_STALE');
+      const snapshot = await requestEditorSnapshot();
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < 0) throw new Error('COMMENT_EDITOR_GENERATION_REQUIRED');
+      const envelope = await loadDocumentContentEnvelopeModule();
+      const live = envelope.parseObservablePayload(snapshot.content);
+      if (live.issue || JSON.stringify(canonicalizeComparableValue(live.doc || live.text))
+        !== JSON.stringify(canonicalizeComparableValue(context.parsed.doc || context.parsed.text))) throw new Error('COMMENT_SAVE_SCENE_FIRST');
+      const authority = await getMainProjectManifestAuthority();
+      return authority.withProjectLease(context.projectId, async lease => {
+        const revalidate = async () => {
+          await lease.assertOwned();
+          if (currentFilePath !== context.filePath || currentLifecycleSubjectId() + ':' + commentAuthoringSessionId !== context.subjectId
+            || isDirty || autoSaveInProgress || lastSignaledEditGeneration > snapshot.generation) throw new Error('COMMENT_SCENE_CHANGED');
+          const fresh = await readCommentAuthoringContext();
+          if (fresh.projectId !== context.projectId || fresh.sceneSha256 !== context.sceneSha256) throw new Error('COMMENT_SCENE_CHANGED');
+        };
+        const module = await loadRtkNonTextReturnModule();
+        return module.commitCommentAuthoring({ projectRoot: context.projectRoot, projectId: context.projectId,
+          sceneId: context.sceneId, sceneSha256: context.sceneSha256, paragraphs: context.paragraphs,
+          input: payload, now: new Date().toISOString() }, { publish: operation => lease.publish(operation), revalidate });
+      });
+    }, 'canonical comment authoring');
+  } catch (error) {
+    return { ok: false, code: error.code || error.message, reason: error.message, writerOutcome: 'NOT_CONFIRMED' };
+  }
+}
+
 async function handleRtkRootCommentReturnCommandSurface(payload = {}) {
   let module = null;
   try {
@@ -28088,6 +28166,7 @@ function setDirtyState(state, ack = null) {
   if (state === false && ack && ack.kind === SAVE_ACK_KINDS.SAVED) {
     lastAcknowledgedEditGeneration = ack.savedGeneration;
   } else if (state === false && ack === null) {
+    commentAuthoringSessionId = crypto.randomUUID();
     // A main-owned document replacement establishes a new baseline.
     lastSignaledEditGeneration = 0;
     lastAcknowledgedEditGeneration = 0;
@@ -29021,6 +29100,7 @@ async function directReviewSurfacePayloadStillMatchesCurrentText() {
 }
 
 async function handleWorkspaceReviewSurfaceQuery() {
+  const commentAuthoring = await readCommentAuthoringProjection();
   await refreshActiveReviewExactTextUiPlan();
   const activeReviewSurface = attachReviewExactTextApplyReconciliationState(
     readActiveReviewSessionReviewSurface(),
@@ -29029,7 +29109,7 @@ async function handleWorkspaceReviewSurfaceQuery() {
   if (hasReviewSurfacePayload(activeReviewSurface)) {
     return {
       ok: true,
-      reviewSurface: activeReviewSurface,
+      reviewSurface: { ...activeReviewSurface, commentAuthoring },
     };
   }
   const canonicalCommentProjection = handleWorkspaceRtkNonTextReturnStateQuery();
@@ -29041,12 +29121,12 @@ async function handleWorkspaceReviewSurfaceQuery() {
   ) {
     return {
       ok: true,
-      reviewSurface: canonicalCommentProjection.reviewSurface,
+      reviewSurface: { ...canonicalCommentProjection.reviewSurface, commentAuthoring },
     };
   }
   return {
     ok: true,
-    reviewSurface: activeReviewSurface,
+    reviewSurface: { ...activeReviewSurface, commentAuthoring },
   };
 }
 
@@ -30520,6 +30600,7 @@ const UI_COMMAND_BRIDGE_ALLOWED_COMMAND_IDS = new Set([
   'cmd.project.review.openComments',
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.exportFullManuscriptDocxReviewPacket',
+  'cmd.project.review.editComment',
   'cmd.project.review.clearSession',
   'cmd.project.review.applyExactTextChange',
   'cmd.project.review.applyExactTextChangesBatch',
@@ -30883,6 +30964,7 @@ const MENU_COMMAND_HANDLERS = Object.freeze({
   'cmd.project.review.exportDocxReviewPacket': async (payload = {}) => {
     return handleReviewDocxExportPacketCommandSurface(payload);
   },
+  'cmd.project.review.editComment': async (payload = {}) => dispatchCommandSurfaceKernel(COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EDIT_COMMENT, payload),
   'cmd.project.review.exportFullManuscriptDocxReviewPacket': async (payload = {}) => {
     return dispatchCommandSurfaceKernel(
       COMMAND_SURFACE_KERNEL_COMMAND_IDS.PROJECT_REVIEW_EXPORT_FULL_MANUSCRIPT_DOCX_PACKET,
