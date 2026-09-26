@@ -19,6 +19,8 @@ and plan -> existing main admission and Command Kernel -> fenced persistence.
 H: parse visibility using the existing style cascade, distinguish vanish toggle
 from webHidden replacement, and reject effective hidden runs plus Ruby before
 publication. Direct false and unused styles retain supported visible text.
+Applied/default table styles with unresolved enabled visibility reject explicitly;
+conditional table-style precedence is not claimed as implemented.
 B: source DOCX, private notes, project files, buffers, other WIP, frozen IDs,
 R authority, size/depth budgets and old evidence remain protected. No new
 document model, UI redesign, dependency, network or schema change.

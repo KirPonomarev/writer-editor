@@ -144,3 +144,18 @@ test('P0a actual main preview command never admits hidden or Ruby plans', async 
   assert.equal(control.importPreviewOk, true, JSON.stringify(control));
   assert.equal(admissions.length, 1);
 });
+
+
+test('P0a selected table styles with unresolved visibility reject without rejecting unused styles', async () => {
+  const table = id => `<w:tbl><w:tblPr>${id ? `<w:tblStyle w:val="${id}"/>` : ''}</w:tblPr><w:tblGrid><w:gridCol w:w="1000"/></w:tblGrid><w:tr><w:tc><w:p>${run()}</w:p></w:tc></w:tr></w:tbl>`;
+  for (const property of ['vanish','webHidden']) {
+    for (const props of [`<w:rPr><w:${property}/></w:rPr>`, `<w:tblStylePr w:type="firstRow"><w:rPr><w:${property}/></w:rPr></w:tblStylePr>`]) {
+      const styles = `<w:style w:type="table" w:styleId="Secret">${props}</w:style><w:style w:type="table" w:styleId="Child"><w:basedOn w:val="Secret"/></w:style>`;
+      await blocked(pack(table('Secret'),styles),'DOCX_TABLE_VISIBILITY_UNSUPPORTED');
+      await blocked(pack(table('Child'),styles),'DOCX_TABLE_VISIBILITY_UNSUPPORTED');
+      assert.equal((await inspect(pack(table(''),styles))).plan.ok,true,'unused visibility style');
+      await blocked(pack(table(''),styles.replace('w:styleId="Secret"','w:styleId="Secret" w:default="1"')),'DOCX_TABLE_VISIBILITY_UNSUPPORTED');
+      assert.equal((await inspect(pack(table(''),styles.replace(`<w:${property}/>`,`<w:${property} w:val="0"/>`)))).plan.ok,true);
+    }
+  }
+});

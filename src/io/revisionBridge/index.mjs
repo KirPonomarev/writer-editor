@@ -7390,6 +7390,7 @@ const DOCX_CONTENT_PREVIEW_FAILURE_REASONS = new Map([
     'DOCX_HEADING_LEVEL_UNSUPPORTED',
     'DOCX_HIDDEN_TEXT_UNSUPPORTED',
     'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED',
+    'DOCX_TABLE_VISIBILITY_UNSUPPORTED',
     'DOCX_RUBY_UNSUPPORTED',
     'DOCX_INLINE_UNDERLINE_UNSUPPORTED',
     'DOCX_TABLE_ATTR_UNSUPPORTED',
@@ -7554,10 +7555,10 @@ function docxContentPreviewSemanticFailure(error) {
   const category = DOCX_CONTENT_PREVIEW_FAILURE_REASONS.get(sourceCode) || 'INTERNAL_ERROR';
   return docxContentPreviewDiagnostic(`DOCX_CONTENT_PREVIEW_${category}`, {
     sourceCode, sourcePart: DOCX_CONTENT_PREVIEW_SOURCE_PART,
-    ...(['DOCX_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED'].includes(sourceCode)
+    ...(['DOCX_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED', 'DOCX_TABLE_VISIBILITY_UNSUPPORTED'].includes(sourceCode)
       && Number.isInteger(error.paragraphIndex) && error.paragraphIndex >= 0
       && error.paragraphIndex < DOCX_CONTENT_PREVIEW_BOUNDS.maxParagraphs
-      ? { paragraphIndex: error.paragraphIndex, tagName: sourceCode === 'DOCX_HIDDEN_TEXT_UNSUPPORTED' ? 'w:vanish' : 'w:webHidden' } : {}),
+      ? { paragraphIndex: error.paragraphIndex, tagName: sourceCode === 'DOCX_HIDDEN_TEXT_UNSUPPORTED' ? 'w:vanish' : sourceCode === 'DOCX_WEB_HIDDEN_TEXT_UNSUPPORTED' ? 'w:webHidden' : 'w:tblStyle' } : {}),
     message: category === 'INTERNAL_ERROR' ? 'DOCX preview failed internally; the document was not imported.'
       : `DOCX preview blocked: ${sourceCode}.`,
   });
@@ -9010,7 +9011,7 @@ function docxInlineReadProperty(properties, tag, token, namespaces) {
 }
 
 function docxInlineStyleCatalog(bytes) {
-  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', themeFonts: docxFontThemeCatalog(bytes) };
+  const catalog = { styles: new Map(), defaults: {}, defaultParagraph: '', defaultCharacter: '', defaultTable: '', themeFonts: docxFontThemeCatalog(bytes) };
   const metadata = docxHostileFileGateCentralEntries(bytes);
   if (metadata.failure) throw new Error('DOCX_INLINE_STYLE_INVENTORY');
   if (!metadata.entries.some((entry) => entry.entryId === 'word/styles.xml')) return catalog;
@@ -9058,6 +9059,7 @@ function docxInlineStyleCatalog(bytes) {
       const defaultValue = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'default');
       if (type === 'paragraph' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultParagraph = id;
       if (type === 'character' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultCharacter = id;
+      if (type === 'table' && ['1', 'true', 'on'].includes(defaultValue)) catalog.defaultTable = id;
     } else if (current && tag === 'w:basedOn' && parent === 'w:style') {
       current.basedOn = docxContentPreviewWordAttributeValue(token, parsed.namespaceMap, 'val');
     } else if (parent === 'w:numPr' && stack.at(-2)?.tag === 'w:pPr') {
@@ -9089,6 +9091,12 @@ function docxInlineStyleCatalog(bytes) {
         docxInlineReadProperty(current.properties, tag, token, parsed.namespaceMap);
       } else if (owner === 'w:rPrDefault') {
         docxInlineReadProperty(catalog.defaults, tag, token, parsed.namespaceMap);
+      } else if (current?.type === 'table' && ['w:vanish', 'w:webHidden'].includes(tag)) {
+        // Conditional table-style precedence is not represented by our model.
+        // Retain the risk only on this style; unused styles remain inert.
+        const visibility = {};
+        docxInlineReadProperty(visibility, tag, token, parsed.namespaceMap);
+        if (Object.values(visibility).some(Boolean)) current.unresolvedTableVisibility = true;
       }
     }
     if (!parsed.selfClosing) stack.push({ raw: parsed.rawTagName, tag, ns: parsed.namespaceMap });
@@ -9097,6 +9105,18 @@ function docxInlineStyleCatalog(bytes) {
   }
   if (stack.length || root !== 'w:styles') throw new Error('DOCX_INLINE_STYLE_XML_INVALID');
   return catalog;
+}
+
+function docxInlineAssertTableVisibility(id, catalog, paragraphIndex) {
+  const seen = new Set();
+  while (id) {
+    if (seen.has(id) || seen.size >= 64) throw new Error('DOCX_INLINE_STYLE_CYCLE_OR_DEPTH');
+    seen.add(id);
+    const style = catalog.styles.get(id);
+    if (!style || style.type !== 'table') return;
+    if (style.unresolvedTableVisibility) throw Object.assign(new Error('DOCX_TABLE_VISIBILITY_UNSUPPORTED'), { paragraphIndex });
+    id = style.basedOn;
+  }
 }
 
 function docxInlineApplyStyle(properties, id, type, catalog) {
@@ -9514,6 +9534,7 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
   let activeInlineRun = null;
   const inlineBudget = { count: 0 };
   const sectionPropertiesFrames = [];
+  const tableVisibilityFrames = [];
   let unsupportedDepth = 0;
   let textDepth = 0;
   let fieldInstructionTextDepth = 0;
@@ -9673,6 +9694,14 @@ function docxContentPreviewParseMainDocumentXml(xmlText, inlineStyles, numbering
       ? parentTag : `other:${tableParent?.rawTagName.split(':').at(-1) || ''}`;
     tableReader.tag(tableTag, tableParentTag, closing, selfClosing,
       name => docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, name));
+    if (tableTag === 'w:tbl') {
+      if (closing) tableVisibilityFrames.pop();
+      else if (!selfClosing) tableVisibilityFrames.push({ styleId: inlineStyles.defaultTable });
+    } else if (!closing && tableTag === 'w:tblStyle' && tableParentTag === 'w:tblPr' && tableVisibilityFrames.length) {
+      tableVisibilityFrames.at(-1).styleId = docxContentPreviewWordAttributeValue(token, tokenNamespaceMap, 'val');
+    } else if (!closing && tableTag === 'w:p' && tableVisibilityFrames.length) {
+      docxInlineAssertTableVisibility(tableVisibilityFrames.at(-1).styleId, inlineStyles, paragraphs.length);
+    }
     if (insideParagraph && tagName === 'w:r') {
       if (closing && activeInlineRun) docxInlineEffectiveRunProperties(activeParagraphMetadata, activeInlineRun, inlineStyles);
       activeInlineRun = closing || selfClosing ? null : { properties: {}, styleId: '' };

@@ -611,7 +611,7 @@ export const R24_INTEROP_WORD_VISIBILITY_RUBY_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "fc5cb216bd8761c5be5c6a3fb352897660d604a49a1eefd16b083121ca5e1c29"
+      "sha256": "d85332b54dbdce2789901cc8bec275187b284048cd8e2d16aee1d7ffd70d3564"
     }
   ]
 });
