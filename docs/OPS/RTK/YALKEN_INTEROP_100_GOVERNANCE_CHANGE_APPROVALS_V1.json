@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "716d654af9dc40bb1b65244bd9b095560e13aa1d7ebff9cef13f7383b9319450",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
+      "sha256": "22c0e828428f6f6d6f3f8b59b02c4915990da1837059943abef9a6ed69227b92",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1558,12 +1558,12 @@
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
-      "sha256": "4f4c8d5552d5ea381fe27fdabd5ae07994e415e8296be4df8ed5f7cd0bd1ffc1",
-      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
-      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "sha256": "917bf2423fe94cbe3f846f335bbc3ca63f16e3dc0ade75ef4f307f22f81d9bbe",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-word-manuscript-fixtures.mjs",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "31fdda940f2ce1dacd4fdcdd61a1cf855c3c9593054146415326752061ea6648",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "sha256": "5ecfa5e2795b53966949850e469b84ab1334ab818c657c130f44b3a8a6ee51f4",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "728133090a3032bdd6e46ceaa70049a3a3ffc6f7552e6adc694918e4351856ec",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "sha256": "d63b8bc3b8c3f926f1534bc6cf7f7981630854045904907f78c451f87a625159",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "a1e92485a0c5502ff199d51ceea3c25e5d1f1d0f0dcb2a4dbbc681e1bce17cce",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "sha256": "e93a68a6bd58c10c838ac28d7255d0b481b12c2bf4d18d91a808878acf203bf2",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "e0e529e812a21559b802a027f718e5ec43c800ecd35dd612a106d0536c488f3b",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "sha256": "7f767531ee7206a31987653e1be0405fdb6be76281fc94c56bcf9e1662d4c618",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "ffcd9e4f1571327ffb56e7e3e3f35589d5a1c4b02b9e68ac78d1497b92d21b0c",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "sha256": "80572343f18fb5c2a080894da3f3eae38219747e8c19c11d45aad6b7e445cef4",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "6675fa025eb606bd99b5011cc6c89fc1316c1617fc7b1a74fce8126f8e720ca1",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
-      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "sha256": "7cf5330c240e1ee2d79a402786a6d9d3ca3d355eae34a38ecf3b8b62741f00a8",
+      "approvedBy": "owner-delegated-codex:WORD_PROOF_SUCCESSOR_ADMISSION_20260926",
+      "approvedAtUtc": "2026-09-26T03:33:52.803865Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+      "rationale": "Owner-authorized final Word proof admission: exact hash pins for the already merged PR1997 table oracle and stale test correction, without extending general promotion paths or altering runtime, raw data, semantics, frozen IDs, or mandatory hops. Actual Git 735-to-1c74 promotion regression and corrupt-pin negatives required. No automatic cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -5349,6 +5349,78 @@
       "rationale": "Owner-approved W7 closure repairs native implicit auto-fit table review while admitting the current structure-capable Lab. Explicit stored geometry, all other table properties, frozen denominator, raw/native oracles and historical identities stay strict. Runtime changed: fresh evidence is required, no expanded promotion allowlist and zero self-awarded cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "31fdda940f2ce1dacd4fdcdd61a1cf855c3c9593054146415326752061ea6648",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "728133090a3032bdd6e46ceaa70049a3a3ffc6f7552e6adc694918e4351856ec",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "716d654af9dc40bb1b65244bd9b095560e13aa1d7ebff9cef13f7383b9319450",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "a1e92485a0c5502ff199d51ceea3c25e5d1f1d0f0dcb2a4dbbc681e1bce17cce",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "e0e529e812a21559b802a027f718e5ec43c800ecd35dd612a106d0536c488f3b",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "ffcd9e4f1571327ffb56e7e3e3f35589d5a1c4b02b9e68ac78d1497b92d21b0c",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:11:54.721499Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes; also serialize the independently verified implicit-auto-fit semantic table graph digest while retaining the observed graph and raw artifact digests, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-word-manuscript-batch.mjs",
+      "sha256": "4f4c8d5552d5ea381fe27fdabd5ae07994e415e8296be4df8ed5f7cd0bd1ffc1",
+      "approvedBy": "owner-delegated-codex:WORD_MEDIA_20260925",
+      "approvedAtUtc": "2026-09-25T05:24:30Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized solo Word-first media implementation: bounded PNG validation, owned atomic binary persistence, complete image visibility, export/intake/Apply, independent raw Word object and binary oracle, companion Lab exact code admission. Preserve all older binding sets, 1120 denominator, source/packaged separation and C3 five cycles. Unmeasured planner durations remain unknown. No physical credit from this approval; all tests, CI, merge and exact-head acceptance remain required."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "6675fa025eb606bd99b5011cc6c89fc1316c1617fc7b1a74fce8126f8e720ca1",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     }
   ]
 }
