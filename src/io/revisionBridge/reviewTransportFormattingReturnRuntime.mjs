@@ -777,6 +777,15 @@ function sceneCommitGuard(projectRoot, authority, expectedSha256, cryptoPort, op
   };
 }
 
+async function publishFormattingScene(scenePath, content, expectedText, beforeRename, options) {
+  if (typeof options.publishScene === 'function') {
+    const receipt = await options.publishScene(scenePath, content, { expectedText, beforeRename });
+    if (receipt?.ok !== 1) throw new Error('RTK_FORMATTING_PROJECT_PUBLICATION_FAILED');
+    return receipt;
+  }
+  return atomicWriteFile(scenePath, content, { safetyMode: 'strict', beforeRename });
+}
+
 async function restoreTransaction(projectRoot, transaction, sceneAuthorityBySceneId, cryptoPort, options = {}) {
   const prepared = await prepareTransactionRecovery(
     projectRoot,
@@ -804,17 +813,16 @@ async function restoreTransaction(projectRoot, transaction, sceneAuthorityByScen
       continue;
     }
     try {
-      await atomicWriteFile(scene.scenePath, rawString(scene.beforeContent), {
-        safetyMode: 'strict',
-        beforeRename: sceneCommitGuard(
+      await publishFormattingScene(scene.scenePath, rawString(scene.beforeContent), rawString(scene.afterContent),
+        sceneCommitGuard(
           projectRoot,
           authority,
           scene.afterSha256,
           cryptoPort,
           options,
           { phase: 'rollback', sceneId: scene.sceneId },
-        ),
-      });
+        ), options,
+      );
     } catch (error) {
       const current = await fs.readFile(scene.scenePath, 'utf8').catch(() => null);
       const currentSha256 = current === null ? '' : sha256Text(cryptoPort, current);
@@ -1274,17 +1282,16 @@ export async function applyMultiSceneFormattingReturnRuntime(input = {}, options
           if (!await revalidateSceneAuthority(normalized.projectRoot, authority)) {
             throw new Error('RTK_FORMATTING_SCENE_PATH_AUTHORITY_CHANGED');
           }
-          await atomicWriteFile(scene.scenePath, scene.afterContent, {
-            safetyMode: 'strict',
-            beforeRename: sceneCommitGuard(
+          await publishFormattingScene(scene.scenePath, scene.afterContent, scene.beforeContent,
+            sceneCommitGuard(
               normalized.projectRoot,
               authority,
               scene.beforeSha256,
               cryptoPort,
               options,
               { phase: 'commit', index, sceneId: scene.sceneId },
-            ),
-          });
+            ), options,
+          );
           writerCalled = true;
           if (!await revalidateSceneAuthority(normalized.projectRoot, authority)) {
             throw new Error('RTK_FORMATTING_SCENE_PATH_AUTHORITY_CHANGED');

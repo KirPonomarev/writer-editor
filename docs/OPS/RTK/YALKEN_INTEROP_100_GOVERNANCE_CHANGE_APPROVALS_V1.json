@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "67de8390579fe29c44191eff22c664071d8987add1ff7bb183918bdc4835ab9a",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "aebc58f2657e26c820c009d80875f3ad73cc8556e2349a061e4fcf3b6091c68e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1468,10 +1468,10 @@
     },
     {
       "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
-      "sha256": "5ebeada4fd2ece4139c3151ce4057064c811e26cbe8d482b4e621f9f360e60f7",
-      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
-      "approvedAtUtc": "2026-09-25T03:25:54Z",
-      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "sha256": "879a0d840bdc1ddc95ca45736fa34db7b1df64cce84888499b2b2f9bd4f8e1e7",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1540,12 +1540,12 @@
     },
     {
       "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
-      "sha256": "cf5abaaf9bbe36835a955aac4fda884dbf7e65cf693a0c676dc0313579dde27f",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:23:37.527202Z",
+      "sha256": "710f4c333e99386b213e76e9c5d8ee42549b94b4a127b58c20be850460366a2f",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/tasks/2026-09-25--word-media.md",
@@ -1675,21 +1675,21 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "f73347f67b31133ac9e82f2051696746d3fe9bb335773c9e47d88160776bdcc1",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
-      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "sha256": "aa73181b5d06481e12ec70a44f7a007ff870eb2da12e7d443ee7d9af51be2ce1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "1fce2aa4e754b17f825af68b49aa45f65291b380e78e34a37e03ab0716743f46",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "sha256": "f5311d9959a853dd4cec33f6425397711329c7cf5dac01adcafb16861655a1b1",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "00fd8b44d8f8c1b1112b2bf2a7bdca03a35e169f5e7e2e554a2ae31d5c438f3a",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "sha256": "ab0f43d6d4e253dadefeb6b8ac7ed02c10edf8c4083a16ce9e87afc616d9559d",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a258e6e978f5b1bf27f23d47c4f8ff6e3375c72d681a20547a00ca18f9075f8e",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "sha256": "4f70d35d7ae438022b26e6353c0e6e865837f0efb326910fb14d99f814dcbffd",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "c4971ba5aa726267352e66f9aa46a2be832d297a20efac050ebf2a11d03c52f1",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "sha256": "dae82359cf683406c1f5ce1b0f56d6afb0195ee5abb7fad1a4bc2c9ca35f0a76",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "3f5e0c0c50102b14cec7f3f5328607f50ffd1db91736d91f10554a7fc9f9454a",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "sha256": "22a463e37b7995000c0b773589191ee9b89c3c6227b4b40810f5a372cf234d37",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "7c2c62615dbd5d8beb8df76f5c01fed24190ec9c86f2ad37bf871c1a9d19ff7c",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "sha256": "e5757f0d763f36ebba6ba2e295446bf306865cd4324ab7c996b5096c593d64c5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "eb2699666ceb57036150f74c385d5cb1e6d6e958281ea613306b8760c399f7bb",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
-      "approvedAtUtc": "2026-09-26T14:23:37.527202Z",
+      "sha256": "d5abe78cd9b80fffd67e592fdfe96432a0d4c7529255ff2c852f3ff30ae3c30a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2188,10 +2188,10 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
-      "sha256": "ff37c55dd31b8961bc695cf3bc6297f11324d444c140a66d7df8f078e07adbb4",
-      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
-      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
-      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "sha256": "1db925753d21fba10f34c8d47d9c84eafd857af2314fb0397b1c5d82cf80a872",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -2228,6 +2228,33 @@
       "approvedAtUtc": "2026-09-26T14:24:53.030448Z",
       "approvedBy": "owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
       "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-clean-link-label.md",
+      "sha256": "b030b1612e219402309569521e01002f61d5287f1f6c0522804df6a44e2b97ad",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-clean-link-label.contract.test.js",
+      "sha256": "0503e6b6d4e5d77c4f9378c232237f3d1d6dc4382ca26b39d053eed2b0b0ef28",
+      "approvedAtUtc": "2026-09-26T16:58:02.156177Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+      "sha256": "02734f421ff996216faecda906aadc34ca3278c89ef7e52e96910a0ac4f3d8fe",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
@@ -6894,6 +6921,411 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized Word closeout: update the stale reader pin to exact already merged PR1998 bytes. Verify every current reader binding with a regression that failed on the stale batch pin; preserve all historical eras, raw proofs, runtime, frozen IDs, semantics and gates. No cell credit from pin admission alone."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "67de8390579fe29c44191eff22c664071d8987add1ff7bb183918bdc4835ab9a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/revision-bridge-docx-review-preview-session-command-surface.contract.test.js",
+      "sha256": "5ebeada4fd2ece4139c3151ce4057064c811e26cbe8d482b4e621f9f360e60f7",
+      "approvedBy": "owner-delegated-codex:WORD_HOSTILE_20260925",
+      "approvedAtUtc": "2026-09-25T03:25:54Z",
+      "rationale": "Owner-authorized solo Word-first implementation: typed rejection of fourteen independently malformed Word input classes with canonical and authoring continuity, stale Review authority revocation, independent raw/native oracle and companion Lab admission. Exact bytes only. Frozen 1120 denominator, all native route hops, source/packaged separation, mandatory gates and exact merged-head official acceptance remain required. This approval grants zero cells.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/RTK_TEST_GRAPH_CATALOG_V1.json",
+      "sha256": "cf5abaaf9bbe36835a955aac4fda884dbf7e65cf693a0c676dc0313579dde27f",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:23:37.527202Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "1fce2aa4e754b17f825af68b49aa45f65291b380e78e34a37e03ab0716743f46",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:35:06.824483Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "00fd8b44d8f8c1b1112b2bf2a7bdca03a35e169f5e7e2e554a2ae31d5c438f3a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a258e6e978f5b1bf27f23d47c4f8ff6e3375c72d681a20547a00ca18f9075f8e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "c4971ba5aa726267352e66f9aa46a2be832d297a20efac050ebf2a11d03c52f1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "3f5e0c0c50102b14cec7f3f5328607f50ffd1db91736d91f10554a7fc9f9454a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "7c2c62615dbd5d8beb8df76f5c01fed24190ec9c86f2ad37bf871c1a9d19ff7c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T16:13:40.644069Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before text/formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "da01447cb53a314984c863c7f7f6033a886466055f0fa53560c5a9ad44983aa8",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "f73347f67b31133ac9e82f2051696746d3fe9bb335773c9e47d88160776bdcc1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "approvedAtUtc": "2026-09-26T13:21:16.106542Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "0d0de7778c8f8c6a916421d931b2c68ab6a31fda163d607b991d6833a551b4f1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "cc0b688fe4ea4783229e26562bb17eb02a88d96ef73a071d4cfedf5bdd98d1c1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "5f92225cdbc850071c6bda47926b32fd79c3496f7a555fca8b999cd7ad615561",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "97b403e98d6b2569e6aaa53073b884add46001a5872eb7fab4d129572fa23b4c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "0035ebdceeb1c6d2d17a7d00553fe573fde9f27dd503e6c9a4e620eaf4040f74",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "eb2699666ceb57036150f74c385d5cb1e6d6e958281ea613306b8760c399f7bb",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926",
+      "approvedAtUtc": "2026-09-26T14:23:37.527202Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded same-device encrypted round-key durability and live key revalidation before formatting/structural Apply. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-clean-link-label.contract.test.js",
+      "sha256": "da240c00c996f839bf6ab82a97ff5fbfe0c98b5204bb8ba0cc6033d693a2e446",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+      "sha256": "05a12b61697bbada44b4f733fd3a8685298eec941227a67da6982c6a3e3efff2",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "fda401be2e8c0d780f40e892977f6977ab5253d990ed08152642b125ed9a78e2",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "f39e9e979e5f4a2ce317ae1214adb29eb5f7c827668f0d753cb3a4597bc85e02",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "0fd6942cac926839a19385f0cdcc90bc9eaa902c3a183f0811e7ef6f34d2029e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "cb84fbbee9aab9133ddceecb763cebecf6477f10741375cb88051941dc16f8e1",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "5813810c6e1f13af0f86b5e7dd6325aa699243145431bf995829970016d3d702",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "39dd3dc4091fa3f27d9cbb49a217e0bc7959f7ca44e4b8f18f4c5c3ffd6a5f14",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "b2b00ecf206440e822885296ff631bf4842596ee871097859deb3af590e4149a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
+      "sha256": "22ffb0e9f18b48b4bb8ede66a0be2c087bfa69083dd026ad2c3b5b9d3dde9a0d",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "52238cb6ac4ad647d0aef7867c9fc2f651a8f5511cae4c0e54b8a343433b1d56",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "c0bfd4415681c94451c376f5295cef264c3089b2ead4572444ec57b29a776edd",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "3de6d75f7ec9694edf47213178646713b76a74f5389ca28cce3d9002891b2ad8",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b92f00e4535067fd09de01813bef2a414c5e74c98bb66dd60112c5756c58ef8a",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "524bc30fb5c3660d17c8f51e34d713007f26edf97bd129a32e39a1288eb23172",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "4b4734cbedea8d7118c12f4360eb4f52c9a88884cd69dfbcbd3f82906cffc8cc",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "a8086019fc089768e0ef4b0a283089e773edaf57d1d99a5c50592919cc5c66a4",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:45:13.835856Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-clean-link-label.contract.test.js",
+      "sha256": "e2fe0ecafff166a597f59681b64b9e744fcada5e40ed6fe01df0d12e16a80c94",
+      "approvedAtUtc": "2026-09-26T16:44:22.710259Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a4cccc6f1d84acc078bc35afb514a6dc778ed7afded48c092e39a2f63297cc30",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "511b4d9af25cd73ddb290ba49433f521208b21fb2a69943365943e7b1ad1b92f",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "2543d74ef39994042160a6eb19201809164e5d5a18537957716379536d497d83",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "571c46901e107f9021515bff273d57293f37fa7cbf672d25ee798b30b5203987",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "35e4aca3693b9bf7505270f5e816129290ba9673c57d8569b5ddbad34267861b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "c0e59e2ec21e54c276243281ec1e0d9974ebf24ddae528b64ef49e63bf295a11",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "8d17bfd4330c0f06069d7dfcbb25e89dcd8552ca4e5c1ed0523807bdd6e5380c",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportFormattingReturnRuntime.mjs",
+      "sha256": "ff37c55dd31b8961bc695cf3bc6297f11324d444c140a66d7df8f078e07adbb4",
+      "approvedAtUtc": "2026-09-26T13:11:39.032373Z",
+      "approvedBy": "owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan P1a: bounded external HTTP(S) link import, authoring, export and authenticated formatting return, including the existing guarded packaged Apply command. Exact implementation, tests and companions only. No cell acceptance, blanket profile expansion, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-26--word-clean-link-label.md",
+      "sha256": "a510215df09ea251713fa33ed37386451525a9267b7ac24c4c625b65b7449b7b",
+      "approvedAtUtc": "2026-09-26T16:38:25.310639Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-clean-link-label.contract.test.js",
+      "sha256": "2f90b264435f3dfba7110f78403aa4b3e5cab0cf5498747c174fe0159383aab6",
+      "approvedAtUtc": "2026-09-26T16:52:56.574177Z",
+      "approvedBy": "owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926",
+      "rationale": "Owner-authorized revision-3 Word plan: bounded authenticated clean hyperlink label return through explicit text Apply with source/key/session revalidation. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     }
   ]
 }

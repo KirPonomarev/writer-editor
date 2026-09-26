@@ -2283,6 +2283,7 @@ function reviewHyperlinkRelationships(xml, budgets, cryptoPort, budgetState) {
 // Apply authority; the existing authenticated export-map resolver does that.
 function reviewHyperlinkRuns(record, documentXml, relationships) {
   const result = new Map(), stack = [];
+  result.inertHyperlinkInstructions = [];
   let field = null;
   for (const token of record.tokens) {
     while (stack.length && stack.at(-1).end <= token.openStart) stack.pop();
@@ -2306,18 +2307,20 @@ function reviewHyperlinkRuns(record, documentXml, relationships) {
       const kind=attr(token,'fldCharType',W_NS);
       if (kind==='begin') {
         if (field || href) throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
-        field={instruction:'',phase:'instruction',href:null};
+        field={instruction:'',phase:'instruction',href:null,instructions:[]};
       } else if (kind==='separate' && field?.phase==='instruction') {
         field.phase='result';
         if (/\bHYPERLINK\b/iu.test(field.instruction)) field.href=parseDocxHyperlinkInstruction(field.instruction);
       } else if (kind==='end' && field) {
         if (/\bHYPERLINK\b/iu.test(field.instruction) && field.phase!=='result') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+        if (field.href && field.phase==='result') result.inertHyperlinkInstructions.push(...field.instructions.map(token=>({...provenance(token),href:field.href})));
         field=null;
       } else throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
     } else if (isWordToken(token,'instrText')) {
       // An orphan instruction is inventory-only, never an executable link.
       if (!field) continue;
       if (field.phase!=='instruction') throw new Error('DOCX_LINK_STRUCTURE_UNSUPPORTED');
+      field.instructions.push(token);
       field.instruction+=tokenText(documentXml,token);
       if (field.instruction.length>4096) throw new Error('DOCX_LINK_FIELD_UNSUPPORTED');
     }
@@ -2622,6 +2625,7 @@ export function extractReviewTransportFormattingRunsV2(documentXml, options = {}
       unsupportedParagraphNames,
       paragraphFormattingInvalid: paragraphFormattingInvalid || paragraphStructureInvalid,
       formattedRuns,
+      ...(linkRuns.inertHyperlinkInstructions.length ? {inertHyperlinkInstructions:linkRuns.inertHyperlinkInstructions} : {}),
     });
   }
   return { ok: true, code: 'RTK_FORMATTING_SCANNER_READY', reasons, paragraphs: results };
@@ -2641,6 +2645,7 @@ function formattingParagraphsSemanticProjection(paragraphs) {
     paragraphStructure: paragraph.paragraphStructure,
     unsupportedParagraphNames: paragraph.unsupportedParagraphNames,
     paragraphFormattingInvalid: paragraph.paragraphFormattingInvalid,
+    ...(paragraph.inertHyperlinkInstructions?.length ? {inertHyperlinkInstructions:paragraph.inertHyperlinkInstructions} : {}),
     formattedRuns: paragraph.formattedRuns.map((run) => ({
       from: run.from,
       to: run.to,
