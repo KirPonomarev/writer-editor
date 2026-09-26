@@ -74,12 +74,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
-      "sha256": "95699409526a820b9dcdf8c0b69ec62f6ae61ab6e98e21d3d50fa3ceb58ae948"
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
+      "sha256": "acc439ffc628832bac6b00cdb7eef1850e4ec536c4a97d67d13efee3744998c5"
     },
     {
       "approved": true,
@@ -1153,10 +1153,10 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "9a0b45a375b879d7c05ea9c1ed1634b44e4272f1e511a2c81d9960bbe23da77c",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:48:22.014432Z",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit.",
+      "sha256": "3a5558826fdacb2c03da8e7ffbc0fee7178da2acb84db002c4487c6ac1a16ff5",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
@@ -1819,57 +1819,57 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b66f530621ae770abaa1145ddb1d494d24a1abee84c1800ed59e0bea5e54fa30",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "sha256": "688720d47abe532b09e79a33e6b5f62e0020542b6ef83ae7a33d9f42048388e7",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "bab1e96b743fe1738adc58e231a7ae16d43b03137b2c54ab83893498e2359902",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:48:22.014432Z",
+      "sha256": "ef69b53c7573f53475f54e27e6ba66f133321d35658d46558e0c6c2a36cbcd84",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "a379a2512044934e8306bbe5f32951dd40b278eddb600d6c48a5769d15919a15",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "sha256": "ca409a8a5b7ad9f73815e77dcbc48d3a6f738f1d520da538560d196f05c31746",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "cbd7b8244f5df8fb05e7c6118ebb338a4bbfc98bdd69dd954a24a0fe6efcd86b",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "sha256": "3b85dfa8b8e2b7546cca0fe43caaab71fac1b63a93dbbf70ee8130313a9401df",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "3307095d000aba3ebb8b01bd63a5734236a08a91222ff0f652d026bb916be15c",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "sha256": "58ab9a18667f29c3943e7023e50ce9379dadcdf5647fbf46b898952ae526453f",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "c79c913a998ebe936161e50deb918e94e61c001f50d79687edeea44a7504756a",
-      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
-      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "sha256": "6675fa025eb606bd99b5011cc6c89fc1316c1617fc7b1a74fce8126f8e720ca1",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_TEST_CLOSEOUT_20260926",
+      "approvedAtUtc": "2026-09-26T03:06:15.430808Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+      "rationale": "Owner-authorized final Word audit found one obsolete scene-batch queue-label assertion after durable transaction migration. Correct the test expectation and bind its exact bytes, preserving all runtime bytes, independent readers, historical certification sets, frozen cells, full transaction and authority assertions. No cell credit from this repair."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -5187,6 +5187,78 @@
       "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b66f530621ae770abaa1145ddb1d494d24a1abee84c1800ed59e0bea5e54fa30",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "bab1e96b743fe1738adc58e231a7ae16d43b03137b2c54ab83893498e2359902",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:48:22.014432Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "9a0b45a375b879d7c05ea9c1ed1634b44e4272f1e511a2c81d9960bbe23da77c",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:48:22.014432Z",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "a379a2512044934e8306bbe5f32951dd40b278eddb600d6c48a5769d15919a15",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "cbd7b8244f5df8fb05e7c6118ebb338a4bbfc98bdd69dd954a24a0fe6efcd86b",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "3307095d000aba3ebb8b01bd63a5734236a08a91222ff0f652d026bb916be15c",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-25T12:22:55.220235Z",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_TRANSACTION_REMEDIATION_20260925",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "filePath": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
+      "rationale": "Owner-approved W1 Word remediation: real fenced manifest authority, recoverable Core scene/manifest/owned-resource/receipt transaction and independent replay proof. Preserve frozen denominator, mandatory native/raw oracles, historical Lab identities and existing proof gates. Exact byte admission only; zero accepted-cell credit.",
+      "sha256": "95699409526a820b9dcdf8c0b69ec62f6ae61ab6e98e21d3d50fa3ceb58ae948"
+    },
+    {
+      "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
+      "sha256": "c79c913a998ebe936161e50deb918e94e61c001f50d79687edeea44a7504756a",
+      "approvedBy": "owner-delegated-codex:WORD_PROVIDER_MACOS27_20260926",
+      "approvedAtUtc": "2026-09-26T00:24:14.918447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner resumed W7 on the upgraded host. Exact macOS 27.0 build 26A428 qualification with unchanged Word, runtime, independent raw oracle, frozen cells and required hops. Native canary and six provider mismatch negatives retained. Zero automatic cell credit."
     }
   ]
 }

@@ -858,7 +858,7 @@
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-e2e-command-chain.contract.test.js",
-        "sha256": "95699409526a820b9dcdf8c0b69ec62f6ae61ab6e98e21d3d50fa3ceb58ae948"
+        "sha256": "acc439ffc628832bac6b00cdb7eef1850e4ec536c4a97d67d13efee3744998c5"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-safe-create-command-surface.contract.test.js",
@@ -906,7 +906,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "c79c913a998ebe936161e50deb918e94e61c001f50d79687edeea44a7504756a"
+        "sha256": "6675fa025eb606bd99b5011cc6c89fc1316c1617fc7b1a74fce8126f8e720ca1"
       },
       {
         "path": "scripts/doctor.mjs",
