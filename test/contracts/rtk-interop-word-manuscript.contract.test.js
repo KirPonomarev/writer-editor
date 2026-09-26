@@ -695,6 +695,8 @@ test('Word import transaction admission preserves every historical Lab identity 
   'scripts/ops/rtk-interop-word-tables-readback.py':'40484d66978c994feb5ac569eb6086a2e1d93120258fd7727e6ff79c0c10b282',
  };
  for(const binding of expected.wordManuscriptBatch.readerBindings)if(autoFitReaderPins[binding.path])binding.sha256=autoFitReaderPins[binding.path];
+ // Host upgraded; exact native qualification changes only these OS identity fields.
+ expected.qualifiedProvider={...expected.qualifiedProvider,macosVersion:'27.0',macosBuild:'26A428'};
  for(const key of Object.keys(base).filter(k=>!['qualifiedRuntimeRepair','admittedPaths'].includes(k))) assert.deepEqual(actual[key],expected[key],key);
  for(const p of base.admittedPaths)assert.ok(actual.admittedPaths.includes(p),p);
  const bindings=actual.qualifiedRuntimeRepair.sourceBindings;
