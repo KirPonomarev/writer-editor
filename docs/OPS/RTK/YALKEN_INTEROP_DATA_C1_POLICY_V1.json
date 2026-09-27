@@ -273,7 +273,8 @@
     "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
     "test/unit/r24-wp104-evidence-integrity.test.js",
     "test/contracts/revision-bridge-docx-review-local-file-entry-command-surface.contract.test.js",
-    "docs/tasks/2026-09-27--word-review-selection-identity.md"
+    "docs/tasks/2026-09-27--word-review-selection-identity.md",
+    "docs/tasks/2026-09-27--word-comment-literal-font.md"
   ],
   "protectedFiles": [
     {
@@ -618,7 +619,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "8d631e6f211bc6151d067ee07fbca7e55444cac2ee7acbc640bacf6ed53558e1"
+        "sha256": "cb81fec4dadce061f04c6d856b85062a5263137a0d1e2b3a5ee1e55a2129b3fd"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1230,7 +1231,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "47c838d850f0f98b873abc74e25cd25f45224625ab88f8747f4f8ff5cdadd058"
+        "sha256": "84b08349dc42f978a948d44984cbb5972e6e1e70c0586fcdd63701a4463ae068"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1279,6 +1280,10 @@
       {
         "path": "docs/tasks/2026-09-27--word-review-selection-identity.md",
         "sha256": "e2930fa2da62052e081a69c8eac3e63d8af01317590c6cdd0f2eab58e23e33cb"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-literal-font.md",
+        "sha256": "e35cc464c791e4e1260af46f6cce115030184ed3ab8b05384ec14f16c221c0c2"
       }
     ],
     "followupRepair": {

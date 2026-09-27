@@ -4244,7 +4244,9 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
       validateCommentMetadataScans(parts, name => byPart[name], { normalizationLedger, stylesScan });
       commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'SUPPORTED',
         ...(normalizationLedger.length ? {
-          normalizationPolicy: normalizationLedger.some(item => item.definitionPart === 'word/styles.xml')
+          normalizationPolicy: normalizationLedger.some(item => item.reason === 'WORD_LITERAL_COMMENT_FONT_PRESENTATION')
+            ? 'LITERAL_COMMENT_TEXT_RETURN_DECLARED_PRESENTATION_AND_PROOFING'
+            : normalizationLedger.some(item => item.definitionPart === 'word/styles.xml')
             ? 'LITERAL_COMMENT_TEXT_RETURN_BUILTIN_PRESENTATION_AND_PROOFING'
             : 'LITERAL_COMMENT_TEXT_RETURN_PROOFING_METADATA_ONLY',
           normalizationLedger,
@@ -4681,6 +4683,8 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, st
     const xml = rawString(parts['word/comments.xml']);
     const scan = scanPart('word/comments.xml');
     const childrenMap = childrenFor(scan);
+    const parentsMap = new Map();
+    for (const [parent, children] of childrenMap) for (const child of children) parentsMap.set(child, parent);
     const paths = new Set(['comments', 'comments/comment', 'comments/comment/p',
       'comments/comment/p/r', 'comments/comment/p/r/t', 'comments/comment/p/r/tab',
       'comments/comment/p/r/br', 'comments/comment/p/r/cr', 'comments/comment/p/r/annotationRef',
@@ -4694,10 +4698,19 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, st
       paths.add('comments/comment/p/pPr/rPr');
       paths.add('comments/comment/p/pPr/rPr/lang');
       paths.add('comments/comment/p/r/rPr/lang');
+      // Native Word inserts a display-font run for Unicode glyph fallback.
+      // The literal profile preserves code points, not font presentation.
+      paths.add('comments/comment/p/r/rPr/rFonts');
     }
     if (scan.diagnostics.length || scan.tokens.filter(token => token.depth === 0).length !== 1) fail();
     for (const token of scan.tokens) {
       if (token.namespaceUri !== W_NS || !paths.has(token.path.join('/'))) fail();
+      if (token.localName === 'rFonts') {
+        const parent = parentsMap.get(token);
+        if (!normalizationLedger || !parent || (childrenMap.get(token) || []).length
+          || !(token.attributes.some(a => a.namespaceUri === W_NS))
+          || (childrenMap.get(parent) || []).filter(t => t.localName === 'rFonts').length !== 1) fail();
+      }
       for (const attribute of token.attributes) {
         if (attribute.qName === 'xmlns' || attribute.prefix === 'xmlns') continue;
         const name = attribute.localName, ns = attribute.namespaceUri;
@@ -4707,6 +4720,15 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, st
         if (token.localName === 'p' && ((ns === W14_NS && ['paraId', 'textId'].includes(name))
           || (ns === W_NS && ['rsidR', 'rsidRDefault', 'rsidP'].includes(name)))) continue;
         if (token.localName === 'r' && ns === W_NS && ['rsidR', 'rsidRPr'].includes(name)) continue;
+        if (normalizationLedger && token.localName === 'rFonts' && ns === W_NS
+          && ['ascii', 'hAnsi', 'eastAsia', 'cs'].includes(name)
+          && attribute.value.trim().length > 0 && attribute.value.length <= 128
+          && !/[\u0000-\u001f\u007f]/u.test(attribute.value)) {
+          normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
+            offset: token.openStart, attribute: attribute.qName, value: attribute.value,
+            disposition: 'NORMALIZED_NON_AUTHORING_METADATA', reason: 'WORD_LITERAL_COMMENT_FONT_PRESENTATION' });
+          continue;
+        }
         if (normalizationLedger && ns === W_NS
           && ((token.localName === 'p' && name === 'rsidRPr' && /^[A-Fa-f0-9]{8}$/u.test(attribute.value))
             || (token.localName === 'lang' && ['val', 'eastAsia', 'bidi'].includes(name)
