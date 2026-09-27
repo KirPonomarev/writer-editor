@@ -278,7 +278,8 @@
     "docs/tasks/2026-09-27--word-new-comment-return.md",
     "docs/tasks/2026-09-27--word-reply-deletion.md",
     "docs/tasks/2026-09-27--word-reply-delete-ui.md",
-    "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md"
+    "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md",
+    "docs/tasks/2026-09-27--word-delivery-historical-lookup.md"
   ],
   "protectedFiles": [
     {
@@ -535,7 +536,7 @@
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
-        "sha256": "9956c4ba1989b9c2e84dcd431b04568fcc94e6a99beb41e3e5919e192e1b6d2c"
+        "sha256": "ddb6922715f1e7d6539042bc2890092815aae52f6d5e5458eaba463b7681592b"
       },
       {
         "path": "src/export/docx/docxMinBuilder.js",
@@ -1304,6 +1305,10 @@
       {
         "path": "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md",
         "sha256": "cbdc8f2ab819dd9897ed5d9e5d3eb403b28c0b6344036e4b253a4eaa16190d0d"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-delivery-historical-lookup.md",
+        "sha256": "3b98f83ae6b4e9b84c3d705b01701c85d008c41d574fbed2a7017feb1c068337"
       }
     ],
     "followupRepair": {
