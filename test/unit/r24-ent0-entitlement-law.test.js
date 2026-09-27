@@ -59,8 +59,8 @@ test('decision branches: read-only commands stay available in free with typed ac
   }
 });
 
-test('decision branches: the nine pro complexity commands are refused in free', () => {
-  assert.equal(law.FREE_PRO_COMPLEXITY_COMMAND_IDS.length, 9);
+test('decision branches: the eight pro complexity commands are refused in free', () => {
+  assert.equal(law.FREE_PRO_COMPLEXITY_COMMAND_IDS.length, 8);
   for (const id of law.FREE_PRO_COMPLEXITY_COMMAND_IDS) {
     const d = law.decideCommandEntitlement(id, 'free');
     assert.equal(d.ok, false, id);
@@ -69,6 +69,15 @@ test('decision branches: the nine pro complexity commands are refused in free', 
     assert.equal(d.access, 'pro_complexity_surface', id);
     assert.equal(d.reason, 'PRO_COMPLEXITY_SURFACE_UNAVAILABLE_IN_FREE', id);
   }
+});
+
+test('decision branches: ordinary DOCX review intake stays available in free', () => {
+  const d = law.decideCommandEntitlement('cmd.project.review.openDocxReviewPreviewSession', 'free');
+  assert.equal(d.ok, true);
+  assert.equal(d.available, true);
+  assert.equal(d.visible, true);
+  assert.equal(d.access, 'free_authorship');
+  assert.equal(d.reason, '');
 });
 
 test('decision branches: free authorship commands stay available under supplied pro', () => {

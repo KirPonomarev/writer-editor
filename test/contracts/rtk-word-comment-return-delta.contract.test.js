@@ -37,6 +37,51 @@ test('unchanged actual exporter/parser graph has no publication', async () => {
   assert.equal(result.unchanged, true); assert.equal(result.afterText, input.beforeText);
 });
 
+test('Word proofing metadata has an explicit return ledger and never widens rich-comment admission', async () => {
+  const { bytes, input, state } = await fixture();
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
+  const options = { cryptoPort: { sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)),
+    byteLength: v => Buffer.byteLength(v) } };
+  const original = parts['word/comments.xml'];
+  const changed = original.replace(/<w:p(?=[ >])/u, '<w:p w:rsidRPr="002E54A5"')
+    .replace(/(<w:p\b[^>]*>)/u, '$1<w:pPr><w:rPr><w:lang w:val="ru-RU"/></w:rPr></w:pPr>')
+    .replace('<w:r>', '<w:r><w:rPr><w:lang w:val="ru-RU" w:eastAsia="ja-JP" w:bidi="ar-SA"/></w:rPr>')
+    .replace('Root before', 'Из Word 🧭');
+  const analyze = xml => {
+    const packageParts = { ...parts, 'word/comments.xml': xml };
+    const returned = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(
+      Object.entries(packageParts).map(([name, data]) => ({ name, data })));
+    return { returned, parsed: bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: returned }, options) };
+  };
+  const { returned, parsed } = analyze(changed);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
+  assert.equal(parsed.reviewIr.commentBodyGrammar.normalizationLedger.length, 5);
+  assert.deepEqual(parsed.reviewIr.commentBodyGrammar.normalizationLedger.map(item => item.value).sort(),
+    ['002E54A5', 'ru-RU', 'ru-RU', 'ja-JP', 'ar-SA'].sort());
+  assert(parsed.reviewIr.commentBodyGrammar.normalizationLedger.every(item => item.part === 'word/comments.xml'
+    && Number.isInteger(item.offset) && item.disposition === 'NORMALIZED_NON_AUTHORING_METADATA'));
+  const result = plan({ ...input, artifactSha256: hash(returned), returnedThreads: parsed.reviewIr.commentThreads,
+    returnedParagraphs: parsed.reviewIr.formattingParagraphs });
+  const after = JSON.parse(result.afterText);
+  assert.equal(after.threads[0].messages[0].body, 'Из Word 🧭');
+  assert.deepEqual(after.threads[0].messages[1], state.threads[0].messages[1]);
+  assert.deepEqual(after.threads[0].anchor, state.threads[0].anchor);
+  assert.throws(() => validateGenericCommentMetadataV1({ ...parts, 'word/comments.xml': changed }, options), /METADATA_UNSUPPORTED/u);
+  for (const bad of [
+    changed.replace('ru-RU', '../../foreign'),
+    changed.replace('w:lang w:val', 'w:lang w:unknown'),
+    changed.replace('<w:lang', '<w:vanish/><w:lang'),
+    changed.replace('<w:lang', '<w:b/><w:lang'),
+    changed.replace('<w:lang', '<w:rStyle w:val="Hidden"/><w:lang'),
+    changed.replace('<w:lang', '<w:drawing/><w:lang'),
+    changed.replace('002E54A5', 'command'),
+    changed.replace('w:val="ru-RU"/>', 'w:val="ru-RU">unrepresented</w:lang>'),
+  ]) assert.equal(analyze(bad).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', bad);
+});
+
 test('one delta preserves canonical IDs and combines root/reply edits, resolution and a proved range', async () => {
   const { input, state } = await fixture(), t = input.returnedThreads[0];
   t.body = '  Changed 🧭 root\nsecond line '; t.replies[0].body = 'Changed reply'; t.status = 'RESOLVED';

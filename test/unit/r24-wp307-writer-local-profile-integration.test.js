@@ -62,6 +62,7 @@ test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near ma
   const source = read('src/main.js');
   const survivorIds = [
     'cmd.project.review.openComments',
+    'cmd.project.review.openDocxReviewPreviewSession',
     'cmd.project.review.exportDocxReviewPacket',
     'cmd.project.review.activateDocxReviewPreviewSession',
     'cmd.project.review.applyExactTextChangesBatch',
@@ -94,7 +95,6 @@ test('WP307 C2 DOCX review roundtrip survivors are bridged by main while near ma
     'cmd.project.review.applyStructuralReturn.extra',
     'cmd.project.review.applyExactTextChange',
     'cmd.project.review.exportLocalPacket',
-    'cmd.project.review.openDocxReviewPreviewSession',
     'cmd.project.review.applyFullManuscriptExactTextReturn',
     'cmd.project.plan.switchMode',
   ]) {

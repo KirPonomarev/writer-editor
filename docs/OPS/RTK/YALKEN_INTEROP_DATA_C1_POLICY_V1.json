@@ -259,7 +259,11 @@
     "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
     "docs/tasks/2026-09-27--word-comment-return-delta.md",
     "src/core/word-comment-return-delta-v1.cjs",
-    "test/contracts/rtk-word-comment-return-delta.contract.test.js"
+    "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+    "docs/tasks/2026-09-27--word-comment-return-apply.md",
+    "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+    "test/unit/r24-ent0-entitlement-law.test.js",
+    "test/unit/r24-ent0-port-enforcement.test.js"
   ],
   "protectedFiles": [
     {
@@ -488,7 +492,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "6c1c2890cd3d0fd41c9d352b85dc4bf9bc4d54738da84814667c8c8bacc48bda"
+        "sha256": "9b26b966b8fb6880a12322bb2bb245173412f8ad778257a14f2ed1b72c32f01a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -500,7 +504,7 @@
       },
       {
         "path": "src/renderer/editor.bundle.js",
-        "sha256": "99bd9819c5c1c0eb5a27226b2ba1fa9c40307d6721caa8c0a23625aa20f49815"
+        "sha256": "b054a39bcd981bd6ccc7adee243022e1fbd425b14e43260c219647a9697df4df"
       },
       {
         "path": "test/contracts/revision-bridge-docx-import-reference.contract.test.js",
@@ -512,7 +516,7 @@
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-integration.test.js",
-        "sha256": "c9d887830a7dd936af3551018ab71c740562fe4a9f42ff10aae262a3ea573740"
+        "sha256": "f4d9c1ecf64710637ef17f7b28c7ce39c4eaa3883929b44f2252184c5e2ebab0"
       },
       {
         "path": "test/contracts/r24-post-audit-certification-set.contract.test.mjs",
@@ -604,7 +608,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "7cd796bcb71b38411efec368c7ae79bd4ec65e1f5bfe245a17e3fdb2999738ef"
+        "sha256": "4d95d850510355882ce4e484679d1e73fd43832e242e5b2f56d7ac6eb762ba4e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -728,11 +732,11 @@
       },
       {
         "path": "src/core/writer-local-profile-v1.cjs",
-        "sha256": "d87d704770a646d8b627edd666fab5443078a050e97cbd93aa1421dff67d1d8a"
+        "sha256": "e6b2ad662056a19488de21c06edd08e32d34768a6b3cfa3370ff79c9959d3825"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile.test.js",
-        "sha256": "e057b11a274f39fd01807ae70b70f3bc8d87f597ceb50566ee0c5fdbe7836f3f"
+        "sha256": "37140754411ae92cb0a93f75d343b0c5d396b456ca1665d3f8e382f0eb7defbb"
       },
       {
         "path": "test/unit/r24-wp307-writer-local-profile-mutants.test.js",
@@ -960,7 +964,7 @@
       },
       {
         "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-        "sha256": "4f495cb4f27600e257c12ce76e9077a02208f78c3916bdaa7bf6b7a7afe793bd"
+        "sha256": "bc4c1a2efc21067bc513eb2092c219f2efd399c366337529b3afb77b6a7e17fb"
       },
       {
         "path": "scripts/doctor.mjs",
@@ -1160,7 +1164,7 @@
       },
       {
         "path": "src/core/entitlement-law-v1.cjs",
-        "sha256": "974827b3744d03b2dabf3a2ee1e4727864440f0bafa237947c7ff6d0a5d1da1b"
+        "sha256": "0daa0ef67d134d06c286a8149b408b59cbae2a21edf27f30c3e1fad5a6a2f608"
       },
       {
         "path": "src/command/commandSurfaceKernel.js",
@@ -1216,7 +1220,15 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "f499ddd6566c4edbf468c29c277e11a45214d1a30c92d69970079e70b28953b9"
+        "sha256": "6e25ce5f72c1c77562a6d26ddfb6d67f80e1ea8d4cf42ec1260dadfb668fc5f3"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
+        "sha256": "68a7e2c6bac31d35a9b315a8df2b3458ad1b60de0d63d53e116da541bfa97f8a"
+      },
+      {
+        "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+        "sha256": "45972c1332421bf5093178999cb954a95e2bc962a5d1f20585eb1c399a53ec50"
       }
     ],
     "followupRepair": {

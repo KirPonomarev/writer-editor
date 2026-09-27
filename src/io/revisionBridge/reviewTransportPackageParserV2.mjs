@@ -4169,8 +4169,13 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     const byPart = { 'word/comments.xml': scans.comments, 'word/commentsExtended.xml': scans.commentsExtended,
       'word/commentsIds.xml': scans.commentsIds, 'word/commentsExtensible.xml': scans.commentsExtensible };
     try {
-      validateCommentMetadataScans(parts, name => byPart[name]);
-      commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'SUPPORTED' };
+      const normalizationLedger = [];
+      validateCommentMetadataScans(parts, name => byPart[name], { normalizationLedger });
+      commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'SUPPORTED',
+        ...(normalizationLedger.length ? {
+          normalizationPolicy: 'LITERAL_COMMENT_TEXT_RETURN_PROOFING_METADATA_ONLY',
+          normalizationLedger,
+        } : {}) };
     } catch (error) {
       if (error.message !== 'DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED') throw error;
       commentBodyGrammar = { profile: 'PLAIN_TEXT_V1', status: 'UNSUPPORTED', code: error.message };
@@ -4480,7 +4485,7 @@ export function validateGenericCommentMetadataV1(parts, options = {}) {
   return validateCommentMetadataScans(parts, name => parseXmlPart(name, rawString(parts[name]), budgets, cryptoPort, state));
 }
 
-function validateCommentMetadataScans(parts, scanPart) {
+function validateCommentMetadataScans(parts, scanPart, { normalizationLedger } = {}) {
   const fail = () => { throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED'); };
   const childrenFor = scan => {
     const map = new Map(), stack = [];
@@ -4511,6 +4516,14 @@ function validateCommentMetadataScans(parts, scanPart) {
       'comments/comment/p/r/noBreakHyphen', 'comments/comment/p/r/softHyphen',
       'comments/comment/p/pPr', 'comments/comment/p/pPr/pStyle',
       'comments/comment/p/r/rPr', 'comments/comment/p/r/rPr/rStyle']);
+    // Authenticated return publishes literal comment text, not Word's proofing
+    // preferences. Record every accepted proofing occurrence; generic import
+    // retains its stricter contract. No rich content or style is admitted here.
+    if (normalizationLedger) {
+      paths.add('comments/comment/p/pPr/rPr');
+      paths.add('comments/comment/p/pPr/rPr/lang');
+      paths.add('comments/comment/p/r/rPr/lang');
+    }
     if (scan.diagnostics.length || scan.tokens.filter(token => token.depth === 0).length !== 1) fail();
     for (const token of scan.tokens) {
       if (token.namespaceUri !== W_NS || !paths.has(token.path.join('/'))) fail();
@@ -4523,6 +4536,17 @@ function validateCommentMetadataScans(parts, scanPart) {
         if (token.localName === 'p' && ((ns === W14_NS && ['paraId', 'textId'].includes(name))
           || (ns === W_NS && ['rsidR', 'rsidRDefault', 'rsidP'].includes(name)))) continue;
         if (token.localName === 'r' && ns === W_NS && ['rsidR', 'rsidRPr'].includes(name)) continue;
+        if (normalizationLedger && ns === W_NS
+          && ((token.localName === 'p' && name === 'rsidRPr' && /^[A-Fa-f0-9]{8}$/u.test(attribute.value))
+            || (token.localName === 'lang' && ['val', 'eastAsia', 'bidi'].includes(name)
+              && /^(?:[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*|x-none)$/u.test(attribute.value)
+              && attribute.value.length <= 63))) {
+          normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
+            offset: token.openStart, attribute: attribute.qName, value: attribute.value,
+            disposition: 'NORMALIZED_NON_AUTHORING_METADATA',
+            reason: token.localName === 'lang' ? 'WORD_PROOFING_LANGUAGE_NOT_COMMENT_TEXT' : 'WORD_EDIT_SESSION_IDENTIFIER' });
+          continue;
+        }
         if (token.localName === 't' && attribute.prefix === 'xml'
           && ['', 'http://www.w3.org/XML/1998/namespace'].includes(ns) && name === 'space'
           && ['preserve', 'default'].includes(attribute.value)) continue;

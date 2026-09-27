@@ -5687,7 +5687,8 @@ async function applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
-async function applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge }) {
+async function applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge, onPrepared }) {
+  const rejected = code => Object.assign(new Error(code), { code });
   try {
     const capsule = context.reviewTransportAuthorityCapsule;
     const intake = context.reviewTransportReturnIntake;
@@ -5697,15 +5698,15 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     const generation = lastSignaledEditGeneration;
     if (typeof isCurrent !== 'function' || !isCurrent() || intake?.authenticated !== true
       || capsule?.projectRoot !== context.projectRoot || capsule?.commentExport?.projectId !== context.projectId) {
-      throw new Error('COMMENT_RETURN_AUTHORITY_REQUIRED');
+      throw rejected('COMMENT_RETURN_AUTHORITY_REQUIRED');
     }
     const module = await loadRtkNonTextReturnModule();
     if (!Buffer.isBuffer(docxBytes) || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) {
-      throw new Error('COMMENT_RETURN_ARTIFACT_MISMATCH');
+      throw rejected('COMMENT_RETURN_ARTIFACT_MISMATCH');
     }
     const grammar = intake.parserResult?.reviewIr?.commentBodyGrammar;
     if (grammar?.profile !== 'PLAIN_TEXT_V1' || grammar?.status !== 'SUPPORTED') {
-      throw new Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+      throw rejected('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
     }
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
@@ -5715,64 +5716,73 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
     const checkIdentity = () => {
       if (!isCurrent() || owner !== activeStage10ApplicationBootstrap || lifecycle !== currentLifecycleSubjectId()
         || context.projectRoot !== getProjectRootPath() || file !== currentFilePath
-        || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw new Error('COMMENT_RETURN_CONTEXT_STALE');
+        || generation !== lastSignaledEditGeneration || isDirty || autoSaveInProgress) throw rejected('COMMENT_RETURN_CONTEXT_STALE');
     };
     const revalidateScenes = async () => {
       checkIdentity();
       const root = await fs.realpath(context.projectRoot);
       const scenes = capsule.exportMap?.scenes;
-      if (!Array.isArray(scenes) || !scenes.length) throw new Error('COMMENT_RETURN_SCENES_REQUIRED');
+      if (!Array.isArray(scenes) || !scenes.length) throw rejected('COMMENT_RETURN_SCENES_REQUIRED');
       let openRaw = null;
       for (const scene of scenes) {
         const target = capsule.scenePathBySceneId?.[scene.sceneId];
         const baseline = capsule.baselineObservableContentBySceneId?.[scene.sceneId]
           ?? capsule.baselineFinalTextBySceneId?.[scene.sceneId];
-        if (typeof target !== 'string' || typeof baseline !== 'string') throw new Error('COMMENT_RETURN_SCENE_BINDING_REQUIRED');
+        if (typeof target !== 'string' || typeof baseline !== 'string') throw rejected('COMMENT_RETURN_SCENE_BINDING_REQUIRED');
         const relative = path.relative(path.resolve(context.projectRoot), target);
-        if (!relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw new Error('COMMENT_RETURN_SCENE_PATH_UNSAFE');
+        if (!relative || relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw rejected('COMMENT_RETURN_SCENE_PATH_UNSAFE');
         let entry = root;
         for (const component of relative.split(path.sep)) {
           entry = path.join(entry, component);
           const stat = await fs.lstat(entry);
-          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw new Error('COMMENT_RETURN_SCENE_PATH_UNSAFE');
+          if (stat.isSymbolicLink() || (entry === path.join(root, relative) ? !stat.isFile() || stat.nlink !== 1 || stat.size > 8 * 1024 * 1024 : !stat.isDirectory())) throw rejected('COMMENT_RETURN_SCENE_PATH_UNSAFE');
         }
         const raw = await fs.readFile(target, 'utf8');
-        if (raw !== baseline) throw new Error('COMMENT_RETURN_SCENE_CONFLICT');
+        if (raw !== baseline) throw rejected('COMMENT_RETURN_SCENE_CONFLICT');
         if (target === file) openRaw = raw;
       }
-      if (openRaw === null) throw new Error('COMMENT_RETURN_OPEN_SCENE_REQUIRED');
+      if (openRaw === null) throw rejected('COMMENT_RETURN_OPEN_SCENE_REQUIRED');
       const snapshot = await requestEditorSnapshot();
-      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true) throw new Error('COMMENT_RETURN_EDITOR_STALE');
+      if (!Number.isSafeInteger(snapshot.generation) || snapshot.generation < generation || snapshot.commentAuthoringPending === true) throw rejected('COMMENT_RETURN_EDITOR_STALE');
       const envelope = await loadDocumentContentEnvelopeModule();
       const live = envelope.parseObservablePayload(snapshot.content), saved = envelope.parseObservablePayload(openRaw);
       if (live.issue || saved.issue || JSON.stringify(canonicalizeComparableValue(live.doc || live.text))
-        !== JSON.stringify(canonicalizeComparableValue(saved.doc || saved.text))) throw new Error('COMMENT_SAVE_SCENE_FIRST');
+        !== JSON.stringify(canonicalizeComparableValue(saved.doc || saved.text))) throw rejected('COMMENT_SAVE_SCENE_FIRST');
       checkIdentity();
     };
     await revalidateScenes();
     const before = await module.readCommentAuthoringState(input);
     const plan = module.planCommentReturnDelta({ ...input, beforeText: before.text });
     checkIdentity();
-    if (explicitCanonicalApplyConfirmed !== true) return { ok: true, status: 'preview-ready',
-      code: 'RTK_COMMENT_DELTA_EXPLICIT_APPLY_REQUIRED', writerCalled: false, pendingProductApplyLane: true,
-      changes: plan.changes, applyReceipts: [], replayReceipts: [] };
-    const payload = { action: 'authenticated-comment-delta', requestId };
-    authenticatedCommentDeltaAdmissions.set(payload, () => queueDiskOperation(async () => {
+    let consumed = false;
+    const apply = async () => {
+      if (consumed) throw rejected('COMMENT_RETURN_PREPARED_CONSUMED');
+      consumed = true;
       checkIdentity();
-      const authority = await getMainProjectManifestAuthority();
-      return authority.withProjectLease(context.projectId, async lease => module.commitAuthenticatedCommentDelta(input, {
-        publish: operation => lease.publish(operation),
-        revalidate: async () => { await lease.assertOwned(); await revalidateScenes(); },
-      }));
-    }, 'authenticated comment return'));
-    let receipt;
-    try { receipt = await dispatchCommandSurfaceKernel('cmd.rtk.review.applyCommentLifecycleReturn', payload); }
-    finally { authenticatedCommentDeltaAdmissions.delete(payload); }
-    if (receipt?.ok !== true) throw new Error(receipt?.code || receipt?.error?.code || 'COMMENT_RETURN_DISPATCH_FAILED');
-    return { ok: true, status: receipt.replay ? 'replayed' : receipt.unchanged ? 'unchanged' : 'applied',
-      code: 'RTK_COMMENT_DELTA_APPLIED', writerCalled: receipt.writerCalled === true,
-      commandBusDispatchOnly: true, directPortDispatch: false, pendingProductApplyLane: false,
-      applyReceipts: [receipt], replayReceipts: [] };
+      const payload = { action: 'authenticated-comment-delta', requestId };
+      authenticatedCommentDeltaAdmissions.set(payload, async () => {
+        checkIdentity();
+        const authority = await getMainProjectManifestAuthority();
+        return authority.withProjectLease(context.projectId, async lease => module.commitAuthenticatedCommentDelta(input, {
+          publish: operation => lease.publish(operation),
+          revalidate: async () => { await lease.assertOwned(); await revalidateScenes(); },
+        }));
+      });
+      let receipt;
+      try { receipt = await dispatchCommandSurfaceKernel('cmd.rtk.review.applyCommentLifecycleReturn', payload); }
+      finally { authenticatedCommentDeltaAdmissions.delete(payload); }
+      if (receipt?.ok !== true) throw rejected(receipt?.code || receipt?.error?.code || 'COMMENT_RETURN_DISPATCH_FAILED');
+      return { ok: true, status: receipt.replay ? 'replayed' : receipt.unchanged ? 'unchanged' : 'applied',
+        code: 'RTK_COMMENT_DELTA_APPLIED', writerCalled: receipt.writerCalled === true,
+        commandBusDispatchOnly: true, directPortDispatch: false, pendingProductApplyLane: false,
+        applyReceipts: [receipt], replayReceipts: [] };
+    };
+    if (explicitCanonicalApplyConfirmed !== true) {
+      if (typeof onPrepared === 'function') onPrepared({ apply, changes: cloneJsonSafe(plan.changes) });
+      return { ok: true, status: 'preview-ready', code: 'RTK_COMMENT_DELTA_EXPLICIT_APPLY_REQUIRED',
+        writerCalled: false, pendingProductApplyLane: true, changes: plan.changes, applyReceipts: [], replayReceipts: [] };
+    }
+    return await apply();
   } catch (error) {
     return { ok: false, status: 'blocked', code: error.code || error.message,
       writerOutcome: 'NOT_CONFIRMED', applyReceipts: [], replayReceipts: [] };
@@ -5785,6 +5795,7 @@ async function applyAuthenticatedDocxCommentProductPath({
   requestId,
   revisionBridge,
   explicitCanonicalApplyConfirmed = false,
+  onPrepared,
   isCurrent,
   docxBytes,
 } = {}) {
@@ -5842,7 +5853,7 @@ async function applyAuthenticatedDocxCommentProductPath({
   }
   const baselineComments = context.reviewTransportAuthorityCapsule?.commentExport;
   if (baselineComments && !compareCommentExportReadback(baselineComments, commentShadowPayload.reviewIr.commentThreads).ok) {
-    return applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge });
+    return applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge, onPrepared });
   }
   if (baselineComments) {
     const owner = activeStage10ApplicationBootstrap;
@@ -9810,6 +9821,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       requestId,
       revisionBridge,
       explicitCanonicalApplyConfirmed,
+      onPrepared: options.onCommentDeltaPrepared,
       isCurrent,
       docxBytes: decoded.bytes,
     })
@@ -10226,6 +10238,29 @@ async function readDocxReviewPreviewSessionLocalFileBytes(selection) {
   return loaded.bytes;
 }
 
+async function notifyLocalWordCommentDeltaFailure() {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  await dialog.showMessageBox(mainWindow, {
+    type: 'warning', title: 'Комментарии из Word',
+    message: 'Применение комментариев не подтверждено',
+    detail: 'Сохраните текущие правки и повторно откройте файл Word. Если возник конфликт, проверьте изменения с обеих сторон.',
+    buttons: ['Понятно'], defaultId: 0, cancelId: 0,
+  });
+}
+
+async function confirmLocalWordCommentDelta({ fileName, changes }) {
+  if (!mainWindow || mainWindow.isDestroyed()) return false;
+  const count = Array.isArray(changes) ? changes.length : 0;
+  if (!count) return false;
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'question', title: 'Комментарии из Word',
+    message: 'Применить изменения комментариев?',
+    detail: `${fileName}\nИзменённых обсуждений: ${count}. Будут обновлены тексты, статусы и привязки поддержанных комментариев. Текст рукописи останется прежним.`,
+    buttons: ['Отмена', 'Применить'], defaultId: 0, cancelId: 0, noLink: true,
+  });
+  return result.response === 1;
+}
+
 async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {}, options = {}) {
   const safePayload = isPlainObjectValue(payload) ? payload : {};
   const unsupportedPayloadKeys = Object.keys(safePayload)
@@ -10305,10 +10340,11 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
     );
   }
 
+  let preparedCommentDelta = null;
   const activationResult = await handleDocxReviewPreviewSessionActivationCommandSurface({
     requestId,
     bufferSource: buffer.toString('base64'),
-  }, options);
+  }, { ...options, onCommentDeltaPrepared: value => { preparedCommentDelta = value; } });
   if (!activationResult || activationResult.ok !== true) {
     const nestedError = isPlainObjectValue(activationResult?.error) ? activationResult.error : {};
     const nestedDetails = isPlainObjectValue(nestedError.details) ? nestedError.details : {};
@@ -10325,6 +10361,39 @@ async function handleDocxReviewPreviewSessionLocalFileCommandSurface(payload = {
           : undefined,
       },
     );
+  }
+
+  if (preparedCommentDelta && activationResult.commentProductPath?.status === 'preview-ready') {
+    const prepared = preparedCommentDelta;
+    preparedCommentDelta = null;
+    const confirm = typeof options.confirmCommentDelta === 'function'
+      ? options.confirmCommentDelta : confirmLocalWordCommentDelta;
+    try {
+      const confirmed = await confirm({ fileName: selection.value.name, changes: prepared.changes });
+      if (confirmed !== true) {
+        activationResult.commentProductPath = { ...activationResult.commentProductPath,
+          status: 'cancelled', code: 'COMMENT_RETURN_APPLY_CANCELLED', pendingProductApplyLane: false };
+      } else {
+        activationResult.commentProductPath = await prepared.apply();
+        if (activationResult.commentProductPath?.ok === true) {
+          const canonical = handleWorkspaceRtkNonTextReturnStateQuery();
+          if (canonical?.ok === true && canonical.reviewSurface?.commentSurvivalPreview) {
+            const surface = cloneJsonSafe(activationResult.reviewSurface);
+            surface.commentSurvivalPreview = cloneJsonSafe(canonical.reviewSurface.commentSurvivalPreview);
+            activationResult.reviewSurface = surface;
+            if (activeReviewSessionStore?.reviewSurface) activeReviewSessionStore.reviewSurface = cloneJsonSafe(surface);
+          }
+        }
+      }
+    } catch (error) {
+      activationResult.commentProductPath = { ok: false, status: 'blocked', code: error.code || error.message,
+        writerOutcome: 'NOT_CONFIRMED', applyReceipts: [], replayReceipts: [] };
+    }
+    if (activationResult.commentProductPath?.ok === false) {
+      const notifyFailure = typeof options.notifyCommentDeltaFailure === 'function'
+        ? options.notifyCommentDeltaFailure : notifyLocalWordCommentDeltaFailure;
+      await notifyFailure();
+    }
   }
 
   return {
@@ -22336,7 +22405,7 @@ async function handleRtkCommentLifecycleReturnCommandSurface(payload = {}) {
     const admitted = authenticatedCommentDeltaAdmissions.get(payload);
     if (!admitted) return { ok: false, code: 'COMMENT_RETURN_ADMISSION_REQUIRED', writerCalled: false };
     authenticatedCommentDeltaAdmissions.delete(payload);
-    return admitted();
+    return queueDiskOperation(admitted, 'authenticated comment return');
   }
   let module = null;
   try {

@@ -31,7 +31,7 @@ test('port tier source: no renderer payload field can steer the port decision', 
   assert.equal(law.getProductEntitlementTier.length, 0);
 });
 
-test('typed refusal: free tier refuses the nine pro commands with the pre-ENT0 code and reason', () => {
+test('typed refusal: free tier refuses every pro-complexity command with the pre-ENT0 code and reason', () => {
   for (const id of law.FREE_PRO_COMPLEXITY_COMMAND_IDS) {
     const d = law.decideCommandEntitlement(id, law.getProductEntitlementTier());
     assert.equal(d.available, false, id);
