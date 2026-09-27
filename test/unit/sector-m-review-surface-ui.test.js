@@ -40,7 +40,7 @@ this.__reviewSurfaceExports = {
   renderReviewSurfaceMarkup,
 };
 `;
-  const sandbox = { WORKSPACE_QUERY_IDS, WORKSPACE_QUERY_ID_SET };
+  const sandbox = { WORKSPACE_QUERY_IDS, WORKSPACE_QUERY_ID_SET, window: new EventTarget() };
   vm.runInNewContext(snippet, sandbox, {
     filename: 'review-surface-ui.editor-snippet.js',
   });
@@ -151,6 +151,7 @@ this.__reviewSurfaceClickHarness = {
     WORKSPACE_QUERY_IDS,
     WORKSPACE_QUERY_ID_SET,
     __bridgeResult: bridgeResult,
+    window: new EventTarget(),
     Element: null,
     HTMLElement: null,
     HTMLButtonElement: null,

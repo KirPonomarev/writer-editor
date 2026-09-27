@@ -248,7 +248,8 @@
     "src/core/word-comment-authoring-v1.cjs",
     "src/core/entitlement-law-v1.cjs",
     "src/command/commandSurfaceKernel.js",
-    "test/contracts/donor-port-command-surface-kernel.contract.test.js"
+    "test/contracts/donor-port-command-surface-kernel.contract.test.js",
+    "test/unit/sector-m-review-surface-ui.test.js"
   ],
   "protectedFiles": [
     {
@@ -1162,6 +1163,10 @@
       {
         "path": "test/contracts/donor-port-command-surface-kernel.contract.test.js",
         "sha256": "d05dcf522ec4096e7d8f2ab692757a1c074d502aed72a9465571c65d7796cc24"
+      },
+      {
+        "path": "test/unit/sector-m-review-surface-ui.test.js",
+        "sha256": "d6beeaefbe02d7ce8db39130164027269bacbb7d1c39c07b29b29ebd98f511ac"
       }
     ],
     "followupRepair": {
