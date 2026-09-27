@@ -5,6 +5,7 @@ const WRITER_LOCAL_PROFILE_ID = 'WRITER_LOCAL_V1';
 const WRITER_LOCAL_OPTIONAL_SYSTEM_DISABLED = 'WRITER_LOCAL_PROFILE_OPTIONAL_SYSTEM_DISABLED';
 const WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS = Object.freeze([
   'cmd.project.review.openComments',
+  'cmd.project.review.openDocxReviewPreviewSession',
   'cmd.project.review.exportDocxReviewPacket',
   'cmd.project.review.exportFullManuscriptDocxReviewPacket',
   'cmd.project.review.editComment',

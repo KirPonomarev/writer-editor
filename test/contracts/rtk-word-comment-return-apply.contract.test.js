@@ -155,3 +155,43 @@ test('ordinary entry apply conflict cannot publish a success projection', async 
   assert.equal(result.reviewSurface.commentSurvivalPreview.orphanComments[0], 'old');
   assert.deepEqual(h.counts(), { parses: 1, writes: 0, prompts: 1 });
 });
+
+test('ordinary DOCX return entry is available in FREE and the packaged local Word profile only through its exact command', () => {
+  const commandId = 'cmd.project.review.openDocxReviewPreviewSession';
+  const entitlement = require('../../src/core/entitlement-law-v1.cjs');
+  const localProfile = require('../../src/core/writer-local-profile-v1.cjs');
+  const packaged = localProfile.createWriterLocalProfileProjection({
+    isPackaged: true,
+    platform: 'darwin',
+  });
+
+  assert.equal(entitlement.isFreeAlwaysAvailableCommandId(commandId), true);
+  assert.equal(entitlement.isProComplexityCommandId(commandId), false);
+  assert.deepEqual(entitlement.decideCommandEntitlement(commandId), {
+    ok: true,
+    available: true,
+    visible: true,
+    access: 'free_authorship',
+    commandId,
+    reason: '',
+  });
+  assert.equal(
+    localProfile.evaluateWriterLocalCommandAccess({ profile: packaged, commandId }).allowed,
+    true,
+  );
+
+  for (const optionalCommandId of [
+    'cmd.project.review.importLocalPacket',
+    'cmd.project.review.clearSession',
+    'cmd.project.review.applyExactTextChange',
+  ]) {
+    assert.equal(entitlement.isProComplexityCommandId(optionalCommandId), true);
+    assert.equal(
+      localProfile.evaluateWriterLocalCommandAccess({
+        profile: packaged,
+        commandId: optionalCommandId,
+      }).allowed,
+      false,
+    );
+  }
+});
