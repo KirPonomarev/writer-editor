@@ -2533,9 +2533,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5d0f6225f64cc08672b09f0050c70dba1f657a58943fcb7f93d58fe33543857b",
+      "sha256": "41d773aec535b8f27d8417bb312aba62b95524688a35700192259ed0a48c55a9",
       "approvedBy": "owner-direct-task:WORD_COMMENT_LITERAL_FONT_20260927",
-      "approvedAtUtc": "2026-09-27T14:50:40.766175+00:00",
+      "approvedAtUtc": "2026-09-27T15:06:33.113649+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Bounded literal Word comment font presentation normalization; no new acceptance credit; old bindings retained."
@@ -2551,9 +2551,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "b79c879e498ff40795917af0d39bf8e31f682e776b4a0ab0fe8dc95bdaef9eb2",
+      "sha256": "17c5644729258d91ce9c7bccb923a7c48bd80b366d7f885c1b5e08687195edc6",
       "approvedBy": "owner-direct-task:WORD_COMMENT_LITERAL_FONT_20260927",
-      "approvedAtUtc": "2026-09-27T14:50:40.766175+00:00",
+      "approvedAtUtc": "2026-09-27T15:06:33.113649+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Bounded literal Word comment font presentation normalization; no new acceptance credit; old bindings retained."
@@ -12021,6 +12021,24 @@
       "sha256": "dee542208976a6fdf1b8331f924dc4c4e0929d45954e2c665c9a8597ae206512",
       "approvedBy": "owner-direct-task:WORD_COMMENT_LITERAL_FONT_20260927",
       "approvedAtUtc": "2026-09-27T14:50:28.475107+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded literal Word comment font presentation normalization; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "b79c879e498ff40795917af0d39bf8e31f682e776b4a0ab0fe8dc95bdaef9eb2",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_LITERAL_FONT_20260927",
+      "approvedAtUtc": "2026-09-27T14:50:40.766175+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Bounded literal Word comment font presentation normalization; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "5d0f6225f64cc08672b09f0050c70dba1f657a58943fcb7f93d58fe33543857b",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_LITERAL_FONT_20260927",
+      "approvedAtUtc": "2026-09-27T14:50:40.766175+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Bounded literal Word comment font presentation normalization; no new acceptance credit; old bindings retained."
