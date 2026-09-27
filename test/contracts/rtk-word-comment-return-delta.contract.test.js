@@ -196,6 +196,41 @@ test('Word proofing metadata has an explicit return ledger and never widens rich
   ]) assert.equal(analyze(bad).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', bad);
 });
 
+test('native Unicode reply font fallback is ledgered without changing text or relaxing generic intake', async () => {
+  const { bytes, input, state } = await fixture();
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { validateGenericCommentMetadataV1 } = await import('../../src/io/revisionBridge/reviewTransportPackageParserV2.mjs');
+  const parts = bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
+  const options = { cryptoPort: { sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } };
+  const font = '<w:rFonts w:ascii="Segoe UI Symbol" w:hAnsi="Segoe UI Symbol" w:cs="Segoe UI Symbol"/>';
+  const changed = parts['word/comments.xml'].replace(/<w:t(?: xml:space="preserve")?>Reply before<\/w:t>/u,
+    '<w:t xml:space="preserve">Reply edited 🧭 — </w:t></w:r><w:r><w:rPr>' + font + '</w:rPr><w:t>✓</w:t>');
+  assert(changed.includes(font));
+  const analyze = xml => {
+    const returned = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(
+      Object.entries({ ...parts, 'word/comments.xml': xml }).map(([name, data]) => ({ name, data })));
+    return { returned, parsed: bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: returned }, options) };
+  };
+  const { returned, parsed } = analyze(changed);
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
+  const ledger = parsed.reviewIr.commentBodyGrammar.normalizationLedger.filter(x => x.reason === 'WORD_LITERAL_COMMENT_FONT_PRESENTATION');
+  assert.deepEqual(ledger.map(x => [x.attribute, x.value]).sort(), ['ascii', 'hAnsi', 'cs'].map(x => ['w:' + x, 'Segoe UI Symbol']).sort());
+  assert.equal(parsed.reviewIr.commentBodyGrammar.normalizationPolicy, 'LITERAL_COMMENT_TEXT_RETURN_DECLARED_PRESENTATION_AND_PROOFING');
+  const after = JSON.parse(plan({ ...input, artifactSha256: hash(returned), returnedThreads: parsed.reviewIr.commentThreads,
+    returnedParagraphs: parsed.reviewIr.formattingParagraphs }).afterText);
+  const expected = structuredClone(state.threads); expected[0].messages[1].body = 'Reply edited 🧭 — ✓';
+  assert.deepEqual(after.threads, expected);
+  assert.throws(() => validateGenericCommentMetadataV1({ ...parts, 'word/comments.xml': changed }, options), /METADATA_UNSUPPORTED/);
+  for (const badFont of [
+    '<w:rFonts/>', font + font, font.replace('w:ascii=', 'w:asciiTheme='),
+    font.replace('w:ascii=', 'w:hint='), font.replace('Segoe UI Symbol', ''),
+    font.replace('Segoe UI Symbol', 'x'.repeat(129)), font.replace('Segoe UI Symbol', 'bad&#10;font'),
+    font.replace('/>', '>unrepresented</w:rFonts>'), font.replace('/>', '><w:lang w:val="en-US"/></w:rFonts>'),
+    '<w:vanish/>' + font, '<w:b/>' + font, '<w:rStyle w:val="Hidden"/>' + font,
+  ]) assert.equal(analyze(changed.replace(font, badFont)).parsed.reviewIr.commentBodyGrammar.status, 'UNSUPPORTED', badFont);
+});
+
 test('one delta preserves canonical IDs and combines root/reply edits, resolution and a proved range', async () => {
   const { input, state } = await fixture(), t = input.returnedThreads[0];
   t.body = '  Changed 🧭 root\nsecond line '; t.replies[0].body = 'Changed reply'; t.status = 'RESOLVED';
