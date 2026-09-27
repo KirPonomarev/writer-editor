@@ -1070,6 +1070,10 @@ export const R24_INTEROP_WORD_COMMENT_THREAD_DELETION_SUCCESSOR=Object.freeze({
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
       "sha256": "bc4c1a2efc21067bc513eb2092c219f2efd399c366337529b3afb77b6a7e17fb"
+    },
+    {
+      "path": "test/unit/r24-wp104-evidence-integrity.test.js",
+      "sha256": "608037c614e73482e2788e6f8facf62a689f1140d2338033fa38b38200a08f57"
     }
   ],
   "guards": [
