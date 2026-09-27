@@ -38,6 +38,12 @@ function retainedProvenance(message, old) {
   for (const key of ['date', 'dateUtc']) {
     const a = original[key], b = returned[key];
     if (a === b || key === 'dateUtc' && !b) continue;
+    if (key === 'dateUtc' && !a && old.transportDateUtc) {
+      const expected = Date.parse(old.transportDateUtc), actual = Date.parse(b);
+      demand(Number.isFinite(expected) && Number.isFinite(actual)
+        && (actual === expected || actual === Math.floor(expected / 60000) * 60000), 'COMMENT_RETURN_PROVENANCE_CHANGED');
+      continue;
+    }
     // Word for Mac rewrites the original timestamp at minute precision. Keep
     // the authenticated original rather than silently destroying its precision.
     const before = Date.parse(a), after = Date.parse(b);

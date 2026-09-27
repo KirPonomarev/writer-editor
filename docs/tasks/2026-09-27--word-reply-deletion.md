@@ -32,3 +32,10 @@ parser and preview remain DERIVED_STATE without write authority.
 No dependencies, runtime network, new surface or schema-version migration.
 No rich-body/mixed-manuscript claim and zero official cell credit from this repair.
 Rollback: revert implementation and exact admissions; retain JSON history/recovery.
+
+Native mixed-origin repro: Word removes empty UTC extension entries but retains
+entries with timestamps. Export now represents an existing explicit ISO UTC date
+in transport metadata, without altering canonical provenance. No local or missing
+date is inferred. Authenticated return accepts only the same transport instant or
+Word's already supported minute precision; arbitrary date changes still fail.
+This repairs the producer while retaining the COMPLETE deletion gate.

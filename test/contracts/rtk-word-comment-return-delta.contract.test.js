@@ -681,3 +681,25 @@ test('reply absence requires full carrier inventory, cannot hide reorder/reparen
   assert.notEqual(partial.input.commentReturnInventory?.status, 'COMPLETE');
   assert.throws(() => plan(partial.input), /COMMENT_RETURN_/);
 });
+
+test('export-only explicit UTC transport survives return without rewriting canonical provenance', async () => {
+  const f = await fixture();
+  const root = f.source.commentExport.threads[0].messages[0];
+  assert.equal(root.transportDateUtc, f.state.threads[0].messages[0].provenance.date);
+  assert.equal(root.provenance.dateUtc, undefined);
+  assert.equal(f.reviewIr.commentThreads[0].dateUtc, root.transportDateUtc);
+  assert.equal(plan(f.input).unchanged, true);
+  f.input.returnedThreads[0].body = 'edited';
+  assert.deepEqual(JSON.parse(plan(f.input).afterText).threads[0].messages[0].provenance, f.state.threads[0].messages[0].provenance);
+  f.input.returnedThreads[0].dateUtc = '2026-09-25T00:00:00Z';
+  assert.throws(() => plan(f.input), /PROVENANCE_CHANGED/);
+  const sceneId = f.state.threads[0].sceneId, text = f.input.returnedParagraphs[0].paragraphText;
+  for (const date of [undefined, '2026-09-26T10:20:00', '2026-02-31T00:00:00Z', 'unknown']) {
+    const state = structuredClone(f.state);state.threads[0].messages[0].provenance = date ? { author: 'Alice', date } : { author: 'Alice' };
+    const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
+      scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+        doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+    assert.equal(source.commentExport.threads[0].messages[0].transportDateUtc, undefined);
+    assert.deepEqual(source.commentExport.threads[0].messages[0].provenance, state.threads[0].messages[0].provenance);
+  }
+});

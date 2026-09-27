@@ -817,7 +817,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "ea21a8d4d6ac60da38d7d2366ac8e7a97f443de55bf9400cd0ceee707a2c3e47"
+        "sha256": "d749a11c1df84edae4f17242fcfc0f3165b753774733e7893176426890e204c7"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1229,11 +1229,11 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "61cde1011ebe8f3eff54d2caac49fa9c379b27bab0ac54435f579b4a361c0cde"
+        "sha256": "9adabbf8b8010c042f1f0b5a01a201cbf5c5abd81b141076075f969451be673e"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "7f951896f40dddebbffbf14dae49debf79662bafa1d30a0288cdae36b5c428c2"
+        "sha256": "264219437aa452abc7a6c581569b0f1b160bc7253bb7f6081b76436e0a0515da"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1293,7 +1293,7 @@
       },
       {
         "path": "docs/tasks/2026-09-27--word-reply-deletion.md",
-        "sha256": "5e65767656ae195e2ba9da5289c3fe8e06b16f48ce55569e15e56c7ae631c2c2"
+        "sha256": "9d878a3db4d8d9c6960bca619e4e783225df1650e865f498fc25c419b9609a0a"
       }
     ],
     "followupRepair": {

@@ -1191,7 +1191,7 @@ export const R24_INTEROP_WORD_REPLY_DELETION_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "5f6d49e293d384c478e9f8d4651a37232033af3a1e24e2ab031aa9abd58c5978"
+      "sha256": "eae56aef53048381b79424c492bc5c4605cf36b123e1e6b2c4effb6936f7dfd0"
     }
   ]
 }
