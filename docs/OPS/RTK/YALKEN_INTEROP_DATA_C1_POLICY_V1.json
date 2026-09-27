@@ -1212,11 +1212,11 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "0336833c74731f41221392738e57ee557cf2c9db135e69f8470c77a8dcf4ebda"
+        "sha256": "34d97ded3533f5bcbb158d13ec814422deab8e9b0b2d778d0eea3424c2dbc3d2"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "f36cfd4999085c0c14da91b243a78fc9e1210fa8d9d12f374b37448e3e26a08b"
+        "sha256": "cbe09cae9ee54ea04196828a635dad78eef8c7b19b12efe303f643606e7be79c"
       }
     ],
     "followupRepair": {

@@ -29,6 +29,24 @@ function provenance(v) {
   return result;
 }
 
+function retainedProvenance(message, old) {
+  const returned = provenance(message);
+  if (!old) return returned;
+  const original = provenance(old.provenance || {});
+  demand((returned.author || '') === (original.author || '')
+    && (returned.initials || '') === (original.initials || ''), 'COMMENT_RETURN_AUTHOR_CHANGED');
+  for (const key of ['date', 'dateUtc']) {
+    const a = original[key], b = returned[key];
+    if (a === b || key === 'dateUtc' && !b) continue;
+    // Word for Mac rewrites the original timestamp at minute precision. Keep
+    // the authenticated original rather than silently destroying its precision.
+    const before = Date.parse(a), after = Date.parse(b);
+    demand(Number.isFinite(before) && Number.isFinite(after)
+      && after === Math.floor(before / 60000) * 60000, 'COMMENT_RETURN_PROVENANCE_CHANGED');
+  }
+  return original;
+}
+
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
@@ -95,7 +113,7 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       if (old) demand(id === durable(old.durableId), 'COMMENT_RETURN_MESSAGE_MISSING_OR_REORDERED');
       else demand(!known.has(id), 'COMMENT_RETURN_IDENTITY_COLLISION');
       return { commentId: old?.canonicalCommentId || `word-reply-${hash(projectId + '\n' + roundId + '\n' + id)}`,
-        kind: index === 0 ? 'root' : 'reply', body: body(m.body), provenance: provenance(m) };
+        kind: index === 0 ? 'root' : 'reply', body: body(m.body), provenance: retainedProvenance(m, old) };
     });
     projection.push({ threadId: expected.threadId, sceneId: expected.sceneId,
       status: actual.status === 'RESOLVED' ? 'resolved' : 'open', anchor, messages: mapped });

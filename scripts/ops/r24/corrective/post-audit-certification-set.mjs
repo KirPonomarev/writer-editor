@@ -910,7 +910,7 @@ export const R24_INTEROP_WORD_COMMENT_RETURN_DELTA_SUCCESSOR=Object.freeze({
   "guards": [
     {
       "path": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "15c2ae2872835aa97d3e1a8f22a91441e3319ef931d4ca9fd080fcf180008a23"
+      "sha256": "f3e0457d118c200edd85b56e44f957d3b63ceb374ebe27025a0deaeb91eff63b"
     }
   ]
 });

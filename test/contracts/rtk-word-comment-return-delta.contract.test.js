@@ -199,3 +199,20 @@ test('actual main command with real project lease applies once; forged admission
   assert.equal((await run(true)).status, 'replayed'); assert.equal(await fs.readFile(stateFile, 'utf8'), after);
   sandbox.isDirty = true; assert.equal((await run(true)).code, 'COMMENT_RETURN_CONTEXT_STALE');
 });
+
+test('Word minute rounding preserves original provenance; unrelated author or date changes are conflicts', async () => {
+  const { input } = await fixture();
+  // The exported original contains seconds; the actual Mac provider drops them.
+  const before = JSON.parse(input.beforeText);
+  before.threads[0].messages[0].provenance.date = '2026-09-26T00:00:52.402Z';
+  input.baseline.threads[0].messages[0].provenance.date = '2026-09-26T00:00:52.402Z';
+  input.baseline.stateDigest = hash(stable(before)); input.beforeText = JSON.stringify(before);
+  input.returnedThreads[0].body = 'Word body edit';
+  const after = JSON.parse(plan(input).afterText);
+  assert.equal(after.threads[0].messages[0].provenance.date, '2026-09-26T00:00:52.402Z');
+  input.returnedThreads[0].date = '2026-09-25T00:00:00Z';
+  assert.throws(() => plan(input), /PROVENANCE_CHANGED/u);
+  input.returnedThreads[0].date = '2026-09-26T00:00:00Z';
+  input.returnedThreads[0].authorPersonIdentity.author = 'Another author';
+  assert.throws(() => plan(input), /AUTHOR_CHANGED/u);
+});
