@@ -2620,6 +2620,15 @@
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
       "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
       "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T12:02:37.013081+00:00",
+      "approvedBy": "owner-direct-task:WORD_WATCHDOG_TEST_DETERMINISM_20260927",
+      "authority": "DIRECT_OWNER_WORD_PROCESS_RELIABILITY_REPAIR",
+      "filePath": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
+      "sha256": "3aaaaef6d2456ace75db440bbd01aca301c5a0fdb7852ad8634b398cd3b489e2",
+      "rationale": "Owner-authorized bounded test-only reliability repair: genuinely stalled child, separated stage ceiling, exact progress-timeout and dead-child assertions. Real process identity protections unchanged; no product or cell claim."
     }
   ],
   "evidenceStampIds": [
