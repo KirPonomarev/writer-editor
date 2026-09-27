@@ -100,7 +100,8 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   const missingRoots = baseline.threads.filter(t => !byRoot.has(durable(t.messages[0].durableId)));
   if (missingRoots.length || additions.length) {
     const inventory = commentReturnInventory;
-    demand(inventory?.schemaVersion === 'yalken.rtk.comment-return-inventory.v1' && inventory.status === 'COMPLETE'
+    demand(inventory?.schemaVersion === 'yalken.rtk.comment-return-inventory.v1'
+      && (inventory.status === 'COMPLETE' || !missingRoots.length && additions.length > 0 && inventory.status === 'COMPLETE_BODY_GRAPH')
       && inventory.deletionAuthority === false && ['ABSENT', 'PRESENT'].includes(inventory.packageState)
       && Array.isArray(inventory.rootDurableIds) && Array.isArray(inventory.messageDurableIds)
       && stable([...byRoot.keys()].sort()) === stable(inventory.rootDurableIds)

@@ -31,3 +31,8 @@ New root IDs are data, never paths or dispatch authority; complete inventories,
 128-thread/129-message/64-KiB budgets and exact unchanged manuscript remain gates.
 Unsupported mixed manuscript edits remain blocked. No cell acceptance is implied.
 Rollback: revert this coherent implementation and admission; no data migration.
+
+Native Word creates optional UTC metadata only for newly added messages. The
+parser distinguishes COMPLETE_BODY_GRAPH from COMPLETE; only additions with no
+missing baseline roots can use the former. Deletion still requires COMPLETE.
+Dangling, duplicate or foreign extensible identities invalidate both receipts.

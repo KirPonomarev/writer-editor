@@ -492,7 +492,7 @@ test('Word minute rounding preserves original provenance; unrelated author or da
 
 // Generated OOXML passes through the actual parser; the authenticated baseline
 // remains the pre-edit graph rather than adopting authority from the new export.
-async function addedRootFixture({ empty = false } = {}) {
+async function addedRootFixture({ empty = false, partialMetadata = false, corruptMetadata = false } = {}) {
   const f = await fixture({ empty });
   const sceneId = 'roman/a.md', text = f.input.returnedParagraphs[0].paragraphText;
   const edited = structuredClone(f.state);
@@ -504,7 +504,16 @@ async function addedRootFixture({ empty = false } = {}) {
     scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
       doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
-  const bytes = buildDocxReviewPacketBuffer(source);
+  let bytes = buildDocxReviewPacketBuffer(source);
+  if (partialMetadata) {
+    const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts };
+    const oldIds = new Set(f.source.commentExport.threads.flatMap(t => t.messages.map(m => m.durableId)));
+    parts['word/commentsExtensible.xml'] = parts['word/commentsExtensible.xml'].replace(/<w16cex:commentExtensible\b[^>]*\/>/gu,
+      tag => [...oldIds].some(id => tag.includes('durableId="' + id + '"')) ? '' : tag);
+    if (corruptMetadata) parts['word/commentsExtensible.xml'] = parts['word/commentsExtensible.xml'].replace('</w16cex:commentsExtensible>',
+      '<w16cex:commentExtensible w16cex:durableId="FFFFFFFF"/></w16cex:commentsExtensible>');
+    bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  }
   const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } });
   assert.equal(parsed.ok, true);
@@ -590,4 +599,19 @@ test('first Word root writes readable empty recovery; failed recovery or lost le
     if (failure !== 'recovery') assert.deepEqual(JSON.parse(await fs.readFile(path.join(projectRoot,
       '.yalken/recovery/non-text-return-state.v1.json'), 'utf8')), state);
   }
+});
+
+
+test('native-style partial optional UTC metadata proves additions but never deletion or dangling identity', async () => {
+  const { input } = await addedRootFixture({ partialMetadata: true });
+  assert.equal(input.commentReturnInventory.status, 'COMPLETE_BODY_GRAPH');
+  assert.equal(plan(input).changes[0].created, true);
+  const partial = await deletionFixture({ partial: true, mutate(parts) {
+    parts['word/commentsExtensible.xml'] = parts['word/commentsExtensible.xml'].replace(/<w16cex:commentExtensible\b[^>]*\/>/u, '');
+  } });
+  assert.equal(partial.input.commentReturnInventory.status, 'COMPLETE_BODY_GRAPH');
+  assert.throws(() => plan(partial.input), /COMMENT_RETURN_PACKAGE_INCOMPLETE/);
+  const corrupt = await addedRootFixture({ partialMetadata: true, corruptMetadata: true });
+  assert.equal(corrupt.input.commentReturnInventory.status, 'INCOMPLETE');
+  assert.throws(() => plan(corrupt.input), /COMMENT_RETURN_PACKAGE_INCOMPLETE/);
 });

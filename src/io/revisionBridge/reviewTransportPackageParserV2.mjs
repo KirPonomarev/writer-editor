@@ -3486,11 +3486,14 @@ function buildCommentReturnInventory(parts, documentScan, scans, relationships, 
     const ids = scans.commentsIds.tokens.filter(t => t.namespaceUri === W16CID_NS && t.localName === 'commentId');
     const extensible = hasExtensible ? scans.commentsExtensible.tokens.filter(t => t.namespaceUri === W16CEX_NS && t.localName === 'commentExtensible') : [];
     const durableIds = ids.map(t => attr(t, 'durableId', W16CID_NS).toUpperCase());
+    const extensibleIds = extensible.map(t => attr(t, 'durableId', W16CEX_NS).toUpperCase());
+    const fullMetadata = !hasExtensible || sameSet(durableIds, extensibleIds);
     requireComplete(rawIds.every(id => /^\d{1,9}$/u.test(id)) && paraIds.every(isValidModernCommentParaId)
       && durableIds.every(id => /^[0-9A-F]{8}$/u.test(id))
       && sameSet(paraIds, ext.map(t => attr(t, 'paraId', W15_NS)))
       && sameSet(paraIds, ids.map(t => attr(t, 'paraId', W16CID_NS)))
-      && (!hasExtensible || sameSet(durableIds, extensible.map(t => attr(t, 'durableId', W16CEX_NS).toUpperCase()))));
+      && new Set(extensibleIds).size === extensibleIds.length
+      && extensibleIds.every(id => durableIds.includes(id)));
     const threads = comments.commentThreads;
     const flat = threads.flatMap(t => [{ rawId: t.commentId, durableId: t.durableId }, ...t.replies]);
     requireComplete(threads.every(t => ['ANCHORED', 'RESOLVED'].includes(t.status))
@@ -3498,7 +3501,10 @@ function buildCommentReturnInventory(parts, documentScan, scans, relationships, 
       && sameSet(durableIds, flat.map(m => rawString(m.durableId).toUpperCase())));
     for (const name of markerNames) requireComplete(sameSet(rawIds, markers.filter(t => isWordToken(t, name)).map(t => attr(t, 'id', W_NS))));
     requireComplete(markers.length === rawIds.length * 3);
-    return { schemaVersion, status: 'COMPLETE', packageState: 'PRESENT',
+    // Word may create optional UTC metadata only for newly authored messages.
+    // Prove the full body/identity/anchor graph separately; this weaker receipt
+    // must never authorize missing-thread deletion.
+    return { schemaVersion, status: fullMetadata ? 'COMPLETE' : 'COMPLETE_BODY_GRAPH', packageState: 'PRESENT',
       rootDurableIds: threads.map(t => t.durableId.toUpperCase()).sort(),
       messageDurableIds: durableIds.sort(), deletionAuthority: false };
   } catch {
