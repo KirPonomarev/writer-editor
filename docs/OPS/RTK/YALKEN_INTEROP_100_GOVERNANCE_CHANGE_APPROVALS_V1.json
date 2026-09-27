@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "3c60c6db094cd1072454cdebba5d4245fc5488e17297ab53cf56dbdbe5699b26",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "sha256": "d8190439942fb999a9308e7828627468bc745c875819bb0e68b682b726ca144e",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:46.868753+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "12edcd2193e9064069f0cc4cfc73e459b3ae6fc80f1ec47e879d0b783d52f6e6",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "sha256": "6a87e2a716a33eb14a49c091a3722b4b97c172a5993d06bda722cf002290c038",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:46.868753+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "deffbc42608dd9031df056d58c4b2fa1c3465421bb1fde9d35d07253314bbfcb",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "sha256": "5782fa0c20edef4d67d5886f288684da954f32ccc15642322b15bd7024ef0c3c",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:46.868753+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2443,21 +2443,21 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-      "sha256": "88c07b1f538938e3d48799a17304e049ab411a04b7999c9bebae6d4daae32dbe",
-      "approvedAtUtc": "2026-09-27T01:32:05.311305Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "2e5cf0c8709fd059b67c6d5f71a3586edfc82d827a41cf7db5596b8e9dd6e0d5",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "src/core/word-comment-anchor-save-v1.cjs",
-      "sha256": "88fb660a961734cd6fb6c096273fd1890e08605d6263b8875ae27bdb5b7a6957",
-      "approvedAtUtc": "2026-09-27T01:20:54.263013Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "e8cdcd3b8bb06de1e723603a5bc5d8597379db5777a17236fafbce317e013bbd",
+      "approvedAtUtc": "2026-09-27T17:59:46.868753+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "src/core/document-content-envelope-v1.cjs",
@@ -2533,30 +2533,30 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "ce0541944d6f435941bc12cdadceac099cb011b85b9dc74df9efc9ccda152140",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:10.267087+00:00",
+      "sha256": "f5236e6050eec34ed744a331f6b3c2d15d4157626230aac5b5ec867ca634ef7c",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:46.868753+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "2ba2f58ab3bbf34f90e8f92560d9cfeb6692822179f3192596ad26ed7925ab4f",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "sha256": "c88495fd7f5063dc9627a96baf319eb9b4d27ac3961dbad56df771f4010fedc9",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "9a7b8b4302f5c4918bbb3cf2ad93485608523b5da20a11419c2081a73165b443",
-      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
-      "approvedAtUtc": "2026-09-27T17:25:10.267087+00:00",
+      "sha256": "bf15d4e24bce08565c48a51a2092ca527d66263dca702ad00ded3b32753076f0",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:11.300844+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2701,6 +2701,15 @@
       "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md",
+      "sha256": "cbdc8f2ab819dd9897ed5d9e5d3eb403b28c0b6344036e4b253a4eaa16190d0d",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     }
   ],
   "evidenceStampIds": [
@@ -12636,6 +12645,132 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "src/core/word-comment-anchor-save-v1.cjs",
+      "sha256": "88fb660a961734cd6fb6c096273fd1890e08605d6263b8875ae27bdb5b7a6957",
+      "approvedAtUtc": "2026-09-27T01:20:54.263013Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
+      "sha256": "88c07b1f538938e3d48799a17304e049ab411a04b7999c9bebae6d4daae32dbe",
+      "approvedAtUtc": "2026-09-27T01:32:05.311305Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement bounded ordinary scene-save anchor rebasing with canonical graph preservation, shared project lease, exact CAS and v4 transaction recovery. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "3c60c6db094cd1072454cdebba5d4245fc5488e17297ab53cf56dbdbe5699b26",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "deffbc42608dd9031df056d58c4b2fa1c3465421bb1fde9d35d07253314bbfcb",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "12edcd2193e9064069f0cc4cfc73e459b3ae6fc80f1ec47e879d0b783d52f6e6",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "2ba2f58ab3bbf34f90e8f92560d9cfeb6692822179f3192596ad26ed7925ab4f",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:06.774186+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ce0541944d6f435941bc12cdadceac099cb011b85b9dc74df9efc9ccda152140",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:10.267087+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "9a7b8b4302f5c4918bbb3cf2ad93485608523b5da20a11419c2081a73165b443",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETE_UI_20260927",
+      "approvedAtUtc": "2026-09-27T17:25:10.267087+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Existing reply UI exact-target intent with preserved drafts, revision guard and no whole-thread fallback; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "27e10eca261d23d20fc4c39e1d6b07cf14126564fadee558067617838864fa7d",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "src/core/word-comment-anchor-save-v1.cjs",
+      "sha256": "28cf5098c8e40324b02997e40d0c04f1d922b62323621b1f1c770b5a786d01eb",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "1196be18517350e61bb0667325c74e65116daebd873f239797095e5862a04671",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "62f2cdd23007ac1fab1ed8e397eb4a6ba22df76482f1a6a65bfb375a58ad429f",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "f2e17c32045adedd5657f76558b9c5bd35c7318460cbcd5a3d4401550d559ad9",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:08.008017+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "f7f11e857e16ce90a7f5847f01ba6c081a2f5effd75374912a8d33a550260e65",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_PARAGRAPH_REBASE_20260927",
+      "approvedAtUtc": "2026-09-27T17:59:11.300844+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Exact safe paragraph split/merge rebase with quote identity, no-loss rejection and atomic recovery; no new acceptance credit; old bindings retained."
     }
   ]
 }

@@ -277,7 +277,8 @@
     "docs/tasks/2026-09-27--word-comment-literal-font.md",
     "docs/tasks/2026-09-27--word-new-comment-return.md",
     "docs/tasks/2026-09-27--word-reply-deletion.md",
-    "docs/tasks/2026-09-27--word-reply-delete-ui.md"
+    "docs/tasks/2026-09-27--word-reply-delete-ui.md",
+    "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md"
   ],
   "protectedFiles": [
     {
@@ -1202,11 +1203,11 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "88c07b1f538938e3d48799a17304e049ab411a04b7999c9bebae6d4daae32dbe"
+        "sha256": "2e5cf0c8709fd059b67c6d5f71a3586edfc82d827a41cf7db5596b8e9dd6e0d5"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
-        "sha256": "88fb660a961734cd6fb6c096273fd1890e08605d6263b8875ae27bdb5b7a6957"
+        "sha256": "e8cdcd3b8bb06de1e723603a5bc5d8597379db5777a17236fafbce317e013bbd"
       },
       {
         "path": "src/core/document-content-envelope-v1.cjs",
@@ -1299,6 +1300,10 @@
       {
         "path": "docs/tasks/2026-09-27--word-reply-delete-ui.md",
         "sha256": "149ae84a50be1b74138dc83f8e9478fc793127a1cc4a7edcff9855c56f760dba"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md",
+        "sha256": "cbdc8f2ab819dd9897ed5d9e5d3eb403b28c0b6344036e4b253a4eaa16190d0d"
       }
     ],
     "followupRepair": {

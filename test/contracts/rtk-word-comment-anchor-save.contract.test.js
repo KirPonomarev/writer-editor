@@ -45,7 +45,8 @@ test('comment save: repeated insertion/deletion and changed anchor reject rather
   const state=JSON.parse(graph());state.threads[0].anchor.blockTextSha256=sha('wrong');
   assert.throws(()=>plan('Left anchor right','prefix Left anchor right',JSON.stringify(state)),/COMMENT_SAVE_ANCHOR_STALE/);
   const multi=envelope.composeObservablePayload({doc:{type:'doc',content:[{type:'paragraph',content:[{type:'text',text:'Left anchor'}]},{type:'paragraph',content:[{type:'text',text:' right'}]}]}});
-  assert.throws(()=>planCommentAnchorSave({beforeText:graph(),projectId,sceneId,beforeContent:content('Left anchor right'),afterContent:multi}),/COMMENT_SAVE_STRUCTURE_UNSUPPORTED/);
+  const split = planCommentAnchorSave({beforeText:graph(),projectId,sceneId,beforeContent:content('Left anchor right'),afterContent:multi});
+  assert.equal(JSON.parse(split.afterText).threads[0].anchor.blockTextSha256,sha('Left anchor'));
 });
 
 function fixture(t) {
@@ -208,4 +209,62 @@ test('manual Save warning is dismiss-only, coalesced, reset after dismissal and 
  sandbox.mainWindow.isDestroyed=()=>true;await sandbox.showCommentSaveFailure({code:'COMMENT_SAVE_RANGE_CONFLICT'});assert.equal(calls,2);
  const autosave=mainSource.slice(mainSource.indexOf('async function autoSave'),mainSource.indexOf('async function handleSave'));
  assert.equal(autosave.includes('showCommentSaveFailure'),false);
+});
+
+const blocks = (texts, types=[]) => envelope.composeObservablePayload({doc:{type:'doc',content:texts.map((text,i)=>({type:types[i]||'paragraph',content:text?[{type:'text',text}]:[]}))}});
+function structural(beforeText,oldTexts,newTexts,types=[]) {
+ return planCommentAnchorSave({beforeText,projectId,sceneId,beforeContent:blocks(oldTexts),afterContent:blocks(newTexts,types)});
+}
+test('paragraph boundary split and inverse merge preserve exact thread identity, bodies and provenance',()=>{
+ const old='Left anchor right',before=graph();
+ for(const pos of [0,1,5,11,12,old.length]) {
+  const texts=[old.slice(0,pos),old.slice(pos)],split=structural(before,[old],texts),splitText=split?.afterText||before,state=JSON.parse(splitText);
+  const a=state.threads[0].anchor, index=pos<=5?1:0;
+  assert.equal(a.sceneParagraphIndex,index);assert.equal(a.paragraphIndex,index);
+  assert.equal(a.startUtf16,index?5-pos:5);assert.equal(a.blockTextSha256,sha(texts[index]));
+  const joined=JSON.parse(structural(splitText,texts,[old])?.afterText||splitText);
+  joined.revision=JSON.parse(before).revision;assert.deepEqual(joined,JSON.parse(before));
+ }
+ for(const pos of [6,8,10]) assert.throws(()=>structural(before,[old],[old.slice(0,pos),old.slice(pos)]),/COMMENT_SAVE_RANGE_CONFLICT/);
+});
+test('paragraph rebase moves adjacent anchors independently and retains Unicode grapheme boundaries',()=>{
+ const old='Before👩🏽‍💻after',before=JSON.parse(graph(old,0,'Before'));
+ const peer=JSON.parse(graph(old,6,'👩🏽‍💻')).threads[0];peer.threadId='peer';before.threads.push(peer);
+ const split=structural(JSON.stringify(before),[old],['Before','👩🏽‍💻after']),state=JSON.parse(split.afterText);
+ assert.deepEqual(state.threads.map(t=>[t.anchor.sceneParagraphIndex,t.anchor.startUtf16]),[[0,0],[1,0]]);
+ assert.deepEqual(state.threads.map(t=>t.messages),before.threads.map(t=>t.messages));
+ assert.throws(()=>structural(JSON.stringify(before),[old],['Before👩','🏽‍💻after']),/COMMENT_SAVE_RANGE_CONFLICT/);
+});
+test('paragraph mapping rejects repeated-boundary ambiguity, split ranges, removed quotes and type changes',()=>{
+ const initial=JSON.parse(graph('a',0,'a'));initial.threads[0].anchor.sceneParagraphIndex=1;initial.threads[0].anchor.paragraphIndex=1;
+ for(const next of [['a','a','a'],['a']]) assert.throws(()=>structural(JSON.stringify(initial),['a','a'],next),/COMMENT_SAVE_RANGE_CONFLICT/);
+ assert.throws(()=>structural(graph(),['Left anchor right'],['Left ',' right']),/COMMENT_SAVE_RANGE_CONFLICT/);
+ assert.throws(()=>structural(graph(),['Left anchor right'],['Left ','anchor right'],['paragraph','heading']),/COMMENT_SAVE_RANGE_CONFLICT/);
+ const old='Left anchor\nright',before=graph(old,5,'anchor\nright');
+ assert.throws(()=>structural(before,[old],['Left anchor','right']),/COMMENT_SAVE_RANGE_CONFLICT/);
+});
+test('paragraph insertion before an unchanged anchor block updates its index without touching other graph state',()=>{
+ const before=graph(),delta=structural(before,['Left anchor right'],['new paragraph','Left anchor right']),after=JSON.parse(delta.afterText);
+ assert.equal(after.threads[0].anchor.sceneParagraphIndex,1);assert.equal(after.threads[0].anchor.startUtf16,5);
+ after.revision=JSON.parse(before).revision;after.threads[0].anchor=JSON.parse(before).threads[0].anchor;
+ assert.deepEqual(after,JSON.parse(before));
+});
+test('actual main Save split and merge use authenticated three-file transaction; in-range Enter writes nothing',async t=>{
+ const f=await mainHarness(t),split=blocks(['Left ','anchor right']);
+ assert.equal((await f.save(split)).success,true);
+ const state=JSON.parse(fs.readFileSync(f.commentPath));assert.equal(state.threads[0].anchor.sceneParagraphIndex,1);
+ await f.sandbox.recoverWriterProjectTransactionForFile(f.scenePath);
+ assert.equal((await f.save(f.beforeScene)).success,true);
+ const joined=JSON.parse(fs.readFileSync(f.commentPath));joined.revision=JSON.parse(f.beforeText).revision;
+ assert.deepEqual(joined,JSON.parse(f.beforeText));
+ const before=observed(f),bad=await f.save(blocks(['Left anc','hor right']));
+ assert.equal(bad.success,false);assert.equal(bad.code,'COMMENT_SAVE_RANGE_CONFLICT');assert.deepEqual(observed(f),before);
+});
+for(const boundary of ['SCENE','COMMENT','COMMIT'])test(`paragraph split SIGKILL ${boundary} and new-process recovery preserve exact quote and graph`,async t=>{
+ const f=fixture(t);f.afterScene=blocks(['Left ','anchor right']);f.request.sceneContent=f.afterScene;
+ f.request.commentState=planCommentAnchorSave({beforeText:f.beforeText,projectId,sceneId,beforeContent:f.beforeScene,afterContent:f.afterScene});
+ fs.writeFileSync(path.join(f.root,'request.json'),JSON.stringify(f.request));
+ assert.equal((await child(f,'crash',boundary)).signal,'SIGKILL');
+ const r=await child(f,'recover');assert.equal(r.code,0,r.stderr);
+ assert.deepEqual(observed(f),boundary==='COMMIT'?[f.afterScene,f.afterManifest,f.request.commentState.afterText]:[f.beforeScene,f.beforeManifest,f.beforeText]);
 });
