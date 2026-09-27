@@ -1198,6 +1198,10 @@
       {
         "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
         "sha256": "5f468833ed73241c7b386735b83cb5e38c4f8853a571a3626957c90de679cbe5"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-anchor-save.md",
+        "sha256": "2df32af554af7753fb5288b9a62f876f62948f341e508078ca5525762610683c"
       }
     ],
     "followupRepair": {
