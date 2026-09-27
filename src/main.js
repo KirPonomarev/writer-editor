@@ -30324,7 +30324,8 @@ async function handleSave() {
         : projectSaveFailure('SAVE_ACK_NOT_DURABLE');
     }
     logDevError('handleSave:projectTransactionResult', saveResult);
-    updateStatus('Ошибка');
+    updateStatus(writerSaveFailureStatus(saveResult));
+    await showCommentSaveFailure(saveResult);
     return projectSaveFailure('PROJECT_TRANSACTION_FAILED', saveResult);
   }
 
@@ -30377,7 +30378,8 @@ async function handleSave() {
         : projectSaveFailure('SAVE_ACK_NOT_DURABLE');
     }
     logDevError('handleSave:newProjectTransactionResult', saveResult);
-    updateStatus('Ошибка');
+    updateStatus(writerSaveFailureStatus(saveResult));
+    await showCommentSaveFailure(saveResult);
     return projectSaveFailure('PROJECT_TRANSACTION_FAILED', saveResult);
   }
 
@@ -30385,10 +30387,25 @@ async function handleSave() {
 }
 
 function writerSaveFailureStatus(result) {
-  if (typeof result?.code === 'string' && result.code.startsWith('COMMENT_SAVE_')) {
-    return 'Не сохранено: изменена привязка комментария. Отмените правку текста или скопируйте черновик.';
+  if (typeof result?.code === 'string' && /^(?:COMMENT_SAVE_|COMMENT_STATE_)/u.test(result.code)) {
+    return 'Ошибка сохранения комментариев. Отмените правки текста или скопируйте черновик.';
   }
   return 'Ошибка сохранения';
+}
+
+let commentSaveWarningPromise = null;
+async function showCommentSaveFailure(result) {
+  if (typeof result?.code !== 'string' || !/^(?:COMMENT_SAVE_|COMMENT_STATE_)/u.test(result.code)
+    || !mainWindow || mainWindow.isDestroyed()) return;
+  if (commentSaveWarningPromise) return commentSaveWarningPromise;
+  // This dismiss-only platform effect reports failure; it cannot authorize writes.
+  commentSaveWarningPromise = dialog.showMessageBox(mainWindow, {
+    type: 'warning', title: 'Текст не сохранён',
+    message: 'Не удалось безопасно сохранить текст с комментариями',
+    detail: 'Привязки комментариев не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки текста или скопируйте черновик перед закрытием.',
+    buttons: ['Вернуться к тексту'], defaultId: 0, cancelId: 0, noLink: true,
+  });
+  try { await commentSaveWarningPromise; } finally { commentSaveWarningPromise = null; }
 }
 
 function projectSaveFailure(reason, cause = null) {

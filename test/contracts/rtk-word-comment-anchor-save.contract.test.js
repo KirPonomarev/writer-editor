@@ -196,3 +196,16 @@ test('other-scene threads and deleted ranges remain byte-equivalent across an or
  const after=JSON.parse(plan('Left anchor right','NEW Left anchor right',JSON.stringify(original)).afterText);
  assert.deepEqual(after.threads.slice(1),original.threads.slice(1));
 });
+
+test('manual Save warning is dismiss-only, coalesced, reset after dismissal and never publishes',async()=>{
+ let close,calls=0;const displays=[];
+ const sandbox={mainWindow:{isDestroyed:()=>false},dialog:{showMessageBox:(_win,options)=>{calls++;displays.push(options);return new Promise(resolve=>close=resolve);}}};
+ vm.createContext(sandbox);vm.runInContext('let commentSaveWarningPromise=null;\n'+extract('showCommentSaveFailure'),sandbox);
+ await sandbox.showCommentSaveFailure({code:'E_OTHER'});assert.equal(calls,0);
+ const first=sandbox.showCommentSaveFailure({code:'COMMENT_SAVE_RANGE_CONFLICT'}),second=sandbox.showCommentSaveFailure({code:'COMMENT_SAVE_RANGE_CONFLICT'});
+ assert.equal(calls,1);assert.deepEqual(Array.from(displays[0].buttons),['Вернуться к тексту']);assert.equal(displays[0].cancelId,0);assert.match(displays[0].detail,/Текст остаётся в редакторе/);
+ close({response:0});await Promise.all([first,second]);const third=sandbox.showCommentSaveFailure({code:'COMMENT_STATE_INVALID'});assert.equal(calls,2);close({response:0});await third;
+ sandbox.mainWindow.isDestroyed=()=>true;await sandbox.showCommentSaveFailure({code:'COMMENT_SAVE_RANGE_CONFLICT'});assert.equal(calls,2);
+ const autosave=mainSource.slice(mainSource.indexOf('async function autoSave'),mainSource.indexOf('async function handleSave'));
+ assert.equal(autosave.includes('showCommentSaveFailure'),false);
+});

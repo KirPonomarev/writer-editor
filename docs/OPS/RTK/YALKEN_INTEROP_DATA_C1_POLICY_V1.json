@@ -255,7 +255,8 @@
     "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
     "src/core/word-comment-anchor-save-v1.cjs",
     "src/core/document-content-envelope-v1.cjs",
-    "src/renderer/documentContentEnvelope.mjs"
+    "src/renderer/documentContentEnvelope.mjs",
+    "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js"
   ],
   "protectedFiles": [
     {
@@ -484,7 +485,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "b949bffa870d195a6feab2c479d0cd87952e106bc0e37d34518f499d017b11ce"
+        "sha256": "2a3701a65680177cb43d98b5dff44990af582d454e1514cb9f37514cac78f06a"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -1180,7 +1181,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-anchor-save.contract.test.js",
-        "sha256": "5625a5b4a510bfbe4e1793a422b532a41ffafe54008a3e05184d6b705b8f3a7e"
+        "sha256": "88c07b1f538938e3d48799a17304e049ab411a04b7999c9bebae6d4daae32dbe"
       },
       {
         "path": "src/core/word-comment-anchor-save-v1.cjs",
@@ -1193,6 +1194,10 @@
       {
         "path": "src/renderer/documentContentEnvelope.mjs",
         "sha256": "3883940cda31083a0ff56bee70fadb4a14b69278cd9ff54b55d19c0092672ae8"
+      },
+      {
+        "path": "test/unit/r24-wp204-lifecycle-recovery-mutants.test.js",
+        "sha256": "5f468833ed73241c7b386735b83cb5e38c4f8853a571a3626957c90de679cbe5"
       }
     ],
     "followupRepair": {

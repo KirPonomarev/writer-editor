@@ -28,6 +28,9 @@ const { selectStorageRecoveryPlan } = require('../../src/core/storage-selection-
 
 const MODULE_BASENAME = 'lifecycle-recovery-v1.cjs';
 const DEPENDENCIES = [
+  'word-comment-anchor-save-v1.cjs',
+  'word-comment-authoring-v1.cjs',
+  'document-content-envelope-v1.cjs',
   'transactional-inbox-outbox-v1.cjs',
   'lifecycle-conflict-v1.cjs',
   'dirty-admission-v1.cjs',
