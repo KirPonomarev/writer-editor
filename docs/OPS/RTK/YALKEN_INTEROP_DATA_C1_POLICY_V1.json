@@ -819,7 +819,7 @@
       },
       {
         "path": "test/contracts/rtk-word-canonical-comment-reexport.contract.test.js",
-        "sha256": "ea79586fb686532052d97376ebcf53b85f7cedd691c1ba639de6d6e110b0e401"
+        "sha256": "925b49cfcad42dc82fa89041f49e4cf5797da2408ce26d412e5d29c7aa4e6687"
       },
       {
         "path": "test/contracts/rtk-word-c5v2-root-comment-return-runtime.contract.test.js",

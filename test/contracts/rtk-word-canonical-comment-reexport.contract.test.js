@@ -270,12 +270,14 @@ test('production double self-parse gate rejects lost comments in provisional and
   assert.equal(provisional.publishAllowed,false);assert.equal(provisional.code,'RTK_V4_PUBLICATION_COMMENT_PROVISIONAL_MISMATCH');
 });
 
-test('production unchanged return revalidates canonical state and reports complete comment loss before commands', async () => {
+test('production unchanged return revalidates state and refuses unproven comment absence before commands', async () => {
   const runtime=await import('../../src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs');
   const input=inputs(),source=makeSource(input),threads=await parsed(buildDocxReviewPacketBuffer(source));
   let state=structuredClone(input.nonTextReturnState),dispatches=0;
-  const ctx=mainHarness(['applyAuthenticatedDocxCommentProductPath'],{
+  const ctx=mainHarness(['applyAuthenticatedDocxCommentProductPath','applyAuthenticatedCommentDelta'],{
     activeStage10ApplicationBootstrap:{generation:1},getProjectRootPath:()=>input.projectRoot,
+    currentLifecycleSubjectId:()=> 'comment-reexport-test',currentFilePath:'',lastSignaledEditGeneration:0,
+    loadRtkNonTextReturnModule:async()=>runtime,computeHash:sha,
     dispatchCommandSurfaceKernel:()=>{dispatches++;throw Error('must not dispatch');},
   });
   const args={context:{projectId:input.projectId,projectRoot:input.projectRoot,
@@ -291,8 +293,15 @@ test('production unchanged return revalidates canonical state and reports comple
   state=structuredClone(input.nonTextReturnState);
   args.commentShadowPayload.reviewIr.commentThreads=[];
   args.commentShadowPayload.sceneAuthorityIdentityJoin={ok:false};
+  args.isCurrent=()=>true;
+  args.docxBytes=buildDocxReviewPacketBuffer(source);
+  args.context.reviewTransportReturnIntake.returnedArtifactSha256='sha256:'+sha(args.docxBytes);
+  // Absence in a projection is insufficient: no complete parser inventory or
+  // explicit native decision accompanies this deliberately incomplete input.
   const missing=await ctx.applyAuthenticatedDocxCommentProductPath(args);
-  assert.equal(missing.ok,false);assert.equal(missing.typedBlocked[0].code,'COMMENT_ROOT_MISSING');assert.equal(dispatches,0);
+  assert.equal(missing.ok,false);assert.equal(missing.code,'DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+  assert.equal(missing.writerOutcome,'NOT_CONFIRMED');assert.equal(missing.applyReceipts.length,0);
+  assert.equal(dispatches,0);
 });
 
 test('actual export handler revalidates inside queue and refuses missing comment proof before any write', async () => {
