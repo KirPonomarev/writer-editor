@@ -266,7 +266,8 @@
     "test/unit/r24-ent0-port-enforcement.test.js",
     "docs/tasks/2026-09-27--word-comment-shadow-replay.md",
     "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
-    "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js"
+    "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js",
+    "docs/tasks/2026-09-27--word-comment-reply-return.md"
   ],
   "protectedFiles": [
     {
@@ -611,7 +612,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "4d95d850510355882ce4e484679d1e73fd43832e242e5b2f56d7ac6eb762ba4e"
+        "sha256": "8084fcb354f8197482d651da9b1f9b51980e6deeef5da84f3b3f6daa20df8673"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1223,7 +1224,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "6e25ce5f72c1c77562a6d26ddfb6d67f80e1ea8d4cf42ec1260dadfb668fc5f3"
+        "sha256": "93f33aea44e6d98fda87429903821160716b1c5f7900113ebe657d377f36fb72"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1231,7 +1232,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "b0d261fb135c7abfd6b0a1ff30906a1b41ca18dfa39d6b110492154fd788a049"
+        "sha256": "d20d93af561b1bb336a3f85efb6353b262ee07ce3c7b66c3084835f4c793ce0a"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1244,6 +1245,10 @@
       {
         "path": "docs/tasks/2026-09-27--word-comment-shadow-replay.md",
         "sha256": "4ac0513ba1f6db0bf4399810501d8e65b212cc2332c24ce1e6b22ab433af4421"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-reply-return.md",
+        "sha256": "5129e2fceec9c78102cb9697a40f552e7edfc5c4d1336eb9fb5f96ff7df8d9ee"
       }
     ],
     "followupRepair": {
