@@ -371,3 +371,92 @@ test('A03 C01 command path rejects non-kernel command ids and never calls a manu
   assert.equal(preview.session.invariants.modernRepliesPromoted, false);
   assert.equal(preview.session.summary.unsupportedReplyCount, 0);
 });
+
+test('actual main shadow intake replays across preview clocks without losing Word dates or writing canonical state', async (t) => {
+  const vm = require('node:vm'), crypto = require('node:crypto');
+  const projectRoot = makeProjectRoot();
+  t.after(() => fs.rmSync(projectRoot, { recursive: true, force: true }));
+  const mod = await loadModule();
+  const bridge = await import(pathToFileURL(path.join(REPO_ROOT, 'src/io/revisionBridge/index.mjs')).href);
+  const payload = authenticatedPayload(projectRoot), identity = payload.authenticatedReturnIdentity;
+  const scenePath = path.join(projectRoot, 'scene.txt');
+  fs.writeFileSync(scenePath, 'Canonical manuscript must remain unchanged');
+  const context = { projectRoot, projectId: identity.projectId, baselineHash: identity.baselineHash,
+    currentBaselineHash: identity.currentBaselineHash, targetScope: { type: 'scene', id: identity.sceneId },
+    reviewTransportAuthorityCapsule: { scenePathBySceneId: { [identity.sceneId]: scenePath },
+      baselineFinalTextBySceneId: { [identity.sceneId]: 'portable sentence' } },
+    reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: identity.returnArtifactId,
+      parserResult: { reviewIr: payload.reviewIr, parserProfileDigest: identity.parserProfileDigest,
+        analysisDigest: identity.analysisDigest, authorityCarrier: { selectedCarrier: { payload: identity } } } } };
+  const main = fs.readFileSync(path.join(REPO_ROOT, 'src/main.js'), 'utf8');
+  const fn = main.match(/function buildDocxReviewPreviewSessionCommentShadowPayload\([^]*?\n}(?=\n|$)/)[0];
+  const sandbox = vm.createContext({ isPlainObjectValue: v => !!v && typeof v === 'object' && !Array.isArray(v),
+    cloneJsonSafe: v => JSON.parse(JSON.stringify(v)), docxReviewPreviewSessionDetailString: v => typeof v === 'string' ? v.trim() : '',
+    computeHash: v => crypto.createHash('sha256').update(v).digest('hex') });
+  vm.runInContext(fn, sandbox);
+  const candidate = clock => ({ reviewPacket: { commentThreads: payload.reviewIr.commentThreads,
+    commentPlacements: payload.reviewIr.commentThreads.map(thread => ({ threadId: thread.threadId,
+      sourceCommentId: thread.commentId, createdAt: clock, targetScope: { type: 'scene', id: identity.sceneId },
+      quote: thread.quotedAnchorText })) } });
+  const firstCandidate = candidate('2026-09-27T01:00:00Z'), candidateBefore = JSON.stringify(firstCandidate);
+  const build = value => sandbox.buildDocxReviewPreviewSessionCommentShadowPayload(context, value, 'request', bridge);
+  const firstPayload = build(firstCandidate), secondPayload = build(candidate('2026-09-27T02:00:00Z'));
+  assert.equal(firstPayload.sceneAuthorityIdentityJoin.ok, true);
+  assert.equal(JSON.stringify(firstCandidate), candidateBefore, 'candidate is immutable');
+  assert.equal(JSON.stringify(firstPayload.reviewIr), JSON.stringify(secondPayload.reviewIr));
+  assert.equal(firstPayload.reviewIr.commentThreads[0].date, payload.reviewIr.commentThreads[0].date);
+  const first = await mod.importRtkCommentShadowSession(firstPayload);
+  assert.equal(first.ok, true, JSON.stringify(first));
+  const before = [first.sessionPath, first.receiptPath, scenePath].map(p => [fs.readFileSync(p, 'utf8'), fs.statSync(p).mtimeMs]);
+  const second = await mod.importRtkCommentShadowSession(secondPayload);
+  assert.equal(second.code, 'RTK_ALREADY_ANALYZED');
+  assert.equal(second.storageEffects.bytesWritten, 0);
+  assert.deepEqual([first.sessionPath, first.receiptPath, scenePath].map(p => [fs.readFileSync(p, 'utf8'), fs.statSync(p).mtimeMs]), before);
+  // Actual parser-owned placement metadata must never be normalized as a preview clock.
+  context.reviewTransportReturnIntake.parserResult.reviewIr = { ...payload.reviewIr,
+    commentPlacements: firstCandidate.reviewPacket.commentPlacements };
+  assert.equal(build(candidate('2026-09-28T00:00:00Z')).reviewIr.commentPlacements[0].createdAt,
+    '2026-09-27T01:00:00Z');
+});
+
+test('shadow identity binds complete IR, preserves legacy records, and still rejects record tampering', async t => {
+  const crypto = require('node:crypto');
+  const { stableJson } = await import(pathToFileURL(path.join(REPO_ROOT, 'src/io/revisionBridge/reviewTransportCore.mjs')).href);
+  const digest = value => 'sha256:' + crypto.createHash('sha256').update(stableJson(value)).digest('hex');
+  const projectRoot = makeProjectRoot();
+  t.after(() => fs.rmSync(projectRoot, { recursive: true, force: true }));
+  const mod = await loadModule(), payload = authenticatedPayload(projectRoot);
+  const preview = mod.buildRtkCommentShadowSessionPreview(payload);
+  assert.equal(preview.ok, true);
+  const record = preview.session;
+  const { schemaVersion, commandId, roundId, returnArtifactId, semanticReturnId, authenticatedReturnIdentity, commentShadowDigest } = record;
+  const legacyKey = digest({ schemaVersion, commandId, roundId, returnArtifactId, semanticReturnId, authenticatedReturnIdentity, commentShadowDigest });
+  const legacyEffect = digest({ roundId, semanticReturnId, authenticatedReturnIdentity, commentShadowDigest, lane: 'comments-shadow' });
+  const legacyRecord = { ...record, requestKey: legacyKey, effectKey: legacyEffect };
+  const legacySession = path.join(projectRoot, 'backups/revision-bridge-rtk-comment-shadow-sessions', legacyKey.slice(7) + '.json');
+  const legacyReceipt = path.join(projectRoot, 'backups/revision-bridge-rtk-comment-shadow-receipts', legacyKey.slice(7) + '.json');
+  for (const p of [legacySession, legacyReceipt]) fs.mkdirSync(path.dirname(p), { recursive: true });
+  fs.writeFileSync(legacySession, JSON.stringify(legacyRecord));
+  fs.writeFileSync(legacyReceipt, JSON.stringify({ requestKey: legacyKey, status: 'committed' }));
+  const legacyBefore = [legacySession, legacyReceipt].map(p => [fs.readFileSync(p, 'utf8'), fs.statSync(p).mtimeMs]);
+  const first = await mod.importRtkCommentShadowSession(payload);
+  assert.equal(first.ok, true, JSON.stringify(first));
+  assert.notEqual(first.session.requestKey, legacyKey);
+  assert.notEqual(first.session.effectKey, legacyEffect);
+  assert.deepEqual([legacySession, legacyReceipt].map(p => [fs.readFileSync(p, 'utf8'), fs.statSync(p).mtimeMs]), legacyBefore);
+  const changed = JSON.parse(JSON.stringify(payload));
+  changed.reviewIr.commentPlacements = [{ threadId: 'rtk-comment-root-1', paragraphIndex: 2 }];
+  const next = await mod.importRtkCommentShadowSession(changed);
+  assert.equal(next.ok, true);
+  assert.notEqual(first.session.requestKey, next.session.requestKey);
+  assert.notEqual(first.session.effectKey, next.session.effectKey);
+  assert.equal(first.session.commentShadowDigest, next.session.commentShadowDigest, 'unchanged threads do not hide changed IR');
+  const corrupt = JSON.parse(fs.readFileSync(first.sessionPath, 'utf8'));
+  corrupt.threads[0].body = 'unauthorized disk mutation';
+  fs.writeFileSync(first.sessionPath, JSON.stringify(corrupt));
+  const corruptBefore = fs.readFileSync(first.sessionPath, 'utf8');
+  const blocked = await mod.importRtkCommentShadowSession(payload);
+  assert.equal(blocked.code, 'RTK_COMMAND_ENVELOPE_TAMPERED');
+  assert.equal(fs.readFileSync(first.sessionPath, 'utf8'), corruptBefore);
+  assert.equal(blocked.writerCalled, false);
+});

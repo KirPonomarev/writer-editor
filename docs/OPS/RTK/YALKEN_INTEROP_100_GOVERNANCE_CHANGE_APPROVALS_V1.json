@@ -1651,12 +1651,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "9b26b966b8fb6880a12322bb2bb245173412f8ad778257a14f2ed1b72c32f01a",
-      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T07:45:10.307447Z",
+      "sha256": "e177a6de83cd00545ce28d627878be2a4fd7b6684d529971d7eed485b9ba55f6",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte governance carrier repair required by PR 2015 CI after full RTK PASS; preserves behavior and existing oracles, with no dependency, denominator, runtime-network, release or product-scope expansion."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "61887d16f6904ef70ee4842b94c6e42823e28d1ba8d4e681cb10cf73053a88fb",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "sha256": "4453f4863484031e024b60b31728a1f282590ee7b163090bf629cd9d7bfb80cd",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:06:22.421471Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "0c68a0a0ae074109272adbebe541410609384a92354cece2fd938c4bb0fb0e21",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "sha256": "b917087d72ea932d7c5ba5ddd232a2d562d4ce972587dea2198b0d4dbbdd0170",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:06:22.422318Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "66b791de5ba42dba4ef7d1b2f7fa62d321bc8ce523af428e59a49a015270ce37",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "sha256": "e9e4e83f91c222ba9714afe2c22dd5cff8ddd35e4f5ce7b021347e5403e762af",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:06:22.422390Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2524,39 +2524,39 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "45972c1332421bf5093178999cb954a95e2bc962a5d1f20585eb1c399a53ec50",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement.",
+      "sha256": "b0d261fb135c7abfd6b0a1ff30906a1b41ca18dfa39d6b110492154fd788a049",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "82176c2b3ec04ce2947a59d0e843189214004152d19b7716f484a51af9202c40",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "sha256": "cb62a7d975b4e3533ae4b33d3be94b8bcb1f00c8df2d990d2de20ca45e3f57dd",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:06:22.422575Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "983d3090b1a6cf51973e7349a1578c77ae61a1f8b70512777e3009ed79e86bc6",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "sha256": "bc19d50b2f6668e2e497d642a95b0d04711cbe3e366fa4e27b7e6b22aae9ecc4",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "991c745d7aabae28d3053ff8cc07b7935d8aadd2267c6b7cd13332f42162a5d8",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
-      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "sha256": "59d7f1a4a38f28fe6101c5940af8ae5aebeb6bd75f164341e6dad19b01e7b972",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2593,6 +2593,33 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized ordinary Word return closure: align entitlement and packaged-profile tests with the already-admitted ordinary DOCX review intake, regenerate deterministic inventory and C2A companions, and preserve all physical, oracle, denominator, and delivery gates. Exact-byte admission only; no automatic cell credit."
+    },
+    {
+      "approved": true,
+      "filePath": "docs/tasks/2026-09-27--word-comment-shadow-replay.md",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "sha256": "4ac0513ba1f6db0bf4399810501d8e65b212cc2332c24ce1e6b22ab433af4421",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "approved": true,
+      "filePath": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "sha256": "bdfe67ea5d9da26cd749936f54577b5b444c219e215004a48652abeda8c3b99c",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "approved": true,
+      "filePath": "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js",
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "sha256": "20532c14e4c28d849db5999b4f2c9bb60082846ee39420159a1b98d1050ebc78",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     }
   ],
   "evidenceStampIds": [
@@ -11007,6 +11034,114 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Owner-authorized PR 2015 closure: regenerate C2A approval carrier with its canonical generator and retain exact inventory binding; no runtime or acceptance change."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "983d3090b1a6cf51973e7349a1578c77ae61a1f8b70512777e3009ed79e86bc6",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "991c745d7aabae28d3053ff8cc07b7935d8aadd2267c6b7cd13332f42162a5d8",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "82176c2b3ec04ce2947a59d0e843189214004152d19b7716f484a51af9202c40",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "61887d16f6904ef70ee4842b94c6e42823e28d1ba8d4e681cb10cf73053a88fb",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "0c68a0a0ae074109272adbebe541410609384a92354cece2fd938c4bb0fb0e21",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "66b791de5ba42dba4ef7d1b2f7fa62d321bc8ce523af428e59a49a015270ce37",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "9b26b966b8fb6880a12322bb2bb245173412f8ad778257a14f2ed1b72c32f01a",
+      "approvedBy": "owner-delegated-codex:WORD_IMPORT_LOSS_DIAGNOSTICS_20260925|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T07:45:10.307447Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Exact current-byte governance carrier repair required by PR 2015 CI after full RTK PASS; preserves behavior and existing oracles, with no dependency, denominator, runtime-network, release or product-scope expansion."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "45972c1332421bf5093178999cb954a95e2bc962a5d1f20585eb1c399a53ec50",
+      "approvedAtUtc": "2026-09-27T10:33:17.111695Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_PROOFING_20260927",
+      "rationale": "Owner-authorized ordinary Word return closure: explicit proofing-only metadata normalization ledger, unchanged literal comment text and strict unknown-content rejection. Exact source/test bindings; no new cell credit or historical proof replacement.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "f2960a56dec4d56bf5902a60af1c00e8dd227a10dbeb2270d1801aad53e3c44a",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "77afcfb614daf2981452f0294f8f4596e754d36e697c8d908410c93d578a566b",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "abe493e484348ac22ce2d7309706687adb43b579f4933a6c579b4f8f989a2866",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "ddacd41577d468ee0b823261706687864aac3dd23dcd2f2f58f98cb53e9aa5a4",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
     }
   ]
 }
