@@ -249,7 +249,8 @@
     "src/core/entitlement-law-v1.cjs",
     "src/command/commandSurfaceKernel.js",
     "test/contracts/donor-port-command-surface-kernel.contract.test.js",
-    "test/unit/sector-m-review-surface-ui.test.js"
+    "test/unit/sector-m-review-surface-ui.test.js",
+    "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js"
   ],
   "protectedFiles": [
     {
@@ -1167,6 +1168,10 @@
       {
         "path": "test/unit/sector-m-review-surface-ui.test.js",
         "sha256": "d6beeaefbe02d7ce8db39130164027269bacbb7d1c39c07b29b29ebd98f511ac"
+      },
+      {
+        "path": "test/contracts/yalken-atlas-v5-final-audit-p0-01-future-schema-loss.contract.test.js",
+        "sha256": "c140b081decf8fc43c31b5133a30c7f528a7b9653826da7064ca7d37bb74c69e"
       }
     ],
     "followupRepair": {

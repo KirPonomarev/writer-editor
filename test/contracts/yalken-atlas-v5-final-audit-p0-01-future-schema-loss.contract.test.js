@@ -31,6 +31,7 @@ async function loadMainWithElectronStub(paths, options = {}) {
     process.argv.push('--dev');
   }
   const ipcHandlers = new Map();
+  const ipcListeners = new Map();
   const shellSession = Object.freeze({ partition: 'persist:yalken-contract-harness' });
   let liveWindow = null;
   let nextWebContentsId = 1;
@@ -45,7 +46,16 @@ async function loadMainWithElectronStub(paths, options = {}) {
         isDestroyed: () => false,
         on: (event, listener) => listeners.set(event, listener),
         paste: () => {},
-        send: () => {},
+        send: (channel, payload) => {
+          if (channel === 'editor:snapshot-request') queueMicrotask(() => {
+            ipcListeners.get('editor:snapshot-response')?.({
+              sender: this.webContents,
+              senderFrame: { url: shellUrl },
+            }, { requestId: payload.requestId, snapshot: {
+              content: '', plainText: '', generation: 1, commentAuthoringPending: false,
+            } });
+          });
+        },
         setWindowOpenHandler: () => {},
         setZoomFactor: () => {},
       };
@@ -98,7 +108,7 @@ async function loadMainWithElectronStub(paths, options = {}) {
       showOpenDialog: async () => ({ canceled: true }),
     },
     ipcMain: {
-      on: () => {},
+      on: (channel, listener) => ipcListeners.set(channel, listener),
       handle: (channel, handler) => {
         ipcHandlers.set(channel, handler);
       },
