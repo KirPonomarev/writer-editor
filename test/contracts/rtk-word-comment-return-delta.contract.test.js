@@ -112,6 +112,23 @@ test('lost part, dangling marker/metadata/relationship and incomplete projection
   assert.throws(() => plan(input), /COMMENT_RETURN_PACKAGE_INCOMPLETE/);
 });
 
+test('last-thread absence reaches a diagnostic preview only with the local authenticated baseline', async () => {
+  const { parsed, input } = await deletionFixture();
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const packet = { returnedProjection: parsed.reviewIr, diagnostics: [] };
+  const candidate = bridge.buildDocxReviewPreviewSessionCandidateFromEvidence(packet,
+    { authenticatedCommentExport: input.baseline });
+  assert.equal(candidate.status, 'diagnostics');
+  assert.equal(candidate.canWriteStorage, false); assert.equal(candidate.canAutoApply, false);
+  assert.deepEqual(candidate.reviewPacket.commentThreads, []);
+  assert(candidate.reviewPacket.diagnosticItems.some(d => d.diagnosticId.includes('MISSING_DISCUSSIONS_REQUIRE_DECISION')));
+  const generic = bridge.buildDocxReviewPreviewSessionCandidateFromEvidence(packet);
+  assert.equal(generic.reviewPacket, null);
+  const broken = structuredClone(packet); broken.returnedProjection.commentReturnInventory.status = 'INCOMPLETE';
+  assert.equal(bridge.buildDocxReviewPreviewSessionCandidateFromEvidence(broken,
+    { authenticatedCommentExport: input.baseline }).reviewPacket, null);
+});
+
 test('Word proofing metadata has an explicit return ledger and never widens rich-comment admission', async () => {
   const { bytes, input, state } = await fixture();
   const bridge = await import('../../src/io/revisionBridge/index.mjs');
