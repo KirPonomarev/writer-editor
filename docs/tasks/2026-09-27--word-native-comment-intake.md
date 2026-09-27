@@ -47,3 +47,10 @@ FEATURE_INTEGRATION_MANIFEST_V1:
 DESIGN_TOOL_ROUTER: NOT_APPLICABLE; mechanical intake/diagnostic data repair.
 Rollback: revert intake/parser, diagnostic passthrough, tests and exact admissions
 as one contour; no persisted schema migration is introduced.
+
+The first physical candidate (1cdb0fe9) exposed another break in this same chain:
+the native-file preview sanitizer discarded genericComments before planning.
+The resulting text-only import is retained as failed evidence, not acceptance.
+The repair preserves the graph and normalization ledger through that sanitizer
+and its loss-report projection. A real local-file helper regression now compares
+both complete projections with direct byte parsing and rejects injected paths.

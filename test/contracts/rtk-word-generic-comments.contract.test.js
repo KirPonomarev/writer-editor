@@ -401,3 +401,26 @@ test('implicit paragraph and character defaults cannot hide literal comment text
     if (hidden === 'none') assert(preview.contentPreview.commentNormalizationLedger.some(item => item.attribute === 'implicitStyle'));
   }
 });
+
+test('native file-selection preview retains the full comment graph and normalization ledger before safe-create planning', async () => {
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const { createDocxImportLocalFilePreview: localPreview } = require('../../src/utils/docxImportLocalFilePreview.js');
+  for (const native of [false, true]) {
+    const bytes = native ? await nativeLiteralCommentBytes() : ordinaryBytes();
+    const direct = bridge.buildDocxContentPreviewFromZipBytes(bytes);
+    const options = { pickLocalFile: async () => ({ path: '/synthetic/native-comments.docx', size: bytes.length }),
+      readLocalFileBytes: async () => bytes };
+    const result = await localPreview({ requestId: 'native-graph-preview' }, options);
+    assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.importPreviewOk, true, JSON.stringify(result));
+    assert.deepEqual(result.docxContentPreviewReport.contentPreview.genericComments, direct.contentPreview.genericComments);
+    assert.deepEqual(result.docxContentPreviewReport.contentPreview.commentNormalizationLedger, direct.contentPreview.commentNormalizationLedger);
+    assert.deepEqual(result.docxImportPreviewPlan.candidateCreatePlan.entries[0].comments, direct.contentPreview.genericComments);
+    const expectedPlan = bridge.buildDocxImportPreviewPlanFromContentPreview(direct);
+    assert.deepEqual(result.docxImportPreviewPlan.lossReport, expectedPlan.lossReport);
+    const malformed = structuredClone(direct);
+    malformed.contentPreview.commentNormalizationLedger = [{ path: '/foreign' }];
+    const rejected = await localPreview({ requestId: 'forged-metadata' }, { ...options,
+      loadRevisionBridgeModule: async () => ({ ...bridge, buildDocxContentPreviewFromZipBytes: () => malformed }) });
+    assert.equal(rejected.ok, false); assert.equal(rejected.error.reason, 'DOCX_IMPORT_LOCAL_FILE_PREVIEW_OUTPUT_FORBIDDEN');
+  }
+});

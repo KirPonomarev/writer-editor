@@ -553,7 +553,7 @@
       },
       {
         "path": "src/utils/docxImportLocalFilePreview.js",
-        "sha256": "b6d9e8d16526357cef943a66cf35b0d43d88d9eb263c1a385072012f7a13a48e"
+        "sha256": "d5cba126ec7294735dbbf4206e3ed5b06b6ce709ae511439c69617c71d9e628e"
       },
       {
         "path": "test/contracts/revision-bridge-docx-inline-styles.contract.test.js",
@@ -1165,7 +1165,7 @@
       },
       {
         "path": "test/contracts/rtk-word-generic-comments.contract.test.js",
-        "sha256": "e63ea1c76cb0614994a16419945dfad476af9d20cea1a7728a8ca2d8371934ba"
+        "sha256": "2f118382668b69124241b0c8b0a4748d8e8181200b3168ed801df4375e18e61d"
       },
       {
         "path": "src/io/revisionBridge/genericWordComments.mjs",
@@ -1313,7 +1313,7 @@
       },
       {
         "path": "docs/tasks/2026-09-27--word-native-comment-intake.md",
-        "sha256": "11d715d11bd3882cc12923a18b98b4b9f879ddf50f9812555507aa3c65f64971"
+        "sha256": "62748c72bfc526a4cbfd487fd7466aad2f322b333562fdc1ed31fc0d3e22e060"
       }
     ],
     "followupRepair": {
