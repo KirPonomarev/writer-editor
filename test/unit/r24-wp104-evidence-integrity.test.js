@@ -141,7 +141,11 @@ test('meta proof: every contour mutant suite re-executes with a verified receipt
   }
   for (const script of LANE_SCRIPTS) {
     const run = spawnSync('npm', ['run', '-s', script], { encoding: 'utf8', timeout: 300000, cwd: ROOT, env: childEnv });
-    assert.equal(run.status, 0, `lane must exit 0: ${script}`);
+    assert.equal(run.status, 0, `lane must exit 0: ${script}\n${JSON.stringify({
+      status: run.status, signal: run.signal, error: run.error?.message,
+      stdoutTail: String(run.stdout || '').slice(-24000),
+      stderrTail: String(run.stderr || '').slice(-8000),
+    })}`);
     const laneMatch = (run.stdout || '').match(/R24_(?:E0|Q0)_LANE_RECEIPT=(\{.*\})/u);
     assert.ok(laneMatch, `lane receipt missing for ${script}`);
     const lane = JSON.parse(laneMatch[1]);
