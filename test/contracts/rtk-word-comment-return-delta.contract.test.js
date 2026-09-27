@@ -26,7 +26,7 @@ async function fixture() {
     sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v),
   } });
   assert.equal(parsed.ok, true);
-  return { state, source, input: { beforeText: JSON.stringify(state, null, 2) + '\n', projectId: state.projectId,
+  return { state, source, bytes, input: { beforeText: JSON.stringify(state, null, 2) + '\n', projectId: state.projectId,
     roundId: 'round-delta-test', artifactSha256: hash(bytes), baseline: source.commentExport,
     exportMap: source.localAuthorityCapsule.exportMap, returnedThreads: parsed.reviewIr.commentThreads,
     returnedParagraphs: parsed.reviewIr.formattingParagraphs } };
@@ -154,7 +154,7 @@ test('return port requires publication authority and rejects lease loss without 
 
 test('actual main command with real project lease applies once; forged admission, dirty editor and stale intake cannot write', async t => {
   const fs = require('node:fs/promises'), path = require('node:path'), os = require('node:os'), vm = require('node:vm');
-  const { input, source } = await fixture(); input.returnedThreads[0].body = 'Main Word delta';
+  const { input, source, bytes } = await fixture(); input.returnedThreads[0].body = 'Main Word delta';
   const root = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), 'comment-return-main-')));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sceneId = 'roman/a.md', file = path.join(root, sceneId), text = input.returnedParagraphs[0].paragraphText;
@@ -171,7 +171,9 @@ test('actual main command with real project lease applies once; forged admission
     reviewTransportReturnIntake: { authenticated: true, returnedArtifactSha256: input.artifactSha256,
       parserResult: { reviewIr: { commentThreads: input.returnedThreads, formattingParagraphs: input.returnedParagraphs } } } };
   let current = true, draft = false;
-  const sandbox = { path, fs, isDirty: false, autoSaveInProgress: false, currentFilePath: file,
+  const sandbox = { path, fs, Buffer, computeHash: hash,
+    docxReviewReturnIntakeProductBudgets: () => ({}),
+    createRtkReviewTransportCryptoPort: () => ({ sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) }), isDirty: false, autoSaveInProgress: false, currentFilePath: file,
     lastSignaledEditGeneration: 0, activeStage10ApplicationBootstrap: {}, currentLifecycleSubjectId: () => 'life1',
     getProjectRootPath: () => root, loadRtkNonTextReturnModule: async () => runtime,
     loadDocumentContentEnvelopeModule: () => import('../../src/renderer/documentContentEnvelope.mjs'),
@@ -188,10 +190,22 @@ test('actual main command with real project lease applies once; forged admission
     'cmd.rtk.review.applyCommentLifecycleReturn': ctx.handleRtkCommentLifecycleReturnCommandSurface,
   });
   sandbox.dispatchCommandSurfaceKernel = kernel.dispatch;
-  const run = explicitCanonicalApplyConfirmed => ctx.applyAuthenticatedCommentDelta({ context,
+  const revisionBridge = await import('../../src/io/revisionBridge/index.mjs');
+  const run = (explicitCanonicalApplyConfirmed, docxBytes = bytes) => ctx.applyAuthenticatedCommentDelta({ context, docxBytes, revisionBridge,
     requestId: 'test', explicitCanonicalApplyConfirmed, isCurrent: () => current });
   assert.equal((await kernel.dispatch('cmd.rtk.review.applyCommentLifecycleReturn', { action: 'authenticated-comment-delta' })).error.code, 'COMMENT_RETURN_ADMISSION_REQUIRED');
   assert.equal((await run(false)).status, 'preview-ready'); assert.equal(await fs.readFile(stateFile, 'utf8'), input.beforeText);
+  assert.equal((await run(true, Buffer.from('foreign'))).code, 'COMMENT_RETURN_ARTIFACT_MISMATCH');
+  const parts = revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes }).parts;
+  const originalComments = parts['word/comments.xml'];
+  parts['word/comments.xml'] = originalComments.replace('<w:r>', '<w:r><w:rPr><w:b/></w:rPr>');
+  assert.notEqual(parts['word/comments.xml'], originalComments);
+  const richBytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  context.reviewTransportReturnIntake.returnedArtifactSha256 = hash(richBytes);
+  assert.equal((await run(true, richBytes)).code, 'DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+  assert.equal(await fs.readFile(stateFile, 'utf8'), input.beforeText);
+  context.reviewTransportReturnIntake.returnedArtifactSha256 = input.artifactSha256;
+
   draft = true; assert.equal((await run(true)).code, 'COMMENT_SAVE_SCENE_FIRST'); draft = false;
   current = false; assert.equal((await run(true)).code, 'COMMENT_RETURN_AUTHORITY_REQUIRED'); current = true;
   const result = await run(true); assert.equal(result.ok, true, JSON.stringify(result)); assert.equal(result.writerCalled, true);

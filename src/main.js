@@ -5687,7 +5687,7 @@ async function applyDocxReviewPreviewSessionExactTextBeforeCommentReturn({
 // Admission is object-identity scoped to the authenticated main intake. An IPC
 // payload with identical fields cannot authorize this publication.
 const authenticatedCommentDeltaAdmissions = new WeakMap();
-async function applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent }) {
+async function applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge }) {
   try {
     const capsule = context.reviewTransportAuthorityCapsule;
     const intake = context.reviewTransportReturnIntake;
@@ -5700,6 +5700,13 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
       throw new Error('COMMENT_RETURN_AUTHORITY_REQUIRED');
     }
     const module = await loadRtkNonTextReturnModule();
+    if (!Buffer.isBuffer(docxBytes) || computeHash(docxBytes) !== intake.returnedArtifactSha256?.replace(/^sha256:/u, '')) {
+      throw new Error('COMMENT_RETURN_ARTIFACT_MISMATCH');
+    }
+    const extracted = revisionBridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: docxBytes },
+      { budgets: docxReviewReturnIntakeProductBudgets({}) });
+    if (!extracted.ok || !extracted.parts['word/comments.xml']) throw new Error('COMMENT_RETURN_PARTS_INVALID');
+    module.validateCommentReturnMetadata(extracted.parts, { cryptoPort: createRtkReviewTransportCryptoPort() });
     const input = { projectRoot: context.projectRoot, projectId: context.projectId,
       roundId: capsule.roundId || capsule.expectedAuthority?.roundId,
       artifactSha256: intake.returnedArtifactSha256, baseline: capsule.commentExport,
@@ -5779,6 +5786,7 @@ async function applyAuthenticatedDocxCommentProductPath({
   revisionBridge,
   explicitCanonicalApplyConfirmed = false,
   isCurrent,
+  docxBytes,
 } = {}) {
   const intake = isPlainObjectValue(context?.reviewTransportReturnIntake)
     ? context.reviewTransportReturnIntake
@@ -5834,7 +5842,7 @@ async function applyAuthenticatedDocxCommentProductPath({
   }
   const baselineComments = context.reviewTransportAuthorityCapsule?.commentExport;
   if (baselineComments && !compareCommentExportReadback(baselineComments, commentShadowPayload.reviewIr.commentThreads).ok) {
-    return applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent });
+    return applyAuthenticatedCommentDelta({ context, requestId, explicitCanonicalApplyConfirmed, isCurrent, docxBytes, revisionBridge });
   }
   if (baselineComments) {
     const owner = activeStage10ApplicationBootstrap;
@@ -9803,6 +9811,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
       revisionBridge,
       explicitCanonicalApplyConfirmed,
       isCurrent,
+      docxBytes: decoded.bytes,
     })
     : null;
   if (!isCurrent()) return superseded();

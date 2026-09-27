@@ -44,3 +44,16 @@ carrier, malformed body/provenance, concurrent local edits, stale publication,
 forged admission, changed replay payload and fault before/after canonical rename.
 Rollback: revert bounded code; existing v1 graph and readable before snapshot remain.
 No full Word feature acceptance or new official cell is claimed by this document.
+
+Provider observation: Word for Mac truncates original message timestamps to minute
+precision. The delta retains authenticated original provenance; unrelated author
+or date changes are conflicts. Return metadata passes the existing closed generic
+comment grammar against hash-bound raw package parts before any publication;
+unrepresented rich comment-body content is rejected rather than flattened.
+
+Candidate physical evidence: actual Word root-body edits applied in SOURCE and
+PACKAGED, survived a fresh process, and repeated Apply performed no write. Both
+new DOCX exports passed an independent XML oracle for body, author/date, anchor,
+parent and status plus body/parent/anchor loss mutations. These bounded results do
+not close the full P1c matrix. Existing review-shadow orphan presentation remains
+an explicitly open projection finding, separate from canonical graph publication.
