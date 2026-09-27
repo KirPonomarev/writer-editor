@@ -269,7 +269,8 @@
     "test/contracts/rtk-word-v4-a03-c01-comment-shadow-runtime.contract.test.js",
     "docs/tasks/2026-09-27--word-comment-reply-return.md",
     "docs/tasks/2026-09-27--word-watchdog-test-determinism.md",
-    "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js"
+    "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
+    "docs/tasks/2026-09-27--word-comment-thread-deletion.md"
   ],
   "protectedFiles": [
     {
@@ -498,7 +499,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "e177a6de83cd00545ce28d627878be2a4fd7b6684d529971d7eed485b9ba55f6"
+        "sha256": "36997008098962d1cddb12fe2b36e474bd955d1396d71905e274ae6fc842365e"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -614,7 +615,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "8084fcb354f8197482d651da9b1f9b51980e6deeef5da84f3b3f6daa20df8673"
+        "sha256": "612a95b212ffb3e7e2013aaf133cd07afa35c7ff8451425aadb2b45f3e52322d"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1222,11 +1223,11 @@
       },
       {
         "path": "src/core/word-comment-return-delta-v1.cjs",
-        "sha256": "34d97ded3533f5bcbb158d13ec814422deab8e9b0b2d778d0eea3424c2dbc3d2"
+        "sha256": "2025aec01f4ee0a4888708b88afd60709f4fd702baa97559b574bc9c24946e6e"
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "93f33aea44e6d98fda87429903821160716b1c5f7900113ebe657d377f36fb72"
+        "sha256": "2d907b1939a73af76228c329abf7900bca86f519e774bc19de7da5e9b51ed519"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1234,7 +1235,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "26894c2d882c25e05e0e46f7c8e719e4b330c9e6b5ab9c9eef7f62854828bbfb"
+        "sha256": "e91d68e0ae0b4b44f0940233a6f79a218bd8408032a4ca318c1e816de90d17df"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCommentShadowSession.mjs",
@@ -1259,6 +1260,10 @@
       {
         "path": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
         "sha256": "3aaaaef6d2456ace75db440bbd01aca301c5a0fdb7852ad8634b398cd3b489e2"
+      },
+      {
+        "path": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
+        "sha256": "3be891b254e86c807988b398149078a43ed1779e8ddf1be145073a60b7805256"
       }
     ],
     "followupRepair": {

@@ -10,13 +10,19 @@ const hash = v => crypto.createHash('sha256').update(v).digest('hex');
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture() {
+async function fixture({ twoThreads = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
       anchor: exactAnchor({ paragraphIndex: 0, startUtf16: 7, selectedText: '🧭 anchor' }, sceneId, [text]),
       messages: [{ commentId: 'root-a', kind: 'root', body: 'Root before', provenance: { author: 'Alice', date: '2026-09-26T00:00:00Z' } },
         { commentId: 'reply-a', kind: 'reply', body: 'Reply before', provenance: { author: 'Bob' } }] }] };
+  if (twoThreads) {
+    const second = structuredClone(state.threads[0]);
+    second.threadId = 'thread-b'; second.rootCommentId = 'root-b';
+    second.messages[0].commentId = 'root-b'; second.messages[1].commentId = 'reply-b';
+    state.threads.push(second);
+  }
   const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
     scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
       doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
@@ -35,6 +41,75 @@ async function fixture() {
 test('unchanged actual exporter/parser graph has no publication', async () => {
   const { input } = await fixture(); const result = plan(input);
   assert.equal(result.unchanged, true); assert.equal(result.afterText, input.beforeText);
+});
+
+async function deletionFixture({ partial = false, mutate } = {}) {
+  const f = await fixture({ twoThreads: partial });
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: f.bytes }).parts };
+  const removed = f.source.commentExport.threads[0].messages;
+  for (const m of removed) {
+    parts['word/comments.xml'] = parts['word/comments.xml'].replace(new RegExp(`<w:comment w:id="${m.commentId}"[^]*?</w:comment>`), '');
+    parts['word/commentsExtended.xml'] = parts['word/commentsExtended.xml'].replace(new RegExp(`<w15:commentEx w15:paraId="${m.paraId}"[^>]*?/>`), '');
+    parts['word/commentsIds.xml'] = parts['word/commentsIds.xml'].replace(new RegExp(`<w16cid:commentId w16cid:paraId="${m.paraId}"[^>]*?/>`), '');
+    parts['word/commentsExtensible.xml'] = parts['word/commentsExtensible.xml'].replace(new RegExp(`<w16cex:commentExtensible w16cex:durableId="${m.durableId}"[^>]*?/>`), '');
+    parts['word/document.xml'] = parts['word/document.xml'].replace(new RegExp(`<w:(?:commentRangeStart|commentRangeEnd|commentReference) w:id="${m.commentId}"/>`, 'gu'), '');
+  }
+  if (!partial) {
+    for (const name of Object.keys(parts).filter(name => name.startsWith('word/comments'))) delete parts[name];
+    parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels'].replace(/<Relationship\b[^>]*\bType="[^"]*\/comments[^"]*"[^>]*\/>/gu, '');
+    parts['[Content_Types].xml'] = parts['[Content_Types].xml'].replace(/<Override\b[^>]*\bPartName="\/word\/comments[^"]*"[^>]*\/>/gu, '');
+  }
+  if (mutate) mutate(parts, f);
+  const returned = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: returned }, { cryptoPort: {
+    sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } });
+  return { ...f, parsed, input: { ...f.input, artifactSha256: hash(returned),
+    returnedThreads: parsed.reviewIr?.commentThreads, returnedParagraphs: parsed.reviewIr?.formattingParagraphs,
+    commentReturnInventory: parsed.reviewIr?.commentReturnInventory } };
+}
+
+for (const partial of [false, true]) test(`whole-thread absence (${partial ? 'partial' : 'last thread'}) preserves all history, rejects races and replays once`, async () => {
+  const { input, state, parsed } = await deletionFixture({ partial });
+  assert.equal(parsed.ok, true);
+  assert.equal(input.commentReturnInventory.status, 'COMPLETE');
+  assert.equal(input.commentReturnInventory.deletionAuthority, false);
+  const result = plan(input), after = JSON.parse(result.afterText);
+  assert.equal(after.threads[0].status, 'deleted');
+  assert.deepEqual({ ...after.threads[0], status: state.threads[0].status }, state.threads[0]);
+  assert.deepEqual(after.threads.slice(1), state.threads.slice(1));
+  assert.equal(result.changes[0].deletionDecision, 'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION');
+  assert.equal(plan({ ...input, beforeText: result.afterText }).replay, true);
+  assert.throws(() => plan({ ...input, commentReturnInventory: undefined }), /COMMENT_RETURN_PACKAGE_INCOMPLETE/);
+  const stale = structuredClone(state); stale.threads[0].messages[0].body += ' concurrent';
+  assert.throws(() => plan({ ...input, beforeText: JSON.stringify(stale) }), /COMMENT_RETURN_BASELINE_CONFLICT/);
+  const sceneId = state.threads[0].sceneId, text = input.returnedParagraphs[0].paragraphText;
+  const reexport = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: after,
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+      doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+  assert.equal(reexport.commentExport.tombstones.length, 1);
+  assert.equal(reexport.commentExport.threads.length, partial ? 1 : 0);
+  assert.deepEqual(reexport.commentExport.tombstones[0].messageIds, ['root-a', 'reply-a']);
+});
+
+test('lost part, dangling marker/metadata/relationship and incomplete projections never become deletion proposals', async () => {
+  for (const [partial, mutate] of [
+    [false, p => { p['word/document.xml'] = p['word/document.xml'].replace('</w:p>', '<w:commentReference w:id="0"/></w:p>'); }],
+    [false, p => { p['word/_rels/document.xml.rels'] = p['word/_rels/document.xml.rels'].replace('</Relationships>', '<Relationship Id="lost" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments" Target="comments.xml"/></Relationships>'); }],
+    [false, p => { p['[Content_Types].xml'] = p['[Content_Types].xml'].replace('</Types>', '<Override PartName="/word/comments.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml"/></Types>'); }],
+    [true, p => { delete p['word/commentsIds.xml']; }],
+    [true, p => { delete p['word/comments.xml']; }],
+    [true, p => { p['word/commentsIds.xml'] = p['word/commentsIds.xml'].replace('</w16cid:commentsIds>', '<w16cid:commentId w16cid:paraId="AABBCCDD" w16cid:durableId="12345678"/></w16cid:commentsIds>'); }],
+    [true, p => { p['word/document.xml'] = p['word/document.xml'].replace('<w:commentReference w:id="2"/>', ''); }],
+    [true, p => { p['word/commentsExtensible.xml'] = p['word/commentsExtensible.xml'].replace(/<w16cex:commentExtensible\b[^>]*\/>/u, ''); }],
+  ]) {
+    const { input, parsed } = await deletionFixture({ partial, mutate });
+    assert(parsed.ok === false || input.commentReturnInventory?.status !== 'COMPLETE');
+    assert.throws(() => plan(input), /COMMENT_RETURN_/);
+  }
+  const { input } = await deletionFixture({ partial: true });
+  input.commentReturnInventory.messageDurableIds = [];
+  assert.throws(() => plan(input), /COMMENT_RETURN_PACKAGE_INCOMPLETE/);
 });
 
 test('Word proofing metadata has an explicit return ledger and never widens rich-comment admission', async () => {

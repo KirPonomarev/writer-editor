@@ -50,13 +50,13 @@ function retainedProvenance(message, old) {
 // Pure data law. Authentication and filesystem authority belong to the caller;
 // Word identities can only join this already authenticated export baseline.
 function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256,
-  baseline, exportMap, returnedThreads, returnedParagraphs }) {
+  baseline, exportMap, returnedThreads, returnedParagraphs, commentReturnInventory }) {
   demand(typeof roundId === 'string' && roundId.length > 0 && roundId.length <= 256
     && typeof artifactSha256 === 'string' && /^(?:sha256:)?[0-9a-f]{64}$/u.test(artifactSha256), 'COMMENT_RETURN_IDENTITY_INVALID');
   demand(plain(baseline) && baseline.projectId === projectId && baseline.schemaVersion === 'yalken.rtk.canonical-comment-export.v1'
     && Array.isArray(baseline.threads) && baseline.threads.length > 0 && baseline.threads.length <= 128,
   'COMMENT_RETURN_BASELINE_REQUIRED');
-  demand(Array.isArray(returnedThreads) && returnedThreads.length === baseline.threads.length
+  demand(Array.isArray(returnedThreads) && returnedThreads.length <= baseline.threads.length
     && Array.isArray(returnedParagraphs) && Array.isArray(exportMap?.scenes), 'COMMENT_RETURN_GRAPH_INCOMPLETE');
   const before = readState(beforeText, projectId);
   const blocks = exportMap.scenes.flatMap(scene => (scene.blocks || []).map((block, sceneParagraphIndex) => ({
@@ -91,9 +91,24 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     byRoot.set(durable(t.durableId), t);
   }
   const projection = [];
+  const expectedRoots = new Set(baseline.threads.map(t => durable(t.messages[0].durableId)));
+  demand([...byRoot.keys()].every(id => expectedRoots.has(id)), 'COMMENT_RETURN_UNKNOWN_ROOT');
+  const missingRoots = baseline.threads.filter(t => !byRoot.has(durable(t.messages[0].durableId)));
+  if (missingRoots.length) {
+    const inventory = commentReturnInventory;
+    demand(inventory?.schemaVersion === 'yalken.rtk.comment-return-inventory.v1' && inventory.status === 'COMPLETE'
+      && inventory.deletionAuthority === false && ['ABSENT', 'PRESENT'].includes(inventory.packageState)
+      && Array.isArray(inventory.rootDurableIds) && Array.isArray(inventory.messageDurableIds)
+      && stable([...byRoot.keys()].sort()) === stable(inventory.rootDurableIds)
+      && stable([...seen].sort()) === stable(inventory.messageDurableIds), 'COMMENT_RETURN_PACKAGE_INCOMPLETE');
+  }
   for (const expected of baseline.threads) {
     const actual = byRoot.get(durable(expected.messages[0].durableId));
-    demand(actual, 'COMMENT_RETURN_ROOT_MISSING');
+    if (!actual) {
+      demand(expected.messages.every(m => !seen.has(durable(m.durableId))), 'COMMENT_RETURN_DELETED_THREAD_FRAGMENT');
+      projection.push({ threadId: expected.threadId, sceneId: expected.sceneId, status: 'deleted' });
+      continue;
+    }
     const block = byParagraph.get(actual.paragraphIndex);
     demand(block?.sceneId === expected.sceneId, 'COMMENT_RETURN_SCENE_MISMATCH');
     const a = actual.finalTextAnchorRange;
@@ -132,6 +147,13 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
   for (const candidate of projection) {
     const thread = after.threads.find(t => t.threadId === candidate.threadId);
     demand(thread && thread.sceneId === candidate.sceneId && thread.status !== 'deleted', 'COMMENT_RETURN_TARGET_INVALID');
+    if (candidate.status === 'deleted') {
+      changes.push({ threadId: thread.threadId, messageIds: [], anchorChanged: false,
+        statusBefore: thread.status, statusAfter: 'deleted',
+        deletionDecision: 'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION' });
+      thread.status = 'deleted'; // Retain every original message, provenance and anchor.
+      continue;
+    }
     candidate.messages = candidate.messages.map(m => ({ ...thread.messages.find(old => old.commentId === m.commentId), ...m }));
     const changedMessages = candidate.messages.filter((m, i) => stable(m) !== stable(thread.messages[i]));
     const anchorChanged = ['sceneParagraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256'].some(k => candidate.anchor[k] !== thread.anchor?.[k]);

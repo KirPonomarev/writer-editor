@@ -3435,6 +3435,72 @@ function buildCommentGraphCapability(input, partNames, commentThreads) {
   };
 }
 
+// A complete package can establish absence, never the user's intention to
+// delete. Only the main-owned explicit confirmation may authorize that delta.
+function buildCommentReturnInventory(parts, documentScan, scans, relationships, contentTypes, comments, grammar) {
+  const schemaVersion = 'yalken.rtk.comment-return-inventory.v1';
+  const descriptors = [
+    ['comments.xml', 'comments', 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments', 'application/vnd.openxmlformats-officedocument.wordprocessingml.comments+xml'],
+    ['commentsExtended.xml', 'commentsExtended', 'http://schemas.microsoft.com/office/2011/relationships/commentsExtended', 'application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml'],
+    ['commentsIds.xml', 'commentsIds', 'http://schemas.microsoft.com/office/2016/09/relationships/commentsIds', 'application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml'],
+    ['commentsExtensible.xml', 'commentsExtensible', 'http://schemas.microsoft.com/office/2018/08/relationships/commentsExtensible', 'application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtensible+xml'],
+  ];
+  const requireComplete = ok => { if (!ok) throw Error('COMMENT_RETURN_PACKAGE_INCOMPLETE'); };
+  const sameSet = (a, b) => {
+    const right = new Set(b);
+    return a.length === b.length && new Set(a).size === a.length
+      && right.size === b.length && a.every(value => right.has(value));
+  };
+  const markerNames = ['commentRangeStart', 'commentRangeEnd', 'commentReference'];
+  const markers = documentScan.tokens.filter(t => markerNames.includes(t.localName));
+  const commentPart = name => /(?:^|\/)comments[^/]*\.xml(?:\.rels)?$/iu.test(name);
+  const commentParts = Object.keys(parts).filter(commentPart);
+  const rels = relationships.filter(r => /\/comments[^/]*$/iu.test(r.type)
+    || (r.targetMode !== 'External' && commentPart(r.target)));
+  const types = contentTypes.filter(t => commentPart(t.partName) || /\.comments(?:Extended|Ids|Extensible)?\+xml$/iu.test(t.contentType));
+  try {
+    requireComplete(!documentScan.diagnostics.length && comments.reasons.every(r => ['RTK_COMMENT_ANCHORED', 'RTK_COMMENT_RESOLVED'].includes(r.code)));
+    if (!commentParts.length) {
+      requireComplete(!markers.length && !rels.length && !types.length && !comments.commentThreads.length && grammar.status === 'ABSENT');
+      return { schemaVersion, status: 'COMPLETE', packageState: 'ABSENT', rootDurableIds: [], messageDurableIds: [], deletionAuthority: false };
+    }
+    requireComplete(grammar.status === 'SUPPORTED' && sameSet(commentParts, descriptors.map(([name]) => `word/${name}`))
+      && rels.length === descriptors.length && types.length === descriptors.length);
+    for (const [name, key, type, contentType] of descriptors) {
+      requireComplete(scans[key] && !scans[key].diagnostics.length);
+      const matching = rels.filter(r => r.type === type);
+      requireComplete(matching.length === 1 && matching[0].partName === 'word/_rels/document.xml.rels'
+        && matching[0].target === name && ['', 'Internal'].includes(matching[0].targetMode)
+        && relationships.filter(r => r.partName === matching[0].partName && r.id === matching[0].id).length === 1);
+      requireComplete(types.filter(t => t.partName === `/word/${name}` && t.contentType === contentType).length === 1);
+    }
+    const bodies = scans.comments.tokens.filter(t => isWordToken(t, 'comment'));
+    const rawIds = bodies.map(t => attr(t, 'id', W_NS));
+    const paraIds = bodies.map(t => lastCommentParagraphParaId(scans, t));
+    const ext = scans.commentsExtended.tokens.filter(t => t.namespaceUri === W15_NS && t.localName === 'commentEx');
+    const ids = scans.commentsIds.tokens.filter(t => t.namespaceUri === W16CID_NS && t.localName === 'commentId');
+    const extensible = scans.commentsExtensible.tokens.filter(t => t.namespaceUri === W16CEX_NS && t.localName === 'commentExtensible');
+    const durableIds = ids.map(t => attr(t, 'durableId', W16CID_NS).toUpperCase());
+    requireComplete(rawIds.every(id => /^\d{1,9}$/u.test(id)) && paraIds.every(isValidModernCommentParaId)
+      && durableIds.every(id => /^[0-9A-F]{8}$/u.test(id))
+      && sameSet(paraIds, ext.map(t => attr(t, 'paraId', W15_NS)))
+      && sameSet(paraIds, ids.map(t => attr(t, 'paraId', W16CID_NS)))
+      && sameSet(durableIds, extensible.map(t => attr(t, 'durableId', W16CEX_NS).toUpperCase())));
+    const threads = comments.commentThreads;
+    const flat = threads.flatMap(t => [{ rawId: t.commentId, durableId: t.durableId }, ...t.replies]);
+    requireComplete(threads.every(t => ['ANCHORED', 'RESOLVED'].includes(t.status))
+      && sameSet(rawIds, flat.map(m => m.rawId))
+      && sameSet(durableIds, flat.map(m => rawString(m.durableId).toUpperCase())));
+    for (const name of markerNames) requireComplete(sameSet(rawIds, markers.filter(t => isWordToken(t, name)).map(t => attr(t, 'id', W_NS))));
+    requireComplete(markers.length === rawIds.length * 3);
+    return { schemaVersion, status: 'COMPLETE', packageState: 'PRESENT',
+      rootDurableIds: threads.map(t => t.durableId.toUpperCase()).sort(),
+      messageDurableIds: durableIds.sort(), deletionAuthority: false };
+  } catch {
+    return { schemaVersion, status: 'INCOMPLETE', deletionAuthority: false };
+  }
+}
+
 function directChildTokensWithin(documentScan, parent) {
   return documentScan.tokens.filter((token) => (
     token.openStart >= parent.openEnd
@@ -4203,6 +4269,8 @@ export function parseReviewTransportPackageV2(input = {}, ports = {}) {
     authorityCarrier,
     commentGraphCapability,
     commentBodyGrammar,
+    commentReturnInventory: buildCommentReturnInventory(parts, documentScan, scans,
+      relationships.relationships, contentTypes.contentTypes, comments, commentBodyGrammar),
     changes: textRevisions,
     diagnostics: reasons,
     conservation: {
