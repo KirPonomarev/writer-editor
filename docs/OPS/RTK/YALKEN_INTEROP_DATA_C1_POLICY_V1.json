@@ -477,7 +477,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "dc88fc6272626a806ac620dad5fbbce17740346e5ab2dcda3ee0f10ffa92cc9b"
+        "sha256": "307b7140fefeaef04efae71c1aa8871bdb479e945168002b18768cd7eff3e66b"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -653,7 +653,7 @@
       },
       {
         "path": "src/renderer/editor.js",
-        "sha256": "3d6f6601e22e486e31bf8f7614f8854955352d0baa4b156de9faa16afd45f8d3"
+        "sha256": "b939de4a38406b156f8650b96b3d2f3a18ec9b60f13be614e8b12c92bd575a6a"
       },
       {
         "path": "test/contracts/revision-bridge-docx-alignment.contract.test.js",
@@ -1141,7 +1141,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-        "sha256": "3eb00f74040129bc4c00d6d2b1f5e0144d84c2a8300fbba8a4f1a5abeb9b31b0"
+        "sha256": "6050ccc0bd356fbc6721b18575c2a9b5d21ed84dc7b807e68e00e2ea9f9c7c7b"
       },
       {
         "path": "src/core/word-comment-authoring-v1.cjs",

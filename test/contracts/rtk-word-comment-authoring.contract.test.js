@@ -182,8 +182,9 @@ test('pending comment draft and publication veto unload; empty state permits clo
   vm.runInContext(editor.slice(start, end), ctx);
   for (const [draft, busy, blocked] of [[null, false, false], [{body:'do not lose'}, false, true], [null, true, true]]) {
     ctx.wordCommentDraft = draft; ctx.wordCommentBusy = busy;
-    let prevented = false; const event = { preventDefault() { prevented = true; } };
+    let prevented = false; const event = { preventDefault() { prevented = true; }, stopImmediatePropagation() { this.cleanupStopped = true; } };
     listener(event); assert.equal(prevented, blocked); assert.equal(event.returnValue, blocked ? false : undefined);
+    assert.equal(event.cleanupStopped, blocked ? true : undefined);
     assert.equal(ctx.wordCommentDraft, draft); // Closing never discards or commits authoring.
   }
   assert.equal(renders, 2);
@@ -195,4 +196,33 @@ test('pending comment draft and publication veto unload; empty state permits clo
   vm.runInContext(main.slice(a, b), mainCtx);
   veto({ preventDefault() { assert.fail('must not override authoring veto'); } });
   assert.equal(mainCtx.isWindowClosing, false); assert.equal(mainCtx.isQuitting, false);
+});
+
+
+test('actual lifecycle confirmation vetoes pending comment authoring before document replacement without changing saved text', async () => {
+  const vm = require('node:vm');
+  const main = fs.readFileSync(path.resolve(__dirname, '../../src/main.js'), 'utf8');
+  const a = main.indexOf('async function confirmDiscardChanges() {');
+  const b = main.indexOf('async function ensureCleanAction', a);
+  let pending = true, subject = 'scene1', barrierCalls = 0;
+  const ctx = vm.createContext({ mainWindow: {}, currentLifecycleSubjectId: () => subject,
+    autoSave: async () => ({ok:true, ack:{kind:'SAVED'}, subjectId:subject}),
+    requestEditorSnapshot: async () => ({commentAuthoringPending:pending}), updateStatus: () => {},
+    evaluateLifecycleBarrier: () => { barrierCalls++;return {allowed:true}; }, LIFECYCLE_EVENTS:{QUIT:'QUIT'},
+    lastSignaledEditGeneration:0,lastAcknowledgedEditGeneration:0,createSaveReceipt: x=>x,createDetachedOutboxObservation:x=>x });
+  vm.runInContext(main.slice(a,b),ctx);
+  assert.equal(await ctx.confirmDiscardChanges(),false);assert.equal(barrierCalls,0);
+  pending=false;assert.equal(await ctx.confirmDiscardChanges(),true);assert.equal(barrierCalls,1);
+  ctx.requestEditorSnapshot=async()=>{subject='scene2';return {commentAuthoringPending:false};};
+  assert.equal(await ctx.confirmDiscardChanges(),false);assert.equal(barrierCalls,1);
+  const editor=fs.readFileSync(path.resolve(__dirname,'../../src/renderer/editor.js'),'utf8');
+  const sa=editor.indexOf('function composeEditorSnapshot() {'), sb=editor.indexOf('function applyIncomingBookProfile',sa);
+  const snapshotCtx=vm.createContext({composeDocumentContent:()=> 'saved text',getPlainText:()=> 'saved text',getActiveBookProfile:()=>null,getSelectionOffsets:()=>({start:0,end:0}),localEditGeneration:2,wordCommentDraft:{body:'unsaved reply'},wordCommentBusy:false});
+  vm.runInContext(editor.slice(sa,sb),snapshotCtx);assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);
+  snapshotCtx.wordCommentDraft=null;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,false);
+  snapshotCtx.wordCommentBusy=true;assert.equal(snapshotCtx.composeEditorSnapshot().commentAuthoringPending,true);
+  const na=main.indexOf('function normalizeEditorSnapshotPayload(payload) {'),nb=main.indexOf('function requestEditorSnapshot',na);
+  const norm=vm.createContext({isPlainObjectValue:x=>x!==null&&typeof x==='object',normalizeSelectionRangeForSettings:x=>x});vm.runInContext(main.slice(na,nb),norm);
+  assert.equal(norm.normalizeEditorSnapshotPayload({content:'saved',commentAuthoringPending:true}).commentAuthoringPending,true);
+  assert.equal(norm.normalizeEditorSnapshotPayload({content:'saved',commentAuthoringPending:'false'}).commentAuthoringPending,false);
 });

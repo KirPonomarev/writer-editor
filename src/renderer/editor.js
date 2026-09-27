@@ -1855,6 +1855,7 @@ function guardWordCommentDraftUnload(event) {
   if (!wordCommentDraft && !wordCommentBusy) return;
   event.preventDefault();
   event.returnValue = false;
+  event.stopImmediatePropagation(); // Do not destroy the editor after a cancelled unload.
   wordCommentNotice = wordCommentBusy
     ? 'Дождитесь завершения сохранения комментария.'
     : 'Закрытие отменено. Сохраните комментарий или явно отмените черновик.';
@@ -8367,6 +8368,7 @@ function composeEditorSnapshot() {
     bookProfile: getActiveBookProfile(),
     selectionRange: getSelectionOffsets(),
     generation: localEditGeneration,
+    commentAuthoringPending: Boolean(wordCommentDraft || wordCommentBusy),
   };
 }
 

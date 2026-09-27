@@ -20358,6 +20358,7 @@ function normalizeEditorSnapshotPayload(payload) {
     doc: isPlainObjectValue(source.doc) ? source.doc : null,
     bookProfile: isPlainObjectValue(source.bookProfile) ? source.bookProfile : null,
     selectionRange: normalizeSelectionRangeForSettings(source.selectionRange),
+    commentAuthoringPending: source.commentAuthoringPending === true,
     generation: Number.isSafeInteger(source.generation) && source.generation >= 0
       ? source.generation
       : null,
@@ -30456,6 +30457,11 @@ async function confirmDiscardChanges() {
   const result = await autoSave();
   if (!result || result.ok !== true || !result.ack || result.subjectId !== subjectId) return false;
   if (currentLifecycleSubjectId() !== subjectId) return false;
+  const authoringSnapshot = await requestEditorSnapshot();
+  if (currentLifecycleSubjectId() !== subjectId || authoringSnapshot.commentAuthoringPending === true) {
+    updateStatus('Сохраните комментарий или явно отмените черновик перед выходом или сменой документа.');
+    return false;
+  }
   const decision = evaluateLifecycleBarrier({
     eventKind: LIFECYCLE_EVENTS.QUIT,
     subjectId,
