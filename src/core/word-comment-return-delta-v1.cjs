@@ -38,6 +38,12 @@ function retainedProvenance(message, old) {
   for (const key of ['date', 'dateUtc']) {
     const a = original[key], b = returned[key];
     if (a === b || key === 'dateUtc' && !b) continue;
+    if (key === 'dateUtc' && !a && old.transportDateUtc) {
+      const expected = Date.parse(old.transportDateUtc), actual = Date.parse(b);
+      demand(Number.isFinite(expected) && Number.isFinite(actual)
+        && (actual === expected || actual === Math.floor(expected / 60000) * 60000), 'COMMENT_RETURN_PROVENANCE_CHANGED');
+      continue;
+    }
     // Word for Mac rewrites the original timestamp at minute precision. Keep
     // the authenticated original rather than silently destroying its precision.
     const before = Date.parse(a), after = Date.parse(b);
@@ -98,10 +104,12 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     demand(byParagraph.has(actual.paragraphIndex), 'COMMENT_RETURN_SCENE_MISMATCH');
   }
   const missingRoots = baseline.threads.filter(t => !byRoot.has(durable(t.messages[0].durableId)));
-  if (missingRoots.length || additions.length) {
+  const missingReplies = baseline.threads.flatMap(t => byRoot.has(durable(t.messages[0].durableId))
+    ? t.messages.slice(1).filter(m => !seen.has(durable(m.durableId))) : []);
+  if (missingRoots.length || missingReplies.length || additions.length) {
     const inventory = commentReturnInventory;
     demand(inventory?.schemaVersion === 'yalken.rtk.comment-return-inventory.v1'
-      && (inventory.status === 'COMPLETE' || !missingRoots.length && additions.length > 0 && inventory.status === 'COMPLETE_BODY_GRAPH')
+      && (inventory.status === 'COMPLETE' || !missingRoots.length && !missingReplies.length && additions.length > 0 && inventory.status === 'COMPLETE_BODY_GRAPH')
       && inventory.deletionAuthority === false && ['ABSENT', 'PRESENT'].includes(inventory.packageState)
       && Array.isArray(inventory.rootDurableIds) && Array.isArray(inventory.messageDurableIds)
       && stable([...byRoot.keys()].sort()) === stable(inventory.rootDurableIds)
@@ -130,16 +138,25 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
     const messages = [{ durableId: actual.durableId, body: actual.body,
       author: actual.authorPersonIdentity?.author, initials: actual.authorPersonIdentity?.initials,
       date: actual.date, dateUtc: actual.dateUtc }, ...actual.replies];
-    demand(messages.length >= expected.messages.length, 'COMMENT_RETURN_MESSAGE_MISSING');
+    const expectedById = new Map(expected.messages.map((m, index) => [durable(m.durableId), { m, index }]));
+    let previousIndex = -1, newReplySeen = false;
     const mapped = messages.map((m, index) => {
       if (index > 0) demand(m.parentRawId === actual.commentId, 'COMMENT_RETURN_PARENT_CHANGED');
-      const id = durable(m.durableId), old = expected.messages[index];
-      if (old) demand(id === durable(old.durableId), 'COMMENT_RETURN_MESSAGE_MISSING_OR_REORDERED');
-      else demand(!known.has(id), 'COMMENT_RETURN_IDENTITY_COLLISION');
+      const id = durable(m.durableId), entry = expectedById.get(id), old = entry?.m;
+      if (old) {
+        demand(!newReplySeen && entry.index > previousIndex && (index === 0) === (entry.index === 0),
+          'COMMENT_RETURN_MESSAGE_MISSING_OR_REORDERED');
+        previousIndex = entry.index;
+      } else {
+        demand(!known.has(id), 'COMMENT_RETURN_IDENTITY_COLLISION');
+        newReplySeen = true;
+      }
       return { commentId: old?.canonicalCommentId || `word-${index === 0 ? 'root' : 'reply'}-${hash(projectId + '\n' + roundId + '\n' + id)}`,
         kind: index === 0 ? 'root' : 'reply', body: body(m.body), provenance: retainedProvenance(m, old) };
     });
+    const deletedMessageIds = expected.messages.slice(1).filter(m => !seen.has(durable(m.durableId))).map(m => m.canonicalCommentId);
     projection.push({ threadId: expected.threadId, sceneId: expected.sceneId, ...(created ? { created: true } : {}),
+      ...(deletedMessageIds.length ? { deletedMessageIds } : {}),
       status: actual.status === 'RESOLVED' ? 'resolved' : 'open', anchor, messages: mapped });
   }
   const inputDigest = hash(stable({ projectId, roundId, artifactSha256, baselineDigest: baseline.stateDigest, projection }));
@@ -176,11 +193,18 @@ function planCommentReturnDelta({ beforeText, projectId, roundId, artifactSha256
       continue;
     }
     candidate.messages = candidate.messages.map(m => ({ ...thread.messages.find(old => old.commentId === m.commentId), ...m }));
+    const removed = thread.messages.filter(m => candidate.deletedMessageIds?.includes(m.commentId));
+    demand(removed.length === (candidate.deletedMessageIds?.length || 0) && removed.every(m => m.kind === 'reply'),
+      'COMMENT_RETURN_TARGET_INVALID');
+    demand(candidate.messages.length + (thread.deletedMessages?.length || 0) + removed.length <= 129, 'COMMENT_RETURN_STATE_BUDGET');
     const changedMessages = candidate.messages.filter((m, i) => stable(m) !== stable(thread.messages[i]));
     const anchorChanged = ['sceneParagraphIndex', 'startUtf16', 'selectedText', 'blockTextSha256'].some(k => candidate.anchor[k] !== thread.anchor?.[k]);
-    if (changedMessages.length || anchorChanged || thread.status !== candidate.status) {
+    if (changedMessages.length || removed.length || anchorChanged || thread.status !== candidate.status) {
       changes.push({ threadId: thread.threadId, messageIds: changedMessages.map(m => m.commentId),
+        ...(removed.length ? { deletedMessageIds: removed.map(m => m.commentId),
+          deletionDecision: 'CONSISTENT_ABSENCE_REQUIRES_EXPLICIT_CONFIRMATION' } : {}),
         anchorChanged, statusBefore: thread.status, statusAfter: candidate.status });
+      if (removed.length) thread.deletedMessages = [...(thread.deletedMessages || []), ...removed];
       thread.messages = candidate.messages; thread.status = candidate.status;
       if (anchorChanged) thread.anchor = candidate.anchor;
     }

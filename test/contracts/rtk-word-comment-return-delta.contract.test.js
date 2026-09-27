@@ -10,13 +10,15 @@ const hash = v => crypto.createHash('sha256').update(v).digest('hex');
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 
-async function fixture({ twoThreads = false, empty = false } = {}) {
+async function fixture({ twoThreads = false, empty = false, threeReplies = false } = {}) {
   const sceneId = 'roman/a.md', text = 'Before 🧭 anchor after';
   const state = { schemaVersion: 'yalken.rtk.word.non-text-return-state.v1', projectId: 'delta-project', revision: 2, events: [],
     threads: [{ threadId: 'thread-a', rootCommentId: 'root-a', sceneId, status: 'open',
       anchor: exactAnchor({ paragraphIndex: 0, startUtf16: 7, selectedText: '🧭 anchor' }, sceneId, [text]),
       messages: [{ commentId: 'root-a', kind: 'root', body: 'Root before', provenance: { author: 'Alice', date: '2026-09-26T00:00:00Z' } },
         { commentId: 'reply-a', kind: 'reply', body: 'Reply before', provenance: { author: 'Bob' } }] }] };
+  if (threeReplies) for (const suffix of ['middle', 'last']) state.threads[0].messages.push({
+    commentId: 'reply-' + suffix, kind: 'reply', body: 'Reply ' + suffix, provenance: { author: suffix } });
   if (twoThreads) {
     const second = structuredClone(state.threads[0]);
     second.threadId = 'thread-b'; second.rootCommentId = 'root-b';
@@ -614,4 +616,90 @@ test('native-style partial optional UTC metadata proves additions but never dele
   const corrupt = await addedRootFixture({ partialMetadata: true, corruptMetadata: true });
   assert.equal(corrupt.input.commentReturnInventory.status, 'INCOMPLETE');
   assert.throws(() => plan(corrupt.input), /COMMENT_RETURN_PACKAGE_INCOMPLETE/);
+});
+
+async function replyDeletionFixture({ removedIndex = 1, mutate } = {}) {
+  const f = await fixture({ threeReplies: true });
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const parts = { ...bridge.extractDocxReviewTransportPackagePartsFromZipBytes({ bytes: f.bytes }).parts };
+  const m = f.source.commentExport.threads[0].messages[removedIndex];
+  parts['word/comments.xml'] = parts['word/comments.xml'].replace(new RegExp(`<w:comment w:id="${m.commentId}"[^]*?</w:comment>`), '');
+  for (const [name, tag, attr, value] of [
+    ['commentsExtended', 'w15:commentEx', 'w15:paraId', m.paraId],
+    ['commentsIds', 'w16cid:commentId', 'w16cid:paraId', m.paraId],
+    ['commentsExtensible', 'w16cex:commentExtensible', 'w16cex:durableId', m.durableId],
+  ]) parts[`word/${name}.xml`] = parts[`word/${name}.xml`].replace(new RegExp(`<${tag} ${attr}="${value}"[^>]*?/>`), '');
+  parts['word/document.xml'] = parts['word/document.xml'].replace(new RegExp(`<w:(?:commentRangeStart|commentRangeEnd|commentReference) w:id="${m.commentId}"/>`, 'gu'), '');
+  if (mutate) mutate(parts, f);
+  const bytes = require('../../src/export/docx/docxMinBuilder.js').buildStoredZip(Object.entries(parts).map(([name, data]) => ({ name, data })));
+  const parsed = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, { cryptoPort: {
+    sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } });
+  return { ...f, parsed, removed: m, input: { ...f.input, artifactSha256: hash(bytes),
+    returnedThreads: parsed.reviewIr?.commentThreads, returnedParagraphs: parsed.reviewIr?.formattingParagraphs,
+    commentReturnInventory: parsed.reviewIr?.commentReturnInventory } };
+}
+
+for (const removedIndex of [1, 2, 3]) test(`delete reply ${removedIndex}: preserve root, survivors, history, replay and export tombstone`, async () => {
+  const f = await replyDeletionFixture({ removedIndex });
+  assert.equal(f.parsed.ok, true); assert.equal(f.input.commentReturnInventory.status, 'COMPLETE');
+  const result = plan(f.input), after = JSON.parse(result.afterText), old = f.state.threads[0];
+  assert.deepEqual(after.threads[0].messages, old.messages.filter((_, i) => i !== removedIndex));
+  assert.deepEqual(after.threads[0].deletedMessages, [old.messages[removedIndex]]);
+  assert.deepEqual(after.threads[0].anchor, old.anchor);
+  assert.deepEqual(result.changes[0].deletedMessageIds, [old.messages[removedIndex].commentId]);
+  assert.equal(plan({ ...f.input, beforeText: result.afterText }).replay, true);
+  const sceneId = old.sceneId, text = f.input.returnedParagraphs[0].paragraphText;
+  const source = makeSource({ projectId: after.projectId, projectRoot: '/project', nonTextReturnState: after,
+    scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+      doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+  assert.deepEqual(source.commentExport.tombstones[0].messageIds, [old.messages[removedIndex].commentId]);
+  assert.deepEqual(source.commentExport.threads[0].messages.map(m => m.canonicalCommentId), after.threads[0].messages.map(m => m.commentId));
+  const bridge = await import('../../src/io/revisionBridge/index.mjs');
+  const roundtrip = bridge.buildDocxReviewTransportAnalysisFromZipBytes({ bytes: buildDocxReviewPacketBuffer(source) },
+    { cryptoPort: { sha256Text: hash, sha256Json: v => 'sha256:' + hash(stable(v)), byteLength: v => Buffer.byteLength(v) } });
+  assert.equal(roundtrip.ok, true);
+  assert.deepEqual([roundtrip.reviewIr.commentThreads[0].body, ...roundtrip.reviewIr.commentThreads[0].replies.map(m => m.body)], after.threads[0].messages.map(m => m.body));
+  assert.throws(() => plan({ ...f.input, beforeText: result.afterText, baseline: source.commentExport,
+    artifactSha256: 'a'.repeat(64), returnedThreads: f.reviewIr.commentThreads }), /IDENTITY_COLLISION/);
+});
+
+test('reply absence requires full carrier inventory, cannot hide reorder/reparent or overwrite newer state', async () => {
+  const f = await replyDeletionFixture();
+  for (const status of [undefined, 'INCOMPLETE', 'COMPLETE_BODY_GRAPH']) {
+    const inventory = status ? { ...f.input.commentReturnInventory, status } : undefined;
+    assert.throws(() => plan({ ...f.input, commentReturnInventory: inventory }), /PACKAGE_INCOMPLETE/);
+  }
+  const wrong = structuredClone(f.input); wrong.returnedThreads[0].replies.reverse();
+  assert.throws(() => plan(wrong), /REORDERED/);
+  const parent = structuredClone(f.input); parent.returnedThreads[0].replies[0].parentRawId = 'foreign';
+  assert.throws(() => plan(parent), /PARENT_CHANGED/);
+  const stale = structuredClone(f.state); stale.threads[0].messages[1].body = 'Concurrent change';
+  assert.throws(() => plan({ ...f.input, beforeText: JSON.stringify(stale) }), /BASELINE_CONFLICT/);
+  const partial = await replyDeletionFixture({ mutate(parts) {
+    parts['word/commentsExtensible.xml'] = parts['word/commentsExtensible.xml'].replace(/<w16cex:commentExtensible\b[^>]*\/>/u, '');
+  } });
+  assert.notEqual(partial.input.commentReturnInventory?.status, 'COMPLETE');
+  assert.throws(() => plan(partial.input), /COMMENT_RETURN_/);
+});
+
+test('export-only explicit UTC transport survives return without rewriting canonical provenance', async () => {
+  const f = await fixture();
+  const root = f.source.commentExport.threads[0].messages[0];
+  assert.equal(root.transportDateUtc, f.state.threads[0].messages[0].provenance.date);
+  assert.equal(root.provenance.dateUtc, undefined);
+  assert.equal(f.reviewIr.commentThreads[0].dateUtc, root.transportDateUtc);
+  assert.equal(plan(f.input).unchanged, true);
+  f.input.returnedThreads[0].body = 'edited';
+  assert.deepEqual(JSON.parse(plan(f.input).afterText).threads[0].messages[0].provenance, f.state.threads[0].messages[0].provenance);
+  f.input.returnedThreads[0].dateUtc = '2026-09-25T00:00:00Z';
+  assert.throws(() => plan(f.input), /PROVENANCE_CHANGED/);
+  const sceneId = f.state.threads[0].sceneId, text = f.input.returnedParagraphs[0].paragraphText;
+  for (const date of [undefined, '2026-09-26T10:20:00', '2026-02-31T00:00:00Z', 'unknown']) {
+    const state = structuredClone(f.state);state.threads[0].messages[0].provenance = date ? { author: 'Alice', date } : { author: 'Alice' };
+    const source = makeSource({ projectId: state.projectId, projectRoot: '/project', nonTextReturnState: state,
+      scenes: [{ sceneId, scenePath: '/project/' + sceneId, order: 0, text,
+        doc: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] } }] });
+    assert.equal(source.commentExport.threads[0].messages[0].transportDateUtc, undefined);
+    assert.deepEqual(source.commentExport.threads[0].messages[0].provenance, state.threads[0].messages[0].provenance);
+  }
 });

@@ -25,12 +25,15 @@ function readState(text, projectId) {
       || !Array.isArray(thread.messages) || thread.messages.length < 1 || thread.messages.length > 129
       || !['open', 'resolved', 'deleted'].includes(thread.status)) fail('COMMENT_STATE_INVALID');
     ids.add(thread.threadId);
+    if (thread.deletedMessages !== undefined && (!Array.isArray(thread.deletedMessages)
+      || thread.messages.length + thread.deletedMessages.length > 129)) fail('COMMENT_STATE_INVALID');
     const messageIds = new Set();
-    for (const message of thread.messages) {
+    for (const message of [...thread.messages, ...(thread.deletedMessages || [])]) {
       if (!plain(message) || typeof message.commentId !== 'string' || messageIds.has(message.commentId)
         || typeof message.body !== 'string' || bytes(message.body) > 16384) fail('COMMENT_STATE_INVALID');
       messageIds.add(message.commentId);
     }
+    if ((thread.deletedMessages || []).some(m => m.kind !== 'reply' || m.commentId === thread.rootCommentId)) fail('COMMENT_STATE_INVALID');
   }
   return state;
 }
@@ -78,7 +81,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
       || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f\r]/u.test(input.body)) fail('COMMENT_BODY_INVALID');
   } else if (input.body !== undefined) fail('COMMENT_INPUT_INVALID');
   if (!['create', 'reanchor'].includes(input.action) && input.anchor !== undefined) fail('COMMENT_INPUT_INVALID');
-  if (input.action !== 'edit' && input.commentId !== undefined) fail('COMMENT_INPUT_INVALID');
+  if (!['edit', 'delete'].includes(input.action) && input.commentId !== undefined) fail('COMMENT_INPUT_INVALID');
   if (input.action === 'create') {
     if (input.threadId !== undefined || after.threads.length >= 128) fail('COMMENT_INPUT_INVALID');
     const threadId = `local-comment-${sha(projectId + '\n' + input.requestId)}`;
@@ -89,7 +92,7 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
       messages: [{ commentId, kind: 'root', body: input.body, provenance: { author: 'Автор Yalken', date: now } }] };
     after.threads.push(thread);
   } else if (input.action === 'reply') {
-    if (thread.status !== 'open' || thread.messages.length >= 129) fail('COMMENT_REPLY_UNAVAILABLE');
+    if (thread.status !== 'open' || thread.messages.length + (thread.deletedMessages?.length || 0) >= 129) fail('COMMENT_REPLY_UNAVAILABLE');
     thread.messages.push({ commentId: `local-reply-${sha(projectId + '\n' + input.requestId)}`, kind: 'reply',
       body: input.body, provenance: { author: 'Автор Yalken', date: now } });
   } else if (input.action === 'edit') {
@@ -98,6 +101,11 @@ function planCommentAuthoring({ beforeText, projectId, sceneId, sceneSha256, par
     message.body = input.body; // Original Word provenance is retained, not re-authenticated.
   } else if (input.action === 'reanchor') {
     thread.anchor = exactAnchor(input.anchor, sceneId, paragraphs);
+  } else if (input.action === 'delete' && input.commentId !== undefined) {
+    const index = thread.messages.findIndex(m => m.commentId === input.commentId);
+    if (index < 1 || thread.messages[index].kind !== 'reply') fail('COMMENT_REPLY_TARGET_INVALID');
+    thread.deletedMessages = [...(thread.deletedMessages || []), thread.messages[index]];
+    thread.messages.splice(index, 1);
   } else {
     const desired = { resolve: 'resolved', reopen: 'open', delete: 'deleted' }[input.action];
     if (thread.status === desired) fail('COMMENT_STATUS_UNCHANGED');

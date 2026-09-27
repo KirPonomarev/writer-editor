@@ -41,6 +41,17 @@ function normalizeCommentProvenance(value) {
   return result;
 }
 
+// Transport representation only: an explicit UTC instant needs no timezone
+// inference. Preserve canonical provenance, including its original precision.
+function explicitUtcTransportDate(provenance) {
+  const value = provenance.date;
+  if (provenance.dateUtc || typeof value !== 'string'
+    || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u.test(value)) return '';
+  const time = Date.parse(value);
+  if (!Number.isFinite(time) || new Date(time).toISOString().replace('.000Z', 'Z') !== value.replace('.000Z', 'Z')) return '';
+  return value;
+}
+
 function commentStateDigest(state) { return digest(stable(state)); }
 
 function isUtf16Boundary(value, offset) {
@@ -99,7 +110,10 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
       && ['open', 'resolved', 'deleted'].includes(thread.status), 'DOCX_COMMENT_THREAD_INVALID');
     reserve(ids, thread.threadId);
     demand(Array.isArray(thread.messages) && thread.messages.length > 0, 'DOCX_COMMENT_MESSAGES_REQUIRED');
-    const messages = thread.messages.map((message, index) => {
+    demand(thread.deletedMessages === undefined || Array.isArray(thread.deletedMessages), 'DOCX_COMMENT_STATE_INVALID');
+    const sourceMessages = [...thread.messages, ...(thread.deletedMessages || [])];
+    demand(sourceMessages.length <= 129, 'DOCX_COMMENT_STATE_INVALID');
+    const allMessages = sourceMessages.map((message, index) => {
       demand(plain(message) && typeof message.commentId === 'string'
         && message.kind === (index === 0 ? 'root' : 'reply')
         && typeof message.body === 'string' && message.body.trim()
@@ -107,22 +121,30 @@ function buildCanonicalCommentExport(state, blocks, projectId) {
       reserve(ids, message.commentId);
       segmentDocxTextForSerialization(message.body);
       demand(!message.body.includes('\r'), 'DOCX_COMMENT_BODY_NON_CANONICAL_NEWLINE');
+      const provenance = normalizeCommentProvenance(message.provenance);
+      const transportDateUtc = explicitUtcTransportDate(provenance);
       return {
         canonicalCommentId: message.commentId, kind: message.kind, body: message.body,
-        provenance: normalizeCommentProvenance(message.provenance),
+        provenance, ...(transportDateUtc ? { transportDateUtc } : {}),
         commentId: String(ordinal++),
         paraId: reserve(paraIds, wordId('comment-paragraph', message.commentId)),
         durableId: reserve(durableIds, wordId('comment-durable', message.commentId)),
       };
     });
+    const messages = allMessages.slice(0, thread.messages.length);
+    const deletedMessages = allMessages.slice(thread.messages.length);
     demand(messages[0].canonicalCommentId === thread.rootCommentId, 'DOCX_COMMENT_ROOT_IDENTITY_INVALID');
     if (thread.status === 'deleted') {
       tombstones.push({ threadId: thread.threadId, sceneId: thread.sceneId, status: 'deleted',
-        messageIds: messages.map(message => message.canonicalCommentId),
-        messageDurableIds: messages.map(message => message.durableId),
+        messageIds: allMessages.map(message => message.canonicalCommentId),
+        messageDurableIds: allMessages.map(message => message.durableId),
         outcome: 'CANONICAL_DELETION_NOT_EXPORTED', threadDigest: digest(stable(thread)) });
       continue;
     }
+    if (deletedMessages.length) tombstones.push({ threadId: thread.threadId, sceneId: thread.sceneId,
+      status: 'deleted-replies', messageIds: deletedMessages.map(m => m.canonicalCommentId),
+      messageDurableIds: deletedMessages.map(m => m.durableId), outcome: 'CANONICAL_DELETION_NOT_EXPORTED',
+      threadDigest: digest(stable(thread)) });
     demand(thread.deleted !== true, 'DOCX_COMMENT_STATE_INVALID');
     threads.push({ threadId: thread.threadId, sceneId: thread.sceneId, status: thread.status,
       anchor: exactCommentAnchor(thread, blocks), messages });
@@ -138,7 +160,7 @@ function commentPackageParts(projection) {
   const comments = [], extended = [], ids = [], extensible = [];
   for (const thread of projection.threads) {
     for (const message of thread.messages) {
-      const { author = '', initials = '', date = '', dateUtc = '' } = message.provenance;
+      const { author = '', initials = '', date = '', dateUtc = message.transportDateUtc || '' } = message.provenance;
       comments.push(`<w:comment w:id="${message.commentId}" w:author="${xmlAttribute(author)}"${initials ? ` w:initials="${xmlAttribute(initials)}"` : ''}${date ? ` w:date="${xmlAttribute(date)}"` : ''}><w:p w14:paraId="${message.paraId}"><w:r>${buildDocxRunContentXml(message.body)}</w:r></w:p></w:comment>`);
       extended.push(`<w15:commentEx w15:paraId="${message.paraId}"${message.kind === 'reply' ? ` w15:paraIdParent="${thread.messages[0].paraId}"` : ''} w15:done="${thread.status === 'resolved' ? 1 : 0}"/>`);
       ids.push(`<w16cid:commentId w16cid:paraId="${message.paraId}" w16cid:durableId="${message.durableId}"/>`);
@@ -222,7 +244,8 @@ function compareCommentExportReadback(projection, returned) {
       }
       const actualMetadata = Object.fromEntries(Object.entries(seen.provenance).filter(([, value]) => typeof value === 'string' && value));
       let metadataEqual = false;
-      try { metadataEqual = stable(normalizeCommentProvenance(actualMetadata)) === stable(message.provenance); } catch { /* Malformed provider provenance never grants continuity. */ }
+      try { metadataEqual = stable(normalizeCommentProvenance(actualMetadata)) === stable({ ...message.provenance,
+        ...(message.transportDateUtc ? { dateUtc: message.transportDateUtc } : {}) }); } catch { /* Malformed provider provenance never grants continuity. */ }
       if (seen.body !== message.body || !metadataEqual) {
         changed.push({ threadId: expected.threadId, canonicalCommentId: message.canonicalCommentId, code: 'COMMENT_BODY_OR_PROVENANCE_CHANGED' });
       }

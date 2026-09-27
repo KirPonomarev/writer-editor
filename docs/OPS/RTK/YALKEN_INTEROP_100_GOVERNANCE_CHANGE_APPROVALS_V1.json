@@ -1021,12 +1021,12 @@
     },
     {
       "approved": true,
-      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "filePath": "src/export/docx/docxReviewPacketComments.js",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
-      "sha256": "acb8364969c97d74eca61b3a52b083652161d5de658bf9a080c68f534e18577a"
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "d749a11c1df84edae4f17242fcfc0f3165b753774733e7893176426890e204c7"
     },
     {
       "approved": true,
@@ -1651,12 +1651,12 @@
     },
     {
       "filePath": "src/main.js",
-      "sha256": "221c446ce62b229fd2c803f1e20d0da58c24b31490c6428120b6c6b3e93a8583",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "sha256": "8ba216707838fcfb629186a03a400c8e2e70b981bd8bd79cc3e59723c432bb36",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "7967a9ac22c5a82e66514245b2f7a046a0ef1a00a8542db8199021e001a0fb14",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "sha256": "eae56aef53048381b79424c492bc5c4605cf36b123e1e6b2c4effb6936f7dfd0",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "b2ffd61269cd7161cc5c99cfb198fd9276ce37e107dcee549ba32d7daa4cf195",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "sha256": "65f5412573156c2691a2828bf71133e29722c7c51dc4118ed74ee301b43b9abc",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "0e57361fc0fbb533609d730da0ae82cd2294f96efa81ce391cbc19fc5d167d4e",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "sha256": "ff2f0ebb94c0b83269256003343053bbc6fa08730b3eb33ac58d4b065f3a1c8b",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2371,21 +2371,21 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
-      "sha256": "6050ccc0bd356fbc6721b18575c2a9b5d21ed84dc7b807e68e00e2ea9f9c7c7b",
-      "approvedAtUtc": "2026-09-27T00:10:12.911243Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement ordinary canonical comment authoring with main-owned active scene identity, exact state CAS, project lease, readable recovery and existing review UI. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "7c0e912932674584561d02bf8e699b8cadc507e99d148cfb029270175b8b065c",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "src/core/word-comment-authoring-v1.cjs",
-      "sha256": "0bf4ff0795ce777d5b3ae1100a65fb6c68f8091d96c38dfb90308d575cd4d8e2",
-      "approvedAtUtc": "2026-09-26T23:40:14.558732Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement ordinary canonical comment authoring with main-owned active scene identity, exact state CAS, project lease, readable recovery and existing review UI. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "490172ae36fcf0a4a0a0f08068542343d718c75684da5340c5ac7db3cbd7249b",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "src/core/entitlement-law-v1.cjs",
@@ -2497,19 +2497,19 @@
     },
     {
       "filePath": "src/core/word-comment-return-delta-v1.cjs",
-      "sha256": "75969e20a343a484f301f8ef3437885ba191cf7c8191de6d08ab36cc20a6e06e",
-      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "9adabbf8b8010c042f1f0b5a01a201cbf5c5abd81b141076075f969451be673e",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-      "sha256": "b587d0726de85619f9311ef0dfecf19c7c271fe077965b95920a08258e98e0c7",
-      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "264219437aa452abc7a6c581569b0f1b160bc7253bb7f6081b76436e0a0515da",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
@@ -2524,39 +2524,39 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "395c6ad6b721532b3ab18ddc27db50a1bdab6d80a7b6fb1b7502dbda9023ea90",
-      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "34d294cec7c3fc37501eb124753c54ba3d43de96b8be868ffc77fa231dfd5717",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "79ae4821c52bd1bbc1064e38424278418a6f897305c7577b104ec06cb0e2cb8f",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:07:25.099424+00:00",
+      "sha256": "41040a99f17425bfc23ff3eaf49f2725dd971fa186ebf3eef4231b326679e997",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:58:47.415593+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "0dd552ba28c883065b35a3c4d312a8bbc318b881c934b9e0b2c0cab3b5395d4d",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "sha256": "138ea90458fe95158eb5d2b15e1cf074bf69e874fcb8ef7eb3aa6b885369d4c1",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "3154ebbc6e32e60f9ed6aa4018b969819425598168f1c640b4f8a18b76bba980",
-      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T16:07:25.099424+00:00",
+      "sha256": "77ad5c7303e5d84f27e0da7f20201d63ca689eef559ad7a932f4094f73b8d89c",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:58:47.415593+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
-      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -2683,6 +2683,15 @@
       "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-reply-deletion.md",
+      "sha256": "9d878a3db4d8d9c6960bca619e4e783225df1650e865f498fc25c419b9609a0a",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     }
   ],
   "evidenceStampIds": [
@@ -12303,6 +12312,231 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "src/core/word-comment-return-delta-v1.cjs",
+      "sha256": "75969e20a343a484f301f8ef3437885ba191cf7c8191de6d08ab36cc20a6e06e",
+      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "filePath": "src/export/docx/docxReviewPacketComments.js",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "acb8364969c97d74eca61b3a52b083652161d5de658bf9a080c68f534e18577a"
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "221c446ce62b229fd2c803f1e20d0da58c24b31490c6428120b6c6b3e93a8583",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "sha256": "b587d0726de85619f9311ef0dfecf19c7c271fe077965b95920a08258e98e0c7",
+      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "395c6ad6b721532b3ab18ddc27db50a1bdab6d80a7b6fb1b7502dbda9023ea90",
+      "approvedAtUtc": "2026-09-27T16:01:12.771736+00:00",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "7967a9ac22c5a82e66514245b2f7a046a0ef1a00a8542db8199021e001a0fb14",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "0e57361fc0fbb533609d730da0ae82cd2294f96efa81ce391cbc19fc5d167d4e",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "b2ffd61269cd7161cc5c99cfb198fd9276ce37e107dcee549ba32d7daa4cf195",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "0dd552ba28c883065b35a3c4d312a8bbc318b881c934b9e0b2c0cab3b5395d4d",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:07:16.841942+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "79ae4821c52bd1bbc1064e38424278418a6f897305c7577b104ec06cb0e2cb8f",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:07:25.099424+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "src/core/word-comment-authoring-v1.cjs",
+      "sha256": "0bf4ff0795ce777d5b3ae1100a65fb6c68f8091d96c38dfb90308d575cd4d8e2",
+      "approvedAtUtc": "2026-09-26T23:40:14.558732Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement ordinary canonical comment authoring with main-owned active scene identity, exact state CAS, project lease, readable recovery and existing review UI. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-authoring.contract.test.js",
+      "sha256": "6050ccc0bd356fbc6721b18575c2a9b5d21ed84dc7b807e68e00e2ea9f9c7c7b",
+      "approvedAtUtc": "2026-09-27T00:10:12.911243Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement ordinary canonical comment authoring with main-owned active scene identity, exact state CAS, project lease, readable recovery and existing review UI. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "3154ebbc6e32e60f9ed6aa4018b969819425598168f1c640b4f8a18b76bba980",
+      "approvedBy": "owner-direct-task:WORD_NEW_COMMENT_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T16:07:25.099424+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Authenticated new Word discussion return with complete graph and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "d155fb25602033587b21c1b55d7e7c3cb9315de23b6513b93b31e9abfb1839c2",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "src/core/word-comment-return-delta-v1.cjs",
+      "sha256": "61cde1011ebe8f3eff54d2caac49fa9c379b27bab0ac54435f579b4a361c0cde",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "filePath": "src/export/docx/docxReviewPacketComments.js",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "sha256": "ea21a8d4d6ac60da38d7d2366ac8e7a97f443de55bf9400cd0ceee707a2c3e47"
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "sha256": "7f951896f40dddebbffbf14dae49debf79662bafa1d30a0288cdae36b5c428c2",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-reply-deletion.md",
+      "sha256": "5e65767656ae195e2ba9da5289c3fe8e06b16f48ce55569e15e56c7ae631c2c2",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "5f6d49e293d384c478e9f8d4651a37232033af3a1e24e2ab031aa9abd58c5978",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "d19204c24587d3d3fe5db074262b19948a2846cdecc63d75b69eb444b25d6a21",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "45bc3b7fad383e6ea3c45a93371ace6412e2552001df5f6c225a5c7189e0a3fe",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "a8efc6dfa56e637ce3943d20622765a77a1ba52e6e11171d5f478962dd70d230",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:01.064868+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "9902d0ba9a78b74c44010d1c46446e764eab9a56d8a34e8e0f8c8f4ab3d69c32",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:27.044890+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "297b78cc992201a701f21c0c1a5561c97920926c8721cc2f400316105cfea379",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:41:27.044890+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a1922b785fdbb72236749b10caf1357df872cfd5ae42b4655569f0e8482cc765",
+      "approvedBy": "owner-direct-task:WORD_REPLY_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T16:55:30.275062+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Individual reply deletion with complete graph, preserved history and explicit confirmation; no new acceptance credit; old bindings retained."
     }
   ]
 }
