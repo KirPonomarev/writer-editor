@@ -2551,12 +2551,12 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "436b166118f0b852b051d84a311cc1535989bd606404025937b51bbc350f87d7",
+      "sha256": "43e72bea49f24a964f277785c2b15a9c9a265fe888fd8e88478ced052dd289b3",
       "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
-      "approvedAtUtc": "2026-09-27T09:25:10.857199Z",
+      "approvedAtUtc": "2026-09-27T09:47:04.337242Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
+      "rationale": "Owner-authorized PR 2015 closure: regenerate C2A approval carrier with its canonical generator and retain exact inventory binding; no runtime or acceptance change."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -10908,6 +10908,15 @@
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
       "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "436b166118f0b852b051d84a311cc1535989bd606404025937b51bbc350f87d7",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.857199Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     }
   ]
 }
