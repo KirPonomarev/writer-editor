@@ -34,7 +34,11 @@ Identity guards, capability revalidation, cancellation and recovery remain in
 the existing main-owned publication path. No new UI/storage writer or registry.
 
 The parser checks a bijection of bodies, modern metadata and document markers,
-with exact internal relationships/content types. Complete disappearance of the
+with exact internal relationships/content types. Actual Word may remove the
+optional commentsExtensible part together with its relationship and content
+type. The remaining body/parent/durable-identity graph must still be complete;
+dangling extension references or incomplete extension entries remain rejected.
+Complete disappearance of the
 last thread is a separate absent-package case; dangling remnants are rejected.
 Missing parts are never normalized into an empty successful comment graph.
 The old broad explicit-Apply flag cannot confirm a newly discovered deletion:

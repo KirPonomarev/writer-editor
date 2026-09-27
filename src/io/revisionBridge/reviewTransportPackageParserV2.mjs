@@ -3464,9 +3464,14 @@ function buildCommentReturnInventory(parts, documentScan, scans, relationships, 
       requireComplete(!markers.length && !rels.length && !types.length && !comments.commentThreads.length && grammar.status === 'ABSENT');
       return { schemaVersion, status: 'COMPLETE', packageState: 'ABSENT', rootDurableIds: [], messageDurableIds: [], deletionAuthority: false };
     }
-    requireComplete(grammar.status === 'SUPPORTED' && sameSet(commentParts, descriptors.map(([name]) => `word/${name}`))
-      && rels.length === descriptors.length && types.length === descriptors.length);
-    for (const [name, key, type, contentType] of descriptors) {
+    // Word can omit the entire optional extensible metadata part after an
+    // edit. Absence is valid only when its relationship and type are absent
+    // too; the body/parent/durable-identity graph remains mandatory.
+    const hasExtensible = commentParts.includes('word/commentsExtensible.xml');
+    const presentDescriptors = hasExtensible ? descriptors : descriptors.slice(0, 3);
+    requireComplete(grammar.status === 'SUPPORTED' && sameSet(commentParts, presentDescriptors.map(([name]) => `word/${name}`))
+      && rels.length === presentDescriptors.length && types.length === presentDescriptors.length);
+    for (const [name, key, type, contentType] of presentDescriptors) {
       requireComplete(scans[key] && !scans[key].diagnostics.length);
       const matching = rels.filter(r => r.type === type);
       requireComplete(matching.length === 1 && matching[0].partName === 'word/_rels/document.xml.rels'
@@ -3479,13 +3484,13 @@ function buildCommentReturnInventory(parts, documentScan, scans, relationships, 
     const paraIds = bodies.map(t => lastCommentParagraphParaId(scans, t));
     const ext = scans.commentsExtended.tokens.filter(t => t.namespaceUri === W15_NS && t.localName === 'commentEx');
     const ids = scans.commentsIds.tokens.filter(t => t.namespaceUri === W16CID_NS && t.localName === 'commentId');
-    const extensible = scans.commentsExtensible.tokens.filter(t => t.namespaceUri === W16CEX_NS && t.localName === 'commentExtensible');
+    const extensible = hasExtensible ? scans.commentsExtensible.tokens.filter(t => t.namespaceUri === W16CEX_NS && t.localName === 'commentExtensible') : [];
     const durableIds = ids.map(t => attr(t, 'durableId', W16CID_NS).toUpperCase());
     requireComplete(rawIds.every(id => /^\d{1,9}$/u.test(id)) && paraIds.every(isValidModernCommentParaId)
       && durableIds.every(id => /^[0-9A-F]{8}$/u.test(id))
       && sameSet(paraIds, ext.map(t => attr(t, 'paraId', W15_NS)))
       && sameSet(paraIds, ids.map(t => attr(t, 'paraId', W16CID_NS)))
-      && sameSet(durableIds, extensible.map(t => attr(t, 'durableId', W16CEX_NS).toUpperCase())));
+      && (!hasExtensible || sameSet(durableIds, extensible.map(t => attr(t, 'durableId', W16CEX_NS).toUpperCase()))));
     const threads = comments.commentThreads;
     const flat = threads.flatMap(t => [{ rawId: t.commentId, durableId: t.durableId }, ...t.replies]);
     requireComplete(threads.every(t => ['ANCHORED', 'RESOLVED'].includes(t.status))

@@ -615,7 +615,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-        "sha256": "612a95b212ffb3e7e2013aaf133cd07afa35c7ff8451425aadb2b45f3e52322d"
+        "sha256": "8d631e6f211bc6151d067ee07fbca7e55444cac2ee7acbc640bacf6ed53558e1"
       },
       {
         "path": "test/contracts/revision-bridge-docx-colors.contract.test.js",
@@ -1227,7 +1227,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "3304570b9a03bf152d4a2274344153ba3d86032c0cdf4753f19c1f1aff3023f9"
+        "sha256": "47c838d850f0f98b873abc74e25cd25f45224625ab88f8747f4f8ff5cdadd058"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1263,7 +1263,7 @@
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
-        "sha256": "3be891b254e86c807988b398149078a43ed1779e8ddf1be145073a60b7805256"
+        "sha256": "1b42f4fdbc539ea4840b03bae19ac69e1b1f3c7e9367b87235a42404d47e8d48"
       }
     ],
     "followupRepair": {

@@ -92,6 +92,28 @@ for (const partial of [false, true]) test(`whole-thread absence (${partial ? 'pa
   assert.deepEqual(reexport.commentExport.tombstones[0].messageIds, ['root-a', 'reply-a']);
 });
 
+test('Word may omit the whole optional extensible part, but never leave a dangling relationship or type', async () => {
+  for (const dangling of ['none', 'relationship', 'type']) {
+    const { input, state, parsed } = await deletionFixture({ partial: true, mutate(parts) {
+      delete parts['word/commentsExtensible.xml'];
+      if (dangling !== 'relationship') parts['word/_rels/document.xml.rels'] = parts['word/_rels/document.xml.rels']
+        .replace(/<Relationship\b[^>]*\bTarget="commentsExtensible.xml"[^>]*\/>/gu, '');
+      if (dangling !== 'type') parts['[Content_Types].xml'] = parts['[Content_Types].xml']
+        .replace(/<Override\b[^>]*\bPartName="\/word\/commentsExtensible.xml"[^>]*\/>/gu, '');
+    } });
+    if (dangling !== 'none') {
+      assert(parsed.ok === false || input.commentReturnInventory?.status === 'INCOMPLETE');
+      assert.throws(() => plan(input), /COMMENT_RETURN_/);
+    } else {
+      assert.equal(input.commentReturnInventory.status, 'COMPLETE');
+      const after = JSON.parse(plan(input).afterText);
+      assert.equal(after.threads[0].status, 'deleted');
+      assert.deepEqual(after.threads[0].messages, state.threads[0].messages);
+      assert.deepEqual(after.threads[1], state.threads[1]);
+    }
+  }
+});
+
 test('lost part, dangling marker/metadata/relationship and incomplete projections never become deletion proposals', async () => {
   for (const [partial, mutate] of [
     [false, p => { p['word/document.xml'] = p['word/document.xml'].replace('</w:p>', '<w:commentReference w:id="0"/></w:p>'); }],

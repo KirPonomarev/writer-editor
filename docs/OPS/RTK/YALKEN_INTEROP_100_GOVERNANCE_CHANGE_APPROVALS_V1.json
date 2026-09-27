@@ -1642,9 +1642,9 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "612a95b212ffb3e7e2013aaf133cd07afa35c7ff8451425aadb2b45f3e52322d",
+      "sha256": "8d631e6f211bc6151d067ee07fbca7e55444cac2ee7acbc640bacf6ed53558e1",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
@@ -1786,27 +1786,27 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "9fd334ad249b5888c1a0ab9e91c630d6df827006367e40b622e828c2061501b5",
+      "sha256": "c1bcfda4cd275ea60f866b9308cb37fdd9ec945ea2bff9bf32e2215dfc544c6a",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T12:56:23.117165+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "44897b293ec02434fe9da34af36e72652d5365f14e0d9a26c6d51a9a1f553fcf",
+      "sha256": "cc5446c433dca9c03a8b0877363251a6501d9c7d2c18aeef1181788638924b3c",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T13:15:39.814302+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "b1b1182ac1810d4505ab8f57c6050d88520ce51e2586faae25268db2725dfc37",
+      "sha256": "cfee9c0b872cbf2404dea71300c8070b4b31508bdc0f32ecdd6de3ad5bf2d780",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T12:56:23.117165+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
@@ -2506,8 +2506,8 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-      "sha256": "3304570b9a03bf152d4a2274344153ba3d86032c0cdf4753f19c1f1aff3023f9",
-      "approvedAtUtc": "2026-09-27T12:39:34.891626+00:00",
+      "sha256": "47c838d850f0f98b873abc74e25cd25f45224625ab88f8747f4f8ff5cdadd058",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved.",
       "approved": true,
@@ -2533,27 +2533,27 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "4594d2e21f098b06c4380867f444e61d5384b749281e7c5f566bac0f14cfc92f",
+      "sha256": "aeee073640b717cdfef040f628762f7309901ff42d051da697b2cd29b4d50991",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T13:15:39.814302+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "eae92ccd0a98dc3919c41d593b1ef8bc83c02e9b738ab1bfeb8f90f1dd25a0f0",
+      "sha256": "c97d73c8a55761e536f6ad8f157eeddd5431527e8deae7c33bb76a806cc300e8",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T13:09:47.814710+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "a8aa9a62c91bee431f98b7e4c6730ddd4ac6494ed2e2cbb7452cb724394c8b76",
+      "sha256": "5bc0b629ffce3aedbef4f793406cb4086e6f31b3527db463c8d0bb9c752a5400",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T13:09:47.814710+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
@@ -2632,9 +2632,9 @@
     },
     {
       "filePath": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
-      "sha256": "3be891b254e86c807988b398149078a43ed1779e8ddf1be145073a60b7805256",
+      "sha256": "1b42f4fdbc539ea4840b03bae19ac69e1b1f3c7e9367b87235a42404d47e8d48",
       "approved": true,
-      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
+      "approvedAtUtc": "2026-09-27T13:35:12.347151+00:00",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
@@ -11607,6 +11607,87 @@
       "sha256": "6458676011542cfbb0cefbeb1b7853bfa52a9726f4d86d547d88175593a31399",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
       "approvedAtUtc": "2026-09-27T13:09:47.814710+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "612a95b212ffb3e7e2013aaf133cd07afa35c7ff8451425aadb2b45f3e52322d",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
+      "sha256": "3304570b9a03bf152d4a2274344153ba3d86032c0cdf4753f19c1f1aff3023f9",
+      "approvedAtUtc": "2026-09-27T12:39:34.891626+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
+      "sha256": "3be891b254e86c807988b398149078a43ed1779e8ddf1be145073a60b7805256",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "9fd334ad249b5888c1a0ab9e91c630d6df827006367e40b622e828c2061501b5",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:56:23.117165+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "b1b1182ac1810d4505ab8f57c6050d88520ce51e2586faae25268db2725dfc37",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:56:23.117165+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "44897b293ec02434fe9da34af36e72652d5365f14e0d9a26c6d51a9a1f553fcf",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T13:15:39.814302+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "eae92ccd0a98dc3919c41d593b1ef8bc83c02e9b738ab1bfeb8f90f1dd25a0f0",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T13:09:47.814710+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "a8aa9a62c91bee431f98b7e4c6730ddd4ac6494ed2e2cbb7452cb724394c8b76",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T13:09:47.814710+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "4594d2e21f098b06c4380867f444e61d5384b749281e7c5f566bac0f14cfc92f",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T13:15:39.814302+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
