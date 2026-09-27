@@ -4595,8 +4595,18 @@ function isLiteralCommentParagraphStyle(stylesScan, stylesXml, styleId) {
     if (!onlyAttrs(parent, []) || !noUnrepresentedText(parent)) return false;
     const seen = new Set();
     return children(parent).every(t => {
-      if (t.namespaceUri !== W_NS || seen.has(t.localName)) return false;
+      if (seen.has(t.localName)) return false;
       seen.add(t.localName);
+      // Native Word's default ligatures and kerning change presentation, not
+      // literal code points. Unknown effects remain outside this grammar.
+      if (t.namespaceUri === W14_NS && t.localName === 'ligatures') {
+        return parent.localName === 'rPr' && !children(t).length && noUnrepresentedText(t)
+          && t.attributes.every(a => a.qName === 'xmlns' || a.prefix === 'xmlns'
+            || a.namespaceUri === W14_NS && a.localName === 'val'
+              && ['none', 'standardContextual'].includes(a.value))
+          && ['none', 'standardContextual'].includes(attr(t, 'val', W14_NS));
+      }
+      if (t.namespaceUri !== W_NS) return false;
       if (parent.localName === 'pPr') return t.localName === 'spacing'
         && leaf(t, ['before', 'after', 'line', 'lineRule'])
         && t.attributes.every(a => a.namespaceUri !== W_NS || (a.localName === 'lineRule'
@@ -4605,9 +4615,12 @@ function isLiteralCommentParagraphStyle(stylesScan, stylesXml, styleId) {
         && Number(val(t)) >= 2 && Number(val(t)) <= 1638;
       if (t.localName === 'lang') return leaf(t, ['val', 'eastAsia', 'bidi'])
         && t.attributes.every(a => a.namespaceUri !== W_NS || language(a.value));
-      return t.localName === 'rFonts' && leaf(t, ['ascii', 'hAnsi', 'eastAsia', 'cs'])
-        && t.attributes.every(a => a.namespaceUri !== W_NS || (a.value.length > 0 && a.value.length <= 128
-          && !/[\u0000-\u001f]/u.test(a.value)));
+      if (t.localName === 'kern') return leaf(t, ['val']) && /^\d{1,4}$/u.test(val(t)) && Number(val(t)) <= 1638;
+      return t.localName === 'rFonts' && leaf(t, ['ascii', 'hAnsi', 'eastAsia', 'cs',
+        'asciiTheme', 'hAnsiTheme', 'eastAsiaTheme', 'cstheme'])
+        && t.attributes.every(a => a.namespaceUri !== W_NS || (/theme$/iu.test(a.localName)
+          ? /^(?:major|minor)(?:Ascii|HAnsi|EastAsia|Bidi)$/u.test(a.value)
+          : a.value.length > 0 && a.value.length <= 128 && !/[\u0000-\u001f]/u.test(a.value)));
     });
   };
   const defaults = tokens.filter(t => isWordToken(t, 'docDefaults') && t.depth === 1);
@@ -4625,6 +4638,20 @@ function isLiteralCommentParagraphStyle(stylesScan, stylesXml, styleId) {
     }
   }
   const styles = tokens.filter(t => isWordToken(t, 'style') && t.depth === 1);
+  const defaultCharacters = styles.filter(t => attr(t, 'type', W_NS) === 'character'
+    && ['1', 'true'].includes(attr(t, 'default', W_NS)));
+  if (defaultCharacters.length > 1) return false;
+  for (const style of defaultCharacters) {
+    if (!onlyAttrs(style, ['type', 'default', 'styleId']) || !noUnrepresentedText(style)) return false;
+    const seen = new Set();
+    for (const node of children(style)) {
+      if (node.namespaceUri !== W_NS || seen.has(node.localName)) return false;
+      seen.add(node.localName);
+      if (node.localName === 'rPr') { if (!properties(node)) return false; }
+      else if (['name', 'uiPriority'].includes(node.localName)) { if (!leaf(node, ['val']) || !val(node)) return false; }
+      else if (!['qFormat', 'semiHidden', 'unhideWhenUsed'].includes(node.localName) || !leaf(node, [])) return false;
+    }
+  }
   const seen = new Set();
   const visit = (id, first) => {
     if (!id || seen.has(id) || seen.size >= 16) return false;
@@ -4655,7 +4682,11 @@ function isLiteralCommentParagraphStyle(stylesScan, stylesXml, styleId) {
       && styles.filter(t => attr(t, 'type', W_NS) === 'paragraph'
         && ['1', 'true'].includes(attr(t, 'default', W_NS))).length === 1;
   };
-  return visit(styleId, true);
+  if (styleId !== null) return visit(styleId, true);
+  const defaultParagraphs = styles.filter(t => attr(t, 'type', W_NS) === 'paragraph'
+    && ['1', 'true'].includes(attr(t, 'default', W_NS)));
+  return defaultParagraphs.length === 0 || defaultParagraphs.length === 1
+    && visit(attr(defaultParagraphs[0], 'styleId', W_NS), false);
 }
 
 function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, stylesScan } = {}) {
@@ -4711,6 +4742,15 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, st
     if (scan.diagnostics.length || scan.tokens.filter(token => token.depth === 0).length !== 1) fail();
     for (const token of scan.tokens) {
       if (token.namespaceUri !== W_NS || !paths.has(token.path.join('/'))) fail();
+      if (normalizationLedger && stylesScan && parts['word/styles.xml'] && token.localName === 'p'
+        && !(childrenMap.get(token) || []).some(p => p.localName === 'pPr'
+          && (childrenMap.get(p) || []).some(t => t.localName === 'pStyle'))) {
+        if (!literalStyle(null)) fail();
+        normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),
+          offset: token.openStart, attribute: 'implicitStyle', value: 'default paragraph and character presentation',
+          disposition: 'NORMALIZED_NON_AUTHORING_METADATA', reason: 'WORD_BUILTIN_COMMENT_STYLE_LITERAL_PRESENTATION',
+          definitionPart: 'word/styles.xml' });
+      }
       if (token.localName === 'rFonts') {
         const parent = parentsMap.get(token);
         if (!normalizationLedger || !parent || (childrenMap.get(token) || []).length
@@ -4750,8 +4790,11 @@ function validateCommentMetadataScans(parts, scanPart, { normalizationLedger, st
           && ['', 'http://www.w3.org/XML/1998/namespace'].includes(ns) && name === 'space'
           && ['preserve', 'default'].includes(attribute.value)) continue;
         if (token.localName === 'br' && ns === W_NS && name === 'type' && attribute.value === 'textWrapping') continue;
-        if (['pStyle', 'rStyle'].includes(token.localName) && ns === W_NS && name === 'val'
-          && attribute.value === (token.localName === 'pStyle' ? 'CommentText' : 'CommentReference')) continue;
+        // Legacy metadata-only callers retain their original minimal profile.
+        // Literal intake/return must inspect even the English built-in style:
+        // a familiar style ID cannot hide a substituted definition.
+        if (!normalizationLedger && token.localName === 'pStyle' && ns === W_NS && name === 'val'
+          && attribute.value === 'CommentText') continue;
         if (normalizationLedger && token.localName === 'pStyle' && ns === W_NS && name === 'val'
           && literalStyle(attribute.value)) {
           normalizationLedger.push({ part: 'word/comments.xml', path: token.path.join('/'),

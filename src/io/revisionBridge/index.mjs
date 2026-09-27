@@ -13,7 +13,6 @@ import { genericCommentCandidates } from './genericWordComments.mjs';
 import {
   extractReviewTransportFormattingRunsV2,
   extractDocumentMediaReferencesV1,
-  validateGenericCommentMetadataV1,
   parseReviewTransportPackageV2,
   WORD_HIGHLIGHT_COLOR_BY_NAME,
 } from './reviewTransportPackageParserV2.mjs';
@@ -10219,11 +10218,20 @@ export function buildDocxContentPreviewFromZipBytes(input) {
           sha256Text: sha256Hex, sha256Json: value => `sha256:${hashCanonicalValue(value)}`,
           byteLength: value => new TextEncoder().encode(value).length,
         } };
-        const metadataParts = Object.fromEntries(['word/comments.xml', 'word/commentsExtended.xml', 'word/commentsIds.xml', 'word/commentsExtensible.xml']
-          .map(name => [name, Buffer.from(auxiliary(name) || []).toString('utf8')]));
-        const metadataValidated = validateGenericCommentMetadataV1(metadataParts, commentPorts);
         const analysis = buildDocxReviewTransportAnalysisFromZipBytes({ bytes }, commentPorts);
-        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated });
+        // The same bounded literal grammar applies to native-origin import and
+        // authenticated return. Presentation normalization never grants return
+        // authority: generic import still allocates entirely new local IDs.
+        const grammar = analysis.reviewIr?.commentBodyGrammar;
+        if (grammar?.profile !== 'PLAIN_TEXT_V1' || grammar.status !== 'SUPPORTED') {
+          throw Error('DOCX_GENERIC_COMMENT_METADATA_UNSUPPORTED');
+        }
+        parsed.contentPreview.genericComments = genericCommentCandidates(analysis, parsed.contentPreview.paragraphs, { metadataValidated: true });
+        parsed.contentPreview.commentNormalizationLedger = (grammar.normalizationLedger || []).map(item => ({
+          sourcePart: item.part, xmlElement: item.path, offset: item.offset,
+          attribute: item.attribute, value: item.value, disposition: item.disposition, reason: item.reason,
+          ...(item.definitionPart ? { definitionPart: item.definitionPart } : {}),
+        }));
         if (parsed.contentPreview.genericComments.length) {
           parsed.diagnostics = parsed.diagnostics.filter(item => !(item.code === 'DOCX_CONTENT_PREVIEW_UNSUPPORTED_STRUCTURE_DIAGNOSTIC'
             && ['w:commentRangeStart', 'w:commentRangeEnd', 'w:commentReference'].includes(item.tagName)));
@@ -11219,6 +11227,12 @@ export function buildDocxImportPreviewPlanFromContentPreview(input = {}) {
       category: 'comments', severity: 'info', sourcePart: 'word/comments.xml',
       message: 'Supported comment bodies, replies, status, literal provenance and exact anchors will receive new local identities with the imported scene.',
     }));
+    if (contentPreview.commentNormalizationLedger?.length) {
+      lossReport.items.push({ ...docxImportPreviewLossItem('DOCX_GENERIC_COMMENT_PRESENTATION_NORMALIZED', {
+        category: 'comments', severity: 'warning', sourcePart: 'word/comments.xml',
+        message: 'Comment text, replies, status, provenance and anchors are preserved. Word comment fonts, spacing and proofing preferences are normalized to Yalken literal comment presentation.',
+      }), normalizationLedger: cloneJsonSafe(contentPreview.commentNormalizationLedger) });
+    }
     lossReport.itemCount = lossReport.items.length;
   }
   if (richContent !== null) {

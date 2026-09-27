@@ -175,8 +175,10 @@ test('Word proofing metadata has an explicit return ledger and never widens rich
   const { returned, parsed } = analyze(changed);
   assert.equal(parsed.ok, true);
   assert.equal(parsed.reviewIr.commentBodyGrammar.status, 'SUPPORTED');
-  assert.equal(parsed.reviewIr.commentBodyGrammar.normalizationLedger.length, 5);
-  assert.deepEqual(parsed.reviewIr.commentBodyGrammar.normalizationLedger.map(item => item.value).sort(),
+  const proofing = parsed.reviewIr.commentBodyGrammar.normalizationLedger.filter(item => item.attribute !== 'implicitStyle');
+  assert.equal(proofing.length, 5);
+  assert.equal(parsed.reviewIr.commentBodyGrammar.normalizationLedger.filter(item => item.attribute === 'implicitStyle').length, 2);
+  assert.deepEqual(proofing.map(item => item.value).sort(),
     ['002E54A5', 'ru-RU', 'ru-RU', 'ja-JP', 'ar-SA'].sort());
   assert(parsed.reviewIr.commentBodyGrammar.normalizationLedger.every(item => item.part === 'word/comments.xml'
     && Number.isInteger(item.offset) && item.disposition === 'NORMALIZED_NON_AUTHORING_METADATA'));

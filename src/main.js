@@ -10944,6 +10944,8 @@ function canonicalizeDocxImportPreviewSourceReport(sourceReport) {
         sourcePart: sourceReport.contentPreview.sourcePart,
         ...(Array.isArray(sourceReport.contentPreview.genericComments)
           ? { genericComments: cloneJsonSafe(sourceReport.contentPreview.genericComments) } : {}),
+        ...(Array.isArray(sourceReport.contentPreview.commentNormalizationLedger)
+          ? { commentNormalizationLedger: cloneJsonSafe(sourceReport.contentPreview.commentNormalizationLedger) } : {}),
         ...(Array.isArray(sourceReport.contentPreview.mediaParts) ? { mediaParts: [...sourceReport.contentPreview.mediaParts] } : {}),
         paragraphCount: sourceReport.contentPreview.paragraphCount,
         textLength: sourceReport.contentPreview.textLength,
