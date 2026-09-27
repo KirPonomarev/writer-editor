@@ -1795,7 +1795,7 @@
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "1028e8aad46f2260207f29924cae809fa6127be2801b3c66216f6515f6086a45",
+      "sha256": "718e0488179bb2c2afdad50962d221c0d264adeeb5bd6005bb16286d03c9849e",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
