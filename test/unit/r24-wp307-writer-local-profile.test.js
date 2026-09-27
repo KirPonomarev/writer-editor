@@ -63,7 +63,7 @@ test('WP307 denies optional product domains and non-survivor Review commands at 
   assert.equal(evaluateWriterLocalCommandAccess({
     profile,
     commandId: 'cmd.project.review.openDocxReviewPreviewSession',
-  }).allowed, false);
+  }).allowed, true);
   assert.equal(evaluateWriterLocalCommandAccess({
     profile,
     commandId: 'cmd.project.review.applyFullManuscriptExactTextReturn',
@@ -90,6 +90,7 @@ test('WP307 admits only owner-authorized DOCX review roundtrip survivors in pack
   const profile = createWriterLocalProfileProjection({ isPackaged: true, platform: 'darwin' });
   assert.deepEqual(WRITER_LOCAL_DOCX_REVIEW_ROUNDTRIP_COMMAND_IDS, [
     'cmd.project.review.openComments',
+    'cmd.project.review.openDocxReviewPreviewSession',
     'cmd.project.review.exportDocxReviewPacket',
     'cmd.project.review.exportFullManuscriptDocxReviewPacket',
     'cmd.project.review.editComment',
