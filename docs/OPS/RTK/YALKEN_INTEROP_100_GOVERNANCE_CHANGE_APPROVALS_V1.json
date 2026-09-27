@@ -1791,16 +1791,16 @@
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after admitting the two already-executed ordinary Word entitlement contract files into the shared interop delivery scope and rebinding the successor guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "1cdb69dd45d4192dbf90bc95aea728cfec49bd8b2efd064863ff4c938dbe4590",
+      "sha256": "718e0488179bb2c2afdad50962d221c0d264adeeb5bd6005bb16286d03c9849e",
       "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after admitting the two already-executed ordinary Word entitlement contract files into the shared interop delivery scope and rebinding the successor guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
@@ -1809,16 +1809,16 @@
       "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after admitting the two already-executed ordinary Word entitlement contract files into the shared interop delivery scope and rebinding the successor guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "cefc5d122f5342c497b0cc2f3a19539820a2b8928a39cecb865b63a967b79e19",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T08:46:39.103Z",
+      "sha256": "bc4c1a2efc21067bc513eb2092c219f2efd399c366337529b3afb77b6a7e17fb",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after repairing the historical Word successor test router so each comment era uses its own certified binding set and immutable delivery head. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript.contract.test.js",
@@ -2542,21 +2542,21 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "abf660b1a3efbef3a12c0be59b40fe5a10aa178cf7ab9df99571aef22791ee5e",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T08:46:39.103Z",
+      "sha256": "b6942f51fa3cea584aafb315662d88cc602f3ce0072123f096cd3f7a191b9a69",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after repairing the historical Word successor test router so each comment era uses its own certified binding set and immutable delivery head. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "db6b2ce61d5c165177005b651499fb537ff0c15c7caf3833e002bce9b24f00b1",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T08:46:39.103Z",
+      "sha256": "85dba91792d694a0dff2b1df349cc9a6b3c573b7bf49009ee2a0dbfd8002b535",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after repairing the historical Word successor test router so each comment era uses its own certified binding set and immutable delivery head. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Exact current-byte refresh after correcting the COMMENT_RETURN_APPLY historical successor head to the immutable delivery commit and rebinding its complete certification set. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",

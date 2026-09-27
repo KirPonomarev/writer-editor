@@ -927,7 +927,7 @@ export const R24_INTEROP_WORD_COMMENT_RETURN_APPLY_SUCCESSOR=Object.freeze({
     },
     {
       "path": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
-      "sha256": "568737cb2e58e3da4e8b6ccdb033cbc6cabec9e0cbedb4b8650420c97b0b66b6"
+      "sha256": "cefc5d122f5342c497b0cc2f3a19539820a2b8928a39cecb865b63a967b79e19"
     }
   ],
   "guards": [
