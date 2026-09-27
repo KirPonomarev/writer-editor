@@ -5760,14 +5760,14 @@ async function applyAuthenticatedCommentDelta({ context, requestId, explicitCano
       consumed = true;
       checkIdentity();
       const payload = { action: 'authenticated-comment-delta', requestId };
-      authenticatedCommentDeltaAdmissions.set(payload, () => queueDiskOperation(async () => {
+      authenticatedCommentDeltaAdmissions.set(payload, async () => {
         checkIdentity();
         const authority = await getMainProjectManifestAuthority();
         return authority.withProjectLease(context.projectId, async lease => module.commitAuthenticatedCommentDelta(input, {
           publish: operation => lease.publish(operation),
           revalidate: async () => { await lease.assertOwned(); await revalidateScenes(); },
         }));
-      }, 'authenticated comment return'));
+      });
       let receipt;
       try { receipt = await dispatchCommandSurfaceKernel('cmd.rtk.review.applyCommentLifecycleReturn', payload); }
       finally { authenticatedCommentDeltaAdmissions.delete(payload); }
@@ -22405,7 +22405,7 @@ async function handleRtkCommentLifecycleReturnCommandSurface(payload = {}) {
     const admitted = authenticatedCommentDeltaAdmissions.get(payload);
     if (!admitted) return { ok: false, code: 'COMMENT_RETURN_ADMISSION_REQUIRED', writerCalled: false };
     authenticatedCommentDeltaAdmissions.delete(payload);
-    return admitted();
+    return queueDiskOperation(admitted, 'authenticated comment return');
   }
   let module = null;
   try {
