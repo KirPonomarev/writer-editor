@@ -1228,7 +1228,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-        "sha256": "dd40507f138572e48b460c00756c5ad0ec309b6d34af5a44e49d0e0ea277861c"
+        "sha256": "ef2ceeb1642214632e776a21ea254f6ed44c01d2f821fa7dbfb3961a693aa8b1"
       }
     ],
     "followupRepair": {

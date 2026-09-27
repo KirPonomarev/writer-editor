@@ -7,6 +7,37 @@ const { exactAnchor } = require('../../src/core/word-comment-authoring-v1.cjs');
 const { buildFullManuscriptDocxReviewPacketSource: makeSource } = require('../../src/export/docx/fullManuscriptDocxReviewPacketSource.js');
 const { buildDocxReviewPacketBuffer } = require('../../src/export/docx/docxReviewPacketBuilder.js');
 const hash = v => crypto.createHash('sha256').update(v).digest('hex');
+
+test('ordinary Word Apply admits the real candidate and rejects corrupted or mixed successor bytes', async () => {
+  const path = require('node:path');
+  const { execFileSync } = require('node:child_process');
+  const root = path.resolve(__dirname, '../..');
+  const cert = await import('../../scripts/ops/r24/corrective/post-audit-certification-set.mjs');
+  const git = (args, options = {}) => execFileSync('git', args, { cwd: root, ...options });
+  const candidate = git(['rev-parse', 'HEAD']).toString().trim();
+  const current = cert.R24_INTEROP_WORD_COMMENT_RETURN_APPLY_CLOSURE_SUCCESSOR;
+  const result = cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git });
+  assert.equal(result.status, 'PASS');
+  assert.equal(result.candidateSha, candidate);
+  assert.equal(result.cellAcceptanceAuthority, false);
+  for (const binding of [...current.bindings, ...current.guards]) {
+    const mutate = (args, options) => args[0] === 'show' && args[1] === candidate + ':' + binding.path
+      ? Buffer.concat([git(args, options), Buffer.from('\nchanged-after-admission')]) : git(args, options);
+    assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: mutate }),
+      /E_INTEROP_WORD_PROMOTION_PIN/);
+  }
+  const mixed = (args, options) => args[0] === 'show' && args[1] === candidate + ':' + current.guards[0].path
+    ? git(['show', 'c00d33d2ceee761e391eb742c98a68f629d355d8:' + current.guards[0].path], options)
+    : git(args, options);
+  assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: mixed }),
+    /E_INTEROP_WORD_PROMOTION_PIN/);
+  const unrelated = (args, options) => {
+    if (args[0] === 'merge-base') throw new Error('unrelated candidate');
+    return git(args, options);
+  };
+  assert.throws(() => cert.verifyR24InteropWordPromotionSuccessor({ candidateSha: candidate, git: unrelated }),
+    /E_INTEROP_WORD_TABLES_ANCESTRY/);
+});
 const stable = v => Array.isArray(v) ? `[${v.map(stable).join(',')}]` : v && typeof v === 'object'
   ? `{${Object.keys(v).sort().map(k => `${JSON.stringify(k)}:${stable(v[k])}`).join(',')}}` : JSON.stringify(v);
 

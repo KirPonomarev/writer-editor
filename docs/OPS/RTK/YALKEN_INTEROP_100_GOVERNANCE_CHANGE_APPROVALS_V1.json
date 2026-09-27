@@ -1786,30 +1786,30 @@
     },
     {
       "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
-      "sha256": "d3408140698c847f7726dd24a70ecd4a054a93df7dfc41c5bb86b6ccee374c45",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "sha256": "e1aa1df4c8fda4279271e3a55cb83b51fd89ec9a2a20bf425e0913ee5be2c1c5",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.855941Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     },
     {
       "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
-      "sha256": "718e0488179bb2c2afdad50962d221c0d264adeeb5bd6005bb16286d03c9849e",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "sha256": "40d31d509371bb146d5c2df58d637fa10922f8905df3ba6d092c628e7eca9c3b",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.856667Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     },
     {
       "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
-      "sha256": "f562c18e147eefbe4923815cf06383e20c2f5ad0fcbf45edae4a658181ffb1b0",
-      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "sha256": "53c5d4d555ae389bfd467a72d8437b7cc6721ed797a971760d7c1fbf715b7e2e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.856726Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     },
     {
       "filePath": "test/contracts/rtk-interop-word-manuscript-promotion.contract.test.js",
@@ -2524,39 +2524,39 @@
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
-      "sha256": "dd40507f138572e48b460c00756c5ad0ec309b6d34af5a44e49d0e0ea277861c",
-      "approvedAtUtc": "2026-09-27T07:44:18.428291Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927",
-      "rationale": "Owner-authorized ordinary Word return closure: bind deterministic renderer, regenerated test inventory, and exact governance companions after the product implementation passed 1676 of 1676 RTK tests. No new product behavior, dependency, runtime network, denominator promotion, release claim, or oracle reduction.",
+      "sha256": "ef2ceeb1642214632e776a21ea254f6ed44c01d2f821fa7dbfb3961a693aa8b1",
+      "approvedAtUtc": "2026-09-27T09:25:10.856779Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "bf6988a95d1cb6577f690ed22b0a16bf05c2c358cd68f2f8b4648c3945a2687f",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T08:18:14.145476Z",
+      "sha256": "b4363e11c3169ac83c61164afac068c84c5cdfbafa93cd9dd70dc3fd288da981",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.856917Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized ordinary Word return closure: preserve the existing exact PK1R1 governance companion while aligning ordinary DOCX intake contracts. No product expansion, cell credit, oracle reduction, dependency, network, or release claim."
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
-      "sha256": "b6942f51fa3cea584aafb315662d88cc602f3ce0072123f096cd3f7a191b9a69",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "sha256": "8d80d86c9291110d589f4a0eb5b2c61d1a554ea7b3b794958b3792fecd798782",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.857166Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "85dba91792d694a0dff2b1df349cc9a6b3c573b7bf49009ee2a0dbfd8002b535",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
-      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "sha256": "436b166118f0b852b051d84a311cc1535989bd606404025937b51bbc350f87d7",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_CLOSURE_20260927",
+      "approvedAtUtc": "2026-09-27T09:25:10.857199Z",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+      "rationale": "Owner expressly requested personal completion and correction after audit. Exact byte admission for current Apply successor regression, preserving historical complete sets, current-candidate ancestry and negative checks. No new cell acceptance or runtime behavior claim."
     },
     {
       "filePath": "test/unit/r24-ent0-entitlement-law.test.js",
@@ -10845,6 +10845,69 @@
       "rationale": "Owner-authorized revision-3 Word plan: connect ordinary native explicit Apply with one-use captured authority and truthful canonical projection; preserve existing single parse, Kernel and exact-CAS publication. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
       "approved": true,
       "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/RTK/YALKEN_INTEROP_DATA_C1_POLICY_V1.json",
+      "sha256": "d3408140698c847f7726dd24a70ecd4a054a93df7dfc41c5bb86b6ccee374c45",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+    },
+    {
+      "filePath": "scripts/ops/r24/corrective/post-audit-certification-set.mjs",
+      "sha256": "718e0488179bb2c2afdad50962d221c0d264adeeb5bd6005bb16286d03c9849e",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+    },
+    {
+      "filePath": "scripts/ops/rtk-interop-data-c1.mjs",
+      "sha256": "f562c18e147eefbe4923815cf06383e20c2f5ad0fcbf45edae4a658181ffb1b0",
+      "approvedBy": "owner-delegated-codex:WORD_INLINE_ATOMS_INDEPENDENT_AUDIT_20260926|owner-delegated-codex:WORD_P0A_VISIBILITY_RUBY_20260926|owner-delegated-codex:WORD_P1A_HTTP_LINKS_20260926|owner-delegated-codex:WORD_ROUND_KEY_DURABILITY_20260926|owner-delegated-codex:WORD_CLEAN_LINK_LABEL_RETURN_20260926|owner-delegated-codex:WORD_STRUCTURAL_TRANSACTION_CONTINUITY_20260926|owner-delegated-codex:WORD_PRESERVE_AUTHORED_TOPOLOGY_20260926|owner-delegated-codex:WORD_LINK_LABEL_CONTEXT_20260926|owner-delegated-codex:WORD_NODE_NAME_INPUT_20260926|owner-delegated-codex:WORD_REVIEW_DEFAULT_TYPOGRAPHY_20260926|owner-delegated-codex:WORD_COMBINED_LINK_RETURN_20260927|owner-delegated-codex:WORD_GENERIC_COMMENTS_20260927|owner-delegated-codex:WORD_COMMENT_AUTHORING_20260927|owner-delegated-codex:WORD_COMMENT_ANCHOR_SAVE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_EXACT_HEAD_PIN_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+    },
+    {
+      "filePath": "test/contracts/rtk-word-comment-return-apply.contract.test.js",
+      "sha256": "dd40507f138572e48b460c00756c5ad0ec309b6d34af5a44e49d0e0ea277861c",
+      "approvedAtUtc": "2026-09-27T07:44:18.428291Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_APPLY_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927",
+      "rationale": "Owner-authorized ordinary Word return closure: bind deterministic renderer, regenerated test inventory, and exact governance companions after the product implementation passed 1676 of 1676 RTK tests. No new product behavior, dependency, runtime network, denominator promotion, release claim, or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "bf6988a95d1cb6577f690ed22b0a16bf05c2c358cd68f2f8b4648c3945a2687f",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T08:18:14.145476Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized ordinary Word return closure: preserve the existing exact PK1R1 governance companion while aligning ordinary DOCX intake contracts. No product expansion, cell credit, oracle reduction, dependency, network, or release claim."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C1B_TEST_INVENTORY_V1.json",
+      "sha256": "b6942f51fa3cea584aafb315662d88cc602f3ce0072123f096cd3f7a191b9a69",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/C2A_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "85dba91792d694a0dff2b1df349cc9a6b3c573b7bf49009ee2a0dbfd8002b535",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_ORDINARY_ENTRY_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_SUCCESSOR_ROUTER_CLOSE_20260927|owner-delegated-codex:WORD_COMMENT_RETURN_CI_SCOPE_CLOSE_20260927",
+      "approvedAtUtc": "2026-09-27T09:00:00.000Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Exact current-byte refresh after closing the COMMENT_RETURN_APPLY historical successor route and its DATA policy guard. Product behavior, evidence denominator, independent oracles, dependencies and runtime network remain unchanged."
     }
   ]
 }
