@@ -8881,6 +8881,28 @@ async function buildDocxReviewReturnIntakeLocalAuthorityCapsule(localAuthority, 
       cleanLinkLabel: sceneAuthority.cleanLinkLabel,
     }
     : {};
+  if (localScope === 'full-manuscript') {
+    const bridge = await loadRevisionBridgeModule();
+    const cleanLinkLabel = bridge.analyzeFullManuscriptCleanLinkReturn(localExportMap, parserResult.reviewIr);
+    if (cleanLinkLabel.ok) {
+      const sceneId = cleanLinkLabel.change.targetScope.id;
+      const scenePath = localAuthority.scenePathBySceneId?.[sceneId];
+      const raw = localAuthority.baselineObservableContentBySceneId?.[sceneId]
+        ?? localAuthority.baselineFinalTextBySceneId?.[sceneId];
+      if (typeof scenePath !== 'string' || typeof raw !== 'string')
+        return docxReviewReturnIntakeBlocked('RTK_CLEAN_LINK_LABEL_BASELINE_REQUIRED');
+      const projectId = docxReviewPreviewSessionDetailString(options.context?.projectId);
+      const baselineHash = docxReviewPreviewSessionDetailString(options.context?.baselineHash);
+      sceneAuthorityFields.cleanLinkLabel = cleanLinkLabel;
+      sceneAuthorityFields.writerContext = {
+        projectRoot: localAuthority.projectRoot, scenePath, scenePathBySceneId: { [sceneId]: scenePath },
+        projectSnapshot: { projectId, baselineHash, scenes: [{ sceneId, text: raw }] },
+        revisionSession: { projectId, baselineHash, sessionId: `docx-review-preview-${localAuthority.roundId}`,
+          status: 'open', reviewGraph: { commentThreads: [], commentPlacements: [], textChanges: [],
+            structuralChanges: [], diagnosticItems: [], decisionStates: [] } },
+      };
+    }
+  }
   return {
     ...cloneJsonSafe(localAuthority),
     ...sceneAuthorityFields,
@@ -9703,7 +9725,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
 
   const cleanLabel = returnIntake.authenticated === true
     ? returnIntake.localAuthorityCapsule?.cleanLinkLabel : null;
-  if (cleanLabel?.ok === true && authenticatedSceneExportMap) {
+  if (cleanLabel?.ok === true && (authenticatedSceneExportMap || authenticatedFullManuscriptExportMap)) {
     // Main-owned derivative, never a synthetic Word revision or worker mutation.
     candidate = { ...candidate, ok:true, status:'ready', reason:'RTK_CLEAN_LINK_LABEL_PREVIEW_READY',
       canAutoApply:false, canImportMutate:false, canWriteStorage:false, canOpenReviewSession:true,
@@ -9760,6 +9782,7 @@ async function handleDocxReviewPreviewSessionActivationCommandSurface(payload = 
     input.revisionSession.reviewGraph.textChanges = cloneJsonSafe(input.reviewItems);
     activeRtkCleanLinkLabelApplyStore = {
       input, keyAuthority:cloneJsonSafe(capsule),
+      openScenePath: currentFilePath,
       sessionToken:readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore),
       intakeGeneration:activeDocxReviewIntakeGeneration,
     };
@@ -22959,7 +22982,8 @@ function cleanLinkLabelStoreMatches(store) {
   if (!store || activeReviewSessionLifecycle !== 'active' || !activeReviewSessionStore
     || activeRtkCleanLinkLabelApplyStore !== store || isDirty || autoSaveInProgress
     || store.intakeGeneration !== activeDocxReviewIntakeGeneration
-    || store.input.projectRoot !== getProjectRootPath() || store.input.scenePath !== currentFilePath) return false;
+    || store.input.projectRoot !== getProjectRootPath()
+    || (store.openScenePath || store.input.scenePath) !== currentFilePath) return false;
   const token = readRtkNonOverlapTrackedReplacementSessionToken(activeReviewSessionStore);
   return Boolean(token.sessionId && token.sourcePacketHash
     && token.sessionId === store.sessionToken.sessionId && token.sourcePacketHash === store.sessionToken.sourcePacketHash);
@@ -22983,6 +23007,14 @@ async function revalidateCleanLinkLabelApplyInput(input) {
   const handle = await resolveDocxReviewRoundKeyHandle(store.keyAuthority.keyRef,store.keyAuthority);
   if (!cleanLinkLabelStoreMatches(store)) return blocked('RTK_CLEAN_LINK_LABEL_STALE_SESSION');
   if (handle?.state !== 'ACTIVE') return blocked('RTK_CLEAN_LINK_LABEL_INACTIVE_KEY');
+  if (store.keyAuthority.scope === 'full-manuscript') {
+    const current = verifyFullManuscriptCurrentSceneBindings({
+      projectRoot: input.projectRoot, exportMapScenes: store.keyAuthority.exportMap?.scenes,
+      scenePathBySceneId: store.keyAuthority.scenePathBySceneId,
+    }, { readFileSync: fsSync.readFileSync, sha256Text: value => `sha256:${computeHash(String(value || ''))}`,
+      isPathInsideBoundary });
+    if (!current.ok) return blocked(current.reason || 'RTK_CLEAN_LINK_LABEL_STALE_MANUSCRIPT');
+  }
   return {ok:true};
 }
 
@@ -23009,6 +23041,7 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
         };
       }
       let trustedLinkReplacementDigest = null;
+      let publishScene = publishReviewSceneWithProjectTransaction;
       if (input.reviewItems?.some(change => String(change.changeId).startsWith('docx-clean-link-label-')
         || Object.hasOwn(change, 'richReplacementLink'))) {
         const gate = await revalidateCleanLinkLabelApplyInput(input);
@@ -23016,9 +23049,15 @@ async function runReviewExactTextBatchSafeWriteFromMainState(applyExactTextBatch
         if (input.reviewItems.length === 1 && input.reviewItems[0].richReplacementLink) {
           trustedLinkReplacementDigest = computeHash(JSON.stringify(input.reviewItems[0]));
         }
+        const beforeRename = async () => {
+          const publicationGate = await revalidateCleanLinkLabelApplyInput(input);
+          if (!publicationGate.ok) throw Object.assign(new Error(publicationGate.reason), { code: publicationGate.code });
+        };
+        publishScene = (filePath, content, options) => publishReviewSceneWithProjectTransaction(
+          filePath, content, { ...options, beforeRename },
+        );
       }
-      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, trustedLinkReplacementDigest,
-        publishScene: publishReviewSceneWithProjectTransaction });
+      return applyExactTextBatchMinSafeWrite(input, { ...safeWriteOptions, trustedLinkReplacementDigest, publishScene });
     },
     'review exact text batch safe apply',
   );

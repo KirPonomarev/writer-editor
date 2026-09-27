@@ -48,7 +48,7 @@ function boundaries(text) {
   return new Set([0,text.length,...Array.from(new Intl.Segmenter('und',{granularity:'grapheme'}).segment(text),x=>x.index)]);
 }
 
-export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagraphs, sceneId, reviewIr = {}, exportTypography, allowTargetChange = false } = {}) {
+export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagraphs, sceneId, reviewIr = {}, exportTypography, allowTargetChange = false, comparisonOnly = false } = {}) {
   try {
     // Only the main-owned authenticated export map supplies this descriptor.
     // A returned stylesheet or historical round cannot invent its own baseline.
@@ -127,6 +127,9 @@ export function analyzeCleanLinkLabelReturn({ baselineParagraphs, returnedParagr
       }
     }
     if (!effect) return reject('no-label-change');
+    // Whole-manuscript comparison establishes one effect, not a writer quote.
+    // Quote uniqueness is then enforced within the independently bound scene.
+    if (comparisonOnly === true) return { ok: true, analysisOnly: true, effect, canWriteManuscript: false };
     const fullText=baselineParagraphs.map(p=>p.text).join('\n');
     let quote=effect.selectedText, replacementText=effect.replacementText, richReplacementRange;
     if (fullText.indexOf(quote)!==fullText.lastIndexOf(quote)) {

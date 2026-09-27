@@ -103,3 +103,75 @@ for(const clean of [true,false])test('actual single-item click preserves profile
  const local=require('../../src/core/writer-local-profile-v1.cjs');assert.equal(local.evaluateWriterLocalCommandAccess({profile:local.createWriterLocalProfileProjection({isPackaged:true,platform:'darwin'}),commandId:calls[0].id}).allowed,clean);
  button.disabled=true;await ui.handleReviewSurfaceExactTextApplyClick({target:button});assert.equal(calls.length,1);
 });
+
+async function manuscriptFixture() {
+ const [m,e]=await modules,bridge=await import('../../src/io/revisionBridge/index.mjs');
+ const {hashCanonicalValue}=await import('../../src/core/browser-safe-hash.mjs');
+ const f=fixture(),other=fixture();
+ other.returnedParagraphs[0].paragraphText='before same after';
+ other.returnedParagraphs[0].formattedRuns=[{from:0,to:7,text:'before ',inlineState:{}},{from:7,to:11,text:'same',inlineState:{bold:true,link:oldHref}},{from:11,to:17,text:' after',inlineState:{}}];
+ const scenes=[other,f].map((value,index)=>({sceneId:index?'roman/target.txt':'roman/other.txt',blocks:value.baselineParagraphs.map((p,j)=>({
+  blockId:'block-'+index+'-'+j,documentParagraphIndex:index+j,formatIr:p.formatIr,
+  canonicalTextSha256:'sha256:'+hash(p.text),canonicalMarksSha256:'sha256:'+hashCanonicalValue(p.formatIr),
+  wordSignals:[{kind:'bookmarkName',value:{name:'yrtk_'+index+'_'+j}}]
+ }))}));
+ const paragraphs=[other,f].flatMap((value,index)=>value.returnedParagraphs.map((p,j)=>({...p,paragraphIndex:index+j,bookmarkNames:['yrtk_'+index+'_'+j]})));
+ return {bridge,f,e,map:{scope:'full-manuscript',scenes},ir:{formattingParagraphs:paragraphs}};
+}
+test('full manuscript resolves the edited scene despite an identical link in another scene and preserves the actual graph',async t=>{
+ const {bridge,f,e,map,ir}=await manuscriptFixture();
+ const r=bridge.analyzeFullManuscriptCleanLinkReturn(map,ir);assert.equal(r.ok,true,JSON.stringify(r));
+ assert.equal(r.change.targetScope.id,'roman/target.txt');assert.equal(r.change.documentParagraphIndex,1);
+ const s=await setup(t,f,r.change); // Bind the real writer input to the resolved scene.
+ const target='roman/target.txt';s.input.projectSnapshot.scenes[0].sceneId=target;s.input.scenePathBySceneId={[target]:s.scenePath};
+ const otherPath=path.join(s.input.projectRoot,'roman/other.txt');fs.writeFileSync(otherPath,'unchanged neighbor');
+ const options={...s.permit,operationId:'op_full_manuscript_link'};
+ const [, ,w]=await modules,result=await w.applyExactTextBatchMinSafeWrite(s.input,options);
+ assert.equal(result.applied,true,JSON.stringify(result));assert.deepEqual(e.parseObservablePayload(fs.readFileSync(s.scenePath,'utf8')).doc,f.expected);
+ assert.equal(fs.readFileSync(otherPath,'utf8'),'unchanged neighbor');
+ const after=fs.readFileSync(s.scenePath,'utf8');const replay=await w.applyExactTextBatchMinSafeWrite(s.input,options);
+ assert.equal(replay.status,'replay');assert.equal(fs.readFileSync(s.scenePath,'utf8'),after);
+});
+for(const fault of ['missing-bookmark','duplicate-bookmark','forged-bookmark','reordered','extra-paragraph','missing-paragraph','neighbor-text','neighbor-style','neighbor-target','two-labels','comment','revision','wrong-hash','duplicate-scene'])test('full manuscript rejects without authority: '+fault,async()=>{
+ const {bridge,map,ir}=await manuscriptFixture(),p=ir.formattingParagraphs;
+ if(fault==='missing-bookmark')p[0].bookmarkNames=[];
+ if(fault==='duplicate-bookmark')p[1].bookmarkNames=p[0].bookmarkNames;
+ if(fault==='forged-bookmark')p[1].bookmarkNames=['yrtk_forged'];
+ if(fault==='reordered')p.reverse();
+ if(fault==='extra-paragraph')p.push(structuredClone(p[0]));
+ if(fault==='missing-paragraph')p.pop();
+ if(fault==='neighbor-text')p[0].formattedRuns[0].text='changed';
+ if(fault==='neighbor-style')p[0].formattedRuns[0].inlineState.italic=true;
+ if(fault==='neighbor-target')p[0].formattedRuns[1].inlineState.link=newHref;
+ if(fault==='two-labels'){p[0].paragraphText='before SAME after';p[0].formattedRuns[1].text='SAME';}
+ if(fault==='comment')ir.comments=[{id:'mixed'}];
+ if(fault==='revision')ir.textRevisions=[{operation:'insert'}];
+ if(fault==='wrong-hash')map.scenes[0].blocks[0].canonicalMarksSha256='sha256:'+'0'.repeat(64);
+ if(fault==='duplicate-scene')map.scenes[1].sceneId=map.scenes[0].sceneId;
+ assert.equal(bridge.analyzeFullManuscriptCleanLinkReturn(map,ir).ok,false);
+});
+for(const stale of [false,true])test('queued full manuscript link gate rechecks every scene after key resolution '+stale,async()=>{
+ let checked=0;const input={projectRoot:'/synthetic',reviewItems:[]};
+ const store={input,keyAuthority:{scope:'full-manuscript',exportMap:{scenes:[{sceneId:'target'},{sceneId:'untouched'}]},scenePathBySceneId:{target:'a',untouched:'b'}}};
+ const sandbox={activeRtkCleanLinkLabelApplyStore:store,cleanLinkLabelStoreMatches:s=>s===store,
+ resolveDocxReviewRoundKeyHandle:async()=>({state:'ACTIVE'}),verifyFullManuscriptCurrentSceneBindings:arg=>{checked++;assert.equal(arg.exportMapScenes.length,2);return {ok:!stale,reason:'STALE_UNTOUCHED_SCENE'};},fsSync:{readFileSync(){}},computeHash:hash,isPathInsideBoundary:()=>true};
+ vm.createContext(sandbox);vm.runInContext(extracted('revalidateCleanLinkLabelApplyInput'),sandbox);
+ const result=await sandbox.revalidateCleanLinkLabelApplyInput(input);assert.equal(result.ok,!stale);assert.equal(checked,1);
+});
+
+test('whole manuscript comparison does not mint a writer change',async()=>{
+ const [m]=await modules,r=m.analyzeCleanLinkLabelReturn({...fixture(),comparisonOnly:true});
+ assert.equal(r.ok,true);assert.equal(r.canWriteManuscript,false);assert.equal(r.change,undefined);
+});
+
+test('async publication revalidates a link candidate immediately before rename',async()=>{
+ let current=true,options;const input={reviewItems:[{changeId:'docx-clean-link-label-native'}]};
+ const sandbox={isDirty:false,autoSaveInProgress:false,queueDiskOperation:fn=>fn(),
+ revalidateCleanLinkLabelApplyInput:async()=>({ok:current,reason:'STALE_DURING_PUBLICATION',code:'STALE_DURING_PUBLICATION'}),
+ computeHash:hash,publishReviewSceneWithProjectTransaction:async(file,content,options)=>{await options.beforeRename();return {ok:true};}};
+ vm.createContext(sandbox);vm.runInContext(extracted('runReviewExactTextBatchSafeWriteFromMainState'),sandbox);
+ await sandbox.runReviewExactTextBatchSafeWriteFromMainState(async(i,o)=>{options=o;return {ok:true};},input);
+ assert.equal(options.beforeRename,undefined);assert.equal(typeof options.publishScene,'function');
+ await options.publishScene('scene','text',{});current=false;
+ await assert.rejects(options.publishScene('scene','text',{}),{code:'STALE_DURING_PUBLICATION'});
+});

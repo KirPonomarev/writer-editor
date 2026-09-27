@@ -280,7 +280,8 @@
     "docs/tasks/2026-09-27--word-reply-delete-ui.md",
     "docs/tasks/2026-09-27--word-comment-paragraph-rebase.md",
     "docs/tasks/2026-09-27--word-delivery-historical-lookup.md",
-    "docs/tasks/2026-09-27--word-native-comment-intake.md"
+    "docs/tasks/2026-09-27--word-native-comment-intake.md",
+    "docs/tasks/2026-09-28--word-full-manuscript-link-return.md"
   ],
   "protectedFiles": [
     {
@@ -509,7 +510,7 @@
     "sourceBindings": [
       {
         "path": "src/main.js",
-        "sha256": "0d8f70ec4e6c3a34dc0f2f2d8067cbcad1e774c01ae5559efaafab0bd6263554"
+        "sha256": "1cc778dc7905317d713efda04ea0c96eae3cd02ff80295b6478c7599c56cec36"
       },
       {
         "path": "src/utils/docxImportPreviewReferences.js",
@@ -545,7 +546,7 @@
       },
       {
         "path": "src/io/revisionBridge/index.mjs",
-        "sha256": "131472fe2d94170b863865252df6d8d4b3b6cfab3415547dd398d8df5d78c56a"
+        "sha256": "97deb1c4b4c0f5f5534558dc8d4a55723d32ce6adbbc2695ec362de524fe90ff"
       },
       {
         "path": "src/utils/docxImportSafeCreate.js",
@@ -1129,7 +1130,7 @@
       },
       {
         "path": "src/io/revisionBridge/reviewTransportCleanLinkLabel.mjs",
-        "sha256": "2a95ccc2aff765988f72afe223265dcf270bea119c444d1b57e952b4952e6d61"
+        "sha256": "3e5ebb944be957db3be87bd6c54d3891157bcd07100a00fdb794dab2644fc5e6"
       },
       {
         "path": "test/contracts/rtk-word-structural-transaction.contract.test.js",
@@ -1157,7 +1158,7 @@
       },
       {
         "path": "test/contracts/rtk-word-combined-link-return.contract.test.js",
-        "sha256": "4e4948268c10ffdff3db5ffbc26a53b756dde42806b35191f8e0b409ed14462b"
+        "sha256": "235932e984eb2889b4897df620f6ad8ea3ee07714c826db4dad14d393897838b"
       },
       {
         "path": "test/unit/sector-m-preload-ui-command-bridge.test.js",
