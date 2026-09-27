@@ -7,6 +7,7 @@ const fsp = require('node:fs/promises');
 const path = require('node:path');
 
 const { durableSaveTransaction } = require('./save-coordinator-v1.cjs');
+const { MODE: COMMENT_REBASE_MODE, planCommentAnchorSave } = require('./word-comment-anchor-save-v1.cjs');
 
 const JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v1';
 const COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v1';
@@ -14,6 +15,10 @@ const RESOURCE_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v2';
 const RESOURCE_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v2';
 const COMMENT_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v3';
 const COMMENT_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v3';
+const ANCHOR_JOURNAL_SCHEMA_VERSION = 'yalken.project-transaction.journal.v4';
+const ANCHOR_COMMIT_SCHEMA_VERSION = 'yalken.project-transaction.commit.v4';
+const commentJournalSchema = value => value?.mode === COMMENT_REBASE_MODE ? ANCHOR_JOURNAL_SCHEMA_VERSION : COMMENT_JOURNAL_SCHEMA_VERSION;
+const commentCommitSchema = value => value?.mode === COMMENT_REBASE_MODE ? ANCHOR_COMMIT_SCHEMA_VERSION : COMMENT_COMMIT_SCHEMA_VERSION;
 const MAX_RESOURCE_BYTES = 20 * 1024 * 1024; // existing 16 MiB media budget plus bounded receipt
 const MAX_RESOURCES = 129;
 const RECOVERY_PACKET_SCHEMA_VERSION = 'yalken.project-transaction.recovery-packet.v1';
@@ -139,13 +144,27 @@ function resourceBindings(resources) {
 }
 
 const commentStatePath = manifestPath => path.join(path.dirname(manifestPath), '.yalken', 'word-review', 'non-text-return-state.v1.json');
-const commentBinding = value => value ? { beforeDigest: sha256hex(value.beforeText), afterDigest: sha256hex(value.afterText) } : null;
+const commentBinding = value => value ? { beforeDigest: sha256hex(value.beforeText), afterDigest: sha256hex(value.afterText), ...(value.mode ? { mode: value.mode } : {}) } : null;
 
 // A single existing canonical comment file, not an arbitrary replacement port.
 // Ordinary import may append new-scene threads; it cannot alter older threads.
-function normalizeCommentState(value, scenePath, manifestPath) {
+function normalizeCommentState(value, scenePath, manifestPath, scenePair = null) {
   if (value === undefined || value === null) return null;
   const fail = () => { throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT); };
+  if (value?.mode === COMMENT_REBASE_MODE) {
+    if (!scenePair || Object.keys(value).sort().join(',') !== 'afterText,beforeText,mode'
+      || !['beforeText', 'afterText'].every(k => typeof value[k] === 'string' && Buffer.byteLength(value[k]) <= 65536)) fail();
+    let projectId, expected;
+    try {
+      projectId = JSON.parse(scenePair.before.manifest).projectId;
+      if (typeof projectId !== 'string' || !projectId) fail();
+      expected = planCommentAnchorSave({ beforeText: value.beforeText, projectId,
+        sceneId: path.relative(path.dirname(manifestPath), scenePath).split(path.sep).join('/'),
+        beforeContent: scenePair.before.scene, afterContent: scenePair.after.scene });
+    } catch { fail(); }
+    if (!expected || expected.afterText !== value.afterText) fail();
+    return expected;
+  }
   if (typeof value !== 'object' || Array.isArray(value)
     || Object.keys(value).sort().join(',') !== 'afterText,beforeText'
     || !['beforeText', 'afterText'].every(key => typeof value[key] === 'string'
@@ -341,7 +360,7 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
   } catch {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_JSON', TRANSACTION_PHASES.RECOVER);
   }
-  if (!journal || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)) {
+  if (!journal || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion)) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SCHEMA', TRANSACTION_PHASES.RECOVER);
   }
   if (journal.scenePath !== scenePath || journal.manifestPath !== manifestPath) {
@@ -367,10 +386,12 @@ function parseJournal(sourceText, { scenePath, manifestPath }) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SHAPE', TRANSACTION_PHASES.RECOVER);
   }
   if (resources.length && before.scene !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.RECOVER);
-  const commentState = journal.schemaVersion === COMMENT_JOURNAL_SCHEMA_VERSION
-    ? normalizeCommentState(journal.commentState, scenePath, manifestPath) : null;
-  if ((journal.schemaVersion === COMMENT_JOURNAL_SCHEMA_VERSION && !commentState)
-    || (journal.schemaVersion !== COMMENT_JOURNAL_SCHEMA_VERSION && journal.commentState !== undefined)
+  const hasComments = [COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(journal.schemaVersion);
+  const commentState = hasComments
+    ? normalizeCommentState(journal.commentState, scenePath, manifestPath, { before, after }) : null;
+  if ((hasComments && (!commentState || commentJournalSchema(commentState) !== journal.schemaVersion))
+    || (!hasComments && journal.commentState !== undefined)
+    || (journal.schemaVersion === ANCHOR_JOURNAL_SCHEMA_VERSION && journal.resources !== undefined)
     || (commentState && resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
   }
@@ -406,7 +427,7 @@ async function readCommitRecordState({
   } catch {
     return corruptCommitState(source, 'COMMIT_RECORD_JSON');
   }
-  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || !isDigest(record.transactionId)
     || !Number.isSafeInteger(record.revision) || record.revision < 0
     || !isDigest(record.sceneDigest) || !isDigest(record.manifestDigest)) {
@@ -422,8 +443,9 @@ async function readCommitRecordState({
       return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
     }
   } else if (record.resources !== undefined) return corruptCommitState(source, 'COMMIT_RESOURCE_SCHEMA');
-  if (record.schemaVersion === COMMENT_COMMIT_SCHEMA_VERSION) {
-    if (!record.commentState || !isDigest(record.commentState.beforeDigest) || !isDigest(record.commentState.afterDigest)) {
+  if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)) {
+    if (!record.commentState || !isDigest(record.commentState.beforeDigest) || !isDigest(record.commentState.afterDigest)
+      || (record.schemaVersion === ANCHOR_COMMIT_SCHEMA_VERSION ? record.commentState.mode !== COMMENT_REBASE_MODE : record.commentState.mode !== undefined)) {
       return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
     }
   } else if (record.commentState !== undefined) return corruptCommitState(source, 'COMMIT_COMMENT_SCHEMA');
@@ -595,7 +617,7 @@ async function readPendingProjectTransactionBinding({ manifestPath, fsAdapter = 
   } catch {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_JSON', TRANSACTION_PHASES.RECOVER);
   }
-  if (!candidate || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION].includes(candidate.schemaVersion)) {
+  if (!candidate || ![JOURNAL_SCHEMA_VERSION, RESOURCE_JOURNAL_SCHEMA_VERSION, COMMENT_JOURNAL_SCHEMA_VERSION, ANCHOR_JOURNAL_SCHEMA_VERSION].includes(candidate.schemaVersion)) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_JOURNAL_SCHEMA', TRANSACTION_PHASES.RECOVER);
   }
   if (candidate.manifestPath !== manifestPath || typeof candidate.scenePath !== 'string') {
@@ -762,12 +784,17 @@ async function commitProjectTransaction({
   }
 
   const resources = createResources === undefined ? [] : normalizeResources(createResources, { scenePath, manifestPath });
-  const commentState = normalizeCommentState(inputCommentState, scenePath, manifestPath);
-  if (commentState && (!resources.length || resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
+  const commentState = normalizeCommentState(inputCommentState, scenePath, manifestPath, {
+    before: { scene: expectedSceneContent, manifest: expectedManifestContent },
+    after: { scene: sceneContent, manifest: manifestContent },
+  });
+  if (commentState && (commentState.mode === COMMENT_REBASE_MODE
+    ? resources.length !== 0
+    : !resources.length || resources.some(entry => entry.path === commentStatePath(manifestPath)))) {
     throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.ADMIT);
   }
   if (resources.length && expectedSceneContent !== null) throw new ProjectTransactionError('E_PROJECT_TRANSACTION_RESOURCES_CREATE_ONLY', TRANSACTION_PHASES.ADMIT);
-  if (resources.length) {
+  if (resources.length || commentState?.mode === COMMENT_REBASE_MODE) {
     await assertResourceBoundary(scenePath, manifestPath, fsAdapter);
     await assertResourceBoundary(manifestPath, manifestPath, fsAdapter);
     await assertResourceBoundary(commitPathFor(scenePath), manifestPath, fsAdapter);
@@ -801,7 +828,7 @@ async function commitProjectTransaction({
     }
   }
   const journal = {
-    schemaVersion: commentState ? COMMENT_JOURNAL_SCHEMA_VERSION : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
+    schemaVersion: commentState ? commentJournalSchema(commentState) : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
     transactionId,
     revision,
     scenePath,
@@ -887,7 +914,7 @@ async function commitProjectTransaction({
 
   if (commentState) await publishCommentState(commentState, manifestPath, commentState.afterText, revision, fsAdapter);
   const commitRecord = {
-    schemaVersion: commentState ? COMMENT_COMMIT_SCHEMA_VERSION : resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
+    schemaVersion: commentState ? commentCommitSchema(commentState) : resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
     ...(commentState ? { commentState: commentBinding(commentState) } : {}),
     transactionId,
     revision,
@@ -961,7 +988,7 @@ function decodePacketRole(packet, role) {
 
 function journalWireRecord(journal) {
   return {
-    schemaVersion: journal.commentState ? COMMENT_JOURNAL_SCHEMA_VERSION : journal.resources?.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
+    schemaVersion: journal.commentState ? commentJournalSchema(journal.commentState) : journal.resources?.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
     ...(journal.commentState ? { commentState: journal.commentState } : {}),
     transactionId: journal.transactionId,
     revision: journal.revision,
@@ -1037,13 +1064,16 @@ async function repairCorruptProjectCommit({
       scene: decodePacketRole(packet, 'AFTER_SCENE'),
       manifest: decodePacketRole(packet, 'AFTER_MANIFEST'),
     };
-    const commentState = normalizeCommentState(packet.commentState, scenePath, manifestPath);
+    const commentState = normalizeCommentState(packet.commentState, scenePath, manifestPath, { before, after });
     const resources = packet.companionResources === undefined ? [] : normalizeResources(packet.companionResources, { scenePath, manifestPath }, true);
+    if (commentState?.mode === COMMENT_REBASE_MODE && packet.companionResources !== undefined) {
+      throw new ProjectTransactionError('E_PROJECT_TRANSACTION_COMMENT_STATE', TRANSACTION_PHASES.RECOVER);
+    }
     if (before.manifest === null || after.scene === null || after.manifest === null) {
       throw new ProjectTransactionError('E_PROJECT_COMMIT_RECOVERY_PACKET_SHAPE', TRANSACTION_PHASES.RECOVER);
     }
     journal = {
-      schemaVersion: commentState ? COMMENT_JOURNAL_SCHEMA_VERSION : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
+      schemaVersion: commentState ? commentJournalSchema(commentState) : resources.length ? RESOURCE_JOURNAL_SCHEMA_VERSION : JOURNAL_SCHEMA_VERSION,
       transactionId: recoveryTransactionId,
       revision: packet.binding.revision,
       scenePath,
@@ -1134,7 +1164,7 @@ async function repairCorruptProjectCommit({
   } else {
     const commitPath = commitPathFor(scenePath);
     const commitRecord = {
-      schemaVersion: journal.commentState ? COMMENT_COMMIT_SCHEMA_VERSION : journal.resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
+      schemaVersion: journal.commentState ? commentCommitSchema(journal.commentState) : journal.resources.length ? RESOURCE_COMMIT_SCHEMA_VERSION : COMMIT_SCHEMA_VERSION,
       ...(journal.commentState ? { commentState: commentBinding(journal.commentState) } : {}),
       transactionId: journal.transactionId,
       revision: journal.revision,
@@ -1205,7 +1235,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
   } catch {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMIT_RECORD_INVALID' };
   }
-  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
+  if (!record || ![COMMIT_SCHEMA_VERSION, RESOURCE_COMMIT_SCHEMA_VERSION, COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)
     || record.scenePath !== scenePath || record.manifestPath !== manifestPath) {
     return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'COMMIT_RECORD_BINDING' };
   }
@@ -1236,7 +1266,7 @@ function classifyProjectTransactionState({ scenePath, manifestPath }) {
       }
     } catch { return { classification: 'PARTIAL_CORRUPTION_DETECTED', reason: 'RESOURCE_BINDING_MISMATCH' }; }
   }
-  if (record.schemaVersion === COMMENT_COMMIT_SCHEMA_VERSION) {
+  if ([COMMENT_COMMIT_SCHEMA_VERSION, ANCHOR_COMMIT_SCHEMA_VERSION].includes(record.schemaVersion)) {
     try {
       const target = commentStatePath(manifestPath);
       let current = path.dirname(manifestPath);

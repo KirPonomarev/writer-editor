@@ -82,6 +82,7 @@ const {
   readPendingProjectTransactionBinding,
   recoverProjectTransaction,
 } = require('./core/project-transaction-v1.cjs');
+const { planCommentAnchorSave } = require('./core/word-comment-anchor-save-v1.cjs');
 const {
   ATOMIC_IMPORT_LIBRARY_TARGET_ROLES,
   ATOMIC_SINGLE_FILE_TARGET_ROLES,
@@ -20714,62 +20715,81 @@ async function commitWriterProjectSnapshot(filePath, content, revision, bookProf
       observeLegacy,
       observeGateway,
       executeGateway: async () => {
-        if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
-        let expectedSceneContent = null;
-        try {
-          expectedSceneContent = await fs.readFile(filePath, 'utf8');
-        } catch (error) {
-          if (!error || error.code !== 'ENOENT') throw error;
-        }
-        if (typeof options.expectedSceneContent === 'string' && expectedSceneContent !== options.expectedSceneContent) {
-          const error = new Error('PROJECT_TRANSACTION_SCENE_CAS');
-          error.code = 'E_PROJECT_TRANSACTION_SCENE_CAS';
-          throw error;
-        }
-        // Invalidation is part of the same scene/manifest commit. Publishing it
-        // after ACK would immediately invalidate the commit's manifest digest.
-        let manifestContent = prepared.nextText;
-        if (expectedSceneContent !== content && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
-          const sceneId = getProjectRelativeFilePath(filePath, prepared.manifestPath);
-          const preservation = await loadProRoundtripPreservationModule();
-          const invalidation = sceneId && typeof preservation?.applyFreeEditProDataInvalidation === 'function'
-            ? preservation.applyFreeEditProDataInvalidation(
-              JSON.parse(manifestContent), { changedSceneIds: [sceneId], deletedSceneIds: [] },
-            )
-            : null;
-          if (!invalidation || invalidation.ok !== true || !isPlainObjectValue(invalidation.manifest)) {
-            const error = new Error('PROJECT_SAVE_INVALIDATION_FAILED');
-            error.code = 'E_PROJECT_SAVE_INVALIDATION_FAILED';
+        const authority = await getMainProjectManifestAuthority();
+        const executeUnderLease = async (lease) => {
+          if (typeof options.beforeScenePublish === 'function') await options.beforeScenePublish();
+          let expectedSceneContent = null;
+          try {
+            expectedSceneContent = await fs.readFile(filePath, 'utf8');
+          } catch (error) {
+            if (!error || error.code !== 'ENOENT') throw error;
+          }
+          if (typeof options.expectedSceneContent === 'string' && expectedSceneContent !== options.expectedSceneContent) {
+            const error = new Error('PROJECT_TRANSACTION_SCENE_CAS');
+            error.code = 'E_PROJECT_TRANSACTION_SCENE_CAS';
             throw error;
           }
-          manifestContent = JSON.stringify(invalidation.manifest, null, 2);
-        }
-        const authority = await getMainProjectManifestAuthority();
-        const receipt = await commitProjectTransaction({
-          scenePath: filePath,
-          sceneContent: content,
-          expectedSceneContent,
-          manifestPath: prepared.manifestPath,
-          manifestContent,
-          expectedManifestContent: prepared.expectedText,
-          revision,
-          verifyManifestContinuation: (request) => authority.verifyManifestContinuation({ ...request, projectId: prepared.projectId }),
-          publishManifest: async ({ manifestPath, expectedText, nextText, reason }) => {
-            if (manifestPath !== prepared.manifestPath) {
-              const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');
-              error.code = 'E_PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH';
+          // Invalidation is part of the same scene/manifest commit. Publishing it
+          // after ACK would immediately invalidate the commit's manifest digest.
+          let manifestContent = prepared.nextText;
+          if (expectedSceneContent !== content && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
+            const sceneId = getProjectRelativeFilePath(filePath, prepared.manifestPath);
+            const preservation = await loadProRoundtripPreservationModule();
+            const invalidation = sceneId && typeof preservation?.applyFreeEditProDataInvalidation === 'function'
+              ? preservation.applyFreeEditProDataInvalidation(
+                JSON.parse(manifestContent), { changedSceneIds: [sceneId], deletedSceneIds: [] },
+              )
+              : null;
+            if (!invalidation || invalidation.ok !== true || !isPlainObjectValue(invalidation.manifest)) {
+              const error = new Error('PROJECT_SAVE_INVALIDATION_FAILED');
+              error.code = 'E_PROJECT_SAVE_INVALIDATION_FAILED';
               throw error;
             }
-            await authority.commitManifestText({
-              projectId: prepared.projectId,
-              targetPath: manifestPath,
-              expectedText,
-              nextText,
-              label: `${operationLabel}:${reason}`,
+            manifestContent = JSON.stringify(invalidation.manifest, null, 2);
+          }
+          let commentState = null;
+          if (lease && typeof expectedSceneContent === 'string'
+            && ['scene', 'chapter-file'].includes(getDocumentContextFromPath(filePath)?.kind)) {
+            const comments = await loadRtkNonTextReturnModule();
+            const current = await comments.readCommentAuthoringState({
+              projectRoot: path.dirname(prepared.manifestPath), projectId: prepared.projectId,
             });
-          },
-        });
-        return Object.freeze({ ...receipt, projectTransaction: true });
+            commentState = planCommentAnchorSave({ beforeText: current.text,
+              projectId: prepared.projectId, sceneId: getProjectRelativeFilePath(filePath, prepared.manifestPath),
+              beforeContent: expectedSceneContent, afterContent: content });
+          }
+          const receipt = await commitProjectTransaction({
+            ...(commentState ? { commentState } : {}),
+            scenePath: filePath,
+            sceneContent: content,
+            expectedSceneContent,
+            manifestPath: prepared.manifestPath,
+            manifestContent,
+            expectedManifestContent: prepared.expectedText,
+            revision,
+            verifyManifestContinuation: (request) => authority.verifyManifestContinuation({ ...request, projectId: prepared.projectId }),
+            publishManifest: async ({ manifestPath, expectedText, nextText, reason }) => {
+              if (manifestPath !== prepared.manifestPath) {
+                const error = new Error('PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH');
+                error.code = 'E_PROJECT_TRANSACTION_MANIFEST_PATH_MISMATCH';
+                throw error;
+              }
+              await authority.commitManifestText({
+                projectId: prepared.projectId,
+                ...(lease ? { lease } : {}),
+                targetPath: manifestPath,
+                expectedText,
+                nextText,
+                label: `${operationLabel}:${reason}`,
+              });
+            },
+          });
+          return Object.freeze({ ...receipt, projectTransaction: true });
+        };
+        // Authenticated review owns its existing outer journal and comment step.
+        // This private main option is never accepted from a renderer payload.
+        if (options.commentRebaseOwner === 'EXACT_REVIEW_JOURNAL') return executeUnderLease(null);
+        return authority.withProjectLease(prepared.projectId, lease => lease.publish(() => executeUnderLease(lease)));
       },
     });
   } catch (error) {
@@ -20788,7 +20808,10 @@ async function recoverWriterProjectTransactionForFile(filePath) {
   if (!isPathInside(projectRoot, filePath)) return { recovered: false, outcome: 'NOT_PROJECT_BOUND' };
   const manifestPath = getProjectManifestPath(currentProjectName || DEFAULT_PROJECT_NAME);
   const authority = await getMainProjectManifestAuthority();
-  return recoverProjectTransaction({
+  const boundManifest = JSON.parse(await fs.readFile(manifestPath, 'utf8'));
+  const boundProjectId = normalizeStableProjectId(boundManifest.projectId);
+  if (!boundProjectId) throw Object.assign(new Error('PROJECT_TRANSACTION_PROJECT_ID_REQUIRED'), { code: 'E_PROJECT_TRANSACTION_PROJECT_ID_REQUIRED' });
+  return authority.withProjectLease(boundProjectId, lease => lease.publish(() => recoverProjectTransaction({
     scenePath: filePath,
     manifestPath,
     verifyManifestContinuation: async (request) => {
@@ -20810,20 +20833,21 @@ async function recoverWriterProjectTransactionForFile(filePath) {
         throw error;
       }
       const projectId = normalizeStableProjectId(nextManifest?.projectId);
-      if (!projectId) {
+      if (!projectId || projectId !== boundProjectId) {
         const error = new Error('PROJECT_TRANSACTION_PROJECT_ID_REQUIRED');
         error.code = 'E_PROJECT_TRANSACTION_PROJECT_ID_REQUIRED';
         throw error;
       }
       await authority.commitManifestText({
         projectId,
+        lease,
         targetPath,
         expectedText,
         nextText,
         label: `project transaction ${reason}`,
       });
     },
-  });
+  })));
 }
 
 async function recoverPendingWriterProjectTransaction() {
@@ -22683,7 +22707,7 @@ async function publishReviewSceneWithProjectTransaction(filePath, content, optio
   }
   const receipt = await commitWriterProjectSnapshot(
     filePath, content, lastSignaledEditGeneration, binding.manifest.bookProfile,
-    'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename },
+    'review scene and manifest transaction', { expectedSceneContent: options.expectedText, beforeScenePublish: options.beforeRename, commentRebaseOwner: 'EXACT_REVIEW_JOURNAL' },
   );
   if (receipt.success !== true || receipt.projectTransaction !== true) {
     throw Object.assign(new Error(receipt.error || 'REVIEW_PROJECT_SCENE_SAVE_FAILED'), {
@@ -30061,7 +30085,7 @@ async function runAutoSave() {
           'autosave project transaction'
         );
         if (!saveResult.success) {
-          updateStatus('Ошибка сохранения');
+          updateStatus(writerSaveFailureStatus(saveResult));
           return lifecycleSaveFailure(lifecycleSubjectId, 'SAVE_WRITE_FAILED', classify(false, null));
         }
         saveReceipt = saveResult;
@@ -30300,7 +30324,8 @@ async function handleSave() {
         : projectSaveFailure('SAVE_ACK_NOT_DURABLE');
     }
     logDevError('handleSave:projectTransactionResult', saveResult);
-    updateStatus('Ошибка');
+    updateStatus(writerSaveFailureStatus(saveResult));
+    await showCommentSaveFailure(saveResult);
     return projectSaveFailure('PROJECT_TRANSACTION_FAILED', saveResult);
   }
 
@@ -30353,11 +30378,34 @@ async function handleSave() {
         : projectSaveFailure('SAVE_ACK_NOT_DURABLE');
     }
     logDevError('handleSave:newProjectTransactionResult', saveResult);
-    updateStatus('Ошибка');
+    updateStatus(writerSaveFailureStatus(saveResult));
+    await showCommentSaveFailure(saveResult);
     return projectSaveFailure('PROJECT_TRANSACTION_FAILED', saveResult);
   }
 
   return projectSaveFailure('SAVE_DIALOG_CANCELLED');
+}
+
+function writerSaveFailureStatus(result) {
+  if (typeof result?.code === 'string' && /^(?:COMMENT_SAVE_|COMMENT_STATE_)/u.test(result.code)) {
+    return 'Ошибка сохранения комментариев. Отмените правки текста или скопируйте черновик.';
+  }
+  return 'Ошибка сохранения';
+}
+
+let commentSaveWarningPromise = null;
+async function showCommentSaveFailure(result) {
+  if (typeof result?.code !== 'string' || !/^(?:COMMENT_SAVE_|COMMENT_STATE_)/u.test(result.code)
+    || !mainWindow || mainWindow.isDestroyed()) return;
+  if (commentSaveWarningPromise) return commentSaveWarningPromise;
+  // This dismiss-only platform effect reports failure; it cannot authorize writes.
+  commentSaveWarningPromise = dialog.showMessageBox(mainWindow, {
+    type: 'warning', title: 'Текст не сохранён',
+    message: 'Не удалось безопасно сохранить текст с комментариями',
+    detail: 'Привязки комментариев не удалось проверить после правки. Текст остаётся в редакторе. Отмените правки текста или скопируйте черновик перед закрытием.',
+    buttons: ['Вернуться к тексту'], defaultId: 0, cancelId: 0, noLink: true,
+  });
+  try { await commentSaveWarningPromise; } finally { commentSaveWarningPromise = null; }
 }
 
 function projectSaveFailure(reason, cause = null) {
