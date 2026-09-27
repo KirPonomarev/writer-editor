@@ -1642,21 +1642,21 @@
     },
     {
       "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
-      "sha256": "8084fcb354f8197482d651da9b1f9b51980e6deeef5da84f3b3f6daa20df8673",
-      "approvedBy": "owner-direct-task:WORD_COMMENT_REPLY_RETURN_20260927",
-      "approvedAtUtc": "2026-09-27T11:39:34.552298+00:00",
+      "sha256": "612a95b212ffb3e7e2013aaf133cd07afa35c7ff8451425aadb2b45f3e52322d",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
       "approved": true,
-      "authority": "DIRECT_OWNER_PERSONAL_WORD_ROUNDTRIP_IMPLEMENTATION",
-      "rationale": "Bounded ordinary Word reply return: validate localized built-in literal comment style and inherited defaults; preserve authority, prior messages and all independent proof requirements. No cell credit, broad rich-format claim or release claim."
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     },
     {
       "filePath": "src/main.js",
-      "sha256": "e177a6de83cd00545ce28d627878be2a4fd7b6684d529971d7eed485b9ba55f6",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
-      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "sha256": "36997008098962d1cddb12fe2b36e474bd955d1396d71905e274ae6fc842365e",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
-      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     },
     {
       "filePath": "src/renderer/editor.bundle.js",
@@ -2497,12 +2497,12 @@
     },
     {
       "filePath": "src/core/word-comment-return-delta-v1.cjs",
-      "sha256": "34d97ded3533f5bcbb158d13ec814422deab8e9b0b2d778d0eea3424c2dbc3d2",
-      "approvedAtUtc": "2026-09-27T02:27:34.173815Z",
-      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927",
-      "rationale": "Owner-authorized revision-3 Word plan: implement authenticated existing-comment return deltas with private main admission, shared project lease, exact baseline CAS and one atomic graph publication. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "sha256": "2025aec01f4ee0a4888708b88afd60709f4fd702baa97559b574bc9c24946e6e",
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved.",
       "approved": true,
-      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN"
     },
     {
       "filePath": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
@@ -2533,9 +2533,9 @@
     },
     {
       "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
-      "sha256": "5c41f44da5ebc7e4059a1faa44a81878701924235612fba174c25148da58f5ed",
+      "sha256": "30f2717bf807c40b0d9b02581d4077620860f6741bb6615ef814f5c6d2b0aece",
       "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
-      "approvedAtUtc": "2026-09-27T12:30:13.495282+00:00",
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
       "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
@@ -2629,6 +2629,15 @@
       "filePath": "test/contracts/rtk-word-c5v2-terminal-orchestrator.contract.test.js",
       "sha256": "3aaaaef6d2456ace75db440bbd01aca301c5a0fdb7852ad8634b398cd3b489e2",
       "rationale": "Owner-authorized bounded test-only reliability repair: genuinely stalled child, separated stage ceiling, exact progress-timeout and dead-child assertions. Real process identity protections unchanged; no product or cell claim."
+    },
+    {
+      "filePath": "docs/tasks/2026-09-27--word-comment-thread-deletion.md",
+      "sha256": "3be891b254e86c807988b398149078a43ed1779e8ddf1be145073a60b7805256",
+      "approved": true,
+      "approvedAtUtc": "2026-09-27T12:32:06.818008+00:00",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     }
   ],
   "evidenceStampIds": [
@@ -11367,6 +11376,42 @@
       "approved": true,
       "authority": "DIRECT_OWNER_WORD_PROCESS_RELIABILITY_REPAIR",
       "rationale": "Test-only repair removes competing self-exit from watchdog clock fixture, retains real process identity checks and exact progress-timeout assertion, adds dead-child proof. No runtime changes or cell credit."
+    },
+    {
+      "filePath": "src/core/word-comment-return-delta-v1.cjs",
+      "sha256": "34d97ded3533f5bcbb158d13ec814422deab8e9b0b2d778d0eea3424c2dbc3d2",
+      "approvedAtUtc": "2026-09-27T02:27:34.173815Z",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_RETURN_DELTA_20260927",
+      "rationale": "Owner-authorized revision-3 Word plan: implement authenticated existing-comment return deltas with private main admission, shared project lease, exact baseline CAS and one atomic graph publication. Exact source/test/companion bindings only; no cell acceptance, historical evidence rewrite or oracle reduction.",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING"
+    },
+    {
+      "filePath": "src/io/revisionBridge/reviewTransportPackageParserV2.mjs",
+      "sha256": "8084fcb354f8197482d651da9b1f9b51980e6deeef5da84f3b3f6daa20df8673",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_REPLY_RETURN_20260927",
+      "approvedAtUtc": "2026-09-27T11:39:34.552298+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_PERSONAL_WORD_ROUNDTRIP_IMPLEMENTATION",
+      "rationale": "Bounded ordinary Word reply return: validate localized built-in literal comment style and inherited defaults; preserve authority, prior messages and all independent proof requirements. No cell credit, broad rich-format claim or release claim."
+    },
+    {
+      "filePath": "src/main.js",
+      "sha256": "e177a6de83cd00545ce28d627878be2a4fd7b6684d529971d7eed485b9ba55f6",
+      "approvedBy": "owner-delegated-codex:WORD_COMMENT_SHADOW_REPLAY_20260927",
+      "approvedAtUtc": "2026-09-27T11:00:35.194934Z",
+      "approved": true,
+      "authority": "DIRECT_OWNER_INTEROP_IMPLEMENTATION_EXACT_BYTE_BINDING",
+      "rationale": "Owner-authorized bounded Word comment shadow replay repair: complete IR-bound identities and intake-clock normalization only. Preserve canonical state, legacy records, negative gates and historical certification sets; no cell credit."
+    },
+    {
+      "filePath": "docs/OPS/R24/CORRECTIVE/PK1R1_GOVERNANCE_CHANGE_APPROVALS_V1.json",
+      "sha256": "5c41f44da5ebc7e4059a1faa44a81878701924235612fba174c25148da58f5ed",
+      "approvedBy": "owner-direct-task:WORD_COMMENT_THREAD_DELETION_20260927",
+      "approvedAtUtc": "2026-09-27T12:30:13.495282+00:00",
+      "approved": true,
+      "authority": "DIRECT_OWNER_WORD_CORRECTION_PLAN",
+      "rationale": "Owner-authorized Word P1c whole-thread return: explicit deletion decision, complete package inventory, retained messages/provenance and existing Kernel/lease guards. No new cell credit; historical bindings preserved."
     }
   ]
 }
