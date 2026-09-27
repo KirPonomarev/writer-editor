@@ -497,7 +497,7 @@ async function addedRootFixture({ empty = false, partialMetadata = false, corrup
   const sceneId = 'roman/a.md', text = f.input.returnedParagraphs[0].paragraphText;
   const edited = structuredClone(f.state);
   edited.threads.push({ threadId: 'provider-created', rootCommentId: 'provider-root', sceneId, status: 'open',
-    anchor: exactAnchor({ paragraphIndex: 0, startUtf16: 0, selectedText: 'Before' }, sceneId, [text]),
+    anchor: exactAnchor({ paragraphIndex: 0, startUtf16: 0, selectedText: 'Before ' }, sceneId, [text]),
     messages: [{ commentId: 'provider-root', kind: 'root', body: 'New Word discussion', provenance: { author: 'Reviewer' } },
       { commentId: 'provider-reply', kind: 'reply', body: 'New Word reply', provenance: { author: 'Second reviewer' } }] });
   const source = makeSource({ projectId: f.state.projectId, projectRoot: '/project', nonTextReturnState: edited,
@@ -537,7 +537,7 @@ for (const empty of [false, true]) test(`new Word root (${empty ? 'first ever' :
   assert.equal(added.messages[0].body, 'New Word discussion');
   assert.equal(added.messages[0].provenance.author, 'Reviewer');
   assert.equal(added.messages[1].body, 'New Word reply');
-  assert.equal(added.anchor.selectedText, 'Before'); assert.equal(added.anchor.startUtf16, 0);
+  assert.equal(added.anchor.selectedText, 'Before '); assert.equal(added.anchor.startUtf16, 0);
   assert.equal(result.changes.length, 1); assert.equal(result.changes[0].created, true);
   assert.equal(plan({ ...input, beforeText: result.afterText }).replay, true);
   assert.equal(JSON.parse(plan({ ...input, beforeText: result.afterText }).afterText).threads.length, after.threads.length);

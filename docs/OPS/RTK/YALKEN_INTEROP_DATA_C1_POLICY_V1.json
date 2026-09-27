@@ -816,7 +816,7 @@
       },
       {
         "path": "src/export/docx/docxReviewPacketComments.js",
-        "sha256": "41e740213741edc375c835647da32f4815f2a33c4f91759c333a4c79a5f4b7ca"
+        "sha256": "acb8364969c97d74eca61b3a52b083652161d5de658bf9a080c68f534e18577a"
       },
       {
         "path": "src/io/revisionBridge/reviewTransportNonTextReturnRuntime.mjs",
@@ -1232,7 +1232,7 @@
       },
       {
         "path": "test/contracts/rtk-word-comment-return-delta.contract.test.js",
-        "sha256": "93b3cb3506927c86ae0e50ab108d61cd97e17684bddf8effa8c54ef4186e20b4"
+        "sha256": "b587d0726de85619f9311ef0dfecf19c7c271fe077965b95920a08258e98e0c7"
       },
       {
         "path": "docs/tasks/2026-09-27--word-comment-return-apply.md",
@@ -1288,7 +1288,7 @@
       },
       {
         "path": "docs/tasks/2026-09-27--word-new-comment-return.md",
-        "sha256": "a0a20c91c817b135e5bab5444fc806b904c31232523bdc83f04c4d497b5d21ee"
+        "sha256": "7dd19078d0631e8e0d2dfebd30aef8ddc4a490ae0910e163e5589ff400bdccb5"
       }
     ],
     "followupRepair": {

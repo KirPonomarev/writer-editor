@@ -36,3 +36,7 @@ Native Word creates optional UTC metadata only for newly added messages. The
 parser distinguishes COMPLETE_BODY_GRAPH from COMPLETE; only additions with no
 missing baseline roots can use the former. Deletion still requires COMPLETE.
 Dangling, duplicate or foreign extensible identities invalidate both receipts.
+
+Adjacent ranges close previous message markers before opening following markers
+at their shared UTF-16 boundary, independent of canonical thread storage order.
+The real new-root Apply/reopen/export route exposed and guards this requirement.

@@ -160,7 +160,10 @@ function commentPackageParts(projection) {
 
 function commentMarkersForBlock(projection, block) {
   const markers = new Map();
-  const append = (offset, xml) => markers.set(offset, (markers.get(offset) || '') + xml);
+  const append = (offset, kind, xml) => {
+    const boundary = markers.get(offset) || { end: '', start: '' };
+    boundary[kind] += xml; markers.set(offset, boundary);
+  };
   for (const thread of projection?.threads || []) {
     if (thread.anchor.blockId !== block.blockId) continue;
     const { startUtf16: start, endUtf16: end, selectedText } = thread.anchor;
@@ -168,12 +171,14 @@ function commentMarkersForBlock(projection, block) {
       && start < end && isUtf16Boundary(block.text, start) && isUtf16Boundary(block.text, end), 'DOCX_COMMENT_ANCHOR_STALE');
     // Word drops an unreferenced reply on save even when commentEx names its parent.
     // Every message therefore has a matching range/reference on the same text.
-    for (const message of thread.messages) append(start, `<w:commentRangeStart w:id="${message.commentId}"/>`);
+    for (const message of thread.messages) append(start, 'start', `<w:commentRangeStart w:id="${message.commentId}"/>`);
     for (const message of thread.messages) {
-      append(end, `<w:commentRangeEnd w:id="${message.commentId}"/><w:r><w:commentReference w:id="${message.commentId}"/></w:r>`);
+      append(end, 'end', `<w:commentRangeEnd w:id="${message.commentId}"/><w:r><w:commentReference w:id="${message.commentId}"/></w:r>`);
     }
   }
-  return markers;
+  // Adjacent ranges share an offset, not an overlap. Close all previous
+  // messages before opening any next range regardless of graph storage order.
+  return new Map([...markers].map(([offset, boundary]) => [offset, boundary.end + boundary.start]));
 }
 
 // Used only after local signed-round verification. Provider metadata and IDs
